@@ -573,6 +573,15 @@ body {
   flex-shrink: 0; cursor: pointer;
 }
 .fis-thumb:active { border-color: var(--ac); }
+.fis-thumb-bsz {
+  width: 38px; height: 48px;
+  background: rgba(59,130,246,.08);
+  border: 1.5px dashed rgba(59,130,246,.35);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; color: var(--bl2); cursor: default;
+}
+.fis-thumb-bsz svg { width: 18px; height: 18px; }
 .fis-name { font-size: 14px; font-weight: 600; color: var(--tx); }
 .fis-meta { font-size: 12px; color: var(--tx3); margin-top: 2px; }
 .fis-amt  { font-size: 14px; font-weight: 700; font-family: var(--mo); color: var(--ac2); white-space: nowrap; }
@@ -727,6 +736,30 @@ body {
 }
 
 /* ══════════════════════════════
+   PROFİL MODAL
+══════════════════════════════ */
+.profil-av-wrap {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--bg3); border: 1px solid var(--bo);
+  border-radius: var(--r); padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.profil-av {
+  width: 52px; height: 52px; border-radius: 14px;
+  background: var(--ac); color: #0C0A08;
+  font-size: 19px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; letter-spacing: -.5px;
+}
+.profil-av-name { font-size: 15px; font-weight: 700; color: var(--tx); }
+.profil-av-role { font-size: 11px; color: var(--tx2); margin-top: 2px; font-family: var(--mo); }
+.profil-sec-lbl {
+  font-size: 10px; font-weight: 700; color: var(--tx3);
+  text-transform: uppercase; letter-spacing: .6px;
+  margin: 16px 0 10px;
+}
+
+/* ══════════════════════════════
    MODAL SİSTEMİ
 ══════════════════════════════ */
 .mo {
@@ -848,7 +881,16 @@ body {
   gap: 12px; padding: 20px;
 }
 #lb.on { display: flex; }
-#lb img { max-width: 90vw; max-height: 72dvh; border-radius: 10px; object-fit: contain; }
+#lb img { max-width: 88vw; max-height: 48dvh; border-radius: 10px; object-fit: contain; }
+#lb-detail {
+  display: none;
+  width: 100%; max-width: 420px;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+#lb-detail.on { display: block; }
 .lb-x {
   position: fixed; top: 16px; right: 16px;
   width: 44px; height: 44px; border-radius: 50%;
@@ -989,7 +1031,7 @@ body {
       <div class="av-top-name" id="av-name">Mehmet Kaya</div>
       <div class="av-top-role">👷 Saha Personeli</div>
     </div>
-    <div class="av-item" onclick="closeAvMenu(); notif('Profil yakında', 'blue')">
+    <div class="av-item" onclick="openProfil()">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       Profil
     </div>
@@ -1344,6 +1386,60 @@ body {
 </div>
 
 <!-- ════════════════════════════
+     MODAL: PROFİL
+════════════════════════════ -->
+<div class="mo" id="mprofil">
+  <div class="ms">
+    <div class="mh"></div>
+    <div class="mhd">
+      <div class="mtitle">👤 Profil</div>
+      <button class="mclose" onclick="closeM('mprofil')">✕</button>
+    </div>
+    <div class="mbody">
+
+      <!-- Avatar özet -->
+      <div class="profil-av-wrap">
+        <div class="profil-av" id="p-av">MK</div>
+        <div>
+          <div class="profil-av-name" id="p-av-name">Mehmet Kaya</div>
+          <div class="profil-av-role" id="p-av-role">👷 Saha Personeli</div>
+        </div>
+      </div>
+
+      <!-- Kişisel bilgiler -->
+      <div class="profil-sec-lbl">Kişisel Bilgiler</div>
+      <div class="fr2">
+        <div class="fg"><label>Ad</label><input class="fgi" id="p-ad" type="text" autocomplete="given-name"></div>
+        <div class="fg"><label>Soyad</label><input class="fgi" id="p-soyad" type="text" autocomplete="family-name"></div>
+      </div>
+      <div class="fg"><label>Telefon</label><input class="fgi" id="p-tel" type="tel" autocomplete="tel" placeholder="+90 5__ ___ __ __"></div>
+      <div class="fg"><label>E-posta</label><input class="fgi" id="p-email" type="email" autocomplete="email" placeholder="ad@example.com"></div>
+
+      <!-- Departman -->
+      <div class="profil-sec-lbl">Departman</div>
+      <div class="fg">
+        <select class="fgi" id="p-dept">
+          <option value="Saha">🚗 Saha Ekibi</option>
+          <option value="Yapim">🎬 Yapım</option>
+          <option value="Sanat">🎨 Sanat / Kostüm</option>
+          <option value="Teknik">🔧 Teknik / Ekipman</option>
+          <option value="Ofis">💼 Prodüksiyon Ofisi</option>
+        </select>
+      </div>
+
+      <!-- Butonlar -->
+      <div style="display:flex;gap:8px;margin-top:8px;padding-bottom:4px">
+        <button class="btn" onclick="closeM('mprofil')" style="flex:1;justify-content:center">İptal</button>
+        <button class="btn btn-p" onclick="submitProfil()" style="flex:2;justify-content:center">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Kaydet
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
      MODAL: BİLDİRİMLER
 ════════════════════════════ -->
 <div class="mo" id="mnotif">
@@ -1409,6 +1505,7 @@ body {
 <div id="lb">
   <button class="lb-x" onclick="closeLB()">✕</button>
   <img id="lb-img" src="" alt="">
+  <div id="lb-detail"></div>
 </div>
 
 <!-- Toast container -->
@@ -1419,9 +1516,12 @@ body {
 
 /* ═══ VERİ ═══ */
 var USERS = {
-  s: { pass:'1234', name:'Mehmet Kaya',   ini:'MK', role:'user', prjs:['ig','mr'] },
-  d: { pass:'1234', name:'Zeynep Arslan', ini:'ZA', role:'dept', prjs:['ig'] },
-  m: { pass:'1234', name:'Ayşe Tekin',   ini:'AT', role:'acc',  prjs:['ig','mr','sr'] }
+  s: { pass:'1234', name:'Mehmet Kaya',   ini:'MK', role:'user', prjs:['ig','mr'],
+       ad:'Mehmet',  soyad:'Kaya',   tel:'+90 532 418 76 03', email:'mehmet.kaya@igfilm.com',   dept:'Saha' },
+  d: { pass:'1234', name:'Zeynep Arslan', ini:'ZA', role:'dept', prjs:['ig'],
+       ad:'Zeynep',  soyad:'Arslan', tel:'+90 541 277 92 15', email:'zeynep.arslan@igfilm.com', dept:'Yapim' },
+  m: { pass:'1234', name:'Ayşe Tekin',   ini:'AT', role:'acc',  prjs:['ig','mr','sr'],
+       ad:'Ayşe',    soyad:'Tekin',  tel:'+90 505 863 44 21', email:'ayse.tekin@igfilm.com',    dept:'Ofis' }
 };
 var UMAP = { saha:'s', dept:'d', muhasebe:'m' };
 var PROJS = [
@@ -1586,6 +1686,46 @@ function goProjectSelect() {
   showScr('sp');
 }
 
+/* ═══ PROFİL ═══ */
+function openProfil() {
+  closeAvMenu();
+  if (!curUser) return;
+  document.getElementById('p-ad').value    = curUser.ad    || '';
+  document.getElementById('p-soyad').value = curUser.soyad || '';
+  document.getElementById('p-tel').value   = curUser.tel   || '';
+  document.getElementById('p-email').value = curUser.email || '';
+  var sel = document.getElementById('p-dept');
+  for (var i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].value === curUser.dept) { sel.selectedIndex = i; break; }
+  }
+  document.getElementById('p-av').textContent      = curUser.ini;
+  document.getElementById('p-av-name').textContent = curUser.name;
+  var roleMap = { user:'👷 Saha Personeli', dept:'🎬 Dept. Sorumlusu', acc:'💼 Muhasebe' };
+  document.getElementById('p-av-role').textContent = roleMap[curUser.role] || curUser.role;
+  openM('mprofil');
+}
+function submitProfil() {
+  if (!curUser) return;
+  var ad    = (document.getElementById('p-ad').value    || '').trim();
+  var soyad = (document.getElementById('p-soyad').value || '').trim();
+  if (!ad || !soyad) { notif('Ad ve soyad zorunludur', 'red'); return; }
+  curUser.ad    = ad;
+  curUser.soyad = soyad;
+  curUser.name  = ad + ' ' + soyad;
+  curUser.ini   = (ad.charAt(0) + soyad.charAt(0)).toUpperCase();
+  curUser.tel   = (document.getElementById('p-tel').value   || '').trim();
+  curUser.email = (document.getElementById('p-email').value || '').trim();
+  curUser.dept  = document.getElementById('p-dept').value;
+  /* Header + menü güncelle */
+  document.getElementById('av-name').textContent = curUser.name;
+  document.getElementById('su-av').textContent   = curUser.ini;
+  /* Modal avatar güncelle */
+  document.getElementById('p-av').textContent      = curUser.ini;
+  document.getElementById('p-av-name').textContent = curUser.name;
+  closeM('mprofil');
+  notif('Profil güncellendi', 'green');
+}
+
 /* ═══ AVATAR MENÜ ═══ */
 function toggleAvMenu() {
   var m = document.getElementById('av-menu');
@@ -1653,6 +1793,40 @@ var KAT_IC = {
   def: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>'
 };
 var DOT = { bekleyen:'var(--am)', onaylandi:'var(--gr)', reddedildi:'var(--rd)' };
+
+/* ═══ FİŞ THUMBNAIL (SVG data URL) ═══ */
+function fisThumbnail(f) {
+  var accent = f.durum === 'reddedildi' ? '#EF4444'
+             : f.durum === 'onaylandi'  ? '#22C55E'
+             : '#E8962E';
+  var svg =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="76" height="96">' +
+    /* fiş kağıdı — zigzag alt kenar */
+    '<path d="M0 0 L76 0 L76 82 L63 92 L51 82 L38 92 L25 82 L13 92 L0 82 Z" fill="#F7F4EF"/>' +
+    /* üst renk şeridi */
+    '<rect width="76" height="5" fill="' + accent + '"/>' +
+    /* firma adı (sahte) */
+    '<rect x="7" y="13" width="44" height="3" rx="1.5" fill="#C8C2B6"/>' +
+    /* tarih (sahte) */
+    '<rect x="7" y="21" width="28" height="2" rx="1" fill="#D8D2C6"/>' +
+    /* ayraç */
+    '<rect x="7" y="29" width="62" height="0.5" fill="#E0D8D0"/>' +
+    /* kalem satırları */
+    '<rect x="7" y="34" width="36" height="2" rx="1" fill="#DAD4C8"/>' +
+    '<rect x="56" y="34" width="13" height="2" rx="1" fill="#DAD4C8"/>' +
+    '<rect x="7" y="41" width="40" height="2" rx="1" fill="#DAD4C8"/>' +
+    '<rect x="56" y="41" width="13" height="2" rx="1" fill="#DAD4C8"/>' +
+    '<rect x="7" y="48" width="28" height="2" rx="1" fill="#DAD4C8"/>' +
+    '<rect x="56" y="48" width="13" height="2" rx="1" fill="#DAD4C8"/>' +
+    /* toplam ayracı */
+    '<rect x="7" y="56" width="62" height="0.5" fill="#C8C2B8"/>' +
+    /* toplam tutarı (kalın çubuk) */
+    '<rect x="7" y="62" width="52" height="3.5" rx="1.5" fill="#A89880"/>' +
+    /* alt not */
+    '<rect x="7" y="70" width="28" height="2" rx="1" fill="#C8C2B6"/>' +
+    '</svg>';
+  return 'data:image/svg+xml,' + encodeURIComponent(svg);
+}
 
 function renderRecent() {
   var mine = DATA.filter(function(d) { return d.personel === 'Mehmet K.' && d.donem === 2; });
@@ -2002,10 +2176,21 @@ function renderDonem(did) {
     var uyHtml = f.uyari    ? ' <span style="font-size:11px;color:var(--am2)" title="' + f.uyari + '">⚠️</span>' : '';
     var dpHtml = f.duplikat ? ' <span style="font-size:11px;color:var(--rd2)">🔴</span>' : '';
     var blHtml = f.belgesiz ? ' <span style="font-size:10px;background:rgba(59,130,246,.15);color:var(--bl2);border-radius:3px;padding:1px 4px;font-weight:700">BSZ</span>' : '';
-    /* thumb veya ikon */
-    var media = f.thumb
-      ? '<img src="' + f.thumb + '" class="fis-thumb" onclick="event.stopPropagation();openLB(\'' + f.thumb + '\',\'' + f.satici + '\')" alt="">'
-      : '<div class="fis-ic" style="background:' + icBg + ';color:' + icClr + '">' + icStr + '</div>';
+    /* thumb, belgesiz ikonu veya SVG fiş thumbnail */
+    var media;
+    if (f.thumb) {
+      media = '<img src="' + f.thumb + '" class="fis-thumb" onclick="event.stopPropagation();openLBFis(' + f.id + ')" alt="">';
+    } else if (f.belgesiz) {
+      media = '<div class="fis-thumb fis-thumb-bsz">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+          '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>' +
+          '<polyline points="14 2 14 8 20 8"/>' +
+          '<line x1="9" y1="13" x2="15" y2="19"/><line x1="15" y1="13" x2="9" y2="19"/>' +
+        '</svg>' +
+      '</div>';
+    } else {
+      media = '<img src="' + fisThumbnail(f) + '" class="fis-thumb" onclick="event.stopPropagation();openLBFis(' + f.id + ')" alt="">';
+    }
     return '<div class="fis-row" style="' + sep + '" onclick="openOCR(0)">' +
       media +
       '<div style="flex:1;min-width:0">' +
@@ -2129,11 +2314,43 @@ function expPDF() {
 }
 
 /* ═══ LİGHTBOX ═══ */
-function openLB(src, cap) {
+function openLBFis(fid) {
+  var f = DATA.find(function(x) { return x.id === fid; });
+  if (!f) return;
+  var src = f.thumb || fisThumbnail(f);
   document.getElementById('lb-img').src = src;
+  var durumClr = { onaylandi:'#4ADE80', reddedildi:'#F87171', bekleyen:'#FCD34D' };
+  var durumIco = { onaylandi:'✅', reddedildi:'❌', bekleyen:'⏳' };
+  var durumTxt = { onaylandi:'Onaylandı', reddedildi:'Reddedildi', bekleyen:'Bekleyen' };
+  var clr = durumClr[f.durum] || '#8A9090';
+  var det = document.getElementById('lb-detail');
+  det.innerHTML =
+    '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px">' +
+      '<div style="font-size:15px;font-weight:700;color:#EDF0F5;flex:1;margin-right:10px">' + f.satici + '</div>' +
+      '<div style="font-size:12px;font-weight:600;color:' + clr + ';white-space:nowrap">' +
+        (durumIco[f.durum] || '') + ' ' + (durumTxt[f.durum] || f.durum) +
+      '</div>' +
+    '</div>' +
+    '<div style="font-size:12px;color:#8A9090;margin-bottom:10px">' + f.tarih + ' · ' + f.kat + '</div>' +
+    '<div style="font-size:22px;font-weight:700;font-family:monospace;color:#F0C080">&#8378;' + f.tutar.toLocaleString('tr-TR') + '</div>' +
+    (f.uyari
+      ? '<div style="margin-top:8px;padding:7px 10px;background:rgba(245,158,11,.1);border-radius:7px;font-size:12px;color:#FCD34D">&#9888;&#65039; ' + f.uyari + '</div>'
+      : '') +
+    (f.belgesiz
+      ? '<div style="margin-top:8px;padding:7px 10px;background:rgba(59,130,246,.1);border-radius:7px;font-size:12px;color:#60A5FA">&#128203; Belgesiz giri&#351; &#8212; fi&#351; mevcut de&#287;il</div>'
+      : '');
+  det.classList.add('on');
   document.getElementById('lb').classList.add('on');
 }
-function closeLB() { document.getElementById('lb').classList.remove('on'); }
+function openLB(src, cap) {
+  document.getElementById('lb-img').src = src;
+  document.getElementById('lb-detail').classList.remove('on');
+  document.getElementById('lb').classList.add('on');
+}
+function closeLB() {
+  document.getElementById('lb').classList.remove('on');
+  document.getElementById('lb-detail').classList.remove('on');
+}
 document.getElementById('lb').addEventListener('click', function(e) {
   if (e.target === this) closeLB();
 });
