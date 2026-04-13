@@ -817,6 +817,55 @@ body {
 }
 
 /* ══════════════════════════════
+   BİLDİRİM MODAL SATIRLARI
+══════════════════════════════ */
+.nm {
+  display: flex; gap: 11px;
+  border-radius: var(--rs);
+  padding: 12px 14px;
+  margin-bottom: 9px;
+  border: 1px solid;
+  transition: opacity .15s;
+}
+.nm:last-child { margin-bottom: 4px; }
+.nm-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  margin-top: 4px; flex-shrink: 0;
+}
+.nm-title { font-size: 13px; font-weight: 600; }
+.nm-body  { font-size: 12px; color: var(--tx2); margin-top: 2px; }
+.nm-meta  { font-size: 11px; color: var(--tx3); margin-top: 3px; }
+/* Okunmadı renkleri */
+.nm-rd  { background: rgba(239,68,68,.06);  border-color: rgba(239,68,68,.2); }
+.nm-rd  .nm-dot   { background: var(--rd); }
+.nm-rd  .nm-title { color: var(--rd2); }
+.nm-gr  { background: rgba(34,197,94,.06);  border-color: rgba(34,197,94,.2); }
+.nm-gr  .nm-dot   { background: var(--gr); }
+.nm-gr  .nm-title { color: var(--gr2); }
+.nm-am  { background: rgba(245,158,11,.06); border-color: rgba(245,158,11,.2); }
+.nm-am  .nm-dot   { background: var(--am); }
+.nm-am  .nm-title { color: var(--am2); }
+.nm-bl  { background: rgba(59,130,246,.06); border-color: rgba(59,130,246,.2); }
+.nm-bl  .nm-dot   { background: var(--bl); }
+.nm-bl  .nm-title { color: var(--bl2); }
+/* Okundu: soluk */
+.nm-read {
+  background: var(--bg3); border-color: var(--bo); opacity: .65;
+}
+.nm-read .nm-dot  { background: var(--tx3); }
+.nm-read .nm-title { color: var(--tx2); }
+/* Okunmamış sayaç */
+.notif-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.notif-cnt {
+  font-size: 11px; font-weight: 700;
+  background: var(--rd); color: #fff;
+  border-radius: 10px; padding: 2px 7px;
+}
+
+/* ══════════════════════════════
    BİLDİRİM TOAST
 ══════════════════════════════ */
 #nc {
@@ -1262,28 +1311,48 @@ body {
       <button class="mclose" onclick="closeM('mnotif')">✕</button>
     </div>
     <div class="mbody">
-      <div style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:var(--rs);padding:12px 14px;margin-bottom:9px;display:flex;gap:11px">
-        <div style="width:8px;height:8px;border-radius:50%;background:var(--rd);margin-top:4px;flex-shrink:0"></div>
+      <div class="notif-header">
+        <div style="font-size:12px;color:var(--tx2)">4 bildirim</div>
+        <span class="notif-cnt">2 okunmadı</span>
+      </div>
+
+      <!-- OKUNMADI: Muhasebe mesajı -->
+      <div class="nm nm-am">
+        <div class="nm-dot"></div>
         <div>
-          <div style="font-size:13px;font-weight:600;color:var(--rd2)">Fiş Reddedildi</div>
-          <div style="font-size:12px;color:var(--tx2);margin-top:2px">Petrol Ofisi — ₺1.000 · Mükerrer fiş tespit edildi</div>
-          <div style="font-size:11px;color:var(--tx3);margin-top:3px">2 saat önce · Muhasebe</div>
+          <div class="nm-title">Eksik Belge — Son Tarih 16 Nisan</div>
+          <div class="nm-body">Dönem #2 kapanışı için Kostüm Deposu (₺320) belgesiz kaydına ait makbuz veya imzalı tutanak en geç yarın EOD itibarıyla sisteme yüklenmelidir. Aksi hâlde kayıt reddedilecektir.</div>
+          <div class="nm-meta">Bugün, 09:14 · Ayşe T. (Muhasebe)</div>
         </div>
       </div>
-      <div style="background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);border-radius:var(--rs);padding:12px 14px;margin-bottom:9px;display:flex;gap:11px">
-        <div style="width:8px;height:8px;border-radius:50%;background:var(--gr);margin-top:4px;flex-shrink:0"></div>
+
+      <!-- OKUNMADI: Fiş reddedildi -->
+      <div class="nm nm-rd">
+        <div class="nm-dot"></div>
         <div>
-          <div style="font-size:13px;font-weight:600;color:var(--gr2)">Fiş Onaylandı</div>
-          <div style="font-size:12px;color:var(--tx2);margin-top:2px">Tavuk Dünyası — ₺780 onaylandı</div>
-          <div style="font-size:11px;color:var(--tx3);margin-top:3px">Dün · Zeynep A.</div>
+          <div class="nm-title">Fiş Reddedildi</div>
+          <div class="nm-body">Petrol Ofisi — ₺1.000 · Mükerrer fiş tespit edildi</div>
+          <div class="nm-meta">2 saat önce · Muhasebe</div>
         </div>
       </div>
-      <div style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:var(--rs);padding:12px 14px;margin-bottom:4px;display:flex;gap:11px">
-        <div style="width:8px;height:8px;border-radius:50%;background:var(--am);margin-top:4px;flex-shrink:0"></div>
+
+      <!-- OKUNDU: Fiş onaylandı -->
+      <div class="nm nm-gr nm-read">
+        <div class="nm-dot"></div>
         <div>
-          <div style="font-size:13px;font-weight:600;color:var(--am2)">Dönem Uyarısı</div>
-          <div style="font-size:12px;color:var(--tx2);margin-top:2px">Dönem #2 avansının %90'ı kullanıldı</div>
-          <div style="font-size:11px;color:var(--tx3);margin-top:3px">3 gün önce · Sistem</div>
+          <div class="nm-title">Fiş Onaylandı</div>
+          <div class="nm-body">Tavuk Dünyası — ₺780 onaylandı</div>
+          <div class="nm-meta">Dün · Zeynep A.</div>
+        </div>
+      </div>
+
+      <!-- OKUNDU: Dönem uyarısı -->
+      <div class="nm nm-am nm-read">
+        <div class="nm-dot"></div>
+        <div>
+          <div class="nm-title">Dönem Uyarısı</div>
+          <div class="nm-body">Dönem #2 avansının %90'ı kullanıldı</div>
+          <div class="nm-meta">3 gün önce · Sistem</div>
         </div>
       </div>
     </div>
