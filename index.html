@@ -475,8 +475,19 @@ body {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
-.rc.warn { border-color: var(--am); }
-.rc.err  { border-color: var(--rd); }
+.rc.warn  { border-color: var(--am); }
+.rc.err   { border-color: var(--rd); }
+.rc.blgsz { border-color: var(--bl); }
+.rc-blgsz-tag {
+  display: inline-block;
+  font-size: 9px; font-weight: 700; letter-spacing: .3px;
+  color: var(--bl2);
+  background: rgba(59,130,246,.12);
+  border: 1px solid rgba(59,130,246,.3);
+  border-radius: 4px;
+  padding: 1px 5px;
+  margin-top: 3px;
+}
 .rc:active { transform: scale(.97); }
 .rc-ic {
   width: 36px; height: 36px; border-radius: 8px;
@@ -1313,7 +1324,8 @@ var DONEMLER = [
 var DATA = [
   { id:1, tarih:'03.04.2026', personel:'Mehmet K.', satici:'Petrol Ofisi',   kat:'Yakit',   tutar:1000, durum:'bekleyen',   donem:2, uyari:null,                    thumb:null },
   { id:2, tarih:'24.03.2026', personel:'Mehmet K.', satici:'Tavuk Dünyası',  kat:'Yiyecek', tutar:780,  durum:'bekleyen',   donem:2, uyari:'Ekip 15, 10 porsiyon', thumb:null },
-  { id:7, tarih:'03.04.2026', personel:'Mehmet K.', satici:'Petrol Ofisi',   kat:'Yakit',   tutar:1000, durum:'reddedildi', donem:2, uyari:'Mükerrer fiş',          thumb:null, duplikat:true }
+  { id:7, tarih:'03.04.2026', personel:'Mehmet K.', satici:'Petrol Ofisi',   kat:'Yakit',   tutar:1000, durum:'reddedildi', donem:2, uyari:'Mükerrer fiş',          thumb:null, duplikat:true },
+  { id:8, tarih:'10.04.2026', personel:'Mehmet K.', satici:'Kostüm Deposu', kat:'Sanat',   tutar:320,  durum:'bekleyen',   donem:2, uyari:null, thumb:null, belgesiz:true, aciklama:'Ekstra kostüm aksesuarı — nakit ödeme, fiş verilmedi' }
 ];
 var FIS_DEMO = [
   {
@@ -1527,17 +1539,19 @@ function renderRecent() {
   var el = document.getElementById('recent-list');
   if (!el) return;
   el.innerHTML = mine.map(function(d) {
-    var cls   = 'rc' + (d.duplikat ? ' err' : d.uyari ? ' warn' : '');
+    var cls   = 'rc' + (d.duplikat ? ' err' : d.belgesiz ? ' blgsz' : d.uyari ? ' warn' : '');
     var icStr = KAT_IC[d.kat] || KAT_IC.def;
-    var icClr = d.duplikat ? 'var(--rd)' : d.uyari ? 'var(--am)' : 'var(--ac)';
-    var icBg  = d.duplikat ? 'rgba(239,68,68,.1)' : d.uyari ? 'rgba(245,158,11,.1)' : 'var(--bg3)';
+    var icClr = d.duplikat ? 'var(--rd)' : d.belgesiz ? 'var(--bl)' : d.uyari ? 'var(--am)' : 'var(--ac)';
+    var icBg  = d.duplikat ? 'rgba(239,68,68,.1)' : d.belgesiz ? 'rgba(59,130,246,.1)' : d.uyari ? 'rgba(245,158,11,.1)' : 'var(--bg3)';
     /* thumb veya ikon */
     var media = d.thumb
       ? '<img src="' + d.thumb + '" class="fis-thumb" style="width:100%;height:52px;margin-bottom:6px" onclick="openLB(\'' + d.thumb + '\',\'' + d.satici + '\')" alt="">'
       : '<div class="rc-ic" style="background:' + icBg + ';color:' + icClr + '">' + icStr + '</div>';
+    var belgesizTag = d.belgesiz ? '<div class="rc-blgsz-tag">BELGESİZ</div>' : '';
     return '<div class="' + cls + '" onclick="openOCR(0)">' +
       media +
       '<div class="rc-name">' + d.satici + '</div>' +
+      belgesizTag +
       '<div class="rc-amt">₺' + d.tutar.toLocaleString('tr-TR') + '</div>' +
       '<div class="rc-dot" style="background:' + (DOT[d.durum] || 'var(--tx3)') + '"></div>' +
     '</div>';
