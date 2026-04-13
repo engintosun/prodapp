@@ -664,6 +664,54 @@ body {
   pointer-events: all;
   z-index: 20;
 }
+/* Arama dropdown */
+#srch-drop {
+  display: none;
+  position: absolute;
+  bottom: 100%; left: 0; right: 0;
+  margin-bottom: 6px;
+  background: var(--bg2);
+  border: 1px solid var(--bo2);
+  border-radius: var(--r);
+  box-shadow: 0 -8px 40px rgba(0,0,0,.65);
+  max-height: 58dvh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  z-index: 30;
+}
+#srch-drop.on { display: block; }
+#srch-drop::-webkit-scrollbar { display: none; }
+.srch-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid var(--bo);
+  font-size: 11px; font-weight: 700;
+  color: var(--tx3); text-transform: uppercase; letter-spacing: .5px;
+}
+.srch-row {
+  display: flex; align-items: center; gap: 11px;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--bo);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.srch-row:last-child { border-bottom: none; }
+.srch-row:active { background: var(--bg3); }
+.srch-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.srch-name { font-size: 13px; font-weight: 600; color: var(--tx); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.srch-meta { font-size: 11px; color: var(--tx3); margin-top: 2px; }
+.srch-amt  { font-size: 13px; font-weight: 700; font-family: var(--mo); color: var(--ac2); white-space: nowrap; }
+.srch-dur  { font-size: 10px; margin-top: 2px; }
+.srch-empty { padding: 22px 14px; text-align: center; color: var(--tx3); font-size: 13px; }
+
+/* Fiş highlight (arama sonucu) */
+@keyframes fisHl {
+  0%   { background: rgba(232,150,46,.18); }
+  70%  { background: rgba(232,150,46,.10); }
+  100% { background: transparent; }
+}
+.fis-hl { animation: fisHl 2s ease forwards; }
+
 /* Arama barı */
 .nav-srch {
   display: none;
@@ -1173,6 +1221,8 @@ body {
 
   <!-- Alt nav — bu sadece nav-wrap, scroll dışında -->
   <div class="su-nav-wrap">
+    <!-- Arama sonuçları dropdown -->
+    <div id="srch-drop"></div>
     <!-- Arama barı -->
     <div class="nav-srch" id="nav-srch">
       <div class="nav-srch-icon">
@@ -1769,21 +1819,81 @@ function openNavSrch() {
   }, 100);
 }
 function closeNavSrch() {
-  var srch = document.getElementById('nav-srch');
-  var nav  = document.getElementById('su-nav');
-  srch.classList.remove('on');
-  nav.style.display = 'flex';
+  document.getElementById('nav-srch').classList.remove('on');
+  document.getElementById('su-nav').style.display = 'flex';
   var inp = document.getElementById('nav-srch-inp');
-  if (inp) { inp.value = ''; srchList(''); }
-  /* ana ikonunu aktif et */
+  if (inp) inp.value = '';
+  var drop = document.getElementById('srch-drop');
+  drop.classList.remove('on');
+  drop.innerHTML = '';
   document.getElementById('ni-ana').classList.add('on');
 }
 function srchList(q) {
-  var items = document.querySelectorAll('#recent-list .rc');
-  var lq = q.toLowerCase();
-  items.forEach(function(el) {
-    el.style.display = (!q || el.textContent.toLowerCase().indexOf(lq) > -1) ? '' : 'none';
+  var drop = document.getElementById('srch-drop');
+  var lq   = (q || '').trim().toLowerCase();
+  if (!lq) { drop.classList.remove('on'); drop.innerHTML = ''; return; }
+
+  var results = DATA.filter(function(d) {
+    return d.satici.toLowerCase().indexOf(lq) > -1
+        || d.kat.toLowerCase().indexOf(lq) > -1
+        || d.tarih.indexOf(lq) > -1
+        || String(d.tutar).indexOf(lq) > -1
+        || (d.aciklama && d.aciklama.toLowerCase().indexOf(lq) > -1);
   });
+
+  if (results.length === 0) {
+    drop.innerHTML = '<div class="srch-empty">Sonuç bulunamadı</div>';
+    drop.classList.add('on');
+    return;
+  }
+
+  var durumClr = { bekleyen:'var(--am)', onaylandi:'var(--gr)', reddedildi:'var(--rd)' };
+  var durumTxt = { bekleyen:'Bekleyen', onaylandi:'Onaylandı', reddedildi:'Reddedildi' };
+
+  drop.innerHTML =
+    '<div class="srch-hd"><span>' + results.length + ' sonuç</span><span>Tıkla → kayda git</span></div>' +
+    results.map(function(d) {
+      var dot = durumClr[d.durum] || 'var(--tx3)';
+      var dtx = durumTxt[d.durum] || d.durum;
+      var bsz = d.belgesiz
+        ? ' <span style="font-size:9px;background:rgba(59,130,246,.15);color:var(--bl2);border:1px solid rgba(59,130,246,.3);border-radius:3px;padding:1px 4px;font-weight:700;vertical-align:middle">BSZ</span>'
+        : '';
+      return '<div class="srch-row" onclick="srchGoTo(' + d.id + ')">' +
+        '<div class="srch-dot" style="background:' + dot + '"></div>' +
+        '<div style="flex:1;min-width:0">' +
+          '<div class="srch-name">' + d.satici + bsz + '</div>' +
+          '<div class="srch-meta">' + d.tarih + ' · ' + d.kat + ' · D' + d.donem + '</div>' +
+        '</div>' +
+        '<div style="text-align:right;flex-shrink:0">' +
+          '<div class="srch-amt">&#8378;' + d.tutar.toLocaleString('tr-TR') + '</div>' +
+          '<div class="srch-dur" style="color:' + dot + '">' + dtx + '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+  drop.classList.add('on');
+}
+function srchGoTo(id) {
+  var f = DATA.find(function(x) { return x.id === id; });
+  if (!f) return;
+  closeNavSrch();
+  /* dönem sekmesine geç */
+  suNav('donem', document.getElementById('ni-donem'));
+  renderDonem(f.donem);
+  /* fis-list'te ilgili satırı bul ve highlight et */
+  setTimeout(function() {
+    var myFis = DATA.filter(function(x) { return x.donem === f.donem && x.personel === 'Mehmet K.'; });
+    var rowIdx = -1;
+    for (var i = 0; i < myFis.length; i++) {
+      if (myFis[i].id === id) { rowIdx = i; break; }
+    }
+    var rows = document.querySelectorAll('#fis-list .fis-row');
+    if (rowIdx >= 0 && rows[rowIdx]) {
+      rows[rowIdx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      rows[rowIdx].classList.add('fis-hl');
+      setTimeout(function() { rows[rowIdx].classList.remove('fis-hl'); }, 2000);
+    }
+  }, 280);
 }
 
 /* ═══ SON HARCAMALAR ═══ */
