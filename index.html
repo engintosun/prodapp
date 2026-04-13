@@ -578,6 +578,47 @@ body {
 .fis-amt  { font-size: 14px; font-weight: 700; font-family: var(--mo); color: var(--ac2); white-space: nowrap; }
 .fis-dot  { width: 7px; height: 7px; border-radius: 50%; margin-top: 5px; margin-left: auto; }
 
+/* ── DÖNEM KAPAMA ÖZETİ ── */
+.kapama-box {
+  background: var(--bg2); border: 1px solid var(--bo);
+  border-radius: var(--r); padding: 14px 16px;
+  margin-bottom: 10px; flex-shrink: 0;
+}
+.kapama-hd {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 12px;
+}
+.kapama-badge {
+  font-size: 10px; font-weight: 700; letter-spacing: .4px;
+  background: rgba(34,197,94,.12); color: var(--gr2);
+  border: 1px solid rgba(34,197,94,.3);
+  border-radius: 20px; padding: 2px 9px;
+}
+.kapama-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 7px; margin-bottom: 12px;
+}
+.kapama-stat {
+  background: var(--bg3); border: 1px solid var(--bo);
+  border-radius: var(--rs); padding: 10px 12px;
+}
+.kapama-stat-lbl { font-size: 10px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .4px; }
+.kapama-stat-val { font-size: 15px; font-weight: 700; font-family: var(--mo); margin-top: 3px; }
+.kapama-docs { border-top: 1px solid var(--bo); padding-top: 12px; }
+.kapama-docs-lbl { font-size: 11px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .4px; margin-bottom: 8px; }
+.kapama-doc-row {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 0; border-bottom: 1px solid var(--bo);
+  font-size: 13px;
+}
+.kapama-doc-row:last-child { border-bottom: none; padding-bottom: 0; }
+.kapama-doc-ic {
+  width: 30px; height: 30px; border-radius: 7px;
+  background: rgba(59,130,246,.1); color: var(--bl2);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 14px;
+}
+
 .avans-btn {
   display: flex; align-items: center; gap: 11px;
   background: rgba(232,150,46,.06); border: 1px solid rgba(232,150,46,.25);
@@ -1068,6 +1109,8 @@ body {
 
       <div class="fis-list" id="fis-list"></div>
 
+      <div class="kapama-box" id="kapama-box" style="display:none"></div>
+
       <div class="avans-btn" onclick="openM('mavans')">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <div style="flex:1">
@@ -1394,7 +1437,15 @@ var DATA = [
   { id:1, tarih:'03.04.2026', personel:'Mehmet K.', satici:'Petrol Ofisi',   kat:'Yakit',   tutar:1000, durum:'bekleyen',   donem:2, uyari:null,                    thumb:null },
   { id:2, tarih:'24.03.2026', personel:'Mehmet K.', satici:'Tavuk Dünyası',  kat:'Yiyecek', tutar:780,  durum:'bekleyen',   donem:2, uyari:'Ekip 15, 10 porsiyon', thumb:null },
   { id:7, tarih:'03.04.2026', personel:'Mehmet K.', satici:'Petrol Ofisi',   kat:'Yakit',   tutar:1000, durum:'reddedildi', donem:2, uyari:'Mükerrer fiş',          thumb:null, duplikat:true },
-  { id:8, tarih:'10.04.2026', personel:'Mehmet K.', satici:'Kostüm Deposu', kat:'Sanat',   tutar:320,  durum:'bekleyen',   donem:2, uyari:null, thumb:null, belgesiz:true, aciklama:'Ekstra kostüm aksesuarı — nakit ödeme, fiş verilmedi' }
+  { id:8, tarih:'10.04.2026', personel:'Mehmet K.', satici:'Kostüm Deposu', kat:'Sanat',   tutar:320,  durum:'bekleyen',   donem:2, uyari:null, thumb:null, belgesiz:true, aciklama:'Ekstra kostüm aksesuarı — nakit ödeme, fiş verilmedi' },
+  /* ── Dönem #1 fişleri (kapali) ── */
+  { id:11, tarih:'20.03.2026', personel:'Mehmet K.', satici:'Petrol Ofisi A.Ş.',       kat:'Yakit',   tutar:2400, durum:'onaylandi', donem:1, uyari:null, thumb:null },
+  { id:12, tarih:'22.03.2026', personel:'Mehmet K.', satici:'Çiçek Restaurant',        kat:'Yiyecek', tutar:1850, durum:'onaylandi', donem:1, uyari:null, thumb:null },
+  { id:13, tarih:'25.03.2026', personel:'Mehmet K.', satici:'Megapol Ekipman Kiralık', kat:'Ekipman', tutar:3200, durum:'onaylandi', donem:1, uyari:null, thumb:null },
+  { id:14, tarih:'28.03.2026', personel:'Mehmet K.', satici:'Taksi / İETT',            kat:'Ulasim',  tutar:680,  durum:'onaylandi', donem:1, uyari:null, thumb:null },
+  { id:15, tarih:'01.04.2026', personel:'Mehmet K.', satici:'Set Malzeme Market',      kat:'Diger',   tutar:1330, durum:'onaylandi', donem:1, uyari:null, thumb:null },
+  { id:16, tarih:'24.03.2026', personel:'Mehmet K.', satici:'Şehir Lokantası',         kat:'Yiyecek', tutar:480,  durum:'reddedildi', donem:1, uyari:'Ekip dışı 3 kişi dahil edilmiş', thumb:null },
+  { id:17, tarih:'29.03.2026', personel:'Mehmet K.', satici:'Kırtasiye Merkez',        kat:'Diger',   tutar:150,  durum:'reddedildi', donem:1, uyari:'Fiş okunamıyor — yeniden yükle', thumb:null }
 ];
 var FIS_DEMO = [
   {
@@ -1945,11 +1996,12 @@ function renderDonem(did) {
   listEl.innerHTML = myFis.map(function(f, i) {
     var sep    = i < myFis.length - 1 ? 'border-bottom:1px solid var(--bo)' : '';
     var icStr  = KAT_IC[f.kat] || KAT_IC.def;
-    var icBg   = f.duplikat ? 'rgba(239,68,68,.1)' : f.uyari ? 'rgba(245,158,11,.1)' : 'var(--bg3)';
-    var icClr  = f.duplikat ? 'var(--rd)' : f.uyari ? 'var(--am)' : 'var(--ac)';
-    var amtClr = f.duplikat ? 'color:var(--rd2)' : '';
-    var uyHtml = f.uyari   ? ' <span style="font-size:11px;color:var(--am2)" title="' + f.uyari + '">⚠️</span>' : '';
+    var icBg   = f.duplikat ? 'rgba(239,68,68,.1)' : f.belgesiz ? 'rgba(59,130,246,.1)' : f.uyari ? 'rgba(245,158,11,.1)' : 'var(--bg3)';
+    var icClr  = f.duplikat ? 'var(--rd)'  : f.belgesiz ? 'var(--bl)'  : f.uyari ? 'var(--am)' : 'var(--ac)';
+    var amtClr = f.duplikat ? 'color:var(--rd2)' : f.durum === 'reddedildi' ? 'color:var(--rd2);text-decoration:line-through' : '';
+    var uyHtml = f.uyari    ? ' <span style="font-size:11px;color:var(--am2)" title="' + f.uyari + '">⚠️</span>' : '';
     var dpHtml = f.duplikat ? ' <span style="font-size:11px;color:var(--rd2)">🔴</span>' : '';
+    var blHtml = f.belgesiz ? ' <span style="font-size:10px;background:rgba(59,130,246,.15);color:var(--bl2);border-radius:3px;padding:1px 4px;font-weight:700">BSZ</span>' : '';
     /* thumb veya ikon */
     var media = f.thumb
       ? '<img src="' + f.thumb + '" class="fis-thumb" onclick="event.stopPropagation();openLB(\'' + f.thumb + '\',\'' + f.satici + '\')" alt="">'
@@ -1957,7 +2009,7 @@ function renderDonem(did) {
     return '<div class="fis-row" style="' + sep + '" onclick="openOCR(0)">' +
       media +
       '<div style="flex:1;min-width:0">' +
-        '<div class="fis-name">' + f.satici + uyHtml + dpHtml + '</div>' +
+        '<div class="fis-name">' + f.satici + uyHtml + dpHtml + blHtml + '</div>' +
         '<div class="fis-meta">' + f.tarih + ' · ' + f.kat + '</div>' +
       '</div>' +
       '<div style="text-align:right;flex-shrink:0">' +
@@ -1966,6 +2018,74 @@ function renderDonem(did) {
       '</div>' +
     '</div>';
   }).join('');
+
+  /* ── Kapalı dönem için kapama özeti ── */
+  var kapamaEl = document.getElementById('kapama-box');
+  if (!kapamaEl) return;
+  if (d.durum !== 'kapali') { kapamaEl.style.display = 'none'; return; }
+
+  var onayFis  = myFis.filter(function(f) { return f.durum === 'onaylandi'; });
+  var redFis   = myFis.filter(function(f) { return f.durum === 'reddedildi'; });
+  var onayTop  = onayFis.reduce(function(s, f) { return s + f.tutar; }, 0);
+  var redTop   = redFis.reduce(function(s, f) { return s + f.tutar; }, 0);
+  var iade     = d.avans - onayTop;
+
+  kapamaEl.style.display = 'block';
+  kapamaEl.innerHTML =
+    '<div class="kapama-hd">' +
+      '<span style="font-size:15px;font-weight:700;color:var(--tx)">Dönem Kapama Özeti</span>' +
+      '<span class="kapama-badge">KAPANDI</span>' +
+    '</div>' +
+    '<div class="kapama-grid">' +
+      '<div class="kapama-stat">' +
+        '<div class="kapama-stat-lbl">Onaylanan</div>' +
+        '<div class="kapama-stat-val" style="color:var(--gr2)">' + onayFis.length + ' fiş · ₺' + onayTop.toLocaleString('tr-TR') + '</div>' +
+      '</div>' +
+      '<div class="kapama-stat">' +
+        '<div class="kapama-stat-lbl">Reddedilen</div>' +
+        '<div class="kapama-stat-val" style="color:var(--rd2)">' + redFis.length + ' fiş · ₺' + redTop.toLocaleString('tr-TR') + '</div>' +
+      '</div>' +
+      '<div class="kapama-stat">' +
+        '<div class="kapama-stat-lbl">Kullanılan Avans</div>' +
+        '<div class="kapama-stat-val" style="color:var(--ac2)">₺' + onayTop.toLocaleString('tr-TR') + '</div>' +
+      '</div>' +
+      '<div class="kapama-stat">' +
+        '<div class="kapama-stat-lbl">İade / Fark</div>' +
+        '<div class="kapama-stat-val" style="color:' + (iade >= 0 ? 'var(--gr2)' : 'var(--rd2)') + '">' +
+          (iade >= 0 ? '+' : '') + '₺' + Math.abs(iade).toLocaleString('tr-TR') +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div style="font-size:11px;color:var(--tx3);margin-bottom:12px">' +
+      'Kapanış: 05.04.2026 · Onaylayan: Ayşe T. (Muhasebe)' +
+    '</div>' +
+    '<div class="kapama-docs">' +
+      '<div class="kapama-docs-lbl">Yüklenen Belgeler</div>' +
+      '<div class="kapama-doc-row">' +
+        '<div class="kapama-doc-ic">📄</div>' +
+        '<div style="flex:1">' +
+          '<div style="font-weight:600">D1_Donem_Raporu_final.pdf</div>' +
+          '<div style="font-size:11px;color:var(--tx3);margin-top:1px">5 Nis 2026 · 142 KB</div>' +
+        '</div>' +
+        '<span style="font-size:11px;color:var(--gr2);font-weight:600">✓</span>' +
+      '</div>' +
+      '<div class="kapama-doc-row">' +
+        '<div class="kapama-doc-ic">🖼</div>' +
+        '<div style="flex:1">' +
+          '<div style="font-weight:600">fisler_taranmis_D1.zip</div>' +
+          '<div style="font-size:11px;color:var(--tx3);margin-top:1px">4 Nis 2026 · 2.3 MB · 5 fiş</div>' +
+        '</div>' +
+        '<span style="font-size:11px;color:var(--gr2);font-weight:600">✓</span>' +
+      '</div>' +
+      '<div class="kapama-doc-row">' +
+        '<div class="kapama-doc-ic">✍️</div>' +
+        '<div style="flex:1">' +
+          '<div style="font-weight:600">imzali_mutabakat_D1.pdf</div>' +
+          '<div style="font-size:11px;color:var(--tx3);margin-top:1px">5 Nis 2026 · 87 KB · Dept. + Muhasebe imzalı</div>' +
+        '</div>' +
+        '<span style="font-size:11px;color:var(--gr2);font-weight:600">✓</span>' +
+      '</div>' +
+    '</div>';
 }
 function yeniDonem() { notif('Yeni dönem başlatıldı', 'green'); }
 
