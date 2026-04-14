@@ -2302,20 +2302,6 @@ function checkBUlasimLimit() {
   _applyUlasimLimit('b-ul-km', 'b-ul-tip', 'b-tutar', 'b-ul-uyari');
 }
 
-function onBKatChange() {
-  var kat   = document.getElementById('b-kat');
-  var panel = document.getElementById('b-ul-panel');
-  if (!kat || !panel) return;
-  if (kat.value === 'Ulasim') {
-    panel.style.display = 'block';
-    checkBUlasimLimit();
-  } else {
-    panel.style.display = 'none';
-    var uy = document.getElementById('b-ul-uyari');
-    if (uy) { uy.style.display = 'none'; uy.innerHTML = ''; }
-  }
-}
-
 function openBelgesizModal() {
   _resetDynFields('b-');
   var kat = document.getElementById('b-kat');
