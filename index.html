@@ -920,6 +920,16 @@ body {
 /* Seksiyon etiketi */
 .sd-sec { font-size: 11px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 9px; }
 
+/* Alt harcama ekleme barı */
+.sd-bot {
+  display: flex; gap: 8px;
+  padding: 10px 16px;
+  padding-bottom: max(14px, var(--safe-bot));
+  border-top: 1px solid var(--bo);
+  background: var(--bg);
+  flex-shrink: 0;
+}
+
 /* Mesaj modalı */
 .sd-mesaj-to { font-size: 13px; color: var(--tx2); margin-bottom: 12px; }
 
@@ -1435,6 +1445,17 @@ body {
     <div id="sd-pnl-ekip"  style="display:none"></div>
     <div id="sd-pnl-avans" style="display:none"></div>
   </div>
+  <!-- Alt harcama ekleme barı -->
+  <div class="sd-bot">
+    <button class="btn btn-p" onclick="openDeptOCR()" style="flex:1;justify-content:center;gap:7px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>
+      Fiş Tara
+    </button>
+    <button class="btn" onclick="openDeptBelgesiz()" style="flex:1;justify-content:center;gap:7px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+      Belgesiz
+    </button>
+  </div>
 </div>
 
 <!-- ════════════════════════════
@@ -1675,7 +1696,7 @@ body {
           <option>Diğer</option>
         </select>
       </div>
-      <div class="fg"><label>Açıklama</label><textarea class="fgi" rows="3" placeholder="Detaylı açıklama..."></textarea></div>
+      <div class="fg"><label>Açıklama</label><textarea class="fgi" rows="3" id="b-aciklama" placeholder="Detaylı açıklama..."></textarea></div>
       <div class="fg">
         <label>Dijital İmza</label>
         <canvas class="sigc" id="sigc2" width="460" height="90"></canvas>
@@ -1910,6 +1931,7 @@ var DEPT_AVANS = [
   { id:202, uye:'Burhan Çelik', ini:'BÇ', tutar:2500, tarih:'10.04', gerekce:'Set kurulum malzemesi — çarşı çekimi lojistik harcaması' }
 ];
 var sdMesajKisi = '';
+var sdMode = false; /* true → OCR/belgesiz modal dept ekranından açıldı */
 
 var curUser  = null;
 var curProj  = null;
@@ -2394,8 +2416,17 @@ function fillOCR(f) {
 }
 function submitOCR() {
   closeM('mo');
-  renderRecent();
-  notif('Harcama onaya gönderildi', 'green');
+  if (sdMode) {
+    sdMode = false;
+    var satici = (document.getElementById('f-satici').value || '').trim() || 'Bilinmiyor';
+    var kat    = document.getElementById('f-kat').value || 'Diger';
+    var tutar  = parseFloat((document.getElementById('f-tutar').value || '0').replace(',', '.')) || 0;
+    _addToDeptBekleyen(satici, kat, tutar, false, '');
+    notif(satici + ' bekleyene eklendi', 'green');
+  } else {
+    renderRecent();
+    notif('Harcama onaya gönderildi', 'green');
+  }
 }
 
 /* ═══ DİNAMİK KATEGORİ PANELLERİ ═══ */
@@ -2537,6 +2568,40 @@ function renderDept() {
   renderDeptBek();
   renderDeptEkip();
   renderDeptAvans();
+  sdTab('bek', document.getElementById('sdtb-bek'));
+}
+
+function openDeptOCR() {
+  sdMode = true;
+  openOCR(0, null);
+}
+
+function openDeptBelgesiz() {
+  sdMode = true;
+  openBelgesizModal();
+}
+
+function _deptTarih() {
+  var d = new Date();
+  return ('0' + d.getDate()).slice(-2) + '.' + ('0' + (d.getMonth()+1)).slice(-2);
+}
+
+function _addToDeptBekleyen(satici, kat, tutar, belgesiz, aciklama) {
+  var uye = curUser ? curUser.name : 'Dept Sorumlusu';
+  var ini = curUser ? curUser.ini  : 'DS';
+  DEPT_BEKLEYEN.unshift({
+    id: Date.now(), uye: uye, ini: ini,
+    satici: satici || 'Yeni Harcama',
+    kat: kat || 'Diger',
+    tutar: tutar || 0,
+    tarih: _deptTarih(),
+    uyari: null,
+    belgesiz: !!belgesiz,
+    aciklama: aciklama || ''
+  });
+  renderDeptBek();
+  renderDeptEkip();
+  renderDeptOzet();
   sdTab('bek', document.getElementById('sdtb-bek'));
 }
 
@@ -2853,7 +2918,16 @@ function submitBelgesiz() {
   var t = document.getElementById('b-tutar').value;
   if (!t) { notif('Tutar giriniz', 'red'); return; }
   closeM('mb');
-  notif('Belgesiz harcama bildirildi', 'amber');
+  if (sdMode) {
+    sdMode = false;
+    var kat    = document.getElementById('b-kat').value || 'Diger';
+    var tutar  = parseFloat(t) || 0;
+    var aciklama = (document.getElementById('b-aciklama') || {}).value || '';
+    _addToDeptBekleyen('Belgesiz Harcama', kat, tutar, true, aciklama);
+    notif('Belgesiz harcama bekleyene eklendi', 'amber');
+  } else {
+    notif('Belgesiz harcama bildirildi', 'amber');
+  }
 }
 
 /* ═══ AVANS ═══ */
