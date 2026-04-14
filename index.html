@@ -1316,7 +1316,7 @@ body {
         </div>
         <div class="fr2">
           <div class="fg"><label>Satıcı</label><input class="fgi" id="f-satici" type="text"></div>
-          <div class="fg"><label>Tutar (₺)</label><input class="fgi" id="f-tutar" type="text"></div>
+          <div class="fg"><label>Tutar (₺)</label><input class="fgi" id="f-tutar" type="text" oninput="checkUlasimLimit()"></div>
         </div>
         <div class="fr2">
           <div class="fg"><label>KDV</label><input class="fgi" id="f-kdv" type="text"></div>
@@ -1326,7 +1326,7 @@ body {
           <div class="fg"><label>Fiş No</label><input class="fgi" id="f-fisno" type="text"></div>
           <div class="fg">
             <label>Kategori</label>
-            <select class="fgi" id="f-kat">
+            <select class="fgi" id="f-kat" onchange="onKatChange()">
               <option value="Yakit">⛽ Yakıt</option>
               <option value="Yiyecek">🍽 Yiyecek</option>
               <option value="Ekipman">🔧 Ekipman</option>
@@ -1335,6 +1335,24 @@ body {
               <option value="Diger">📦 Diğer</option>
             </select>
           </div>
+        </div>
+        <!-- ULAŞIM PANELİ -->
+        <div id="ul-panel" style="display:none">
+          <div class="fr2">
+            <div class="fg"><label>Biniş Noktası</label><input class="fgi" id="ul-binis" type="text" placeholder="Kalkış yeri"></div>
+            <div class="fg"><label>Varış Noktası</label><input class="fgi" id="ul-varis" type="text" placeholder="Varış yeri"></div>
+          </div>
+          <div class="fr2">
+            <div class="fg"><label>Mesafe (km)</label><input class="fgi" id="ul-km" type="number" min="0" step="1" placeholder="0" oninput="checkUlasimLimit()"></div>
+            <div class="fg">
+              <label>Güzergâh</label>
+              <select class="fgi" id="ul-tip" onchange="checkUlasimLimit()">
+                <option value="ic">🏙 Şehiriçi (max 15₺/km)</option>
+                <option value="dis">🛣 Şehirdışı (max 25₺/km)</option>
+              </select>
+            </div>
+          </div>
+          <div id="ul-uyari" style="display:none"></div>
         </div>
         <div class="fg"><label>Açıklama</label><textarea class="fgi" rows="2" id="f-aciklama" placeholder="Harcama notu..."></textarea></div>
         <button class="vbtn" id="vbtn" onclick="toggleVoice()">
@@ -2054,6 +2072,9 @@ function fillOCR(f) {
     if (bEl) { bEl.style.width = cf.w + '%'; bEl.style.background = cf.c; }
   });
   if (f.uyari) setTimeout(function() { notif(f.uyari, 'amber'); }, 600);
+  /* Ulaşım panelini sıfırla ve kat'a göre göster/gizle */
+  resetUlasimPanel();
+  onKatChange();
   clearSig();
   var st = document.getElementById('sig-time');
   if (st) st.textContent = new Date().toLocaleString('tr-TR');
@@ -2062,6 +2083,67 @@ function submitOCR() {
   closeM('mo');
   renderRecent();
   notif('Harcama onaya gönderildi', 'green');
+}
+
+/* ═══ ULAŞIM DENETİMİ ═══ */
+function resetUlasimPanel() {
+  var fields = ['ul-binis','ul-varis','ul-km'];
+  for (var i = 0; i < fields.length; i++) {
+    var el = document.getElementById(fields[i]);
+    if (el) el.value = '';
+  }
+  var tip = document.getElementById('ul-tip');
+  if (tip) tip.selectedIndex = 0;
+  var uy = document.getElementById('ul-uyari');
+  if (uy) { uy.style.display = 'none'; uy.innerHTML = ''; }
+}
+
+function onKatChange() {
+  var kat = document.getElementById('f-kat');
+  var panel = document.getElementById('ul-panel');
+  if (!kat || !panel) return;
+  if (kat.value === 'Ulasim') {
+    panel.style.display = 'block';
+    checkUlasimLimit();
+  } else {
+    panel.style.display = 'none';
+    var uy = document.getElementById('ul-uyari');
+    if (uy) { uy.style.display = 'none'; uy.innerHTML = ''; }
+  }
+}
+
+function checkUlasimLimit() {
+  var kat = document.getElementById('f-kat');
+  if (!kat || kat.value !== 'Ulasim') return;
+  var kmEl  = document.getElementById('ul-km');
+  var tipEl = document.getElementById('ul-tip');
+  var tutEl = document.getElementById('f-tutar');
+  var uyEl  = document.getElementById('ul-uyari');
+  if (!kmEl || !tipEl || !tutEl || !uyEl) return;
+
+  var km  = parseFloat(kmEl.value)  || 0;
+  var tut = parseFloat((tutEl.value || '').replace(',', '.')) || 0;
+  if (km <= 0 || tut <= 0) { uyEl.style.display = 'none'; uyEl.innerHTML = ''; return; }
+
+  var rate  = tipEl.value === 'dis' ? 25 : 15;
+  var limit = km * rate;
+
+  if (tut > limit * 2) {
+    uyEl.className = 'al al-rd';
+    uyEl.innerHTML = '<span>🔴</span><div><strong>Aşırı Yüksek Tutar!</strong> ' +
+      km + ' km için üst sınır <strong>₺' + limit.toLocaleString('tr-TR') + '</strong>, ' +
+      'girilen tutar sınırın 2 katından fazla. Muhasebe incelemesi zorunlu olabilir.</div>';
+    uyEl.style.display = 'flex';
+  } else if (tut > limit) {
+    uyEl.className = 'al al-am';
+    uyEl.innerHTML = '<span>⚠️</span><div>' +
+      km + ' km için tavsiye edilen üst sınır <strong>₺' + limit.toLocaleString('tr-TR') + '</strong> ' +
+      '(' + rate + ' ₺/km). Girilen tutar bu sınırı aşıyor; kaydedebilirsiniz ancak muhasebe sorabilir.</div>';
+    uyEl.style.display = 'flex';
+  } else {
+    uyEl.style.display = 'none';
+    uyEl.innerHTML = '';
+  }
 }
 function simGIB() {
   var el = document.getElementById('gib-res');
