@@ -1335,9 +1335,11 @@ body {
             <label>Kategori</label>
             <select class="fgi" id="f-kat" onchange="onKatChange()">
               <option value="Yakit">⛽ Yakıt</option>
-              <option value="Yiyecek">🍽 Yiyecek</option>
+              <option value="Yiyecek">🍽 Yiyecek/Yemek</option>
               <option value="Ekipman">🔧 Ekipman</option>
               <option value="Ulasim">🚗 Ulaşım</option>
+              <option value="Konaklama">🏨 Konaklama</option>
+              <option value="Kiralama">🚙 Kiralama</option>
               <option value="Sanat">🎨 Sanat/Kostüm</option>
               <option value="Diger">📦 Diğer</option>
             </select>
@@ -1360,6 +1362,35 @@ body {
             </div>
           </div>
           <div id="ul-uyari" style="display:none"></div>
+        </div>
+        <!-- YEMEK PANELİ (OCR) -->
+        <div id="ym-panel" style="display:none">
+          <div class="fr2">
+            <div class="fg"><label>Kişi Sayısı</label><input class="fgi" id="ym-kisi" type="number" min="1" step="1" placeholder="0"></div>
+            <div class="fg">
+              <label>Öğün</label>
+              <select class="fgi" id="ym-ogun">
+                <option value="kahvalti">🌅 Kahvaltı</option>
+                <option value="ogle">🌞 Öğle</option>
+                <option value="aksam">🌙 Akşam</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <!-- KONAKLAMA PANELİ (OCR) -->
+        <div id="ko-panel" style="display:none">
+          <div class="fr2">
+            <div class="fg"><label>Gece Sayısı</label><input class="fgi" id="ko-gece" type="number" min="1" step="1" placeholder="0"></div>
+            <div class="fg"><label>Kişi Sayısı</label><input class="fgi" id="ko-kisi" type="number" min="1" step="1" placeholder="0"></div>
+          </div>
+        </div>
+        <!-- KİRALAMA PANELİ (OCR) -->
+        <div id="ki-panel" style="display:none">
+          <div class="fr2">
+            <div class="fg"><label>Başlangıç Tarihi</label><input class="fgi" id="ki-bas" type="date"></div>
+            <div class="fg"><label>Bitiş Tarihi</label><input class="fgi" id="ki-bit" type="date"></div>
+          </div>
+          <div class="fg"><label>Günlük Ücret (₺)</label><input class="fgi" id="ki-gun" type="number" min="0" step="0.01" placeholder="0.00"></div>
         </div>
         <div class="fg"><label>Açıklama</label><textarea class="fgi" rows="2" id="f-aciklama" placeholder="Harcama notu..."></textarea></div>
         <button class="vbtn" id="vbtn" onclick="toggleVoice()">
@@ -1409,9 +1440,11 @@ body {
           <label>Kategori</label>
           <select class="fgi" id="b-kat" onchange="onBKatChange()">
             <option value="Yakit">⛽ Yakıt</option>
-            <option value="Yiyecek">🍽 Yiyecek</option>
+            <option value="Yiyecek">🍽 Yiyecek/Yemek</option>
             <option value="Ekipman">🔧 Ekipman</option>
             <option value="Ulasim">🚗 Ulaşım</option>
+            <option value="Konaklama">🏨 Konaklama</option>
+            <option value="Kiralama">🚙 Kiralama</option>
             <option value="Sanat">🎨 Sanat/Kostüm</option>
             <option value="Diger">📦 Diğer</option>
           </select>
@@ -1434,6 +1467,35 @@ body {
           </div>
         </div>
         <div id="b-ul-uyari" style="display:none"></div>
+      </div>
+      <!-- YEMEK PANELİ (belgesiz) -->
+      <div id="b-ym-panel" style="display:none">
+        <div class="fr2">
+          <div class="fg"><label>Kişi Sayısı</label><input class="fgi" id="b-ym-kisi" type="number" min="1" step="1" placeholder="0"></div>
+          <div class="fg">
+            <label>Öğün</label>
+            <select class="fgi" id="b-ym-ogun">
+              <option value="kahvalti">🌅 Kahvaltı</option>
+              <option value="ogle">🌞 Öğle</option>
+              <option value="aksam">🌙 Akşam</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <!-- KONAKLAMA PANELİ (belgesiz) -->
+      <div id="b-ko-panel" style="display:none">
+        <div class="fr2">
+          <div class="fg"><label>Gece Sayısı</label><input class="fgi" id="b-ko-gece" type="number" min="1" step="1" placeholder="0"></div>
+          <div class="fg"><label>Kişi Sayısı</label><input class="fgi" id="b-ko-kisi" type="number" min="1" step="1" placeholder="0"></div>
+        </div>
+      </div>
+      <!-- KİRALAMA PANELİ (belgesiz) -->
+      <div id="b-ki-panel" style="display:none">
+        <div class="fr2">
+          <div class="fg"><label>Başlangıç Tarihi</label><input class="fgi" id="b-ki-bas" type="date"></div>
+          <div class="fg"><label>Bitiş Tarihi</label><input class="fgi" id="b-ki-bit" type="date"></div>
+        </div>
+        <div class="fg"><label>Günlük Ücret (₺)</label><input class="fgi" id="b-ki-gun" type="number" min="0" step="0.01" placeholder="0.00"></div>
       </div>
       <div class="fr2">
         <div class="fg"><label>Tarih</label><input class="fgi" type="date" id="b-tarih"></div>
@@ -2110,9 +2172,16 @@ function fillOCR(f) {
     if (bEl) { bEl.style.width = cf.w + '%'; bEl.style.background = cf.c; }
   });
   if (f.uyari) setTimeout(function() { notif(f.uyari, 'amber'); }, 600);
-  /* Ulaşım panelini sıfırla ve kat'a göre göster/gizle */
-  resetUlasimPanel();
-  onKatChange();
+  /* Dinamik panelleri sıfırla, kategoriyi oto-algıla ve göster */
+  _resetDynFields('');
+  var detectedKat = _detectKatFromFis(f);
+  var sel = document.getElementById('f-kat');
+  if (sel) {
+    for (var k = 0; k < sel.options.length; k++) {
+      if (sel.options[k].value === detectedKat) { sel.selectedIndex = k; break; }
+    }
+  }
+  _showDynPanel('', detectedKat);
   clearSig();
   var st = document.getElementById('sig-time');
   if (st) st.textContent = new Date().toLocaleString('tr-TR');
@@ -2123,31 +2192,70 @@ function submitOCR() {
   notif('Harcama onaya gönderildi', 'green');
 }
 
-/* ═══ ULAŞIM DENETİMİ ═══ */
-function resetUlasimPanel() {
-  var fields = ['ul-binis','ul-varis','ul-km'];
-  for (var i = 0; i < fields.length; i++) {
-    var el = document.getElementById(fields[i]);
+/* ═══ DİNAMİK KATEGORİ PANELLERİ ═══ */
+var DYN_PANEL_IDS = ['ul-panel','ym-panel','ko-panel','ki-panel'];
+
+function _hideAllDynPanels(p) {
+  for (var i = 0; i < DYN_PANEL_IDS.length; i++) {
+    var el = document.getElementById(p + DYN_PANEL_IDS[i]);
+    if (el) el.style.display = 'none';
+  }
+  var uy = document.getElementById(p + 'ul-uyari');
+  if (uy) { uy.style.display = 'none'; uy.innerHTML = ''; }
+}
+
+function _showDynPanel(p, kat) {
+  _hideAllDynPanels(p);
+  var map = { 'Ulasim':'ul-panel', 'Yiyecek':'ym-panel', 'Konaklama':'ko-panel', 'Kiralama':'ki-panel' };
+  var pid = map[kat];
+  if (pid) {
+    var el = document.getElementById(p + pid);
+    if (el) el.style.display = 'block';
+  }
+  if (kat === 'Ulasim') {
+    if (p === 'b-') checkBUlasimLimit(); else checkUlasimLimit();
+  }
+}
+
+function _resetDynFields(p) {
+  _hideAllDynPanels(p);
+  var clears = [
+    p+'ul-binis', p+'ul-varis', p+'ul-km',
+    p+'ym-kisi',
+    p+'ko-gece', p+'ko-kisi',
+    p+'ki-bas',  p+'ki-bit',  p+'ki-gun'
+  ];
+  for (var i = 0; i < clears.length; i++) {
+    var el = document.getElementById(clears[i]);
     if (el) el.value = '';
   }
-  var tip = document.getElementById('ul-tip');
-  if (tip) tip.selectedIndex = 0;
-  var uy = document.getElementById('ul-uyari');
-  if (uy) { uy.style.display = 'none'; uy.innerHTML = ''; }
+  var ulTip = document.getElementById(p + 'ul-tip');
+  if (ulTip) ulTip.selectedIndex = 0;
+  var ymOgun = document.getElementById(p + 'ym-ogun');
+  if (ymOgun) ymOgun.selectedIndex = 0;
+}
+
+function _detectKatFromFis(f) {
+  var kat = f.kat || '';
+  if (kat === 'Konaklama' || kat === 'Kiralama' || kat === 'Ulasim' || kat === 'Yiyecek') return kat;
+  var txt = ((f.satici || '') + ' ' + (f.aciklama || '') + ' ' + (f.prev || '')).toLowerCase();
+  if (/otel|hotel|konaklama|pansiyon|motel/.test(txt))                        return 'Konaklama';
+  if (/kiralık|kiralama|araç kira|rent/.test(txt))                            return 'Kiralama';
+  if (/taksi|otobüs|metro|transfer|ulaşım|bilet/.test(txt))                   return 'Ulasim';
+  if (/yemek|restoran|lokanta|kahvaltı|pizza|döner|tavuk|cafe|kafe/.test(txt)) return 'Yiyecek';
+  return kat;
 }
 
 function onKatChange() {
   var kat = document.getElementById('f-kat');
-  var panel = document.getElementById('ul-panel');
-  if (!kat || !panel) return;
-  if (kat.value === 'Ulasim') {
-    panel.style.display = 'block';
-    checkUlasimLimit();
-  } else {
-    panel.style.display = 'none';
-    var uy = document.getElementById('ul-uyari');
-    if (uy) { uy.style.display = 'none'; uy.innerHTML = ''; }
-  }
+  if (!kat) return;
+  _showDynPanel('', kat.value);
+}
+
+function onBKatChange() {
+  var kat = document.getElementById('b-kat');
+  if (!kat) return;
+  _showDynPanel('b-', kat.value);
 }
 
 function _applyUlasimLimit(kmId, tipId, tutId, uyId) {
@@ -2209,18 +2317,7 @@ function onBKatChange() {
 }
 
 function openBelgesizModal() {
-  /* paneli ve uyarıyı sıfırla */
-  var panel = document.getElementById('b-ul-panel');
-  if (panel) panel.style.display = 'none';
-  var fields = ['b-ul-binis', 'b-ul-varis', 'b-ul-km'];
-  for (var i = 0; i < fields.length; i++) {
-    var el = document.getElementById(fields[i]);
-    if (el) el.value = '';
-  }
-  var tip = document.getElementById('b-ul-tip');
-  if (tip) tip.selectedIndex = 0;
-  var uy = document.getElementById('b-ul-uyari');
-  if (uy) { uy.style.display = 'none'; uy.innerHTML = ''; }
+  _resetDynFields('b-');
   var kat = document.getElementById('b-kat');
   if (kat) kat.selectedIndex = 0;
   openM('mb');
