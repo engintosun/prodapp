@@ -2151,8 +2151,8 @@ var DEPT_BEKLEYEN = [
   { id:107, uye:'Aylin Korkmaz', ini:'AK', satici:'Ses Kablosu x4',  kat:'Ekipman', tutar:860,  tarih:'09.04', uyari:null, belgesiz:false }
 ];
 var DEPT_AVANS = [
-  { id:201, uye:'Okan Demir',   ini:'OD', tutar:5000, tarih:'11.04', gerekce:'Dış çekim ekipman kira ön ödemesi — 2 günlük set kurulumu' },
-  { id:202, uye:'Burhan Çelik', ini:'BÇ', tutar:2500, tarih:'10.04', gerekce:'Set kurulum malzemesi — çarşı çekimi lojistik harcaması' }
+  { id:201, uye:'Okan Demir',   ini:'OD', tutar:5000, tarih:'11.04', gerekce:'Dış çekim ekipman kira ön ödemesi — 2 günlük set kurulumu', fromKey:'s' },
+  { id:202, uye:'Burhan Çelik', ini:'BÇ', tutar:2500, tarih:'10.04', gerekce:'Set kurulum malzemesi — çarşı çekimi lojistik harcaması',   fromKey:'s' }
 ];
 var sdMesajKisi = '';
 var sdMode = false; /* true → OCR/belgesiz modal dept ekranından açıldı */
@@ -3145,8 +3145,26 @@ function deptAvansOnayla(id) {
     if (DEPT_AVANS[i].id === id) {
       var a = DEPT_AVANS[i];
       DEPT_AVANS.splice(i, 1);
-      notif(a.uye + ' avansı onaylandı — ₺' + a.tutar.toLocaleString('tr-TR'), 'green');
+
+      /* Muhasebe bekleyenine aktar */
+      var tarih = _deptTarih ? _deptTarih() : '';
+      ACC_BEKLEYEN.unshift({
+        id: Date.now(), tip: 'avans',
+        dept: curUser ? curUser.dept : 'Dept',
+        uye: a.uye, ini: a.ini,
+        satici: 'Avans Talebi', kat: 'Avans',
+        tutar: a.tutar, tarih: tarih,
+        belgesiz: false, uyari: '',
+        gerekce: a.gerekce, fromKey: a.fromKey || 's'
+      });
+
+      /* Muhasebe kullanıcısına bildir */
+      _pushNotif('m', 'am', 'Avans Onay Bekliyor',
+        a.uye + ' — ₺' + a.tutar.toLocaleString('tr-TR') + ' avans talebi dept onayından geçti.',
+        'Az önce · ' + (curUser ? curUser.name : 'Dept') + ' (Dept)');
+
       renderDeptAvans();
+      notif(a.uye + ' avansı onaylandı → muhasebede bekliyor', 'green');
       return;
     }
   }
@@ -3157,8 +3175,14 @@ function deptAvansReddet(id) {
     if (DEPT_AVANS[i].id === id) {
       var a = DEPT_AVANS[i];
       DEPT_AVANS.splice(i, 1);
-      notif(a.uye + ' avans talebi reddedildi', 'red');
+
+      /* Saha kullanıcısına red bildirimi */
+      _pushNotif(a.fromKey || 's', 'rd', 'Avans Talebi Reddedildi',
+        '₺' + a.tutar.toLocaleString('tr-TR') + ' avans talebi dept sorumlusu tarafından reddedildi.',
+        'Az önce · ' + (curUser ? curUser.name : 'Dept') + ' (Dept)');
+
       renderDeptAvans();
+      notif(a.uye + ' avans talebi reddedildi', 'red');
       return;
     }
   }
@@ -3336,15 +3360,35 @@ function submitBelgesiz() {
 /* ═══ AVANS ═══ */
 function submitAvans() {
   var t = document.getElementById('av-tutar').value;
-  var g = document.getElementById('av-gerekce').value;
+  var g = (document.getElementById('av-gerekce').value || '').trim();
   if (!t) { notif('Tutar giriniz', 'red'); return; }
   if (!g) { notif('Gerekçe giriniz', 'red'); return; }
+  var tutar = parseFloat(t) || 0;
+  var uye   = curUser ? curUser.name : 'Saha';
+  var ini   = curUser ? curUser.ini  : 'SH';
+  var fKey  = curUserKey || 's';
+  var tarih = _deptTarih ? _deptTarih() : '';
   closeM('mavans');
-  notif('Avans talebi muhasebe onayına gönderildi', 'green');
-  NOTIFLAR.unshift({ id: Date.now(), tip:'bl', title:'Avans Talebi Gönderildi',
-    body: 'Avans talebiniz muhasebe onayına iletildi.',
-    meta: 'Az önce · Sistem', read: false });
+
+  /* Dept avans kuyruğuna ekle */
+  DEPT_AVANS.unshift({ id: Date.now(), uye: uye, ini: ini,
+    tutar: tutar, tarih: tarih, gerekce: g, fromKey: fKey });
+  renderDeptAvans();   /* dept ekranı açıksa listeyi güncelle, rozeti yenile */
+
+  /* Saha kullanıcısına onay bilgisi */
+  _pushNotif(fKey, 'bl', 'Avans Talebi Gönderildi',
+    '₺' + tutar.toLocaleString('tr-TR') + ' avans talebi dept onayına iletildi.',
+    'Az önce · Sistem');
   updateNotifBadge();
+
+  /* Dept kullanıcısına yeni talep bildirimi */
+  _pushNotif('d', 'am', 'Yeni Avans Talebi',
+    uye + ' — ₺' + tutar.toLocaleString('tr-TR') + ' · ' + g,
+    'Az önce · ' + uye);
+
+  notif('Avans talebi dept onayına gönderildi', 'green');
+  document.getElementById('av-tutar').value  = '';
+  document.getElementById('av-gerekce').value = '';
 }
 
 /* ═══ DÖNEM ═══ */
@@ -3801,18 +3845,23 @@ function renderAccBek() {
     return;
   }
   el.innerHTML = ACC_BEKLEYEN.map(function(f) {
-    var uyHtml = f.uyari ? '<div style="font-size:11px;color:var(--am2);margin-top:4px">⚠ ' + f.uyari + '</div>' : '';
-    var bgsz = f.belgesiz ? '<span class="tag-am" style="margin-left:4px;font-size:10px">Belgesiz</span>' : '';
-    return '<div class="sa-dept-card">' +
+    var isAvans = f.tip === 'avans';
+    var avTag   = isAvans ? '<span style="margin-left:5px;font-size:10px;font-weight:700;background:rgba(232,150,46,.15);color:var(--ac2);border:1px solid rgba(232,150,46,.3);border-radius:5px;padding:1px 6px">💰 AVANS</span>' : '';
+    var bgsz    = (!isAvans && f.belgesiz) ? '<span class="tag-am" style="margin-left:4px;font-size:10px">Belgesiz</span>' : '';
+    var uyHtml  = (!isAvans && f.uyari) ? '<div style="font-size:11px;color:var(--am2);margin-top:4px">⚠ ' + f.uyari + '</div>' : '';
+    var desc    = isAvans
+      ? '<div style="font-size:12px;color:var(--tx2);margin-bottom:4px">Gerekçe: ' + (f.gerekce || '—') + '</div>'
+      : '<div style="font-size:12px;color:var(--tx2);margin-bottom:4px">' + f.satici + ' <span style="color:var(--tx3)">· ' + f.kat + '</span></div>';
+    var avBorder = isAvans ? 'border-color:rgba(232,150,46,.35);' : '';
+    return '<div class="sa-dept-card" style="' + avBorder + '">' +
       '<div class="sa-dc-hd" style="margin-bottom:8px">' +
-        '<div style="width:32px;height:32px;border-radius:9px;background:var(--bg3);color:var(--tx2);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + f.ini + '</div>' +
-        '<div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--tx)">' + f.uye + bgsz + '</div><div style="font-size:11px;color:var(--tx3)">' + f.dept + ' · ' + f.tarih + '</div></div>' +
-        '<div style="font-size:15px;font-weight:800;font-family:var(--mo);color:var(--tx)">₺' + f.tutar.toLocaleString('tr-TR') + '</div>' +
+        '<div style="width:32px;height:32px;border-radius:9px;background:' + (isAvans ? 'rgba(232,150,46,.15)' : 'var(--bg3)') + ';color:' + (isAvans ? 'var(--ac2)' : 'var(--tx2)') + ';font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + f.ini + '</div>' +
+        '<div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--tx)">' + f.uye + avTag + bgsz + '</div><div style="font-size:11px;color:var(--tx3)">' + f.dept + ' · ' + f.tarih + '</div></div>' +
+        '<div style="font-size:15px;font-weight:800;font-family:var(--mo);color:' + (isAvans ? 'var(--ac2)' : 'var(--tx)') + '">₺' + f.tutar.toLocaleString('tr-TR') + '</div>' +
       '</div>' +
-      '<div style="font-size:12px;color:var(--tx2);margin-bottom:4px">' + f.satici + ' <span style="color:var(--tx3)">· ' + f.kat + '</span></div>' +
-      uyHtml +
+      desc + uyHtml +
       '<div style="display:flex;gap:8px;margin-top:10px">' +
-        '<button class="btn btn-g btn-sm" style="flex:1;justify-content:center" onclick="accOnayla(' + f.id + ')">Onayla</button>' +
+        '<button class="btn btn-g btn-sm" style="flex:1;justify-content:center" onclick="accOnayla(' + f.id + ')">' + (isAvans ? '✓ Onayla & Aktar' : 'Onayla') + '</button>' +
         '<button class="btn btn-r btn-sm" style="flex:1;justify-content:center" onclick="accReddet(' + f.id + ')">Reddet</button>' +
       '</div>' +
     '</div>';
@@ -3986,15 +4035,37 @@ function accSendMesaj() {
 }
 
 function accOnayla(id) {
+  var item = null;
+  for (var i = 0; i < ACC_BEKLEYEN.length; i++) {
+    if (ACC_BEKLEYEN[i].id === id) { item = ACC_BEKLEYEN[i]; break; }
+  }
   ACC_BEKLEYEN = ACC_BEKLEYEN.filter(function(f){ return f.id !== id; });
   renderAccBek();
-  notif('Harcama onaylandı', 'green');
+  if (item && item.tip === 'avans') {
+    _pushNotif(item.fromKey || 's', 'gr', 'Avans Talebiniz Onaylandı ✅',
+      '₺' + item.tutar.toLocaleString('tr-TR') + ' avans talebi muhasebe tarafından onaylandı. En kısa sürede hesabınıza aktarılacak.',
+      'Az önce · ' + (curUser ? curUser.name : 'Muhasebe') + ' (Muhasebe)');
+    notif(item.uye + ' avansı onaylandı', 'green');
+  } else {
+    notif('Harcama onaylandı', 'green');
+  }
 }
 
 function accReddet(id) {
+  var item = null;
+  for (var i = 0; i < ACC_BEKLEYEN.length; i++) {
+    if (ACC_BEKLEYEN[i].id === id) { item = ACC_BEKLEYEN[i]; break; }
+  }
   ACC_BEKLEYEN = ACC_BEKLEYEN.filter(function(f){ return f.id !== id; });
   renderAccBek();
-  notif('Harcama reddedildi', 'red');
+  if (item && item.tip === 'avans') {
+    _pushNotif(item.fromKey || 's', 'rd', 'Avans Talebiniz Reddedildi',
+      '₺' + item.tutar.toLocaleString('tr-TR') + ' avans talebi muhasebe tarafından reddedildi. Detaylar için muhasebe ile iletişime geçin.',
+      'Az önce · ' + (curUser ? curUser.name : 'Muhasebe') + ' (Muhasebe)');
+    notif(item.uye + ' avansı reddedildi', 'red');
+  } else {
+    notif('Harcama reddedildi', 'red');
+  }
 }
 
 function accSupheIsle(id, action) {
