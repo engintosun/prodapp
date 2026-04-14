@@ -784,9 +784,149 @@ body {
 .ni.on .ni-dot { background: var(--ac); }
 
 /* ══════════════════════════════
-   PLACEHOLDER: DEPT & MUHASEBE
+   DEPT EKRANI
 ══════════════════════════════ */
-#sd, #sa {
+#sd { flex-direction: column; justify-content: flex-start; align-items: stretch; }
+
+.sd-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px;
+  padding-top: max(14px, var(--safe-top));
+  border-bottom: 1px solid var(--bo);
+  flex-shrink: 0; background: var(--bg);
+}
+.sd-hd-left { display: flex; align-items: center; gap: 10px; }
+.sd-hd-av {
+  width: 38px; height: 38px; border-radius: 11px;
+  background: var(--ac); color: #0C0A08;
+  font-size: 12px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.sd-hd-prj  { font-size: 14px; font-weight: 700; color: var(--tx); }
+.sd-hd-role { font-size: 11px; color: var(--tx3); }
+
+.sd-body {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 16px 40px;
+}
+
+/* Özet kartlar */
+.sd-ozet {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; margin-bottom: 20px;
+}
+.sd-oz {
+  background: var(--bg2); border: 1px solid var(--bo);
+  border-radius: var(--r); padding: 13px 12px;
+}
+.sd-oz-lbl { font-size: 10px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+.sd-oz-val { font-size: 19px; font-weight: 800; font-family: var(--mo); }
+.sd-oz-sub { font-size: 11px; color: var(--tx3); margin-top: 2px; }
+
+/* Tab bar */
+.sd-tabs {
+  display: flex; gap: 5px;
+  background: var(--bg2); border: 1px solid var(--bo);
+  border-radius: 14px; padding: 4px; margin-bottom: 16px;
+}
+.sd-tb {
+  flex: 1; border: none; background: none;
+  font-family: var(--fn); font-size: 12px; font-weight: 600;
+  color: var(--tx3); padding: 8px 4px; border-radius: 11px;
+  cursor: pointer; transition: all .15s;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  -webkit-tap-highlight-color: transparent;
+}
+.sd-tb.on { background: var(--bg3); color: var(--tx); }
+.sd-tb-bj {
+  background: var(--ac); color: #0C0A08;
+  font-size: 10px; font-weight: 800;
+  border-radius: 7px; padding: 1px 5px; min-width: 16px; text-align: center;
+}
+
+/* Bekleyen fişler */
+.sd-fis {
+  background: var(--bg2); border: 1px solid var(--bo);
+  border-radius: var(--r); padding: 12px 13px;
+  margin-bottom: 8px;
+}
+.sd-fis-top  { display: flex; align-items: flex-start; gap: 9px; }
+.sd-fis-dot  { width: 8px; height: 8px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
+.sd-fis-main { flex: 1; min-width: 0; }
+.sd-fis-row  { display: flex; align-items: center; justify-content: space-between; }
+.sd-fis-satici { font-size: 13px; font-weight: 600; color: var(--tx); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sd-fis-tutar  { font-size: 14px; font-weight: 800; font-family: var(--mo); color: var(--ac2); flex-shrink: 0; margin-left: 8px; }
+.sd-fis-meta   { font-size: 11px; color: var(--tx3); margin-top: 2px; }
+.sd-fis-uyari  { font-size: 11px; color: var(--am2); margin-top: 3px; }
+.sd-fis-belgesiz { font-size: 11px; color: var(--bl2); margin-top: 3px; }
+.sd-fis-acts { display: flex; gap: 7px; margin-top: 10px; }
+.sd-ok {
+  flex: 1; background: rgba(34,197,94,.10); border: 1px solid rgba(34,197,94,.28);
+  color: var(--gr2); border-radius: 9px; padding: 8px; font-size: 12px; font-weight: 700;
+  font-family: var(--fn); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  -webkit-tap-highlight-color: transparent; transition: background .12s;
+}
+.sd-ok:active { background: rgba(34,197,94,.22); }
+.sd-rd {
+  flex: 1; background: rgba(239,68,68,.07); border: 1px solid rgba(239,68,68,.22);
+  color: var(--rd2); border-radius: 9px; padding: 8px; font-size: 12px; font-weight: 700;
+  font-family: var(--fn); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  -webkit-tap-highlight-color: transparent; transition: background .12s;
+}
+.sd-rd:active { background: rgba(239,68,68,.18); }
+
+/* Ekip listesi */
+.sd-ekip-card {
+  background: var(--bg2); border: 1px solid var(--bo);
+  border-radius: var(--r); overflow: hidden; margin-bottom: 16px;
+}
+.sd-uye {
+  display: flex; align-items: center; gap: 11px;
+  padding: 13px 14px; border-bottom: 1px solid var(--bo);
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: background .12s;
+}
+.sd-uye:last-child { border-bottom: none; }
+.sd-uye:active { background: var(--bg3); }
+.sd-uye-av {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--bg3); border: 1px solid var(--bo2);
+  font-size: 11px; font-weight: 800; color: var(--tx2);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.sd-uye-name { font-size: 13px; font-weight: 600; color: var(--tx); }
+.sd-uye-rol  { font-size: 11px; color: var(--tx3); }
+.sd-uye-right { margin-left: auto; text-align: right; flex-shrink: 0; }
+.sd-uye-tutar { font-size: 13px; font-weight: 700; font-family: var(--mo); color: var(--tx); }
+.sd-uye-bek   { font-size: 11px; color: var(--am2); }
+.sd-uye-bek0  { font-size: 11px; color: var(--tx3); }
+
+/* Avans kartları */
+.sd-avans-card {
+  background: var(--bg2); border: 1px solid var(--bo);
+  border-radius: var(--r); padding: 13px 14px; margin-bottom: 9px;
+}
+.sd-av-top     { display: flex; align-items: center; justify-content: space-between; margin-bottom: 3px; }
+.sd-av-kisi    { display: flex; align-items: center; gap: 8px; }
+.sd-av-av      { width: 28px; height: 28px; border-radius: 8px; background: var(--bg3); border: 1px solid var(--bo2); font-size: 10px; font-weight: 800; color: var(--tx2); display: flex; align-items: center; justify-content: center; }
+.sd-av-name    { font-size: 13px; font-weight: 600; color: var(--tx); }
+.sd-av-tutar   { font-size: 16px; font-weight: 800; font-family: var(--mo); color: var(--ac2); }
+.sd-av-gerekce { font-size: 12px; color: var(--tx2); margin: 5px 0 10px; line-height: 1.5; }
+.sd-av-meta    { font-size: 11px; color: var(--tx3); margin-bottom: 10px; }
+
+/* Seksiyon etiketi */
+.sd-sec { font-size: 11px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 9px; }
+
+/* Mesaj modalı */
+.sd-mesaj-to { font-size: 13px; color: var(--tx2); margin-bottom: 12px; }
+
+/* ══════════════════════════════
+   MUHASEBE PLACEHOLDER
+══════════════════════════════ */
+#sa {
   justify-content: center; align-items: center;
   gap: 12px;
 }
@@ -1269,13 +1409,32 @@ body {
 </div><!-- /su -->
 
 <!-- ════════════════════════════
-     DEPT PLACEHOLDER
+     DEPT EKRANI
 ════════════════════════════ -->
 <div class="scr" id="sd">
-  <svg viewBox="0 0 24 24" fill="none" stroke="var(--tx3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-  <div style="font-size:15px;font-weight:700;color:var(--tx2)">Departman Sorumlusu</div>
-  <div style="font-size:13px;color:var(--tx3)">Yakında geliştiriliyor</div>
-  <button class="btn btn-sm" onclick="goLogin()">← Çıkış</button>
+  <!-- Header -->
+  <div class="sd-hd">
+    <div class="sd-hd-left">
+      <div class="sd-hd-av" id="sd-hd-av">ZA</div>
+      <div>
+        <div class="sd-hd-prj" id="sd-hd-prj">İstanbul Gecesi</div>
+        <div class="sd-hd-role" id="sd-hd-role">Dept. Sorumlusu · Yapım</div>
+      </div>
+    </div>
+    <button class="btn btn-sm" onclick="goProjectSelect()">↩ Proje</button>
+  </div>
+  <!-- Scrollable body -->
+  <div class="sd-body">
+    <div class="sd-ozet" id="sd-ozet"></div>
+    <div class="sd-tabs">
+      <button class="sd-tb on" id="sdtb-bek"   onclick="sdTab('bek',   this)">Bekleyen <span class="sd-tb-bj" id="sdtb-bek-cnt">7</span></button>
+      <button class="sd-tb"     id="sdtb-ekip"  onclick="sdTab('ekip',  this)">Ekip</button>
+      <button class="sd-tb"     id="sdtb-avans" onclick="sdTab('avans', this)">Avanslar <span class="sd-tb-bj" id="sdtb-av-cnt">2</span></button>
+    </div>
+    <div id="sd-pnl-bek"></div>
+    <div id="sd-pnl-ekip"  style="display:none"></div>
+    <div id="sd-pnl-avans" style="display:none"></div>
+  </div>
 </div>
 
 <!-- ════════════════════════════
@@ -1625,6 +1784,30 @@ body {
 </div>
 
 <!-- ════════════════════════════
+     MODAL: MESAJ GÖNDER (DEPT)
+════════════════════════════ -->
+<div class="mo" id="md-mesaj">
+  <div class="ms">
+    <div class="mh"></div>
+    <div class="mhd">
+      <div class="mtitle">✉️ Mesaj Gönder</div>
+      <button class="mclose" onclick="closeM('md-mesaj')">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="sd-mesaj-to" id="md-mesaj-kisi">Alıcı: —</div>
+      <div class="fg">
+        <label>Mesaj</label>
+        <textarea class="fgi" rows="4" id="md-mesaj-txt" placeholder="Mesajınızı yazın..."></textarea>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn" onclick="closeM('md-mesaj')" style="flex:1;justify-content:center">İptal</button>
+        <button class="btn btn-p" onclick="sendMesaj()" style="flex:2;justify-content:center">✉️ Gönder</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
      LİGHTBOX
 ════════════════════════════ -->
 <input type="file" id="galeri-input" accept="image/*" multiple style="display:none">
@@ -1704,6 +1887,29 @@ var NOTIFLAR = [
     body:'Dönem #2 avansının %90\'ı kullanıldı',
     meta:'3 gün önce · Sistem', read:true }
 ];
+
+/* ─── DEPT demo verisi ─── */
+var DEPT_EKIP = [
+  { id:'mk', ini:'MK', name:'Mehmet Kaya',    rol:'Saha / Araç Sorumlusu', tutar:11240 },
+  { id:'od', ini:'OD', name:'Okan Demir',     rol:'Kamera Asistanı',       tutar:6840  },
+  { id:'sy', ini:'SY', name:'Selin Yıldız',   rol:'Sanat Departmanı',      tutar:4290  },
+  { id:'bc', ini:'BÇ', name:'Burhan Çelik',   rol:'Işık Ekibi',            tutar:8150  },
+  { id:'ak', ini:'AK', name:'Aylin Korkmaz',  rol:'Ses Kaydı',             tutar:2670  }
+];
+var DEPT_BEKLEYEN = [
+  { id:101, uye:'Mehmet Kaya',   ini:'MK', satici:'Petrol Ofisi',     kat:'Yakit',   tutar:1000, tarih:'03.04', uyari:null, belgesiz:false },
+  { id:102, uye:'Mehmet Kaya',   ini:'MK', satici:'Tavuk Dünyası',    kat:'Yiyecek', tutar:780,  tarih:'24.03', uyari:'Ekip 15 kişi, 10 porsiyon faturalandı', belgesiz:false },
+  { id:103, uye:'Mehmet Kaya',   ini:'MK', satici:'Kostüm Deposu',    kat:'Sanat',   tutar:320,  tarih:'10.04', uyari:null, belgesiz:true,  aciklama:'Nakit ödeme, fiş verilmedi' },
+  { id:104, uye:'Okan Demir',    ini:'OD', satici:'Kamera Gereçleri', kat:'Ekipman', tutar:2400, tarih:'11.04', uyari:null, belgesiz:false },
+  { id:105, uye:'Burhan Çelik',  ini:'BÇ', satici:'Aydınlatma Tüp',  kat:'Ekipman', tutar:1150, tarih:'10.04', uyari:null, belgesiz:false },
+  { id:106, uye:'Burhan Çelik',  ini:'BÇ', satici:'İETT Transfer',   kat:'Ulasim',  tutar:380,  tarih:'12.04', uyari:null, belgesiz:false },
+  { id:107, uye:'Aylin Korkmaz', ini:'AK', satici:'Ses Kablosu x4',  kat:'Ekipman', tutar:860,  tarih:'09.04', uyari:null, belgesiz:false }
+];
+var DEPT_AVANS = [
+  { id:201, uye:'Okan Demir',   ini:'OD', tutar:5000, tarih:'11.04', gerekce:'Dış çekim ekipman kira ön ödemesi — 2 günlük set kurulumu' },
+  { id:202, uye:'Burhan Çelik', ini:'BÇ', tutar:2500, tarih:'10.04', gerekce:'Set kurulum malzemesi — çarşı çekimi lojistik harcaması' }
+];
+var sdMesajKisi = '';
 
 var curUser  = null;
 var curProj  = null;
@@ -1813,7 +2019,7 @@ function selectProj(pid) {
     notif(curProj.name + ' projesine giriş yapıldı', 'green');
   } else if (curUser.role === 'dept') {
     showScr('sd');
-    notif('Departman ekranı yakında', 'blue');
+    renderDept();
   } else {
     showScr('sa');
     notif('Muhasebe ekranı yakında', 'blue');
@@ -2308,6 +2514,227 @@ function openBelgesizModal() {
   if (kat) kat.selectedIndex = 0;
   openM('mb');
 }
+/* ═══ DEPT EKRANI ═══ */
+var SD_KAT_CLR = {
+  Yakit:'var(--am)', Yiyecek:'var(--gr)', Ekipman:'var(--bl)',
+  Sanat:'var(--ac)', Ulasim:'var(--bl2)', Diger:'var(--tx3)',
+  Konaklama:'var(--bl)', Kiralama:'var(--am2)'
+};
+var SD_KAT_LBL = {
+  Yakit:'Yakıt', Yiyecek:'Yiyecek', Ekipman:'Ekipman',
+  Sanat:'Sanat', Ulasim:'Ulaşım', Diger:'Diğer',
+  Konaklama:'Konaklama', Kiralama:'Kiralama'
+};
+
+function renderDept() {
+  var av  = document.getElementById('sd-hd-av');
+  var prj = document.getElementById('sd-hd-prj');
+  var rol = document.getElementById('sd-hd-role');
+  if (curUser && av)  av.textContent  = curUser.ini;
+  if (curProj && prj) prj.textContent = curProj.name;
+  if (curUser && rol) rol.textContent = 'Dept. Sorumlusu · ' + curUser.dept;
+  renderDeptOzet();
+  renderDeptBek();
+  renderDeptEkip();
+  renderDeptAvans();
+  sdTab('bek', document.getElementById('sdtb-bek'));
+}
+
+function renderDeptOzet() {
+  var el = document.getElementById('sd-ozet');
+  if (!el) return;
+  /* Sabit özet rakamlara ek olarak bekleyenleri hesapla */
+  var bekTop = 0;
+  for (var i = 0; i < DEPT_BEKLEYEN.length; i++) bekTop += DEPT_BEKLEYEN[i].tutar;
+  var cards = [
+    { lbl:'Toplam Harcama',  val:'₺33.390', sub:'Dönem #2 · 19 kayıt',    clr:'var(--tx)'  },
+    { lbl:'Onaylanan',       val:'₺26.500', sub:'12 harcama onaylandı',    clr:'var(--gr2)' },
+    { lbl:'Bekleyen',        val:'₺' + bekTop.toLocaleString('tr-TR'), sub: DEPT_BEKLEYEN.length + ' harcama onay bekliyor', clr:'var(--am2)' },
+    { lbl:'Reddedilen',      val:'₺3.890',  sub:'3 harcama reddedildi',    clr:'var(--rd2)' }
+  ];
+  el.innerHTML = cards.map(function(c) {
+    return '<div class="sd-oz">' +
+      '<div class="sd-oz-lbl">' + c.lbl + '</div>' +
+      '<div class="sd-oz-val" style="color:' + c.clr + '">' + c.val + '</div>' +
+      '<div class="sd-oz-sub">' + c.sub + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function renderDeptBek() {
+  var el = document.getElementById('sd-pnl-bek');
+  if (!el) return;
+  var cnt = document.getElementById('sdtb-bek-cnt');
+  if (cnt) cnt.textContent = DEPT_BEKLEYEN.length;
+  if (!DEPT_BEKLEYEN.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--tx3);font-size:13px">✅ Bekleyen harcama yok</div>';
+    return;
+  }
+  el.innerHTML = DEPT_BEKLEYEN.map(function(f) {
+    var clr = SD_KAT_CLR[f.kat] || 'var(--tx3)';
+    var lbl = SD_KAT_LBL[f.kat] || f.kat;
+    var extras = '';
+    if (f.uyari)    extras += '<div class="sd-fis-uyari">⚠️ ' + f.uyari + '</div>';
+    if (f.belgesiz) extras += '<div class="sd-fis-belgesiz">📋 Belgesiz · ' + (f.aciklama || '') + '</div>';
+    return '<div class="sd-fis" id="sd-fis-' + f.id + '">' +
+      '<div class="sd-fis-top">' +
+        '<div class="sd-fis-dot" style="background:' + clr + '"></div>' +
+        '<div class="sd-fis-main">' +
+          '<div class="sd-fis-row">' +
+            '<div class="sd-fis-satici">' + f.satici + '</div>' +
+            '<div class="sd-fis-tutar">₺' + f.tutar.toLocaleString('tr-TR') + '</div>' +
+          '</div>' +
+          '<div class="sd-fis-meta">' + f.uye + ' · ' + lbl + ' · ' + f.tarih + '</div>' +
+          extras +
+        '</div>' +
+      '</div>' +
+      '<div class="sd-fis-acts">' +
+        '<button class="sd-ok" onclick="deptOnayla(' + f.id + ')">✓ Onayla</button>' +
+        '<button class="sd-rd" onclick="deptReddet(' + f.id + ')">✕ Reddet</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function renderDeptEkip() {
+  var el = document.getElementById('sd-pnl-ekip');
+  if (!el) return;
+  /* bek sayısını DEPT_BEKLEYEN'den hesapla */
+  var bekMap = {};
+  for (var i = 0; i < DEPT_BEKLEYEN.length; i++) {
+    var n = DEPT_BEKLEYEN[i].uye;
+    bekMap[n] = (bekMap[n] || 0) + 1;
+  }
+  var rows = DEPT_EKIP.map(function(u) {
+    var bek = bekMap[u.name] || 0;
+    return '<div class="sd-uye" onclick="openMesaj(\'' + u.name.replace(/'/g, "\\'") + '\', \'' + u.ini + '\')">' +
+      '<div class="sd-uye-av">' + u.ini + '</div>' +
+      '<div>' +
+        '<div class="sd-uye-name">' + u.name + '</div>' +
+        '<div class="sd-uye-rol">' + u.rol + '</div>' +
+      '</div>' +
+      '<div class="sd-uye-right">' +
+        '<div class="sd-uye-tutar">₺' + u.tutar.toLocaleString('tr-TR') + '</div>' +
+        (bek > 0
+          ? '<div class="sd-uye-bek">' + bek + ' bekleyen</div>'
+          : '<div class="sd-uye-bek0">Bekleyen yok</div>') +
+      '</div>' +
+    '</div>';
+  }).join('');
+  el.innerHTML = '<div class="sd-sec">Aktif Dönem · Ekip Harcamaları</div>' +
+    '<div class="sd-ekip-card">' + rows + '</div>' +
+    '<div class="sd-sec">Toplam Ekip · ' + DEPT_EKIP.length + ' kişi</div>';
+}
+
+function renderDeptAvans() {
+  var el = document.getElementById('sd-pnl-avans');
+  if (!el) return;
+  var cnt = document.getElementById('sdtb-av-cnt');
+  if (cnt) cnt.textContent = DEPT_AVANS.length;
+  if (!DEPT_AVANS.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--tx3);font-size:13px">✅ Bekleyen avans talebi yok</div>';
+    return;
+  }
+  el.innerHTML = DEPT_AVANS.map(function(a) {
+    return '<div class="sd-avans-card" id="sd-av-' + a.id + '">' +
+      '<div class="sd-av-top">' +
+        '<div class="sd-av-kisi">' +
+          '<div class="sd-av-av">' + a.ini + '</div>' +
+          '<div class="sd-av-name">' + a.uye + '</div>' +
+        '</div>' +
+        '<div class="sd-av-tutar">₺' + a.tutar.toLocaleString('tr-TR') + '</div>' +
+      '</div>' +
+      '<div class="sd-av-meta">' + a.tarih + ' tarihli talep</div>' +
+      '<div class="sd-av-gerekce">' + a.gerekce + '</div>' +
+      '<div class="sd-fis-acts">' +
+        '<button class="sd-ok" onclick="deptAvansOnayla(' + a.id + ')">✓ Onayla</button>' +
+        '<button class="sd-rd" onclick="deptAvansReddet(' + a.id + ')">✕ Reddet</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function sdTab(t, el) {
+  var tabs = ['bek', 'ekip', 'avans'];
+  for (var i = 0; i < tabs.length; i++) {
+    var btn = document.getElementById('sdtb-' + tabs[i]);
+    var pnl = document.getElementById('sd-pnl-' + tabs[i]);
+    if (btn) btn.classList.remove('on');
+    if (pnl) pnl.style.display = 'none';
+  }
+  if (el) el.classList.add('on');
+  var active = document.getElementById('sd-pnl-' + t);
+  if (active) active.style.display = 'block';
+}
+
+function deptOnayla(id) {
+  for (var i = 0; i < DEPT_BEKLEYEN.length; i++) {
+    if (DEPT_BEKLEYEN[i].id === id) {
+      var f = DEPT_BEKLEYEN[i];
+      DEPT_BEKLEYEN.splice(i, 1);
+      notif(f.satici + ' onaylandı', 'green');
+      renderDeptBek();
+      renderDeptEkip();
+      renderDeptOzet();
+      return;
+    }
+  }
+}
+
+function deptReddet(id) {
+  for (var i = 0; i < DEPT_BEKLEYEN.length; i++) {
+    if (DEPT_BEKLEYEN[i].id === id) {
+      var f = DEPT_BEKLEYEN[i];
+      DEPT_BEKLEYEN.splice(i, 1);
+      notif(f.satici + ' reddedildi', 'red');
+      renderDeptBek();
+      renderDeptEkip();
+      renderDeptOzet();
+      return;
+    }
+  }
+}
+
+function deptAvansOnayla(id) {
+  for (var i = 0; i < DEPT_AVANS.length; i++) {
+    if (DEPT_AVANS[i].id === id) {
+      var a = DEPT_AVANS[i];
+      DEPT_AVANS.splice(i, 1);
+      notif(a.uye + ' avansı onaylandı — ₺' + a.tutar.toLocaleString('tr-TR'), 'green');
+      renderDeptAvans();
+      return;
+    }
+  }
+}
+
+function deptAvansReddet(id) {
+  for (var i = 0; i < DEPT_AVANS.length; i++) {
+    if (DEPT_AVANS[i].id === id) {
+      var a = DEPT_AVANS[i];
+      DEPT_AVANS.splice(i, 1);
+      notif(a.uye + ' avans talebi reddedildi', 'red');
+      renderDeptAvans();
+      return;
+    }
+  }
+}
+
+function openMesaj(name, ini) {
+  sdMesajKisi = name;
+  var kisiEl = document.getElementById('md-mesaj-kisi');
+  var txtEl  = document.getElementById('md-mesaj-txt');
+  if (kisiEl) kisiEl.textContent = 'Alıcı: ' + name;
+  if (txtEl)  txtEl.value = '';
+  openM('md-mesaj');
+}
+
+function sendMesaj() {
+  var txt = (document.getElementById('md-mesaj-txt').value || '').trim();
+  if (!txt) { notif('Mesaj boş olamaz', 'red'); return; }
+  closeM('md-mesaj');
+  notif('Mesaj gönderildi → ' + sdMesajKisi, 'green');
+}
+
 function simGIB() {
   var el = document.getElementById('gib-res');
   if (el) el.textContent = 'Bağlanıyor...';
