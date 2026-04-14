@@ -425,30 +425,12 @@ body {
 .ocr-sub-cancel { color: var(--rd2); }
 .ocr-sub-cancel svg { stroke: var(--rd2); }
 
-/* ── HIZLI BUTONLAR ── */
-.qbtns {
-  display: flex;
-  gap: 28px;
-  justify-content: center;
-  margin-bottom: 28px;
-  flex-shrink: 0;
+/* ── OCR İPUCU (buton altı) ── */
+.ocr-tip {
+  font-size: 11px; color: var(--tx3);
+  margin-top: 12px; letter-spacing: .2px;
+  text-align: center;
 }
-.qbtn {
-  display: flex; flex-direction: column;
-  align-items: center; gap: 7px;
-  background: none; border: none;
-  cursor: pointer; font-family: var(--fn);
-  -webkit-tap-highlight-color: transparent;
-}
-.qbtn-ic {
-  width: 52px; height: 52px; border-radius: 50%;
-  border: 1px solid var(--bo); background: var(--bg2);
-  display: flex; align-items: center; justify-content: center;
-  transition: border-color .15s;
-}
-.qbtn-ic svg { width: 20px; height: 20px; stroke: var(--tx2); }
-.qbtn:active .qbtn-ic { border-color: var(--ac); transform: scale(.95); }
-.qbtn-lbl { font-size: 13px; color: var(--tx2); font-weight: 500; }
 
 /* ── SON HARCAMALAR ── */
 .recent-hd {
@@ -657,13 +639,11 @@ body {
 
 /* ── ALT NAV ── */
 .su-nav-wrap {
-  position: absolute;
+  position: fixed;
   bottom: 0; left: 0; right: 0;
-  /* gradient arkaplana */
   padding: 8px 16px;
   padding-bottom: max(16px, var(--safe-bot));
   background: linear-gradient(to top, var(--bg) 55%, transparent);
-  /* TÜM ÇOCUKLAR TIKLANABİLİR — pointer-events her zaman all */
   pointer-events: all;
   z-index: 20;
 }
@@ -1139,6 +1119,8 @@ body {
           </div>
         </div>
 
+        <div class="ocr-tip">Galeri veya belgesiz için basılı tut</div>
+
         <!-- Uzun bas alt menü -->
         <div class="ocr-sub" id="ocr-sub">
           <div class="ocr-sub-item" onclick="doOCR()">
@@ -1158,22 +1140,6 @@ body {
             Vazgeç
           </div>
         </div>
-      </div>
-
-      <!-- Hızlı butonlar -->
-      <div class="qbtns" id="qbtns">
-        <button class="qbtn" onclick="doGaleri()">
-          <div class="qbtn-ic">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          </div>
-          <span class="qbtn-lbl">Galeri</span>
-        </button>
-        <button class="qbtn" onclick="openM('mb')">
-          <div class="qbtn-ic">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-          </div>
-          <span class="qbtn-lbl">Belgesiz</span>
-        </button>
       </div>
 
       <!-- Son harcamalar -->
@@ -1982,12 +1948,10 @@ function renderRecent() {
 
 function openSub() {
   document.getElementById('ocr-sub').style.display  = 'block';
-  document.getElementById('qbtns').style.display    = 'none';
   document.getElementById('ocr-hint').textContent   = 'seç veya vazgeç';
 }
 function closeSub() {
   document.getElementById('ocr-sub').style.display  = 'none';
-  document.getElementById('qbtns').style.display    = 'flex';
   document.getElementById('ocr-hint').textContent   = 'tara veya uzun bas';
 }
 function doOCR()    { closeSub(); openOCR(0, null); }
