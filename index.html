@@ -458,6 +458,36 @@ body {
 }
 
 /* ── SON HARCAMALAR ── */
+/* ─── Kiralama uyarı kartı ─── */
+.kira-kart {
+  border: 1px solid var(--bo); border-radius: var(--r);
+  background: var(--bg2); padding: 13px 14px; margin-bottom: 14px; flex-shrink: 0;
+}
+.kira-kart-hd {
+  font-size: 11px; font-weight: 700; display: flex; align-items: center;
+  gap: 6px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .4px;
+}
+.kira-kart-cnt {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 17px; height: 17px; border-radius: 6px;
+  background: currentColor; font-size: 10px; line-height: 1;
+}
+.kira-kart-cnt-inner { color: var(--bg); }
+.kira-kart-msg { font-size: 12px; color: var(--tx2); margin-bottom: 8px; }
+.kira-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 0; border-top: 1px solid var(--bo);
+}
+.kira-item-name { font-size: 13px; font-weight: 600; color: var(--tx); }
+.kira-item-det  { font-size: 11px; color: var(--tx3); margin-top: 1px; }
+.kira-tag {
+  font-size: 10px; font-weight: 700; border-radius: 6px; border: 1px solid;
+  padding: 2px 7px; white-space: nowrap; flex-shrink: 0;
+}
+.kira-tag-gecmis   { color:var(--rd2);  border-color:rgba(239,68,68,.3);   background:rgba(239,68,68,.08); }
+.kira-tag-yaklasan { color:var(--am2);  border-color:rgba(245,158,11,.3);  background:rgba(245,158,11,.08); }
+.kira-tag-aktif    { color:var(--gr2);  border-color:rgba(34,197,94,.25);  background:rgba(34,197,94,.06); }
+
 .recent-hd {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 10px;
@@ -1470,6 +1500,9 @@ body {
         </button>
       </div>
 
+      <!-- Kiralama uyarı kartı -->
+      <div id="kiralama-karti"></div>
+
       <!-- Son harcamalar -->
       <div class="recent-hd">
         <div class="sec-lbl">Son Harcamalar</div>
@@ -1741,10 +1774,11 @@ body {
         <!-- KİRALAMA PANELİ (OCR) -->
         <div id="ki-panel" style="display:none">
           <div class="fr2">
-            <div class="fg"><label>Başlangıç Tarihi</label><input class="fgi" id="ki-bas" type="date"></div>
-            <div class="fg"><label>Bitiş Tarihi</label><input class="fgi" id="ki-bit" type="date"></div>
+            <div class="fg"><label>Başlangıç Tarihi</label><input class="fgi" id="ki-bas" type="date" oninput="checkKiralamaBit('')"></div>
+            <div class="fg"><label>Bitiş Tarihi</label><input class="fgi" id="ki-bit" type="date" oninput="checkKiralamaBit('')"></div>
           </div>
-          <div class="fg"><label>Günlük Ücret (₺)</label><input class="fgi" id="ki-gun" type="number" min="0" step="0.01" placeholder="0.00"></div>
+          <div class="fg"><label>Günlük Ücret (₺)</label><input class="fgi" id="ki-gun" type="number" min="0" step="0.01" placeholder="0.00" oninput="checkKiralamaBit('')"></div>
+          <div id="ki-uyari" style="display:none;margin-bottom:8px"></div>
         </div>
         <div class="fg"><label>Açıklama</label><textarea class="fgi" rows="2" id="f-aciklama" placeholder="Harcama notu..."></textarea></div>
         <button class="vbtn" id="vbtn" onclick="toggleVoice()">
@@ -1846,10 +1880,11 @@ body {
       <!-- KİRALAMA PANELİ (belgesiz) -->
       <div id="b-ki-panel" style="display:none">
         <div class="fr2">
-          <div class="fg"><label>Başlangıç Tarihi</label><input class="fgi" id="b-ki-bas" type="date"></div>
-          <div class="fg"><label>Bitiş Tarihi</label><input class="fgi" id="b-ki-bit" type="date"></div>
+          <div class="fg"><label>Başlangıç Tarihi</label><input class="fgi" id="b-ki-bas" type="date" oninput="checkKiralamaBit('b-')"></div>
+          <div class="fg"><label>Bitiş Tarihi</label><input class="fgi" id="b-ki-bit" type="date" oninput="checkKiralamaBit('b-')"></div>
         </div>
-        <div class="fg"><label>Günlük Ücret (₺)</label><input class="fgi" id="b-ki-gun" type="number" min="0" step="0.01" placeholder="0.00"></div>
+        <div class="fg"><label>Günlük Ücret (₺)</label><input class="fgi" id="b-ki-gun" type="number" min="0" step="0.01" placeholder="0.00" oninput="checkKiralamaBit('b-')"></div>
+        <div id="b-ki-uyari" style="display:none;margin-bottom:8px"></div>
       </div>
       <div class="fr2">
         <div class="fg"><label>Tarih</label><input class="fgi" type="date" id="b-tarih"></div>
@@ -2049,7 +2084,14 @@ var DATA = [
   { id:14, tarih:'28.03.2026', personel:'Mehmet K.', satici:'Taksi / İETT',            kat:'Ulasim',  tutar:680,  durum:'onaylandi', donem:1, uyari:null, thumb:null },
   { id:15, tarih:'01.04.2026', personel:'Mehmet K.', satici:'Set Malzeme Market',      kat:'Diger',   tutar:1330, durum:'onaylandi', donem:1, uyari:null, thumb:null },
   { id:16, tarih:'24.03.2026', personel:'Mehmet K.', satici:'Şehir Lokantası',         kat:'Yiyecek', tutar:480,  durum:'reddedildi', donem:1, uyari:'Ekip dışı 3 kişi dahil edilmiş', thumb:null },
-  { id:17, tarih:'29.03.2026', personel:'Mehmet K.', satici:'Kırtasiye Merkez',        kat:'Diger',   tutar:150,  durum:'reddedildi', donem:1, uyari:'Fiş okunamıyor — yeniden yükle', thumb:null }
+  { id:17, tarih:'29.03.2026', personel:'Mehmet K.', satici:'Kırtasiye Merkez',        kat:'Diger',   tutar:150,  durum:'reddedildi', donem:1, uyari:'Fiş okunamıyor — yeniden yükle', thumb:null },
+  /* ── Kiralama demo verileri ── */
+  { id:20, tarih:'01.04.2026', personel:'Mehmet K.', satici:'Megapol Araç Kiralama',    kat:'Kiralama', tutar:3150, durum:'onaylandi', donem:2, uyari:null, thumb:null,
+    kiraMeta:{ bas:'2026-04-01', bit:'2026-04-05', gunluk:450 } },
+  { id:21, tarih:'10.04.2026', personel:'Mehmet K.', satici:'Sigma Kamera Ekipmanları', kat:'Kiralama', tutar:4800, durum:'bekleyen', donem:2, uyari:null, thumb:null,
+    kiraMeta:{ bas:'2026-04-10', bit:'2026-04-16', gunluk:800 } },
+  { id:22, tarih:'12.04.2026', personel:'Mehmet K.', satici:'ProAV Ses Ekipmanı',       kat:'Kiralama', tutar:2450, durum:'bekleyen', donem:2, uyari:null, thumb:null,
+    kiraMeta:{ bas:'2026-04-12', bit:'2026-04-25', gunluk:350 } }
 ];
 var FIS_DEMO = [
   {
@@ -2445,6 +2487,7 @@ function fisThumbnail(f) {
 }
 
 function renderRecent() {
+  renderKiralamaKarti();
   var mine = DATA.filter(function(d) { return d.personel === 'Mehmet K.' && d.donem === 2; });
   var el = document.getElementById('recent-list');
   if (!el) return;
@@ -2612,8 +2655,157 @@ function submitOCR() {
     _addToDeptBekleyen(satici, kat, tutar, false, '');
     notif(satici + ' bekleyene eklendi', 'green');
   } else {
+    var kat2   = document.getElementById('f-kat').value || 'Diger';
+    var sat2   = (document.getElementById('f-satici').value || '').trim() || 'Bilinmiyor';
+    var tut2   = parseFloat((document.getElementById('f-tutar').value || '0').replace(',', '.')) || 0;
+    var today2 = new Date();
+    var tarih2 = _pad(today2.getDate()) + '.' + _pad(today2.getMonth()+1) + '.' + today2.getFullYear();
+    var entry  = { id: Date.now(), tarih: tarih2, personel: 'Mehmet K.', satici: sat2,
+                   kat: kat2, tutar: tut2, durum: 'bekleyen', donem: 2, uyari: null, thumb: null };
+    if (kat2 === 'Kiralama') {
+      entry.kiraMeta = {
+        bas:    (document.getElementById('ki-bas').value || ''),
+        bit:    (document.getElementById('ki-bit').value || ''),
+        gunluk: parseFloat(document.getElementById('ki-gun').value || '0') || 0
+      };
+    }
+    DATA.unshift(entry);
     renderRecent();
     notif('Harcama onaya gönderildi', 'green');
+  }
+}
+
+/* ═══ KİRALAMA WORKFLOW ═══ */
+function _today() {
+  var d = new Date();
+  return new Date(d.getFullYear() + '-' + _pad(d.getMonth()+1) + '-' + _pad(d.getDate()) + 'T00:00:00');
+}
+function _pad(n) { return n < 10 ? '0' + n : String(n); }
+
+function _formatKiraTarih(dateStr) {
+  var aylar = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+  var p = (dateStr || '').split('-');
+  if (p.length < 3) return dateStr;
+  return parseInt(p[2]) + ' ' + (aylar[parseInt(p[1])-1] || p[1]) + ' ' + p[0];
+}
+
+function _kiralamaDurumu(km) {
+  var today  = _today();
+  var bit    = new Date((km.bit || '') + 'T00:00:00');
+  var diffMs = bit - today;
+  var diffGun = Math.round(diffMs / 86400000);
+  if (isNaN(diffGun)) return { durum:'aktif', kalanGun:0, gecikmeGun:0, ceza:0 };
+  if (diffGun < 0) {
+    var gecGun = -diffGun;
+    return { durum:'gecmis', gecikmeGun:gecGun, kalanGun:0, ceza:gecGun * (km.gunluk || 0) };
+  }
+  if (diffGun <= 2) return { durum:'yaklasan', kalanGun:diffGun, gecikmeGun:0, ceza:0 };
+  return { durum:'aktif', kalanGun:diffGun, gecikmeGun:0, ceza:0 };
+}
+
+function _kiralamalar() {
+  return DATA.filter(function(d) {
+    return d.kat === 'Kiralama' && d.personel === 'Mehmet K.' && d.kiraMeta && d.donem === 2;
+  });
+}
+
+function renderKiralamaKarti() {
+  var el = document.getElementById('kiralama-karti');
+  if (!el) return;
+  var liste = _kiralamalar();
+  if (!liste.length) { el.innerHTML = ''; return; }
+
+  var gecmis = [], yaklasan = [], aktif = [];
+  for (var i = 0; i < liste.length; i++) {
+    var dur = _kiralamaDurumu(liste[i].kiraMeta);
+    liste[i]._dur = dur;
+    if (dur.durum === 'gecmis')        gecmis.push(liste[i]);
+    else if (dur.durum === 'yaklasan') yaklasan.push(liste[i]);
+    else                               aktif.push(liste[i]);
+  }
+
+  var hdrClr, hdrIco, hdrMsg;
+  if (gecmis.length) {
+    var topCeza = 0, topGun = 0;
+    for (var g = 0; g < gecmis.length; g++) {
+      topCeza += gecmis[g]._dur.ceza;
+      if (gecmis[g]._dur.gecikmeGun > topGun) topGun = gecmis[g]._dur.gecikmeGun;
+    }
+    hdrClr = 'var(--rd2)'; hdrIco = '🔴';
+    hdrMsg = gecmis.length + ' kiralama iade edilmedi · Max ' + topGun + ' gün gecikme · Tahmini ceza: <strong>₺' + topCeza.toLocaleString('tr-TR') + '</strong>';
+  } else if (yaklasan.length) {
+    hdrClr = 'var(--am2)'; hdrIco = '🟡';
+    hdrMsg = 'Yaklaşan iade tarihi var — hazırlık yapın';
+  } else {
+    hdrClr = 'var(--gr2)'; hdrIco = '📦';
+    hdrMsg = liste.length + ' kiralama devam ediyor';
+  }
+
+  var rows = '';
+  for (var j = 0; j < liste.length; j++) {
+    var d = liste[j];
+    var dur2 = d._dur;
+    var tagCls, tagTxt, detayTxt;
+    if (dur2.durum === 'gecmis') {
+      tagCls  = 'kira-tag kira-tag-gecmis';
+      tagTxt  = dur2.gecikmeGun + ' GÜN GECİKMİŞ';
+      detayTxt = 'Ceza: ₺' + dur2.ceza.toLocaleString('tr-TR') + ' · ' + _formatKiraTarih(d.kiraMeta.bit) + ' bitmişti';
+    } else if (dur2.durum === 'yaklasan') {
+      tagCls  = 'kira-tag kira-tag-yaklasan';
+      tagTxt  = dur2.kalanGun === 0 ? 'BUGÜN BİTİYOR' : dur2.kalanGun + ' GÜN KALDI';
+      detayTxt = 'İade: ' + _formatKiraTarih(d.kiraMeta.bit) + ' · ₺' + d.kiraMeta.gunluk.toLocaleString('tr-TR') + '/gün';
+    } else {
+      tagCls  = 'kira-tag kira-tag-aktif';
+      tagTxt  = dur2.kalanGun + ' gün kaldı';
+      detayTxt = 'İade: ' + _formatKiraTarih(d.kiraMeta.bit) + ' · ₺' + d.kiraMeta.gunluk.toLocaleString('tr-TR') + '/gün';
+    }
+    rows += '<div class="kira-item">' +
+      '<div style="flex:1;min-width:0">' +
+        '<div class="kira-item-name">' + d.satici + '</div>' +
+        '<div class="kira-item-det">' + detayTxt + '</div>' +
+      '</div>' +
+      '<span class="' + tagCls + '">' + tagTxt + '</span>' +
+    '</div>';
+  }
+
+  el.innerHTML = '<div class="kira-kart" style="border-color:' + hdrClr + '">' +
+    '<div class="kira-kart-hd" style="color:' + hdrClr + '">' +
+      hdrIco + ' Aktif Kiralamalar' +
+      '<span class="kira-kart-cnt"><span class="kira-kart-cnt-inner">' + liste.length + '</span></span>' +
+    '</div>' +
+    '<div class="kira-kart-msg">' + hdrMsg + '</div>' +
+    rows +
+  '</div>';
+}
+
+/* Kiralama formu bitiş tarihi / günlük ücret değişince uyarı göster */
+function checkKiralamaBit(p) {
+  var bitEl = document.getElementById(p + 'ki-bit');
+  var gunEl = document.getElementById(p + 'ki-gun');
+  var uyEl  = document.getElementById(p + 'ki-uyari');
+  if (!bitEl || !bitEl.value || !uyEl) return;
+  var today   = _today();
+  var bit     = new Date(bitEl.value + 'T00:00:00');
+  var diffMs  = bit - today;
+  var diffGun = Math.round(diffMs / 86400000);
+  var gunluk  = parseFloat((gunEl && gunEl.value) || '0') || 0;
+  if (isNaN(diffGun)) { uyEl.style.display = 'none'; return; }
+  if (diffGun < 0) {
+    var gecGun = -diffGun;
+    var ceza   = gecGun * gunluk;
+    uyEl.className = 'al-rd';
+    uyEl.style.display = 'block';
+    uyEl.innerHTML = '⚠ Bitiş tarihi ' + gecGun + ' gün geçti — iade edilmedi!' +
+      (ceza > 0 ? '<br><strong>Tahmini gecikme cezası: ₺' + ceza.toLocaleString('tr-TR') + '</strong>' : '');
+  } else if (diffGun <= 2) {
+    uyEl.className = 'al-am';
+    uyEl.style.display = 'block';
+    uyEl.innerHTML = diffGun === 0
+      ? '⚠ Bugün iade tarihi — iade işlemini tamamlayın'
+      : '⚠ Bitiş tarihine ' + diffGun + ' gün kaldı — iade hazırlığı yapın';
+  } else {
+    uyEl.style.display = 'none';
+    uyEl.innerHTML = '';
   }
 }
 
@@ -3120,6 +3312,23 @@ function submitBelgesiz() {
     _addToDeptBekleyen('Belgesiz Harcama', kat, tutar, true, aciklama);
     notif('Belgesiz harcama bekleyene eklendi', 'amber');
   } else {
+    var bKat = document.getElementById('b-kat').value || 'Diger';
+    if (bKat === 'Kiralama') {
+      var bTut   = parseFloat(document.getElementById('b-tutar').value || '0') || 0;
+      var bTodayD = new Date();
+      var bTarih  = _pad(bTodayD.getDate()) + '.' + _pad(bTodayD.getMonth()+1) + '.' + bTodayD.getFullYear();
+      DATA.unshift({
+        id: Date.now(), tarih: bTarih, personel: 'Mehmet K.', satici: 'Belgesiz Kiralama',
+        kat: 'Kiralama', tutar: bTut, durum: 'bekleyen', donem: 2,
+        uyari: null, thumb: null, belgesiz: true,
+        kiraMeta: {
+          bas:    (document.getElementById('b-ki-bas').value || ''),
+          bit:    (document.getElementById('b-ki-bit').value || ''),
+          gunluk: parseFloat(document.getElementById('b-ki-gun').value || '0') || 0
+        }
+      });
+      renderKiralamaKarti();
+    }
     notif('Belgesiz harcama bildirildi', 'amber');
   }
 }
