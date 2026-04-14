@@ -842,17 +842,52 @@ body {
 }
 
 /* Özet kartlar */
-.sd-ozet {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 8px; margin-bottom: 20px;
-}
-.sd-oz {
+.sd-ozet { display: block; margin-bottom: 0; }
+
+/* Bütçe kartı */
+.sd-butce-kart {
   background: var(--bg2); border: 1px solid var(--bo);
-  border-radius: var(--r); padding: 13px 12px;
+  border-radius: var(--r); padding: 15px 14px; margin-bottom: 16px;
 }
-.sd-oz-lbl { font-size: 10px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
-.sd-oz-val { font-size: 19px; font-weight: 800; font-family: var(--mo); }
-.sd-oz-sub { font-size: 11px; color: var(--tx3); margin-top: 2px; }
+.sd-butce-kart.bk-am { border-color: rgba(245,158,11,.4);  background: rgba(245,158,11,.03); }
+.sd-butce-kart.bk-rd { border-color: rgba(239,68,68,.38);  background: rgba(239,68,68,.03); }
+.sd-butce-top  { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 11px; }
+.sd-butce-lbl  { font-size: 10px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 3px; }
+.sd-butce-total { font-size: 24px; font-weight: 800; font-family: var(--mo); color: var(--tx); }
+.sd-butce-badge {
+  font-size: 11px; font-weight: 700; border-radius: 8px; padding: 4px 9px;
+  flex-shrink: 0; margin-top: 2px;
+}
+.sd-butce-badge.bk-ok { background: rgba(34,197,94,.12);  color: var(--gr2); }
+.sd-butce-badge.bk-am { background: rgba(245,158,11,.15); color: var(--am2); }
+.sd-butce-badge.bk-rd { background: rgba(239,68,68,.12);  color: var(--rd2); }
+.sd-butce-bar-wrap {
+  height: 8px; background: var(--bg3); border-radius: 4px;
+  overflow: hidden; margin-bottom: 12px;
+}
+.sd-butce-bar-f { height: 100%; border-radius: 4px; transition: width .4s ease; }
+.sd-butce-stats {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-bottom: 10px;
+}
+.sd-butce-stat {
+  text-align: center; padding: 8px 4px;
+  border-radius: var(--rs); background: var(--bg3);
+}
+.sd-butce-sv { font-size: 13px; font-weight: 800; font-family: var(--mo); }
+.sd-butce-sl { font-size: 10px; color: var(--tx3); text-transform: uppercase; letter-spacing: .4px; margin-top: 2px; }
+.sd-butce-uyari-ban {
+  font-size: 12px; font-weight: 600; padding: 7px 10px;
+  border-radius: var(--rs); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.sd-butce-uyari-ban.bk-am { background: rgba(245,158,11,.10); color: var(--am2); }
+.sd-butce-uyari-ban.bk-rd { background: rgba(239,68,68,.08);  color: var(--rd2); }
+.sd-butce-don-row {
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid var(--bo); padding-top: 8px; margin-top: 2px;
+}
+.sd-butce-don-lbl { font-size: 11px; color: var(--tx3); }
+.sd-butce-don-val { font-size: 11px; font-weight: 700; font-family: var(--mo); color: var(--tx2); }
 
 /* Tab bar */
 .sd-tabs {
@@ -2154,6 +2189,12 @@ var DEPT_AVANS = [
   { id:201, uye:'Okan Demir',   ini:'OD', tutar:5000, tarih:'11.04', gerekce:'Dış çekim ekipman kira ön ödemesi — 2 günlük set kurulumu', fromKey:'s' },
   { id:202, uye:'Burhan Çelik', ini:'BÇ', tutar:2500, tarih:'10.04', gerekce:'Set kurulum malzemesi — çarşı çekimi lojistik harcaması',   fromKey:'s' }
 ];
+/* Dönem bütçe tanımları — her dönem için ayrılmış bütçe ve onaylanan harcama */
+var DONEM_BUTCE = [
+  { donem:2, lbl:'Dönem #2', butce:40000, harcanan:26500, reddedildi:3890, _lastPct:0 },
+  { donem:1, lbl:'Dönem #1', butce:60000, harcanan:58400, reddedildi:1600, _lastPct:0 }
+];
+
 var sdMesajKisi = '';
 var sdMode = false; /* true → OCR/belgesiz modal dept ekranından açıldı */
 
@@ -2979,31 +3020,108 @@ function _addToDeptBekleyen(satici, kat, tutar, belgesiz, aciklama) {
     belgesiz: !!belgesiz,
     aciklama: aciklama || ''
   });
+  /* Bütçe eşik kontrolü */
+  var _cb = DONEM_BUTCE.find(function(x){ return x.donem === 2; });
+  if (_cb) {
+    var _cbt = 0;
+    for (var _ci = 0; _ci < DEPT_BEKLEYEN.length; _ci++) _cbt += DEPT_BEKLEYEN[_ci].tutar;
+    _checkButceUyari(_cb, _cbt);
+  }
   renderDeptBek();
   renderDeptEkip();
   renderDeptOzet();
   sdTab('bek', document.getElementById('sdtb-bek'));
 }
 
+/* Bütçe eşik uyarısı — eşik ilk kez aşıldığında bildirim gönderir */
+function _checkButceUyari(b, bekTop) {
+  var committed = (b.harcanan || 0) + (bekTop || 0);
+  var pct  = b.butce > 0 ? (committed / b.butce * 100) : 0;
+  var prev = b._lastPct || 0;
+  b._lastPct = pct;
+  if (pct >= 100 && prev < 100) {
+    _pushNotif('d', 'rd', 'Bütçe Limiti Aşıldı!',
+      b.lbl + ' bütçesi tamamen tükendi. Yeni harcama yapılmamalı.',
+      'Az önce · Sistem');
+    _pushNotif('m', 'rd', 'Departman Bütçesi Aşıldı',
+      (curUser ? curUser.dept : 'Dept') + ' departmanı ' + b.lbl + ' bütçesini aştı.',
+      'Az önce · Sistem');
+    updateNotifBadge();
+  } else if (pct >= 80 && prev < 80) {
+    _pushNotif('d', 'am', 'Bütçe Uyarısı — %' + Math.round(pct),
+      b.lbl + ' bütçesinin %' + Math.round(pct) + '\'i kullanıldı. Harcamaları yavaşlatın.',
+      'Az önce · Sistem');
+    updateNotifBadge();
+  }
+}
+
 function renderDeptOzet() {
   var el = document.getElementById('sd-ozet');
   if (!el) return;
-  /* Sabit özet rakamlara ek olarak bekleyenleri hesapla */
+
+  var b = DONEM_BUTCE.find(function(x){ return x.donem === 2; });
+  if (!b) { el.innerHTML = ''; return; }
+
   var bekTop = 0;
   for (var i = 0; i < DEPT_BEKLEYEN.length; i++) bekTop += DEPT_BEKLEYEN[i].tutar;
-  var cards = [
-    { lbl:'Toplam Harcama',  val:'₺33.390', sub:'Dönem #2 · 19 kayıt',    clr:'var(--tx)'  },
-    { lbl:'Onaylanan',       val:'₺26.500', sub:'12 harcama onaylandı',    clr:'var(--gr2)' },
-    { lbl:'Bekleyen',        val:'₺' + bekTop.toLocaleString('tr-TR'), sub: DEPT_BEKLEYEN.length + ' harcama onay bekliyor', clr:'var(--am2)' },
-    { lbl:'Reddedilen',      val:'₺3.890',  sub:'3 harcama reddedildi',    clr:'var(--rd2)' }
-  ];
-  el.innerHTML = cards.map(function(c) {
-    return '<div class="sd-oz">' +
-      '<div class="sd-oz-lbl">' + c.lbl + '</div>' +
-      '<div class="sd-oz-val" style="color:' + c.clr + '">' + c.val + '</div>' +
-      '<div class="sd-oz-sub">' + c.sub + '</div>' +
+
+  var committed = b.harcanan + bekTop;
+  var kalan     = Math.max(0, b.butce - committed);
+  var pct       = b.butce > 0 ? Math.min(100, Math.round(committed / b.butce * 100)) : 0;
+  var pctExact  = b.butce > 0 ? (committed / b.butce * 100).toFixed(1) : '0.0';
+
+  var durum, barClr, kartCls, badgeCls;
+  if (pct >= 100) {
+    durum = 'Limit Aşıldı!'; barClr = 'var(--rd)'; kartCls = 'bk-rd'; badgeCls = 'bk-rd';
+  } else if (pct >= 80) {
+    durum = '⚠ %' + pct + ' Dolu'; barClr = 'var(--am)'; kartCls = 'bk-am'; badgeCls = 'bk-am';
+  } else {
+    durum = '%' + pct + ' Kullanıldı'; barClr = 'var(--gr)'; kartCls = ''; badgeCls = 'bk-ok';
+  }
+
+  var uyariBan = '';
+  if (pct >= 100) {
+    uyariBan = '<div class="sd-butce-uyari-ban bk-rd">🔴 Dönem bütçesi tamamen tükendi — muhasebe ile iletişime geçin</div>';
+  } else if (pct >= 80) {
+    uyariBan = '<div class="sd-butce-uyari-ban bk-am">⚠ Bütçenin %' + pctExact + '\'i kullanıldı — harcamaları yavaşlatın</div>';
+  }
+
+  /* Önceki dönem özeti */
+  var b1 = DONEM_BUTCE.find(function(x){ return x.donem === 1; });
+  var don1Row = b1
+    ? '<div class="sd-butce-don-row">' +
+        '<span class="sd-butce-don-lbl">Dönem #1 (Kapalı)</span>' +
+        '<span class="sd-butce-don-val">₺' + b1.harcanan.toLocaleString('tr-TR') + ' / ₺' + b1.butce.toLocaleString('tr-TR') + ' · %' + Math.round(b1.harcanan/b1.butce*100) + '</span>' +
+      '</div>'
+    : '';
+
+  el.innerHTML =
+    '<div class="sd-butce-kart ' + kartCls + '">' +
+      '<div class="sd-butce-top">' +
+        '<div>' +
+          '<div class="sd-butce-lbl">' + b.lbl + ' Bütçesi</div>' +
+          '<div class="sd-butce-total">₺' + b.butce.toLocaleString('tr-TR') + '</div>' +
+        '</div>' +
+        '<span class="sd-butce-badge ' + badgeCls + '">' + durum + '</span>' +
+      '</div>' +
+      uyariBan +
+      '<div class="sd-butce-bar-wrap"><div class="sd-butce-bar-f" style="width:' + pct + '%;background:' + barClr + '"></div></div>' +
+      '<div class="sd-butce-stats">' +
+        '<div class="sd-butce-stat">' +
+          '<div class="sd-butce-sv" style="color:var(--gr2)">₺' + b.harcanan.toLocaleString('tr-TR') + '</div>' +
+          '<div class="sd-butce-sl">Onaylanan</div>' +
+        '</div>' +
+        '<div class="sd-butce-stat">' +
+          '<div class="sd-butce-sv" style="color:var(--am2)">₺' + bekTop.toLocaleString('tr-TR') + '</div>' +
+          '<div class="sd-butce-sl">Bekleyen</div>' +
+        '</div>' +
+        '<div class="sd-butce-stat">' +
+          '<div class="sd-butce-sv" style="color:' + (kalan === 0 ? 'var(--rd2)' : 'var(--gr2)') + '">₺' + kalan.toLocaleString('tr-TR') + '</div>' +
+          '<div class="sd-butce-sl">Kalan</div>' +
+        '</div>' +
+      '</div>' +
+      don1Row +
     '</div>';
-  }).join('');
 }
 
 function renderDeptBek() {
@@ -3117,6 +3235,14 @@ function deptOnayla(id) {
     if (DEPT_BEKLEYEN[i].id === id) {
       var f = DEPT_BEKLEYEN[i];
       DEPT_BEKLEYEN.splice(i, 1);
+      /* Onaylanan tutarı bütçeye ekle */
+      var ob = DONEM_BUTCE.find(function(x){ return x.donem === 2; });
+      if (ob) {
+        ob.harcanan += f.tutar;
+        var obt = 0;
+        for (var oi = 0; oi < DEPT_BEKLEYEN.length; oi++) obt += DEPT_BEKLEYEN[oi].tutar;
+        _checkButceUyari(ob, obt);
+      }
       notif(f.satici + ' onaylandı', 'green');
       renderDeptBek();
       renderDeptEkip();
@@ -3131,6 +3257,9 @@ function deptReddet(id) {
     if (DEPT_BEKLEYEN[i].id === id) {
       var f = DEPT_BEKLEYEN[i];
       DEPT_BEKLEYEN.splice(i, 1);
+      /* Reddedilen tutarı kaydet */
+      var rb = DONEM_BUTCE.find(function(x){ return x.donem === 2; });
+      if (rb) rb.reddedildi += f.tutar;
       notif(f.satici + ' reddedildi', 'red');
       renderDeptBek();
       renderDeptEkip();
