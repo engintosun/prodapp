@@ -1568,7 +1568,13 @@ body {
         <div class="sd-hd-role" id="sd-hd-role">Dept. Sorumlusu · Yapım</div>
       </div>
     </div>
-    <button class="btn btn-sm" onclick="goProjectSelect()">↩ Proje</button>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="su-ib" onclick="openNotifModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="su-badge" id="sd-badge"></div>
+      </div>
+      <button class="btn btn-sm" onclick="goProjectSelect()">↩ Proje</button>
+    </div>
   </div>
   <!-- Scrollable body -->
   <div class="sd-body">
@@ -1608,7 +1614,13 @@ body {
         <div class="sa-hd-role">Muhasebe · Tüm Departmanlar</div>
       </div>
     </div>
-    <button class="btn btn-sm" onclick="goProjectSelect()">↩ Proje</button>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="su-ib" onclick="openNotifModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="su-badge" id="sa-badge"></div>
+      </div>
+      <button class="btn btn-sm" onclick="goProjectSelect()">↩ Proje</button>
+    </div>
   </div>
   <!-- Scrollable tab bar -->
   <div class="sa-tabs-wrap">
@@ -2056,20 +2068,28 @@ var FIS_DEMO = [
   }
 ];
 
-var NOTIFLAR = [
-  { id:1, tip:'am', title:'Eksik Belge — Son Tarih 16 Nisan',
-    body:'Dönem #2 kapanışı için Kostüm Deposu (₺320) belgesiz kaydına ait makbuz veya imzalı tutanak en geç yarın EOD itibarıyla sisteme yüklenmelidir. Aksi hâlde kayıt reddedilecektir.',
-    meta:'Bugün, 09:14 · Ayşe T. (Muhasebe)', read:false },
-  { id:2, tip:'rd', title:'Fiş Reddedildi',
-    body:'Petrol Ofisi — ₺1.000 · Mükerrer fiş tespit edildi',
-    meta:'2 saat önce · Muhasebe', read:false },
-  { id:3, tip:'gr', title:'Fiş Onaylandı',
-    body:'Tavuk Dünyası — ₺780 onaylandı',
-    meta:'Dün · Zeynep A.', read:true },
-  { id:4, tip:'am', title:'Dönem Uyarısı',
-    body:'Dönem #2 avansının %90\'ı kullanıldı',
-    meta:'3 gün önce · Sistem', read:true }
-];
+/* Kullanıcı başına gelen kutusu — tüm oturumlar arasında paylaşılan state */
+var GLOBAL_INBOX = {
+  s: [
+    { id:1, tip:'am', title:'Eksik Belge — Son Tarih 16 Nisan',
+      body:'Dönem #2 kapanışı için Kostüm Deposu (₺320) belgesiz kaydına ait makbuz veya imzalı tutanak en geç yarın EOD itibarıyla sisteme yüklenmelidir.',
+      meta:'Bugün, 09:14 · Ayşe T. (Muhasebe)', read:false },
+    { id:2, tip:'rd', title:'Fiş Reddedildi',
+      body:'Petrol Ofisi — ₺1.000 · Mükerrer fiş tespit edildi',
+      meta:'2 saat önce · Muhasebe', read:false },
+    { id:3, tip:'gr', title:'Fiş Onaylandı',
+      body:'Tavuk Dünyası — ₺780 onaylandı',
+      meta:'Dün · Zeynep A.', read:true },
+    { id:4, tip:'am', title:'Dönem Uyarısı',
+      body:'Dönem #2 avansının %90\'ı kullanıldı',
+      meta:'3 gün önce · Sistem', read:true }
+  ],
+  d: [],
+  m: []
+};
+/* Aktif kullanıcının referansı — selectProj'da GLOBAL_INBOX[curUserKey]'e bağlanır */
+var NOTIFLAR = GLOBAL_INBOX['s'];
+var curUserKey = 's';
 
 /* ─── DEPT demo verisi ─── */
 var DEPT_EKIP = [
@@ -2155,6 +2175,7 @@ function doLogin() {
     return;
   }
   document.getElementById('lerr').classList.remove('on');
+  curUserKey = key;
   curUser = u;
   if (u.prjs.length === 1) {
     selectProj(u.prjs[0]);
@@ -2193,6 +2214,8 @@ function renderProjs(u) {
 function selectProj(pid) {
   curProj = PROJS.find(function(p) { return p.id === pid; }) || null;
   if (!curUser) return;
+  /* Her oturum açılışında kullanıcının gelen kutusu yüklenir */
+  NOTIFLAR = GLOBAL_INBOX[curUserKey] = GLOBAL_INBOX[curUserKey] || [];
   if (curUser.role === 'user') {
     document.getElementById('su-av').textContent  = curUser.ini;
     document.getElementById('su-prj').textContent = curProj ? curProj.name : '—';
@@ -2204,9 +2227,11 @@ function selectProj(pid) {
   } else if (curUser.role === 'dept') {
     showScr('sd');
     renderDept();
+    updateNotifBadge();
   } else {
     showScr('sa');
     renderAcc();
+    updateNotifBadge();
     notif(curProj.name + ' muhasebesine giriş yapıldı', 'blue');
   }
 }
@@ -2960,6 +2985,12 @@ function sendMesaj() {
   var txt = (document.getElementById('md-mesaj-txt').value || '').trim();
   if (!txt) { notif('Mesaj boş olamaz', 'red'); return; }
   closeM('md-mesaj');
+  /* Demoda tüm ekip üyeleri saha kullanıcısına ('s') bağlı */
+  var gonderen = curUser ? curUser.name : 'Dept. Sorumlusu';
+  _pushNotif('s', 'bl',
+    gonderen + ' sana mesaj gönderdi',
+    txt,
+    'Az önce · ' + gonderen + ' (Dept)');
   notif('Mesaj gönderildi → ' + sdMesajKisi, 'green');
 }
 
@@ -3353,16 +3384,33 @@ function openM(id) { document.getElementById(id).classList.add('on'); }
 function closeM(id) { document.getElementById(id).classList.remove('on'); }
 
 /* ═══ BİLDİRİM YÖNETİMİ ═══ */
+/* Hedef kullanıcının gelen kutusuna bildirim ekler */
+function _pushNotif(toKey, tip, title, body, meta) {
+  if (!GLOBAL_INBOX[toKey]) GLOBAL_INBOX[toKey] = [];
+  GLOBAL_INBOX[toKey].unshift({
+    id: Date.now() + Math.floor(Math.random() * 1000),
+    tip: tip, title: title, body: body, meta: meta, read: false
+  });
+  /* Hedef aktif kullanıcıysa NOTIFLAR'ı güncelle ve rozeti yenile */
+  if (curUserKey === toKey) {
+    NOTIFLAR = GLOBAL_INBOX[toKey];
+    updateNotifBadge();
+  }
+}
+
 function updateNotifBadge() {
   var cnt = 0;
   for (var i = 0; i < NOTIFLAR.length; i++) { if (!NOTIFLAR[i].read) cnt++; }
-  var b = document.getElementById('su-badge');
-  if (!b) return;
-  if (cnt > 0) {
-    b.textContent = cnt > 9 ? '9+' : String(cnt);
-    b.style.display = 'block';
-  } else {
-    b.style.display = 'none';
+  var ids = ['su-badge', 'sd-badge', 'sa-badge'];
+  for (var j = 0; j < ids.length; j++) {
+    var b = document.getElementById(ids[j]);
+    if (!b) continue;
+    if (cnt > 0) {
+      b.textContent = cnt > 9 ? '9+' : String(cnt);
+      b.style.display = 'block';
+    } else {
+      b.style.display = 'none';
+    }
   }
 }
 
@@ -3708,12 +3756,22 @@ function saSelectAlici(id) {
 }
 
 function accSendMesaj() {
-  var txt = document.getElementById('sa-mesaj-txt');
-  if (!txt || !txt.value.trim()) { notif('Mesaj boş olamaz', 'red'); return; }
+  var txtEl = document.getElementById('sa-mesaj-txt');
+  if (!txtEl || !txtEl.value.trim()) { notif('Mesaj boş olamaz', 'red'); return; }
   if (!saAliciId) { notif('Alıcı seçilmedi', 'amber'); return; }
   var sel = ACC_ALICILAR.find(function(a){ return a.id === saAliciId; });
+  var msg = txtEl.value.trim();
+  var gonderen = curUser ? curUser.name : 'Muhasebe';
+  /* Dept alıcılar → 'd' (dept kullanıcısı); bireysel alıcılar → 's' (saha) */
+  var deptIds = { yapim:1, kamera:1, sanat:1, ses:1, kostum:1 };
+  var toKey = deptIds[saAliciId] ? 'd' : 's';
+  var aliciAd = sel ? sel.name : saAliciId;
+  _pushNotif(toKey, 'bl',
+    gonderen + ' → ' + aliciAd,
+    msg,
+    'Az önce · ' + gonderen + ' (Muhasebe)');
   notif((sel ? sel.name + ' ekibine' : 'Mesaj') + ' gönderildi', 'green');
-  txt.value = '';
+  txtEl.value = '';
   saAliciId = '';
   renderAccMesaj();
 }
