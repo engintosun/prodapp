@@ -911,10 +911,49 @@ body {
 }
 
 /* Bekleyen fişler */
+/* Toplu seçim toolbar */
+.sd-bek-tb {
+  background: var(--bg2); border: 1px solid var(--bo);
+  border-radius: var(--r); padding: 10px 12px;
+  margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px;
+}
+.sd-bek-tb-r1 {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.sd-bek-cb-row {
+  display: flex; align-items: center; gap: 8px; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.sd-bek-cb-lbl { font-size: 13px; font-weight: 600; color: var(--tx2); }
+.sd-bek-sel-info {
+  font-size: 12px; font-weight: 700; color: var(--tx3);
+}
+.sd-bek-sel-info.has-sel { color: var(--ac2); }
+.sd-bek-tb-r2 { display: flex; gap: 7px; }
+.sd-bek-tb-r2 .sd-ok,
+.sd-bek-tb-r2 .sd-rd { flex: 1; font-size: 12px; padding: 8px 6px; }
+
+/* Checkbox */
+.sd-cb {
+  width: 20px; height: 20px; border-radius: 6px; flex-shrink: 0;
+  border: 2px solid var(--bo); background: var(--bg3);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background .12s, border-color .12s;
+  -webkit-tap-highlight-color: transparent;
+}
+.sd-cb.on { background: var(--ac); border-color: var(--ac); }
+.sd-cb.on::after { content: '✓'; font-size: 12px; font-weight: 900; color: #0C0A08; }
+.sd-cb.part { background: rgba(232,150,46,.2); border-color: var(--ac); }
+.sd-cb.part::after { content: '−'; font-size: 14px; font-weight: 900; color: var(--ac2); }
+
 .sd-fis {
   background: var(--bg2); border: 1px solid var(--bo);
   border-radius: var(--r); padding: 12px 13px;
-  margin-bottom: 8px;
+  margin-bottom: 8px; transition: border-color .12s, background .12s;
+}
+.sd-fis.secili {
+  border-color: rgba(232,150,46,.5);
+  background: rgba(232,150,46,.04);
 }
 .sd-fis-top  { display: flex; align-items: flex-start; gap: 9px; }
 .sd-fis-dot  { width: 8px; height: 8px; border-radius: 50%; margin-top: 4px; flex-shrink: 0; }
@@ -2197,6 +2236,7 @@ var DONEM_BUTCE = [
 
 var sdMesajKisi = '';
 var sdMode = false; /* true → OCR/belgesiz modal dept ekranından açıldı */
+var sdSec  = {};    /* seçili bekleyen id → true */
 
 var curUser  = null;
 var curProj  = null;
@@ -2979,6 +3019,7 @@ var SD_KAT_LBL = {
 };
 
 function renderDept() {
+  sdSec = {}; /* yeni oturumda seçimi temizle */
   var av  = document.getElementById('sd-hd-av');
   var prj = document.getElementById('sd-hd-prj');
   var rol = document.getElementById('sd-hd-role');
@@ -3129,19 +3170,61 @@ function renderDeptBek() {
   if (!el) return;
   var cnt = document.getElementById('sdtb-bek-cnt');
   if (cnt) cnt.textContent = DEPT_BEKLEYEN.length;
+
   if (!DEPT_BEKLEYEN.length) {
+    sdSec = {};
     el.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--tx3);font-size:13px">✅ Bekleyen harcama yok</div>';
     return;
   }
-  el.innerHTML = DEPT_BEKLEYEN.map(function(f) {
-    var clr = SD_KAT_CLR[f.kat] || 'var(--tx3)';
-    var lbl = SD_KAT_LBL[f.kat] || f.kat;
+
+  /* Mevcut seçimi temizle — listeden çıkmış id'leri at */
+  var validIds = {};
+  for (var vi = 0; vi < DEPT_BEKLEYEN.length; vi++) validIds[DEPT_BEKLEYEN[vi].id] = true;
+  for (var k in sdSec) { if (!validIds[k]) delete sdSec[k]; }
+
+  /* Seçim sayısı ve tutarı */
+  var selCnt = 0, selTop = 0;
+  for (var si = 0; si < DEPT_BEKLEYEN.length; si++) {
+    if (sdSec[DEPT_BEKLEYEN[si].id]) { selCnt++; selTop += DEPT_BEKLEYEN[si].tutar; }
+  }
+  var allSel = selCnt === DEPT_BEKLEYEN.length;
+  var partSel = selCnt > 0 && !allSel;
+
+  var infoTxt = selCnt > 0
+    ? selCnt + ' seçili · ₺' + selTop.toLocaleString('tr-TR')
+    : 'Seçim yok';
+  var infoCls = selCnt > 0 ? 'sd-bek-sel-info has-sel' : 'sd-bek-sel-info';
+  var btnDis  = selCnt === 0 ? ' disabled style="opacity:.38;pointer-events:none"' : '';
+  var cbAllCls = allSel ? 'sd-cb on' : (partSel ? 'sd-cb part' : 'sd-cb');
+
+  var toolbar =
+    '<div class="sd-bek-tb" id="sd-bek-tb">' +
+      '<div class="sd-bek-tb-r1">' +
+        '<div class="sd-bek-cb-row" onclick="_sdToggleAll()">' +
+          '<div class="' + cbAllCls + '" id="sd-cb-all"></div>' +
+          '<span class="sd-bek-cb-lbl">Tümünü Seç</span>' +
+        '</div>' +
+        '<span class="' + infoCls + '" id="sd-bek-sel-info">' + infoTxt + '</span>' +
+      '</div>' +
+      '<div class="sd-bek-tb-r2">' +
+        '<button class="sd-ok"' + btnDis + ' onclick="deptOnaylaSecili()" id="sd-bek-ok">✓ Seçilenleri Onayla</button>' +
+        '<button class="sd-rd"' + btnDis + ' onclick="deptReddetSecili()" id="sd-bek-rd">✕ Seçilenleri Reddet</button>' +
+      '</div>' +
+    '</div>';
+
+  var cards = DEPT_BEKLEYEN.map(function(f) {
+    var clr    = SD_KAT_CLR[f.kat] || 'var(--tx3)';
+    var lbl    = SD_KAT_LBL[f.kat] || f.kat;
+    var sel    = !!sdSec[f.id];
+    var cbCls  = 'sd-cb' + (sel ? ' on' : '');
+    var fisCls = 'sd-fis' + (sel ? ' secili' : '');
     var extras = '';
     if (f.uyari)    extras += '<div class="sd-fis-uyari">⚠️ ' + f.uyari + '</div>';
     if (f.belgesiz) extras += '<div class="sd-fis-belgesiz">📋 Belgesiz · ' + (f.aciklama || '') + '</div>';
-    return '<div class="sd-fis" id="sd-fis-' + f.id + '">' +
+    return '<div class="' + fisCls + '" id="sd-fis-' + f.id + '">' +
       '<div class="sd-fis-top">' +
-        '<div class="sd-fis-dot" style="background:' + clr + '"></div>' +
+        '<div class="' + cbCls + '" id="sd-cb-' + f.id + '" onclick="event.stopPropagation();_sdToggle(' + f.id + ')"></div>' +
+        '<div class="sd-fis-dot" style="background:' + clr + ';margin-top:6px"></div>' +
         '<div class="sd-fis-main">' +
           '<div class="sd-fis-row">' +
             '<div class="sd-fis-satici">' + f.satici + '</div>' +
@@ -3157,6 +3240,101 @@ function renderDeptBek() {
       '</div>' +
     '</div>';
   }).join('');
+
+  el.innerHTML = toolbar + cards;
+}
+
+/* ─── Toplu seçim yardımcıları ─── */
+function _sdToggle(id) {
+  if (sdSec[id]) { delete sdSec[id]; } else { sdSec[id] = true; }
+  /* Kart görünümü */
+  var card = document.getElementById('sd-fis-' + id);
+  if (card) card.classList.toggle('secili', !!sdSec[id]);
+  var cb = document.getElementById('sd-cb-' + id);
+  if (cb) { cb.className = 'sd-cb' + (sdSec[id] ? ' on' : ''); }
+  _sdUpdateToolbar();
+}
+
+function _sdToggleAll() {
+  var selCnt = 0;
+  for (var i = 0; i < DEPT_BEKLEYEN.length; i++) {
+    if (sdSec[DEPT_BEKLEYEN[i].id]) selCnt++;
+  }
+  var selectAll = selCnt < DEPT_BEKLEYEN.length;
+  sdSec = {};
+  if (selectAll) {
+    for (var j = 0; j < DEPT_BEKLEYEN.length; j++) sdSec[DEPT_BEKLEYEN[j].id] = true;
+  }
+  renderDeptBek(); /* tüm kartlar değiştiği için full re-render */
+}
+
+function _sdUpdateToolbar() {
+  var selCnt = 0, selTop = 0;
+  for (var i = 0; i < DEPT_BEKLEYEN.length; i++) {
+    if (sdSec[DEPT_BEKLEYEN[i].id]) { selCnt++; selTop += DEPT_BEKLEYEN[i].tutar; }
+  }
+  var allSel  = DEPT_BEKLEYEN.length > 0 && selCnt === DEPT_BEKLEYEN.length;
+  var partSel = selCnt > 0 && !allSel;
+
+  var info = document.getElementById('sd-bek-sel-info');
+  if (info) {
+    info.textContent = selCnt > 0
+      ? selCnt + ' seçili · ₺' + selTop.toLocaleString('tr-TR')
+      : 'Seçim yok';
+    info.className = selCnt > 0 ? 'sd-bek-sel-info has-sel' : 'sd-bek-sel-info';
+  }
+  var dis = selCnt === 0;
+  var ok = document.getElementById('sd-bek-ok');
+  var rd = document.getElementById('sd-bek-rd');
+  if (ok) { ok.disabled = dis; ok.style.opacity = dis ? '.38' : '1'; ok.style.pointerEvents = dis ? 'none' : ''; }
+  if (rd) { rd.disabled = dis; rd.style.opacity = dis ? '.38' : '1'; rd.style.pointerEvents = dis ? 'none' : ''; }
+  var cbAll = document.getElementById('sd-cb-all');
+  if (cbAll) cbAll.className = allSel ? 'sd-cb on' : (partSel ? 'sd-cb part' : 'sd-cb');
+}
+
+function deptOnaylaSecili() {
+  var ids = {};
+  for (var k in sdSec) { if (sdSec[k]) ids[k] = true; }
+  var keys = Object.keys(ids);
+  if (!keys.length) { notif('Seçili kayıt yok', 'amber'); return; }
+  var cnt = 0, top = 0;
+  var ob = DONEM_BUTCE.find(function(x){ return x.donem === 2; });
+  DEPT_BEKLEYEN = DEPT_BEKLEYEN.filter(function(f) {
+    if (ids[f.id]) {
+      cnt++; top += f.tutar;
+      if (ob) ob.harcanan += f.tutar;
+      return false;
+    }
+    return true;
+  });
+  if (ob) {
+    var bt = 0;
+    for (var i = 0; i < DEPT_BEKLEYEN.length; i++) bt += DEPT_BEKLEYEN[i].tutar;
+    _checkButceUyari(ob, bt);
+  }
+  sdSec = {};
+  notif(cnt + ' harcama onaylandı · ₺' + top.toLocaleString('tr-TR'), 'green');
+  renderDeptBek(); renderDeptEkip(); renderDeptOzet();
+}
+
+function deptReddetSecili() {
+  var ids = {};
+  for (var k in sdSec) { if (sdSec[k]) ids[k] = true; }
+  var keys = Object.keys(ids);
+  if (!keys.length) { notif('Seçili kayıt yok', 'amber'); return; }
+  var cnt = 0, top = 0;
+  var rb = DONEM_BUTCE.find(function(x){ return x.donem === 2; });
+  DEPT_BEKLEYEN = DEPT_BEKLEYEN.filter(function(f) {
+    if (ids[f.id]) {
+      cnt++; top += f.tutar;
+      if (rb) rb.reddedildi += f.tutar;
+      return false;
+    }
+    return true;
+  });
+  sdSec = {};
+  notif(cnt + ' harcama reddedildi · ₺' + top.toLocaleString('tr-TR'), 'red');
+  renderDeptBek(); renderDeptEkip(); renderDeptOzet();
 }
 
 function renderDeptEkip() {
