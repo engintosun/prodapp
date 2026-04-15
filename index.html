@@ -1380,8 +1380,11 @@ body {
 }
 .sa-alici-btn.on { border-color: var(--ac); background: rgba(232,150,46,.08); }
 .sa-alici-av   { width: 22px; height: 22px; border-radius: 6px; font-size: 9px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.sa-alici-name { font-size: 12px; font-weight: 600; color: var(--tx2); }
+.sa-alici-name { font-size: 12px; font-weight: 600; color: var(--tx2); line-height: 1.2; }
 .sa-alici-btn.on .sa-alici-name { color: var(--ac2); }
+.sa-alici-sub  { font-size: 10px; color: var(--tx3); line-height: 1; margin-top: 1px; }
+.sa-alici-btn.on .sa-alici-sub { color: rgba(232,150,46,.7); }
+.sa-alici-sep  { flex: 0 0 100%; font-size: 11px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .5px; margin: 6px 0 2px; }
 
 /* ══════════════════════════════
    PROFİL MODAL
@@ -5015,15 +5018,36 @@ var ACC_SUPHE = [
   { id:4, dept:'Ses',    uye:'Aylin Korkmaz',ini:'AK', satici:'Hane Restoran',  kat:'Yiyecek',   tutar:980,  tarih:'07.04', sebep:'Kişi başı 326 TL — yüksek yemek harcaması',   durum:'inc' }
 ];
 
-var ACC_ALICILAR = [
-  { id:'yapim',  ini:'YP', name:'Yapım Ekibi',    renk:'#E8962E' },
-  { id:'kamera', ini:'KA', name:'Kamera',          renk:'#3B82F6' },
-  { id:'sanat',  ini:'SA', name:'Sanat',            renk:'#22C55E' },
-  { id:'ses',    ini:'SE', name:'Ses & Müzik',      renk:'#A855F7' },
-  { id:'kostum', ini:'KO', name:'Kostüm & Makyaj',  renk:'#EC4899' },
-  { id:'mk',     ini:'MK', name:'Mehmet Kaya',      renk:'#64748B' },
-  { id:'sy',     ini:'SY', name:'Selin Yıldız',     renk:'#64748B' }
+/* Departman alıcıları */
+var ACC_ALICILAR_DEPT = [
+  { id:'dept:yapim',  ini:'YP', name:'Yapım',          renk:'#E8962E', tip:'dept' },
+  { id:'dept:kamera', ini:'KA', name:'Kamera',          renk:'#3B82F6', tip:'dept' },
+  { id:'dept:sanat',  ini:'SA', name:'Sanat',            renk:'#22C55E', tip:'dept' },
+  { id:'dept:ses',    ini:'SE', name:'Ses & Müzik',      renk:'#A855F7', tip:'dept' },
+  { id:'dept:kostum', ini:'KO', name:'Kostüm & Makyaj',  renk:'#EC4899', tip:'dept' }
 ];
+/* Bireysel alıcılar — ACC_DEPT_UYELER'den türetilmiş, isim bazında tekilleştirilmiş */
+var ACC_ALICILAR_KISI = (function() {
+  var seen = {};
+  var result = [];
+  var deptRenk = { yapim:'#E8962E', kamera:'#3B82F6', sanat:'#22C55E', ses:'#A855F7', kostum:'#EC4899' };
+  var deptLbl  = { yapim:'Yapım', kamera:'Kamera', sanat:'Sanat', ses:'Ses & Müzik', kostum:'Kostüm & Makyaj' };
+  var deptKeys = ['yapim','kamera','sanat','ses','kostum'];
+  for (var di = 0; di < deptKeys.length; di++) {
+    var dk = deptKeys[di];
+    var members = ACC_DEPT_UYELER[dk] || [];
+    for (var mi = 0; mi < members.length; mi++) {
+      var m = members[mi];
+      if (!seen[m.name]) {
+        seen[m.name] = true;
+        result.push({ id:'kisi:' + m.ini, ini:m.ini, name:m.name, dept:deptLbl[dk], renk:deptRenk[dk], tip:'kisi' });
+      }
+    }
+  }
+  return result;
+}());
+/* Birleşik liste — geriye dönük uyumluluk için */
+var ACC_ALICILAR = ACC_ALICILAR_DEPT.concat(ACC_ALICILAR_KISI);
 
 var saRaporTip = 'dept';
 var saAliciId  = '';
@@ -5245,47 +5269,78 @@ function renderAccRapor(tip) {
 function renderAccMesaj() {
   var el = document.getElementById('sa-pnl-mesaj');
   if (!el) return;
+
+  function _btn(a) {
+    var sub = a.tip === 'kisi' ? '<div class="sa-alici-sub">' + a.dept + '</div>' : '';
+    return '<button class="sa-alici-btn' + (saAliciId === a.id ? ' on' : '') + '" onclick="saSelectAlici(\'' + a.id + '\')">' +
+      '<div class="sa-alici-av" style="background:' + a.renk + ';color:#fff">' + a.ini + '</div>' +
+      '<div><span class="sa-alici-name">' + a.name + '</span>' + sub + '</div>' +
+    '</button>';
+  }
+
   var html = '<div class="sa-alici-lbl">Alıcı seçin</div>';
-  html += '<div class="sa-alici-grid">' +
-    ACC_ALICILAR.map(function(a) {
-      return '<button class="sa-alici-btn' + (saAliciId === a.id ? ' on' : '') + '" onclick="saSelectAlici(\'' + a.id + '\')">' +
-        '<div class="sa-alici-av" style="background:' + a.renk + ';color:#fff">' + a.ini + '</div>' +
-        '<span class="sa-alici-name">' + a.name + '</span>' +
-      '</button>';
-    }).join('') +
-  '</div>';
-  var sel = ACC_ALICILAR.find(function(a){ return a.id === saAliciId; });
-  var ph = sel ? sel.name + ' ekibine mesaj...' : 'Önce alıcı seçin';
-  html += '<div class="fg"><textarea id="sa-mesaj-txt" class="fgi" rows="4" placeholder="' + ph + '" style="resize:none;font-family:var(--fn)"' + (sel ? '' : ' disabled') + '></textarea></div>';
-  html += '<button class="btn btn-p btn-full" style="margin-top:8px" onclick="accSendMesaj()">Gönder</button>';
+  html += '<div class="sa-alici-grid">';
+  html += '<div class="sa-alici-sep">Departmanlar</div>';
+  for (var di = 0; di < ACC_ALICILAR_DEPT.length; di++) html += _btn(ACC_ALICILAR_DEPT[di]);
+  html += '<div class="sa-alici-sep">Ekip Üyeleri</div>';
+  for (var ki = 0; ki < ACC_ALICILAR_KISI.length; ki++) html += _btn(ACC_ALICILAR_KISI[ki]);
+  html += '</div>';
+
+  var sel = null;
+  for (var si = 0; si < ACC_ALICILAR.length; si++) {
+    if (ACC_ALICILAR[si].id === saAliciId) { sel = ACC_ALICILAR[si]; break; }
+  }
+  var ph = sel
+    ? (sel.tip === 'dept' ? sel.name + ' departmanına mesaj...' : sel.name + ' kişisine mesaj...')
+    : 'Önce alıcı seçin';
+  html += '<div class="fg" style="margin-top:12px"><textarea id="sa-mesaj-txt" class="fgi" rows="4" placeholder="' + ph + '" style="resize:none;font-family:var(--fn)"' + (sel ? '' : ' disabled') + '></textarea></div>';
+  if (sel && sel.tip === 'dept') {
+    html += '<div style="font-size:11px;color:var(--tx3);margin-bottom:8px">Mesaj ' + sel.name + ' departmanındaki tüm üyelere iletilir</div>';
+  }
+  html += '<button class="btn btn-p btn-full" onclick="accSendMesaj()">Gönder</button>';
   el.innerHTML = html;
 }
 
 function saSelectAlici(id) {
   saAliciId = id;
   renderAccMesaj();
-  var txt = document.getElementById('sa-mesaj-txt');
-  if (txt) txt.focus();
+  setTimeout(function() {
+    var txt = document.getElementById('sa-mesaj-txt');
+    if (txt) txt.focus();
+  }, 50);
 }
 
 function accSendMesaj() {
   var txtEl = document.getElementById('sa-mesaj-txt');
   if (!txtEl || !txtEl.value.trim()) { notif('Mesaj boş olamaz', 'red'); return; }
   if (!saAliciId) { notif('Alıcı seçilmedi', 'amber'); return; }
-  var sel = ACC_ALICILAR.find(function(a){ return a.id === saAliciId; });
-  var msg = txtEl.value.trim();
+  var sel = null;
+  for (var i = 0; i < ACC_ALICILAR.length; i++) {
+    if (ACC_ALICILAR[i].id === saAliciId) { sel = ACC_ALICILAR[i]; break; }
+  }
+  var msg      = txtEl.value.trim();
   var gonderen = curUser ? curUser.name : 'Muhasebe';
-  /* Dept alıcılar → 'd' (dept kullanıcısı); bireysel alıcılar → 's' (saha) */
-  var deptIds = { yapim:1, kamera:1, sanat:1, ses:1, kostum:1 };
-  var toKey = deptIds[saAliciId] ? 'd' : 's';
-  var aliciAd = sel ? sel.name : saAliciId;
-  _pushNotif(toKey, 'bl',
-    gonderen + ' → ' + aliciAd,
-    msg,
-    'Az önce · ' + gonderen + ' (Muhasebe)');
-  notif((sel ? sel.name + ' ekibine' : 'Mesaj') + ' gönderildi', 'green');
+  var aliciAd  = sel ? sel.name : saAliciId;
+
+  if (sel && sel.tip === 'dept') {
+    /* Departman mesajı → dept kullanıcısı ('d') VE saha kullanıcısı ('s') bildirim alır */
+    var notifTitle = gonderen + ' → ' + aliciAd + ' Departmanı';
+    var notifBody  = msg;
+    var notifMeta  = 'Az önce · ' + gonderen + ' (Muhasebe) · Tüm üyelere gönderildi';
+    _pushNotif('d', 'bl', notifTitle, notifBody, notifMeta);
+    _pushNotif('s', 'bl', notifTitle, notifBody, 'Az önce · ' + gonderen + ' (Muhasebe)');
+    notif(aliciAd + ' departmanına gönderildi', 'green');
+  } else {
+    /* Bireysel mesaj → saha kullanıcısına ('s') gönderilir */
+    _pushNotif('s', 'bl',
+      gonderen + ' → ' + aliciAd,
+      msg,
+      'Az önce · ' + gonderen + ' (Muhasebe)');
+    notif(aliciAd + ' kişisine gönderildi', 'green');
+  }
+
   txtEl.value = '';
-  saAliciId = '';
+  saAliciId   = '';
   renderAccMesaj();
 }
 
