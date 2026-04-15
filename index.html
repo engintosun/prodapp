@@ -1026,6 +1026,88 @@ body {
 /* Seksiyon etiketi */
 .sd-sec { font-size: 11px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 9px; }
 
+/* ── Dönem Seçici — Dept Ekranı ── */
+.sd-donem-sec {
+  display: flex; align-items: center; gap: 6px;
+  padding: 10px 14px; border-bottom: 1px solid var(--bo);
+  overflow-x: auto; scrollbar-width: none; flex-shrink: 0;
+}
+.sd-donem-sec::-webkit-scrollbar { display: none; }
+.sd-donem-pill {
+  display: flex; flex-direction: column; align-items: center;
+  background: var(--bg2); border: 1px solid var(--bo);
+  border-radius: 20px; padding: 5px 13px;
+  cursor: pointer; white-space: nowrap; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent; transition: all .12s;
+}
+.sd-donem-pill.on { border-color: var(--ac); background: rgba(232,150,46,.1); }
+.sd-donem-pill-lbl { font-size: 12px; font-weight: 700; color: var(--tx2); }
+.sd-donem-pill.on .sd-donem-pill-lbl { color: var(--ac2); }
+.sd-donem-pill-sub { font-size: 10px; color: var(--tx3); margin-top: 1px; }
+.sd-donem-pill.on .sd-donem-pill-sub { color: rgba(232,150,46,.7); }
+.sd-donem-aktif { font-size: 9px; color: var(--gr); font-weight: 700; margin-top: 1px; }
+
+/* Geçmiş dönem görünümü */
+.sd-don-ozet-past {
+  background: var(--bg2); border: 1px solid var(--bo);
+  border-radius: var(--r); padding: 14px; margin-bottom: 10px;
+}
+.sd-don-ozet-past-lbl { font-size: 11px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.sd-don-stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
+.sd-don-stat-c { text-align: center; }
+.sd-don-stat-v { font-size: 14px; font-weight: 800; font-family: var(--mo); }
+.sd-don-stat-l { font-size: 10px; color: var(--tx3); margin-top: 2px; }
+.sd-ges-sec-hd {
+  font-size: 11px; font-weight: 700; color: var(--tx3);
+  text-transform: uppercase; letter-spacing: .5px;
+  padding: 12px 14px 6px;
+}
+.sd-ges-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 11px 14px; border-bottom: 1px solid var(--bo);
+}
+.sd-ges-row:last-child { border-bottom: none; }
+.sd-ges-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.sd-ges-info { flex: 1; }
+.sd-ges-satici { font-size: 13px; font-weight: 600; color: var(--tx); }
+.sd-ges-meta   { font-size: 11px; color: var(--tx3); margin-top: 1px; }
+.sd-ges-sebep  { font-size: 11px; color: var(--rd2); margin-top: 2px; }
+.sd-ges-right  { text-align: right; flex-shrink: 0; }
+.sd-ges-tutar  { font-size: 13px; font-weight: 700; font-family: var(--mo); color: var(--tx); }
+
+/* ── Dönem Seçici — Muhasebe Ekranı ── */
+.sa-donem-bar {
+  display: flex; align-items: center; gap: 6px;
+  overflow-x: auto; scrollbar-width: none; margin-bottom: 14px;
+}
+.sa-donem-bar::-webkit-scrollbar { display: none; }
+.sa-donem-pill {
+  display: flex; flex-direction: column; align-items: center;
+  background: var(--bg3); border: 1px solid var(--bo);
+  border-radius: 20px; padding: 5px 13px;
+  cursor: pointer; white-space: nowrap; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent; transition: all .12s;
+}
+.sa-donem-pill.on { border-color: var(--ac); background: rgba(232,150,46,.1); }
+.sa-donem-pill-lbl { font-size: 12px; font-weight: 700; color: var(--tx2); }
+.sa-donem-pill.on .sa-donem-pill-lbl { color: var(--ac2); }
+.sa-donem-pill-sub { font-size: 10px; color: var(--tx3); margin-top: 1px; }
+.sa-donem-pill.on .sa-donem-pill-sub { color: rgba(232,150,46,.7); }
+/* Dönem karşılaştırma satırı */
+.sa-don-cmp-card {
+  background: var(--bg2); border: 1px solid var(--bo);
+  border-radius: var(--r); padding: 13px 14px; margin-bottom: 9px;
+}
+.sa-don-cmp-hd { font-size: 13px; font-weight: 700; color: var(--tx); margin-bottom: 8px; }
+.sa-don-cmp-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 0; border-bottom: 1px solid var(--bo);
+}
+.sa-don-cmp-row:last-child { border-bottom: none; }
+.sa-don-cmp-lbl { font-size: 12px; color: var(--tx3); flex: 1; }
+.sa-don-cmp-val { font-size: 12px; font-weight: 700; font-family: var(--mo); flex-shrink: 0; text-align: right; }
+.sa-don-cmp-delta { font-size: 11px; margin-left: 8px; flex-shrink: 0; }
+
 /* Alt harcama ekleme barı */
 .sd-bot {
   display: flex; gap: 8px;
@@ -1921,6 +2003,7 @@ body {
   <!-- Scrollable body -->
   <div class="sd-body">
     <div class="sd-ozet" id="sd-ozet"></div>
+    <div class="sd-donem-sec" id="sd-donem-sec"></div>
     <div class="sd-tabs">
       <button class="sd-tb on" id="sdtb-bek"   onclick="sdTab('bek',   this)">Bekleyen <span class="sd-tb-bj" id="sdtb-bek-cnt">7</span></button>
       <button class="sd-tb"     id="sdtb-ekip"  onclick="sdTab('ekip',  this)">Ekip</button>
@@ -2593,8 +2676,85 @@ var DEPT_AVANS = [
 /* Dönem bütçe tanımları — her dönem için ayrılmış bütçe ve onaylanan harcama */
 var DONEM_BUTCE = [
   { donem:2, lbl:'Dönem #2', butce:40000, harcanan:26500, reddedildi:3890, _lastPct:0 },
-  { donem:1, lbl:'Dönem #1', butce:60000, harcanan:58400, reddedildi:1600, _lastPct:0 }
+  { donem:1, lbl:'Dönem #1', butce:60000, harcanan:58400, reddedildi:5660, _lastPct:0 },
+  { donem:0, lbl:'Dönem #0', butce:35000, harcanan:33780, reddedildi:1800, _lastPct:0 }
 ];
+
+/* ── Dönem tanımları (Dept & Muhasebe) ── */
+var SD_DONEMLER = [
+  { id:2, lbl:'Dönem #2', tarih:'Nis 2026', aktif:true  },
+  { id:1, lbl:'Dönem #1', tarih:'Mar 2026', aktif:false },
+  { id:0, lbl:'Dönem #0', tarih:'Şub 2026', aktif:false }
+];
+
+/* Dept onaylı / reddedilmiş harcama geçmişi — döneme göre */
+var DEPT_GECMIS = {
+  2: {
+    onaylandi: [
+      { id:201, uye:'Mehmet Kaya',   ini:'MK', satici:'Araç Kiralık',      kat:'Ulasim',   tutar:4800, tarih:'08.04' },
+      { id:202, uye:'Mehmet Kaya',   ini:'MK', satici:'Akaryakıt',          kat:'Yakit',    tutar:620,  tarih:'07.04' },
+      { id:203, uye:'Okan Demir',    ini:'OD', satici:'Set Ekipman',        kat:'Ekipman',  tutar:3200, tarih:'06.04' },
+      { id:204, uye:'Burhan Çelik',  ini:'BÇ', satici:'Kablo & Adaptör',   kat:'Ekipman',  tutar:1450, tarih:'05.04' },
+      { id:205, uye:'Aylin Korkmaz', ini:'AK', satici:'Kayıt Stüdyo',      kat:'Ekipman',  tutar:980,  tarih:'04.04' }
+    ],
+    reddedildi: [
+      { id:301, uye:'Okan Demir',    ini:'OD', satici:'Otel Rezervasyon',   kat:'Konaklama',tutar:3200, tarih:'07.04', sebep:'Limit aşımı — onaysız konaklama' },
+      { id:302, uye:'Mehmet Kaya',   ini:'MK', satici:'Otopark Çekim',      kat:'Ulasim',   tutar:450,  tarih:'03.04', sebep:'Mükerrer kayıt' }
+    ]
+  },
+  1: {
+    onaylandi: [
+      { id:401, uye:'Mehmet Kaya',   ini:'MK', satici:'Benzin İstasyon',    kat:'Yakit',    tutar:1200, tarih:'28.03' },
+      { id:402, uye:'Mehmet Kaya',   ini:'MK', satici:'Ekip Yemeği',        kat:'Yiyecek',  tutar:2400, tarih:'26.03' },
+      { id:403, uye:'Okan Demir',    ini:'OD', satici:'Kamera Malzeme',     kat:'Ekipman',  tutar:5600, tarih:'22.03' },
+      { id:404, uye:'Burhan Çelik',  ini:'BÇ', satici:'Işık Ekipmanı',     kat:'Ekipman',  tutar:3800, tarih:'18.03' },
+      { id:405, uye:'Selin Yıldız',  ini:'SY', satici:'Dekor Malzeme',     kat:'Sanat',    tutar:2100, tarih:'15.03' },
+      { id:406, uye:'Aylin Korkmaz', ini:'AK', satici:'Ses Sistemi',        kat:'Ekipman',  tutar:1800, tarih:'12.03' },
+      { id:407, uye:'Burhan Çelik',  ini:'BÇ', satici:'Jeneratör Kiralık', kat:'Ekipman',  tutar:4200, tarih:'08.03' },
+      { id:408, uye:'Mehmet Kaya',   ini:'MK', satici:'Transfer Araç',      kat:'Ulasim',   tutar:2800, tarih:'05.03' }
+    ],
+    reddedildi: [
+      { id:501, uye:'Okan Demir',    ini:'OD', satici:'Otel Bodrum',        kat:'Konaklama',tutar:4800, tarih:'20.03', sebep:'Onaysız konaklama' },
+      { id:502, uye:'Selin Yıldız',  ini:'SY', satici:'—',                  kat:'Malzeme',  tutar:860,  tarih:'14.03', sebep:'Belgesiz harcama' }
+    ]
+  },
+  0: {
+    onaylandi: [
+      { id:601, uye:'Mehmet Kaya',   ini:'MK', satici:'Akaryakıt Şub',      kat:'Yakit',    tutar:980,  tarih:'24.02' },
+      { id:602, uye:'Mehmet Kaya',   ini:'MK', satici:'Ekip Kahvaltısı',    kat:'Yiyecek',  tutar:1400, tarih:'20.02' },
+      { id:603, uye:'Burhan Çelik',  ini:'BÇ', satici:'Kablo Seti',         kat:'Ekipman',  tutar:2200, tarih:'15.02' },
+      { id:604, uye:'Aylin Korkmaz', ini:'AK', satici:'Mikrofon Kira',      kat:'Ekipman',  tutar:1600, tarih:'10.02' },
+      { id:605, uye:'Okan Demir',    ini:'OD', satici:'Lens Filtre x2',     kat:'Ekipman',  tutar:3400, tarih:'05.02' }
+    ],
+    reddedildi: [
+      { id:701, uye:'Mehmet Kaya',   ini:'MK', satici:'Restoran Lüks',      kat:'Yiyecek',  tutar:1800, tarih:'22.02', sebep:'Kişi başı limit aşımı' }
+    ]
+  }
+};
+
+/* ── Muhasebe — Dönem bazlı departman özetleri ── */
+var SA_DONEMLER = [
+  { id:2, lbl:'Dönem #2', tarih:'Nis 2026', aktif:true  },
+  { id:1, lbl:'Dönem #1', tarih:'Mar 2026', aktif:false },
+  { id:0, lbl:'Dönem #0', tarih:'Şub 2026', aktif:false }
+];
+var SA_DONEM_DEPTS = {
+  /* 2: aktif — ACC_DEPTS'ten alınır */
+  1: [
+    { id:'yapim',  name:'Yapım',           renk:'#E8962E', uye:6, total:61000, onay:57200, bekleyen:0, suphe:0, red:3800 },
+    { id:'kamera', name:'Kamera',          renk:'#3B82F6', uye:4, total:28400, onay:26800, bekleyen:0, suphe:0, red:1600 },
+    { id:'sanat',  name:'Sanat',           renk:'#22C55E', uye:5, total:31200, onay:29800, bekleyen:0, suphe:0, red:1400 },
+    { id:'ses',    name:'Ses & Müzik',     renk:'#A855F7', uye:3, total:12600, onay:12200, bekleyen:0, suphe:0, red:400  },
+    { id:'kostum', name:'Kostüm & Makyaj', renk:'#EC4899', uye:4, total:17400, onay:15900, bekleyen:0, suphe:0, red:1500 }
+  ],
+  0: [
+    { id:'yapim',  name:'Yapım',           renk:'#E8962E', uye:6, total:42000, onay:40200, bekleyen:0, suphe:0, red:1800 },
+    { id:'kamera', name:'Kamera',          renk:'#3B82F6', uye:4, total:18600, onay:18600, bekleyen:0, suphe:0, red:0    },
+    { id:'sanat',  name:'Sanat',           renk:'#22C55E', uye:5, total:22400, onay:21200, bekleyen:0, suphe:0, red:1200 },
+    { id:'ses',    name:'Ses & Müzik',     renk:'#A855F7', uye:3, total:9800,  onay:9800,  bekleyen:0, suphe:0, red:0    },
+    { id:'kostum', name:'Kostüm & Makyaj', renk:'#EC4899', uye:4, total:14200, onay:12800, bekleyen:0, suphe:0, red:1400 }
+  ]
+};
 
 /* ── Üye dönem & avans geçmişi (Dept ekranı profil modalı) ── */
 var UYE_GECMIS = {
@@ -2715,8 +2875,10 @@ var ACC_DEPT_GECMIS = {
              { ini:'LC', satici:'Aksesuar',        tutar:1800, tarih:'01.04', durum:'onay', sebep:'' } ]
 };
 
-var sdMesajKisi = '';
-var sdMode = false; /* true → OCR/belgesiz modal dept ekranından açıldı */
+var sdMesajKisi    = '';
+var sdMode         = false; /* true → OCR/belgesiz modal dept ekranından açıldı */
+var sdSeciliDonem  = 2;     /* dept ekranında aktif dönem seçimi */
+var saSeciliDonem  = 2;     /* muhasebe dashboard dönem seçimi */
 var sdSec  = {};    /* seçili bekleyen id → true */
 
 var curUser  = null;
@@ -3501,17 +3663,41 @@ var SD_KAT_LBL = {
 
 function renderDept() {
   sdSec = {}; /* yeni oturumda seçimi temizle */
+  sdSeciliDonem = 2; /* aktif dönemden başla */
   var av  = document.getElementById('sd-hd-av');
   var prj = document.getElementById('sd-hd-prj');
   var rol = document.getElementById('sd-hd-role');
   if (curUser && av)  av.textContent  = curUser.ini;
   if (curProj && prj) prj.textContent = curProj.name;
   if (curUser && rol) rol.textContent = 'Dept. Sorumlusu · ' + curUser.dept;
+  renderDeptDonemSec();
   renderDeptOzet();
   renderDeptBek();
   renderDeptEkip();
   renderDeptAvans();
   sdTab('bek', document.getElementById('sdtb-bek'));
+}
+
+/* ── Dept — Dönem Seçici ── */
+function renderDeptDonemSec() {
+  var el = document.getElementById('sd-donem-sec');
+  if (!el) return;
+  el.innerHTML = SD_DONEMLER.map(function(d) {
+    var on  = sdSeciliDonem === d.id ? ' on' : '';
+    var sub = d.aktif
+      ? '<div class="sd-donem-aktif">● Aktif</div>'
+      : '<div class="sd-donem-pill-sub">' + d.tarih + '</div>';
+    return '<button class="sd-donem-pill' + on + '" onclick="sdSetDonem(' + d.id + ')">' +
+      '<div class="sd-donem-pill-lbl">' + d.lbl + '</div>' + sub +
+    '</button>';
+  }).join('');
+}
+
+function sdSetDonem(id) {
+  sdSeciliDonem = id;
+  renderDeptDonemSec();
+  renderDeptOzet();
+  renderDeptBek();
 }
 
 function openDeptOCR() {
@@ -3581,75 +3767,127 @@ function renderDeptOzet() {
   var el = document.getElementById('sd-ozet');
   if (!el) return;
 
-  var b = DONEM_BUTCE.find(function(x){ return x.donem === 2; });
-  if (!b) { el.innerHTML = ''; return; }
-
-  var bekTop = 0;
-  for (var i = 0; i < DEPT_BEKLEYEN.length; i++) bekTop += DEPT_BEKLEYEN[i].tutar;
-
-  var committed = b.harcanan + bekTop;
-  var kalan     = Math.max(0, b.butce - committed);
-  var pct       = b.butce > 0 ? Math.min(100, Math.round(committed / b.butce * 100)) : 0;
-  var pctExact  = b.butce > 0 ? (committed / b.butce * 100).toFixed(1) : '0.0';
-
-  var durum, barClr, kartCls, badgeCls;
-  if (pct >= 100) {
-    durum = 'Limit Aşıldı!'; barClr = 'var(--rd)'; kartCls = 'bk-rd'; badgeCls = 'bk-rd';
-  } else if (pct >= 80) {
-    durum = '⚠ %' + pct + ' Dolu'; barClr = 'var(--am)'; kartCls = 'bk-am'; badgeCls = 'bk-am';
-  } else {
-    durum = '%' + pct + ' Kullanıldı'; barClr = 'var(--gr)'; kartCls = ''; badgeCls = 'bk-ok';
+  /* Aktif dönem (2) — canlı progress bar */
+  if (sdSeciliDonem === 2) {
+    var b = DONEM_BUTCE.find(function(x){ return x.donem === 2; });
+    if (!b) { el.innerHTML = ''; return; }
+    var bekTop = 0;
+    for (var i = 0; i < DEPT_BEKLEYEN.length; i++) bekTop += DEPT_BEKLEYEN[i].tutar;
+    var committed = b.harcanan + bekTop;
+    var kalan     = Math.max(0, b.butce - committed);
+    var pct       = b.butce > 0 ? Math.min(100, Math.round(committed / b.butce * 100)) : 0;
+    var pctExact  = b.butce > 0 ? (committed / b.butce * 100).toFixed(1) : '0.0';
+    var durum, barClr, kartCls, badgeCls;
+    if (pct >= 100) {
+      durum = 'Limit Aşıldı!'; barClr = 'var(--rd)'; kartCls = 'bk-rd'; badgeCls = 'bk-rd';
+    } else if (pct >= 80) {
+      durum = '⚠ %' + pct + ' Dolu'; barClr = 'var(--am)'; kartCls = 'bk-am'; badgeCls = 'bk-am';
+    } else {
+      durum = '%' + pct + ' Kullanıldı'; barClr = 'var(--gr)'; kartCls = ''; badgeCls = 'bk-ok';
+    }
+    var uyariBan = '';
+    if (pct >= 100) {
+      uyariBan = '<div class="sd-butce-uyari-ban bk-rd">🔴 Dönem bütçesi tamamen tükendi — muhasebe ile iletişime geçin</div>';
+    } else if (pct >= 80) {
+      uyariBan = '<div class="sd-butce-uyari-ban bk-am">⚠ Bütçenin %' + pctExact + '\'i kullanıldı — harcamaları yavaşlatın</div>';
+    }
+    el.innerHTML =
+      '<div class="sd-butce-kart ' + kartCls + '">' +
+        '<div class="sd-butce-top">' +
+          '<div><div class="sd-butce-lbl">' + b.lbl + ' Bütçesi</div><div class="sd-butce-total">₺' + b.butce.toLocaleString('tr-TR') + '</div></div>' +
+          '<span class="sd-butce-badge ' + badgeCls + '">' + durum + '</span>' +
+        '</div>' +
+        uyariBan +
+        '<div class="sd-butce-bar-wrap"><div class="sd-butce-bar-f" style="width:' + pct + '%;background:' + barClr + '"></div></div>' +
+        '<div class="sd-butce-stats">' +
+          '<div class="sd-butce-stat"><div class="sd-butce-sv" style="color:var(--gr2)">₺' + b.harcanan.toLocaleString('tr-TR') + '</div><div class="sd-butce-sl">Onaylanan</div></div>' +
+          '<div class="sd-butce-stat"><div class="sd-butce-sv" style="color:var(--am2)">₺' + bekTop.toLocaleString('tr-TR') + '</div><div class="sd-butce-sl">Bekleyen</div></div>' +
+          '<div class="sd-butce-stat"><div class="sd-butce-sv" style="color:' + (kalan === 0 ? 'var(--rd2)' : 'var(--gr2)') + '">₺' + kalan.toLocaleString('tr-TR') + '</div><div class="sd-butce-sl">Kalan</div></div>' +
+        '</div>' +
+      '</div>';
+    return;
   }
 
-  var uyariBan = '';
-  if (pct >= 100) {
-    uyariBan = '<div class="sd-butce-uyari-ban bk-rd">🔴 Dönem bütçesi tamamen tükendi — muhasebe ile iletişime geçin</div>';
-  } else if (pct >= 80) {
-    uyariBan = '<div class="sd-butce-uyari-ban bk-am">⚠ Bütçenin %' + pctExact + '\'i kullanıldı — harcamaları yavaşlatın</div>';
-  }
-
-  /* Önceki dönem özeti */
-  var b1 = DONEM_BUTCE.find(function(x){ return x.donem === 1; });
-  var don1Row = b1
-    ? '<div class="sd-butce-don-row">' +
-        '<span class="sd-butce-don-lbl">Dönem #1 (Kapalı)</span>' +
-        '<span class="sd-butce-don-val">₺' + b1.harcanan.toLocaleString('tr-TR') + ' / ₺' + b1.butce.toLocaleString('tr-TR') + ' · %' + Math.round(b1.harcanan/b1.butce*100) + '</span>' +
-      '</div>'
-    : '';
+  /* Geçmiş dönem — statik özet */
+  var bp = DONEM_BUTCE.find(function(x){ return x.donem === sdSeciliDonem; });
+  var gec = DEPT_GECMIS[sdSeciliDonem] || { onaylandi:[], reddedildi:[] };
+  var topOnay = 0, topRed = 0;
+  for (var j = 0; j < gec.onaylandi.length; j++)  topOnay += gec.onaylandi[j].tutar;
+  for (var k = 0; k < gec.reddedildi.length; k++) topRed  += gec.reddedildi[k].tutar;
+  var donRec = null;
+  for (var m = 0; m < SD_DONEMLER.length; m++) if (SD_DONEMLER[m].id === sdSeciliDonem) { donRec = SD_DONEMLER[m]; break; }
+  var butce = bp ? bp.butce : 0;
+  var harcanan = bp ? bp.harcanan : topOnay;
+  var pctH = butce > 0 ? Math.round(harcanan / butce * 100) : 0;
 
   el.innerHTML =
-    '<div class="sd-butce-kart ' + kartCls + '">' +
-      '<div class="sd-butce-top">' +
-        '<div>' +
-          '<div class="sd-butce-lbl">' + b.lbl + ' Bütçesi</div>' +
-          '<div class="sd-butce-total">₺' + b.butce.toLocaleString('tr-TR') + '</div>' +
-        '</div>' +
-        '<span class="sd-butce-badge ' + badgeCls + '">' + durum + '</span>' +
+    '<div class="sd-don-ozet-past">' +
+      '<div class="sd-don-ozet-past-lbl">' + (donRec ? donRec.lbl + ' · ' + donRec.tarih : '') + ' — Kapalı Dönem</div>' +
+      '<div class="sd-don-stat-grid">' +
+        '<div class="sd-don-stat-c"><div class="sd-don-stat-v">₺' + (butce > 0 ? butce.toLocaleString('tr-TR') : '—') + '</div><div class="sd-don-stat-l">Bütçe</div></div>' +
+        '<div class="sd-don-stat-c"><div class="sd-don-stat-v" style="color:var(--gr2)">₺' + harcanan.toLocaleString('tr-TR') + '</div><div class="sd-don-stat-l">Onaylanan</div></div>' +
+        '<div class="sd-don-stat-c"><div class="sd-don-stat-v" style="color:var(--rd2)">₺' + topRed.toLocaleString('tr-TR') + '</div><div class="sd-don-stat-l">Reddedildi</div></div>' +
+        '<div class="sd-don-stat-c"><div class="sd-don-stat-v" style="color:' + (pctH >= 100 ? 'var(--rd2)' : 'var(--tx2)') + '">%' + pctH + '</div><div class="sd-don-stat-l">Kullanım</div></div>' +
       '</div>' +
-      uyariBan +
-      '<div class="sd-butce-bar-wrap"><div class="sd-butce-bar-f" style="width:' + pct + '%;background:' + barClr + '"></div></div>' +
-      '<div class="sd-butce-stats">' +
-        '<div class="sd-butce-stat">' +
-          '<div class="sd-butce-sv" style="color:var(--gr2)">₺' + b.harcanan.toLocaleString('tr-TR') + '</div>' +
-          '<div class="sd-butce-sl">Onaylanan</div>' +
-        '</div>' +
-        '<div class="sd-butce-stat">' +
-          '<div class="sd-butce-sv" style="color:var(--am2)">₺' + bekTop.toLocaleString('tr-TR') + '</div>' +
-          '<div class="sd-butce-sl">Bekleyen</div>' +
-        '</div>' +
-        '<div class="sd-butce-stat">' +
-          '<div class="sd-butce-sv" style="color:' + (kalan === 0 ? 'var(--rd2)' : 'var(--gr2)') + '">₺' + kalan.toLocaleString('tr-TR') + '</div>' +
-          '<div class="sd-butce-sl">Kalan</div>' +
-        '</div>' +
-      '</div>' +
-      don1Row +
     '</div>';
+}
+
+function _renderDeptBekGecmis(el, donemId) {
+  var gec = DEPT_GECMIS[donemId] || { onaylandi:[], reddedildi:[] };
+  var on  = gec.onaylandi  || [];
+  var red = gec.reddedildi || [];
+  var html = '';
+
+  html += '<div class="sd-ges-sec-hd">Onaylananlar (' + on.length + ')</div>';
+  if (!on.length) {
+    html += '<div style="text-align:center;padding:20px 0;color:var(--tx3);font-size:12px">Onaylanan kayıt yok</div>';
+  } else {
+    html += on.map(function(f) {
+      var lbl = SD_KAT_LBL && SD_KAT_LBL[f.kat] ? SD_KAT_LBL[f.kat] : (f.kat || '');
+      return '<div class="sd-ges-row">' +
+        '<div class="sd-ges-dot" style="background:var(--gr)"></div>' +
+        '<div class="sd-ges-info" style="flex:1">' +
+          '<div class="sd-ges-satici">' + f.satici + '</div>' +
+          '<div class="sd-ges-meta" style="font-size:11px;color:var(--tx3)">' + f.uye + (lbl ? ' · ' + lbl : '') + ' · ' + f.tarih + '</div>' +
+        '</div>' +
+        '<div class="sd-ges-right"><div class="sd-ges-tutar" style="font-size:13px;font-weight:700;font-family:var(--mo);color:var(--gr2)">₺' + f.tutar.toLocaleString('tr-TR') + '</div></div>' +
+      '</div>';
+    }).join('');
+  }
+
+  html += '<div class="sd-ges-sec-hd">Reddedilenler (' + red.length + ')</div>';
+  if (!red.length) {
+    html += '<div style="text-align:center;padding:20px 0;color:var(--tx3);font-size:12px">Reddedilen kayıt yok</div>';
+  } else {
+    html += red.map(function(f) {
+      var lbl = SD_KAT_LBL && SD_KAT_LBL[f.kat] ? SD_KAT_LBL[f.kat] : (f.kat || '');
+      return '<div class="sd-ges-row">' +
+        '<div class="sd-ges-dot" style="background:var(--rd)"></div>' +
+        '<div class="sd-ges-info" style="flex:1">' +
+          '<div class="sd-ges-satici">' + f.satici + '</div>' +
+          '<div class="sd-ges-meta" style="font-size:11px;color:var(--tx3)">' + f.uye + (lbl ? ' · ' + lbl : '') + ' · ' + f.tarih + '</div>' +
+          (f.sebep ? '<div class="sd-ges-sebep">↳ ' + f.sebep + '</div>' : '') +
+        '</div>' +
+        '<div class="sd-ges-right"><div class="sd-ges-tutar" style="font-size:13px;font-weight:700;font-family:var(--mo);color:var(--rd2)">₺' + f.tutar.toLocaleString('tr-TR') + '</div></div>' +
+      '</div>';
+    }).join('');
+  }
+
+  el.innerHTML = html;
 }
 
 function renderDeptBek() {
   var el = document.getElementById('sd-pnl-bek');
   if (!el) return;
   var cnt = document.getElementById('sdtb-bek-cnt');
+
+  /* Geçmiş dönem — onaylananlar + reddedilenler */
+  if (sdSeciliDonem !== 2) {
+    if (cnt) cnt.textContent = '0';
+    _renderDeptBekGecmis(el, sdSeciliDonem);
+    return;
+  }
+
   if (cnt) cnt.textContent = DEPT_BEKLEYEN.length;
 
   if (!DEPT_BEKLEYEN.length) {
@@ -5111,38 +5349,110 @@ function saTab(t, el) {
   if (el) el.classList.add('on');
 }
 
+function saSetDonem(id) {
+  saSeciliDonem = id;
+  renderAccDash();
+}
+
 function renderAccDash() {
   var el = document.getElementById('sa-pnl-dash');
   if (!el) return;
-  var totalTop = 0, totalOnay = 0, totalBek = 0;
-  for (var i = 0; i < ACC_DEPTS.length; i++) {
-    totalTop  += ACC_DEPTS[i].total;
-    totalOnay += ACC_DEPTS[i].onay;
-    totalBek  += ACC_DEPTS[i].bekleyen;
+
+  /* Dönem seçici */
+  var donBar = '<div class="sa-donem-bar">';
+  for (var di = 0; di < SA_DONEMLER.length; di++) {
+    var dp = SA_DONEMLER[di];
+    var dpOn = saSeciliDonem === dp.id ? ' on' : '';
+    var dpSub = dp.aktif
+      ? '<div style="font-size:9px;color:var(--gr);font-weight:700;margin-top:1px">● Aktif</div>'
+      : '<div style="font-size:10px;color:var(--tx3);margin-top:1px">' + dp.tarih + '</div>';
+    donBar += '<button class="sa-donem-pill' + dpOn + '" onclick="saSetDonem(' + dp.id + ')">' +
+      '<div style="font-size:12px;font-weight:700;color:' + (saSeciliDonem === dp.id ? 'var(--ac2)' : 'var(--tx2)') + '">' + dp.lbl + '</div>' +
+      dpSub +
+    '</button>';
   }
-  var html = '<div class="sa-genel">';
+  donBar += '</div>';
+
+  /* Aktif veya geçmiş dönem dept listesi */
+  var depts = saSeciliDonem === 2 ? ACC_DEPTS : (SA_DONEM_DEPTS[saSeciliDonem] || []);
+  var donRec = null;
+  for (var dri = 0; dri < SA_DONEMLER.length; dri++) if (SA_DONEMLER[dri].id === saSeciliDonem) { donRec = SA_DONEMLER[dri]; break; }
+  var isAktif = saSeciliDonem === 2;
+
+  var totalTop = 0, totalOnay = 0, totalBek = 0, totalRed = 0;
+  for (var i = 0; i < depts.length; i++) {
+    totalTop  += depts[i].total;
+    totalOnay += depts[i].onay;
+    totalBek  += (depts[i].bekleyen || 0);
+    totalRed  += (depts[i].red || 0);
+  }
+
+  var html = donBar;
+
+  /* Genel özet kartı */
+  html += '<div class="sa-genel">';
   html += '<div class="sa-genel-lbl">Toplam Harcama</div>';
   html += '<div class="sa-genel-total">₺' + totalTop.toLocaleString('tr-TR') + '</div>';
-  html += '<div class="sa-genel-sub">' + curProj.name + ' · Aktif dönem</div>';
+  html += '<div class="sa-genel-sub">' + curProj.name + ' · ' + (donRec ? donRec.lbl + (isAktif ? ' — Aktif' : ' — Kapalı') : '') + '</div>';
   html += '<div class="sa-genel-row">';
   html += '<div class="sa-genel-stat"><div class="sa-genel-stat-val" style="color:var(--gr2)">₺' + totalOnay.toLocaleString('tr-TR') + '</div><div class="sa-genel-stat-lbl">Onaylı</div></div>';
-  html += '<div class="sa-genel-stat"><div class="sa-genel-stat-val" style="color:var(--am2)">₺' + totalBek.toLocaleString('tr-TR') + '</div><div class="sa-genel-stat-lbl">Bekleyen</div></div>';
-  html += '<div class="sa-genel-stat"><div class="sa-genel-stat-val" style="color:var(--rd2)">' + ACC_SUPHE.length + '</div><div class="sa-genel-stat-lbl">Şüpheli</div></div>';
+  if (isAktif) {
+    html += '<div class="sa-genel-stat"><div class="sa-genel-stat-val" style="color:var(--am2)">₺' + totalBek.toLocaleString('tr-TR') + '</div><div class="sa-genel-stat-lbl">Bekleyen</div></div>';
+    html += '<div class="sa-genel-stat"><div class="sa-genel-stat-val" style="color:var(--rd2)">' + ACC_SUPHE.length + '</div><div class="sa-genel-stat-lbl">Şüpheli</div></div>';
+  } else {
+    html += '<div class="sa-genel-stat"><div class="sa-genel-stat-val" style="color:var(--rd2)">₺' + totalRed.toLocaleString('tr-TR') + '</div><div class="sa-genel-stat-lbl">Reddedildi</div></div>';
+    var pctKul = totalTop > 0 ? Math.round(totalOnay / totalTop * 100) : 0;
+    html += '<div class="sa-genel-stat"><div class="sa-genel-stat-val" style="color:var(--tx2)">%' + pctKul + '</div><div class="sa-genel-stat-lbl">Onay Oranı</div></div>';
+  }
   html += '</div></div>';
-  for (var k = 0; k < ACC_DEPTS.length; k++) {
-    var d = ACC_DEPTS[k];
+
+  /* Departman kartları */
+  for (var k = 0; k < depts.length; k++) {
+    var d = depts[k];
     var pct = totalTop > 0 ? Math.round(d.total / totalTop * 100) : 0;
-    html += '<div class="sa-dept-card" style="cursor:pointer" onclick="openAccDeptDetay(\'' + d.id + '\')">';
-    html += '<div class="sa-dc-hd"><div class="sa-dc-dot" style="background:' + d.renk + '"></div><div class="sa-dc-name">' + d.name + '</div><div class="sa-dc-uye">' + d.uye + ' kişi ›</div></div>';
+    var clickHandler = isAktif ? 'onclick="openAccDeptDetay(\'' + d.id + '\')"' : '';
+    html += '<div class="sa-dept-card" style="cursor:' + (isAktif ? 'pointer' : 'default') + '" ' + clickHandler + '>';
+    html += '<div class="sa-dc-hd"><div class="sa-dc-dot" style="background:' + d.renk + '"></div><div class="sa-dc-name">' + d.name + '</div><div class="sa-dc-uye">' + d.uye + ' kişi' + (isAktif ? ' ›' : '') + '</div></div>';
     html += '<div class="sa-dc-stats">';
     html += '<div><div class="sa-dc-stat-lbl">Toplam</div><div class="sa-dc-stat-val">₺' + d.total.toLocaleString('tr-TR') + '</div></div>';
     html += '<div><div class="sa-dc-stat-lbl">Onaylı</div><div class="sa-dc-stat-val" style="color:var(--gr2)">₺' + d.onay.toLocaleString('tr-TR') + '</div></div>';
-    html += '<div><div class="sa-dc-stat-lbl">Bekleyen</div><div class="sa-dc-stat-val" style="color:var(--am2)">₺' + d.bekleyen.toLocaleString('tr-TR') + '</div></div>';
-    html += '<div><div class="sa-dc-stat-lbl">Şüpheli</div><div class="sa-dc-stat-val" style="color:' + (d.suphe > 0 ? 'var(--rd2)' : 'var(--tx3)') + '">₺' + d.suphe.toLocaleString('tr-TR') + '</div></div>';
+    if (isAktif) {
+      html += '<div><div class="sa-dc-stat-lbl">Bekleyen</div><div class="sa-dc-stat-val" style="color:var(--am2)">₺' + (d.bekleyen || 0).toLocaleString('tr-TR') + '</div></div>';
+      html += '<div><div class="sa-dc-stat-lbl">Şüpheli</div><div class="sa-dc-stat-val" style="color:' + ((d.suphe || 0) > 0 ? 'var(--rd2)' : 'var(--tx3)') + '">₺' + (d.suphe || 0).toLocaleString('tr-TR') + '</div></div>';
+    } else {
+      html += '<div><div class="sa-dc-stat-lbl">Reddedildi</div><div class="sa-dc-stat-val" style="color:var(--rd2)">₺' + (d.red || 0).toLocaleString('tr-TR') + '</div></div>';
+      var dPct = d.total > 0 ? Math.round(d.onay / d.total * 100) : 0;
+      html += '<div><div class="sa-dc-stat-lbl">Onay %</div><div class="sa-dc-stat-val" style="color:var(--tx2)">%' + dPct + '</div></div>';
+    }
     html += '</div>';
     html += '<div class="sa-dc-bar"><div class="sa-dc-bar-f" style="width:' + pct + '%;background:' + d.renk + '"></div></div>';
     html += '</div>';
   }
+
+  /* Dönem karşılaştırması — sadece geçmiş dönemlerde */
+  if (!isAktif && SA_DONEM_DEPTS[saSeciliDonem]) {
+    var prevId = saSeciliDonem - 1;
+    var prevDepts = SA_DONEM_DEPTS[prevId] || null;
+    if (prevDepts) {
+      var prevTotal = 0, curTotal = totalTop;
+      for (var pi = 0; pi < prevDepts.length; pi++) prevTotal += prevDepts[pi].total;
+      var prevDonRec = null;
+      for (var pri = 0; pri < SA_DONEMLER.length; pri++) if (SA_DONEMLER[pri].id === prevId) { prevDonRec = SA_DONEMLER[pri]; break; }
+      var diff = curTotal - prevTotal;
+      var diffSign = diff >= 0 ? '+' : '';
+      var diffClr  = diff > 0 ? 'var(--rd2)' : 'var(--gr2)';
+      html += '<div class="sa-don-cmp-card">';
+      html += '<div style="font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Dönem Karşılaştırması</div>';
+      html += '<div class="sa-don-cmp-row"><span style="font-size:13px;color:var(--tx2)">' + (donRec ? donRec.lbl : '') + '</span><span style="font-size:14px;font-weight:700;font-family:var(--mo)">₺' + curTotal.toLocaleString('tr-TR') + '</span></div>';
+      html += '<div class="sa-don-cmp-row"><span style="font-size:13px;color:var(--tx2)">' + (prevDonRec ? prevDonRec.lbl : 'Önceki') + '</span><span style="font-size:14px;font-weight:700;font-family:var(--mo)">₺' + prevTotal.toLocaleString('tr-TR') + '</span></div>';
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0 4px">';
+      html += '<span style="font-size:12px;color:var(--tx3)">Fark</span>';
+      html += '<span style="font-size:14px;font-weight:700;font-family:var(--mo);color:' + diffClr + '">' + diffSign + diff.toLocaleString('tr-TR') + ' ₺</span>';
+      html += '</div>';
+      html += '</div>';
+    }
+  }
+
   el.innerHTML = html;
 }
 
