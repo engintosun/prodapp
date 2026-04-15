@@ -1370,21 +1370,52 @@ body {
 .sa-pdf-btn:active { background: var(--bg3); }
 
 /* Mesaj bölümü */
-.sa-alici-lbl  { font-size: 11px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
-.sa-alici-grid { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
-.sa-alici-btn  {
-  display: flex; align-items: center; gap: 6px;
-  background: var(--bg2); border: 1px solid var(--bo);
-  border-radius: 20px; padding: 6px 11px;
-  cursor: pointer; -webkit-tap-highlight-color: transparent; transition: all .12s;
+.sa-alici-lbl { font-size: 11px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .5px; padding: 12px 14px 6px; }
+.sa-msg-dept-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 14px; border-bottom: 1px solid var(--bo);
+  cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background .12s;
 }
-.sa-alici-btn.on { border-color: var(--ac); background: rgba(232,150,46,.08); }
-.sa-alici-av   { width: 22px; height: 22px; border-radius: 6px; font-size: 9px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.sa-alici-name { font-size: 12px; font-weight: 600; color: var(--tx2); line-height: 1.2; }
-.sa-alici-btn.on .sa-alici-name { color: var(--ac2); }
-.sa-alici-sub  { font-size: 10px; color: var(--tx3); line-height: 1; margin-top: 1px; }
-.sa-alici-btn.on .sa-alici-sub { color: rgba(232,150,46,.7); }
-.sa-alici-sep  { flex: 0 0 100%; font-size: 11px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .5px; margin: 6px 0 2px; }
+.sa-msg-dept-row:last-child { border-bottom: none; }
+.sa-msg-dept-row:active { background: var(--bg3); }
+.sa-msg-dept-av {
+  width: 38px; height: 38px; border-radius: 11px;
+  font-size: 11px; font-weight: 800; color: #fff;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.sa-msg-dept-name { font-size: 14px; font-weight: 600; color: var(--tx); }
+.sa-msg-dept-sub  { font-size: 11px; color: var(--tx3); margin-top: 1px; }
+.sa-msg-dept-arr  { margin-left: auto; color: var(--tx3); font-size: 18px; flex-shrink: 0; }
+.sa-msg-step-hd {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-bottom: 1px solid var(--bo);
+}
+.sa-msg-back {
+  background: none; border: none; color: var(--ac2);
+  font-size: 13px; font-weight: 600; font-family: var(--fn);
+  cursor: pointer; padding: 4px 0; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.sa-msg-step-title { font-size: 14px; font-weight: 700; color: var(--tx); }
+.sa-msg-uye-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; border-bottom: 1px solid var(--bo);
+  cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background .12s;
+}
+.sa-msg-uye-row:active { background: var(--bg3); }
+.sa-msg-uye-row.sel { background: rgba(232,150,46,.07); border-left: 3px solid var(--ac); padding-left: 11px; }
+.sa-msg-uye-av {
+  width: 34px; height: 34px; border-radius: 10px;
+  background: var(--bg3); border: 1px solid var(--bo2);
+  font-size: 10px; font-weight: 800; color: var(--tx2);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.sa-msg-uye-name { font-size: 13px; font-weight: 600; color: var(--tx); }
+.sa-msg-uye-rol  { font-size: 11px; color: var(--tx3); margin-top: 1px; }
+.sa-msg-uye-chk  { margin-left: auto; font-size: 18px; color: var(--ac2); flex-shrink: 0; }
+.sa-msg-compose  { padding: 12px 14px 0; }
+.sa-msg-alici-bar { font-size: 12px; color: var(--tx3); margin-bottom: 8px; }
+.sa-msg-alici-bar strong { color: var(--ac2); font-weight: 700; }
 
 /* ══════════════════════════════
    PROFİL MODAL
@@ -5049,8 +5080,9 @@ var ACC_ALICILAR_KISI = (function() {
 /* Birleşik liste — geriye dönük uyumluluk için */
 var ACC_ALICILAR = ACC_ALICILAR_DEPT.concat(ACC_ALICILAR_KISI);
 
-var saRaporTip = 'dept';
-var saAliciId  = '';
+var saRaporTip  = 'dept';
+var saAliciId   = '';   /* seçili alıcı id — 'dept:yapim' veya 'kisi:MK:yapim' */
+var saAliciDept = '';   /* step 2'de açık olan dept anahtarı — 'yapim', 'kamera' vb. */
 
 function renderAcc() {
   if (!curUser || !curProj) return;
@@ -5266,39 +5298,111 @@ function renderAccRapor(tip) {
     '<button class="sa-pdf-btn" onclick="accPDF()">📥 PDF Raporu İndir</button>';
 }
 
+/* ── Muhasebe Mesaj — İki adımlı alıcı seçimi ── */
+
 function renderAccMesaj() {
   var el = document.getElementById('sa-pnl-mesaj');
   if (!el) return;
-
-  function _btn(a) {
-    var sub = a.tip === 'kisi' ? '<div class="sa-alici-sub">' + a.dept + '</div>' : '';
-    return '<button class="sa-alici-btn' + (saAliciId === a.id ? ' on' : '') + '" onclick="saSelectAlici(\'' + a.id + '\')">' +
-      '<div class="sa-alici-av" style="background:' + a.renk + ';color:#fff">' + a.ini + '</div>' +
-      '<div><span class="sa-alici-name">' + a.name + '</span>' + sub + '</div>' +
-    '</button>';
+  if (!saAliciDept) {
+    _renderAccMesajDepts(el);
+  } else {
+    _renderAccMesajMembers(el);
   }
+}
 
-  var html = '<div class="sa-alici-lbl">Alıcı seçin</div>';
-  html += '<div class="sa-alici-grid">';
-  html += '<div class="sa-alici-sep">Departmanlar</div>';
-  for (var di = 0; di < ACC_ALICILAR_DEPT.length; di++) html += _btn(ACC_ALICILAR_DEPT[di]);
-  html += '<div class="sa-alici-sep">Ekip Üyeleri</div>';
-  for (var ki = 0; ki < ACC_ALICILAR_KISI.length; ki++) html += _btn(ACC_ALICILAR_KISI[ki]);
-  html += '</div>';
-
-  var sel = null;
-  for (var si = 0; si < ACC_ALICILAR.length; si++) {
-    if (ACC_ALICILAR[si].id === saAliciId) { sel = ACC_ALICILAR[si]; break; }
+function _renderAccMesajDepts(el) {
+  var html = '<div class="sa-alici-lbl">Departman seçin</div>';
+  for (var i = 0; i < ACC_ALICILAR_DEPT.length; i++) {
+    var d   = ACC_ALICILAR_DEPT[i];
+    var dk  = d.id.replace('dept:', '');
+    var cnt = (ACC_DEPT_UYELER[dk] || []).length;
+    html += '<div class="sa-msg-dept-row" onclick="saSelectDept(\'' + dk + '\')">' +
+      '<div class="sa-msg-dept-av" style="background:' + d.renk + '">' + d.ini + '</div>' +
+      '<div>' +
+        '<div class="sa-msg-dept-name">' + d.name + '</div>' +
+        '<div class="sa-msg-dept-sub">' + cnt + ' kişi</div>' +
+      '</div>' +
+      '<div class="sa-msg-dept-arr">›</div>' +
+    '</div>';
   }
-  var ph = sel
-    ? (sel.tip === 'dept' ? sel.name + ' departmanına mesaj...' : sel.name + ' kişisine mesaj...')
-    : 'Önce alıcı seçin';
-  html += '<div class="fg" style="margin-top:12px"><textarea id="sa-mesaj-txt" class="fgi" rows="4" placeholder="' + ph + '" style="resize:none;font-family:var(--fn)"' + (sel ? '' : ' disabled') + '></textarea></div>';
-  if (sel && sel.tip === 'dept') {
-    html += '<div style="font-size:11px;color:var(--tx3);margin-bottom:8px">Mesaj ' + sel.name + ' departmanındaki tüm üyelere iletilir</div>';
-  }
-  html += '<button class="btn btn-p btn-full" onclick="accSendMesaj()">Gönder</button>';
   el.innerHTML = html;
+}
+
+function _renderAccMesajMembers(el) {
+  /* dept kaydını bul */
+  var deptRec = null;
+  for (var i = 0; i < ACC_ALICILAR_DEPT.length; i++) {
+    if (ACC_ALICILAR_DEPT[i].id === 'dept:' + saAliciDept) { deptRec = ACC_ALICILAR_DEPT[i]; break; }
+  }
+  if (!deptRec) return;
+
+  var members  = ACC_DEPT_UYELER[saAliciDept] || [];
+  var allId    = 'dept:' + saAliciDept;
+  var allSel   = saAliciId === allId;
+
+  var html = '<div class="sa-msg-step-hd">' +
+    '<button class="sa-msg-back" onclick="saSelectDeptBack()">← Geri</button>' +
+    '<span class="sa-msg-step-title">' + deptRec.name + '</span>' +
+  '</div>';
+
+  /* Tüm departman seçeneği */
+  html += '<div class="sa-msg-uye-row' + (allSel ? ' sel' : '') + '" onclick="saSelectAlici(\'' + allId + '\')">' +
+    '<div class="sa-msg-uye-av" style="background:' + deptRec.renk + ';color:#fff;border:none">' + deptRec.ini + '</div>' +
+    '<div>' +
+      '<div class="sa-msg-uye-name">Tüm ' + deptRec.name + ' Ekibi</div>' +
+      '<div class="sa-msg-uye-rol">' + members.length + ' kişiye gönderilir</div>' +
+    '</div>' +
+    (allSel ? '<div class="sa-msg-uye-chk">✓</div>' : '') +
+  '</div>';
+
+  /* Bireysel üyeler */
+  for (var j = 0; j < members.length; j++) {
+    var u   = members[j];
+    var uid = 'kisi:' + u.ini + ':' + saAliciDept;
+    var sel = saAliciId === uid;
+    html += '<div class="sa-msg-uye-row' + (sel ? ' sel' : '') + '" onclick="saSelectAlici(\'' + uid + '\')">' +
+      '<div class="sa-msg-uye-av">' + u.ini + '</div>' +
+      '<div>' +
+        '<div class="sa-msg-uye-name">' + u.name + '</div>' +
+        '<div class="sa-msg-uye-rol">' + u.rol + '</div>' +
+      '</div>' +
+      (sel ? '<div class="sa-msg-uye-chk">✓</div>' : '') +
+    '</div>';
+  }
+
+  /* Mesaj yazma alanı — alıcı seçildiyse göster */
+  if (saAliciId) {
+    var selName = '';
+    if (allSel) {
+      selName = 'Tüm ' + deptRec.name + ' Ekibi';
+    } else {
+      for (var k = 0; k < members.length; k++) {
+        if ('kisi:' + members[k].ini + ':' + saAliciDept === saAliciId) { selName = members[k].name; break; }
+      }
+    }
+    var ph = selName + ' için mesaj...';
+    html += '<div class="sa-msg-compose">' +
+      '<div class="sa-msg-alici-bar">Alıcı: <strong>' + selName + '</strong>' +
+        (allSel ? ' <span style="color:var(--tx3)">· tüm üyelere iletilir</span>' : '') +
+      '</div>' +
+      '<textarea id="sa-mesaj-txt" class="fgi" rows="4" placeholder="' + ph + '" style="resize:none;font-family:var(--fn);width:100%;box-sizing:border-box"></textarea>' +
+      '<button class="btn btn-p btn-full" style="margin-top:8px;margin-bottom:4px" onclick="accSendMesaj()">Gönder</button>' +
+    '</div>';
+  }
+
+  el.innerHTML = html;
+}
+
+function saSelectDept(deptKey) {
+  saAliciDept = deptKey;
+  saAliciId   = '';
+  renderAccMesaj();
+}
+
+function saSelectDeptBack() {
+  saAliciDept = '';
+  saAliciId   = '';
+  renderAccMesaj();
 }
 
 function saSelectAlici(id) {
@@ -5307,40 +5411,48 @@ function saSelectAlici(id) {
   setTimeout(function() {
     var txt = document.getElementById('sa-mesaj-txt');
     if (txt) txt.focus();
-  }, 50);
+  }, 60);
 }
 
 function accSendMesaj() {
   var txtEl = document.getElementById('sa-mesaj-txt');
   if (!txtEl || !txtEl.value.trim()) { notif('Mesaj boş olamaz', 'red'); return; }
-  if (!saAliciId) { notif('Alıcı seçilmedi', 'amber'); return; }
-  var sel = null;
-  for (var i = 0; i < ACC_ALICILAR.length; i++) {
-    if (ACC_ALICILAR[i].id === saAliciId) { sel = ACC_ALICILAR[i]; break; }
+  if (!saAliciId)   { notif('Alıcı seçilmedi', 'amber'); return; }
+  if (!saAliciDept) { notif('Departman seçilmedi', 'amber'); return; }
+
+  /* Dept kaydı */
+  var deptRec = null;
+  for (var i = 0; i < ACC_ALICILAR_DEPT.length; i++) {
+    if (ACC_ALICILAR_DEPT[i].id === 'dept:' + saAliciDept) { deptRec = ACC_ALICILAR_DEPT[i]; break; }
   }
+  var deptName = deptRec ? deptRec.name : saAliciDept;
+
   var msg      = txtEl.value.trim();
   var gonderen = curUser ? curUser.name : 'Muhasebe';
-  var aliciAd  = sel ? sel.name : saAliciId;
+  var isDept   = saAliciId === 'dept:' + saAliciDept;
 
-  if (sel && sel.tip === 'dept') {
-    /* Departman mesajı → dept kullanıcısı ('d') VE saha kullanıcısı ('s') bildirim alır */
-    var notifTitle = gonderen + ' → ' + aliciAd + ' Departmanı';
-    var notifBody  = msg;
-    var notifMeta  = 'Az önce · ' + gonderen + ' (Muhasebe) · Tüm üyelere gönderildi';
-    _pushNotif('d', 'bl', notifTitle, notifBody, notifMeta);
-    _pushNotif('s', 'bl', notifTitle, notifBody, 'Az önce · ' + gonderen + ' (Muhasebe)');
-    notif(aliciAd + ' departmanına gönderildi', 'green');
+  if (isDept) {
+    /* Departmana → dept ('d') + saha ('s') bildirim */
+    var title = gonderen + ' → ' + deptName + ' Departmanı';
+    _pushNotif('d', 'bl', title, msg, 'Az önce · ' + gonderen + ' (Muhasebe) · Tüm üyelere');
+    _pushNotif('s', 'bl', title, msg, 'Az önce · ' + gonderen + ' (Muhasebe)');
+    notif(deptName + ' departmanına gönderildi', 'green');
   } else {
-    /* Bireysel mesaj → saha kullanıcısına ('s') gönderilir */
+    /* Kişiye → saha ('s') bildirim */
+    var members = ACC_DEPT_UYELER[saAliciDept] || [];
+    var selName = '';
+    for (var j = 0; j < members.length; j++) {
+      if ('kisi:' + members[j].ini + ':' + saAliciDept === saAliciId) { selName = members[j].name; break; }
+    }
     _pushNotif('s', 'bl',
-      gonderen + ' → ' + aliciAd,
+      gonderen + ' → ' + selName,
       msg,
       'Az önce · ' + gonderen + ' (Muhasebe)');
-    notif(aliciAd + ' kişisine gönderildi', 'green');
+    notif((selName || 'Kişi') + ' için mesaj gönderildi', 'green');
   }
 
-  txtEl.value = '';
   saAliciId   = '';
+  saAliciDept = '';
   renderAccMesaj();
 }
 
