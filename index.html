@@ -950,7 +950,9 @@ body {
   background: var(--bg2); border: 1px solid var(--bo);
   border-radius: var(--r); padding: 12px 13px;
   margin-bottom: 8px; transition: border-color .12s, background .12s;
+  cursor: pointer;
 }
+.sd-fis:active { background: var(--bg3); }
 .sd-fis.secili {
   border-color: rgba(232,150,46,.5);
   background: rgba(232,150,46,.04);
@@ -1036,6 +1038,85 @@ body {
 
 /* Mesaj modalı */
 .sd-mesaj-to { font-size: 13px; color: var(--tx2); margin-bottom: 12px; }
+
+/* ── Harcama Detay Modalı ── */
+.fdet-thumb {
+  width: 100%; height: 140px;
+  background: var(--bg3); border: 1px solid var(--bo);
+  border-radius: var(--rs); margin-bottom: 14px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  overflow: hidden; position: relative;
+}
+.fdet-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.fdet-thumb-ph { font-size: 36px; margin-bottom: 6px; }
+.fdet-thumb-lbl { font-size: 11px; color: var(--tx3); }
+.fdet-rows { margin-bottom: 14px; }
+.fdet-row {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 8px 0; border-bottom: 1px solid var(--bo);
+  gap: 8px;
+}
+.fdet-row:last-child { border-bottom: none; }
+.fdet-lbl { font-size: 11px; color: var(--tx3); flex-shrink: 0; width: 80px; }
+.fdet-val { font-size: 13px; color: var(--tx); font-weight: 600; text-align: right; flex: 1; word-break: break-word; }
+.fdet-uyari {
+  background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.3);
+  border-radius: var(--rs); padding: 9px 11px;
+  font-size: 12px; color: var(--am2); margin-bottom: 14px; line-height: 1.5;
+}
+.fdet-belgesiz {
+  background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.25);
+  border-radius: var(--rs); padding: 9px 11px;
+  font-size: 12px; color: var(--rd); margin-bottom: 14px;
+}
+.fdet-acts { display: flex; gap: 8px; margin-top: 4px; }
+.fdet-acts .btn { flex: 1; justify-content: center; }
+
+/* ── Ekip Üyesi Profil Modalı ── */
+.uye-prof-hd {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 16px 14px; border-bottom: 1px solid var(--bo);
+}
+.uye-prof-av {
+  width: 52px; height: 52px; border-radius: 15px;
+  background: var(--bg3); border: 1px solid var(--bo2);
+  font-size: 15px; font-weight: 800; color: var(--tx2);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.uye-prof-name { font-size: 16px; font-weight: 700; color: var(--tx); }
+.uye-prof-rol  { font-size: 12px; color: var(--tx3); margin-top: 2px; }
+.uye-stats {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px; padding: 14px 16px; border-bottom: 1px solid var(--bo);
+}
+.uye-stat-c {
+  background: var(--bg3); border: 1px solid var(--bo);
+  border-radius: var(--rs); padding: 10px 8px; text-align: center;
+}
+.uye-stat-val { font-size: 15px; font-weight: 800; font-family: var(--mo); color: var(--tx); }
+.uye-stat-lbl { font-size: 10px; color: var(--tx3); margin-top: 3px; }
+.uye-hist-hd {
+  font-size: 11px; font-weight: 700; color: var(--tx3);
+  text-transform: uppercase; letter-spacing: .6px;
+  padding: 12px 16px 6px;
+}
+.uye-hist-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px; border-bottom: 1px solid var(--bo); gap: 8px;
+}
+.uye-hist-row:last-child { border-bottom: none; }
+.uye-hist-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 2px;
+}
+.uye-hist-info { flex: 1; }
+.uye-hist-satici { font-size: 13px; font-weight: 600; color: var(--tx); }
+.uye-hist-meta   { font-size: 11px; color: var(--tx3); margin-top: 1px; }
+.uye-hist-tutar  { font-size: 13px; font-weight: 700; font-family: var(--mo); color: var(--tx); flex-shrink: 0; }
+.uye-hist-tag    { font-size: 10px; font-weight: 700; border-radius: 5px; padding: 1px 6px; flex-shrink: 0; }
+.uye-hist-tag-bek { background: rgba(245,158,11,.15); color: var(--am2); }
+.uye-hist-tag-ok  { background: rgba(34,197,94,.12);  color: var(--gr); }
+.uye-msg-btn { padding: 14px 16px; }
 
 /* ══════════════════════════════
    MUHASEBE EKRANI
@@ -2112,6 +2193,48 @@ body {
 </div>
 
 <!-- ════════════════════════════
+     HARCAMA DETAY MODALI
+════════════════════════════ -->
+<div class="mo" id="md-fisdet">
+  <div class="ms">
+    <div class="mh"></div>
+    <div class="mhd">
+      <div class="mtitle" id="md-fisdet-title">Harcama Detayı</div>
+      <button class="mclose" onclick="closeM('md-fisdet')">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="fdet-thumb" id="fdet-thumb"></div>
+      <div id="fdet-uyari-wrap"></div>
+      <div class="fdet-rows" id="fdet-rows"></div>
+      <div class="fdet-acts" id="fdet-acts"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     EKİP ÜYESİ PROFİL MODALI
+════════════════════════════ -->
+<div class="mo" id="md-uye">
+  <div class="ms">
+    <div class="mh"></div>
+    <div class="uye-prof-hd">
+      <div class="uye-prof-av" id="uye-prof-av">MK</div>
+      <div>
+        <div class="uye-prof-name" id="uye-prof-name">—</div>
+        <div class="uye-prof-rol"  id="uye-prof-rol">—</div>
+      </div>
+      <button class="mclose" onclick="closeM('md-uye')" style="margin-left:auto">✕</button>
+    </div>
+    <div class="uye-stats" id="uye-stats"></div>
+    <div class="uye-hist-hd">Bekleyen Harcamalar</div>
+    <div id="uye-hist-list"></div>
+    <div class="uye-msg-btn">
+      <button class="btn btn-full" id="uye-msg-btn" onclick="">✉ Mesaj Gönder</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
      LİGHTBOX
 ════════════════════════════ -->
 <input type="file" id="galeri-input" accept="image/*" multiple style="display:none">
@@ -2200,8 +2323,34 @@ var GLOBAL_INBOX = {
       body:'Dönem #2 avansının %90\'ı kullanıldı',
       meta:'3 gün önce · Sistem', read:true }
   ],
-  d: [],
-  m: []
+  d: [
+    { id:11, tip:'am', title:'Bütçe Uyarısı — %83 Doluluk',
+      body:'Dönem #2 departman bütçesi ₺40.000 limitinin %83\'üne ulaştı. Onay bekleyen ₺6.890 dahil edildiğinde limit aşılabilir.',
+      meta:'Bugün, 10:30 · Sistem', read:false },
+    { id:12, tip:'bl', title:'Yeni Avans Talebi — Okan Demir',
+      body:'Okan Demir ₺5.000 avans talebinde bulundu. Gerekçe: Dış çekim ekipman kira ön ödemesi.',
+      meta:'Bugün, 09:45 · Sistem', read:false },
+    { id:13, tip:'am', title:'Eksik Belge — Kostüm Deposu',
+      body:'Mehmet Kaya\'nın ₺320 Kostüm Deposu harcaması belgesiz girildi. Muhasebe kapanışından önce belge yüklenmeli.',
+      meta:'Dün · Sistem', read:true },
+    { id:14, tip:'gr', title:'Toplu Onay Tamamlandı',
+      body:'3 harcama (₺2.160) başarıyla onaylandı ve muhasebe ekranına iletildi.',
+      meta:'2 gün önce · Sistem', read:true }
+  ],
+  m: [
+    { id:21, tip:'bl', title:'Dept. Onayı — 5 Bekleyen Harcama',
+      body:'Yapım departmanı ₺7.130 tutarında 5 harcamayı onayladı. Muhasebe onayına hazır.',
+      meta:'Bugün, 11:00 · Zeynep A. (Dept.)', read:false },
+    { id:22, tip:'am', title:'Şüpheli Harcama — Petrol Ofisi',
+      body:'Mehmet Kaya — Petrol Ofisi ₺4.200 harcaması km başına 38 TL ile şehiriçi limitin 2,5 katı. İnceleme gerekiyor.',
+      meta:'Bugün, 09:20 · Sistem', read:false },
+    { id:23, tip:'bl', title:'Avans Talebi — Onay Bekliyor',
+      body:'Okan Demir ₺5.000 avans talebi Dept. Sorumlusu onayından geçti. Muhasebe aktarımı bekliyor.',
+      meta:'Bugün, 10:00 · Zeynep A.', read:false },
+    { id:24, tip:'gr', title:'Dönem #1 Kapandı',
+      body:'Dönem #1 muhasebe kaydı tamamlandı. Toplam: ₺58.400 onaylı, ₺1.600 reddedildi.',
+      meta:'3 gün önce · Sistem', read:true }
+  ]
 };
 /* Aktif kullanıcının referansı — selectProj'da GLOBAL_INBOX[curUserKey]'e bağlanır */
 var NOTIFLAR = GLOBAL_INBOX['s'];
@@ -3221,7 +3370,7 @@ function renderDeptBek() {
     var extras = '';
     if (f.uyari)    extras += '<div class="sd-fis-uyari">⚠️ ' + f.uyari + '</div>';
     if (f.belgesiz) extras += '<div class="sd-fis-belgesiz">📋 Belgesiz · ' + (f.aciklama || '') + '</div>';
-    return '<div class="' + fisCls + '" id="sd-fis-' + f.id + '">' +
+    return '<div class="' + fisCls + '" id="sd-fis-' + f.id + '" onclick="openFisDetay(' + f.id + ',\'dept\')">' +
       '<div class="sd-fis-top">' +
         '<div class="' + cbCls + '" id="sd-cb-' + f.id + '" onclick="event.stopPropagation();_sdToggle(' + f.id + ')"></div>' +
         '<div class="sd-fis-dot" style="background:' + clr + ';margin-top:6px"></div>' +
@@ -3235,8 +3384,8 @@ function renderDeptBek() {
         '</div>' +
       '</div>' +
       '<div class="sd-fis-acts">' +
-        '<button class="sd-ok" onclick="deptOnayla(' + f.id + ')">✓ Onayla</button>' +
-        '<button class="sd-rd" onclick="deptReddet(' + f.id + ')">✕ Reddet</button>' +
+        '<button class="sd-ok" onclick="event.stopPropagation();deptOnayla(' + f.id + ')">✓ Onayla</button>' +
+        '<button class="sd-rd" onclick="event.stopPropagation();deptReddet(' + f.id + ')">✕ Reddet</button>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -3348,7 +3497,7 @@ function renderDeptEkip() {
   }
   var rows = DEPT_EKIP.map(function(u) {
     var bek = bekMap[u.name] || 0;
-    return '<div class="sd-uye" onclick="openMesaj(\'' + u.name.replace(/'/g, "\\'") + '\', \'' + u.ini + '\')">' +
+    return '<div class="sd-uye" onclick="openUyeProfil(\'' + u.id + '\')">' +
       '<div class="sd-uye-av">' + u.ini + '</div>' +
       '<div>' +
         '<div class="sd-uye-name">' + u.name + '</div>' +
@@ -3943,6 +4092,194 @@ document.getElementById('lb').addEventListener('click', function(e) {
 function openM(id) { document.getElementById(id).classList.add('on'); }
 function closeM(id) { document.getElementById(id).classList.remove('on'); }
 
+/* ═══ HARCAMA DETAY MODALI ═══ */
+/* ctx: 'dept' | 'acc' */
+var _fisDetCtx = '';
+var _fisDetId  = 0;
+
+function openFisDetay(id, ctx) {
+  _fisDetCtx = ctx;
+  _fisDetId  = id;
+
+  var f = null;
+  if (ctx === 'dept') {
+    for (var i = 0; i < DEPT_BEKLEYEN.length; i++) {
+      if (DEPT_BEKLEYEN[i].id === id) { f = DEPT_BEKLEYEN[i]; break; }
+    }
+  } else {
+    for (var j = 0; j < ACC_BEKLEYEN.length; j++) {
+      if (ACC_BEKLEYEN[j].id === id) { f = ACC_BEKLEYEN[j]; break; }
+    }
+  }
+  if (!f) return;
+
+  /* Başlık */
+  var titleEl = document.getElementById('md-fisdet-title');
+  if (titleEl) titleEl.textContent = ctx === 'dept' ? 'Harcama Detayı (Dept.)' : 'Harcama Detayı (Muhasebe)';
+
+  /* Küçük resim */
+  var thumbEl = document.getElementById('fdet-thumb');
+  if (thumbEl) {
+    var isAvans = f.tip === 'avans';
+    if (isAvans) {
+      thumbEl.innerHTML =
+        '<div class="fdet-thumb-ph">💰</div>' +
+        '<div class="fdet-thumb-lbl">Avans Talebi</div>';
+    } else if (f.belgesiz) {
+      thumbEl.innerHTML =
+        '<div class="fdet-thumb-ph">📋</div>' +
+        '<div class="fdet-thumb-lbl">Belge Yok</div>';
+    } else {
+      /* FIS_DEMO'dan küçük resim döndür — döngüsel */
+      var demoIdx = id % (FIS_DEMO ? FIS_DEMO.length : 1);
+      var demo    = FIS_DEMO && FIS_DEMO[demoIdx];
+      if (demo && demo.img) {
+        thumbEl.innerHTML = '<img src="' + demo.img + '" alt="fiş">';
+      } else {
+        thumbEl.innerHTML =
+          '<div class="fdet-thumb-ph">🧾</div>' +
+          '<div class="fdet-thumb-lbl">' + (f.satici || '—') + '</div>';
+      }
+    }
+  }
+
+  /* Uyarı bandı */
+  var uyWrap = document.getElementById('fdet-uyari-wrap');
+  if (uyWrap) {
+    var uyHtml = '';
+    if (f.uyari)    uyHtml += '<div class="fdet-uyari">⚠ ' + f.uyari + '</div>';
+    if (f.belgesiz) uyHtml += '<div class="fdet-belgesiz">📋 Belgesiz harcama' + (f.aciklama ? ' · ' + f.aciklama : '') + '</div>';
+    uyWrap.innerHTML = uyHtml;
+  }
+
+  /* Alanlar */
+  var rows = [];
+  if (f.tip === 'avans') {
+    rows.push(['Personel', f.uye]);
+    rows.push(['Tutar',    '₺' + f.tutar.toLocaleString('tr-TR')]);
+    rows.push(['Tarih',    f.tarih || '—']);
+    rows.push(['Gerekçe',  f.gerekce || '—']);
+    if (f.dept) rows.push(['Dept.', f.dept]);
+  } else {
+    rows.push(['Satıcı',   f.satici || '—']);
+    rows.push(['Tutar',    '₺' + f.tutar.toLocaleString('tr-TR')]);
+    rows.push(['Tarih',    f.tarih || '—']);
+    rows.push(['Kategori', SD_KAT_LBL[f.kat] || f.kat || '—']);
+    rows.push(['Personel', f.uye || '—']);
+    if (f.dept) rows.push(['Dept.', f.dept]);
+    if (f.aciklama) rows.push(['Açıklama', f.aciklama]);
+  }
+  var rowsEl = document.getElementById('fdet-rows');
+  if (rowsEl) {
+    rowsEl.innerHTML = rows.map(function(r) {
+      return '<div class="fdet-row">' +
+        '<div class="fdet-lbl">' + r[0] + '</div>' +
+        '<div class="fdet-val">' + r[1] + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  /* Aksiyon butonları */
+  var actsEl = document.getElementById('fdet-acts');
+  if (actsEl) {
+    var isAvans2 = f.tip === 'avans';
+    if (ctx === 'dept') {
+      actsEl.innerHTML =
+        '<button class="btn btn-g" onclick="_fisDetAksiyon(\'onayla\')">' +
+          (isAvans2 ? '✓ Onayla' : '✓ Onayla') + '</button>' +
+        '<button class="btn btn-r" onclick="_fisDetAksiyon(\'reddet\')">✕ Reddet</button>';
+    } else {
+      actsEl.innerHTML =
+        '<button class="btn btn-g" onclick="_fisDetAksiyon(\'onayla\')">' +
+          (isAvans2 ? '✓ Onayla & Aktar' : '✓ Onayla') + '</button>' +
+        '<button class="btn btn-r" onclick="_fisDetAksiyon(\'reddet\')">✕ Reddet</button>';
+    }
+  }
+
+  openM('md-fisdet');
+}
+
+function _fisDetAksiyon(tip) {
+  closeM('md-fisdet');
+  if (_fisDetCtx === 'dept') {
+    if (tip === 'onayla') deptOnayla(_fisDetId);
+    else deptReddet(_fisDetId);
+  } else {
+    if (tip === 'onayla') accOnayla(_fisDetId);
+    else accReddet(_fisDetId);
+  }
+}
+
+/* ═══ EKİP ÜYESİ PROFİL MODALI ═══ */
+function openUyeProfil(uyeId) {
+  var u = null;
+  for (var i = 0; i < DEPT_EKIP.length; i++) {
+    if (DEPT_EKIP[i].id === uyeId) { u = DEPT_EKIP[i]; break; }
+  }
+  if (!u) return;
+
+  /* Avatar & başlık */
+  var avEl   = document.getElementById('uye-prof-av');
+  var nameEl = document.getElementById('uye-prof-name');
+  var rolEl  = document.getElementById('uye-prof-rol');
+  if (avEl)   avEl.textContent   = u.ini;
+  if (nameEl) nameEl.textContent = u.name;
+  if (rolEl)  rolEl.textContent  = u.rol;
+
+  /* İstatistikler */
+  var bekList = DEPT_BEKLEYEN.filter(function(f){ return f.uye === u.name; });
+  var bekTop  = 0;
+  for (var b = 0; b < bekList.length; b++) bekTop += bekList[b].tutar;
+  var statsEl = document.getElementById('uye-stats');
+  if (statsEl) {
+    statsEl.innerHTML =
+      '<div class="uye-stat-c">' +
+        '<div class="uye-stat-val">₺' + u.tutar.toLocaleString('tr-TR') + '</div>' +
+        '<div class="uye-stat-lbl">Toplam</div>' +
+      '</div>' +
+      '<div class="uye-stat-c">' +
+        '<div class="uye-stat-val" style="color:var(--gr)">₺' + (u.tutar - bekTop).toLocaleString('tr-TR') + '</div>' +
+        '<div class="uye-stat-lbl">Onaylanan</div>' +
+      '</div>' +
+      '<div class="uye-stat-c">' +
+        '<div class="uye-stat-val" style="color:var(--am2)">₺' + bekTop.toLocaleString('tr-TR') + '</div>' +
+        '<div class="uye-stat-lbl">Bekleyen</div>' +
+      '</div>';
+  }
+
+  /* Harcama listesi */
+  var histEl = document.getElementById('uye-hist-list');
+  if (histEl) {
+    if (!bekList.length) {
+      histEl.innerHTML = '<div style="padding:14px 16px;font-size:13px;color:var(--tx3)">Bekleyen harcama yok</div>';
+    } else {
+      histEl.innerHTML = bekList.map(function(f) {
+        var clr = SD_KAT_CLR[f.kat] || 'var(--tx3)';
+        var lbl = SD_KAT_LBL[f.kat] || f.kat;
+        return '<div class="uye-hist-row" onclick="closeM(\'md-uye\');openFisDetay(' + f.id + ',\'dept\')">' +
+          '<div class="uye-hist-dot" style="background:' + clr + '"></div>' +
+          '<div class="uye-hist-info">' +
+            '<div class="uye-hist-satici">' + f.satici + '</div>' +
+            '<div class="uye-hist-meta">' + lbl + ' · ' + f.tarih + '</div>' +
+          '</div>' +
+          '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">' +
+            '<div class="uye-hist-tutar">₺' + f.tutar.toLocaleString('tr-TR') + '</div>' +
+            '<div class="uye-hist-tag uye-hist-tag-bek">Bekleyen</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+  }
+
+  /* Mesaj gönder butonu */
+  var msgBtn = document.getElementById('uye-msg-btn');
+  if (msgBtn) {
+    msgBtn.onclick = function() { closeM('md-uye'); openMesaj(u.name, u.ini); };
+  }
+
+  openM('md-uye');
+}
+
 /* ═══ BİLDİRİM YÖNETİMİ ═══ */
 /* Hedef kullanıcının gelen kutusuna bildirim ekler */
 function _pushNotif(toKey, tip, title, body, meta) {
@@ -4160,7 +4497,7 @@ function renderAccBek() {
       ? '<div style="font-size:12px;color:var(--tx2);margin-bottom:4px">Gerekçe: ' + (f.gerekce || '—') + '</div>'
       : '<div style="font-size:12px;color:var(--tx2);margin-bottom:4px">' + f.satici + ' <span style="color:var(--tx3)">· ' + f.kat + '</span></div>';
     var avBorder = isAvans ? 'border-color:rgba(232,150,46,.35);' : '';
-    return '<div class="sa-dept-card" style="' + avBorder + '">' +
+    return '<div class="sa-dept-card" style="' + avBorder + 'cursor:pointer" onclick="openFisDetay(' + f.id + ',\'acc\')">' +
       '<div class="sa-dc-hd" style="margin-bottom:8px">' +
         '<div style="width:32px;height:32px;border-radius:9px;background:' + (isAvans ? 'rgba(232,150,46,.15)' : 'var(--bg3)') + ';color:' + (isAvans ? 'var(--ac2)' : 'var(--tx2)') + ';font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + f.ini + '</div>' +
         '<div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--tx)">' + f.uye + avTag + bgsz + '</div><div style="font-size:11px;color:var(--tx3)">' + f.dept + ' · ' + f.tarih + '</div></div>' +
@@ -4168,8 +4505,8 @@ function renderAccBek() {
       '</div>' +
       desc + uyHtml +
       '<div style="display:flex;gap:8px;margin-top:10px">' +
-        '<button class="btn btn-g btn-sm" style="flex:1;justify-content:center" onclick="accOnayla(' + f.id + ')">' + (isAvans ? '✓ Onayla & Aktar' : 'Onayla') + '</button>' +
-        '<button class="btn btn-r btn-sm" style="flex:1;justify-content:center" onclick="accReddet(' + f.id + ')">Reddet</button>' +
+        '<button class="btn btn-g btn-sm" style="flex:1;justify-content:center" onclick="event.stopPropagation();accOnayla(' + f.id + ')">' + (isAvans ? '✓ Onayla & Aktar' : 'Onayla') + '</button>' +
+        '<button class="btn btn-r btn-sm" style="flex:1;justify-content:center" onclick="event.stopPropagation();accReddet(' + f.id + ')">Reddet</button>' +
       '</div>' +
     '</div>';
   }).join('');
