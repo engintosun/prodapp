@@ -1451,6 +1451,32 @@ body {
 }
 .sa-pdf-btn:active { background: var(--bg3); }
 
+/* ── Rapor drill-down ── */
+.sa-rep-drill-hd { display: flex; align-items: center; gap: 10px; padding: 0 0 14px; border-bottom: 1px solid var(--bo); margin-bottom: 14px; }
+.sa-rep-back { background: none; border: none; color: var(--ac2); font-size: 13px; font-weight: 600; font-family: var(--fn); cursor: pointer; padding: 0; flex-shrink: 0; }
+.sa-rep-drill-title { font-size: 15px; font-weight: 700; color: var(--tx); }
+.sa-rep-sec-hd { font-size: 10px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .6px; margin: 14px 0 8px; }
+.sa-rep-dept-row { background: var(--bg2); border: 1px solid var(--bo); border-radius: var(--r); padding: 12px; margin-bottom: 8px; cursor: pointer; transition: border-color .12s; }
+.sa-rep-dept-row:active { border-color: var(--ac); }
+.sa-rep-kisi-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--bg2); border: 1px solid var(--bo); border-radius: var(--rs); margin-bottom: 6px; cursor: pointer; }
+.sa-rep-kisi-row:active { border-color: var(--ac); }
+.sa-rep-kisi-av { width: 34px; height: 34px; border-radius: 10px; background: var(--bg3); border: 1px solid var(--bo2); font-size: 11px; font-weight: 800; color: var(--tx2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sa-rep-kisi-info { flex: 1; min-width: 0; }
+.sa-rep-kisi-name { font-size: 13px; font-weight: 600; color: var(--tx); }
+.sa-rep-kisi-sub  { font-size: 11px; color: var(--tx3); margin-top: 1px; }
+.sa-rep-kisi-tutar { font-size: 14px; font-weight: 800; font-family: var(--mo); color: var(--tx); }
+.sa-rep-stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.sa-rep-stat-c { background: var(--bg2); border: 1px solid var(--bo); border-radius: var(--rs); padding: 10px 8px; text-align: center; }
+.sa-rep-stat-v { font-size: 13px; font-weight: 800; font-family: var(--mo); color: var(--tx); margin-bottom: 2px; }
+.sa-rep-stat-l { font-size: 9px; color: var(--tx3); text-transform: uppercase; letter-spacing: .3px; }
+/* Dönem karşılaştırma tablo */
+.sa-don-tbl { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 12px; }
+.sa-don-tbl th { font-size: 9px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .4px; padding: 5px 4px; text-align: right; border-bottom: 1px solid var(--bo); }
+.sa-don-tbl th:first-child { text-align: left; }
+.sa-don-tbl td { padding: 8px 4px; border-bottom: 1px solid var(--bo); text-align: right; font-family: var(--mo); font-weight: 600; color: var(--tx2); }
+.sa-don-tbl td:first-child { text-align: left; font-family: var(--fn); color: var(--tx); font-weight: 600; }
+.sa-don-tbl tr:last-child td { border-bottom: none; }
+
 /* Mesaj bölümü */
 .sa-alici-lbl { font-size: 11px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .5px; padding: 12px 14px 6px; }
 .sa-msg-dept-row {
@@ -2679,6 +2705,68 @@ var DONEM_BUTCE = [
   { donem:1, lbl:'Dönem #1', butce:60000, harcanan:58400, reddedildi:5660, _lastPct:0 },
   { donem:0, lbl:'Dönem #0', butce:35000, harcanan:33780, reddedildi:1800, _lastPct:0 }
 ];
+
+/* ── Muhasebe Rapor — Departman Kategori Dağılımı ── */
+var ACC_DEPT_KATLAR = {
+  yapim:  [ {name:'Ulaşım',tutar:18400,renk:'#3B82F6'}, {name:'Konaklama',tutar:14200,renk:'#A855F7'}, {name:'Ekipman',tutar:9800,renk:'#E8962E'}, {name:'Yiyecek',tutar:4200,renk:'#22C55E'}, {name:'Diğer',tutar:1600,renk:'#64748B'} ],
+  kamera: [ {name:'Ekipman',tutar:18500,renk:'#E8962E'}, {name:'Ulaşım',tutar:8200,renk:'#3B82F6'}, {name:'Yiyecek',tutar:3200,renk:'#22C55E'}, {name:'Diğer',tutar:2800,renk:'#64748B'} ],
+  sanat:  [ {name:'Malzeme',tutar:12400,renk:'#EC4899'}, {name:'Ekipman',tutar:8600,renk:'#E8962E'}, {name:'Ulaşım',tutar:4200,renk:'#3B82F6'}, {name:'Yiyecek',tutar:1950,renk:'#22C55E'} ],
+  ses:    [ {name:'Ekipman',tutar:9200,renk:'#E8962E'}, {name:'Ulaşım',tutar:3400,renk:'#3B82F6'}, {name:'Yiyecek',tutar:1200,renk:'#22C55E'}, {name:'Diğer',tutar:1000,renk:'#64748B'} ],
+  kostum: [ {name:'Malzeme',tutar:11200,renk:'#EC4899'}, {name:'Konaklama',tutar:4800,renk:'#A855F7'}, {name:'Ulaşım',tutar:2400,renk:'#3B82F6'}, {name:'Diğer',tutar:1200,renk:'#64748B'} ]
+};
+
+/* ── Muhasebe Rapor — Personel Listesi ── */
+var ACC_RAPOR_PERSONEL = [
+  { name:'Mehmet Kaya',   ini:'MK', dept:'Yapım',   deptId:'yapim',  rol:'Araç Sorumlusu',     total:14200, onay:10000, bek:4200, avans:13000,
+    donemler:[{lbl:'Dönem #2',total:11240,onay:9240,bek:2000},{lbl:'Dönem #1',total:14600,onay:14600,bek:0}],
+    katlar:[{name:'Ulaşım',tutar:8200,renk:'#3B82F6'},{name:'Konaklama',tutar:3600,renk:'#A855F7'},{name:'Yiyecek',tutar:1400,renk:'#22C55E'},{name:'Diğer',tutar:1000,renk:'#64748B'}] },
+  { name:'Okan Demir',    ini:'OD', dept:'Kamera',  deptId:'kamera', rol:'Kamera Asistanı',    total:16400, onay:12600, bek:3800, avans:9000,
+    donemler:[{lbl:'Dönem #2',total:6840,onay:3040,bek:3800},{lbl:'Dönem #1',total:9200,onay:8800,bek:0}],
+    katlar:[{name:'Ekipman',tutar:10400,renk:'#E8962E'},{name:'Ulaşım',tutar:3600,renk:'#3B82F6'},{name:'Yiyecek',tutar:1600,renk:'#22C55E'},{name:'Diğer',tutar:800,renk:'#64748B'}] },
+  { name:'Burhan Çelik',  ini:'BÇ', dept:'Yapım',   deptId:'yapim',  rol:'Işık Sorumlusu',     total:8100,  onay:8100,  bek:0,    avans:2500,
+    donemler:[{lbl:'Dönem #2',total:8150,onay:8150,bek:0},{lbl:'Dönem #1',total:9400,onay:9400,bek:0}],
+    katlar:[{name:'Ekipman',tutar:4800,renk:'#E8962E'},{name:'Ulaşım',tutar:2100,renk:'#3B82F6'},{name:'Diğer',tutar:1200,renk:'#64748B'}] },
+  { name:'Selin Yıldız',  ini:'SY', dept:'Sanat',   deptId:'sanat',  rol:'Sanat Direktörü',    total:12800, onay:8500,  bek:4200, avans:3000,
+    donemler:[{lbl:'Dönem #2',total:4290,onay:3970,bek:320},{lbl:'Dönem #1',total:5800,onay:5500,bek:0}],
+    katlar:[{name:'Malzeme',tutar:6400,renk:'#EC4899'},{name:'Ekipman',tutar:4200,renk:'#E8962E'},{name:'Ulaşım',tutar:1600,renk:'#3B82F6'},{name:'Diğer',tutar:600,renk:'#64748B'}] },
+  { name:'Aylin Korkmaz', ini:'AK', dept:'Ses',     deptId:'ses',    rol:'Ses Direktörü',      total:7600,  onay:5700,  bek:1900, avans:0,
+    donemler:[{lbl:'Dönem #2',total:2670,onay:2670,bek:0},{lbl:'Dönem #1',total:3100,onay:2800,bek:0}],
+    katlar:[{name:'Ekipman',tutar:4200,renk:'#E8962E'},{name:'Ulaşım',tutar:2000,renk:'#3B82F6'},{name:'Yiyecek',tutar:800,renk:'#22C55E'},{name:'Diğer',tutar:600,renk:'#64748B'}] },
+  { name:'Fatih Bayrak',  ini:'FB', dept:'Kamera',  deptId:'kamera', rol:'Kamera Operatörü',   total:10800, onay:10800, bek:0,    avans:0,
+    donemler:[{lbl:'Dönem #2',total:5400,onay:5400,bek:0},{lbl:'Dönem #1',total:5400,onay:5400,bek:0}],
+    katlar:[{name:'Ekipman',tutar:6800,renk:'#E8962E'},{name:'Ulaşım',tutar:2800,renk:'#3B82F6'},{name:'Diğer',tutar:1200,renk:'#64748B'}] },
+  { name:'Elif Yılmaz',   ini:'EY', dept:'Kamera',  deptId:'kamera', rol:'Çekim Direktörü',    total:5500,  onay:5500,  bek:0,    avans:0,
+    donemler:[{lbl:'Dönem #2',total:2800,onay:2800,bek:0},{lbl:'Dönem #1',total:2700,onay:2700,bek:0}],
+    katlar:[{name:'Ulaşım',tutar:3200,renk:'#3B82F6'},{name:'Yiyecek',tutar:1400,renk:'#22C55E'},{name:'Diğer',tutar:900,renk:'#64748B'}] },
+  { name:'Can Kılıç',     ini:'CK', dept:'Sanat',   deptId:'sanat',  rol:'Set Dekorasyon',     total:8100,  onay:7200,  bek:900,  avans:0,
+    donemler:[{lbl:'Dönem #2',total:4100,onay:3600,bek:500},{lbl:'Dönem #1',total:4000,onay:3600,bek:0}],
+    katlar:[{name:'Malzeme',tutar:4600,renk:'#EC4899'},{name:'Ekipman',tutar:2200,renk:'#E8962E'},{name:'Diğer',tutar:1300,renk:'#64748B'}] },
+  { name:'Nisan Aydın',   ini:'NA', dept:'Sanat',   deptId:'sanat',  rol:'Kostüm Asistanı',    total:6250,  onay:4100,  bek:1100, avans:0,
+    donemler:[{lbl:'Dönem #2',total:3200,onay:2100,bek:600},{lbl:'Dönem #1',total:3050,onay:2000,bek:0}],
+    katlar:[{name:'Malzeme',tutar:3800,renk:'#EC4899'},{name:'Ulaşım',tutar:1400,renk:'#3B82F6'},{name:'Diğer',tutar:1050,renk:'#64748B'}] },
+  { name:'Kaan Taş',      ini:'KT', dept:'Ses',     deptId:'ses',    rol:'Ses Asistanı',       total:4200,  onay:4200,  bek:0,    avans:0,
+    donemler:[{lbl:'Dönem #2',total:2100,onay:2100,bek:0},{lbl:'Dönem #1',total:2100,onay:2100,bek:0}],
+    katlar:[{name:'Ekipman',tutar:2800,renk:'#E8962E'},{name:'Ulaşım',tutar:1000,renk:'#3B82F6'},{name:'Diğer',tutar:400,renk:'#64748B'}] },
+  { name:'Arda Şen',      ini:'AS', dept:'Kostüm',  deptId:'kostum', rol:'Makyaj Sanatçısı',   total:6800,  onay:6800,  bek:0,    avans:2000,
+    donemler:[{lbl:'Dönem #2',total:3400,onay:3400,bek:0},{lbl:'Dönem #1',total:3400,onay:3400,bek:0}],
+    katlar:[{name:'Malzeme',tutar:4200,renk:'#EC4899'},{name:'Konaklama',tutar:1600,renk:'#A855F7'},{name:'Diğer',tutar:1000,renk:'#64748B'}] },
+  { name:'Lale Çetin',    ini:'LC', dept:'Kostüm',  deptId:'kostum', rol:'Kostüm Asistanı',    total:4550,  onay:2040,  bek:2510, avans:0,
+    donemler:[{lbl:'Dönem #2',total:2400,onay:1040,bek:1360},{lbl:'Dönem #1',total:2150,onay:1000,bek:0}],
+    katlar:[{name:'Malzeme',tutar:2800,renk:'#EC4899'},{name:'Ulaşım',tutar:1100,renk:'#3B82F6'},{name:'Diğer',tutar:650,renk:'#64748B'}] },
+  { name:'Zeynep Arslan', ini:'ZA', dept:'Yapım',   deptId:'yapim',  rol:'Yapım Koordinatörü', total:3500,  onay:3900,  bek:0,    avans:0,
+    donemler:[{lbl:'Dönem #2',total:1800,onay:1900,bek:0},{lbl:'Dönem #1',total:1700,onay:2000,bek:0}],
+    katlar:[{name:'Ulaşım',tutar:2200,renk:'#3B82F6'},{name:'Yiyecek',tutar:800,renk:'#22C55E'},{name:'Diğer',tutar:500,renk:'#64748B'}] },
+  { name:'Mert Öztürk',   ini:'MO', dept:'Ses',     deptId:'ses',    rol:'Müzik Editörü',      total:3000,  onay:2500,  bek:200,  avans:0,
+    donemler:[{lbl:'Dönem #2',total:1500,onay:1250,bek:200},{lbl:'Dönem #1',total:1500,onay:1250,bek:0}],
+    katlar:[{name:'Ekipman',tutar:1800,renk:'#E8962E'},{name:'Ulaşım',tutar:800,renk:'#3B82F6'},{name:'Diğer',tutar:400,renk:'#64748B'}] }
+];
+
+/* ── Muhasebe Rapor — Dönem Kategori Karşılaştırması ── */
+var ACC_DONEM_KATLAR = {
+  2: [ {name:'Ulaşım',tutar:22400,renk:'#3B82F6'}, {name:'Ekipman',tutar:28600,renk:'#E8962E'}, {name:'Malzeme',tutar:18400,renk:'#EC4899'}, {name:'Konaklama',tutar:15800,renk:'#A855F7'}, {name:'Yiyecek',tutar:10350,renk:'#22C55E'}, {name:'Diğer',tutar:6900,renk:'#64748B'} ],
+  1: [ {name:'Ulaşım',tutar:28200,renk:'#3B82F6'}, {name:'Ekipman',tutar:32600,renk:'#E8962E'}, {name:'Malzeme',tutar:22800,renk:'#EC4899'}, {name:'Konaklama',tutar:18400,renk:'#A855F7'}, {name:'Yiyecek',tutar:12400,renk:'#22C55E'}, {name:'Diğer',tutar:8200,renk:'#64748B'} ],
+  0: [ {name:'Ulaşım',tutar:19200,renk:'#3B82F6'}, {name:'Ekipman',tutar:22400,renk:'#E8962E'}, {name:'Malzeme',tutar:15200,renk:'#EC4899'}, {name:'Konaklama',tutar:12600,renk:'#A855F7'}, {name:'Yiyecek',tutar:9800,renk:'#22C55E'}, {name:'Diğer',tutar:5800,renk:'#64748B'} ]
+};
 
 /* ── Dönem tanımları (Dept & Muhasebe) ── */
 var SD_DONEMLER = [
@@ -5318,7 +5406,10 @@ var ACC_ALICILAR_KISI = (function() {
 /* Birleşik liste — geriye dönük uyumluluk için */
 var ACC_ALICILAR = ACC_ALICILAR_DEPT.concat(ACC_ALICILAR_KISI);
 
-var saRaporTip  = 'dept';
+var saRaporTip      = 'dept';
+var saRaporDeptId   = ''; /* drill-down: seçili dept ID */
+var saRaporKisiIdx  = -1; /* drill-down: seçili kişi index */
+var saRaporKisiFrom = ''; /* 'dept' | 'list' */
 var saAliciId   = '';   /* seçili alıcı id — 'dept:yapim' veya 'kisi:MK:yapim' */
 var saAliciDept = '';   /* step 2'de açık olan dept anahtarı — 'yapim', 'kamera' vb. */
 
@@ -5522,15 +5613,24 @@ function renderAccSuphe() {
   el.innerHTML = html;
 }
 
+/* ═══ MUHASEBE RAPORLAR ═══ */
+
 function renderAccRapor(tip) {
-  saRaporTip = tip;
+  saRaporTip    = tip;
+  saRaporDeptId  = '';
+  saRaporKisiIdx = -1;
+  _renderAccRaporIc();
+}
+
+function _renderAccRaporIc() {
   var el = document.getElementById('sa-pnl-rapor');
   if (!el) return;
+
   var btns = '<div class="sa-rapor-btns">' +
     ['dept','kat','personel','donem'].map(function(t) {
       var icons = { dept:'🏢', kat:'🏷', personel:'👤', donem:'📅' };
       var lbls  = { dept:'Departman', kat:'Kategori', personel:'Personel', donem:'Dönem' };
-      return '<button class="sa-rapor-btn' + (t === tip ? ' on' : '') + '" onclick="renderAccRapor(\'' + t + '\')">' +
+      return '<button class="sa-rapor-btn' + (t === saRaporTip ? ' on' : '') + '" onclick="renderAccRapor(\'' + t + '\')">' +
         '<div class="sa-rapor-btn-ic">' + icons[t] + '</div>' +
         '<div class="sa-rapor-btn-lbl">' + lbls[t] + '</div>' +
       '</button>';
@@ -5538,74 +5638,373 @@ function renderAccRapor(tip) {
   '</div>';
 
   var content = '';
-  if (tip === 'dept') {
-    var maxD = 0;
-    for (var i = 0; i < ACC_DEPTS.length; i++) if (ACC_DEPTS[i].total > maxD) maxD = ACC_DEPTS[i].total;
-    content = '<div class="sa-rep-hd"><span>Departmana göre</span><span style="font-weight:400;font-size:11px">Toplam harcama</span></div>';
-    content += ACC_DEPTS.map(function(d) {
-      var pct = maxD > 0 ? Math.round(d.total / maxD * 100) : 0;
-      return '<div class="sa-bar-row">' +
-        '<div class="sa-bar-lbl">' + d.name + '</div>' +
-        '<div class="sa-bar-wrap"><div class="sa-bar-f" style="width:' + pct + '%;background:' + d.renk + '"></div></div>' +
-        '<div class="sa-bar-val">₺' + d.total.toLocaleString('tr-TR') + '</div>' +
-      '</div>';
-    }).join('');
-  } else if (tip === 'kat') {
-    var katlar = [
-      { name:'Ulaşım',    tutar:22400, renk:'#3B82F6' },
-      { name:'Yiyecek',   tutar:18700, renk:'#22C55E' },
-      { name:'Konaklama', tutar:15900, renk:'#A855F7' },
-      { name:'Ekipman',   tutar:12300, renk:'#E8962E' },
-      { name:'Malzeme',   tutar:8750,  renk:'#EC4899' },
-      { name:'Diğer',     tutar:4400,  renk:'#64748B' }
-    ];
-    var maxK = 0;
-    for (var ki = 0; ki < katlar.length; ki++) if (katlar[ki].tutar > maxK) maxK = katlar[ki].tutar;
-    content = '<div class="sa-rep-hd"><span>Kategoriye göre</span><span style="font-weight:400;font-size:11px">Tüm departmanlar</span></div>';
-    content += katlar.map(function(k) {
-      var pct = maxK > 0 ? Math.round(k.tutar / maxK * 100) : 0;
-      return '<div class="sa-bar-row">' +
-        '<div class="sa-bar-lbl">' + k.name + '</div>' +
-        '<div class="sa-bar-wrap"><div class="sa-bar-f" style="width:' + pct + '%;background:' + k.renk + '"></div></div>' +
-        '<div class="sa-bar-val">₺' + k.tutar.toLocaleString('tr-TR') + '</div>' +
-      '</div>';
-    }).join('');
-  } else if (tip === 'personel') {
-    var personeller = [
-      { name:'Mehmet Kaya',   dept:'Yapım',   tutar:11240 },
-      { name:'Burhan Çelik',  dept:'Yapım',   tutar:8150  },
-      { name:'Okan Demir',    dept:'Kamera',  tutar:6840  },
-      { name:'Selin Yıldız',  dept:'Sanat',   tutar:4290  },
-      { name:'Aylin Korkmaz', dept:'Ses',     tutar:2670  }
-    ];
-    var maxP = 0;
-    for (var pi = 0; pi < personeller.length; pi++) if (personeller[pi].tutar > maxP) maxP = personeller[pi].tutar;
-    content = '<div class="sa-rep-hd"><span>Personele göre</span><span style="font-weight:400;font-size:11px">Kişisel harcama</span></div>';
-    content += personeller.map(function(p) {
-      var pct = maxP > 0 ? Math.round(p.tutar / maxP * 100) : 0;
-      return '<div class="sa-rep-row">' +
-        '<div class="sa-rep-left"><div>' + p.name + '</div><div class="sa-rep-sub">' + p.dept + '</div></div>' +
-        '<div class="sa-rep-val">₺' + p.tutar.toLocaleString('tr-TR') + '</div>' +
-      '</div>';
-    }).join('');
-  } else if (tip === 'donem') {
-    var donemler = [
-      { name:'Dönem 1 · Oca–Şub', total:58400, onay:58400, bek:0    },
-      { name:'Dönem 2 · Mar–Nis', total:84050, onay:62450, bek:21600 }
-    ];
-    content = '<div class="sa-rep-hd"><span>Dönem karşılaştırması</span></div>';
-    content += '<div class="sa-don-cmp">' + donemler.map(function(d) {
-      return '<div class="sa-don-card">' +
-        '<div class="sa-don-name">' + d.name + '</div>' +
-        '<div class="sa-don-stat"><div class="sa-don-stat-lbl">Toplam</div><div class="sa-don-stat-val">₺' + d.total.toLocaleString('tr-TR') + '</div></div>' +
-        '<div class="sa-don-stat"><div class="sa-don-stat-lbl">Onaylı</div><div class="sa-don-stat-val" style="color:var(--gr2)">₺' + d.onay.toLocaleString('tr-TR') + '</div></div>' +
-        '<div class="sa-don-stat"><div class="sa-don-stat-lbl">Bekleyen</div><div class="sa-don-stat-val" style="color:var(--am2)">₺' + d.bek.toLocaleString('tr-TR') + '</div></div>' +
-      '</div>';
-    }).join('') + '</div>';
-  }
+  if      (saRaporTip === 'dept')     content = saRaporDeptId   ? _raporDeptDetay()    : _raporDeptList();
+  else if (saRaporTip === 'kat')      content = _raporKat();
+  else if (saRaporTip === 'personel') content = saRaporKisiIdx >= 0 ? _raporKisiDetay() : _raporPersonelList();
+  else if (saRaporTip === 'donem')    content = _raporDonem();
 
   el.innerHTML = btns + content +
     '<button class="sa-pdf-btn" onclick="accPDF()">📥 PDF Raporu İndir</button>';
+}
+
+/* ── Dept Raporu — Liste ── */
+function _raporDeptList() {
+  var maxD = 0;
+  for (var i = 0; i < ACC_DEPTS.length; i++) if (ACC_DEPTS[i].total > maxD) maxD = ACC_DEPTS[i].total;
+  var html = '<div class="sa-rep-hd"><span>Departmana göre</span><span style="font-weight:400;font-size:11px">Detay için tıkla</span></div>';
+  html += ACC_DEPTS.map(function(d) {
+    var pct = maxD > 0 ? Math.round(d.total / maxD * 100) : 0;
+    return '<div class="sa-rep-dept-row" onclick="_saRaporDept(\'' + d.id + '\')">' +
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">' +
+        '<div class="sa-dc-dot" style="background:' + d.renk + '"></div>' +
+        '<div style="flex:1;font-size:13px;font-weight:700;color:var(--tx)">' + d.name + '</div>' +
+        '<div style="font-size:14px;font-weight:800;font-family:var(--mo)">₺' + d.total.toLocaleString('tr-TR') + '</div>' +
+        '<div style="font-size:13px;color:var(--tx3);margin-left:2px">›</div>' +
+      '</div>' +
+      '<div class="sa-bar-wrap"><div class="sa-bar-f" style="width:' + pct + '%;background:' + d.renk + '"></div></div>' +
+      '<div style="display:flex;justify-content:space-between;margin-top:6px">' +
+        '<span style="font-size:11px;color:var(--gr2)">Onaylı ₺' + d.onay.toLocaleString('tr-TR') + '</span>' +
+        '<span style="font-size:11px;color:var(--am2)">Bekleyen ₺' + d.bekleyen.toLocaleString('tr-TR') + '</span>' +
+        '<span style="font-size:11px;color:var(--tx3)">' + d.uye + ' kişi</span>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+  return html;
+}
+
+function _saRaporDept(id) {
+  saRaporDeptId = id;
+  _renderAccRaporIc();
+}
+
+/* ── Dept Raporu — Detay ── */
+function _raporDeptDetay() {
+  var dept = null;
+  for (var i = 0; i < ACC_DEPTS.length; i++) if (ACC_DEPTS[i].id === saRaporDeptId) { dept = ACC_DEPTS[i]; break; }
+  if (!dept) return '';
+
+  var uyeler  = ACC_DEPT_UYELER[saRaporDeptId]   || [];
+  var katlar  = ACC_DEPT_KATLAR[saRaporDeptId]   || [];
+  var donemler= ACC_DEPT_DONEMLER[saRaporDeptId] || [];
+  var avanslar= ACC_DEPT_AVANS[saRaporDeptId]    || [];
+
+  var html = '<div class="sa-rep-drill-hd">' +
+    '<button class="sa-rep-back" onclick="_saRaporDeptBack()">← Geri</button>' +
+    '<div style="flex:1">' +
+      '<div class="sa-rep-drill-title">' + dept.name + '</div>' +
+      '<div style="font-size:11px;color:var(--tx3)">' + dept.uye + ' kişi · Detay Raporu</div>' +
+    '</div>' +
+  '</div>';
+
+  /* Özet */
+  html += '<div class="sa-rep-stat-grid">';
+  html += '<div class="sa-rep-stat-c"><div class="sa-rep-stat-v">₺' + dept.total.toLocaleString('tr-TR') + '</div><div class="sa-rep-stat-l">Toplam</div></div>';
+  html += '<div class="sa-rep-stat-c"><div class="sa-rep-stat-v" style="color:var(--gr2)">₺' + dept.onay.toLocaleString('tr-TR') + '</div><div class="sa-rep-stat-l">Onaylı</div></div>';
+  html += '<div class="sa-rep-stat-c"><div class="sa-rep-stat-v" style="color:var(--am2)">₺' + dept.bekleyen.toLocaleString('tr-TR') + '</div><div class="sa-rep-stat-l">Bekleyen</div></div>';
+  html += '</div>';
+
+  /* Kişi bazlı döküm */
+  html += '<div class="sa-rep-sec-hd">Kişi Bazlı Döküm</div>';
+  var maxU = 0;
+  for (var ui = 0; ui < uyeler.length; ui++) if (uyeler[ui].total > maxU) maxU = uyeler[ui].total;
+  html += uyeler.map(function(u) {
+    var upct = maxU > 0 ? Math.round(u.total / maxU * 100) : 0;
+    var kisiIdx = -1;
+    for (var ki = 0; ki < ACC_RAPOR_PERSONEL.length; ki++) {
+      if (ACC_RAPOR_PERSONEL[ki].name === u.name) { kisiIdx = ki; break; }
+    }
+    return '<div class="sa-rep-kisi-row" onclick="' + (kisiIdx >= 0 ? '_saRaporKisiFromDept(' + kisiIdx + ')' : '') + '">' +
+      '<div class="sa-rep-kisi-av">' + u.ini + '</div>' +
+      '<div class="sa-rep-kisi-info">' +
+        '<div style="display:flex;justify-content:space-between;align-items:baseline">' +
+          '<div class="sa-rep-kisi-name">' + u.name + '</div>' +
+          '<div class="sa-rep-kisi-tutar">₺' + u.total.toLocaleString('tr-TR') + '</div>' +
+        '</div>' +
+        '<div class="sa-rep-kisi-sub">' + u.rol + '</div>' +
+        '<div style="margin-top:5px"><div class="sa-bar-wrap"><div class="sa-bar-f" style="width:' + upct + '%;background:' + dept.renk + '"></div></div></div>' +
+        '<div style="display:flex;gap:10px;margin-top:3px">' +
+          '<span style="font-size:10px;color:var(--gr2)">₺' + u.onay.toLocaleString('tr-TR') + ' onaylı</span>' +
+          (u.bek > 0 ? '<span style="font-size:10px;color:var(--am2)">₺' + u.bek.toLocaleString('tr-TR') + ' bekleyen</span>' : '') +
+        '</div>' +
+      '</div>' +
+      '<div style="color:var(--tx3);font-size:12px;flex-shrink:0">' + (kisiIdx >= 0 ? '›' : '') + '</div>' +
+    '</div>';
+  }).join('');
+
+  /* Kategori dağılımı */
+  if (katlar.length) {
+    html += '<div class="sa-rep-sec-hd">Kategori Dağılımı</div>';
+    var maxK = 0;
+    for (var ki2 = 0; ki2 < katlar.length; ki2++) if (katlar[ki2].tutar > maxK) maxK = katlar[ki2].tutar;
+    html += katlar.map(function(kt) {
+      var kpct = maxK > 0 ? Math.round(kt.tutar / maxK * 100) : 0;
+      return '<div class="sa-bar-row">' +
+        '<div class="sa-bar-lbl">' + kt.name + '</div>' +
+        '<div class="sa-bar-wrap"><div class="sa-bar-f" style="width:' + kpct + '%;background:' + kt.renk + '"></div></div>' +
+        '<div class="sa-bar-val">₺' + kt.tutar.toLocaleString('tr-TR') + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  /* Dönem özeti tablosu */
+  if (donemler.length) {
+    html += '<div class="sa-rep-sec-hd">Dönem Bazlı Özet</div>';
+    html += '<table class="sa-don-tbl"><thead><tr><th>Dönem</th><th>Toplam</th><th>Onaylı</th><th>Reddedildi</th></tr></thead><tbody>';
+    html += donemler.map(function(d) {
+      return '<tr><td>' + d.lbl + '</td><td>₺' + d.total.toLocaleString('tr-TR') + '</td>' +
+        '<td style="color:var(--gr2)">₺' + d.onay.toLocaleString('tr-TR') + '</td>' +
+        '<td style="color:var(--rd2)">₺' + (d.red || 0).toLocaleString('tr-TR') + '</td></tr>';
+    }).join('');
+    html += '</tbody></table>';
+  }
+
+  /* Avans özeti */
+  if (avanslar.length) {
+    var topAv = 0;
+    for (var avi = 0; avi < avanslar.length; avi++) topAv += avanslar[avi].tutar;
+    html += '<div class="sa-rep-sec-hd">Avans Özeti · ₺' + topAv.toLocaleString('tr-TR') + ' toplam</div>';
+    html += avanslar.map(function(av) {
+      var clr = av.durum === 'ödendi' ? 'var(--gr2)' : 'var(--am2)';
+      return '<div class="sa-rep-row">' +
+        '<div class="sa-rep-left"><div>' + av.name + '</div><div class="sa-rep-sub">' + av.gerekce + ' · ' + av.tarih + '</div></div>' +
+        '<div style="text-align:right"><div class="sa-rep-val">₺' + av.tutar.toLocaleString('tr-TR') + '</div><div style="font-size:10px;color:' + clr + '">' + av.durum + '</div></div>' +
+      '</div>';
+    }).join('');
+  }
+
+  return html;
+}
+
+function _saRaporDeptBack() {
+  saRaporDeptId  = '';
+  saRaporKisiIdx = -1;
+  _renderAccRaporIc();
+}
+
+/* ── Kategori Raporu ── */
+function _raporKat() {
+  var katlar = ACC_DONEM_KATLAR[2] || [];
+  var total = 0;
+  for (var i = 0; i < katlar.length; i++) total += katlar[i].tutar;
+  var maxK = 0;
+  for (var ki = 0; ki < katlar.length; ki++) if (katlar[ki].tutar > maxK) maxK = katlar[ki].tutar;
+  var html = '<div class="sa-rep-hd"><span>Kategoriye göre</span><span style="font-weight:400;font-size:11px">Aktif dönem · ₺' + total.toLocaleString('tr-TR') + '</span></div>';
+  html += katlar.map(function(k) {
+    var pct    = maxK  > 0 ? Math.round(k.tutar / maxK  * 100) : 0;
+    var pctTop = total > 0 ? (k.tutar / total * 100).toFixed(1) : '0.0';
+    return '<div class="sa-bar-row">' +
+      '<div class="sa-bar-lbl">' + k.name + '</div>' +
+      '<div class="sa-bar-wrap"><div class="sa-bar-f" style="width:' + pct + '%;background:' + k.renk + '"></div></div>' +
+      '<div style="text-align:right;flex-shrink:0;min-width:96px">' +
+        '<div class="sa-bar-val">₺' + k.tutar.toLocaleString('tr-TR') + '</div>' +
+        '<div style="font-size:10px;color:var(--tx3)">%' + pctTop + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+  return html;
+}
+
+/* ── Personel Raporu — Liste ── */
+function _raporPersonelList() {
+  var sorted = ACC_RAPOR_PERSONEL.slice().sort(function(a,b){ return b.total - a.total; });
+  var maxP = sorted[0] ? sorted[0].total : 0;
+  var html = '<div class="sa-rep-hd"><span>Personele göre</span><span style="font-weight:400;font-size:11px">Detay için tıkla</span></div>';
+  html += sorted.map(function(p) {
+    var origIdx = -1;
+    for (var i = 0; i < ACC_RAPOR_PERSONEL.length; i++) if (ACC_RAPOR_PERSONEL[i].name === p.name) { origIdx = i; break; }
+    var pct = maxP > 0 ? Math.round(p.total / maxP * 100) : 0;
+    return '<div class="sa-rep-kisi-row" onclick="_saRaporKisi(' + origIdx + ')">' +
+      '<div class="sa-rep-kisi-av">' + p.ini + '</div>' +
+      '<div class="sa-rep-kisi-info">' +
+        '<div style="display:flex;justify-content:space-between;align-items:baseline">' +
+          '<div class="sa-rep-kisi-name">' + p.name + '</div>' +
+          '<div class="sa-rep-kisi-tutar">₺' + p.total.toLocaleString('tr-TR') + '</div>' +
+        '</div>' +
+        '<div class="sa-rep-kisi-sub">' + p.dept + ' · ' + p.rol + '</div>' +
+        '<div style="margin-top:5px"><div class="sa-bar-wrap"><div class="sa-bar-f" style="width:' + pct + '%"></div></div></div>' +
+      '</div>' +
+      '<div style="color:var(--tx3);font-size:12px;flex-shrink:0">›</div>' +
+    '</div>';
+  }).join('');
+  return html;
+}
+
+function _saRaporKisi(idx) {
+  saRaporKisiFrom = 'list';
+  saRaporKisiIdx  = idx;
+  _renderAccRaporIc();
+}
+
+function _saRaporKisiFromDept(idx) {
+  saRaporKisiFrom = 'dept';
+  saRaporKisiIdx  = idx;
+  _renderAccRaporIc();
+}
+
+/* ── Personel Raporu — Detay ── */
+function _raporKisiDetay() {
+  var p = ACC_RAPOR_PERSONEL[saRaporKisiIdx];
+  if (!p) return '';
+
+  var backLabel = saRaporKisiFrom === 'dept' ? '← ' + p.dept : '← Geri';
+  var html = '<div class="sa-rep-drill-hd">' +
+    '<button class="sa-rep-back" onclick="_saRaporKisiBack()">' + backLabel + '</button>' +
+    '<div style="display:flex;align-items:center;gap:10px;flex:1">' +
+      '<div class="sa-rep-kisi-av" style="background:var(--bg3);border:1px solid var(--bo2)">' + p.ini + '</div>' +
+      '<div><div class="sa-rep-drill-title">' + p.name + '</div><div style="font-size:11px;color:var(--tx3)">' + p.dept + ' · Kişi Raporu</div></div>' +
+    '</div>' +
+  '</div>';
+
+  /* Özet grid */
+  html += '<div class="sa-rep-stat-grid">';
+  html += '<div class="sa-rep-stat-c"><div class="sa-rep-stat-v">₺' + p.total.toLocaleString('tr-TR') + '</div><div class="sa-rep-stat-l">Toplam</div></div>';
+  html += '<div class="sa-rep-stat-c"><div class="sa-rep-stat-v" style="color:var(--gr2)">₺' + p.onay.toLocaleString('tr-TR') + '</div><div class="sa-rep-stat-l">Onaylı</div></div>';
+  html += '<div class="sa-rep-stat-c"><div class="sa-rep-stat-v" style="color:var(--am2)">₺' + p.bek.toLocaleString('tr-TR') + '</div><div class="sa-rep-stat-l">Bekleyen</div></div>';
+  html += '</div>';
+
+  /* Kategori dağılımı */
+  if (p.katlar && p.katlar.length) {
+    html += '<div class="sa-rep-sec-hd">Kategori Dağılımı</div>';
+    var maxKt = 0;
+    for (var ki = 0; ki < p.katlar.length; ki++) if (p.katlar[ki].tutar > maxKt) maxKt = p.katlar[ki].tutar;
+    html += p.katlar.map(function(kt) {
+      var kpct = maxKt > 0 ? Math.round(kt.tutar / maxKt * 100) : 0;
+      return '<div class="sa-bar-row">' +
+        '<div class="sa-bar-lbl">' + kt.name + '</div>' +
+        '<div class="sa-bar-wrap"><div class="sa-bar-f" style="width:' + kpct + '%;background:' + kt.renk + '"></div></div>' +
+        '<div class="sa-bar-val">₺' + kt.tutar.toLocaleString('tr-TR') + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  /* Dönem bazlı özet */
+  if (p.donemler && p.donemler.length) {
+    html += '<div class="sa-rep-sec-hd">Dönem Özeti</div>';
+    html += '<table class="sa-don-tbl"><thead><tr><th>Dönem</th><th>Toplam</th><th>Onaylı</th><th>Bekleyen</th></tr></thead><tbody>';
+    html += p.donemler.map(function(d) {
+      return '<tr><td>' + d.lbl + '</td><td>₺' + d.total.toLocaleString('tr-TR') + '</td>' +
+        '<td style="color:var(--gr2)">₺' + d.onay.toLocaleString('tr-TR') + '</td>' +
+        '<td style="color:' + (d.bek > 0 ? 'var(--am2)' : 'var(--tx3)') + '">₺' + d.bek.toLocaleString('tr-TR') + '</td></tr>';
+    }).join('');
+    html += '</tbody></table>';
+  }
+
+  /* Avans geçmişi */
+  if (p.avans > 0) {
+    var deptAvanslar = ACC_DEPT_AVANS[p.deptId] || [];
+    var kisiAvanslar = deptAvanslar.filter(function(av) { return av.name === p.name; });
+    html += '<div class="sa-rep-sec-hd">Avans Geçmişi · ₺' + p.avans.toLocaleString('tr-TR') + ' toplam</div>';
+    if (kisiAvanslar.length) {
+      html += kisiAvanslar.map(function(av) {
+        var clr = av.durum === 'ödendi' ? 'var(--gr2)' : 'var(--am2)';
+        return '<div class="sa-rep-row">' +
+          '<div class="sa-rep-left"><div>₺' + av.tutar.toLocaleString('tr-TR') + '</div><div class="sa-rep-sub">' + av.gerekce + ' · ' + av.tarih + '</div></div>' +
+          '<div style="font-size:12px;font-weight:700;color:' + clr + '">' + av.durum + '</div>' +
+        '</div>';
+      }).join('');
+    } else {
+      html += '<div style="text-align:center;padding:16px;color:var(--tx3);font-size:12px">Avans kaydı bulunamadı</div>';
+    }
+  }
+
+  return html;
+}
+
+function _saRaporKisiBack() {
+  saRaporKisiIdx = -1;
+  if (saRaporKisiFrom === 'dept') {
+    /* dept detayına geri dön */
+    saRaporKisiFrom = '';
+    _renderAccRaporIc();
+  } else {
+    saRaporKisiFrom = '';
+    saRaporDeptId   = '';
+    _renderAccRaporIc();
+  }
+}
+
+/* ── Dönem Karşılaştırma Raporu ── */
+function _raporDonem() {
+  var html = '<div class="sa-rep-hd"><span>Dönem Karşılaştırması</span><span style="font-weight:400;font-size:11px">Tüm dönemler</span></div>';
+
+  /* Genel özet tablosu */
+  html += '<div class="sa-rep-sec-hd">Genel Özet</div>';
+  html += '<table class="sa-don-tbl"><thead><tr><th>Dönem</th><th>Bütçe</th><th>Toplam</th><th>Onaylı</th><th>Red</th><th>% Onay</th></tr></thead><tbody>';
+
+  /* Dönem #2 — aktif */
+  var t2 = 0, o2 = 0;
+  for (var i = 0; i < ACC_DEPTS.length; i++) { t2 += ACC_DEPTS[i].total; o2 += ACC_DEPTS[i].onay; }
+  var b2rec = null;
+  for (var bi = 0; bi < DONEM_BUTCE.length; bi++) if (DONEM_BUTCE[bi].donem === 2) { b2rec = DONEM_BUTCE[bi]; break; }
+  var r2 = b2rec ? b2rec.reddedildi : 0;
+  var bu2 = b2rec ? b2rec.butce : 0;
+  html += '<tr><td>Dönem #2 <span style="font-size:9px;color:var(--gr)">●</span></td>' +
+    '<td>₺' + bu2.toLocaleString('tr-TR') + '</td>' +
+    '<td>₺' + t2.toLocaleString('tr-TR') + '</td>' +
+    '<td style="color:var(--gr2)">₺' + o2.toLocaleString('tr-TR') + '</td>' +
+    '<td style="color:var(--rd2)">₺' + r2.toLocaleString('tr-TR') + '</td>' +
+    '<td>%' + (t2 > 0 ? Math.round(o2 / t2 * 100) : 0) + '</td></tr>';
+
+  [1, 0].forEach(function(did) {
+    var depts = SA_DONEM_DEPTS[did] || [];
+    var t = 0, o = 0, r = 0;
+    for (var j = 0; j < depts.length; j++) { t += depts[j].total; o += depts[j].onay; r += (depts[j].red || 0); }
+    var brec = null;
+    for (var bj = 0; bj < DONEM_BUTCE.length; bj++) if (DONEM_BUTCE[bj].donem === did) { brec = DONEM_BUTCE[bj]; break; }
+    var bu = brec ? brec.butce : 0;
+    html += '<tr><td>Dönem #' + did + '</td>' +
+      '<td>₺' + bu.toLocaleString('tr-TR') + '</td>' +
+      '<td>₺' + t.toLocaleString('tr-TR') + '</td>' +
+      '<td style="color:var(--gr2)">₺' + o.toLocaleString('tr-TR') + '</td>' +
+      '<td style="color:var(--rd2)">₺' + r.toLocaleString('tr-TR') + '</td>' +
+      '<td>%' + (t > 0 ? Math.round(o / t * 100) : 0) + '</td></tr>';
+  });
+  html += '</tbody></table>';
+
+  /* Departman bazlı karşılaştırma */
+  html += '<div class="sa-rep-sec-hd">Departman Bazlı (#2 / #1 / #0)</div>';
+  html += '<table class="sa-don-tbl"><thead><tr><th>Dept</th><th>#2</th><th>#1</th><th>#0</th><th>Δ 2–1</th></tr></thead><tbody>';
+  var depts1 = SA_DONEM_DEPTS[1] || [];
+  var depts0 = SA_DONEM_DEPTS[0] || [];
+  for (var di = 0; di < ACC_DEPTS.length; di++) {
+    var d2 = ACC_DEPTS[di];
+    var d1 = null, d0 = null;
+    for (var d1i = 0; d1i < depts1.length; d1i++) if (depts1[d1i].id === d2.id) { d1 = depts1[d1i]; break; }
+    for (var d0i = 0; d0i < depts0.length; d0i++) if (depts0[d0i].id === d2.id) { d0 = depts0[d0i]; break; }
+    var delta = d1 ? (d2.total - d1.total) : 0;
+    var dSign = delta >= 0 ? '+' : '';
+    var dClr  = delta > 0 ? 'var(--rd2)' : (delta < 0 ? 'var(--gr2)' : 'var(--tx3)');
+    html += '<tr>' +
+      '<td>' + d2.name + '</td>' +
+      '<td>₺' + (d2.total/1000).toFixed(0) + 'K</td>' +
+      '<td>₺' + (d1 ? (d1.total/1000).toFixed(0) : '—') + 'K</td>' +
+      '<td>₺' + (d0 ? (d0.total/1000).toFixed(0) : '—') + 'K</td>' +
+      '<td style="color:' + dClr + '">' + dSign + (delta/1000).toFixed(0) + 'K</td>' +
+    '</tr>';
+  }
+  html += '</tbody></table>';
+
+  /* Kategori karşılaştırması #2 vs #1 */
+  html += '<div class="sa-rep-sec-hd">Kategori Bazlı (#2 vs #1)</div>';
+  html += '<table class="sa-don-tbl"><thead><tr><th>Kategori</th><th>#2</th><th>#1</th><th>Fark</th></tr></thead><tbody>';
+  var kd2 = ACC_DONEM_KATLAR[2] || [];
+  var kd1 = ACC_DONEM_KATLAR[1] || [];
+  kd2.forEach(function(k) {
+    var k1 = null;
+    for (var ki = 0; ki < kd1.length; ki++) if (kd1[ki].name === k.name) { k1 = kd1[ki]; break; }
+    var diff = k1 ? (k.tutar - k1.tutar) : 0;
+    var dSign = diff >= 0 ? '+' : '';
+    var dClr  = diff > 0 ? 'var(--rd2)' : (diff < 0 ? 'var(--gr2)' : 'var(--tx3)');
+    html += '<tr>' +
+      '<td>' + k.name + '</td>' +
+      '<td>₺' + k.tutar.toLocaleString('tr-TR') + '</td>' +
+      '<td>₺' + (k1 ? k1.tutar.toLocaleString('tr-TR') : '—') + '</td>' +
+      '<td style="color:' + dClr + '">' + dSign + diff.toLocaleString('tr-TR') + '</td>' +
+    '</tr>';
+  });
+  html += '</tbody></table>';
+
+  return html;
 }
 
 /* ── Muhasebe Mesaj — İki adımlı alıcı seçimi ── */
