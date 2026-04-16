@@ -1107,6 +1107,125 @@ body {
 .sa-don-cmp-val { font-size: 12px; font-weight: 700; font-family: var(--mo); flex-shrink: 0; text-align: right; }
 .sa-don-cmp-delta { font-size: 11px; margin-left: 8px; flex-shrink: 0; }
 
+/* ── Dept Avans Formu & Geçmişi ── */
+.sd-av-form {
+  background: var(--bg2); border: 1px solid var(--bo);
+  border-radius: var(--r); padding: 13px 14px; margin-bottom: 12px;
+}
+.sd-av-form-hd {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+}
+.sd-av-form-title { font-size: 13px; font-weight: 700; color: var(--tx); }
+.sd-av-ozet {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px; margin-bottom: 14px;
+}
+.sd-av-ozet-c {
+  background: var(--bg3); border-radius: var(--rs); padding: 9px 8px; text-align: center;
+}
+.sd-av-ozet-v { font-size: 14px; font-weight: 800; font-family: var(--mo); }
+.sd-av-ozet-l {
+  font-size: 9px; color: var(--tx3); text-transform: uppercase; letter-spacing: .4px; margin-top: 2px;
+}
+.sd-av-gec-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 11px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .5px;
+  padding: 10px 0 6px; margin-top: 4px; border-top: 1px solid var(--bo);
+}
+.sd-av-gec-row {
+  background: var(--bg2); border: 1px solid var(--bo);
+  border-radius: var(--rs); padding: 11px 12px; margin-bottom: 7px;
+  display: flex; align-items: flex-start; gap: 9px;
+}
+.sd-av-gec-av {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: var(--bg3); border: 1px solid var(--bo2);
+  font-size: 10px; font-weight: 800; color: var(--tx2);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.sd-av-gec-info { flex: 1; min-width: 0; }
+.sd-av-gec-name { font-size: 12px; font-weight: 600; color: var(--tx); }
+.sd-av-gec-sub  { font-size: 11px; color: var(--tx3); margin-top: 1px; }
+.sd-av-gec-right { text-align: right; flex-shrink: 0; }
+.sd-av-gec-tutar { font-size: 13px; font-weight: 800; font-family: var(--mo); color: var(--tx); }
+.sd-av-gec-durum { font-size: 10px; margin-top: 2px; font-weight: 700; }
+/* ── Dept Geçmiş Dönem Sekmesi ── */
+.sd-gec-donem-row {
+  display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none;
+  padding-bottom: 2px; margin-bottom: 12px;
+}
+.sd-gec-donem-row::-webkit-scrollbar { display: none; }
+.sd-gec-don-pill {
+  display: flex; flex-direction: column; align-items: center;
+  background: var(--bg2); border: 1px solid var(--bo);
+  border-radius: 20px; padding: 5px 14px;
+  cursor: pointer; white-space: nowrap; flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent; transition: all .12s;
+}
+.sd-gec-don-pill.on { border-color: var(--ac); background: rgba(232,150,46,.1); }
+.sd-gec-don-pill-lbl { font-size: 12px; font-weight: 700; color: var(--tx2); }
+.sd-gec-don-pill.on .sd-gec-don-pill-lbl { color: var(--ac2); }
+.sd-gec-don-pill-sub { font-size: 10px; color: var(--tx3); margin-top: 1px; }
+.sd-gec-sec-hd {
+  font-size: 10px; font-weight: 700; color: var(--tx3);
+  text-transform: uppercase; letter-spacing: .6px;
+  margin: 14px 0 7px;
+}
+.sd-gec-stat-row {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 7px; margin-bottom: 12px;
+}
+.sd-gec-stat-c {
+  background: var(--bg2); border: 1px solid var(--bo);
+  border-radius: var(--rs); padding: 9px 8px; text-align: center;
+}
+.sd-gec-stat-v { font-size: 14px; font-weight: 800; font-family: var(--mo); }
+.sd-gec-stat-l { font-size: 9px; color: var(--tx3); text-transform: uppercase; letter-spacing: .4px; margin-top: 2px; }
+.sd-gec-fis-card {
+  background: var(--bg2); border: 1px solid var(--bo);
+  border-radius: var(--r); overflow: hidden; margin-bottom: 9px;
+}
+.sd-gec-fis-row {
+  display: flex; align-items: flex-start; gap: 9px;
+  padding: 11px 13px; border-bottom: 1px solid var(--bo2);
+}
+.sd-gec-fis-row:last-child { border-bottom: none; }
+.sd-gec-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.sd-gec-fis-info { flex: 1; min-width: 0; }
+.sd-gec-satici { font-size: 13px; font-weight: 600; color: var(--tx); }
+.sd-gec-meta   { font-size: 11px; color: var(--tx3); margin-top: 1px; }
+.sd-gec-sebep  { font-size: 11px; color: var(--rd2); margin-top: 2px; }
+.sd-gec-fis-right { text-align: right; flex-shrink: 0; }
+.sd-gec-fis-tutar { font-size: 13px; font-weight: 700; font-family: var(--mo); color: var(--tx); }
+.sd-gec-fis-tag {
+  font-size: 10px; font-weight: 700; border-radius: 6px; padding: 2px 6px;
+  display: inline-block; margin-top: 3px;
+}
+.sd-gec-fis-tag.on  { background: rgba(34,197,94,.12);   color: var(--gr2); }
+.sd-gec-fis-tag.red { background: rgba(239,68,68,.10);   color: var(--rd2); }
+.sd-gec-av-card {
+  background: var(--bg2); border: 1px solid var(--bo);
+  border-radius: var(--rs); padding: 11px 12px; margin-bottom: 7px;
+  display: flex; align-items: flex-start; gap: 9px;
+}
+/* ── Muhasebe Kiralama Dept Tablosu ── */
+.sa-kira-dept-tbl { width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 12px; }
+.sa-kira-dept-tbl th {
+  text-align: left; padding: 6px 8px;
+  font-size: 10px; font-weight: 700; color: var(--tx3);
+  text-transform: uppercase; letter-spacing: .4px; border-bottom: 1px solid var(--bo);
+}
+.sa-kira-dept-tbl td {
+  padding: 8px 8px; border-bottom: 1px solid var(--bo2); color: var(--tx2); vertical-align: middle;
+}
+.sa-kira-dept-tbl tr:last-child td { border-bottom: none; }
+.sa-kira-dept-tbl td.ceza { color: var(--rd2); font-weight: 700; font-family: var(--mo); }
+.sa-kira-dept-tbl td.num  { font-family: var(--mo); font-weight: 700; color: var(--tx); }
+.sa-kira-dept-tbl td.nm { display: flex; align-items: center; gap: 6px; }
+.sa-kira-dept-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.sa-kira-sec-hd {
+  font-size: 10px; font-weight: 700; color: var(--tx3);
+  text-transform: uppercase; letter-spacing: .6px; margin: 14px 0 8px;
+}
+
 /* Alt harcama ekleme barı */
 .sd-bot {
   display: flex; gap: 8px;
@@ -2185,11 +2304,13 @@ body {
       <button class="sd-tb"     id="sdtb-ekip"  onclick="sdTab('ekip',  this)">Ekip</button>
       <button class="sd-tb"     id="sdtb-avans" onclick="sdTab('avans', this)">Avanslar <span class="sd-tb-bj" id="sdtb-av-cnt">2</span></button>
       <button class="sd-tb"     id="sdtb-kira"  onclick="sdTab('kira',  this)">Kiralama <span class="sd-tb-bj" id="sdtb-kira-cnt">0</span></button>
+      <button class="sd-tb"     id="sdtb-gecmis" onclick="sdTab('gecmis', this)">Geçmiş</button>
     </div>
     <div id="sd-pnl-bek"></div>
-    <div id="sd-pnl-ekip"  style="display:none"></div>
-    <div id="sd-pnl-avans" style="display:none"></div>
-    <div id="sd-pnl-kira"  style="display:none"></div>
+    <div id="sd-pnl-ekip"   style="display:none"></div>
+    <div id="sd-pnl-avans"  style="display:none"></div>
+    <div id="sd-pnl-kira"   style="display:none"></div>
+    <div id="sd-pnl-gecmis" style="display:none"></div>
   </div>
   <!-- Alt harcama ekleme barı -->
   <div class="sd-bot">
@@ -3269,9 +3390,11 @@ var ACC_DEPT_FIS = {
 };
 
 var sdMesajKisi    = '';
-var sdMode         = false; /* true → OCR/belgesiz modal dept ekranından açıldı */
-var sdSeciliDonem  = 2;     /* dept ekranında aktif dönem seçimi */
-var saSeciliDonem  = 2;     /* muhasebe dashboard dönem seçimi */
+var sdMode            = false; /* true → OCR/belgesiz modal dept ekranından açıldı */
+var sdSeciliDonem     = 2;     /* dept ekranında aktif dönem seçimi */
+var saSeciliDonem     = 2;     /* muhasebe dashboard dönem seçimi */
+var sdGecmisPnlDonem  = 1;     /* geçmiş sekmesinde seçili dönem */
+var sdAvansFormAcik   = false; /* avans formu açık mı */
 var sdSec  = {};    /* seçili bekleyen id → true */
 
 var curUser  = null;
@@ -4515,27 +4638,151 @@ function renderDeptAvans() {
   if (!el) return;
   var cnt = document.getElementById('sdtb-av-cnt');
   if (cnt) cnt.textContent = DEPT_AVANS.length;
-  if (!DEPT_AVANS.length) {
-    el.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--tx3);font-size:13px">✅ Bekleyen avans talebi yok</div>';
-    return;
+
+  /* Özet: aktif dönem bekleyen + geçmiş toplamı */
+  var gecmisAvans = ACC_AVANS_GECMIS.filter(function(av) { return av.dept === 'Yapım'; });
+  var gecmisOdendi = 0, gecmisBek = 0, gecmisRed = 0;
+  for (var gi = 0; gi < gecmisAvans.length; gi++) {
+    var ga = gecmisAvans[gi];
+    if (ga.durum === 'ödendi') gecmisOdendi += ga.tutar;
+    else if (ga.durum === 'reddedildi') gecmisRed += ga.tutar;
+    else gecmisBek += ga.tutar;
   }
-  el.innerHTML = DEPT_AVANS.map(function(a) {
-    return '<div class="sd-avans-card" id="sd-av-' + a.id + '">' +
-      '<div class="sd-av-top">' +
-        '<div class="sd-av-kisi">' +
-          '<div class="sd-av-av">' + a.ini + '</div>' +
-          '<div class="sd-av-name">' + a.uye + '</div>' +
-        '</div>' +
-        '<div class="sd-av-tutar">₺' + a.tutar.toLocaleString('tr-TR') + '</div>' +
+  var aktifBek = 0;
+  for (var ai = 0; ai < DEPT_AVANS.length; ai++) aktifBek += DEPT_AVANS[ai].tutar;
+  var toplamBek = aktifBek + gecmisBek;
+
+  var html = '<div class="sd-av-ozet">' +
+    '<div class="sd-av-ozet-c"><div class="sd-av-ozet-v" style="color:var(--am2)">₺' + toplamBek.toLocaleString('tr-TR') + '</div><div class="sd-av-ozet-l">Bekleyen</div></div>' +
+    '<div class="sd-av-ozet-c"><div class="sd-av-ozet-v" style="color:var(--gr2)">₺' + gecmisOdendi.toLocaleString('tr-TR') + '</div><div class="sd-av-ozet-l">Ödendi</div></div>' +
+    '<div class="sd-av-ozet-c"><div class="sd-av-ozet-v">' + (DEPT_AVANS.length + gecmisAvans.length) + '</div><div class="sd-av-ozet-l">Toplam</div></div>' +
+  '</div>';
+
+  /* Yeni avans formu */
+  var formHtml = '';
+  if (sdAvansFormAcik) {
+    var uyeOpts = DEPT_EKIP.map(function(u) {
+      return '<option value="' + u.id + '">' + u.name + '</option>';
+    }).join('');
+    formHtml = '<div class="sd-av-form">' +
+      '<div class="sd-av-form-hd">' +
+        '<span class="sd-av-form-title">Yeni Avans Talebi</span>' +
+        '<button class="btn btn-sm" onclick="sdAvansFormKapat()" style="padding:4px 10px">✕</button>' +
       '</div>' +
-      '<div class="sd-av-meta">' + a.tarih + ' tarihli talep</div>' +
-      '<div class="sd-av-gerekce">' + a.gerekce + '</div>' +
-      '<div class="sd-fis-acts">' +
-        '<button class="sd-ok" onclick="deptAvansOnayla(' + a.id + ')">✓ Onayla</button>' +
-        '<button class="sd-rd" onclick="deptAvansReddet(' + a.id + ')">✕ Reddet</button>' +
-      '</div>' +
+      '<div class="fg"><label class="fg-lbl">Ekip Üyesi</label>' +
+        '<select class="fgi" id="sdav-uye" style="width:100%">' + uyeOpts + '</select></div>' +
+      '<div class="fg"><label class="fg-lbl">Tutar (₺)</label>' +
+        '<input class="fgi" id="sdav-tutar" type="number" placeholder="0" min="0"></div>' +
+      '<div class="fg"><label class="fg-lbl">Gerekçe</label>' +
+        '<input class="fgi" id="sdav-gerekce" type="text" placeholder="Avans gerekçesi..."></div>' +
+      '<button class="btn btn-p btn-full" onclick="sdAvansEkle()" style="justify-content:center;margin-top:2px">Avans Talebi Oluştur</button>' +
     '</div>';
-  }).join('');
+  } else {
+    formHtml = '<button class="btn btn-p" onclick="sdAvansFormAc()" style="margin-bottom:12px;gap:6px">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
+      'Yeni Avans Talebi</button>';
+  }
+  html += formHtml;
+
+  /* Aktif dönem — bekleyen avanslar */
+  if (DEPT_AVANS.length) {
+    html += '<div class="sd-sec">Onay Bekleyen (' + DEPT_AVANS.length + ')</div>';
+    html += DEPT_AVANS.map(function(a) {
+      return '<div class="sd-avans-card" id="sd-av-' + a.id + '">' +
+        '<div class="sd-av-top">' +
+          '<div class="sd-av-kisi">' +
+            '<div class="sd-av-av">' + a.ini + '</div>' +
+            '<div class="sd-av-name">' + a.uye + '</div>' +
+          '</div>' +
+          '<div class="sd-av-tutar">₺' + a.tutar.toLocaleString('tr-TR') + '</div>' +
+        '</div>' +
+        '<div class="sd-av-meta">' + a.tarih + ' tarihli talep</div>' +
+        '<div class="sd-av-gerekce">' + a.gerekce + '</div>' +
+        '<div class="sd-fis-acts">' +
+          '<button class="sd-ok" onclick="deptAvansOnayla(' + a.id + ')">✓ Onayla</button>' +
+          '<button class="sd-rd" onclick="deptAvansReddet(' + a.id + ')">✕ Reddet</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  } else {
+    html += '<div style="text-align:center;padding:16px 0;color:var(--tx3);font-size:13px">Bekleyen avans talebi yok</div>';
+  }
+
+  /* Geçmiş dönemler avans listesi */
+  if (gecmisAvans.length) {
+    /* Dönemlere göre grupla */
+    var donGrp = {};
+    for (var di = 0; di < gecmisAvans.length; di++) {
+      var dav = gecmisAvans[di];
+      var dk = 'Dönem #' + dav.donem;
+      if (!donGrp[dk]) donGrp[dk] = [];
+      donGrp[dk].push(dav);
+    }
+    var donKeys = Object.keys(donGrp).sort(function(a,b){ return b.localeCompare(a); });
+    html += '<div class="sd-av-gec-hd"><span>Geçmiş Avans Geçmişi</span><span style="color:var(--tx2)">₺' + (gecmisOdendi + gecmisBek + gecmisRed).toLocaleString('tr-TR') + '</span></div>';
+    for (var dki = 0; dki < donKeys.length; dki++) {
+      var dk2 = donKeys[dki];
+      var rows = donGrp[dk2];
+      var dkTop = 0;
+      for (var ri = 0; ri < rows.length; ri++) dkTop += rows[ri].tutar;
+      html += '<div class="sd-sec" style="margin-top:10px">' + dk2 + ' · ₺' + dkTop.toLocaleString('tr-TR') + ' · ' + rows.length + ' avans</div>';
+      html += rows.map(function(av) {
+        var clr = av.durum === 'ödendi' ? 'var(--gr2)' : (av.durum === 'reddedildi' ? 'var(--rd2)' : 'var(--am2)');
+        var ico = av.durum === 'ödendi' ? '✅' : (av.durum === 'reddedildi' ? '❌' : '⏳');
+        return '<div class="sd-av-gec-row">' +
+          '<div class="sd-av-gec-av">' + av.ini + '</div>' +
+          '<div class="sd-av-gec-info">' +
+            '<div class="sd-av-gec-name">' + av.uye + '</div>' +
+            '<div class="sd-av-gec-sub">' + av.tarih + ' · ' + av.gerekce + '</div>' +
+          '</div>' +
+          '<div class="sd-av-gec-right">' +
+            '<div class="sd-av-gec-tutar">₺' + av.tutar.toLocaleString('tr-TR') + '</div>' +
+            '<div class="sd-av-gec-durum" style="color:' + clr + '">' + ico + ' ' + av.durum + '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+  }
+
+  el.innerHTML = html;
+}
+
+function sdAvansFormAc() {
+  sdAvansFormAcik = true;
+  renderDeptAvans();
+}
+
+function sdAvansFormKapat() {
+  sdAvansFormAcik = false;
+  renderDeptAvans();
+}
+
+function sdAvansEkle() {
+  var uyeSel = document.getElementById('sdav-uye');
+  var tutarEl = document.getElementById('sdav-tutar');
+  var gerekceEl = document.getElementById('sdav-gerekce');
+  if (!uyeSel || !tutarEl || !gerekceEl) return;
+  var uyeId = uyeSel.value;
+  var tutar = parseFloat(tutarEl.value) || 0;
+  var gerekce = (gerekceEl.value || '').trim();
+  if (!tutar || tutar <= 0) { notif('Tutar giriniz', 'red'); return; }
+  if (!gerekce) { notif('Gerekçe giriniz', 'red'); return; }
+  var uyeObj = null;
+  for (var i = 0; i < DEPT_EKIP.length; i++) {
+    if (DEPT_EKIP[i].id === uyeId) { uyeObj = DEPT_EKIP[i]; break; }
+  }
+  if (!uyeObj) return;
+  DEPT_AVANS.unshift({
+    id: Date.now(), uye: uyeObj.name, ini: uyeObj.ini,
+    tutar: tutar, tarih: _deptTarih(), gerekce: gerekce, fromKey: 's'
+  });
+  _pushNotif('d', 'am', 'Yeni Avans Talebi',
+    uyeObj.name + ' — ₺' + tutar.toLocaleString('tr-TR') + ' · ' + gerekce,
+    'Az önce · Sistem');
+  updateNotifBadge();
+  sdAvansFormAcik = false;
+  renderDeptAvans();
+  notif('Avans talebi oluşturuldu', 'green');
 }
 
 /* ═══ DEPT — KİRALAMA ═══ */
@@ -4672,18 +4919,24 @@ function renderAccKira() {
   if (!el) return;
   var today = _todayISO();
 
+  var deptler = ['yapim','kamera','sanat','ses','kostum'];
+  var deptNm  = { yapim:'Yapım', kamera:'Kamera', sanat:'Sanat', ses:'Ses & Müzik', kostum:'Kostüm & Makyaj' };
+  var deptClr = { yapim:'#E8962E', kamera:'#3B82F6', sanat:'#22C55E', ses:'#A855F7', kostum:'#EC4899' };
+
   /* Özet sayılar */
-  var topAktif = 0, topGec = 0, gecSay = 0;
+  var topAktif = 0, topGec = 0, gecSay = 0, iadeSay = 0;
   for (var i = 0; i < ACC_KIRALAMALAR.length; i++) {
     var k = ACC_KIRALAMALAR[i];
     var dur = _kiraDurum(k);
     if (dur !== 'iade') topAktif += k.tutar;
     if (dur === 'gec') { topGec += Math.abs(_gunFarki(today, k.bit)) * k.gunluk; gecSay++; }
+    if (dur === 'iade') iadeSay++;
   }
-  var aktifSay = ACC_KIRALAMALAR.filter(function(k){ return !k.iade; }).length;
+  var aktifSay = ACC_KIRALAMALAR.length - iadeSay;
   var cnt = document.getElementById('satb-kira-cnt');
   if (cnt) cnt.textContent = aktifSay;
 
+  /* Genel özet */
   var html =
     '<div class="sa-kira-ozet">' +
       '<div class="sa-kira-ozet-c"><div style="font-size:14px;font-weight:800;font-family:var(--mo)">₺' + topAktif.toLocaleString('tr-TR') + '</div><div style="font-size:9px;text-transform:uppercase;color:var(--tx3);margin-top:3px">Aktif Toplam</div></div>' +
@@ -4691,16 +4944,67 @@ function renderAccKira() {
       '<div class="sa-kira-ozet-c"><div style="font-size:14px;font-weight:800;font-family:var(--mo);color:' + (gecSay > 0 ? 'var(--rd2)' : 'var(--gr2)') + '">' + gecSay + '</div><div style="font-size:9px;text-transform:uppercase;color:var(--tx3);margin-top:3px">Gecikmiş</div></div>' +
     '</div>';
 
-  /* Dept grupla */
-  var deptler = ['yapim','kamera','sanat','ses','kostum'];
-  var deptNm  = { yapim:'Yapım', kamera:'Kamera', sanat:'Sanat', ses:'Ses & Müzik', kostum:'Kostüm & Makyaj' };
-  var deptClr = { yapim:'#E8962E', kamera:'#3B82F6', sanat:'#22C55E', ses:'#A855F7', kostum:'#EC4899' };
+  /* Departman özet tablosu */
+  html += '<div class="sa-kira-sec-hd">Departman Özeti</div>';
+  html += '<div class="sa-dept-card" style="padding:0;overflow:hidden;margin-bottom:14px">';
+  html += '<table class="sa-kira-dept-tbl">';
+  html += '<thead><tr><th>Departman</th><th>Aktif</th><th>Toplam ₺</th><th>Gecikme Cezası</th></tr></thead><tbody>';
+  for (var dti = 0; dti < deptler.length; dti++) {
+    var dId = deptler[dti];
+    var dKiralar = ACC_KIRALAMALAR.filter(function(k){ return k.deptId === dId; });
+    if (!dKiralar.length) continue;
+    var dAktif = 0, dTop = 0, dCeza = 0, dGec = 0;
+    for (var dki2 = 0; dki2 < dKiralar.length; dki2++) {
+      var dk2 = dKiralar[dki2];
+      var dkDur = _kiraDurum(dk2);
+      if (dkDur !== 'iade') { dAktif++; dTop += dk2.tutar; }
+      if (dkDur === 'gec') { dGec++; dCeza += Math.abs(_gunFarki(today, dk2.bit)) * dk2.gunluk; }
+    }
+    html += '<tr>' +
+      '<td class="nm"><div class="sa-kira-dept-dot" style="background:' + deptClr[dId] + '"></div>' + deptNm[dId] + '</td>' +
+      '<td class="num">' + dAktif + (dGec > 0 ? ' <span style="color:var(--rd2);font-size:10px">(' + dGec + ' geç)</span>' : '') + '</td>' +
+      '<td class="num">₺' + dTop.toLocaleString('tr-TR') + '</td>' +
+      '<td class="' + (dCeza > 0 ? 'ceza' : 'num') + '">' + (dCeza > 0 ? '⚠ ₺' + dCeza.toLocaleString('tr-TR') : '—') + '</td>' +
+    '</tr>';
+  }
+  html += '</tbody></table></div>';
 
+  /* Gecikmiş kiralamalar öne çıkar */
+  var gecmisler = ACC_KIRALAMALAR.filter(function(k){ return _kiraDurum(k) === 'gec'; });
+  if (gecmisler.length) {
+    html += '<div class="sa-kira-sec-hd" style="color:var(--rd2)">🔴 Gecikmiş Kiralamalar (' + gecmisler.length + ')</div>';
+    html += gecmisler.map(function(k) {
+      var kalan = _gunFarki(today, k.bit);
+      var gecGun = Math.abs(kalan);
+      var topCeza = gecGun * k.gunluk;
+      return '<div class="sa-kira-card gec">' +
+        '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">' +
+          '<div>' +
+            '<div style="font-size:13px;font-weight:700;color:var(--tx)">' + k.satici + '</div>' +
+            '<div style="font-size:11px;color:var(--tx3);margin-top:2px">' + deptNm[k.deptId] + ' · ' + k.uye + ' · ' + k.kat + '</div>' +
+          '</div>' +
+          '<div style="text-align:right">' +
+            '<div style="font-size:14px;font-weight:800;font-family:var(--mo)">₺' + k.tutar.toLocaleString('tr-TR') + '</div>' +
+            '<span class="sd-kira-tag sd-kira-tag-gec" style="margin-top:3px;display:inline-block">' + gecGun + ' gün geç</span>' +
+          '</div>' +
+        '</div>' +
+        '<div style="font-size:11px;color:var(--tx3);margin-top:5px">' + k.bas.split('-').reverse().join('.') + ' → ' + k.bit.split('-').reverse().join('.') + ' · ₺' + k.gunluk.toLocaleString('tr-TR') + '/gün</div>' +
+        '<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:8px 10px;margin-top:8px">' +
+          '<div style="font-size:12px;font-weight:700;color:var(--rd2)">Gecikme Cezası Hesabı</div>' +
+          '<div style="font-size:11px;color:var(--tx2);margin-top:4px">' + gecGun + ' gün × ₺' + k.gunluk.toLocaleString('tr-TR') + ' = <strong style="color:var(--rd2)">₺' + topCeza.toLocaleString('tr-TR') + '</strong></div>' +
+          '<div style="font-size:10px;color:var(--tx3);margin-top:2px">İade tarihine kadar her gün ₺' + k.gunluk.toLocaleString('tr-TR') + ' eklenir</div>' +
+        '</div>' +
+        '<button class="btn btn-g btn-sm" style="margin-top:8px" onclick="accKiraIade(' + k.id + ')">✓ İade Alındı</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  /* Per-dept grupla — gecikmiş hariç diğerleri */
+  html += '<div class="sa-kira-sec-hd">Tüm Kiralamalar — Departman Bazlı</div>';
   deptler.forEach(function(dId) {
     var dKiralar = ACC_KIRALAMALAR.filter(function(k){ return k.deptId === dId; });
     if (!dKiralar.length) return;
 
-    /* Gecikmiş & aktif önce, iade en son */
     dKiralar.sort(function(a, b) {
       var da = _kiraDurum(a), db = _kiraDurum(b);
       var ord = { gec:0, yak:1, ak:2, iade:3 };
@@ -4727,7 +5031,7 @@ function renderAccKira() {
         : '';
       var iadeBtn = dur !== 'iade'
         ? '<button class="btn btn-g btn-sm" style="margin-top:8px" onclick="accKiraIade(' + k.id + ')">✓ İade Alındı</button>'
-        : '';
+        : '<span style="font-size:11px;color:var(--tx3);display:block;margin-top:6px">✓ İade edildi</span>';
       return '<div class="sa-kira-card' + (dur === 'gec' ? ' gec' : dur === 'yak' ? ' yak' : '') + '">' +
         '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">' +
           '<div>' +
@@ -4739,7 +5043,11 @@ function renderAccKira() {
             '<span class="' + tagCls + '" style="margin-top:3px;display:inline-block">' + tagTxt + '</span>' +
           '</div>' +
         '</div>' +
-        '<div style="font-size:11px;color:var(--tx3);margin-top:5px">' + k.bas.split('-').reverse().join('.') + ' → ' + k.bit.split('-').reverse().join('.') + ' · ₺' + k.gunluk.toLocaleString('tr-TR') + '/gün</div>' +
+        '<div style="font-size:11px;color:var(--tx3);margin-top:5px">' +
+          k.bas.split('-').reverse().join('.') + ' → ' + k.bit.split('-').reverse().join('.') +
+          ' · ₺' + k.gunluk.toLocaleString('tr-TR') + '/gün' +
+          (k.gunluk && kalan !== 0 && dur !== 'iade' ? ' · <strong>' + Math.abs(kalan) + (kalan < 0 ? ' gün geç' : ' gün kaldı') + '</strong>' : '') +
+        '</div>' +
         cezaTxt + iadeBtn +
       '</div>';
     }).join('');
@@ -4852,7 +5160,7 @@ function saAvansSetDonem(id) {
 }
 
 function sdTab(t, el) {
-  var tabs = ['bek', 'ekip', 'avans', 'kira'];
+  var tabs = ['bek', 'ekip', 'avans', 'kira', 'gecmis'];
   for (var i = 0; i < tabs.length; i++) {
     var btn = document.getElementById('sdtb-' + tabs[i]);
     var pnl = document.getElementById('sd-pnl-' + tabs[i]);
@@ -4863,6 +5171,130 @@ function sdTab(t, el) {
   var active = document.getElementById('sd-pnl-' + t);
   if (active) active.style.display = 'block';
   if (t === 'kira') renderDeptKira();
+  if (t === 'gecmis') renderDeptGecmis();
+}
+
+/* ── Dept Geçmiş Dönemler Sekmesi ── */
+function sdGecmisSetDonem(id) {
+  sdGecmisPnlDonem = id;
+  renderDeptGecmis();
+}
+
+function renderDeptGecmis() {
+  var el = document.getElementById('sd-pnl-gecmis');
+  if (!el) return;
+
+  /* Geçmiş dönemler (aktif değil) */
+  var gecmisDon = SD_DONEMLER.filter(function(d) { return !d.aktif; });
+  if (!gecmisDon.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--tx3);font-size:13px">Geçmiş dönem verisi yok</div>';
+    return;
+  }
+  /* Seçili dönem geçerli mi? */
+  var donId = sdGecmisPnlDonem;
+  var donRec = null;
+  for (var di = 0; di < gecmisDon.length; di++) {
+    if (gecmisDon[di].id === donId) { donRec = gecmisDon[di]; break; }
+  }
+  if (!donRec) { donId = gecmisDon[0].id; donRec = gecmisDon[0]; sdGecmisPnlDonem = donId; }
+
+  /* Dönem seçici */
+  var html = '<div class="sd-gec-donem-row">';
+  for (var pi = 0; pi < gecmisDon.length; pi++) {
+    var dp = gecmisDon[pi];
+    html += '<button class="sd-gec-don-pill' + (dp.id === donId ? ' on' : '') + '" onclick="sdGecmisSetDonem(' + dp.id + ')">' +
+      '<div class="sd-gec-don-pill-lbl">' + dp.lbl + '</div>' +
+      '<div class="sd-gec-don-pill-sub">' + dp.tarih + '</div>' +
+    '</button>';
+  }
+  html += '</div>';
+
+  /* Harcamalar */
+  var gec = DEPT_GECMIS[donId] || { onaylandi:[], reddedildi:[] };
+  var onayTop = 0, redTop = 0;
+  for (var oi = 0; oi < gec.onaylandi.length; oi++) onayTop += gec.onaylandi[oi].tutar;
+  for (var ri = 0; ri < gec.reddedildi.length; ri++) redTop += gec.reddedildi[ri].tutar;
+  var topTutar = onayTop + redTop;
+
+  /* Özet grid */
+  html += '<div class="sd-gec-stat-row">' +
+    '<div class="sd-gec-stat-c"><div class="sd-gec-stat-v">₺' + topTutar.toLocaleString('tr-TR') + '</div><div class="sd-gec-stat-l">Toplam</div></div>' +
+    '<div class="sd-gec-stat-c"><div class="sd-gec-stat-v" style="color:var(--gr2)">₺' + onayTop.toLocaleString('tr-TR') + '</div><div class="sd-gec-stat-l">Onaylı</div></div>' +
+    '<div class="sd-gec-stat-c"><div class="sd-gec-stat-v" style="color:var(--rd2)">₺' + redTop.toLocaleString('tr-TR') + '</div><div class="sd-gec-stat-l">Reddedildi</div></div>' +
+  '</div>';
+
+  /* Onaylananlar */
+  if (gec.onaylandi.length) {
+    html += '<div class="sd-gec-sec-hd">Onaylanan Harcamalar (' + gec.onaylandi.length + ')</div>';
+    html += '<div class="sd-gec-fis-card">';
+    html += gec.onaylandi.map(function(f) {
+      var kat = SD_KAT_LBL[f.kat] || f.kat;
+      var clrDot = SD_KAT_CLR[f.kat] || 'var(--tx3)';
+      return '<div class="sd-gec-fis-row">' +
+        '<div class="sd-gec-dot" style="background:' + clrDot + '"></div>' +
+        '<div class="sd-gec-fis-info">' +
+          '<div class="sd-gec-satici">' + f.satici + '</div>' +
+          '<div class="sd-gec-meta">' + f.ini + ' · ' + kat + ' · ' + f.tarih + '</div>' +
+        '</div>' +
+        '<div class="sd-gec-fis-right">' +
+          '<div class="sd-gec-fis-tutar">₺' + f.tutar.toLocaleString('tr-TR') + '</div>' +
+          '<div class="sd-gec-fis-tag on">Onaylı</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+    html += '</div>';
+  }
+
+  /* Reddedilenler */
+  if (gec.reddedildi.length) {
+    html += '<div class="sd-gec-sec-hd">Reddedilen Harcamalar (' + gec.reddedildi.length + ')</div>';
+    html += '<div class="sd-gec-fis-card">';
+    html += gec.reddedildi.map(function(f) {
+      var kat = SD_KAT_LBL[f.kat] || f.kat;
+      return '<div class="sd-gec-fis-row">' +
+        '<div class="sd-gec-dot" style="background:var(--rd2)"></div>' +
+        '<div class="sd-gec-fis-info">' +
+          '<div class="sd-gec-satici">' + f.satici + '</div>' +
+          '<div class="sd-gec-meta">' + f.ini + ' · ' + kat + ' · ' + f.tarih + '</div>' +
+          (f.sebep ? '<div class="sd-gec-sebep">Red gerekçesi: ' + f.sebep + '</div>' : '') +
+        '</div>' +
+        '<div class="sd-gec-fis-right">' +
+          '<div class="sd-gec-fis-tutar">₺' + f.tutar.toLocaleString('tr-TR') + '</div>' +
+          '<div class="sd-gec-fis-tag red">Reddedildi</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+    html += '</div>';
+  }
+
+  /* Avans geçmişi bu dönem için */
+  var donAvans = ACC_AVANS_GECMIS.filter(function(av) { return av.dept === 'Yapım' && av.donem === donId; });
+  if (donAvans.length) {
+    var avTop = 0;
+    for (var avi = 0; avi < donAvans.length; avi++) avTop += donAvans[avi].tutar;
+    html += '<div class="sd-gec-sec-hd">Avans Geçmişi — ' + donRec.lbl + ' · ₺' + avTop.toLocaleString('tr-TR') + '</div>';
+    html += donAvans.map(function(av) {
+      var clr = av.durum === 'ödendi' ? 'var(--gr2)' : (av.durum === 'reddedildi' ? 'var(--rd2)' : 'var(--am2)');
+      var ico = av.durum === 'ödendi' ? '✅' : (av.durum === 'reddedildi' ? '❌' : '⏳');
+      return '<div class="sd-av-gec-row">' +
+        '<div class="sd-av-gec-av">' + av.ini + '</div>' +
+        '<div class="sd-av-gec-info">' +
+          '<div class="sd-av-gec-name">' + av.uye + '</div>' +
+          '<div class="sd-av-gec-sub">' + av.tarih + ' · ' + av.gerekce + '</div>' +
+        '</div>' +
+        '<div class="sd-av-gec-right">' +
+          '<div class="sd-av-gec-tutar">₺' + av.tutar.toLocaleString('tr-TR') + '</div>' +
+          '<div class="sd-av-gec-durum" style="color:' + clr + '">' + ico + ' ' + av.durum + '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  if (!gec.onaylandi.length && !gec.reddedildi.length && !donAvans.length) {
+    html += '<div style="text-align:center;padding:30px 0;color:var(--tx3);font-size:13px">Bu dönem için veri yok</div>';
+  }
+
+  el.innerHTML = html;
 }
 
 function deptOnayla(id) {
@@ -6855,21 +7287,58 @@ function _raporKisiDetay() {
     html += _raporFisGrouped(kisFisler);
   }
 
-  /* Avans Geçmişi */
+  /* Avans Geçmişi — dönem bazlı gruplu */
+  var avansOdendi = 0, avansBek = 0, avansRed = 0;
+  for (var avo = 0; avo < kisiAvanslar.length; avo++) {
+    var avx = kisiAvanslar[avo];
+    if (avx.durum === 'ödendi') avansOdendi += avx.tutar;
+    else if (avx.durum === 'reddedildi') avansRed += avx.tutar;
+    else avansBek += avx.tutar;
+  }
+
   if (kisiAvanslar.length) {
-    html += '<div class="sa-rep-sec-hd">Avans Geçmişi · ₺' + avansTop.toLocaleString('tr-TR') + ' toplam</div>';
-    html += kisiAvanslar.map(function(av) {
-      var clr = av.durum === 'ödendi' ? 'var(--gr2)' : (av.durum === 'reddedildi' ? 'var(--rd2)' : 'var(--am2)');
-      return '<div class="sa-rep-row">' +
-        '<div class="sa-rep-left">' +
-          '<div>₺' + av.tutar.toLocaleString('tr-TR') + ' · Dönem #' + av.donem + '</div>' +
-          '<div class="sa-rep-sub">' + av.gerekce + ' · ' + av.tarih + '</div>' +
-        '</div>' +
-        '<div style="text-align:right"><div style="font-size:11px;font-weight:700;color:' + clr + '">' + av.durum + '</div>' +
-          '<div style="font-size:10px;color:var(--tx3)">' + av.dept + '</div>' +
-        '</div>' +
+    html += '<div class="sa-rep-sec-hd">Avans Geçmişi · ₺' + avansTop.toLocaleString('tr-TR') + ' toplam · ' + kisiAvanslar.length + ' kayıt</div>';
+
+    /* Özet bar */
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px">' +
+      '<div class="sa-rep-stat-c"><div class="sa-rep-stat-v" style="color:var(--am2)">₺' + avansBek.toLocaleString('tr-TR') + '</div><div class="sa-rep-stat-l">Bekleyen</div></div>' +
+      '<div class="sa-rep-stat-c"><div class="sa-rep-stat-v" style="color:var(--gr2)">₺' + avansOdendi.toLocaleString('tr-TR') + '</div><div class="sa-rep-stat-l">Ödendi</div></div>' +
+      '<div class="sa-rep-stat-c"><div class="sa-rep-stat-v" style="color:var(--rd2)">₺' + avansRed.toLocaleString('tr-TR') + '</div><div class="sa-rep-stat-l">Reddedildi</div></div>' +
+    '</div>';
+
+    /* Dönem bazlı gruplama */
+    var avGrp = {};
+    for (var avgi = 0; avgi < kisiAvanslar.length; avgi++) {
+      var avg = kisiAvanslar[avgi];
+      var avdk = avg.donem;
+      if (!avGrp[avdk]) avGrp[avdk] = [];
+      avGrp[avdk].push(avg);
+    }
+    var avDonKeys = Object.keys(avGrp).map(Number).sort(function(a,b){ return b-a; });
+    for (var adk = 0; adk < avDonKeys.length; adk++) {
+      var avdk2 = avDonKeys[adk];
+      var avRows = avGrp[avdk2];
+      var avDkTop = 0;
+      for (var avri = 0; avri < avRows.length; avri++) avDkTop += avRows[avri].tutar;
+      html += '<div style="font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin:10px 0 6px;border-top:1px solid var(--bo);padding-top:8px">' +
+        'Dönem #' + avdk2 + (avdk2 === 2 ? ' <span style="color:var(--gr)">● Aktif</span>' : '') +
+        ' · ₺' + avDkTop.toLocaleString('tr-TR') + ' · ' + avRows.length + ' avans' +
       '</div>';
-    }).join('');
+      html += avRows.map(function(av) {
+        var clr = av.durum === 'ödendi' ? 'var(--gr2)' : (av.durum === 'reddedildi' ? 'var(--rd2)' : 'var(--am2)');
+        var ico = av.durum === 'ödendi' ? '✅' : (av.durum === 'reddedildi' ? '❌' : '⏳');
+        return '<div class="sa-rep-row">' +
+          '<div class="sa-rep-left">' +
+            '<div style="font-size:13px;font-weight:700;color:var(--tx)">₺' + av.tutar.toLocaleString('tr-TR') + '</div>' +
+            '<div class="sa-rep-sub">' + av.gerekce + '</div>' +
+            '<div class="sa-rep-sub">' + av.tarih + ' · ' + av.dept + '</div>' +
+          '</div>' +
+          '<div style="text-align:right;flex-shrink:0">' +
+            '<div style="font-size:12px;font-weight:700;color:' + clr + '">' + ico + ' ' + av.durum + '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
   } else if (p.avans > 0) {
     html += '<div class="sa-rep-sec-hd">Avans Geçmişi</div>';
     html += '<div style="text-align:center;padding:12px;color:var(--tx3);font-size:12px">Kayıt bulunamadı</div>';
