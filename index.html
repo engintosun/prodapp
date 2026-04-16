@@ -4241,7 +4241,6 @@ function renderDept() {
   if (curUser && rol) rol.textContent = 'Dept. Sorumlusu · ' + curUser.dept;
   renderDeptDonemSec();
   renderDeptOzet();
-  renderDeptBek();
   renderDeptEkip();
   renderDeptAvans();
   renderDeptKira();
@@ -5251,6 +5250,7 @@ function sdTab(t, el) {
   if (el) el.classList.add('on');
   var active = document.getElementById('sd-pnl-' + t);
   if (active) active.style.display = 'block';
+  if (t === 'bek')    renderDeptBek();
   if (t === 'avans')  renderDeptAvans();
   if (t === 'kira')   renderDeptKira();
   if (t === 'gecmis') renderDeptGecmis();
