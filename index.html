@@ -3942,7 +3942,7 @@ function renderSahaButce() {
   if (!el) return;
   var b = null;
   for (var bi = 0; bi < DONEM_BUTCE.length; bi++) {
-    if (DONEM_BUTCE[bi].donem === 2) { b = DONEM_BUTCE[bi]; break; }
+    if (DONEM_BUTCE[bi].donem === aktifDon) { b = DONEM_BUTCE[bi]; break; }
   }
   if (!b || !b.butce) { el.innerHTML = ''; return; }
   var bekTop = 0;
@@ -4000,7 +4000,7 @@ function renderSahaKatLimits() {
 function renderRecent() {
   renderSahaButce();
   renderSahaKatLimits();
-  var mine = DATA.filter(function(d) { return d.personel === 'Mehmet K.' && d.donem === 2; });
+  var mine = DATA.filter(function(d) { return d.personel === 'Mehmet K.' && d.donem === aktifDon; });
   var el = document.getElementById('recent-list');
   if (!el) return;
   el.innerHTML = mine.map(function(d) {
@@ -4173,7 +4173,7 @@ function submitOCR() {
     var today2 = new Date();
     var tarih2 = _pad(today2.getDate()) + '.' + _pad(today2.getMonth()+1) + '.' + today2.getFullYear();
     var entry  = { id: Date.now(), tarih: tarih2, personel: 'Mehmet K.', satici: sat2,
-                   kat: kat2, tutar: tut2, durum: 'bekleyen', donem: 2, uyari: null, thumb: null };
+                   kat: kat2, tutar: tut2, durum: 'bekleyen', donem: aktifDon, uyari: null, thumb: null };
     if (kat2 === 'Kiralama') {
       entry.kiraMeta = {
         bas:    (document.getElementById('ki-bas').value || ''),
@@ -4508,7 +4508,7 @@ function _addToDeptBekleyen(satici, kat, tutar, belgesiz, aciklama, fotos) {
     fotos: fotos || []
   });
   /* Bütçe eşik kontrolü */
-  var _cb = DONEM_BUTCE.find(function(x){ return x.donem === 2; });
+  var _cb = DONEM_BUTCE.find(function(x){ return x.donem === aktifDon; });
   if (_cb) {
     var _cbt = 0;
     for (var _ci = 0; _ci < DEPT_BEKLEYEN.length; _ci++) _cbt += DEPT_BEKLEYEN[_ci].tutar;
@@ -4548,7 +4548,7 @@ function renderDeptOzet() {
 
   /* Aktif dönem (2) — canlı progress bar */
   if (sdSeciliDonem === 2) {
-    var b = DONEM_BUTCE.find(function(x){ return x.donem === 2; });
+    var b = DONEM_BUTCE.find(function(x){ return x.donem === aktifDon; });
     if (!b) { el.innerHTML = ''; return; }
     var bekTop = 0;
     for (var i = 0; i < DEPT_BEKLEYEN.length; i++) bekTop += DEPT_BEKLEYEN[i].tutar;
@@ -4820,7 +4820,7 @@ function deptOnaylaSecili() {
   var keys = Object.keys(ids);
   if (!keys.length) { notif('Seçili kayıt yok', 'amber'); return; }
   var cnt = 0, top = 0;
-  var ob = DONEM_BUTCE.find(function(x){ return x.donem === 2; });
+  var ob = DONEM_BUTCE.find(function(x){ return x.donem === aktifDon; });
   if (!DEPT_GECMIS[2]) DEPT_GECMIS[2] = { onaylandi:[], reddedildi:[] };
   DEPT_BEKLEYEN = DEPT_BEKLEYEN.filter(function(f) {
     if (ids[f.id]) {
@@ -4849,7 +4849,7 @@ function deptReddetSecili() {
   var keys = Object.keys(ids);
   if (!keys.length) { notif('Seçili kayıt yok', 'amber'); return; }
   var cnt = 0, top = 0;
-  var rb = DONEM_BUTCE.find(function(x){ return x.donem === 2; });
+  var rb = DONEM_BUTCE.find(function(x){ return x.donem === aktifDon; });
   DEPT_BEKLEYEN = DEPT_BEKLEYEN.filter(function(f) {
     if (ids[f.id]) {
       cnt++; top += f.tutar;
@@ -5622,7 +5622,7 @@ function deptOnayla(id) {
       var f = DEPT_BEKLEYEN[i];
       DEPT_BEKLEYEN.splice(i, 1);
       /* Onaylanan tutarı bütçeye ekle */
-      var ob = DONEM_BUTCE.find(function(x){ return x.donem === 2; });
+      var ob = DONEM_BUTCE.find(function(x){ return x.donem === aktifDon; });
       if (ob) {
         ob.harcanan += f.tutar;
         var obt = 0;
@@ -5650,7 +5650,7 @@ function deptReddet(id) {
       var f = DEPT_BEKLEYEN[i];
       DEPT_BEKLEYEN.splice(i, 1);
       /* Reddedilen tutarı kaydet */
-      var rb = DONEM_BUTCE.find(function(x){ return x.donem === 2; });
+      var rb = DONEM_BUTCE.find(function(x){ return x.donem === aktifDon; });
       if (rb) rb.reddedildi += f.tutar;
       updateNotifBadge();
       notif(f.satici + ' reddedildi', 'red');
@@ -5706,7 +5706,7 @@ function deptAvansReddet(id) {
         tutar: a.tutar, tarih: _deptTarih(),
         durum: 'reddedildi',
         gerekce: a.gerekce + ' [Dept reddetti]',
-        donem: 2
+        donem: aktifDon
       });
 
       /* Saha kullanıcısına red bildirimi */
@@ -5932,7 +5932,7 @@ function submitBelgesiz() {
     if (bKat === 'Kiralama') {
       DATA.unshift({
         id: Date.now(), tarih: bTarih, personel: 'Mehmet K.', satici: 'Belgesiz Kiralama',
-        kat: 'Kiralama', tutar: bTut, durum: 'bekleyen', donem: 2,
+        kat: 'Kiralama', tutar: bTut, durum: 'bekleyen', donem: aktifDon,
         uyari: null, thumb: null, belgesiz: true, aciklama: bAciklama, fotos: fotos,
         kiraMeta: {
           bas:    (document.getElementById('b-ki-bas').value || ''),
@@ -5944,7 +5944,7 @@ function submitBelgesiz() {
     } else {
       DATA.unshift({
         id: Date.now(), tarih: bTarih, personel: 'Mehmet K.', satici: 'Belgesiz Harcama',
-        kat: bKat, tutar: bTut, durum: 'bekleyen', donem: 2,
+        kat: bKat, tutar: bTut, durum: 'bekleyen', donem: aktifDon,
         uyari: null, thumb: null, belgesiz: true, aciklama: bAciklama, fotos: fotos
       });
       renderRecent();
@@ -7010,7 +7010,7 @@ function accButceKaydet() {
   var toplamButce = 0;
   for (var t = 0; t < ACC_DEPTS.length; t++) toplamButce += ACC_DEPTS[t].butce || 0;
   for (var b = 0; b < DONEM_BUTCE.length; b++) {
-    if (DONEM_BUTCE[b].donem === 2) { DONEM_BUTCE[b].butce = toplamButce; break; }
+    if (DONEM_BUTCE[b].donem === aktifDon) { DONEM_BUTCE[b].butce = toplamButce; break; }
   }
   for (var j = 0; j < KAT_LIMIT.length; j++) {
     var ki = document.getElementById('kat-inp-' + KAT_LIMIT[j].kat);
@@ -8056,7 +8056,7 @@ function accOnayla(id) {
       tutar: item.tutar, tarih: _deptTarih(),
       durum: 'ödendi',
       gerekce: item.gerekce || '',
-      donem: 2
+      donem: aktifDon
     });
 
     /* İlgili kişiye onay bildirimi */
@@ -8093,7 +8093,7 @@ function accReddet(id) {
       tutar: item.tutar, tarih: _deptTarih(),
       durum: 'reddedildi',
       gerekce: item.gerekce || '',
-      donem: 2
+      donem: aktifDon
     });
 
     /* İlgili kişiye red bildirimi */
