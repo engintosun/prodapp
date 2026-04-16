@@ -3042,10 +3042,7 @@ var ACC_KIRALAMALAR = [
 
 /* ── Muhasebe — Avans Geçmişi (dönem bazlı) ── */
 var ACC_AVANS_GECMIS = [
-  { id:301, dept:'Yapım',  uye:'Okan Demir',    ini:'OD', tutar:5000, tarih:'11.04', durum:'bekleyen',    gerekce:'Dış çekim ekipman kira ön ödemesi', donem:2 },
-  { id:302, dept:'Yapım',  uye:'Burhan Çelik',  ini:'BÇ', tutar:2500, tarih:'10.04', durum:'bekleyen',    gerekce:'Set kurulum lojistik harcaması',     donem:2 },
   { id:303, dept:'Yapım',  uye:'Mehmet Kaya',   ini:'MK', tutar:8000, tarih:'01.04', durum:'ödendi',      gerekce:'Set kurulum harcamaları',             donem:2 },
-  { id:304, dept:'Kostüm', uye:'Burhan Çelik',  ini:'BÇ', tutar:2500, tarih:'10.04', durum:'bekleyen',    gerekce:'Kostüm alım & kiralama',              donem:2 },
   { id:305, dept:'Kostüm', uye:'Arda Şen',      ini:'AS', tutar:2000, tarih:'02.04', durum:'ödendi',      gerekce:'Makyaj malzeme seti',                 donem:2 },
   { id:306, dept:'Kamera', uye:'Okan Demir',    ini:'OD', tutar:4000, tarih:'08.04', durum:'ödendi',      gerekce:'Kamera ekipman depozitosu',           donem:2 },
   { id:307, dept:'Sanat',  uye:'Selin Yıldız',  ini:'SY', tutar:3000, tarih:'05.04', durum:'ödendi',      gerekce:'Sanat malzemesi alımları',            donem:2 },
@@ -6643,6 +6640,9 @@ var ACC_DEPTS = [
 ];
 
 var ACC_BEKLEYEN = [
+  { id:301, tip:'avans', dept:'Yapım',  uye:'Okan Demir',   ini:'OD', tutar:5000, tarih:'11.04', gerekce:'Dış çekim ekipman kira ön ödemesi', fromKey:'d' },
+  { id:302, tip:'avans', dept:'Yapım',  uye:'Burhan Çelik', ini:'BÇ', tutar:2500, tarih:'10.04', gerekce:'Set kurulum lojistik harcaması',    fromKey:'d' },
+  { id:304, tip:'avans', dept:'Kostüm', uye:'Burhan Çelik', ini:'BÇ', tutar:2500, tarih:'10.04', gerekce:'Kostüm alım & kiralama',            fromKey:'d' },
   { id:1, dept:'Yapım',   uye:'Mehmet Kaya',   ini:'MK', satici:'Petrol Ofisi',    kat:'Ulaşım',    tutar:4200, tarih:'12.04', belgesiz:false, uyari:'Km başına 38 TL — limit aşımı' },
   { id:2, dept:'Yapım',   uye:'Okan Demir',    ini:'OD', satici:'Grand Otel',      kat:'Konaklama', tutar:3800, tarih:'11.04', belgesiz:false, uyari:'' },
   { id:3, dept:'Sanat',   uye:'Selin Yıldız',  ini:'SY', satici:'—',               kat:'Malzeme',   tutar:2100, tarih:'10.04', belgesiz:true,  uyari:'' },
