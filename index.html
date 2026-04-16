@@ -4195,6 +4195,33 @@ function openBelgesizModal() {
   openM('mb');
 }
 /* ═══ DEPT EKRANI ═══ */
+
+/* Dept kullanıcısının ekran adını döndür (Yapim → Yapım) */
+var _DEPT_LBL_MAP = {
+  Yapim:'Yapım', yapim:'Yapım', Kamera:'Kamera', kamera:'Kamera',
+  Sanat:'Sanat', sanat:'Sanat', Ses:'Ses & Müzik', ses:'Ses & Müzik',
+  Kostum:'Kostüm & Makyaj', kostum:'Kostüm & Makyaj'
+};
+function _curDeptName() {
+  if (!curUser) return 'Yapım';
+  return _DEPT_LBL_MAP[curUser.dept] || curUser.dept;
+}
+
+/* Avans zinciri ortak yardımcı — tarih sırası (en yeni üstte) */
+function _avSortDesc(arr) {
+  return arr.slice().sort(function(a, b) {
+    /* id büyükse daha yeni (Date.now() veya statik sayı sırası) */
+    return (b.id || 0) - (a.id || 0);
+  });
+}
+
+/* ACC_AVANS_GECMIS'e yeni kayıt ekle ve listeler güncelle */
+function _avGecmisEkle(kayit) {
+  ACC_AVANS_GECMIS.unshift(kayit);
+  renderDeptAvans();   /* dept avanslar sekmesi */
+  renderAccAvans();    /* muhasebe avanslar sekmesi */
+}
+
 var SD_KAT_CLR = {
   Yakit:'var(--am)', Yiyecek:'var(--gr)', Ekipman:'var(--bl)',
   Sanat:'var(--ac)', Ulasim:'var(--bl2)', Diger:'var(--tx3)',
@@ -4684,10 +4711,13 @@ function renderDeptAvans() {
   }
   html += formHtml;
 
-  /* Aktif dönem — bekleyen avanslar */
-  if (DEPT_AVANS.length) {
-    html += '<div class="sd-sec">Onay Bekleyen (' + DEPT_AVANS.length + ')</div>';
-    html += DEPT_AVANS.map(function(a) {
+  /* Aktif dönem — bekleyen avanslar (en yeni üstte) */
+  var sortedDeptAv = _avSortDesc(DEPT_AVANS);
+  if (sortedDeptAv.length) {
+    var deptAvTop = 0;
+    for (var daii = 0; daii < sortedDeptAv.length; daii++) deptAvTop += sortedDeptAv[daii].tutar;
+    html += '<div class="sd-sec">Saha Onay Bekleyen (' + sortedDeptAv.length + ') · <span style="font-family:var(--mo);color:var(--am2)">₺' + deptAvTop.toLocaleString('tr-TR') + '</span></div>';
+    html += sortedDeptAv.map(function(a) {
       return '<div class="sd-avans-card" id="sd-av-' + a.id + '">' +
         '<div class="sd-av-top">' +
           '<div class="sd-av-kisi">' +
@@ -4699,11 +4729,12 @@ function renderDeptAvans() {
         '<div class="sd-av-meta">' + a.tarih + ' tarihli talep</div>' +
         '<div class="sd-av-gerekce">' + a.gerekce + '</div>' +
         '<div class="sd-fis-acts">' +
-          '<button class="sd-ok" onclick="deptAvansOnayla(' + a.id + ')">✓ Onayla</button>' +
+          '<button class="sd-ok" onclick="deptAvansOnayla(' + a.id + ')">✓ Onayla → Muhasebe</button>' +
           '<button class="sd-rd" onclick="deptAvansReddet(' + a.id + ')">✕ Reddet</button>' +
         '</div>' +
       '</div>';
     }).join('');
+    html += '<div style="text-align:right;font-size:11px;color:var(--tx3);padding-bottom:4px">Toplam: <strong style="color:var(--am2)">₺' + deptAvTop.toLocaleString('tr-TR') + '</strong></div>';
   } else {
     html += '<div style="text-align:center;padding:16px 0;color:var(--tx3);font-size:13px">Bekleyen avans talebi yok</div>';
   }
@@ -4718,14 +4749,16 @@ function renderDeptAvans() {
       if (!donGrp[dk]) donGrp[dk] = [];
       donGrp[dk].push(dav);
     }
-    var donKeys = Object.keys(donGrp).sort(function(a,b){ return b.localeCompare(a); });
-    html += '<div class="sd-av-gec-hd"><span>Geçmiş Avans Geçmişi</span><span style="color:var(--tx2)">₺' + (gecmisOdendi + gecmisBek + gecmisRed).toLocaleString('tr-TR') + '</span></div>';
+    var donKeys = Object.keys(donGrp).map(Number).sort(function(a,b){ return b-a; });
+    var gecmisTopAll = gecmisOdendi + gecmisBek + gecmisRed;
+    html += '<div class="sd-av-gec-hd"><span>Avans Geçmişi (' + gecmisAvans.length + ' kayıt)</span><span style="color:var(--tx2)">₺' + gecmisTopAll.toLocaleString('tr-TR') + '</span></div>';
     for (var dki = 0; dki < donKeys.length; dki++) {
-      var dk2 = donKeys[dki];
-      var rows = donGrp[dk2];
+      var avDon = donKeys[dki];
+      var rows = _avSortDesc(donGrp[avDon]); /* en yeni üstte */
       var dkTop = 0;
       for (var ri = 0; ri < rows.length; ri++) dkTop += rows[ri].tutar;
-      html += '<div class="sd-sec" style="margin-top:10px">' + dk2 + ' · ₺' + dkTop.toLocaleString('tr-TR') + ' · ' + rows.length + ' avans</div>';
+      var isAktif = avDon === 2;
+      html += '<div class="sd-sec" style="margin-top:10px">Dönem #' + avDon + (isAktif ? ' <span style="color:var(--gr)">● Aktif</span>' : '') + ' · ₺' + dkTop.toLocaleString('tr-TR') + ' · ' + rows.length + ' avans</div>';
       html += rows.map(function(av) {
         var clr = av.durum === 'ödendi' ? 'var(--gr2)' : (av.durum === 'reddedildi' ? 'var(--rd2)' : 'var(--am2)');
         var ico = av.durum === 'ödendi' ? '✅' : (av.durum === 'reddedildi' ? '❌' : '⏳');
@@ -4742,6 +4775,11 @@ function renderDeptAvans() {
         '</div>';
       }).join('');
     }
+    /* Toplam */
+    html += '<div style="border-top:1px solid var(--bo);padding-top:8px;margin-top:6px;display:flex;justify-content:space-between">' +
+      '<span style="font-size:11px;color:var(--tx3)">Genel Toplam</span>' +
+      '<strong style="font-size:12px;font-family:var(--mo)">₺' + gecmisTopAll.toLocaleString('tr-TR') + '</strong>' +
+    '</div>';
   }
 
   el.innerHTML = html;
@@ -4772,17 +4810,29 @@ function sdAvansEkle() {
     if (DEPT_EKIP[i].id === uyeId) { uyeObj = DEPT_EKIP[i]; break; }
   }
   if (!uyeObj) return;
-  DEPT_AVANS.unshift({
-    id: Date.now(), uye: uyeObj.name, ini: uyeObj.ini,
-    tutar: tutar, tarih: _deptTarih(), gerekce: gerekce, fromKey: 's'
+
+  /* Dept avansı → muhasebe bekleyenine direkt gider (dept onayına gerek yok) */
+  ACC_BEKLEYEN.unshift({
+    id: Date.now(), tip: 'avans',
+    dept: _curDeptName(),
+    uye: uyeObj.name, ini: uyeObj.ini,
+    satici: 'Avans Talebi (Dept)',
+    kat: 'Avans',
+    tutar: tutar, tarih: _deptTarih(),
+    belgesiz: false, uyari: '',
+    gerekce: gerekce, fromKey: 'd'
   });
-  _pushNotif('d', 'am', 'Yeni Avans Talebi',
-    uyeObj.name + ' — ₺' + tutar.toLocaleString('tr-TR') + ' · ' + gerekce,
-    'Az önce · Sistem');
+
+  /* Muhasebe kullanıcısına bildir */
+  _pushNotif('m', 'am', 'Yeni Avans Talebi (Dept)',
+    (curUser ? curUser.name : 'Dept Sorumlusu') + ' · ' + uyeObj.name + ' için ₺' + tutar.toLocaleString('tr-TR') + ' · ' + gerekce,
+    'Az önce · ' + (curUser ? curUser.name : 'Dept'));
   updateNotifBadge();
+
   sdAvansFormAcik = false;
   renderDeptAvans();
-  notif('Avans talebi oluşturuldu', 'green');
+  renderAccAvans(); /* muhasebe açıksa anında güncelle */
+  notif('Avans talebi muhasebeye gönderildi', 'green');
 }
 
 /* ═══ DEPT — KİRALAMA ═══ */
@@ -5073,11 +5123,8 @@ function renderAccAvans() {
   var el = document.getElementById('sa-pnl-avans');
   if (!el) return;
 
-  /* Aktif bekleyenler (ACC_BEKLEYEN'den avans olanlar) */
-  var aktifAv = [];
-  for (var ai = 0; ai < ACC_BEKLEYEN.length; ai++) {
-    if (ACC_BEKLEYEN[ai].tip === 'avans') aktifAv.push(ACC_BEKLEYEN[ai]);
-  }
+  /* Bekleyen avanslar — en yeni üstte */
+  var aktifAv = _avSortDesc(ACC_BEKLEYEN.filter(function(a){ return a.tip === 'avans'; }));
 
   /* Dönem seçici */
   var donBar = '<div class="sa-donem-bar" style="margin-bottom:14px">';
@@ -5090,17 +5137,20 @@ function renderAccAvans() {
     '</button>';
   }
   donBar += '</div>';
-
   var html = donBar;
 
-  /* Aktif dönem: bekleyenler ayrıca üstte */
-  if (saAvansDonem === 2 && aktifAv.length) {
-    html += '<div style="font-size:10px;font-weight:700;color:var(--am2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Onay Bekleyen</div>';
+  /* Onay bekleyen bölümü (aktif dönem seçiliyse ya da her zaman göster) */
+  if (aktifAv.length) {
+    var bekTop = aktifAv.reduce(function(s,a){ return s + a.tutar; }, 0);
+    html += '<div class="sa-av-don-hd"><span style="color:var(--am2)">⏳ Onay Bekleyen (' + aktifAv.length + ')</span><span style="color:var(--am2)">₺' + bekTop.toLocaleString('tr-TR') + '</span></div>';
     html += aktifAv.map(function(av) {
+      var kaynakTag = av.fromKey === 'd'
+        ? '<span style="font-size:10px;background:rgba(59,130,246,.12);color:var(--bl2);border-radius:5px;padding:1px 6px;margin-left:6px">Dept</span>'
+        : '<span style="font-size:10px;background:rgba(232,150,46,.12);color:var(--ac2);border-radius:5px;padding:1px 6px;margin-left:6px">Saha</span>';
       return '<div class="sa-dept-card" style="margin-bottom:8px">' +
         '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">' +
           '<div class="sa-av-av" style="background:rgba(232,150,46,.15);color:var(--ac2)">' + av.ini + '</div>' +
-          '<div style="flex:1"><div class="sa-av-name">' + av.uye + '</div><div class="sa-av-sub">' + av.dept + ' · ' + av.tarih + '</div></div>' +
+          '<div style="flex:1"><div class="sa-av-name">' + av.uye + kaynakTag + '</div><div class="sa-av-sub">' + av.dept + ' · ' + av.tarih + '</div></div>' +
           '<div class="sa-av-tutar" style="color:var(--ac2)">₺' + av.tutar.toLocaleString('tr-TR') + '</div>' +
         '</div>' +
         '<div style="font-size:12px;color:var(--tx2);margin-bottom:10px">Gerekçe: ' + (av.gerekce || '—') + '</div>' +
@@ -5110,28 +5160,37 @@ function renderAccAvans() {
         '</div>' +
       '</div>';
     }).join('');
+    /* Toplam satırı */
+    html += '<div style="text-align:right;font-size:11px;color:var(--tx3);padding:2px 2px 12px">Bekleyen toplam: <strong style="color:var(--am2)">₺' + bekTop.toLocaleString('tr-TR') + '</strong></div>';
   }
 
-  /* Geçmiş — dönem filtrelenmiş */
-  var gecmisDonem = ACC_AVANS_GECMIS.filter(function(av){ return av.donem === saAvansDonem; });
+  /* Geçmiş — dönem filtrelenmiş, en yeni üstte */
+  var gecmisDonem = _avSortDesc(ACC_AVANS_GECMIS.filter(function(av){ return av.donem === saAvansDonem; }));
 
-  if (!gecmisDonem.length && !(saAvansDonem === 2 && aktifAv.length)) {
+  if (!gecmisDonem.length && !aktifAv.length) {
     el.innerHTML = html + '<div style="text-align:center;padding:30px 0;color:var(--tx3);font-size:13px">Bu dönem için avans kaydı yok</div>';
     return;
   }
 
   /* Grupla: bekleyen / ödendi / reddedildi */
-  var bek = gecmisDonem.filter(function(a){ return a.durum === 'bekleyen'; });
-  var ode = gecmisDonem.filter(function(a){ return a.durum === 'ödendi'; });
-  var red = gecmisDonem.filter(function(a){ return a.durum === 'reddedildi'; });
+  var bek  = gecmisDonem.filter(function(a){ return a.durum === 'bekleyen'; });
+  var ode  = gecmisDonem.filter(function(a){ return a.durum === 'ödendi'; });
+  var red  = gecmisDonem.filter(function(a){ return a.durum === 'reddedildi'; });
 
   function avRow(av) {
-    var clr  = av.durum === 'ödendi' ? 'sa-av-durum-ok' : (av.durum === 'reddedildi' ? 'sa-av-durum-red' : 'sa-av-durum-bek');
-    var ico  = av.durum === 'ödendi' ? '✅' : (av.durum === 'reddedildi' ? '❌' : '⏳');
+    var clr = av.durum === 'ödendi' ? 'sa-av-durum-ok' : (av.durum === 'reddedildi' ? 'sa-av-durum-red' : 'sa-av-durum-bek');
+    var ico = av.durum === 'ödendi' ? '✅' : (av.durum === 'reddedildi' ? '❌' : '⏳');
     return '<div class="sa-av-row">' +
       '<div class="sa-av-av">' + av.ini + '</div>' +
-      '<div class="sa-av-info"><div class="sa-av-name">' + av.uye + '</div><div class="sa-av-sub">' + av.dept + ' · ' + av.tarih + '</div><div style="font-size:11px;color:var(--tx3);margin-top:2px">' + av.gerekce + '</div></div>' +
-      '<div class="sa-av-right"><div class="sa-av-tutar">₺' + av.tutar.toLocaleString('tr-TR') + '</div><div class="sa-av-durum ' + clr + '">' + ico + ' ' + av.durum + '</div></div>' +
+      '<div class="sa-av-info">' +
+        '<div class="sa-av-name">' + av.uye + '</div>' +
+        '<div class="sa-av-sub">' + av.dept + ' · ' + av.tarih + '</div>' +
+        '<div style="font-size:11px;color:var(--tx3);margin-top:2px">' + av.gerekce + '</div>' +
+      '</div>' +
+      '<div class="sa-av-right">' +
+        '<div class="sa-av-tutar">₺' + av.tutar.toLocaleString('tr-TR') + '</div>' +
+        '<div class="sa-av-durum ' + clr + '">' + ico + ' ' + av.durum + '</div>' +
+      '</div>' +
     '</div>';
   }
 
@@ -5139,16 +5198,28 @@ function renderAccAvans() {
     var bTop = bek.reduce(function(s,a){ return s + a.tutar; }, 0);
     html += '<div class="sa-av-don-hd"><span style="color:var(--am2)">⏳ Bekleyen (' + bek.length + ')</span><span>₺' + bTop.toLocaleString('tr-TR') + '</span></div>';
     html += bek.map(avRow).join('');
+    html += '<div style="text-align:right;font-size:10px;color:var(--tx3);padding-bottom:8px">Toplam: ₺' + bTop.toLocaleString('tr-TR') + '</div>';
   }
   if (ode.length) {
     var oTop = ode.reduce(function(s,a){ return s + a.tutar; }, 0);
     html += '<div class="sa-av-don-hd"><span style="color:var(--gr2)">✅ Ödendi (' + ode.length + ')</span><span>₺' + oTop.toLocaleString('tr-TR') + '</span></div>';
     html += ode.map(avRow).join('');
+    html += '<div style="text-align:right;font-size:10px;color:var(--tx3);padding-bottom:8px">Toplam: ₺' + oTop.toLocaleString('tr-TR') + '</div>';
   }
   if (red.length) {
     var rTop = red.reduce(function(s,a){ return s + a.tutar; }, 0);
     html += '<div class="sa-av-don-hd"><span style="color:var(--rd2)">❌ Reddedildi (' + red.length + ')</span><span>₺' + rTop.toLocaleString('tr-TR') + '</span></div>';
     html += red.map(avRow).join('');
+    html += '<div style="text-align:right;font-size:10px;color:var(--tx3);padding-bottom:8px">Toplam: ₺' + rTop.toLocaleString('tr-TR') + '</div>';
+  }
+
+  /* Dönem genel toplam */
+  if (gecmisDonem.length) {
+    var donTop = gecmisDonem.reduce(function(s,a){ return s + a.tutar; }, 0);
+    html += '<div style="border-top:1px solid var(--bo);padding-top:10px;margin-top:4px;display:flex;justify-content:space-between;align-items:center">' +
+      '<span style="font-size:11px;color:var(--tx3)">Dönem Toplamı (' + gecmisDonem.length + ' kayıt)</span>' +
+      '<strong style="font-size:13px;font-family:var(--mo)">₺' + donTop.toLocaleString('tr-TR') + '</strong>' +
+    '</div>';
   }
 
   el.innerHTML = html;
@@ -5346,7 +5417,7 @@ function deptAvansOnayla(id) {
       var tarih = _deptTarih ? _deptTarih() : '';
       ACC_BEKLEYEN.unshift({
         id: Date.now(), tip: 'avans',
-        dept: curUser ? curUser.dept : 'Dept',
+        dept: _curDeptName(),
         uye: a.uye, ini: a.ini,
         satici: 'Avans Talebi', kat: 'Avans',
         tutar: a.tutar, tarih: tarih,
@@ -5372,12 +5443,22 @@ function deptAvansReddet(id) {
       var a = DEPT_AVANS[i];
       DEPT_AVANS.splice(i, 1);
 
+      /* Geçmişe yaz — reddedildi */
+      _avGecmisEkle({
+        id: Date.now(), dept: _curDeptName(),
+        uye: a.uye, ini: a.ini,
+        tutar: a.tutar, tarih: _deptTarih(),
+        durum: 'reddedildi',
+        gerekce: a.gerekce + ' [Dept reddetti]',
+        donem: 2
+      });
+
       /* Saha kullanıcısına red bildirimi */
       _pushNotif(a.fromKey || 's', 'rd', 'Avans Talebi Reddedildi',
-        '₺' + a.tutar.toLocaleString('tr-TR') + ' avans talebi dept sorumlusu tarafından reddedildi.',
+        '₺' + a.tutar.toLocaleString('tr-TR') + ' avans talebin dept sorumlusu tarafından reddedildi. Gerekçe: ' + a.gerekce,
         'Az önce · ' + (curUser ? curUser.name : 'Dept') + ' (Dept)');
+      updateNotifBadge();
 
-      renderDeptAvans();
       notif(a.uye + ' avans talebi reddedildi', 'red');
       return;
     }
@@ -7642,10 +7723,30 @@ function accOnayla(id) {
   }
   ACC_BEKLEYEN = ACC_BEKLEYEN.filter(function(f){ return f.id !== id; });
   renderAccBek();
+
   if (item && item.tip === 'avans') {
-    _pushNotif(item.fromKey || 's', 'gr', 'Avans Talebiniz Onaylandı ✅',
-      '₺' + item.tutar.toLocaleString('tr-TR') + ' avans talebi muhasebe tarafından onaylandı. En kısa sürede hesabınıza aktarılacak.',
+    /* Avans geçmişine yaz — ödendi */
+    _avGecmisEkle({
+      id: Date.now(), dept: item.dept || _curDeptName(),
+      uye: item.uye, ini: item.ini,
+      tutar: item.tutar, tarih: _deptTarih(),
+      durum: 'ödendi',
+      gerekce: item.gerekce || '',
+      donem: 2
+    });
+
+    /* İlgili kişiye onay bildirimi */
+    var fk = item.fromKey || 's';
+    _pushNotif(fk, 'gr', 'Avans Talebiniz Onaylandı ✅',
+      '₺' + item.tutar.toLocaleString('tr-TR') + ' avans talebiniz muhasebe tarafından onaylandı. En kısa sürede hesabınıza aktarılacak.',
       'Az önce · ' + (curUser ? curUser.name : 'Muhasebe') + ' (Muhasebe)');
+    /* Dept'e de bildir (farklı kullanıcıysa) */
+    if (fk !== 'd') {
+      _pushNotif('d', 'gr', 'Avans Onaylandı — ' + item.uye,
+        '₺' + item.tutar.toLocaleString('tr-TR') + ' avans talebi muhasebe tarafından onaylandı.',
+        'Az önce · ' + (curUser ? curUser.name : 'Muhasebe') + ' (Muhasebe)');
+    }
+    updateNotifBadge();
     notif(item.uye + ' avansı onaylandı', 'green');
   } else {
     notif('Harcama onaylandı', 'green');
@@ -7659,10 +7760,29 @@ function accReddet(id) {
   }
   ACC_BEKLEYEN = ACC_BEKLEYEN.filter(function(f){ return f.id !== id; });
   renderAccBek();
+
   if (item && item.tip === 'avans') {
-    _pushNotif(item.fromKey || 's', 'rd', 'Avans Talebiniz Reddedildi',
-      '₺' + item.tutar.toLocaleString('tr-TR') + ' avans talebi muhasebe tarafından reddedildi. Detaylar için muhasebe ile iletişime geçin.',
+    /* Avans geçmişine yaz — reddedildi */
+    _avGecmisEkle({
+      id: Date.now(), dept: item.dept || _curDeptName(),
+      uye: item.uye, ini: item.ini,
+      tutar: item.tutar, tarih: _deptTarih(),
+      durum: 'reddedildi',
+      gerekce: item.gerekce || '',
+      donem: 2
+    });
+
+    /* İlgili kişiye red bildirimi */
+    var fkr = item.fromKey || 's';
+    _pushNotif(fkr, 'rd', 'Avans Talebiniz Reddedildi',
+      '₺' + item.tutar.toLocaleString('tr-TR') + ' avans talebiniz muhasebe tarafından reddedildi. Detaylar için muhasebe ile iletişime geçin.',
       'Az önce · ' + (curUser ? curUser.name : 'Muhasebe') + ' (Muhasebe)');
+    if (fkr !== 'd') {
+      _pushNotif('d', 'am', 'Avans Reddedildi — ' + item.uye,
+        '₺' + item.tutar.toLocaleString('tr-TR') + ' avans talebi muhasebe tarafından reddedildi.',
+        'Az önce · ' + (curUser ? curUser.name : 'Muhasebe') + ' (Muhasebe)');
+    }
+    updateNotifBadge();
     notif(item.uye + ' avansı reddedildi', 'red');
   } else {
     notif('Harcama reddedildi', 'red');
