@@ -7024,6 +7024,126 @@ var saRaporSecilenDonemler = [2, 1, 0]; /* dönem karşılaştırma seçimi */
 var saAliciId   = '';   /* seçili alıcı id — 'dept:yapim' veya 'kisi:MK:yapim' */
 var saAliciDept = '';   /* step 2'de açık olan dept anahtarı — 'yapim', 'kamera' vb. */
 
+/* ═══════════════════════════════════════════════════════════════
+   APP NAMESPACE
+   Tüm global state'e tek bir noktadan erişim sağlar.
+   Mevcut global isimler shim olarak korunuyor (Adım 1).
+   Adım 2'de fonksiyon içleri APP.xxx.yyy kullanacak şekilde migre edilecek.
+   ═══════════════════════════════════════════════════════════════ */
+var APP = {
+
+  /* ── Seed: sabit demo/konfigürasyon verisi ── */
+  seed: {
+    users:      USERS,
+    umap:       UMAP,
+    projs:      PROJS,
+    donemler:   DONEMLER,
+    deptEkip:   DEPT_EKIP,
+    sdDonemler: SD_DONEMLER,
+    saDonemler: SA_DONEMLER,
+    accDepts:   ACC_DEPTS,
+    katLimit:   KAT_LIMIT
+  },
+
+  /* ── Data: uygulama çalışma zamanı verisi (mutable) ── */
+  data: {
+    fisler:         DATA,
+    deptBekleyen:   DEPT_BEKLEYEN,
+    deptAvans:      DEPT_AVANS,
+    deptKira:       DEPT_KIRA,
+    accBekleyen:    ACC_BEKLEYEN,
+    accAvansGecmis: ACC_AVANS_GECMIS,
+    accKiralamalar: ACC_KIRALAMALAR,
+    accSuphe:       ACC_SUPHE,
+    donemButce:     DONEM_BUTCE,
+    globalInbox:    GLOBAL_INBOX,
+    deptGecmis:     DEPT_GECMIS
+  },
+
+  /* ── Cache: türetilmiş / hesaplanmış lookup verisi ── */
+  cache: {
+    accDeptFis:       ACC_DEPT_FIS,
+    accDeptUyeler:    ACC_DEPT_UYELER,
+    accDeptDonemler:  ACC_DEPT_DONEMLER,
+    accDeptAvans:     ACC_DEPT_AVANS,
+    accDeptGecmis:    ACC_DEPT_GECMIS,
+    accDeptKatlar:    ACC_DEPT_KATLAR,
+    accDonemKatlar:   ACC_DONEM_KATLAR,
+    uyeGecmis:        UYE_GECMIS,
+    accRaporPersonel: ACC_RAPOR_PERSONEL
+  },
+
+  /* ── UI: ekran durumu ──
+     Object ref'ler (sdSec, notiflar) mutasyonla senkronize olur.
+     Primitifler (aktifDon, curUserKey vb.) Adım 2'de migrate edilecek;
+     şimdilik başlangıç değerleri kopyalanmış durumda. ── */
+  ui: {
+    /* Object refs — push/splice/property ile güncelleme çalışır */
+    sdSec:    sdSec,
+    notiflar: NOTIFLAR,
+    /* Primitives — başlangıç değeri; Adım 2'ye kadar global isimlerle güncellenir */
+    curUser:          null,
+    curUserKey:       's',
+    curProj:          null,
+    aktifDon:         2,
+    sdSeciliDonem:    2,
+    saSeciliDonem:    2,
+    sdGecmisPnlDonem: 1,
+    sdAvansFormAcik:  false,
+    sdMesajKisi:      '',
+    sdMode:           false,
+    saAvansDonem:     2,
+    saRaporTip:       'dept',
+    longTimer:        null,
+    longFired:        false,
+    isRec:            false,
+    speechRecog:      null
+  }
+};
+
+/* ── Shims: mevcut global isimler APP canonical referansına yönlendirildi ──
+   push/splice ile mutasyon: ikisi de senkronize.
+   filter/= ile reassignment: Adım 2'ye kadar shim kopar — global isim çalışmaya devam eder. */
+
+/* Seed shims */
+var USERS        = APP.seed.users;
+var UMAP         = APP.seed.umap;
+var PROJS        = APP.seed.projs;
+var DONEMLER     = APP.seed.donemler;
+var DEPT_EKIP    = APP.seed.deptEkip;
+var SD_DONEMLER  = APP.seed.sdDonemler;
+var SA_DONEMLER  = APP.seed.saDonemler;
+var ACC_DEPTS    = APP.seed.accDepts;
+var KAT_LIMIT    = APP.seed.katLimit;
+
+/* Data shims */
+var DATA             = APP.data.fisler;
+var DEPT_BEKLEYEN    = APP.data.deptBekleyen;
+var DEPT_AVANS       = APP.data.deptAvans;
+var DEPT_KIRA        = APP.data.deptKira;
+var ACC_BEKLEYEN     = APP.data.accBekleyen;
+var ACC_AVANS_GECMIS = APP.data.accAvansGecmis;
+var ACC_KIRALAMALAR  = APP.data.accKiralamalar;
+var ACC_SUPHE        = APP.data.accSuphe;
+var DONEM_BUTCE      = APP.data.donemButce;
+var GLOBAL_INBOX     = APP.data.globalInbox;
+var DEPT_GECMIS      = APP.data.deptGecmis;
+
+/* Cache shims */
+var ACC_DEPT_FIS      = APP.cache.accDeptFis;
+var ACC_DEPT_UYELER   = APP.cache.accDeptUyeler;
+var ACC_DEPT_DONEMLER = APP.cache.accDeptDonemler;
+var ACC_DEPT_AVANS    = APP.cache.accDeptAvans;
+var ACC_DEPT_GECMIS   = APP.cache.accDeptGecmis;
+var ACC_DEPT_KATLAR   = APP.cache.accDeptKatlar;
+var ACC_DONEM_KATLAR  = APP.cache.accDonemKatlar;
+var UYE_GECMIS        = APP.cache.uyeGecmis;
+var ACC_RAPOR_PERSONEL = APP.cache.accRaporPersonel;
+
+/* UI shims — sadece object ref'ler; primitifler global olarak kalıyor */
+var sdSec    = APP.ui.sdSec;
+var NOTIFLAR = APP.ui.notiflar;
+
 function renderAcc() {
   if (!curUser || !curProj) return;
   document.getElementById('sa-hd-av').textContent  = curUser.ini || 'MH';
