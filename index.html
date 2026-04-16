@@ -3110,9 +3110,8 @@ var GLOBAL_INBOX = {
       meta:'3 gün önce · Sistem', read:true }
   ]
 };
-/* Aktif kullanıcının referansı — selectProj'da GLOBAL_INBOX[curUserKey]'e bağlanır */
+/* Aktif kullanıcının referansı — selectProj'da GLOBAL_INBOX[APP.ui.curUserKey]'e bağlanır */
 var NOTIFLAR = GLOBAL_INBOX['s'];
-var curUserKey = 's';
 
 /* ─── DEPT demo verisi ─── */
 var DEPT_EKIP = [
@@ -3503,22 +3502,9 @@ var ACC_DEPT_FIS = {
   ]
 };
 
-var sdMesajKisi    = '';
-var sdMode            = false; /* true → OCR/belgesiz modal dept ekranından açıldı */
-var sdSeciliDonem     = 2;     /* dept ekranında aktif dönem seçimi */
-var saSeciliDonem     = 2;     /* muhasebe dashboard dönem seçimi */
-var sdGecmisPnlDonem  = 1;     /* geçmiş sekmesinde seçili dönem */
-var sdAvansFormAcik   = false; /* avans formu açık mı */
 var _avRedPending     = null;  /* { id, kaynak:'dept'|'acc' } — red nedeni modalı için */
 var sdSec  = {};    /* seçili bekleyen id → true */
 
-var curUser  = null;
-var curProj  = null;
-var aktifDon = 2;
-var longTimer   = null;
-var longFired   = false;
-var isRec       = false;
-var speechRecog = null;
 
 /* ═══ EKRAN SİSTEMİ ═══ */
 function hideAll() {
@@ -3588,8 +3574,8 @@ function doLogin() {
     return;
   }
   document.getElementById('lerr').classList.remove('on');
-  curUserKey = key;
-  curUser = u;
+  APP.ui.curUserKey = key;
+  APP.ui.curUser = u;
   if (u.prjs.length === 1) {
     selectProj(u.prjs[0]);
   } else {
@@ -3604,8 +3590,8 @@ document.getElementById('lps').addEventListener('keydown', function(e) {
 function goLogin() {
   hideAll();
   document.getElementById('sl').classList.add('on');
-  curUser = null;
-  curProj = null;
+  APP.ui.curUser = null;
+  APP.ui.curProj = null;
 }
 
 /* ═══ PROJE ═══ */
@@ -3625,19 +3611,19 @@ function renderProjs(u) {
   }).join('');
 }
 function selectProj(pid) {
-  curProj = PROJS.find(function(p) { return p.id === pid; }) || null;
-  if (!curUser) return;
+  APP.ui.curProj = PROJS.find(function(p) { return p.id === pid; }) || null;
+  if (!APP.ui.curUser) return;
   /* Her oturum açılışında kullanıcının gelen kutusu yüklenir */
-  NOTIFLAR = GLOBAL_INBOX[curUserKey] = GLOBAL_INBOX[curUserKey] || [];
-  if (curUser.role === 'user') {
-    document.getElementById('su-av').textContent  = curUser.ini;
-    document.getElementById('su-prj').textContent = curProj ? curProj.name : '—';
-    document.getElementById('av-name').textContent = curUser.name;
+  NOTIFLAR = GLOBAL_INBOX[APP.ui.curUserKey] = GLOBAL_INBOX[APP.ui.curUserKey] || [];
+  if (APP.ui.curUser.role === 'user') {
+    document.getElementById('su-av').textContent  = APP.ui.curUser.ini;
+    document.getElementById('su-prj').textContent = APP.ui.curProj ? APP.ui.curProj.name : '—';
+    document.getElementById('av-name').textContent = APP.ui.curUser.name;
     showScr('su');
     renderRecent();
     updateNotifBadge();
-    notif(curProj.name + ' projesine giriş yapıldı', 'green');
-  } else if (curUser.role === 'dept') {
+    notif(APP.ui.curProj.name + ' projesine giriş yapıldı', 'green');
+  } else if (APP.ui.curUser.role === 'dept') {
     showScr('sd');
     renderDept();
     updateNotifBadge();
@@ -3645,13 +3631,13 @@ function selectProj(pid) {
     showScr('sa');
     renderAcc();
     updateNotifBadge();
-    notif(curProj.name + ' muhasebesine giriş yapıldı', 'blue');
+    notif(APP.ui.curProj.name + ' muhasebesine giriş yapıldı', 'blue');
   }
 }
 function goProjectSelect() {
-  if (!curUser) return;
+  if (!APP.ui.curUser) return;
   document.getElementById('pt').textContent = 'Proje Değiştir';
-  renderProjs(curUser);
+  renderProjs(APP.ui.curUser);
   showScr('sp');
 }
 
@@ -3659,18 +3645,18 @@ function goProjectSelect() {
 
 /* Ortak: form alanlarını doldur + avatar satırını güncelle */
 function _profilFill() {
-  document.getElementById('p-ad').value    = curUser.ad    || '';
-  document.getElementById('p-soyad').value = curUser.soyad || '';
-  document.getElementById('p-tel').value   = curUser.tel   || '';
-  document.getElementById('p-email').value = curUser.email || '';
+  document.getElementById('p-ad').value    = APP.ui.curUser.ad    || '';
+  document.getElementById('p-soyad').value = APP.ui.curUser.soyad || '';
+  document.getElementById('p-tel').value   = APP.ui.curUser.tel   || '';
+  document.getElementById('p-email').value = APP.ui.curUser.email || '';
   var sel = document.getElementById('p-dept');
   for (var i = 0; i < sel.options.length; i++) {
-    if (sel.options[i].value === curUser.dept) { sel.selectedIndex = i; break; }
+    if (sel.options[i].value === APP.ui.curUser.dept) { sel.selectedIndex = i; break; }
   }
-  document.getElementById('p-av').textContent      = curUser.ini;
-  document.getElementById('p-av-name').textContent = curUser.name;
+  document.getElementById('p-av').textContent      = APP.ui.curUser.ini;
+  document.getElementById('p-av-name').textContent = APP.ui.curUser.name;
   var roleMap = { user:'👷 Saha Personeli', dept:'🎬 Dept. Sorumlusu', acc:'💼 Muhasebe' };
-  document.getElementById('p-av-role').textContent = roleMap[curUser.role] || curUser.role;
+  document.getElementById('p-av-role').textContent = roleMap[APP.ui.curUser.role] || APP.ui.curUser.role;
   /* Rol özel bölümleri gizle — açan fonksiyon gerekeni gösterir */
   document.getElementById('p-dept-section').style.display = 'none';
   document.getElementById('p-acc-section').style.display  = 'none';
@@ -3679,21 +3665,21 @@ function _profilFill() {
 /* Saha — avatar menüsünden */
 function openProfil() {
   closeAvMenu();
-  if (!curUser) return;
+  if (!APP.ui.curUser) return;
   _profilFill();
   openM('mprofil');
 }
 
 /* Dept — header avatarından */
 function openSdProfil() {
-  if (!curUser) return;
+  if (!APP.ui.curUser) return;
   _profilFill();
 
   /* Departman özeti bölümünü göster ve doldur */
   var sec = document.getElementById('p-dept-section');
   sec.style.display = '';
   document.getElementById('p-dept-sec-hd').textContent =
-    (curUser.dept || 'Departman') + ' · Ekip Özeti';
+    (APP.ui.curUser.dept || 'Departman') + ' · Ekip Özeti';
 
   /* İstatistik kutuları */
   var toplamTutar = 0;
@@ -3724,7 +3710,7 @@ function openSdProfil() {
 
 /* Muhasebe — header avatarından */
 function openSaProfil() {
-  if (!curUser) return;
+  if (!APP.ui.curUser) return;
   _profilFill();
 
   /* Proje & dönem bölümünü göster ve doldur */
@@ -3732,11 +3718,11 @@ function openSaProfil() {
 
   /* Aktif proje */
   var prjHtml = '';
-  if (curProj) {
+  if (APP.ui.curProj) {
     prjHtml = '<div class="profil-prj-row">' +
       '<div>' +
-        '<div class="profil-prj-name">' + curProj.name + '</div>' +
-        '<div class="profil-prj-sub">' + curProj.type + ' · ' + curProj.status + '</div>' +
+        '<div class="profil-prj-name">' + APP.ui.curProj.name + '</div>' +
+        '<div class="profil-prj-sub">' + APP.ui.curProj.type + ' · ' + APP.ui.curProj.status + '</div>' +
       '</div>' +
       '<span class="tag-gr" style="font-size:10px">Aktif</span>' +
     '</div>';
@@ -3764,32 +3750,32 @@ function openSaProfil() {
 }
 
 function submitProfil() {
-  if (!curUser) return;
+  if (!APP.ui.curUser) return;
   var ad    = (document.getElementById('p-ad').value    || '').trim();
   var soyad = (document.getElementById('p-soyad').value || '').trim();
   if (!ad || !soyad) { notif('Ad ve soyad zorunludur', 'red'); return; }
-  curUser.ad    = ad;
-  curUser.soyad = soyad;
-  curUser.name  = ad + ' ' + soyad;
-  curUser.ini   = (ad.charAt(0) + soyad.charAt(0)).toUpperCase();
-  curUser.tel   = (document.getElementById('p-tel').value   || '').trim();
-  curUser.email = (document.getElementById('p-email').value || '').trim();
-  curUser.dept  = document.getElementById('p-dept').value;
+  APP.ui.curUser.ad    = ad;
+  APP.ui.curUser.soyad = soyad;
+  APP.ui.curUser.name  = ad + ' ' + soyad;
+  APP.ui.curUser.ini   = (ad.charAt(0) + soyad.charAt(0)).toUpperCase();
+  APP.ui.curUser.tel   = (document.getElementById('p-tel').value   || '').trim();
+  APP.ui.curUser.email = (document.getElementById('p-email').value || '').trim();
+  APP.ui.curUser.dept  = document.getElementById('p-dept').value;
   /* Modal avatar güncelle */
-  document.getElementById('p-av').textContent      = curUser.ini;
-  document.getElementById('p-av-name').textContent = curUser.name;
+  document.getElementById('p-av').textContent      = APP.ui.curUser.ini;
+  document.getElementById('p-av-name').textContent = APP.ui.curUser.name;
   /* Aktif ekran header'ını güncelle */
-  if (curUser.role === 'user') {
-    document.getElementById('av-name').textContent = curUser.name;
-    document.getElementById('su-av').textContent   = curUser.ini;
-  } else if (curUser.role === 'dept') {
+  if (APP.ui.curUser.role === 'user') {
+    document.getElementById('av-name').textContent = APP.ui.curUser.name;
+    document.getElementById('su-av').textContent   = APP.ui.curUser.ini;
+  } else if (APP.ui.curUser.role === 'dept') {
     var sdAv = document.getElementById('sd-hd-av');
     var sdRol = document.getElementById('sd-hd-role');
-    if (sdAv)  sdAv.textContent  = curUser.ini;
-    if (sdRol) sdRol.textContent = 'Dept. Sorumlusu · ' + curUser.dept;
-  } else if (curUser.role === 'acc') {
+    if (sdAv)  sdAv.textContent  = APP.ui.curUser.ini;
+    if (sdRol) sdRol.textContent = 'Dept. Sorumlusu · ' + APP.ui.curUser.dept;
+  } else if (APP.ui.curUser.role === 'acc') {
     var saAv = document.getElementById('sa-hd-av');
-    if (saAv) saAv.textContent = curUser.ini;
+    if (saAv) saAv.textContent = APP.ui.curUser.ini;
   }
   closeM('mprofil');
   notif('Profil güncellendi', 'green');
@@ -3819,7 +3805,7 @@ function suNav(id, el) {
     document.getElementById('tab-ana').classList.add('on');
   } else if (id === 'donem') {
     document.getElementById('tab-donem').classList.add('on');
-    renderDonem(aktifDon);
+    renderDonem(APP.ui.aktifDon);
   }
 }
 
@@ -3962,7 +3948,7 @@ function renderSahaButce() {
   if (!el) return;
   var b = null;
   for (var bi = 0; bi < DONEM_BUTCE.length; bi++) {
-    if (DONEM_BUTCE[bi].donem === aktifDon) { b = DONEM_BUTCE[bi]; break; }
+    if (DONEM_BUTCE[bi].donem === APP.ui.aktifDon) { b = DONEM_BUTCE[bi]; break; }
   }
   if (!b || !b.butce) { el.innerHTML = ''; return; }
   var bekTop = 0;
@@ -4020,7 +4006,7 @@ function renderSahaKatLimits() {
 function renderRecent() {
   renderSahaButce();
   renderSahaKatLimits();
-  var mine = DATA.filter(function(d) { return d.personel === 'Mehmet K.' && d.donem === aktifDon; });
+  var mine = DATA.filter(function(d) { return d.personel === 'Mehmet K.' && d.donem === APP.ui.aktifDon; });
   var el = document.getElementById('recent-list');
   if (!el) return;
   el.innerHTML = mine.map(function(d) {
@@ -4048,19 +4034,19 @@ function renderRecent() {
   var btn = document.getElementById('ocr-btn');
   if (!btn) return;
   function onStart(e) {
-    longFired = false;
-    longTimer = setTimeout(function() {
-      longFired = true;
+    APP.ui.longFired = false;
+    APP.ui.longTimer = setTimeout(function() {
+      APP.ui.longFired = true;
       openSub();
     }, 500);
   }
   function onEnd(e) {
-    clearTimeout(longTimer);
-    if (!longFired) openOCR(0);
+    clearTimeout(APP.ui.longTimer);
+    if (!APP.ui.longFired) openOCR(0);
   }
   function onCancel() {
-    clearTimeout(longTimer);
-    longFired = false;
+    clearTimeout(APP.ui.longTimer);
+    APP.ui.longFired = false;
   }
   btn.addEventListener('mousedown',   onStart);
   btn.addEventListener('touchstart',  onStart, { passive: true });
@@ -4179,8 +4165,8 @@ function fillOCR(f) {
 }
 function submitOCR() {
   closeM('mo');
-  if (sdMode) {
-    sdMode = false;
+  if (APP.ui.sdMode) {
+    APP.ui.sdMode = false;
     var satici = (document.getElementById('f-satici').value || '').trim() || 'Bilinmiyor';
     var kat    = document.getElementById('f-kat').value || 'Diger';
     var tutar  = parseFloat((document.getElementById('f-tutar').value || '0').replace(',', '.')) || 0;
@@ -4193,7 +4179,7 @@ function submitOCR() {
     var today2 = new Date();
     var tarih2 = _pad(today2.getDate()) + '.' + _pad(today2.getMonth()+1) + '.' + today2.getFullYear();
     var entry  = { id: Date.now(), tarih: tarih2, personel: 'Mehmet K.', satici: sat2,
-                   kat: kat2, tutar: tut2, durum: 'bekleyen', donem: aktifDon, uyari: null, thumb: null };
+                   kat: kat2, tutar: tut2, durum: 'bekleyen', donem: APP.ui.aktifDon, uyari: null, thumb: null };
     if (kat2 === 'Kiralama') {
       entry.kiraMeta = {
         bas:    (document.getElementById('ki-bas').value || ''),
@@ -4380,8 +4366,8 @@ var _DEPT_LBL_MAP = {
   Kostum:'Kostüm & Makyaj', kostum:'Kostüm & Makyaj'
 };
 function _curDeptName() {
-  if (!curUser) return 'Yapım';
-  return _DEPT_LBL_MAP[curUser.dept] || curUser.dept;
+  if (!APP.ui.curUser) return 'Yapım';
+  return _DEPT_LBL_MAP[APP.ui.curUser.dept] || APP.ui.curUser.dept;
 }
 
 /* Avans zinciri ortak yardımcı — tarih sırası (en yeni üstte) */
@@ -4419,11 +4405,11 @@ function avansRedOnay() {
           durum: 'reddedildi',
           gerekce: a.gerekce,
           redNedeni: redNedeni,
-          donem: aktifDon
+          donem: APP.ui.aktifDon
         });
         _pushNotif(a.fromKey || 's', 'rd', 'Avans Talebi Reddedildi',
           '₺' + a.tutar.toLocaleString('tr-TR') + ' avans talebin dept sorumlusu tarafından reddedildi. Red nedeni: ' + redNedeni,
-          'Az önce · ' + (curUser ? curUser.name : 'Dept') + ' (Dept)');
+          'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Dept') + ' (Dept)');
         updateNotifBadge();
         notif(a.uye + ' avans talebi reddedildi', 'red');
         break;
@@ -4440,16 +4426,16 @@ function avansRedOnay() {
       durum: 'reddedildi',
       gerekce: item.gerekce || '',
       redNedeni: redNedeni,
-      donem: aktifDon
+      donem: APP.ui.aktifDon
     });
     var fkr = item.fromKey || 's';
     _pushNotif(fkr, 'rd', 'Avans Talebiniz Reddedildi',
       '₺' + item.tutar.toLocaleString('tr-TR') + ' avans talebiniz muhasebe tarafından reddedildi. Red nedeni: ' + redNedeni,
-      'Az önce · ' + (curUser ? curUser.name : 'Muhasebe') + ' (Muhasebe)');
+      'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe') + ' (Muhasebe)');
     if (fkr !== 'd') {
       _pushNotif('d', 'am', 'Avans Reddedildi — ' + item.uye,
         '₺' + item.tutar.toLocaleString('tr-TR') + ' avans talebi muhasebe tarafından reddedildi. Red nedeni: ' + redNedeni,
-        'Az önce · ' + (curUser ? curUser.name : 'Muhasebe') + ' (Muhasebe)');
+        'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe') + ' (Muhasebe)');
     }
     updateNotifBadge();
     notif(item.uye + ' avansı reddedildi', 'red');
@@ -4527,13 +4513,13 @@ function _checkKatLimit(kat, newTotal) {
 
 function renderDept() {
   sdSec = {}; /* yeni oturumda seçimi temizle */
-  sdSeciliDonem = 2; /* aktif dönemden başla */
+  APP.ui.sdSeciliDonem = 2; /* aktif dönemden başla */
   var av  = document.getElementById('sd-hd-av');
   var prj = document.getElementById('sd-hd-prj');
   var rol = document.getElementById('sd-hd-role');
-  if (curUser && av)  av.textContent  = curUser.ini;
-  if (curProj && prj) prj.textContent = curProj.name;
-  if (curUser && rol) rol.textContent = 'Dept. Sorumlusu · ' + curUser.dept;
+  if (APP.ui.curUser && av)  av.textContent  = APP.ui.curUser.ini;
+  if (APP.ui.curProj && prj) prj.textContent = APP.ui.curProj.name;
+  if (APP.ui.curUser && rol) rol.textContent = 'Dept. Sorumlusu · ' + APP.ui.curUser.dept;
   renderDeptDonemSec();
   renderDeptOzet();
   renderDeptEkip();
@@ -4547,7 +4533,7 @@ function renderDeptDonemSec() {
   var el = document.getElementById('sd-donem-sec');
   if (!el) return;
   el.innerHTML = SD_DONEMLER.map(function(d) {
-    var on  = sdSeciliDonem === d.id ? ' on' : '';
+    var on  = APP.ui.sdSeciliDonem === d.id ? ' on' : '';
     var sub = d.aktif
       ? '<div class="sd-donem-aktif">● Aktif</div>'
       : '<div class="sd-donem-pill-sub">' + d.tarih + '</div>';
@@ -4558,19 +4544,19 @@ function renderDeptDonemSec() {
 }
 
 function sdSetDonem(id) {
-  sdSeciliDonem = id;
+  APP.ui.sdSeciliDonem = id;
   renderDeptDonemSec();
   renderDeptOzet();
   renderDeptBek();
 }
 
 function openDeptOCR() {
-  sdMode = true;
+  APP.ui.sdMode = true;
   openOCR(0, null);
 }
 
 function openDeptBelgesiz() {
-  sdMode = true;
+  APP.ui.sdMode = true;
   openBelgesizModal();
 }
 
@@ -4580,8 +4566,8 @@ function _deptTarih() {
 }
 
 function _addToDeptBekleyen(satici, kat, tutar, belgesiz, aciklama, fotos) {
-  var uye = curUser ? curUser.name : 'Dept Sorumlusu';
-  var ini = curUser ? curUser.ini  : 'DS';
+  var uye = APP.ui.curUser ? APP.ui.curUser.name : 'Dept Sorumlusu';
+  var ini = APP.ui.curUser ? APP.ui.curUser.ini  : 'DS';
   DEPT_BEKLEYEN.unshift({
     id: Date.now(), uye: uye, ini: ini,
     satici: satici || 'Yeni Harcama',
@@ -4594,7 +4580,7 @@ function _addToDeptBekleyen(satici, kat, tutar, belgesiz, aciklama, fotos) {
     fotos: fotos || []
   });
   /* Bütçe eşik kontrolü */
-  var _cb = DONEM_BUTCE.find(function(x){ return x.donem === aktifDon; });
+  var _cb = DONEM_BUTCE.find(function(x){ return x.donem === APP.ui.aktifDon; });
   if (_cb) {
     var _cbt = 0;
     for (var _ci = 0; _ci < DEPT_BEKLEYEN.length; _ci++) _cbt += DEPT_BEKLEYEN[_ci].tutar;
@@ -4617,7 +4603,7 @@ function _checkButceUyari(b, bekTop) {
       b.lbl + ' bütçesi tamamen tükendi. Yeni harcama yapılmamalı.',
       'Az önce · Sistem');
     _pushNotif('m', 'rd', 'Departman Bütçesi Aşıldı',
-      (curUser ? curUser.dept : 'Dept') + ' departmanı ' + b.lbl + ' bütçesini aştı.',
+      (APP.ui.curUser ? APP.ui.curUser.dept : 'Dept') + ' departmanı ' + b.lbl + ' bütçesini aştı.',
       'Az önce · Sistem');
     updateNotifBadge();
   } else if (pct >= 80 && prev < 80) {
@@ -4633,8 +4619,8 @@ function renderDeptOzet() {
   if (!el) return;
 
   /* Aktif dönem (2) — canlı progress bar */
-  if (sdSeciliDonem === 2) {
-    var b = DONEM_BUTCE.find(function(x){ return x.donem === aktifDon; });
+  if (APP.ui.sdSeciliDonem === 2) {
+    var b = DONEM_BUTCE.find(function(x){ return x.donem === APP.ui.aktifDon; });
     if (!b) { el.innerHTML = ''; return; }
     var bekTop = 0;
     for (var i = 0; i < DEPT_BEKLEYEN.length; i++) bekTop += DEPT_BEKLEYEN[i].tutar;
@@ -4698,13 +4684,13 @@ function renderDeptOzet() {
   }
 
   /* Geçmiş dönem — statik özet */
-  var bp = DONEM_BUTCE.find(function(x){ return x.donem === sdSeciliDonem; });
-  var gec = DEPT_GECMIS[sdSeciliDonem] || { onaylandi:[], reddedildi:[] };
+  var bp = DONEM_BUTCE.find(function(x){ return x.donem === APP.ui.sdSeciliDonem; });
+  var gec = DEPT_GECMIS[APP.ui.sdSeciliDonem] || { onaylandi:[], reddedildi:[] };
   var topOnay = 0, topRed = 0;
   for (var j = 0; j < gec.onaylandi.length; j++)  topOnay += gec.onaylandi[j].tutar;
   for (var k = 0; k < gec.reddedildi.length; k++) topRed  += gec.reddedildi[k].tutar;
   var donRec = null;
-  for (var m = 0; m < SD_DONEMLER.length; m++) if (SD_DONEMLER[m].id === sdSeciliDonem) { donRec = SD_DONEMLER[m]; break; }
+  for (var m = 0; m < SD_DONEMLER.length; m++) if (SD_DONEMLER[m].id === APP.ui.sdSeciliDonem) { donRec = SD_DONEMLER[m]; break; }
   var butce = bp ? bp.butce : 0;
   var harcanan = bp ? bp.harcanan : topOnay;
   var pctH = butce > 0 ? Math.round(harcanan / butce * 100) : 0;
@@ -4771,9 +4757,9 @@ function renderDeptBek() {
   var cnt = document.getElementById('sdtb-bek-cnt');
 
   /* Geçmiş dönem — onaylananlar + reddedilenler */
-  if (sdSeciliDonem !== 2) {
+  if (APP.ui.sdSeciliDonem !== 2) {
     if (cnt) cnt.textContent = '0';
-    _renderDeptBekGecmis(el, sdSeciliDonem);
+    _renderDeptBekGecmis(el, APP.ui.sdSeciliDonem);
     return;
   }
 
@@ -4906,7 +4892,7 @@ function deptOnaylaSecili() {
   var keys = Object.keys(ids);
   if (!keys.length) { notif('Seçili kayıt yok', 'amber'); return; }
   var cnt = 0, top = 0;
-  var ob = DONEM_BUTCE.find(function(x){ return x.donem === aktifDon; });
+  var ob = DONEM_BUTCE.find(function(x){ return x.donem === APP.ui.aktifDon; });
   if (!DEPT_GECMIS[2]) DEPT_GECMIS[2] = { onaylandi:[], reddedildi:[] };
   DEPT_BEKLEYEN = DEPT_BEKLEYEN.filter(function(f) {
     if (ids[f.id]) {
@@ -4935,7 +4921,7 @@ function deptReddetSecili() {
   var keys = Object.keys(ids);
   if (!keys.length) { notif('Seçili kayıt yok', 'amber'); return; }
   var cnt = 0, top = 0;
-  var rb = DONEM_BUTCE.find(function(x){ return x.donem === aktifDon; });
+  var rb = DONEM_BUTCE.find(function(x){ return x.donem === APP.ui.aktifDon; });
   DEPT_BEKLEYEN = DEPT_BEKLEYEN.filter(function(f) {
     if (ids[f.id]) {
       cnt++; top += f.tutar;
@@ -5006,7 +4992,7 @@ function renderDeptAvans() {
 
   /* Yeni avans formu */
   var formHtml = '';
-  if (sdAvansFormAcik) {
+  if (APP.ui.sdAvansFormAcik) {
     var uyeOpts = DEPT_EKIP.map(function(u) {
       return '<option value="' + u.id + '">' + u.name + '</option>';
     }).join('');
@@ -5109,12 +5095,12 @@ function renderDeptAvans() {
 }
 
 function sdAvansFormAc() {
-  sdAvansFormAcik = true;
+  APP.ui.sdAvansFormAcik = true;
   renderDeptAvans();
 }
 
 function sdAvansFormKapat() {
-  sdAvansFormAcik = false;
+  APP.ui.sdAvansFormAcik = false;
   renderDeptAvans();
 }
 
@@ -5148,11 +5134,11 @@ function sdAvansEkle() {
 
   /* Muhasebe kullanıcısına bildir */
   _pushNotif('m', 'am', 'Yeni Avans Talebi (Dept)',
-    (curUser ? curUser.name : 'Dept Sorumlusu') + ' · ' + uyeObj.name + ' için ₺' + tutar.toLocaleString('tr-TR') + ' · ' + gerekce,
-    'Az önce · ' + (curUser ? curUser.name : 'Dept'));
+    (APP.ui.curUser ? APP.ui.curUser.name : 'Dept Sorumlusu') + ' · ' + uyeObj.name + ' için ₺' + tutar.toLocaleString('tr-TR') + ' · ' + gerekce,
+    'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Dept'));
   updateNotifBadge();
 
-  sdAvansFormAcik = false;
+  APP.ui.sdAvansFormAcik = false;
   renderDeptAvans();
   renderAccAvans(); /* muhasebe açıksa anında güncelle */
   notif('Avans talebi muhasebeye gönderildi', 'green');
@@ -5285,7 +5271,6 @@ function deptKiraIade(id) {
 
 /* ═══ MUHASEBe — KİRALAMA ═══ */
 
-var saAvansDonem = 2; /* avans paneli aktif dönem */
 
 function renderAccKira() {
   var el = document.getElementById('sa-pnl-kira');
@@ -5453,9 +5438,9 @@ function renderAccAvans() {
   var donBar = '<div class="sa-donem-bar" style="margin-bottom:14px">';
   for (var di = 0; di < SA_DONEMLER.length; di++) {
     var dp = SA_DONEMLER[di];
-    var dpOn = saAvansDonem === dp.id ? ' on' : '';
+    var dpOn = APP.ui.saAvansDonem === dp.id ? ' on' : '';
     donBar += '<button class="sa-donem-pill' + dpOn + '" onclick="saAvansSetDonem(' + dp.id + ')">' +
-      '<div style="font-size:12px;font-weight:700;color:' + (saAvansDonem === dp.id ? 'var(--ac2)' : 'var(--tx2)') + '">' + dp.lbl + '</div>' +
+      '<div style="font-size:12px;font-weight:700;color:' + (APP.ui.saAvansDonem === dp.id ? 'var(--ac2)' : 'var(--tx2)') + '">' + dp.lbl + '</div>' +
       (dp.aktif ? '<div style="font-size:9px;color:var(--gr);font-weight:700;margin-top:1px">● Aktif</div>' : '<div style="font-size:10px;color:var(--tx3);margin-top:1px">' + dp.tarih + '</div>') +
     '</button>';
   }
@@ -5488,7 +5473,7 @@ function renderAccAvans() {
   }
 
   /* Geçmiş — dönem filtrelenmiş, en yeni üstte */
-  var gecmisDonem = _avSortDesc(ACC_AVANS_GECMIS.filter(function(av){ return av.donem === saAvansDonem; }));
+  var gecmisDonem = _avSortDesc(ACC_AVANS_GECMIS.filter(function(av){ return av.donem === APP.ui.saAvansDonem; }));
 
   if (!gecmisDonem.length && !aktifAv.length) {
     el.innerHTML = html + '<div style="text-align:center;padding:30px 0;color:var(--tx3);font-size:13px">Bu dönem için avans kaydı yok</div>';
@@ -5553,7 +5538,7 @@ function renderAccAvans() {
 }
 
 function saAvansSetDonem(id) {
-  saAvansDonem = id;
+  APP.ui.saAvansDonem = id;
   renderAccAvans();
 }
 
@@ -5563,7 +5548,7 @@ function accAvansOpenKisi(name) {
     if (ACC_RAPOR_PERSONEL[i].name === name) { idx = i; break; }
   }
   if (idx < 0) { notif('Personel raporu bulunamadı', 'amber'); return; }
-  saRaporTip    = 'personel';
+  APP.ui.saRaporTip    = 'personel';
   saRaporDeptId  = '';
   saRaporKisiIdx = idx;
   saRaporKisiFrom = 'list';
@@ -5589,7 +5574,7 @@ function sdTab(t, el) {
 
 /* ── Dept Geçmiş Dönemler Sekmesi ── */
 function sdGecmisSetDonem(id) {
-  sdGecmisPnlDonem = id;
+  APP.ui.sdGecmisPnlDonem = id;
   renderDeptGecmis();
 }
 
@@ -5604,12 +5589,12 @@ function renderDeptGecmis() {
     return;
   }
   /* Seçili dönem geçerli mi? */
-  var donId = sdGecmisPnlDonem;
+  var donId = APP.ui.sdGecmisPnlDonem;
   var donRec = null;
   for (var di = 0; di < gecmisDon.length; di++) {
     if (gecmisDon[di].id === donId) { donRec = gecmisDon[di]; break; }
   }
-  if (!donRec) { donId = gecmisDon[0].id; donRec = gecmisDon[0]; sdGecmisPnlDonem = donId; }
+  if (!donRec) { donId = gecmisDon[0].id; donRec = gecmisDon[0]; APP.ui.sdGecmisPnlDonem = donId; }
 
   /* Dönem seçici */
   var html = '<div class="sd-gec-donem-row">';
@@ -5716,7 +5701,7 @@ function deptOnayla(id) {
       var f = DEPT_BEKLEYEN[i];
       DEPT_BEKLEYEN.splice(i, 1);
       /* Onaylanan tutarı bütçeye ekle */
-      var ob = DONEM_BUTCE.find(function(x){ return x.donem === aktifDon; });
+      var ob = DONEM_BUTCE.find(function(x){ return x.donem === APP.ui.aktifDon; });
       if (ob) {
         ob.harcanan += f.tutar;
         var obt = 0;
@@ -5744,7 +5729,7 @@ function deptReddet(id) {
       var f = DEPT_BEKLEYEN[i];
       DEPT_BEKLEYEN.splice(i, 1);
       /* Reddedilen tutarı kaydet */
-      var rb = DONEM_BUTCE.find(function(x){ return x.donem === aktifDon; });
+      var rb = DONEM_BUTCE.find(function(x){ return x.donem === APP.ui.aktifDon; });
       if (rb) rb.reddedildi += f.tutar;
       updateNotifBadge();
       notif(f.satici + ' reddedildi', 'red');
@@ -5777,7 +5762,7 @@ function deptAvansOnayla(id) {
       /* Muhasebe kullanıcısına bildir */
       _pushNotif('m', 'am', 'Avans Onay Bekliyor',
         a.uye + ' — ₺' + a.tutar.toLocaleString('tr-TR') + ' avans talebi dept onayından geçti.',
-        'Az önce · ' + (curUser ? curUser.name : 'Dept') + ' (Dept)');
+        'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Dept') + ' (Dept)');
 
       updateNotifBadge();
       renderDeptAvans();
@@ -5803,7 +5788,7 @@ function deptAvansReddet(id) {
 }
 
 function openMesaj(name, ini) {
-  sdMesajKisi = name;
+  APP.ui.sdMesajKisi = name;
   var kisiEl = document.getElementById('md-mesaj-kisi');
   var txtEl  = document.getElementById('md-mesaj-txt');
   if (kisiEl) kisiEl.textContent = 'Alıcı: ' + name;
@@ -5816,12 +5801,12 @@ function sendMesaj() {
   if (!txt) { notif('Mesaj boş olamaz', 'red'); return; }
   closeM('md-mesaj');
   /* Demoda tüm ekip üyeleri saha kullanıcısına ('s') bağlı */
-  var gonderen = curUser ? curUser.name : 'Dept. Sorumlusu';
+  var gonderen = APP.ui.curUser ? APP.ui.curUser.name : 'Dept. Sorumlusu';
   _pushNotif('s', 'bl',
     gonderen + ' sana mesaj gönderdi',
     txt,
     'Az önce · ' + gonderen + ' (Dept)');
-  notif('Mesaj gönderildi → ' + sdMesajKisi, 'green');
+  notif('Mesaj gönderildi → ' + APP.ui.sdMesajKisi, 'green');
 }
 
 function simGIB() {
@@ -5895,20 +5880,20 @@ function toggleVoice() {
   var btn = document.getElementById('vbtn');
   var ic  = document.getElementById('v-ic');
   var lbl = document.getElementById('v-lbl');
-  if (!isRec) {
+  if (!APP.ui.isRec) {
     var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SR) {
-      speechRecog = new SR();
-      speechRecog.lang = 'tr-TR';
-      speechRecog.onresult = function(e) {
+      APP.ui.speechRecog = new SR();
+      APP.ui.speechRecog.lang = 'tr-TR';
+      APP.ui.speechRecog.onresult = function(e) {
         var txt = e.results[0][0].transcript;
         var ac  = document.getElementById('f-aciklama');
         if (ac) ac.value += (ac.value ? ' ' : '') + txt;
         notif('Ses metne çevrildi', 'green');
       };
-      speechRecog.onerror = function() { notif('Ses tanıma hatası', 'red'); stopVoice(); };
-      speechRecog.onend   = function() { stopVoice(); };
-      speechRecog.start();
+      APP.ui.speechRecog.onerror = function() { notif('Ses tanıma hatası', 'red'); stopVoice(); };
+      APP.ui.speechRecog.onend   = function() { stopVoice(); };
+      APP.ui.speechRecog.start();
     } else {
       /* simülasyon */
       setTimeout(function() {
@@ -5918,17 +5903,17 @@ function toggleVoice() {
         stopVoice();
       }, 2000);
     }
-    isRec = true;
+    APP.ui.isRec = true;
     if (btn) btn.classList.add('rec');
     if (ic)  ic.style.stroke = 'var(--rd)';
     if (lbl) lbl.textContent = '● Kayıt alınıyor...';
   } else {
-    if (speechRecog) speechRecog.stop();
+    if (APP.ui.speechRecog) APP.ui.speechRecog.stop();
     stopVoice();
   }
 }
 function stopVoice() {
-  isRec = false;
+  APP.ui.isRec = false;
   var btn = document.getElementById('vbtn');
   var ic  = document.getElementById('v-ic');
   var lbl = document.getElementById('v-lbl');
@@ -5997,8 +5982,8 @@ function submitBelgesiz() {
   if (!t) { notif('Tutar giriniz', 'red'); return; }
   var fotos = bFotolar.slice(); /* anlık kopyasını al */
   closeM('mb');
-  if (sdMode) {
-    sdMode = false;
+  if (APP.ui.sdMode) {
+    APP.ui.sdMode = false;
     var kat      = document.getElementById('b-kat').value || 'Diger';
     var tutar    = parseFloat(t) || 0;
     var aciklama = (document.getElementById('b-aciklama') || {}).value || '';
@@ -6013,7 +5998,7 @@ function submitBelgesiz() {
     if (bKat === 'Kiralama') {
       DATA.unshift({
         id: Date.now(), tarih: bTarih, personel: 'Mehmet K.', satici: 'Belgesiz Kiralama',
-        kat: 'Kiralama', tutar: bTut, durum: 'bekleyen', donem: aktifDon,
+        kat: 'Kiralama', tutar: bTut, durum: 'bekleyen', donem: APP.ui.aktifDon,
         uyari: null, thumb: null, belgesiz: true, aciklama: bAciklama, fotos: fotos,
         kiraMeta: {
           bas:    (document.getElementById('b-ki-bas').value || ''),
@@ -6025,7 +6010,7 @@ function submitBelgesiz() {
     } else {
       DATA.unshift({
         id: Date.now(), tarih: bTarih, personel: 'Mehmet K.', satici: 'Belgesiz Harcama',
-        kat: bKat, tutar: bTut, durum: 'bekleyen', donem: aktifDon,
+        kat: bKat, tutar: bTut, durum: 'bekleyen', donem: APP.ui.aktifDon,
         uyari: null, thumb: null, belgesiz: true, aciklama: bAciklama, fotos: fotos
       });
       renderRecent();
@@ -6041,9 +6026,9 @@ function submitAvans() {
   if (!t) { notif('Tutar giriniz', 'red'); return; }
   if (!g) { notif('Gerekçe giriniz', 'red'); return; }
   var tutar = parseFloat(t) || 0;
-  var uye   = curUser ? curUser.name : 'Saha';
-  var ini   = curUser ? curUser.ini  : 'SH';
-  var fKey  = curUserKey || 's';
+  var uye   = APP.ui.curUser ? APP.ui.curUser.name : 'Saha';
+  var ini   = APP.ui.curUser ? APP.ui.curUser.ini  : 'SH';
+  var fKey  = APP.ui.curUserKey || 's';
   var tarih = _deptTarih ? _deptTarih() : '';
   closeM('mavans');
 
@@ -6070,7 +6055,7 @@ function submitAvans() {
 
 /* ═══ DÖNEM ═══ */
 function renderDonem(did) {
-  aktifDon = did;
+  APP.ui.aktifDon = did;
   var d = DONEMLER.find(function(x) { return x.id === did; });
   if (!d) return;
   var kalan = d.avans - d.harcama;
@@ -6230,9 +6215,9 @@ function yeniDonem() { notif('Yeni dönem başlatıldı', 'green'); }
 
 /* ═══ PDF EXPORT ═══ */
 function expPDF() {
-  var prj   = curProj ? curProj.name : 'PRODAPP';
+  var prj   = APP.ui.curProj ? APP.ui.curProj.name : 'PRODAPP';
   var tarih = new Date().toLocaleDateString('tr-TR');
-  var mine  = DATA.filter(function(d) { return d.donem === aktifDon && d.personel === 'Mehmet K.'; });
+  var mine  = DATA.filter(function(d) { return d.donem === APP.ui.aktifDon && d.personel === 'Mehmet K.'; });
   var top   = mine.reduce(function(s, d) { return s + d.tutar; }, 0);
   var w = window.open('', '_blank', 'width=860,height=620');
   if (!w) { notif('Popup engellendi', 'red'); return; }
@@ -6867,7 +6852,7 @@ function _pushNotif(toKey, tip, title, body, meta) {
     tip: tip, title: title, body: body, meta: meta, read: false
   });
   /* Hedef aktif kullanıcıysa NOTIFLAR'ı güncelle ve rozeti yenile */
-  if (curUserKey === toKey) {
+  if (APP.ui.curUserKey === toKey) {
     NOTIFLAR = GLOBAL_INBOX[toKey];
     updateNotifBadge();
   }
@@ -7016,7 +7001,6 @@ var ACC_ALICILAR_KISI = (function() {
 /* Birleşik liste — geriye dönük uyumluluk için */
 var ACC_ALICILAR = ACC_ALICILAR_DEPT.concat(ACC_ALICILAR_KISI);
 
-var saRaporTip      = 'dept';
 var saRaporDeptId   = ''; /* drill-down: seçili dept ID */
 var saRaporKisiIdx  = -1; /* drill-down: seçili kişi index */
 var saRaporKisiFrom = ''; /* 'dept' | 'list' */
@@ -7075,7 +7059,7 @@ var APP = {
 
   /* ── UI: ekran durumu ──
      Object ref'ler (sdSec, notiflar) mutasyonla senkronize olur.
-     Primitifler (aktifDon, curUserKey vb.) Adım 2'de migrate edilecek;
+     Primitifler (APP.ui.aktifDon, APP.ui.curUserKey vb.) Adım 2'de migrate edilecek;
      şimdilik başlangıç değerleri kopyalanmış durumda. ── */
   ui: {
     /* Object refs — push/splice/property ile güncelleme çalışır */
@@ -7145,9 +7129,9 @@ var sdSec    = APP.ui.sdSec;
 var NOTIFLAR = APP.ui.notiflar;
 
 function renderAcc() {
-  if (!curUser || !curProj) return;
-  document.getElementById('sa-hd-av').textContent  = curUser.ini || 'MH';
-  document.getElementById('sa-hd-prj').textContent = curProj.name;
+  if (!APP.ui.curUser || !APP.ui.curProj) return;
+  document.getElementById('sa-hd-av').textContent  = APP.ui.curUser.ini || 'MH';
+  document.getElementById('sa-hd-prj').textContent = APP.ui.curProj.name;
   var bCnt = document.getElementById('satb-bek-cnt');
   if (bCnt) bCnt.textContent = ACC_BEKLEYEN.length;
   var sCnt = document.getElementById('satb-suphe-cnt');
@@ -7155,7 +7139,7 @@ function renderAcc() {
   renderAccDash();
   renderAccBek();
   renderAccSuphe();
-  renderAccRapor(saRaporTip);
+  renderAccRapor(APP.ui.saRaporTip);
   renderAccKira();
   renderAccMesaj();
   saTab('dash', document.getElementById('satb-dash'));
@@ -7175,7 +7159,7 @@ function saTab(t, el) {
 }
 
 function saSetDonem(id) {
-  saSeciliDonem = id;
+  APP.ui.saSeciliDonem = id;
   renderAccDash();
 }
 
@@ -7211,7 +7195,7 @@ function accButceKaydet() {
   var toplamButce = 0;
   for (var t = 0; t < ACC_DEPTS.length; t++) toplamButce += ACC_DEPTS[t].butce || 0;
   for (var b = 0; b < DONEM_BUTCE.length; b++) {
-    if (DONEM_BUTCE[b].donem === aktifDon) { DONEM_BUTCE[b].butce = toplamButce; break; }
+    if (DONEM_BUTCE[b].donem === APP.ui.aktifDon) { DONEM_BUTCE[b].butce = toplamButce; break; }
   }
   for (var j = 0; j < KAT_LIMIT.length; j++) {
     var ki = document.getElementById('kat-inp-' + KAT_LIMIT[j].kat);
@@ -7232,22 +7216,22 @@ function renderAccDash() {
   var donBar = '<div class="sa-donem-bar">';
   for (var di = 0; di < SA_DONEMLER.length; di++) {
     var dp = SA_DONEMLER[di];
-    var dpOn = saSeciliDonem === dp.id ? ' on' : '';
+    var dpOn = APP.ui.saSeciliDonem === dp.id ? ' on' : '';
     var dpSub = dp.aktif
       ? '<div style="font-size:9px;color:var(--gr);font-weight:700;margin-top:1px">● Aktif</div>'
       : '<div style="font-size:10px;color:var(--tx3);margin-top:1px">' + dp.tarih + '</div>';
     donBar += '<button class="sa-donem-pill' + dpOn + '" onclick="saSetDonem(' + dp.id + ')">' +
-      '<div style="font-size:12px;font-weight:700;color:' + (saSeciliDonem === dp.id ? 'var(--ac2)' : 'var(--tx2)') + '">' + dp.lbl + '</div>' +
+      '<div style="font-size:12px;font-weight:700;color:' + (APP.ui.saSeciliDonem === dp.id ? 'var(--ac2)' : 'var(--tx2)') + '">' + dp.lbl + '</div>' +
       dpSub +
     '</button>';
   }
   donBar += '</div>';
 
   /* Aktif veya geçmiş dönem dept listesi */
-  var depts = saSeciliDonem === 2 ? ACC_DEPTS : (SA_DONEM_DEPTS[saSeciliDonem] || []);
+  var depts = APP.ui.saSeciliDonem === 2 ? ACC_DEPTS : (SA_DONEM_DEPTS[APP.ui.saSeciliDonem] || []);
   var donRec = null;
-  for (var dri = 0; dri < SA_DONEMLER.length; dri++) if (SA_DONEMLER[dri].id === saSeciliDonem) { donRec = SA_DONEMLER[dri]; break; }
-  var isAktif = saSeciliDonem === 2;
+  for (var dri = 0; dri < SA_DONEMLER.length; dri++) if (SA_DONEMLER[dri].id === APP.ui.saSeciliDonem) { donRec = SA_DONEMLER[dri]; break; }
+  var isAktif = APP.ui.saSeciliDonem === 2;
 
   var totalTop = 0, totalOnay = 0, totalBek = 0, totalRed = 0;
   for (var i = 0; i < depts.length; i++) {
@@ -7263,7 +7247,7 @@ function renderAccDash() {
   html += '<div class="sa-genel">';
   html += '<div class="sa-genel-lbl">Toplam Harcama</div>';
   html += '<div class="sa-genel-total">₺' + totalTop.toLocaleString('tr-TR') + '</div>';
-  html += '<div class="sa-genel-sub">' + curProj.name + ' · ' + (donRec ? donRec.lbl + (isAktif ? ' — Aktif' : ' — Kapalı') : '') + '</div>';
+  html += '<div class="sa-genel-sub">' + APP.ui.curProj.name + ' · ' + (donRec ? donRec.lbl + (isAktif ? ' — Aktif' : ' — Kapalı') : '') + '</div>';
   html += '<div class="sa-genel-row">';
   html += '<div class="sa-genel-stat"><div class="sa-genel-stat-val" style="color:var(--gr2)">₺' + totalOnay.toLocaleString('tr-TR') + '</div><div class="sa-genel-stat-lbl">Onaylı</div></div>';
   if (isAktif) {
@@ -7320,8 +7304,8 @@ function renderAccDash() {
   }
 
   /* Dönem karşılaştırması — sadece geçmiş dönemlerde */
-  if (!isAktif && SA_DONEM_DEPTS[saSeciliDonem]) {
-    var prevId = saSeciliDonem - 1;
+  if (!isAktif && SA_DONEM_DEPTS[APP.ui.saSeciliDonem]) {
+    var prevId = APP.ui.saSeciliDonem - 1;
     var prevDepts = SA_DONEM_DEPTS[prevId] || null;
     if (prevDepts) {
       var prevTotal = 0, curTotal = totalTop;
@@ -7543,7 +7527,7 @@ function saRaporToggleDonem(did) {
 }
 
 function renderAccRapor(tip) {
-  saRaporTip    = tip;
+  APP.ui.saRaporTip    = tip;
   saRaporDeptId  = '';
   saRaporKisiIdx = -1;
   _renderAccRaporIc();
@@ -7557,7 +7541,7 @@ function _renderAccRaporIc() {
     ['dept','kat','personel','donem'].map(function(t) {
       var icons = { dept:'🏢', kat:'🏷', personel:'👤', donem:'📅' };
       var lbls  = { dept:'Departman', kat:'Kategori', personel:'Personel', donem:'Dönem' };
-      return '<button class="sa-rapor-btn' + (t === saRaporTip ? ' on' : '') + '" onclick="renderAccRapor(\'' + t + '\')">' +
+      return '<button class="sa-rapor-btn' + (t === APP.ui.saRaporTip ? ' on' : '') + '" onclick="renderAccRapor(\'' + t + '\')">' +
         '<div class="sa-rapor-btn-ic">' + icons[t] + '</div>' +
         '<div class="sa-rapor-btn-lbl">' + lbls[t] + '</div>' +
       '</button>';
@@ -7565,10 +7549,10 @@ function _renderAccRaporIc() {
   '</div>';
 
   var content = '';
-  if      (saRaporTip === 'dept')     content = saRaporDeptId   ? _raporDeptDetay()    : _raporDeptList();
-  else if (saRaporTip === 'kat')      content = _raporKat();
-  else if (saRaporTip === 'personel') content = saRaporKisiIdx >= 0 ? _raporKisiDetay() : _raporPersonelList();
-  else if (saRaporTip === 'donem')    content = _raporDonem();
+  if      (APP.ui.saRaporTip === 'dept')     content = saRaporDeptId   ? _raporDeptDetay()    : _raporDeptList();
+  else if (APP.ui.saRaporTip === 'kat')      content = _raporKat();
+  else if (APP.ui.saRaporTip === 'personel') content = saRaporKisiIdx >= 0 ? _raporKisiDetay() : _raporPersonelList();
+  else if (APP.ui.saRaporTip === 'donem')    content = _raporDonem();
 
   el.innerHTML = btns + content +
     '<button class="sa-pdf-btn" onclick="accPDF()">📥 PDF Raporu İndir</button>';
@@ -8213,7 +8197,7 @@ function accSendMesaj() {
   var deptName = deptRec ? deptRec.name : saAliciDept;
 
   var msg      = txtEl.value.trim();
-  var gonderen = curUser ? curUser.name : 'Muhasebe';
+  var gonderen = APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe';
   var isDept   = saAliciId === 'dept:' + saAliciDept;
 
   if (isDept) {
@@ -8257,19 +8241,19 @@ function accOnayla(id) {
       tutar: item.tutar, tarih: _deptTarih(),
       durum: 'ödendi',
       gerekce: item.gerekce || '',
-      donem: aktifDon
+      donem: APP.ui.aktifDon
     });
 
     /* İlgili kişiye onay bildirimi */
     var fk = item.fromKey || 's';
     _pushNotif(fk, 'gr', 'Avans Talebiniz Onaylandı ✅',
       '₺' + item.tutar.toLocaleString('tr-TR') + ' avans talebiniz muhasebe tarafından onaylandı. En kısa sürede hesabınıza aktarılacak.',
-      'Az önce · ' + (curUser ? curUser.name : 'Muhasebe') + ' (Muhasebe)');
+      'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe') + ' (Muhasebe)');
     /* Dept'e de bildir (farklı kullanıcıysa) */
     if (fk !== 'd') {
       _pushNotif('d', 'gr', 'Avans Onaylandı — ' + item.uye,
         '₺' + item.tutar.toLocaleString('tr-TR') + ' avans talebi muhasebe tarafından onaylandı.',
-        'Az önce · ' + (curUser ? curUser.name : 'Muhasebe') + ' (Muhasebe)');
+        'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe') + ' (Muhasebe)');
     }
     updateNotifBadge();
     notif(item.uye + ' avansı onaylandı', 'green');
@@ -8310,10 +8294,10 @@ function accSupheIsle(id, action) {
 }
 
 function accPDF() {
-  var prj    = curProj ? curProj.name : 'PRODAPP';
+  var prj    = APP.ui.curProj ? APP.ui.curProj.name : 'PRODAPP';
   var tarih  = new Date().toLocaleDateString('tr-TR');
   var rAdlar = { dept:'Departman Raporu', kat:'Kategori Raporu', personel:'Personel Raporu', donem:'Dönem Karşılaştırma' };
-  var rAd    = rAdlar[saRaporTip] || 'Rapor';
+  var rAd    = rAdlar[APP.ui.saRaporTip] || 'Rapor';
   var el     = document.getElementById('sa-pnl-rapor');
   if (!el)   { notif('Rapor bulunamadı', 'red'); return; }
 
