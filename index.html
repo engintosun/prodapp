@@ -485,6 +485,19 @@ body {
   text-align: center;
 }
 
+/* ── SAHA BÜTÇE WİDGET ── */
+.su-bw { background:var(--bg2); border:1px solid var(--bo); border-radius:var(--r); padding:11px 14px; margin-bottom:14px; }
+.su-bw-hd { display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; }
+.su-bw-lbl { font-size:10px; font-weight:700; color:var(--tx3); text-transform:uppercase; letter-spacing:.5px; }
+.su-bw-pct { font-size:11px; font-weight:700; }
+.su-bw-track { height:5px; background:var(--bg3); border-radius:3px; overflow:hidden; margin-bottom:8px; }
+.su-bw-fill  { height:100%; border-radius:3px; transition:width .3s; }
+.su-bw-stats { display:grid; grid-template-columns:repeat(3,1fr); }
+.su-bw-stat  { text-align:center; padding:0 8px; border-left:1px solid var(--bo); }
+.su-bw-stat:first-child { padding-left:0; border-left:none; }
+.su-bw-sv { font-size:12px; font-weight:800; font-family:var(--mo); }
+.su-bw-sl { font-size:9px; color:var(--tx3); text-transform:uppercase; letter-spacing:.3px; margin-top:1px; }
+
 /* ── SON HARCAMALAR ── */
 
 .recent-hd {
@@ -1548,6 +1561,36 @@ body {
 .sa-dc-bar   { height: 3px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
 .sa-dc-bar-f { height: 100%; border-radius: 2px; }
 
+/* Muhasebe — dept bütçe barı */
+.sa-dc-butce { margin-top:9px; padding-top:9px; border-top:1px solid var(--bo); }
+.sa-dc-butce-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; }
+.sa-dc-butce-lbl { font-size:10px; color:var(--tx3); }
+.sa-dc-butce-pct { font-size:11px; font-weight:700; }
+.sa-dc-butce-track { height:5px; background:var(--bg3); border-radius:3px; overflow:hidden; }
+.sa-dc-butce-fill  { height:100%; border-radius:3px; transition:width .3s; }
+/* Bütçe düzenle butonu */
+.sa-edit-butce-btn {
+  background: none; border: 1px solid var(--bo); color: var(--tx3);
+  font-size: 11px; font-weight: 600; font-family: var(--fn);
+  border-radius: 8px; padding: 5px 12px; cursor: pointer;
+  -webkit-tap-highlight-color: transparent; transition: background .12s;
+}
+.sa-edit-butce-btn:active { background: var(--bg3); }
+/* Bütçe düzenleme modal */
+.butce-modal-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 0; border-bottom: 1px solid var(--bo);
+}
+.butce-modal-row:last-child { border-bottom: none; }
+.butce-modal-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.butce-modal-name { flex: 1; font-size: 13px; font-weight: 600; color: var(--tx); }
+.butce-modal-inp  {
+  width: 110px; background: var(--bg3); border: 1px solid var(--bo);
+  color: var(--tx); font-size: 13px; font-weight: 700; font-family: var(--mo);
+  border-radius: 8px; padding: 7px 10px; text-align: right;
+}
+.butce-modal-inp:focus { outline: none; border-color: var(--ac); }
+
 /* Şüpheli kayıtlar */
 .sa-suphe-card {
   background: var(--bg2); border: 1px solid var(--bo);
@@ -2185,6 +2228,9 @@ body {
         </button>
       </div>
 
+      <!-- Bütçe widget -->
+      <div id="su-butce-bar"></div>
+
       <!-- Son harcamalar -->
       <div class="recent-hd">
         <div class="sec-lbl">Son Harcamalar</div>
@@ -2649,6 +2695,27 @@ body {
       <div style="display:flex;gap:8px;margin-top:4px;padding-bottom:4px">
         <button class="btn" onclick="closeM('mavans')" style="flex:1;justify-content:center">İptal</button>
         <button class="btn btn-p" onclick="submitAvans()" style="flex:2;justify-content:center">Talep Gönder</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     MODAL: BÜTÇE DÜZENLE
+════════════════════════════ -->
+<div class="mo" id="mbutce">
+  <div class="ms">
+    <div class="mh"></div>
+    <div class="mhd">
+      <div class="mtitle">✏ Departman Bütçeleri</div>
+      <button class="mclose" onclick="closeM('mbutce')">✕</button>
+    </div>
+    <div class="mbody">
+      <div style="font-size:12px;color:var(--tx3);margin-bottom:14px">Aktif dönem (Dönem #2) için her departmanın harcama limitini belirleyin.</div>
+      <div id="mbutce-body"></div>
+      <div style="display:flex;gap:8px;margin-top:16px">
+        <button class="btn" onclick="closeM('mbutce')" style="flex:1;justify-content:center">İptal</button>
+        <button class="btn btn-p" onclick="accButceKaydet()" style="flex:2;justify-content:center">✓ Kaydet</button>
       </div>
     </div>
   </div>
@@ -3839,7 +3906,38 @@ function fisThumbnail(f) {
   return 'data:image/svg+xml,' + encodeURIComponent(svg);
 }
 
+function renderSahaButce() {
+  var el = document.getElementById('su-butce-bar');
+  if (!el) return;
+  var b = null;
+  for (var bi = 0; bi < DONEM_BUTCE.length; bi++) {
+    if (DONEM_BUTCE[bi].donem === 2) { b = DONEM_BUTCE[bi]; break; }
+  }
+  if (!b || !b.butce) { el.innerHTML = ''; return; }
+  var bekTop = 0;
+  for (var i = 0; i < DEPT_BEKLEYEN.length; i++) bekTop += DEPT_BEKLEYEN[i].tutar;
+  var committed = b.harcanan + bekTop;
+  var kalan     = Math.max(0, b.butce - committed);
+  var pct       = Math.min(100, Math.round(committed / b.butce * 100));
+  var barClr    = pct >= 100 ? 'var(--rd)' : pct >= 80 ? 'var(--am)' : 'var(--gr)';
+  var pctClr    = pct >= 100 ? 'var(--rd2)' : pct >= 80 ? 'var(--am2)' : 'var(--gr2)';
+  el.innerHTML =
+    '<div class="su-bw">' +
+      '<div class="su-bw-hd">' +
+        '<span class="su-bw-lbl">Dönem Bütçesi</span>' +
+        '<span class="su-bw-pct" style="color:' + pctClr + '">%' + pct + ' · ₺' + b.butce.toLocaleString('tr-TR') + '</span>' +
+      '</div>' +
+      '<div class="su-bw-track"><div class="su-bw-fill" style="width:' + pct + '%;background:' + barClr + '"></div></div>' +
+      '<div class="su-bw-stats">' +
+        '<div class="su-bw-stat"><div class="su-bw-sv" style="color:var(--gr2)">₺' + b.harcanan.toLocaleString('tr-TR') + '</div><div class="su-bw-sl">Onaylanan</div></div>' +
+        '<div class="su-bw-stat"><div class="su-bw-sv" style="color:var(--am2)">₺' + bekTop.toLocaleString('tr-TR') + '</div><div class="su-bw-sl">Bekleyen</div></div>' +
+        '<div class="su-bw-stat"><div class="su-bw-sv" style="color:' + (kalan === 0 ? 'var(--rd2)' : 'var(--tx2)') + '">₺' + kalan.toLocaleString('tr-TR') + '</div><div class="su-bw-sl">Kalan</div></div>' +
+      '</div>' +
+    '</div>';
+}
+
 function renderRecent() {
+  renderSahaButce();
   var mine = DATA.filter(function(d) { return d.personel === 'Mehmet K.' && d.donem === 2; });
   var el = document.getElementById('recent-list');
   if (!el) return;
@@ -6632,11 +6730,11 @@ function notif(msg, type) {
 
 /* ═══ MUHASEBE ═══ */
 var ACC_DEPTS = [
-  { id:'yapim',  name:'Yapım',          renk:'#E8962E', uye:6,  total:48200, onay:31400, bekleyen:12600, suphe:4200 },
-  { id:'kamera', name:'Kamera',         renk:'#3B82F6', uye:4,  total:32700, onay:28900, bekleyen:3800,  suphe:0    },
-  { id:'sanat',  name:'Sanat',          renk:'#22C55E', uye:5,  total:27150, onay:19800, bekleyen:6200,  suphe:1150 },
-  { id:'ses',    name:'Ses & Müzik',    renk:'#A855F7', uye:3,  total:14800, onay:12400, bekleyen:2100,  suphe:300  },
-  { id:'kostum', name:'Kostüm & Makyaj',renk:'#EC4899', uye:4,  total:19600, onay:16200, bekleyen:3400,  suphe:0    }
+  { id:'yapim',  name:'Yapım',          renk:'#E8962E', uye:6,  total:48200, onay:31400, bekleyen:12600, suphe:4200, butce:55000 },
+  { id:'kamera', name:'Kamera',         renk:'#3B82F6', uye:4,  total:32700, onay:28900, bekleyen:3800,  suphe:0,    butce:38000 },
+  { id:'sanat',  name:'Sanat',          renk:'#22C55E', uye:5,  total:27150, onay:19800, bekleyen:6200,  suphe:1150, butce:30000 },
+  { id:'ses',    name:'Ses & Müzik',    renk:'#A855F7', uye:3,  total:14800, onay:12400, bekleyen:2100,  suphe:300,  butce:16000 },
+  { id:'kostum', name:'Kostüm & Makyaj',renk:'#EC4899', uye:4,  total:19600, onay:16200, bekleyen:3400,  suphe:0,    butce:22000 }
 ];
 
 var ACC_BEKLEYEN = [
@@ -6733,6 +6831,32 @@ function saSetDonem(id) {
   renderAccDash();
 }
 
+function openAccButceDuzenle() {
+  var el = document.getElementById('mbutce-body');
+  if (!el) return;
+  el.innerHTML = ACC_DEPTS.map(function(d) {
+    return '<div class="butce-modal-row">' +
+      '<div class="butce-modal-dot" style="background:' + d.renk + '"></div>' +
+      '<div class="butce-modal-name">' + d.name + '</div>' +
+      '<input class="butce-modal-inp fgi" id="butce-inp-' + d.id + '" type="number" min="0" step="1000" value="' + (d.butce || 0) + '">' +
+    '</div>';
+  }).join('');
+  openM('mbutce');
+}
+
+function accButceKaydet() {
+  for (var i = 0; i < ACC_DEPTS.length; i++) {
+    var inp = document.getElementById('butce-inp-' + ACC_DEPTS[i].id);
+    if (inp) {
+      var val = parseInt(inp.value, 10);
+      if (!isNaN(val) && val >= 0) ACC_DEPTS[i].butce = val;
+    }
+  }
+  closeM('mbutce');
+  renderAccDash();
+  notif('Departman bütçeleri güncellendi', 'green');
+}
+
 function renderAccDash() {
   var el = document.getElementById('sa-pnl-dash');
   if (!el) return;
@@ -6785,6 +6909,13 @@ function renderAccDash() {
   }
   html += '</div></div>';
 
+  /* Bütçe düzenle butonu — sadece aktif dönem */
+  if (isAktif) {
+    html += '<div style="display:flex;justify-content:flex-end;margin-bottom:10px">' +
+      '<button class="sa-edit-butce-btn" onclick="openAccButceDuzenle()">✏ Bütçeleri Düzenle</button>' +
+    '</div>';
+  }
+
   /* Departman kartları */
   for (var k = 0; k < depts.length; k++) {
     var d = depts[k];
@@ -6805,6 +6936,19 @@ function renderAccDash() {
     }
     html += '</div>';
     html += '<div class="sa-dc-bar"><div class="sa-dc-bar-f" style="width:' + pct + '%;background:' + d.renk + '"></div></div>';
+    /* Bütçe barı — sadece aktif dönem ve limit tanımlıysa */
+    if (isAktif && d.butce) {
+      var bPct = Math.min(100, Math.round(d.total / d.butce * 100));
+      var bClr = bPct >= 100 ? 'var(--rd)' : bPct >= 80 ? 'var(--am)' : d.renk;
+      var bPctClr = bPct >= 100 ? 'var(--rd2)' : bPct >= 80 ? 'var(--am2)' : 'var(--tx3)';
+      html += '<div class="sa-dc-butce" onclick="event.stopPropagation()">' +
+        '<div class="sa-dc-butce-row">' +
+          '<span class="sa-dc-butce-lbl">Limit: ₺' + d.butce.toLocaleString('tr-TR') + '</span>' +
+          '<span class="sa-dc-butce-pct" style="color:' + bPctClr + '">%' + bPct + ' kullanıldı</span>' +
+        '</div>' +
+        '<div class="sa-dc-butce-track"><div class="sa-dc-butce-fill" style="width:' + bPct + '%;background:' + bClr + '"></div></div>' +
+      '</div>';
+    }
     html += '</div>';
   }
 
