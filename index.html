@@ -5634,6 +5634,7 @@ function deptOnayla(id) {
       DEPT_GECMIS[2].onaylandi.push({ id:f.id, uye:f.uye||'', ini:f.ini||'', satici:f.satici||'', kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptTarih() });
       var newH = _katHarcanan();
       _checkKatLimit(f.kat, newH[f.kat] || 0);
+      updateNotifBadge();
       notif(f.satici + ' onaylandı', 'green');
       renderDeptBek();
       renderDeptEkip();
@@ -5651,6 +5652,7 @@ function deptReddet(id) {
       /* Reddedilen tutarı kaydet */
       var rb = DONEM_BUTCE.find(function(x){ return x.donem === 2; });
       if (rb) rb.reddedildi += f.tutar;
+      updateNotifBadge();
       notif(f.satici + ' reddedildi', 'red');
       renderDeptBek();
       renderDeptEkip();
@@ -5683,6 +5685,7 @@ function deptAvansOnayla(id) {
         a.uye + ' — ₺' + a.tutar.toLocaleString('tr-TR') + ' avans talebi dept onayından geçti.',
         'Az önce · ' + (curUser ? curUser.name : 'Dept') + ' (Dept)');
 
+      updateNotifBadge();
       renderDeptAvans();
       notif(a.uye + ' avansı onaylandı → muhasebede bekliyor', 'green');
       return;
