@@ -4745,7 +4745,7 @@ function renderDeptAvans() {
     var donGrp = {};
     for (var di = 0; di < gecmisAvans.length; di++) {
       var dav = gecmisAvans[di];
-      var dk = 'Dönem #' + dav.donem;
+      var dk = dav.donem;
       if (!donGrp[dk]) donGrp[dk] = [];
       donGrp[dk].push(dav);
     }
@@ -5180,7 +5180,7 @@ function renderAccAvans() {
   function avRow(av) {
     var clr = av.durum === 'ödendi' ? 'sa-av-durum-ok' : (av.durum === 'reddedildi' ? 'sa-av-durum-red' : 'sa-av-durum-bek');
     var ico = av.durum === 'ödendi' ? '✅' : (av.durum === 'reddedildi' ? '❌' : '⏳');
-    return '<div class="sa-av-row">' +
+    return '<div class="sa-av-row" style="cursor:pointer" onclick="accAvansOpenKisi(\'' + av.uye.replace(/'/g, '\\x27') + '\')">' +
       '<div class="sa-av-av">' + av.ini + '</div>' +
       '<div class="sa-av-info">' +
         '<div class="sa-av-name">' + av.uye + '</div>' +
@@ -5230,6 +5230,19 @@ function saAvansSetDonem(id) {
   renderAccAvans();
 }
 
+function accAvansOpenKisi(name) {
+  var idx = -1;
+  for (var i = 0; i < ACC_RAPOR_PERSONEL.length; i++) {
+    if (ACC_RAPOR_PERSONEL[i].name === name) { idx = i; break; }
+  }
+  if (idx < 0) { notif('Personel raporu bulunamadı', 'amber'); return; }
+  saRaporTip    = 'personel';
+  saRaporDeptId  = '';
+  saRaporKisiIdx = idx;
+  saRaporKisiFrom = 'list';
+  saTab('rapor', document.getElementById('satb-rapor'));
+}
+
 function sdTab(t, el) {
   var tabs = ['bek', 'ekip', 'avans', 'kira', 'gecmis'];
   for (var i = 0; i < tabs.length; i++) {
@@ -5241,7 +5254,8 @@ function sdTab(t, el) {
   if (el) el.classList.add('on');
   var active = document.getElementById('sd-pnl-' + t);
   if (active) active.style.display = 'block';
-  if (t === 'kira') renderDeptKira();
+  if (t === 'avans')  renderDeptAvans();
+  if (t === 'kira')   renderDeptKira();
   if (t === 'gecmis') renderDeptGecmis();
 }
 
