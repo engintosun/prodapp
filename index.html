@@ -7003,12 +7003,20 @@ function accButceKaydet() {
     var di = document.getElementById('butce-inp-' + ACC_DEPTS[i].id);
     if (di) { var dv = parseInt(di.value, 10); if (!isNaN(dv) && dv >= 0) ACC_DEPTS[i].butce = dv; }
   }
+  /* DONEM_BUTCE toplam bütçesini ACC_DEPTS toplamından güncelle */
+  var toplamButce = 0;
+  for (var t = 0; t < ACC_DEPTS.length; t++) toplamButce += ACC_DEPTS[t].butce || 0;
+  for (var b = 0; b < DONEM_BUTCE.length; b++) {
+    if (DONEM_BUTCE[b].donem === 2) { DONEM_BUTCE[b].butce = toplamButce; break; }
+  }
   for (var j = 0; j < KAT_LIMIT.length; j++) {
     var ki = document.getElementById('kat-inp-' + KAT_LIMIT[j].kat);
     if (ki) { var kv = parseInt(ki.value, 10); if (!isNaN(kv) && kv >= 0) KAT_LIMIT[j].limit = kv; }
   }
   closeM('mbutce');
   renderAccDash();
+  renderSahaButce();   /* saha widget'ı güncelle */
+  renderDeptOzet();    /* dept bütçe kartını güncelle */
   notif('Bütçe ve kategori limitleri güncellendi', 'green');
 }
 
