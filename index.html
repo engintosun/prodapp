@@ -2967,6 +2967,25 @@ body {
   </div>
 </div>
 
+<!-- Avans Red Nedeni Modalı -->
+<div class="mo" id="md-av-red">
+  <div class="ms">
+    <div class="mh">
+      <span style="font-weight:700;color:var(--rd)">Avans Talebini Reddet</span>
+      <button class="mclose" onclick="avansRedIptal()">✕</button>
+    </div>
+    <div style="font-size:13px;color:var(--tx2);margin-bottom:12px" id="md-av-red-info">—</div>
+    <div class="fg">
+      <label class="fg-lbl">Red Nedeni <span style="color:var(--rd)">*</span></label>
+      <textarea class="fgi" id="av-red-nedeni" rows="3" placeholder="Red gerekçesini yazınız..." style="resize:vertical;min-height:72px"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-sm" onclick="avansRedIptal()" style="flex:1;justify-content:center">İptal</button>
+      <button class="btn btn-r btn-sm" onclick="avansRedOnay()" style="flex:1;justify-content:center">Reddet</button>
+    </div>
+  </div>
+</div>
+
 <!-- ════════════════════════════
      LİGHTBOX
 ════════════════════════════ -->
@@ -3490,6 +3509,7 @@ var sdSeciliDonem     = 2;     /* dept ekranında aktif dönem seçimi */
 var saSeciliDonem     = 2;     /* muhasebe dashboard dönem seçimi */
 var sdGecmisPnlDonem  = 1;     /* geçmiş sekmesinde seçili dönem */
 var sdAvansFormAcik   = false; /* avans formu açık mı */
+var _avRedPending     = null;  /* { id, kaynak:'dept'|'acc' } — red nedeni modalı için */
 var sdSec  = {};    /* seçili bekleyen id → true */
 
 var curUser  = null;
@@ -4379,6 +4399,72 @@ function _avGecmisEkle(kayit) {
   renderAccAvans();    /* muhasebe avanslar sekmesi */
 }
 
+/* Red nedeni modalı — onayla */
+function avansRedOnay() {
+  if (!_avRedPending) return;
+  var ta = document.getElementById('av-red-nedeni');
+  var redNedeni = ta ? (ta.value || '').trim() : '';
+  if (!redNedeni) { notif('Red nedeni zorunludur', 'red'); return; }
+
+  if (_avRedPending.kaynak === 'dept') {
+    var id = _avRedPending.id;
+    for (var i = 0; i < DEPT_AVANS.length; i++) {
+      if (DEPT_AVANS[i].id === id) {
+        var a = DEPT_AVANS[i];
+        DEPT_AVANS.splice(i, 1);
+        _avGecmisEkle({
+          id: Date.now(), dept: _curDeptName(),
+          uye: a.uye, ini: a.ini,
+          tutar: a.tutar, tarih: _deptTarih(),
+          durum: 'reddedildi',
+          gerekce: a.gerekce,
+          redNedeni: redNedeni,
+          donem: aktifDon
+        });
+        _pushNotif(a.fromKey || 's', 'rd', 'Avans Talebi Reddedildi',
+          '₺' + a.tutar.toLocaleString('tr-TR') + ' avans talebin dept sorumlusu tarafından reddedildi. Red nedeni: ' + redNedeni,
+          'Az önce · ' + (curUser ? curUser.name : 'Dept') + ' (Dept)');
+        updateNotifBadge();
+        notif(a.uye + ' avans talebi reddedildi', 'red');
+        break;
+      }
+    }
+  } else if (_avRedPending.kaynak === 'acc') {
+    var item = _avRedPending._item;
+    ACC_BEKLEYEN = ACC_BEKLEYEN.filter(function(f){ return f.id !== item.id; });
+    renderAccBek();
+    _avGecmisEkle({
+      id: Date.now(), dept: item.dept || _curDeptName(),
+      uye: item.uye, ini: item.ini,
+      tutar: item.tutar, tarih: _deptTarih(),
+      durum: 'reddedildi',
+      gerekce: item.gerekce || '',
+      redNedeni: redNedeni,
+      donem: aktifDon
+    });
+    var fkr = item.fromKey || 's';
+    _pushNotif(fkr, 'rd', 'Avans Talebiniz Reddedildi',
+      '₺' + item.tutar.toLocaleString('tr-TR') + ' avans talebiniz muhasebe tarafından reddedildi. Red nedeni: ' + redNedeni,
+      'Az önce · ' + (curUser ? curUser.name : 'Muhasebe') + ' (Muhasebe)');
+    if (fkr !== 'd') {
+      _pushNotif('d', 'am', 'Avans Reddedildi — ' + item.uye,
+        '₺' + item.tutar.toLocaleString('tr-TR') + ' avans talebi muhasebe tarafından reddedildi. Red nedeni: ' + redNedeni,
+        'Az önce · ' + (curUser ? curUser.name : 'Muhasebe') + ' (Muhasebe)');
+    }
+    updateNotifBadge();
+    notif(item.uye + ' avansı reddedildi', 'red');
+  }
+
+  _avRedPending = null;
+  closeM('md-av-red');
+}
+
+/* Red nedeni modalı — iptal */
+function avansRedIptal() {
+  _avRedPending = null;
+  closeM('md-av-red');
+}
+
 var SD_KAT_CLR = {
   Yakit:'var(--am)', Yiyecek:'var(--gr)', Ekipman:'var(--bl)',
   Sanat:'var(--ac)', Ulasim:'var(--bl2)', Diger:'var(--tx3)',
@@ -4995,11 +5081,15 @@ function renderDeptAvans() {
       html += rows.map(function(av) {
         var clr = av.durum === 'ödendi' ? 'var(--gr2)' : (av.durum === 'reddedildi' ? 'var(--rd2)' : 'var(--am2)');
         var ico = av.durum === 'ödendi' ? '✅' : (av.durum === 'reddedildi' ? '❌' : '⏳');
+        var redSatir = (av.durum === 'reddedildi' && av.redNedeni)
+          ? '<div style="font-size:11px;color:var(--rd2);margin-top:2px">Red nedeni: ' + av.redNedeni + '</div>'
+          : '';
         return '<div class="sd-av-gec-row">' +
           '<div class="sd-av-gec-av">' + av.ini + '</div>' +
           '<div class="sd-av-gec-info">' +
             '<div class="sd-av-gec-name">' + av.uye + '</div>' +
             '<div class="sd-av-gec-sub">' + av.tarih + ' · ' + av.gerekce + '</div>' +
+            redSatir +
           '</div>' +
           '<div class="sd-av-gec-right">' +
             '<div class="sd-av-gec-tutar">₺' + av.tutar.toLocaleString('tr-TR') + '</div>' +
@@ -5413,12 +5503,16 @@ function renderAccAvans() {
   function avRow(av) {
     var clr = av.durum === 'ödendi' ? 'sa-av-durum-ok' : (av.durum === 'reddedildi' ? 'sa-av-durum-red' : 'sa-av-durum-bek');
     var ico = av.durum === 'ödendi' ? '✅' : (av.durum === 'reddedildi' ? '❌' : '⏳');
+    var redSatirAcc = (av.durum === 'reddedildi' && av.redNedeni)
+      ? '<div style="font-size:11px;color:var(--rd2);margin-top:2px">Red nedeni: ' + av.redNedeni + '</div>'
+      : '';
     return '<div class="sa-av-row" style="cursor:pointer" onclick="accAvansOpenKisi(\'' + av.uye.replace(/'/g, '\\x27') + '\')">' +
       '<div class="sa-av-av">' + av.ini + '</div>' +
       '<div class="sa-av-info">' +
         '<div class="sa-av-name">' + av.uye + '</div>' +
         '<div class="sa-av-sub">' + av.dept + ' · ' + av.tarih + '</div>' +
         '<div style="font-size:11px;color:var(--tx3);margin-top:2px">' + av.gerekce + '</div>' +
+        redSatirAcc +
       '</div>' +
       '<div class="sa-av-right">' +
         '<div class="sa-av-tutar">₺' + av.tutar.toLocaleString('tr-TR') + '</div>' +
@@ -5697,25 +5791,12 @@ function deptAvansReddet(id) {
   for (var i = 0; i < DEPT_AVANS.length; i++) {
     if (DEPT_AVANS[i].id === id) {
       var a = DEPT_AVANS[i];
-      DEPT_AVANS.splice(i, 1);
-
-      /* Geçmişe yaz — reddedildi */
-      _avGecmisEkle({
-        id: Date.now(), dept: _curDeptName(),
-        uye: a.uye, ini: a.ini,
-        tutar: a.tutar, tarih: _deptTarih(),
-        durum: 'reddedildi',
-        gerekce: a.gerekce + ' [Dept reddetti]',
-        donem: aktifDon
-      });
-
-      /* Saha kullanıcısına red bildirimi */
-      _pushNotif(a.fromKey || 's', 'rd', 'Avans Talebi Reddedildi',
-        '₺' + a.tutar.toLocaleString('tr-TR') + ' avans talebin dept sorumlusu tarafından reddedildi. Gerekçe: ' + a.gerekce,
-        'Az önce · ' + (curUser ? curUser.name : 'Dept') + ' (Dept)');
-      updateNotifBadge();
-
-      notif(a.uye + ' avans talebi reddedildi', 'red');
+      _avRedPending = { id: id, kaynak: 'dept' };
+      var infoEl = document.getElementById('md-av-red-info');
+      if (infoEl) infoEl.textContent = a.uye + ' · ₺' + a.tutar.toLocaleString('tr-TR') + ' · Talep: ' + a.gerekce;
+      var ta = document.getElementById('av-red-nedeni');
+      if (ta) ta.value = '';
+      openM('md-av-red');
       return;
     }
   }
@@ -8082,33 +8163,20 @@ function accReddet(id) {
   for (var i = 0; i < ACC_BEKLEYEN.length; i++) {
     if (ACC_BEKLEYEN[i].id === id) { item = ACC_BEKLEYEN[i]; break; }
   }
-  ACC_BEKLEYEN = ACC_BEKLEYEN.filter(function(f){ return f.id !== id; });
-  renderAccBek();
+  if (!item) return;
 
-  if (item && item.tip === 'avans') {
-    /* Avans geçmişine yaz — reddedildi */
-    _avGecmisEkle({
-      id: Date.now(), dept: item.dept || _curDeptName(),
-      uye: item.uye, ini: item.ini,
-      tutar: item.tutar, tarih: _deptTarih(),
-      durum: 'reddedildi',
-      gerekce: item.gerekce || '',
-      donem: aktifDon
-    });
-
-    /* İlgili kişiye red bildirimi */
-    var fkr = item.fromKey || 's';
-    _pushNotif(fkr, 'rd', 'Avans Talebiniz Reddedildi',
-      '₺' + item.tutar.toLocaleString('tr-TR') + ' avans talebiniz muhasebe tarafından reddedildi. Detaylar için muhasebe ile iletişime geçin.',
-      'Az önce · ' + (curUser ? curUser.name : 'Muhasebe') + ' (Muhasebe)');
-    if (fkr !== 'd') {
-      _pushNotif('d', 'am', 'Avans Reddedildi — ' + item.uye,
-        '₺' + item.tutar.toLocaleString('tr-TR') + ' avans talebi muhasebe tarafından reddedildi.',
-        'Az önce · ' + (curUser ? curUser.name : 'Muhasebe') + ' (Muhasebe)');
-    }
-    updateNotifBadge();
-    notif(item.uye + ' avansı reddedildi', 'red');
+  if (item.tip === 'avans') {
+    /* Avans reddi — önce modal ile red nedeni al, sonra işle */
+    _avRedPending = { id: id, kaynak: 'acc', _item: item };
+    var infoEl = document.getElementById('md-av-red-info');
+    if (infoEl) infoEl.textContent = item.uye + ' · ₺' + item.tutar.toLocaleString('tr-TR') + ' · Talep: ' + (item.gerekce || '—');
+    var ta = document.getElementById('av-red-nedeni');
+    if (ta) ta.value = '';
+    openM('md-av-red');
   } else {
+    /* Normal harcama reddi — direkt işle */
+    ACC_BEKLEYEN = ACC_BEKLEYEN.filter(function(f){ return f.id !== id; });
+    renderAccBek();
     notif('Harcama reddedildi', 'red');
   }
 }
