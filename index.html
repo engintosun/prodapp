@@ -16,8 +16,8 @@
 html { height: 100%; }
 body {
   height: 100%;
-  background: #0C0A08;
-  color: #EDF0F5;
+  background: var(--bg);
+  color: var(--tx);
   font-family: 'DM Sans', system-ui, sans-serif;
   font-size: 14px;
   line-height: 1.6;
@@ -54,6 +54,34 @@ body {
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bot: env(safe-area-inset-bottom, 0px);
 }
+
+/* ── AÇIK TEMA ── */
+[data-theme="light"] {
+  --bg:  #F5F3F0;
+  --bg2: #EDEAE4;
+  --bg3: #E4E0D8;
+  --bg4: #DAD5CC;
+  --bo:  #C4BDB0;
+  --bo2: #ADA69A;
+  --tx:  #1A1714;
+  --tx2: #55504A;
+  --tx3: #8A857E;
+  --ac2: #CF7A10;
+  --gr:  #16A34A;
+  --gr2: #166534;
+  --rd:  #DC2626;
+  --rd2: #991B1B;
+  --am:  #D97706;
+  --am2: #92400E;
+  --bl:  #2563EB;
+  --bl2: #1E3A8A;
+  --sh:  0 8px 32px rgba(0,0,0,.10);
+}
+
+/* ── TEMA İKONLARI ── */
+.theme-icon-light { display: none; }
+[data-theme="light"] .theme-icon-dark  { display: none; }
+[data-theme="light"] .theme-icon-light { display: block; }
 
 /* ── EKRAN SİSTEMİ ── */
 /* Her ekran tam viewport, flex column */
@@ -1618,11 +1646,26 @@ body {
 }
 .profil-av-name { font-size: 15px; font-weight: 700; color: var(--tx); }
 .profil-av-role { font-size: 11px; color: var(--tx2); margin-top: 2px; font-family: var(--mo); }
+.profil-av-dept { font-size: 11px; color: var(--tx3); margin-top: 3px; }
 .profil-sec-lbl {
   font-size: 10px; font-weight: 700; color: var(--tx3);
   text-transform: uppercase; letter-spacing: .6px;
   margin: 16px 0 10px;
 }
+/* Profil — rol özel bölümler */
+.profil-rol-sec { background: var(--bg3); border: 1px solid var(--bo); border-radius: var(--r); padding: 14px; margin-top: 4px; }
+.profil-rol-sec-hd { font-size: 10px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 10px; }
+.profil-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.profil-stat-c { background: var(--bg2); border: 1px solid var(--bo); border-radius: var(--rs); padding: 10px 10px; }
+.profil-stat-v { font-size: 14px; font-weight: 800; font-family: var(--mo); color: var(--tx); margin-bottom: 2px; }
+.profil-stat-l { font-size: 10px; color: var(--tx3); text-transform: uppercase; letter-spacing: .3px; }
+.profil-prj-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--bo); }
+.profil-prj-row:last-child { border-bottom: none; }
+.profil-prj-name { font-size: 13px; font-weight: 600; color: var(--tx); }
+.profil-prj-sub  { font-size: 11px; color: var(--tx3); margin-top: 1px; }
+/* Avatar tıklanabilir */
+.sd-hd-av, .sa-hd-av { cursor: pointer; transition: opacity .12s; }
+.sd-hd-av:active, .sa-hd-av:active { opacity: .7; }
 
 /* ══════════════════════════════
    MODAL SİSTEMİ
@@ -1904,6 +1947,11 @@ body {
       <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
       Proje Değiştir
     </div>
+    <div class="av-item" onclick="closeAvMenu(); toggleTheme()">
+      <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <span class="theme-icon-dark">Açık Tema</span><span class="theme-icon-light">Koyu Tema</span>
+    </div>
     <div class="av-item" onclick="closeAvMenu(); notif('Yardım yakında', 'blue')">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       Yardım
@@ -2087,13 +2135,17 @@ body {
   <!-- Header -->
   <div class="sd-hd">
     <div class="sd-hd-left">
-      <div class="sd-hd-av" id="sd-hd-av">ZA</div>
+      <div class="sd-hd-av" id="sd-hd-av" onclick="openSdProfil()">ZA</div>
       <div>
         <div class="sd-hd-prj" id="sd-hd-prj">İstanbul Gecesi</div>
         <div class="sd-hd-role" id="sd-hd-role">Dept. Sorumlusu · Yapım</div>
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
+      <div class="su-ib" onclick="toggleTheme()" title="Tema">
+        <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </div>
       <div class="su-ib" onclick="openNotifModal()">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <div class="su-badge" id="sd-badge"></div>
@@ -2136,13 +2188,17 @@ body {
   <!-- Header -->
   <div class="sa-hd">
     <div class="sa-hd-left">
-      <div class="sa-hd-av" id="sa-hd-av">MH</div>
+      <div class="sa-hd-av" id="sa-hd-av" onclick="openSaProfil()">MH</div>
       <div>
         <div class="sa-hd-prj" id="sa-hd-prj">İstanbul Gecesi</div>
         <div class="sa-hd-role">Muhasebe · Tüm Departmanlar</div>
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
+      <div class="su-ib" onclick="toggleTheme()" title="Tema">
+        <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </div>
       <div class="su-ib" onclick="openNotifModal()">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <div class="su-badge" id="sa-badge"></div>
@@ -2494,6 +2550,27 @@ body {
           <option value="Teknik">🔧 Teknik / Ekipman</option>
           <option value="Ofis">💼 Prodüksiyon Ofisi</option>
         </select>
+      </div>
+
+      <!-- Dept özel bölüm -->
+      <div id="p-dept-section" style="display:none">
+        <div class="profil-sec-lbl">Departman Özeti</div>
+        <div class="profil-rol-sec">
+          <div class="profil-rol-sec-hd" id="p-dept-sec-hd">Yönetilen Departman</div>
+          <div class="profil-stat-grid" id="p-dept-stats"></div>
+          <div id="p-dept-ekip-list"></div>
+        </div>
+      </div>
+
+      <!-- Muhasebe özel bölüm -->
+      <div id="p-acc-section" style="display:none">
+        <div class="profil-sec-lbl">Proje & Dönem Özeti</div>
+        <div class="profil-rol-sec">
+          <div class="profil-rol-sec-hd">Aktif Proje</div>
+          <div id="p-acc-prj"></div>
+          <div class="profil-rol-sec-hd" style="margin-top:12px">Dönem Durumu</div>
+          <div class="profil-stat-grid" id="p-acc-don-stats"></div>
+        </div>
       </div>
 
       <!-- Butonlar -->
@@ -3118,6 +3195,22 @@ function showScr(id) {
   document.getElementById(id).classList.add('on');
 }
 
+/* ═══ TEMA ═══ */
+function applyTheme(theme) {
+  if (theme === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+  }
+}
+function toggleTheme() {
+  var current = document.documentElement.getAttribute('data-theme');
+  var next = current === 'light' ? 'dark' : 'light';
+  applyTheme(next);
+  localStorage.setItem('prodapp-theme', next);
+  notif(next === 'light' ? 'Açık tema aktif ☀️' : 'Koyu tema aktif 🌙', 'blue');
+}
+
 /* ═══ AUTH ═══ */
 function renderDemo() {
   var el = document.getElementById('demo-list');
@@ -3229,9 +3322,9 @@ function goProjectSelect() {
 }
 
 /* ═══ PROFİL ═══ */
-function openProfil() {
-  closeAvMenu();
-  if (!curUser) return;
+
+/* Ortak: form alanlarını doldur + avatar satırını güncelle */
+function _profilFill() {
   document.getElementById('p-ad').value    = curUser.ad    || '';
   document.getElementById('p-soyad').value = curUser.soyad || '';
   document.getElementById('p-tel').value   = curUser.tel   || '';
@@ -3244,8 +3337,98 @@ function openProfil() {
   document.getElementById('p-av-name').textContent = curUser.name;
   var roleMap = { user:'👷 Saha Personeli', dept:'🎬 Dept. Sorumlusu', acc:'💼 Muhasebe' };
   document.getElementById('p-av-role').textContent = roleMap[curUser.role] || curUser.role;
+  /* Rol özel bölümleri gizle — açan fonksiyon gerekeni gösterir */
+  document.getElementById('p-dept-section').style.display = 'none';
+  document.getElementById('p-acc-section').style.display  = 'none';
+}
+
+/* Saha — avatar menüsünden */
+function openProfil() {
+  closeAvMenu();
+  if (!curUser) return;
+  _profilFill();
   openM('mprofil');
 }
+
+/* Dept — header avatarından */
+function openSdProfil() {
+  if (!curUser) return;
+  _profilFill();
+
+  /* Departman özeti bölümünü göster ve doldur */
+  var sec = document.getElementById('p-dept-section');
+  sec.style.display = '';
+  document.getElementById('p-dept-sec-hd').textContent =
+    (curUser.dept || 'Departman') + ' · Ekip Özeti';
+
+  /* İstatistik kutuları */
+  var toplamTutar = 0;
+  for (var i = 0; i < DEPT_EKIP.length; i++) { toplamTutar += DEPT_EKIP[i].tutar || 0; }
+  var bekSay = DEPT_BEKLEYEN ? DEPT_BEKLEYEN.length : 0;
+  document.getElementById('p-dept-stats').innerHTML =
+    '<div class="profil-stat-c"><div class="profil-stat-v">' + DEPT_EKIP.length + '</div><div class="profil-stat-l">Ekip Üyesi</div></div>' +
+    '<div class="profil-stat-c"><div class="profil-stat-v">' + bekSay + '</div><div class="profil-stat-l">Bekleyen Fiş</div></div>' +
+    '<div class="profil-stat-c"><div class="profil-stat-v">₺' + toplamTutar.toLocaleString('tr-TR') + '</div><div class="profil-stat-l">Toplam Harcama</div></div>' +
+    '<div class="profil-stat-c"><div class="profil-stat-v">' + SD_DONEMLER.length + '</div><div class="profil-stat-l">Dönem</div></div>';
+
+  /* Ekip listesi */
+  var rows = '';
+  for (var j = 0; j < DEPT_EKIP.length; j++) {
+    var u = DEPT_EKIP[j];
+    rows += '<div class="profil-prj-row">' +
+      '<div>' +
+        '<div class="profil-prj-name">' + u.name + '</div>' +
+        '<div class="profil-prj-sub">' + u.rol + '</div>' +
+      '</div>' +
+      '<div style="font-size:13px;font-weight:700;font-family:var(--mo);color:var(--tx2)">₺' + (u.tutar || 0).toLocaleString('tr-TR') + '</div>' +
+    '</div>';
+  }
+  document.getElementById('p-dept-ekip-list').innerHTML = rows;
+
+  openM('mprofil');
+}
+
+/* Muhasebe — header avatarından */
+function openSaProfil() {
+  if (!curUser) return;
+  _profilFill();
+
+  /* Proje & dönem bölümünü göster ve doldur */
+  document.getElementById('p-acc-section').style.display = '';
+
+  /* Aktif proje */
+  var prjHtml = '';
+  if (curProj) {
+    prjHtml = '<div class="profil-prj-row">' +
+      '<div>' +
+        '<div class="profil-prj-name">' + curProj.name + '</div>' +
+        '<div class="profil-prj-sub">' + curProj.type + ' · ' + curProj.status + '</div>' +
+      '</div>' +
+      '<span class="tag-gr" style="font-size:10px">Aktif</span>' +
+    '</div>';
+  }
+  document.getElementById('p-acc-prj').innerHTML = prjHtml || '<div style="font-size:13px;color:var(--tx3)">Proje seçilmedi</div>';
+
+  /* Aktif dönem özeti */
+  var aktifDon2 = null;
+  for (var i = 0; i < SA_DONEMLER.length; i++) {
+    if (SA_DONEMLER[i].aktif) { aktifDon2 = SA_DONEMLER[i]; break; }
+  }
+  var topBek = 0, topOnay = 0, topSuphe = 0, deptSay = ACC_DEPTS.length;
+  for (var j = 0; j < ACC_DEPTS.length; j++) {
+    topBek   += ACC_DEPTS[j].bekleyen || 0;
+    topOnay  += ACC_DEPTS[j].onay     || 0;
+    topSuphe += ACC_DEPTS[j].suphe    || 0;
+  }
+  document.getElementById('p-acc-don-stats').innerHTML =
+    '<div class="profil-stat-c"><div class="profil-stat-v">' + (aktifDon2 ? aktifDon2.lbl : '—') + '</div><div class="profil-stat-l">Aktif Dönem</div></div>' +
+    '<div class="profil-stat-c"><div class="profil-stat-v">' + deptSay + '</div><div class="profil-stat-l">Departman</div></div>' +
+    '<div class="profil-stat-c"><div class="profil-stat-v">₺' + topOnay.toLocaleString('tr-TR') + '</div><div class="profil-stat-l">Onaylı</div></div>' +
+    '<div class="profil-stat-c"><div class="profil-stat-v" style="color:var(--am)">₺' + topBek.toLocaleString('tr-TR') + '</div><div class="profil-stat-l">Bekleyen</div></div>';
+
+  openM('mprofil');
+}
+
 function submitProfil() {
   if (!curUser) return;
   var ad    = (document.getElementById('p-ad').value    || '').trim();
@@ -3258,12 +3441,22 @@ function submitProfil() {
   curUser.tel   = (document.getElementById('p-tel').value   || '').trim();
   curUser.email = (document.getElementById('p-email').value || '').trim();
   curUser.dept  = document.getElementById('p-dept').value;
-  /* Header + menü güncelle */
-  document.getElementById('av-name').textContent = curUser.name;
-  document.getElementById('su-av').textContent   = curUser.ini;
   /* Modal avatar güncelle */
   document.getElementById('p-av').textContent      = curUser.ini;
   document.getElementById('p-av-name').textContent = curUser.name;
+  /* Aktif ekran header'ını güncelle */
+  if (curUser.role === 'user') {
+    document.getElementById('av-name').textContent = curUser.name;
+    document.getElementById('su-av').textContent   = curUser.ini;
+  } else if (curUser.role === 'dept') {
+    var sdAv = document.getElementById('sd-hd-av');
+    var sdRol = document.getElementById('sd-hd-role');
+    if (sdAv)  sdAv.textContent  = curUser.ini;
+    if (sdRol) sdRol.textContent = 'Dept. Sorumlusu · ' + curUser.dept;
+  } else if (curUser.role === 'acc') {
+    var saAv = document.getElementById('sa-hd-av');
+    if (saAv) saAv.textContent = curUser.ini;
+  }
   closeM('mprofil');
   notif('Profil güncellendi', 'green');
 }
@@ -6774,6 +6967,9 @@ function accPDF() {
 
 /* ═══ BAŞLAT ═══ */
 (function init() {
+  /* kayıtlı temayı uygula */
+  var savedTheme = localStorage.getItem('prodapp-theme');
+  if (savedTheme) applyTheme(savedTheme);
   /* bugünün tarihini belgesiz forma doldur */
   var today = new Date().toISOString().split('T')[0];
   var bt = document.getElementById('b-tarih');
