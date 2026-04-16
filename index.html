@@ -1590,6 +1590,35 @@ body {
   border-radius: 8px; padding: 7px 10px; text-align: right;
 }
 .butce-modal-inp:focus { outline: none; border-color: var(--ac); }
+.butce-modal-sec-hd {
+  font-size: 10px; font-weight: 700; color: var(--tx3); text-transform: uppercase;
+  letter-spacing: .5px; padding: 12px 0 6px; border-top: 1px solid var(--bo); margin-top: 4px;
+}
+.butce-modal-sec-hd:first-child { border-top: none; padding-top: 0; }
+
+/* Dept ekranı — kategori limit kartı */
+.sd-kat-kart {
+  background: var(--bg2); border: 1px solid var(--bo); border-radius: var(--r);
+  padding: 12px 14px; margin-top: 8px;
+}
+.sd-kat-kart-hd { font-size: 10px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.sd-kat-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.sd-kat-row:last-child { margin-bottom: 0; }
+.sd-kat-dot  { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.sd-kat-lbl  { font-size: 12px; color: var(--tx2); width: 64px; flex-shrink: 0; }
+.sd-kat-bar-wrap { flex: 1; height: 5px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+.sd-kat-bar-f    { height: 100%; border-radius: 3px; transition: width .3s; }
+.sd-kat-pct  { font-size: 10px; font-weight: 700; width: 34px; text-align: right; flex-shrink: 0; }
+.sd-kat-tutar { font-size: 10px; color: var(--tx3); width: 80px; text-align: right; flex-shrink: 0; font-family: var(--mo); }
+
+/* Saha — kompakt kategori satırları */
+.su-kat-row  { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+.su-kat-row:last-child { margin-bottom: 0; }
+.su-kat-dot  { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.su-kat-lbl  { font-size: 11px; color: var(--tx2); width: 58px; flex-shrink: 0; }
+.su-kat-bar  { flex: 1; height: 5px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+.su-kat-fill { height: 100%; border-radius: 3px; transition: width .3s; }
+.su-kat-pct  { font-size: 10px; font-weight: 700; width: 30px; text-align: right; flex-shrink: 0; }
 
 /* Şüpheli kayıtlar */
 .sa-suphe-card {
@@ -2230,6 +2259,8 @@ body {
 
       <!-- Bütçe widget -->
       <div id="su-butce-bar"></div>
+      <!-- Kategori limitler -->
+      <div id="su-kat-bar"></div>
 
       <!-- Son harcamalar -->
       <div class="recent-hd">
@@ -2707,7 +2738,7 @@ body {
   <div class="ms">
     <div class="mh"></div>
     <div class="mhd">
-      <div class="mtitle">✏ Departman Bütçeleri</div>
+      <div class="mtitle">✏ Bütçe & Limit Ayarları</div>
       <button class="mclose" onclick="closeM('mbutce')">✕</button>
     </div>
     <div class="mbody">
@@ -3936,8 +3967,39 @@ function renderSahaButce() {
     '</div>';
 }
 
+function renderSahaKatLimits() {
+  var el = document.getElementById('su-kat-bar');
+  if (!el) return;
+  var katH   = _katHarcanan();
+  var katBek = _katBekleyen();
+  var rows = [];
+  for (var i = 0; i < KAT_LIMIT.length; i++) {
+    var km = KAT_LIMIT[i];
+    if (!km.limit) continue;
+    var kTot = (katH[km.kat] || 0) + (katBek[km.kat] || 0);
+    if (!kTot) continue; /* sadece aktivitesi olanları göster */
+    rows.push({ km:km, tot:kTot });
+  }
+  if (!rows.length) { el.innerHTML = ''; return; }
+  el.innerHTML = '<div class="su-bw">' +
+    '<div class="su-bw-hd"><span class="su-bw-lbl">Kategori Limitleri</span></div>' +
+    rows.map(function(r) {
+      var pct = Math.min(100, Math.round(r.tot / r.km.limit * 100));
+      var barClr = pct >= 100 ? 'var(--rd)' : pct >= 80 ? 'var(--am)' : r.km.clr;
+      var pctClr = pct >= 100 ? 'var(--rd2)' : pct >= 80 ? 'var(--am2)' : 'var(--tx3)';
+      return '<div class="su-kat-row">' +
+        '<div class="su-kat-dot" style="background:' + r.km.clr + '"></div>' +
+        '<span class="su-kat-lbl">' + r.km.lbl + '</span>' +
+        '<div class="su-kat-bar"><div class="su-kat-fill" style="width:' + pct + '%;background:' + barClr + '"></div></div>' +
+        '<span class="su-kat-pct" style="color:' + pctClr + '">%' + pct + '</span>' +
+      '</div>';
+    }).join('') +
+  '</div>';
+}
+
 function renderRecent() {
   renderSahaButce();
+  renderSahaKatLimits();
   var mine = DATA.filter(function(d) { return d.personel === 'Mehmet K.' && d.donem === 2; });
   var el = document.getElementById('recent-list');
   if (!el) return;
@@ -4324,9 +4386,58 @@ var SD_KAT_CLR = {
 };
 var SD_KAT_LBL = {
   Yakit:'Yakıt', Yiyecek:'Yiyecek', Ekipman:'Ekipman',
-  Sanat:'Sanat', Ulasim:'Ulaşım', Diger:'Diğer',
+  Sanat:'Sanat',  Ulasim:'Ulaşım',  Diger:'Diğer',
   Konaklama:'Konaklama', Kiralama:'Kiralama'
 };
+
+/* Kategori alt limitleri — düzenlenebilir */
+var KAT_LIMIT = [
+  { kat:'Yakit',     lbl:'Yakıt',     limit:5000,  clr:'var(--am)'  },
+  { kat:'Yiyecek',   lbl:'Yiyecek',   limit:4000,  clr:'var(--gr)'  },
+  { kat:'Ekipman',   lbl:'Ekipman',   limit:14000, clr:'var(--bl)'  },
+  { kat:'Sanat',     lbl:'Sanat',     limit:4000,  clr:'var(--ac)'  },
+  { kat:'Ulasim',    lbl:'Ulaşım',    limit:5000,  clr:'var(--bl2)' },
+  { kat:'Konaklama', lbl:'Konaklama', limit:7000,  clr:'var(--bl)'  },
+  { kat:'Kiralama',  lbl:'Kiralama',  limit:10000, clr:'var(--am2)' },
+  { kat:'Diger',     lbl:'Diğer',     limit:2000,  clr:'var(--tx3)' }
+];
+
+/* Onaylanmış harcamaları kategori bazlı topla (DEPT_GECMIS[2]) */
+function _katHarcanan() {
+  var h = {};
+  var on = (DEPT_GECMIS[2] && DEPT_GECMIS[2].onaylandi) ? DEPT_GECMIS[2].onaylandi : [];
+  for (var i = 0; i < on.length; i++) h[on[i].kat] = (h[on[i].kat] || 0) + on[i].tutar;
+  return h;
+}
+
+/* Bekleyen harcamaları kategori bazlı topla */
+function _katBekleyen() {
+  var b = {};
+  for (var i = 0; i < DEPT_BEKLEYEN.length; i++) {
+    var k = DEPT_BEKLEYEN[i].kat;
+    b[k] = (b[k] || 0) + DEPT_BEKLEYEN[i].tutar;
+  }
+  return b;
+}
+
+/* Kategori limit uyarısı — ilk geçişte bildirim gönder */
+function _checkKatLimit(kat, newTotal) {
+  var km = null;
+  for (var i = 0; i < KAT_LIMIT.length; i++) { if (KAT_LIMIT[i].kat === kat) { km = KAT_LIMIT[i]; break; } }
+  if (!km || !km.limit) return;
+  var pct = newTotal / km.limit * 100;
+  if (pct >= 100) {
+    _pushNotif('d', 'rd', km.lbl + ' Limiti Aşıldı!',
+      km.lbl + ' kategorisi ₺' + km.limit.toLocaleString('tr-TR') + ' limitini aştı.',
+      'Az önce · Sistem');
+    updateNotifBadge();
+  } else if (pct >= 80) {
+    _pushNotif('d', 'am', km.lbl + ' Kategorisi — %' + Math.round(pct),
+      km.lbl + ' kategorisinin %' + Math.round(pct) + "'i kullanıldı.",
+      'Az önce · Sistem');
+    updateNotifBadge();
+  }
+}
 
 function renderDept() {
   sdSec = {}; /* yeni oturumda seçimi temizle */
@@ -4459,6 +4570,29 @@ function renderDeptOzet() {
     } else if (pct >= 80) {
       uyariBan = '<div class="sd-butce-uyari-ban bk-am">⚠ Bütçenin %' + pctExact + '\'i kullanıldı — harcamaları yavaşlatın</div>';
     }
+    /* Kategori limit barları */
+    var katH   = _katHarcanan();
+    var katBek = _katBekleyen();
+    var katRows = '';
+    for (var ki = 0; ki < KAT_LIMIT.length; ki++) {
+      var km = KAT_LIMIT[ki];
+      if (!km.limit) continue;
+      var kHar = katH[km.kat] || 0;
+      var kBek = katBek[km.kat] || 0;
+      var kTot = kHar + kBek;
+      if (!kTot && !km.limit) continue;
+      var kPct = Math.min(100, Math.round(kTot / km.limit * 100));
+      var kBarClr = kPct >= 100 ? 'var(--rd)' : kPct >= 80 ? 'var(--am)' : km.clr;
+      var kPctClr = kPct >= 100 ? 'var(--rd2)' : kPct >= 80 ? 'var(--am2)' : 'var(--tx3)';
+      katRows +=
+        '<div class="sd-kat-row">' +
+          '<div class="sd-kat-dot" style="background:' + km.clr + '"></div>' +
+          '<div class="sd-kat-lbl">' + km.lbl + '</div>' +
+          '<div class="sd-kat-bar-wrap"><div class="sd-kat-bar-f" style="width:' + kPct + '%;background:' + kBarClr + '"></div></div>' +
+          '<div class="sd-kat-pct" style="color:' + kPctClr + '">%' + kPct + '</div>' +
+          '<div class="sd-kat-tutar">₺' + kTot.toLocaleString('tr-TR') + '&nbsp;/&nbsp;₺' + km.limit.toLocaleString('tr-TR') + '</div>' +
+        '</div>';
+    }
     el.innerHTML =
       '<div class="sd-butce-kart ' + kartCls + '">' +
         '<div class="sd-butce-top">' +
@@ -4472,7 +4606,8 @@ function renderDeptOzet() {
           '<div class="sd-butce-stat"><div class="sd-butce-sv" style="color:var(--am2)">₺' + bekTop.toLocaleString('tr-TR') + '</div><div class="sd-butce-sl">Bekleyen</div></div>' +
           '<div class="sd-butce-stat"><div class="sd-butce-sv" style="color:' + (kalan === 0 ? 'var(--rd2)' : 'var(--gr2)') + '">₺' + kalan.toLocaleString('tr-TR') + '</div><div class="sd-butce-sl">Kalan</div></div>' +
         '</div>' +
-      '</div>';
+      '</div>' +
+      (katRows ? '<div class="sd-kat-kart"><div class="sd-kat-kart-hd">Kategori Limitleri</div>' + katRows + '</div>' : '');
     return;
   }
 
@@ -4686,10 +4821,12 @@ function deptOnaylaSecili() {
   if (!keys.length) { notif('Seçili kayıt yok', 'amber'); return; }
   var cnt = 0, top = 0;
   var ob = DONEM_BUTCE.find(function(x){ return x.donem === 2; });
+  if (!DEPT_GECMIS[2]) DEPT_GECMIS[2] = { onaylandi:[], reddedildi:[] };
   DEPT_BEKLEYEN = DEPT_BEKLEYEN.filter(function(f) {
     if (ids[f.id]) {
       cnt++; top += f.tutar;
       if (ob) ob.harcanan += f.tutar;
+      DEPT_GECMIS[2].onaylandi.push({ id:f.id, uye:f.uye||'', ini:f.ini||'', satici:f.satici||'', kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptTarih() });
       return false;
     }
     return true;
@@ -4699,6 +4836,8 @@ function deptOnaylaSecili() {
     for (var i = 0; i < DEPT_BEKLEYEN.length; i++) bt += DEPT_BEKLEYEN[i].tutar;
     _checkButceUyari(ob, bt);
   }
+  var newH2 = _katHarcanan();
+  for (var ki = 0; ki < KAT_LIMIT.length; ki++) _checkKatLimit(KAT_LIMIT[ki].kat, newH2[KAT_LIMIT[ki].kat] || 0);
   sdSec = {};
   notif(cnt + ' harcama onaylandı · ₺' + top.toLocaleString('tr-TR'), 'green');
   renderDeptBek(); renderDeptEkip(); renderDeptOzet();
@@ -5490,6 +5629,11 @@ function deptOnayla(id) {
         for (var oi = 0; oi < DEPT_BEKLEYEN.length; oi++) obt += DEPT_BEKLEYEN[oi].tutar;
         _checkButceUyari(ob, obt);
       }
+      /* Kategori geçmişine ekle + limit kontrolü */
+      if (!DEPT_GECMIS[2]) DEPT_GECMIS[2] = { onaylandi:[], reddedildi:[] };
+      DEPT_GECMIS[2].onaylandi.push({ id:f.id, uye:f.uye||'', ini:f.ini||'', satici:f.satici||'', kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptTarih() });
+      var newH = _katHarcanan();
+      _checkKatLimit(f.kat, newH[f.kat] || 0);
       notif(f.satici + ' onaylandı', 'green');
       renderDeptBek();
       renderDeptEkip();
@@ -6834,27 +6978,38 @@ function saSetDonem(id) {
 function openAccButceDuzenle() {
   var el = document.getElementById('mbutce-body');
   if (!el) return;
-  el.innerHTML = ACC_DEPTS.map(function(d) {
-    return '<div class="butce-modal-row">' +
-      '<div class="butce-modal-dot" style="background:' + d.renk + '"></div>' +
-      '<div class="butce-modal-name">' + d.name + '</div>' +
-      '<input class="butce-modal-inp fgi" id="butce-inp-' + d.id + '" type="number" min="0" step="1000" value="' + (d.butce || 0) + '">' +
-    '</div>';
-  }).join('');
+  var deptRows = '<div class="butce-modal-sec-hd">Departman Bütçeleri</div>' +
+    ACC_DEPTS.map(function(d) {
+      return '<div class="butce-modal-row">' +
+        '<div class="butce-modal-dot" style="background:' + d.renk + '"></div>' +
+        '<div class="butce-modal-name">' + d.name + '</div>' +
+        '<input class="butce-modal-inp" id="butce-inp-' + d.id + '" type="number" min="0" step="1000" value="' + (d.butce || 0) + '">' +
+      '</div>';
+    }).join('');
+  var katRows = '<div class="butce-modal-sec-hd">Kategori Limitleri</div>' +
+    KAT_LIMIT.map(function(km) {
+      return '<div class="butce-modal-row">' +
+        '<div class="butce-modal-dot" style="background:' + km.clr + '"></div>' +
+        '<div class="butce-modal-name">' + km.lbl + '</div>' +
+        '<input class="butce-modal-inp" id="kat-inp-' + km.kat + '" type="number" min="0" step="500" value="' + (km.limit || 0) + '">' +
+      '</div>';
+    }).join('');
+  el.innerHTML = deptRows + katRows;
   openM('mbutce');
 }
 
 function accButceKaydet() {
   for (var i = 0; i < ACC_DEPTS.length; i++) {
-    var inp = document.getElementById('butce-inp-' + ACC_DEPTS[i].id);
-    if (inp) {
-      var val = parseInt(inp.value, 10);
-      if (!isNaN(val) && val >= 0) ACC_DEPTS[i].butce = val;
-    }
+    var di = document.getElementById('butce-inp-' + ACC_DEPTS[i].id);
+    if (di) { var dv = parseInt(di.value, 10); if (!isNaN(dv) && dv >= 0) ACC_DEPTS[i].butce = dv; }
+  }
+  for (var j = 0; j < KAT_LIMIT.length; j++) {
+    var ki = document.getElementById('kat-inp-' + KAT_LIMIT[j].kat);
+    if (ki) { var kv = parseInt(ki.value, 10); if (!isNaN(kv) && kv >= 0) KAT_LIMIT[j].limit = kv; }
   }
   closeM('mbutce');
   renderAccDash();
-  notif('Departman bütçeleri güncellendi', 'green');
+  notif('Bütçe ve kategori limitleri güncellendi', 'green');
 }
 
 function renderAccDash() {
