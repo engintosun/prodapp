@@ -2792,15 +2792,12 @@ body {
         <div class="fg"><label>Tarih</label><input class="fgi" type="date" id="b-tarih"></div>
         <div class="fg">
           <label>Departman</label>
-          <select class="fgi">
-            <option>🎨 Sanat</option><option>🎬 Prodüksiyon</option>
-            <option>💡 Işık</option><option>🎤 Ses</option>
-          </select>
+          <select class="fgi" id="b-dept"></select>
         </div>
       </div>
       <div class="fg">
         <label>Neden</label>
-        <select class="fgi">
+        <select class="fgi" id="b-neden">
           <option>Fiş verilmedi</option>
           <option>Fiş kayboldu</option>
           <option>Acil nakit ödeme</option>
@@ -4593,12 +4590,32 @@ function checkBUlasimLimit() {
   _applyUlasimLimit('b-ul-km', 'b-ul-tip', 'b-tutar', 'b-ul-uyari');
 }
 
+var _B_DEPT_MAP = { yapim:'Yapım', kamera:'Kamera', sanat:'Sanat', ses:'Ses & Müzik', kostum:'Kostüm & Makyaj', diger:'Diğer' };
+var _B_DEPT_KEYS = ['yapim','kamera','sanat','ses','kostum','diger'];
+
 function openBelgesizModal() {
   _resetDynFields('b-');
   var kat = document.getElementById('b-kat');
   if (kat) kat.selectedIndex = 0;
   bFotolar = [];
   _bFotoRender();
+  var tarihEl = document.getElementById('b-tarih');
+  if (tarihEl) tarihEl.value = new Date().toISOString().slice(0, 10);
+  /* Departman select doldur */
+  var deptSel = document.getElementById('b-dept');
+  if (deptSel) {
+    var deptHtml = '';
+    for (var di = 0; di < _B_DEPT_KEYS.length; di++) {
+      var dk = _B_DEPT_KEYS[di];
+      var lbl = _B_DEPT_MAP[dk];
+      deptHtml += '<option value="' + lbl + '">' + lbl + '</option>';
+    }
+    deptSel.innerHTML = deptHtml;
+    /* Default: kullanıcının dept'iyle eşleşen anahtar */
+    var userDept = APP.ui.curUser ? (APP.ui.curUser.dept || '').toLowerCase() : '';
+    var matchLbl = _B_DEPT_MAP[userDept] || '';
+    if (matchLbl) deptSel.value = matchLbl;
+  }
   openM('mb');
 }
 /* ═══ DEPT EKRANI ═══ */
@@ -6250,16 +6267,27 @@ function submitBelgesiz() {
     _addToDeptBekleyen('Belgesiz Harcama', kat, tutar, true, aciklama, fotos);
     notif('Belgesiz harcama bekleyene eklendi', 'amber');
   } else {
-    var bKat = document.getElementById('b-kat').value || 'Diger';
-    var bTut   = parseFloat(document.getElementById('b-tutar').value || '0') || 0;
-    var bTodayD = new Date();
-    var bTarih  = _pad(bTodayD.getDate()) + '.' + _pad(bTodayD.getMonth()+1) + '.' + bTodayD.getFullYear();
+    var bKat      = document.getElementById('b-kat').value || 'Diger';
+    var bTut      = parseFloat(document.getElementById('b-tutar').value || '0') || 0;
     var bAciklama = (document.getElementById('b-aciklama') || {}).value || '';
+    var bDept     = (document.getElementById('b-dept')     || {}).value || '';
+    var bNeden    = (document.getElementById('b-neden')    || {}).value || '';
+    var bPersonel = APP.ui.curUser ? APP.ui.curUser.name : 'Bilinmeyen';
+    var bTarihRaw = (document.getElementById('b-tarih')    || {}).value || '';
+    var bTarih;
+    if (bTarihRaw) {
+      var dp = bTarihRaw.split('-');
+      bTarih = dp[2] + '.' + dp[1] + '.' + dp[0];
+    } else {
+      var bd = new Date();
+      bTarih = _pad(bd.getDate()) + '.' + _pad(bd.getMonth()+1) + '.' + bd.getFullYear();
+    }
     if (bKat === 'Kiralama') {
       APP.data.fisler.unshift({
-        id: Date.now(), tarih: bTarih, personel: 'Mehmet K.', satici: 'Belgesiz Kiralama',
+        id: Date.now(), tarih: bTarih, personel: bPersonel, satici: 'Belgesiz Kiralama',
         kat: 'Kiralama', tutar: bTut, durum: 'bekleyen', donem: APP.ui.aktifDon,
         uyari: null, thumb: null, belgesiz: true, aciklama: bAciklama, fotos: fotos,
+        dept: bDept, neden: bNeden,
         kiraMeta: {
           bas:    (document.getElementById('b-ki-bas').value || ''),
           bit:    (document.getElementById('b-ki-bit').value || ''),
@@ -6269,15 +6297,29 @@ function submitBelgesiz() {
       renderRecent();
     } else {
       APP.data.fisler.unshift({
-        id: Date.now(), tarih: bTarih, personel: 'Mehmet K.', satici: 'Belgesiz Harcama',
+        id: Date.now(), tarih: bTarih, personel: bPersonel, satici: 'Belgesiz Harcama',
         kat: bKat, tutar: bTut, durum: 'bekleyen', donem: APP.ui.aktifDon,
-        uyari: null, thumb: null, belgesiz: true, aciklama: bAciklama, fotos: fotos
+        uyari: null, thumb: null, belgesiz: true, aciklama: bAciklama, fotos: fotos,
+        dept: bDept, neden: bNeden
       });
       renderRecent();
     }
     notif('Belgesiz harcama bildirildi', 'amber');
   }
   saveAppData();
+  /* Form sıfırla */
+  var _clr = function(id) { var el = document.getElementById(id); if (el) el.value = ''; };
+  _clr('b-tutar'); _clr('b-aciklama');
+  _clr('b-ul-km'); _clr('b-ul-binis'); _clr('b-ul-varis');
+  _clr('b-ym-kisi'); _clr('b-ko-gece'); _clr('b-ko-kisi');
+  _clr('b-ki-bas'); _clr('b-ki-bit'); _clr('b-ki-gun');
+  var bKatEl2 = document.getElementById('b-kat');
+  if (bKatEl2) bKatEl2.value = 'Diger';
+  var bTarihEl = document.getElementById('b-tarih');
+  if (bTarihEl) bTarihEl.value = new Date().toISOString().slice(0, 10);
+  bFotolar = [];
+  _bFotoRender();
+  clearSig2();
 }
 
 /* ═══ AVANS ═══ */
