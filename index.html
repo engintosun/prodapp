@@ -3373,7 +3373,7 @@ APP.seed.saDonemler = [
   { id:0, lbl:'Dönem #0', tarih:'Şub 2026', aktif:false }
 ];
 var SA_DONEM_DEPTS = {
-  /* 2: aktif — APP.seed.accDepts'ten alınır */
+  /* 2: aktif — APP.data.accDepts'ten alınır */
   1: [
     { id:'yapim',  name:'Yapım',           renk:'#E8962E', uye:6, total:61000, onay:57200, bekleyen:0, suphe:0, red:3800 },
     { id:'kamera', name:'Kamera',          renk:'#3B82F6', uye:4, total:28400, onay:26800, bekleyen:0, suphe:0, red:1600 },
@@ -3808,11 +3808,11 @@ function openSaProfil() {
   for (var i = 0; i < APP.seed.saDonemler.length; i++) {
     if (APP.seed.saDonemler[i].aktif) { aktifDon2 = APP.seed.saDonemler[i]; break; }
   }
-  var topBek = 0, topOnay = 0, topSuphe = 0, deptSay = APP.seed.accDepts.length;
-  for (var j = 0; j < APP.seed.accDepts.length; j++) {
-    topBek   += APP.seed.accDepts[j].bekleyen || 0;
-    topOnay  += APP.seed.accDepts[j].onay     || 0;
-    topSuphe += APP.seed.accDepts[j].suphe    || 0;
+  var topBek = 0, topOnay = 0, topSuphe = 0, deptSay = APP.data.accDepts.length;
+  for (var j = 0; j < APP.data.accDepts.length; j++) {
+    topBek   += APP.data.accDepts[j].bekleyen || 0;
+    topOnay  += APP.data.accDepts[j].onay     || 0;
+    topSuphe += APP.data.accDepts[j].suphe    || 0;
   }
   document.getElementById('p-acc-don-stats').innerHTML =
     '<div class="profil-stat-c"><div class="profil-stat-v">' + (aktifDon2 ? aktifDon2.lbl : '—') + '</div><div class="profil-stat-l">Aktif Dönem</div></div>' +
@@ -6670,8 +6670,8 @@ var _accDeptId = '';
 function openAccDeptDetay(deptId) {
   _accDeptId = deptId;
   var d = null;
-  for (var i = 0; i < APP.seed.accDepts.length; i++) {
-    if (APP.seed.accDepts[i].id === deptId) { d = APP.seed.accDepts[i]; break; }
+  for (var i = 0; i < APP.data.accDepts.length; i++) {
+    if (APP.data.accDepts[i].id === deptId) { d = APP.data.accDepts[i]; break; }
   }
   if (!d) return;
 
@@ -6737,7 +6737,7 @@ function _renderAdeptBek(deptId) {
   var el = document.getElementById('adept-pnl-bek');
   if (!el) return;
   var deptName = '';
-  for (var i = 0; i < APP.seed.accDepts.length; i++) if (APP.seed.accDepts[i].id === deptId) { deptName = APP.seed.accDepts[i].name; break; }
+  for (var i = 0; i < APP.data.accDepts.length; i++) if (APP.data.accDepts[i].id === deptId) { deptName = APP.data.accDepts[i].name; break; }
   var items = APP.data.accBekleyen.filter(function(f) { return f.dept === deptName; });
   if (!items.length) { el.innerHTML = '<div style="padding:20px 16px;color:var(--tx3);font-size:13px">Bekleyen harcama yok</div>'; return; }
   el.innerHTML = items.map(function(f) {
@@ -6837,7 +6837,7 @@ function openAccUyeDetay(uyeName, deptId) {
 
   /* Dept adı */
   var deptName = '';
-  for (var j = 0; j < APP.seed.accDepts.length; j++) if (APP.seed.accDepts[j].id === deptId) { deptName = APP.seed.accDepts[j].name; break; }
+  for (var j = 0; j < APP.data.accDepts.length; j++) if (APP.data.accDepts[j].id === deptId) { deptName = APP.data.accDepts[j].name; break; }
 
   var avEl   = document.getElementById('acuye-av');
   var nameEl = document.getElementById('acuye-name');
@@ -7034,7 +7034,7 @@ function notif(msg, type) {
 }
 
 /* ═══ MUHASEBE ═══ */
-APP.seed.accDepts = [
+APP.data.accDepts = [
   { id:'yapim',  name:'Yapım',          renk:'#E8962E', uye:6,  total:48200, onay:31400, bekleyen:12600, suphe:4200, butce:55000 },
   { id:'kamera', name:'Kamera',         renk:'#3B82F6', uye:4,  total:32700, onay:28900, bekleyen:3800,  suphe:0,    butce:38000 },
   { id:'sanat',  name:'Sanat',          renk:'#22C55E', uye:5,  total:27150, onay:19800, bekleyen:6200,  suphe:1150, butce:30000 },
@@ -7142,7 +7142,7 @@ function openAccButceDuzenle() {
   var el = document.getElementById('mbutce-body');
   if (!el) return;
   var deptRows = '<div class="butce-modal-sec-hd">Departman Bütçeleri</div>' +
-    APP.seed.accDepts.map(function(d) {
+    APP.data.accDepts.map(function(d) {
       return '<div class="butce-modal-row">' +
         '<div class="butce-modal-dot" style="background:' + d.renk + '"></div>' +
         '<div class="butce-modal-name">' + d.name + '</div>' +
@@ -7162,13 +7162,13 @@ function openAccButceDuzenle() {
 }
 
 function accButceKaydet() {
-  for (var i = 0; i < APP.seed.accDepts.length; i++) {
-    var di = document.getElementById('butce-inp-' + APP.seed.accDepts[i].id);
-    if (di) { var dv = parseInt(di.value, 10); if (!isNaN(dv) && dv >= 0) APP.seed.accDepts[i].butce = dv; }
+  for (var i = 0; i < APP.data.accDepts.length; i++) {
+    var di = document.getElementById('butce-inp-' + APP.data.accDepts[i].id);
+    if (di) { var dv = parseInt(di.value, 10); if (!isNaN(dv) && dv >= 0) APP.data.accDepts[i].butce = dv; }
   }
-  /* APP.data.donemButce toplam bütçesini APP.seed.accDepts toplamından güncelle */
+  /* APP.data.donemButce toplam bütçesini APP.data.accDepts toplamından güncelle */
   var toplamButce = 0;
-  for (var t = 0; t < APP.seed.accDepts.length; t++) toplamButce += APP.seed.accDepts[t].butce || 0;
+  for (var t = 0; t < APP.data.accDepts.length; t++) toplamButce += APP.data.accDepts[t].butce || 0;
   for (var b = 0; b < APP.data.donemButce.length; b++) {
     if (APP.data.donemButce[b].donem === APP.ui.aktifDon) { APP.data.donemButce[b].butce = toplamButce; break; }
   }
@@ -7204,7 +7204,7 @@ function renderAccDash() {
   donBar += '</div>';
 
   /* Aktif veya geçmiş dönem dept listesi */
-  var depts = APP.ui.saSeciliDonem === 2 ? APP.seed.accDepts : (SA_DONEM_DEPTS[APP.ui.saSeciliDonem] || []);
+  var depts = APP.ui.saSeciliDonem === 2 ? APP.data.accDepts : (SA_DONEM_DEPTS[APP.ui.saSeciliDonem] || []);
   var donRec = null;
   for (var dri = 0; dri < APP.seed.saDonemler.length; dri++) if (APP.seed.saDonemler[dri].id === APP.ui.saSeciliDonem) { donRec = APP.seed.saDonemler[dri]; break; }
   var isAktif = APP.ui.saSeciliDonem === 2;
@@ -7537,9 +7537,9 @@ function _renderAccRaporIc() {
 /* ── Dept Raporu — Liste ── */
 function _raporDeptList() {
   var maxD = 0;
-  for (var i = 0; i < APP.seed.accDepts.length; i++) if (APP.seed.accDepts[i].total > maxD) maxD = APP.seed.accDepts[i].total;
+  for (var i = 0; i < APP.data.accDepts.length; i++) if (APP.data.accDepts[i].total > maxD) maxD = APP.data.accDepts[i].total;
   var html = '<div class="sa-rep-hd"><span>Departmana göre</span><span style="font-weight:400;font-size:11px">Detay için tıkla</span></div>';
-  html += APP.seed.accDepts.map(function(d) {
+  html += APP.data.accDepts.map(function(d) {
     var pct = maxD > 0 ? Math.round(d.total / maxD * 100) : 0;
     return '<div class="sa-rep-dept-row" onclick="_saRaporDept(\'' + d.id + '\')">' +
       '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">' +
@@ -7567,7 +7567,7 @@ function _saRaporDept(id) {
 /* ── Dept Raporu — Detay ── */
 function _raporDeptDetay() {
   var dept = null;
-  for (var i = 0; i < APP.seed.accDepts.length; i++) if (APP.seed.accDepts[i].id === saRaporDeptId) { dept = APP.seed.accDepts[i]; break; }
+  for (var i = 0; i < APP.data.accDepts.length; i++) if (APP.data.accDepts[i].id === saRaporDeptId) { dept = APP.data.accDepts[i]; break; }
   if (!dept) return '';
 
   var uyeler   = APP.cache.accDeptUyeler[saRaporDeptId]   || [];
@@ -7944,7 +7944,7 @@ function _raporDonem() {
 
   /* Dönem verilerini al (id → {total, onay, red, bek, butce, lbl}) */
   function _getDonemData(did) {
-    var depts = did === 2 ? APP.seed.accDepts : (SA_DONEM_DEPTS[did] || []);
+    var depts = did === 2 ? APP.data.accDepts : (SA_DONEM_DEPTS[did] || []);
     var t = 0, o = 0, r = 0, bek = 0;
     for (var i = 0; i < depts.length; i++) {
       t   += depts[i].total;
@@ -7999,8 +7999,8 @@ function _raporDonem() {
     html += '<div class="sa-rep-sec-hd">Departman Bazlı Karşılaştırma</div>';
     html += '<table class="sa-don-tbl"><thead><tr><th>Dept</th>' + thCols + '<th>' + deltaLabel + '</th></tr></thead><tbody>';
 
-    for (var di = 0; di < APP.seed.accDepts.length; di++) {
-      var dept0 = APP.seed.accDepts[di];
+    for (var di = 0; di < APP.data.accDepts.length; di++) {
+      var dept0 = APP.data.accDepts[di];
       var colVals = colDids.map(function(ddid) {
         if (ddid === 2) return dept0.total;
         var srcArr = SA_DONEM_DEPTS[ddid] || [];
