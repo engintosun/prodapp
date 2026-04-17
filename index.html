@@ -5189,15 +5189,26 @@ function deptReddetSecili() {
   for (var k in APP.ui.sdSec) { if (APP.ui.sdSec[k]) ids[k] = true; }
   var keys = Object.keys(ids);
   if (!keys.length) { notif('Seçili kayıt yok', 'amber'); return; }
+  var redNedeni = (prompt(keys.length + ' harcama için ret nedeni girin:') || '').trim();
+  if (!redNedeni) { notif('Red nedeni zorunludur — iptal edildi', 'amber'); return; }
   var cnt = 0, top = 0;
   var rb = APP.data.donemButce.find(function(x){ return x.donem === APP.ui.aktifDon; });
+  if (!APP.data.deptGecmis[APP.ui.aktifDon]) APP.data.deptGecmis[APP.ui.aktifDon] = { onaylandi:[], reddedildi:[] };
+  var deptAdSoyad = APP.ui.curUser ? APP.ui.curUser.name : 'Dept';
   APP.data.deptBekleyen = APP.data.deptBekleyen.filter(function(f) {
-    if (ids[f.id]) {
-      cnt++; top += f.tutar;
-      if (rb) rb.reddedildi += f.tutar;
-      return false;
-    }
-    return true;
+    if (!ids[f.id]) return true;
+    cnt++; top += f.tutar;
+    if (rb) rb.reddedildi += f.tutar;
+    APP.data.deptGecmis[APP.ui.aktifDon].reddedildi.push({
+      id: f.id, uye: f.uye || '', ini: f.ini || '',
+      satici: f.satici || '', kat: f.kat || 'Diger',
+      tutar: f.tutar, tarih: f.tarih || _deptTarih(),
+      redNedeni: redNedeni
+    });
+    _pushNotif(f.fromKey || 's', 'rd', 'Harcama Reddedildi',
+      '₺' + f.tutar.toLocaleString('tr-TR') + ' ' + f.satici + ' harcamanız reddedildi. Neden: ' + redNedeni,
+      'Az önce · ' + deptAdSoyad + ' (Dept)');
+    return false;
   });
   APP.ui.sdSec = {};
   notif(cnt + ' harcama reddedildi · ₺' + top.toLocaleString('tr-TR'), 'red');
@@ -6002,10 +6013,22 @@ function deptReddet(id) {
   for (var i = 0; i < APP.data.deptBekleyen.length; i++) {
     if (APP.data.deptBekleyen[i].id === id) {
       var f = APP.data.deptBekleyen[i];
+      var redNedeni = (prompt('Red nedeni girin:') || '').trim();
+      if (!redNedeni) { notif('Red nedeni zorunludur — iptal edildi', 'amber'); return; }
       APP.data.deptBekleyen.splice(i, 1);
-      /* Reddedilen tutarı kaydet */
       var rb = APP.data.donemButce.find(function(x){ return x.donem === APP.ui.aktifDon; });
       if (rb) rb.reddedildi += f.tutar;
+      if (!APP.data.deptGecmis[APP.ui.aktifDon]) APP.data.deptGecmis[APP.ui.aktifDon] = { onaylandi:[], reddedildi:[] };
+      APP.data.deptGecmis[APP.ui.aktifDon].reddedildi.push({
+        id: f.id, uye: f.uye || '', ini: f.ini || '',
+        satici: f.satici || '', kat: f.kat || 'Diger',
+        tutar: f.tutar, tarih: f.tarih || _deptTarih(),
+        redNedeni: redNedeni
+      });
+      var fKey = f.fromKey || 's';
+      _pushNotif(fKey, 'rd', 'Harcama Reddedildi',
+        '₺' + f.tutar.toLocaleString('tr-TR') + ' ' + f.satici + ' harcamanız reddedildi. Neden: ' + redNedeni,
+        'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Dept') + ' (Dept)');
       updateNotifBadge();
       notif(f.satici + ' reddedildi', 'red');
       saveAppData();
