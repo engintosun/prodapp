@@ -2813,6 +2813,10 @@ body {
           <div class="profil-rol-sec-hd" style="margin-top:12px">Dönem Durumu</div>
           <div class="profil-stat-grid" id="p-acc-don-stats"></div>
         </div>
+        <div class="profil-sec-lbl" style="margin-top:12px">Veri Yönetimi</div>
+        <button class="btn btn-r btn-full" onclick="closeM('mprofil');openM('md-demo-reset')" style="justify-content:center">
+          Demo Verisine Döndür
+        </button>
       </div>
 
       <!-- Butonlar -->
@@ -2822,6 +2826,26 @@ body {
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
           Kaydet
         </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     MODAL: DEMO VERİSİ SIFIRLA
+════════════════════════════ -->
+<div class="mo" id="md-demo-reset">
+  <div class="ms">
+    <div class="mh"></div>
+    <div class="mhd">
+      <div class="mtitle">⚠ Demo Verisine Döndür</div>
+      <button class="mclose" onclick="closeM('md-demo-reset')">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="al-rd" style="margin-bottom:12px">Tüm veriler silinip demo verisine dönülecek. Bu işlem geri alınamaz.</div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn btn-sm" onclick="closeM('md-demo-reset')" style="flex:1;justify-content:center">İptal</button>
+        <button class="btn btn-r btn-sm" onclick="demoVeriOnay()" style="flex:1;justify-content:center">Evet, Sıfırla</button>
       </div>
     </div>
   </div>
@@ -3032,6 +3056,26 @@ APP.ui    = {
   isRec:            false,
   speechRecog:      null
 };
+
+/* ═══ LOCAL STORAGE — KALICILIK ═══ */
+function saveAppData() {
+  try {
+    localStorage.setItem('prodapp-data', JSON.stringify(APP.data));
+  } catch(e) { console.warn('Kaydetme başarısız:', e); }
+}
+
+function loadAppData() {
+  try {
+    var raw = localStorage.getItem('prodapp-data');
+    if (!raw) return false;
+    var parsed = JSON.parse(raw);
+    Object.keys(parsed).forEach(function(k) {
+      if (APP.data[k] !== undefined) APP.data[k] = parsed[k];
+    });
+    return true;
+  } catch(e) { console.warn('Yükleme başarısız:', e); return false; }
+}
+
 /* ═══ VERİ ═══ */
 APP.seed.users = {
   s: { pass:'1234', name:'Mehmet Kaya',   ini:'MK', role:'user', prjs:['ig','mr'],
@@ -4221,6 +4265,7 @@ function submitOCR() {
     renderRecent();
     notif('Harcama onaya gönderildi', 'green');
   }
+  saveAppData();
 }
 
 /* ═══ KİRALAMA WORKFLOW ═══ */
@@ -4471,8 +4516,15 @@ function avansRedOnay() {
     notif(item.uye + ' avansı reddedildi', 'red');
   }
 
+  saveAppData();
   _avRedPending = null;
   closeM('md-av-red');
+}
+
+/* Demo verisine dönüş */
+function demoVeriOnay() {
+  localStorage.removeItem('prodapp-data');
+  location.reload();
 }
 
 /* Red nedeni modalı — iptal */
@@ -4942,6 +4994,7 @@ function deptOnaylaSecili() {
   for (var ki = 0; ki < APP.seed.katLimit.length; ki++) _checkKatLimit(APP.seed.katLimit[ki].kat, newH2[APP.seed.katLimit[ki].kat] || 0);
   APP.ui.sdSec = {};
   notif(cnt + ' harcama onaylandı · ₺' + top.toLocaleString('tr-TR'), 'green');
+  saveAppData();
   renderDeptBek(); renderDeptEkip(); renderDeptOzet();
 }
 
@@ -4962,6 +5015,7 @@ function deptReddetSecili() {
   });
   APP.ui.sdSec = {};
   notif(cnt + ' harcama reddedildi · ₺' + top.toLocaleString('tr-TR'), 'red');
+  saveAppData();
   renderDeptBek(); renderDeptEkip(); renderDeptOzet();
 }
 
@@ -5172,6 +5226,7 @@ function sdAvansEkle() {
   renderDeptAvans();
   renderAccAvans(); /* muhasebe açıksa anında güncelle */
   notif('Avans talebi muhasebeye gönderildi', 'green');
+  saveAppData();
 }
 
 /* ═══ DEPT — KİRALAMA ═══ */
@@ -5297,6 +5352,7 @@ function deptKiraIade(id) {
   }
   renderDeptKira();
   notif('Kiralama iadesi işaretlendi', 'green');
+  saveAppData();
 }
 
 /* ═══ MUHASEBe — KİRALAMA ═══ */
@@ -5453,6 +5509,7 @@ function accKiraIade(id) {
   }
   renderAccKira();
   notif('İade alındı olarak işaretlendi', 'green');
+  saveAppData();
 }
 
 /* ═══ MUHASEBe — AVANS GEÇMİŞİ ═══ */
@@ -5745,6 +5802,7 @@ function deptOnayla(id) {
       _checkKatLimit(f.kat, newH[f.kat] || 0);
       updateNotifBadge();
       notif(f.satici + ' onaylandı', 'green');
+      saveAppData();
       renderDeptBek();
       renderDeptEkip();
       renderDeptOzet();
@@ -5763,6 +5821,7 @@ function deptReddet(id) {
       if (rb) rb.reddedildi += f.tutar;
       updateNotifBadge();
       notif(f.satici + ' reddedildi', 'red');
+      saveAppData();
       renderDeptBek();
       renderDeptEkip();
       renderDeptOzet();
@@ -5797,6 +5856,7 @@ function deptAvansOnayla(id) {
       updateNotifBadge();
       renderDeptAvans();
       notif(a.uye + ' avansı onaylandı → muhasebede bekliyor', 'green');
+      saveAppData();
       return;
     }
   }
@@ -6047,6 +6107,7 @@ function submitBelgesiz() {
     }
     notif('Belgesiz harcama bildirildi', 'amber');
   }
+  saveAppData();
 }
 
 /* ═══ AVANS ═══ */
@@ -6079,6 +6140,7 @@ function submitAvans() {
     'Az önce · ' + uye);
 
   notif('Avans talebi dept onayına gönderildi', 'green');
+  saveAppData();
   document.getElementById('av-tutar').value  = '';
   document.getElementById('av-gerekce').value = '';
 }
@@ -7000,6 +7062,9 @@ APP.data.accSuphe = [
   { id:4, dept:'Ses',    uye:'Aylin Korkmaz',ini:'AK', satici:'Hane Restoran',  kat:'Yiyecek',   tutar:980,  tarih:'07.04', sebep:'Kişi başı 326 TL — yüksek yemek harcaması',   durum:'inc' }
 ];
 
+/* Tüm demo verileri yüklendi — localStorage'daki kayıtlı veriyi uygula */
+loadAppData();
+
 /* Departman alıcıları */
 var ACC_ALICILAR_DEPT = [
   { id:'dept:yapim',  ini:'YP', name:'Yapım',          renk:'#E8962E', tip:'dept' },
@@ -7116,6 +7181,7 @@ function accButceKaydet() {
   renderSahaButce();   /* saha widget'ı güncelle */
   renderDeptOzet();    /* dept bütçe kartını güncelle */
   notif('Bütçe ve kategori limitleri güncellendi', 'green');
+  saveAppData();
 }
 
 function renderAccDash() {
@@ -8170,6 +8236,7 @@ function accOnayla(id) {
   } else {
     notif('Harcama onaylandı', 'green');
   }
+  saveAppData();
 }
 
 function accReddet(id) {
@@ -8192,6 +8259,7 @@ function accReddet(id) {
     APP.data.accBekleyen = APP.data.accBekleyen.filter(function(f){ return f.id !== id; });
     renderAccBek();
     notif('Harcama reddedildi', 'red');
+    saveAppData();
   }
 }
 
@@ -8201,6 +8269,7 @@ function accSupheIsle(id, action) {
   }
   renderAccSuphe();
   notif(action === 'ok' ? 'Kayıt temiz olarak işaretlendi' : 'Harcama reddedildi', action === 'ok' ? 'green' : 'red');
+  saveAppData();
 }
 
 function accPDF() {
