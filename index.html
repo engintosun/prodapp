@@ -2097,6 +2097,49 @@ body {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* ══════════════════════════════
+   SOHBET LİSTESİ (Mesajlaşma 2.0)
+══════════════════════════════ */
+.sohbet-sec-hd {
+  font-size: 11px; font-weight: 700; color: var(--tx3);
+  text-transform: uppercase; letter-spacing: .06em;
+  padding: 16px 0 8px;
+}
+.sohbet-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 0; border-bottom: 1px solid var(--bo);
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: opacity .12s;
+}
+.sohbet-item:active { opacity: .6; }
+.sohbet-av {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: var(--bg3); border: 1px solid var(--bo);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: var(--tx2);
+  flex-shrink: 0;
+}
+.sohbet-av-grup { background: rgba(59,130,246,.12); color: var(--bl); border-color: rgba(59,130,246,.2); }
+.sohbet-body { flex: 1; min-width: 0; }
+.sohbet-adi { font-size: 14px; font-weight: 600; color: var(--tx); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sohbet-onizleme { font-size: 12px; color: var(--tx3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sohbet-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
+.sohbet-zaman { font-size: 11px; color: var(--tx3); white-space: nowrap; }
+.sohbet-badge {
+  background: var(--rd); color: #fff;
+  font-size: 10px; font-weight: 700;
+  min-width: 18px; height: 18px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 5px;
+}
+.sohbet-bos { font-size: 13px; color: var(--tx3); text-align: center; padding: 24px 0; }
+.sohbet-ayrac {
+  border: none; border-top: 1px solid var(--bo);
+  margin: 16px 0 0;
+}
+/* Saha ekranı mesaj tab içeriği */
+#tab-mesaj { padding: 0 16px 32px; }
 </style>
 </head>
 <body>
@@ -2306,6 +2349,11 @@ body {
       </div>
     </div>
 
+    <!-- TAB: MESAJ -->
+    <div class="su-tab" id="tab-mesaj">
+      <div id="su-sohbet-liste"></div>
+    </div>
+
   </div><!-- /su-scroll -->
 
   <!-- Alt nav — bu sadece nav-wrap, scroll dışında -->
@@ -2341,6 +2389,10 @@ body {
       <div class="ni" id="ni-ara" onclick="openNavSrch()">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <div class="ni-dot"></div>
+      </div>
+      <div class="ni" id="ni-mesaj" onclick="suNav('mesaj', this)" style="position:relative">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <div class="ni-dot" id="ni-mesaj-dot"></div>
       </div>
     </div>
   </div>
@@ -2382,12 +2434,14 @@ body {
       <button class="sd-tb"     id="sdtb-avans" onclick="sdTab('avans', this)">Avanslar <span class="sd-tb-bj" id="sdtb-av-cnt">2</span></button>
       <button class="sd-tb"     id="sdtb-kira"  onclick="sdTab('kira',  this)">Kiralama <span class="sd-tb-bj" id="sdtb-kira-cnt">0</span></button>
       <button class="sd-tb"     id="sdtb-gecmis" onclick="sdTab('gecmis', this)">Geçmiş</button>
+      <button class="sd-tb"     id="sdtb-mesaj"  onclick="sdTab('mesaj',  this)">Mesajlar</button>
     </div>
     <div id="sd-pnl-bek"></div>
     <div id="sd-pnl-ekip"   style="display:none"></div>
     <div id="sd-pnl-avans"  style="display:none"></div>
     <div id="sd-pnl-kira"   style="display:none"></div>
     <div id="sd-pnl-gecmis" style="display:none"></div>
+    <div id="sd-pnl-mesaj"  style="display:none"></div>
   </div>
   <!-- Alt harcama ekleme barı -->
   <div class="sd-bot">
@@ -3880,6 +3934,9 @@ function suNav(id, el) {
   } else if (id === 'donem') {
     document.getElementById('tab-donem').classList.add('on');
     renderDonem(APP.ui.aktifDon);
+  } else if (id === 'mesaj') {
+    document.getElementById('tab-mesaj').classList.add('on');
+    renderSuMesaj();
   }
 }
 
@@ -5643,7 +5700,7 @@ function accAvansOpenKisi(name) {
 }
 
 function sdTab(t, el) {
-  var tabs = ['bek', 'ekip', 'avans', 'kira', 'gecmis'];
+  var tabs = ['bek', 'ekip', 'avans', 'kira', 'gecmis', 'mesaj'];
   for (var i = 0; i < tabs.length; i++) {
     var btn = document.getElementById('sdtb-' + tabs[i]);
     var pnl = document.getElementById('sd-pnl-' + tabs[i]);
@@ -5657,6 +5714,7 @@ function sdTab(t, el) {
   if (t === 'avans')  renderDeptAvans();
   if (t === 'kira')   renderDeptKira();
   if (t === 'gecmis') renderDeptGecmis();
+  if (t === 'mesaj')  renderDeptMesaj();
 }
 
 /* ── Dept Geçmiş Dönemler Sekmesi ── */
@@ -7062,6 +7120,35 @@ APP.data.accSuphe = [
   { id:4, dept:'Ses',    uye:'Aylin Korkmaz',ini:'AK', satici:'Hane Restoran',  kat:'Yiyecek',   tutar:980,  tarih:'07.04', sebep:'Kişi başı 326 TL — yüksek yemek harcaması',   durum:'inc' }
 ];
 
+/* ── Demo sohbetler ── */
+APP.data.sohbetler = [
+  {
+    id: 'c1', tip: 'bireysel', katilimcilar: ['s', 'd'],
+    mesajlar: [
+      { id: 'm1', gonderen: 'd', icerik: 'Merhaba Mehmet, bu haftaki yakıt fişini sisteme yüklediniz mi?', tarih: 1713416400000, okunanlar: ['d', 's'] },
+      { id: 'm2', gonderen: 's', icerik: 'Evet, GIB\'den onaylatıp yükledim hocam.', tarih: 1713420000000, okunanlar: ['d', 's'] },
+      { id: 'm3', gonderen: 'd', icerik: 'Petrol Ofisi fişinde km başı limit aşımı var, kontrol eder misiniz?', tarih: 1713423600000, okunanlar: ['d'] },
+      { id: 'm4', gonderen: 's', icerik: '285 km gidiş-dönüş, km başı 38 TL hesapladım. Düzeltirim.', tarih: 1713427200000, okunanlar: [] }
+    ]
+  },
+  {
+    id: 'c2', tip: 'bireysel', katilimcilar: ['m', 'd'],
+    mesajlar: [
+      { id: 'm5', gonderen: 'm', icerik: 'Zeynep Hanım, Yapım departmanı Q2 bütçesi onay bekliyor.', tarih: 1713330000000, okunanlar: ['m', 'd'] },
+      { id: 'm6', gonderen: 'd', icerik: 'Revize ettim, yeni talep 55.000 TL. Detayları ekledim.', tarih: 1713336000000, okunanlar: ['m', 'd'] },
+      { id: 'm7', gonderen: 'm', icerik: 'İnceleyip onaylayacağım, teşekkürler.', tarih: 1713340000000, okunanlar: ['m'] }
+    ]
+  },
+  {
+    id: 'c3', tip: 'grup', katilimcilar: ['m', 'd', 's'],
+    grupAdi: 'Yapım Ekibi Duyuru', grupDept: 'yapim',
+    mesajlar: [
+      { id: 'm8', gonderen: 'm', icerik: 'Dönem kapanış belgeleri 19 Nisan\'a kadar sisteme yüklenmelidir.', tarih: 1713243600000, okunanlar: ['m', 'd'] },
+      { id: 'm9', gonderen: 'd', icerik: 'Ekip bilgilendirildi, teşekkürler.', tarih: 1713247200000, okunanlar: ['m', 'd'] }
+    ]
+  }
+];
+
 /* Tüm demo verileri yüklendi — localStorage'daki kayıtlı veriyi uygula */
 loadAppData();
 
@@ -8043,15 +8130,157 @@ function _raporDonem() {
   return html;
 }
 
+/* ═══ SOHBET SİSTEMİ (Mesajlaşma 2.0) ═══ */
+
+function _fmtSohbetZaman(ts) {
+  if (!ts) return '';
+  var d = new Date(ts);
+  var now = new Date();
+  var todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  var yestStart  = todayStart - 86400000;
+  if (ts >= todayStart) {
+    var hh = d.getHours(), mm = d.getMinutes();
+    return (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm;
+  }
+  if (ts >= yestStart) return 'dün';
+  return (d.getDate() < 10 ? '0' : '') + d.getDate() + '.' + (d.getMonth() + 1 < 10 ? '0' : '') + (d.getMonth() + 1);
+}
+
+function _getSohbetAdi(sohbet, userKey) {
+  if (sohbet.tip === 'grup') return sohbet.grupAdi || 'Grup';
+  var diger = '';
+  for (var i = 0; i < sohbet.katilimcilar.length; i++) {
+    if (sohbet.katilimcilar[i] !== userKey) { diger = sohbet.katilimcilar[i]; break; }
+  }
+  var u = APP.seed.users[diger];
+  return u ? u.name : diger;
+}
+
+function _getSohbetOkunmamis(sohbet, userKey) {
+  var cnt = 0;
+  var msgs = sohbet.mesajlar || [];
+  for (var i = 0; i < msgs.length; i++) {
+    var m = msgs[i];
+    if (m.gonderen === userKey) continue;
+    if (m.okunanlar.indexOf(userKey) === -1) cnt++;
+  }
+  return cnt;
+}
+
+function _getSonMesaj(sohbet) {
+  var msgs = sohbet.mesajlar || [];
+  return msgs.length ? msgs[msgs.length - 1] : null;
+}
+
+function _sohbetFiltre(userKey) {
+  var list = APP.data.sohbetler || [];
+  if (userKey === 'm') return list;
+  /* dept: kendi dept sohbetleri + muhasebeyle olanlar */
+  if (userKey === 'd') {
+    return list.filter(function(s) {
+      return s.katilimcilar.indexOf('d') !== -1;
+    });
+  }
+  /* saha: sadece dept sorumlusuyla bireysel sohbet */
+  return list.filter(function(s) {
+    return s.tip === 'bireysel' &&
+           s.katilimcilar.indexOf('s') !== -1 &&
+           s.katilimcilar.indexOf('d') !== -1;
+  });
+}
+
+function _sohbetAvHtml(sohbet, userKey) {
+  if (sohbet.tip === 'grup') {
+    return '<div class="sohbet-av sohbet-av-grup">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' +
+    '</div>';
+  }
+  var adi = _getSohbetAdi(sohbet, userKey);
+  var ini = adi.split(' ').map(function(w) { return w[0]; }).join('').toUpperCase().slice(0, 2);
+  return '<div class="sohbet-av">' + ini + '</div>';
+}
+
+function renderSohbetListesi(containerEl, userKey) {
+  if (!containerEl) return;
+  var list = _sohbetFiltre(userKey);
+  if (!list.length) {
+    containerEl.innerHTML = '<div class="sohbet-bos">Henüz sohbet yok</div>';
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < list.length; i++) {
+    var s      = list[i];
+    var son    = _getSonMesaj(s);
+    var adi    = _getSohbetAdi(s, userKey);
+    var okunmamis = _getSohbetOkunmamis(s, userKey);
+    var onizleme  = son ? (son.icerik.length > 40 ? son.icerik.slice(0, 40) + '…' : son.icerik) : 'Mesaj yok';
+    var zaman     = son ? _fmtSohbetZaman(son.tarih) : '';
+    html += '<div class="sohbet-item" onclick="openSohbet(\'' + s.id + '\')">' +
+      _sohbetAvHtml(s, userKey) +
+      '<div class="sohbet-body">' +
+        '<div class="sohbet-adi">' + adi + '</div>' +
+        '<div class="sohbet-onizleme">' + onizleme + '</div>' +
+      '</div>' +
+      '<div class="sohbet-meta">' +
+        '<div class="sohbet-zaman">' + zaman + '</div>' +
+        (okunmamis ? '<div class="sohbet-badge">' + okunmamis + '</div>' : '') +
+      '</div>' +
+    '</div>';
+  }
+  containerEl.innerHTML = html;
+}
+
+function openSohbet(id) {
+  console.log('Sohbet açıldı:', id);
+}
+
+/* ── Sohbet listeleri — ekrana özel render ── */
+
+function renderDeptMesaj() {
+  var el = document.getElementById('sd-pnl-mesaj');
+  if (!el) return;
+  var userKey = APP.ui.curUserKey || 'd';
+  el.innerHTML = '<div class="sohbet-sec-hd">Sohbetler</div><div id="sd-sohbet-liste"></div>';
+  renderSohbetListesi(document.getElementById('sd-sohbet-liste'), userKey);
+}
+
+function renderSuMesaj() {
+  var el = document.getElementById('su-sohbet-liste');
+  if (!el) return;
+  var userKey = APP.ui.curUserKey || 's';
+  var list = _sohbetFiltre(userKey);
+  el.innerHTML = '<div class="sohbet-sec-hd">Mesajlar</div>';
+  var inner = document.createElement('div');
+  el.appendChild(inner);
+  renderSohbetListesi(inner, userKey);
+  /* okunmamış varsa nav dotunu renklendir */
+  var toplamOkunmamis = 0;
+  for (var i = 0; i < list.length; i++) toplamOkunmamis += _getSohbetOkunmamis(list[i], userKey);
+  var dot = document.getElementById('ni-mesaj-dot');
+  if (dot) dot.style.background = toplamOkunmamis ? 'var(--rd)' : 'transparent';
+}
+
 /* ── Muhasebe Mesaj — İki adımlı alıcı seçimi ── */
 
 function renderAccMesaj() {
   var el = document.getElementById('sa-pnl-mesaj');
   if (!el) return;
+
+  /* YENİ: Sohbetler + eski mesaj gönder alanı */
+  el.innerHTML =
+    '<div class="sohbet-sec-hd">YENİ: Sohbetler</div>' +
+    '<div id="sa-sohbet-liste"></div>' +
+    '<hr class="sohbet-ayrac">' +
+    '<div class="sohbet-sec-hd" style="padding-top:14px">Mesaj Gönder</div>' +
+    '<div id="sa-mesaj-eski"></div>';
+
+  renderSohbetListesi(document.getElementById('sa-sohbet-liste'), 'm');
+
+  var eskiEl = document.getElementById('sa-mesaj-eski');
   if (!saAliciDept) {
-    _renderAccMesajDepts(el);
+    _renderAccMesajDepts(eskiEl);
   } else {
-    _renderAccMesajMembers(el);
+    _renderAccMesajMembers(eskiEl);
   }
 }
 
