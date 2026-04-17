@@ -7270,8 +7270,8 @@ function renderAccDash() {
       var bPctClr = bPct >= 100 ? 'var(--rd2)' : bPct >= 80 ? 'var(--am2)' : 'var(--tx3)';
       html += '<div class="sa-dc-butce" onclick="event.stopPropagation()">' +
         '<div class="sa-dc-butce-row">' +
-          '<span class="sa-dc-butce-lbl">Limit: ₺' + d.butce.toLocaleString('tr-TR') + '</span>' +
-          '<span class="sa-dc-butce-pct" style="color:' + bPctClr + '">%' + bPct + ' kullanıldı</span>' +
+          '<span class="sa-dc-butce-lbl">Bütçe</span>' +
+          '<span class="sa-dc-butce-pct" style="color:' + bPctClr + '">%' + bPct + ' · ₺' + d.total.toLocaleString('tr-TR') + ' / ₺' + d.butce.toLocaleString('tr-TR') + '</span>' +
         '</div>' +
         '<div class="sa-dc-butce-track"><div class="sa-dc-butce-fill" style="width:' + bPct + '%;background:' + bClr + '"></div></div>' +
       '</div>';
