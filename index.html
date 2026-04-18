@@ -7838,6 +7838,88 @@ function saRaporToggleDonem(did) {
   _renderAccRaporIc();
 }
 
+function _computeRaporPersonel() {
+  var _katRenkHex = {
+    Yakit:'#F59E0B', Yiyecek:'#22C55E', Ekipman:'#3B82F6',
+    Sanat:'#E8962E', Ulasim:'#60A5FA', Diger:'#64748B',
+    Konaklama:'#8B5CF6', Kiralama:'#F97316', Avans:'#A855F7'
+  };
+  var _katLblMap = {
+    Yakit:'Yakıt', Yiyecek:'Yiyecek', Ekipman:'Ekipman',
+    Sanat:'Sanat', Ulasim:'Ulaşım', Diger:'Diğer',
+    Konaklama:'Konaklama', Kiralama:'Kiralama', Avans:'Avans'
+  };
+  /* Dönem id → etiket */
+  var donLbl = {};
+  for (var _di = 0; _di < APP.seed.donemler.length; _di++) {
+    donLbl[APP.seed.donemler[_di].id] = APP.seed.donemler[_di].lbl;
+  }
+  /* Mevcut cache'den kimlik bilgisi (ini/dept/deptId/rol) — seed önce okunur */
+  var seedMap = {};
+  for (var _si = 0; _si < APP.cache.accRaporPersonel.length; _si++) {
+    var _sp = APP.cache.accRaporPersonel[_si];
+    seedMap[_sp.name] = { ini: _sp.ini, dept: _sp.dept, deptId: _sp.deptId, rol: _sp.rol };
+  }
+  /* Tüm benzersiz personel adları */
+  var nameSet = {};
+  for (var _fxi = 0; _fxi < APP.data.fisler.length; _fxi++) {
+    var _fpn = APP.data.fisler[_fxi].personel;
+    if (_fpn) nameSet[_fpn] = true;
+  }
+  for (var _exi = 0; _exi < APP.seed.deptEkip.length; _exi++) {
+    nameSet[APP.seed.deptEkip[_exi].name] = true;
+  }
+  var result = [];
+  for (var _name in nameSet) {
+    var _sd = seedMap[_name] || null;
+    var _parts = _name.split(' ');
+    var _ini    = _sd ? _sd.ini    : ((_parts[0] ? _parts[0][0] : '') + (_parts[1] ? _parts[1][0] : '')).toUpperCase();
+    var _dept   = _sd ? _sd.dept   : 'Yapım';
+    var _deptId = _sd ? _sd.deptId : 'yapim';
+    var _rol    = _sd ? _sd.rol    : '';
+    var _onay = 0, _bek = 0, _red = 0;
+    var _donMap = {};
+    var _katMap = {};
+    for (var _fi = 0; _fi < APP.data.fisler.length; _fi++) {
+      var _f = APP.data.fisler[_fi];
+      if (_f.personel !== _name) continue;
+      var _tut = _f.tutar || 0;
+      if      (_f.durum === 'onaylandi')  { _onay += _tut; }
+      else if (_f.durum === 'reddedildi') { _red  += _tut; }
+      else                                { _bek  += _tut; }
+      var _did = _f.donem;
+      if (!_donMap[_did]) _donMap[_did] = { total:0, onay:0, bek:0 };
+      _donMap[_did].total += _tut;
+      if      (_f.durum === 'onaylandi')  _donMap[_did].onay += _tut;
+      else if (_f.durum !== 'reddedildi') _donMap[_did].bek  += _tut;
+      var _kn = _f.kat || 'Diger';
+      _katMap[_kn] = (_katMap[_kn] || 0) + _tut;
+    }
+    var _donemler = [];
+    for (var _did2 in _donMap) {
+      _donemler.push({ _id: +_did2, lbl: donLbl[+_did2] || ('Dönem #' + _did2), total: _donMap[_did2].total, onay: _donMap[_did2].onay, bek: _donMap[_did2].bek });
+    }
+    _donemler.sort(function(a, b) { return b._id - a._id; });
+    for (var _dci = 0; _dci < _donemler.length; _dci++) { delete _donemler[_dci]._id; }
+    var _katlar = [];
+    for (var _kn2 in _katMap) {
+      _katlar.push({ name: _katLblMap[_kn2] || _kn2, tutar: _katMap[_kn2], renk: _katRenkHex[_kn2] || '#64748B' });
+    }
+    _katlar.sort(function(a, b) { return b.tutar - a.tutar; });
+    var _avans = 0;
+    for (var _avi = 0; _avi < APP.data.accAvansGecmis.length; _avi++) {
+      var _av = APP.data.accAvansGecmis[_avi];
+      if (_av.uye === _name && _av.durum === 'ödendi') _avans += _av.tutar;
+    }
+    result.push({
+      name: _name, ini: _ini, dept: _dept, deptId: _deptId, rol: _rol,
+      total: _onay + _bek + _red, onay: _onay, bek: _bek, avans: _avans,
+      donemler: _donemler, katlar: _katlar
+    });
+  }
+  return result;
+}
+
 function renderAccRapor(tip) {
   APP.ui.saRaporTip    = tip;
   saRaporDeptId  = '';
@@ -7846,6 +7928,7 @@ function renderAccRapor(tip) {
 }
 
 function _renderAccRaporIc() {
+  APP.cache.accRaporPersonel = _computeRaporPersonel();
   var el = document.getElementById('sa-pnl-rapor');
   if (!el) return;
 
