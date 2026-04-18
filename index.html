@@ -5198,6 +5198,18 @@ function deptOnaylaSecili() {
       f.log = f.log || [];
       f.log.push(_mkLog('onaylandi', ''));
       APP.data.deptGecmis[2].onaylandi.push({ id:f.id, uye:f.uye||'', ini:f.ini||'', satici:f.satici||'', kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptTarih(), log:f.log });
+      /* Muhasebe kuyruğuna aktar */
+      f.log.push(_mkLog('dept-onayladi', ''));
+      APP.data.accBekleyen.unshift({
+        id: Date.now() + Math.floor(Math.random()*1000),
+        dept: _curDeptName(),
+        uye: f.uye, ini: f.ini,
+        satici: f.satici, kat: f.kat,
+        tutar: f.tutar, tarih: f.tarih,
+        belgesiz: !!f.belgesiz, uyari: f.uyari || '',
+        aciklama: f.aciklama || '', fotos: f.fotos || [],
+        fromKey: f.fromKey || 's', log: f.log
+      });
       return false;
     }
     return true;
@@ -5209,10 +5221,15 @@ function deptOnaylaSecili() {
   }
   var newH2 = _katHarcanan();
   for (var ki = 0; ki < APP.seed.katLimit.length; ki++) _checkKatLimit(APP.seed.katLimit[ki].kat, newH2[APP.seed.katLimit[ki].kat] || 0);
+  _pushNotif('m', 'bl', 'Dept Onayı — ' + cnt + ' Harcama',
+    _curDeptName() + ' departmanı ' + cnt + ' harcamayı (₺' + top.toLocaleString('tr-TR') + ') onayladı. Muhasebe onayına hazır.',
+    'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Dept') + ' (Dept)');
   APP.ui.sdSec = {};
   notif(cnt + ' harcama onaylandı · ₺' + top.toLocaleString('tr-TR'), 'green');
   saveAppData();
   renderDeptBek(); renderDeptEkip(); renderDeptOzet();
+  renderAccBek();
+  updateNotifBadge();
 }
 
 function deptReddetSecili() {
@@ -6031,6 +6048,21 @@ function deptOnayla(id) {
       f.log.push(_mkLog('onaylandi', ''));
       if (!APP.data.deptGecmis[2]) APP.data.deptGecmis[2] = { onaylandi:[], reddedildi:[] };
       APP.data.deptGecmis[2].onaylandi.push({ id:f.id, uye:f.uye||'', ini:f.ini||'', satici:f.satici||'', kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptTarih(), log:f.log });
+      /* Muhasebe kuyruğuna aktar */
+      f.log.push(_mkLog('dept-onayladi', ''));
+      APP.data.accBekleyen.unshift({
+        id: Date.now() + Math.floor(Math.random()*1000),
+        dept: _curDeptName(),
+        uye: f.uye, ini: f.ini,
+        satici: f.satici, kat: f.kat,
+        tutar: f.tutar, tarih: f.tarih,
+        belgesiz: !!f.belgesiz, uyari: f.uyari || '',
+        aciklama: f.aciklama || '', fotos: f.fotos || [],
+        fromKey: f.fromKey || 's', log: f.log
+      });
+      _pushNotif('m', 'bl', 'Dept Onayı — Yeni Harcama',
+        f.satici + ' (₺' + f.tutar.toLocaleString('tr-TR') + ') dept onayından geçti.',
+        'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Dept') + ' (Dept)');
       var newH = _katHarcanan();
       _checkKatLimit(f.kat, newH[f.kat] || 0);
       updateNotifBadge();
@@ -6039,6 +6071,7 @@ function deptOnayla(id) {
       renderDeptBek();
       renderDeptEkip();
       renderDeptOzet();
+      renderAccBek();
       return;
     }
   }
