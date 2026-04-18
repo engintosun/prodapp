@@ -8897,6 +8897,22 @@ function accOnayla(id) {
     updateNotifBadge();
     notif(item.uye + ' avansı onaylandı', 'green');
   } else {
+    /* Harcama onayı — fisler dizisinde durumu güncelle */
+    if (item) {
+      for (var j = 0; j < APP.data.fisler.length; j++) {
+        var fj = APP.data.fisler[j];
+        if (fj.personel === item.uye && fj.satici === item.satici &&
+            fj.tutar === item.tutar && fj.tarih === item.tarih) {
+          fj.durum = 'onaylandi';
+          break;
+        }
+      }
+      _pushNotif(item.fromKey || 's', 'gr', 'Harcama Onaylandı ✅',
+        item.satici + ' — ₺' + item.tutar.toLocaleString('tr-TR') + ' muhasebe onayından geçti.',
+        'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe') + ' (Muhasebe)');
+      updateNotifBadge();
+      renderRecent();
+    }
     notif('Harcama onaylandı', 'green');
   }
   saveAppData();
@@ -8925,6 +8941,21 @@ function accReddet(id) {
     item.log.push(_mkLog('reddedildi', redNedeniAcc));
     APP.data.accBekleyen = APP.data.accBekleyen.filter(function(f){ return f.id !== id; });
     renderAccBek();
+    /* fisler dizisinde durumu güncelle */
+    for (var ri = 0; ri < APP.data.fisler.length; ri++) {
+      var rf = APP.data.fisler[ri];
+      if (rf.personel === item.uye && rf.satici === item.satici &&
+          rf.tutar === item.tutar && rf.tarih === item.tarih) {
+        rf.durum = 'reddedildi';
+        rf.uyari = redNedeniAcc;
+        break;
+      }
+    }
+    _pushNotif(item.fromKey || 's', 'rd', 'Harcama Reddedildi (Muhasebe)',
+      item.satici + ' — ₺' + item.tutar.toLocaleString('tr-TR') + ' muhasebe tarafından reddedildi. Neden: ' + redNedeniAcc,
+      'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe') + ' (Muhasebe)');
+    updateNotifBadge();
+    renderRecent();
     notif('Harcama reddedildi', 'red');
     saveAppData();
   }
