@@ -1289,6 +1289,16 @@ body {
 .fdet-foto-grid { display: flex; gap: 8px; flex-wrap: wrap; }
 .fdet-foto-item { width: 72px; height: 72px; border-radius: var(--rs); overflow: hidden; border: 1px solid var(--bo); cursor: pointer; flex-shrink: 0; }
 .fdet-foto-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.fdet-log-sec { margin-top: 14px; border-top: 1px solid var(--bo); padding-top: 12px; }
+.fdet-log-lbl { font-size: 10px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.fdet-log-item { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--bo); }
+.fdet-log-item:last-child { border-bottom: none; }
+.fdet-log-ico { flex-shrink: 0; margin-top: 1px; }
+.fdet-log-txt { flex: 1; }
+.fdet-log-kisi { font-size: 12px; font-weight: 600; color: var(--tx); }
+.fdet-log-time { font-size: 11px; color: var(--tx3); margin-top: 1px; }
+.fdet-log-detay { font-size: 11px; color: var(--tx3); margin-top: 1px; font-style: italic; }
+.fdet-log-bos { font-size: 12px; color: var(--tx3); padding: 6px 0; }
 
 /* Belgesiz modal — fotoğraf yükleme */
 .b-foto-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
@@ -3259,24 +3269,24 @@ APP.seed.donemler = [
   { id:1, n:'D1', lbl:'Dönem #1', tarih:'20.03–05.04', durum:'kapali', avans:9460,  harcama:9460,  islem:8 }
 ];
 APP.data.fisler = [
-  { id:1, tarih:'03.04.2026', personel:'Mehmet K.', satici:'Petrol Ofisi',   kat:'Yakit',   tutar:1000, durum:'bekleyen',   donem:2, uyari:null,                    thumb:null },
-  { id:2, tarih:'24.03.2026', personel:'Mehmet K.', satici:'Tavuk Dünyası',  kat:'Yiyecek', tutar:780,  durum:'bekleyen',   donem:2, uyari:'Ekip 15, 10 porsiyon', thumb:null },
-  { id:7, tarih:'03.04.2026', personel:'Mehmet K.', satici:'Petrol Ofisi',   kat:'Yakit',   tutar:1000, durum:'reddedildi', donem:2, uyari:'Mükerrer fiş',          thumb:null, duplikat:true },
-  { id:8, tarih:'10.04.2026', personel:'Mehmet K.', satici:'Kostüm Deposu', kat:'Sanat',   tutar:320,  durum:'bekleyen',   donem:2, uyari:null, thumb:null, belgesiz:true, aciklama:'Ekstra kostüm aksesuarı — nakit ödeme, fiş verilmedi' },
+  { id:1, tarih:'03.04.2026', personel:'Mehmet Kaya', satici:'Petrol Ofisi',   kat:'Yakit',   tutar:1000, durum:'bekleyen',   donem:2, uyari:null,                    thumb:null },
+  { id:2, tarih:'24.03.2026', personel:'Mehmet Kaya', satici:'Tavuk Dünyası',  kat:'Yiyecek', tutar:780,  durum:'bekleyen',   donem:2, uyari:'Ekip 15, 10 porsiyon', thumb:null },
+  { id:7, tarih:'03.04.2026', personel:'Mehmet Kaya', satici:'Petrol Ofisi',   kat:'Yakit',   tutar:1000, durum:'reddedildi', donem:2, uyari:'Mükerrer fiş',          thumb:null, duplikat:true },
+  { id:8, tarih:'10.04.2026', personel:'Mehmet Kaya', satici:'Kostüm Deposu', kat:'Sanat',   tutar:320,  durum:'bekleyen',   donem:2, uyari:null, thumb:null, belgesiz:true, aciklama:'Ekstra kostüm aksesuarı — nakit ödeme, fiş verilmedi' },
   /* ── Dönem #1 fişleri (kapali) ── */
-  { id:11, tarih:'20.03.2026', personel:'Mehmet K.', satici:'Petrol Ofisi A.Ş.',       kat:'Yakit',   tutar:2400, durum:'onaylandi', donem:1, uyari:null, thumb:null },
-  { id:12, tarih:'22.03.2026', personel:'Mehmet K.', satici:'Çiçek Restaurant',        kat:'Yiyecek', tutar:1850, durum:'onaylandi', donem:1, uyari:null, thumb:null },
-  { id:13, tarih:'25.03.2026', personel:'Mehmet K.', satici:'Megapol Ekipman Kiralık', kat:'Ekipman', tutar:3200, durum:'onaylandi', donem:1, uyari:null, thumb:null },
-  { id:14, tarih:'28.03.2026', personel:'Mehmet K.', satici:'Taksi / İETT',            kat:'Ulasim',  tutar:680,  durum:'onaylandi', donem:1, uyari:null, thumb:null },
-  { id:15, tarih:'01.04.2026', personel:'Mehmet K.', satici:'Set Malzeme Market',      kat:'Diger',   tutar:1330, durum:'onaylandi', donem:1, uyari:null, thumb:null },
-  { id:16, tarih:'24.03.2026', personel:'Mehmet K.', satici:'Şehir Lokantası',         kat:'Yiyecek', tutar:480,  durum:'reddedildi', donem:1, uyari:'Ekip dışı 3 kişi dahil edilmiş', thumb:null },
-  { id:17, tarih:'29.03.2026', personel:'Mehmet K.', satici:'Kırtasiye Merkez',        kat:'Diger',   tutar:150,  durum:'reddedildi', donem:1, uyari:'Fiş okunamıyor — yeniden yükle', thumb:null },
+  { id:11, tarih:'20.03.2026', personel:'Mehmet Kaya', satici:'Petrol Ofisi A.Ş.',       kat:'Yakit',   tutar:2400, durum:'onaylandi', donem:1, uyari:null, thumb:null },
+  { id:12, tarih:'22.03.2026', personel:'Mehmet Kaya', satici:'Çiçek Restaurant',        kat:'Yiyecek', tutar:1850, durum:'onaylandi', donem:1, uyari:null, thumb:null },
+  { id:13, tarih:'25.03.2026', personel:'Mehmet Kaya', satici:'Megapol Ekipman Kiralık', kat:'Ekipman', tutar:3200, durum:'onaylandi', donem:1, uyari:null, thumb:null },
+  { id:14, tarih:'28.03.2026', personel:'Mehmet Kaya', satici:'Taksi / İETT',            kat:'Ulasim',  tutar:680,  durum:'onaylandi', donem:1, uyari:null, thumb:null },
+  { id:15, tarih:'01.04.2026', personel:'Mehmet Kaya', satici:'Set Malzeme Market',      kat:'Diger',   tutar:1330, durum:'onaylandi', donem:1, uyari:null, thumb:null },
+  { id:16, tarih:'24.03.2026', personel:'Mehmet Kaya', satici:'Şehir Lokantası',         kat:'Yiyecek', tutar:480,  durum:'reddedildi', donem:1, uyari:'Ekip dışı 3 kişi dahil edilmiş', thumb:null },
+  { id:17, tarih:'29.03.2026', personel:'Mehmet Kaya', satici:'Kırtasiye Merkez',        kat:'Diger',   tutar:150,  durum:'reddedildi', donem:1, uyari:'Fiş okunamıyor — yeniden yükle', thumb:null },
   /* ── Kiralama demo verileri ── */
-  { id:20, tarih:'01.04.2026', personel:'Mehmet K.', satici:'Megapol Araç Kiralama',    kat:'Kiralama', tutar:3150, durum:'onaylandi', donem:2, uyari:null, thumb:null,
+  { id:20, tarih:'01.04.2026', personel:'Mehmet Kaya', satici:'Megapol Araç Kiralama',    kat:'Kiralama', tutar:3150, durum:'onaylandi', donem:2, uyari:null, thumb:null,
     kiraMeta:{ bas:'2026-04-01', bit:'2026-04-05', gunluk:450 } },
-  { id:21, tarih:'10.04.2026', personel:'Mehmet K.', satici:'Sigma Kamera Ekipmanları', kat:'Kiralama', tutar:4800, durum:'bekleyen', donem:2, uyari:null, thumb:null,
+  { id:21, tarih:'10.04.2026', personel:'Mehmet Kaya', satici:'Sigma Kamera Ekipmanları', kat:'Kiralama', tutar:4800, durum:'bekleyen', donem:2, uyari:null, thumb:null,
     kiraMeta:{ bas:'2026-04-10', bit:'2026-04-16', gunluk:800 } },
-  { id:22, tarih:'12.04.2026', personel:'Mehmet K.', satici:'ProAV Ses Ekipmanı',       kat:'Kiralama', tutar:2450, durum:'bekleyen', donem:2, uyari:null, thumb:null,
+  { id:22, tarih:'12.04.2026', personel:'Mehmet Kaya', satici:'ProAV Ses Ekipmanı',       kat:'Kiralama', tutar:2450, durum:'bekleyen', donem:2, uyari:null, thumb:null,
     kiraMeta:{ bas:'2026-04-12', bit:'2026-04-25', gunluk:350 } }
 ];
 var FIS_DEMO = [
@@ -4127,7 +4137,7 @@ function srchGoTo(id) {
   renderDonem(f.donem);
   /* fis-list'te ilgili satırı bul ve highlight et */
   setTimeout(function() {
-    var myFis = APP.data.fisler.filter(function(x) { return x.donem === f.donem && x.personel === 'Mehmet K.'; });
+    var myFis = APP.data.fisler.filter(function(x) { return x.donem === f.donem && x.personel === 'Mehmet Kaya'; });
     var rowIdx = -1;
     for (var i = 0; i < myFis.length; i++) {
       if (myFis[i].id === id) { rowIdx = i; break; }
@@ -4246,7 +4256,7 @@ function renderSahaKatLimits() {
 function renderRecent() {
   renderSahaButce();
   renderSahaKatLimits();
-  var mine = APP.data.fisler.filter(function(d) { return d.personel === 'Mehmet K.' && d.donem === APP.ui.aktifDon; });
+  var mine = APP.data.fisler.filter(function(d) { return d.personel === 'Mehmet Kaya' && d.donem === APP.ui.aktifDon; });
   var el = document.getElementById('recent-list');
   if (!el) return;
   el.innerHTML = mine.map(function(d) {
@@ -4418,8 +4428,9 @@ function submitOCR() {
     var tut2   = parseFloat((document.getElementById('f-tutar').value || '0').replace(',', '.')) || 0;
     var today2 = new Date();
     var tarih2 = _pad(today2.getDate()) + '.' + _pad(today2.getMonth()+1) + '.' + today2.getFullYear();
-    var entry  = { id: Date.now(), tarih: tarih2, personel: 'Mehmet K.', satici: sat2,
-                   kat: kat2, tutar: tut2, durum: 'bekleyen', donem: APP.ui.aktifDon, uyari: null, thumb: null };
+    var entry  = { id: Date.now(), tarih: tarih2, personel: APP.ui.curUser ? APP.ui.curUser.name : 'Bilinmeyen', satici: sat2,
+                   kat: kat2, tutar: tut2, durum: 'bekleyen', donem: APP.ui.aktifDon, uyari: null, thumb: null,
+                   log: [_mkLog('olusturuldu', 'Harcama sisteme girildi')] };
     if (kat2 === 'Kiralama') {
       entry.kiraMeta = {
         bas:    (document.getElementById('ki-bas').value || ''),
@@ -4440,6 +4451,23 @@ function _today() {
   return new Date(d.getFullYear() + '-' + _pad(d.getMonth()+1) + '-' + _pad(d.getDate()) + 'T00:00:00');
 }
 function _pad(n) { return n < 10 ? '0' + n : String(n); }
+
+function _mkLog(aksiyon, detay) {
+  var u = APP.ui.curUser;
+  var rolMap = { user:'saha', dept:'dept', acc:'muhasebe' };
+  return {
+    zaman: Date.now(),
+    aksiyon: aksiyon,
+    kisi: u ? u.name : 'Bilinmeyen',
+    rol: u ? (rolMap[u.role] || u.role) : 'bilinmeyen',
+    detay: detay || ''
+  };
+}
+
+function _fmtLogZaman(ts) {
+  var d = new Date(ts);
+  return _pad(d.getDate()) + '.' + _pad(d.getMonth()+1) + ' ' + _pad(d.getHours()) + ':' + _pad(d.getMinutes());
+}
 
 function _formatKiraTarih(dateStr) {
   var aylar = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
@@ -4845,7 +4873,8 @@ function _addToDeptBekleyen(satici, kat, tutar, belgesiz, aciklama, fotos) {
     uyari: null,
     belgesiz: !!belgesiz,
     aciklama: aciklama || '',
-    fotos: fotos || []
+    fotos: fotos || [],
+    log: [_mkLog('olusturuldu', 'Harcama bildirildi')]
   });
   /* Bütçe eşik kontrolü */
   var _cb = APP.data.donemButce.find(function(x){ return x.donem === APP.ui.aktifDon; });
@@ -5166,7 +5195,9 @@ function deptOnaylaSecili() {
     if (ids[f.id]) {
       cnt++; top += f.tutar;
       if (ob) ob.harcanan += f.tutar;
-      APP.data.deptGecmis[2].onaylandi.push({ id:f.id, uye:f.uye||'', ini:f.ini||'', satici:f.satici||'', kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptTarih() });
+      f.log = f.log || [];
+      f.log.push(_mkLog('onaylandi', ''));
+      APP.data.deptGecmis[2].onaylandi.push({ id:f.id, uye:f.uye||'', ini:f.ini||'', satici:f.satici||'', kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptTarih(), log:f.log });
       return false;
     }
     return true;
@@ -5199,11 +5230,13 @@ function deptReddetSecili() {
     if (!ids[f.id]) return true;
     cnt++; top += f.tutar;
     if (rb) rb.reddedildi += f.tutar;
+    f.log = f.log || [];
+    f.log.push(_mkLog('reddedildi', redNedeni));
     APP.data.deptGecmis[APP.ui.aktifDon].reddedildi.push({
       id: f.id, uye: f.uye || '', ini: f.ini || '',
       satici: f.satici || '', kat: f.kat || 'Diger',
       tutar: f.tutar, tarih: f.tarih || _deptTarih(),
-      redNedeni: redNedeni
+      redNedeni: redNedeni, log: f.log
     });
     _pushNotif(f.fromKey || 's', 'rd', 'Harcama Reddedildi',
       '₺' + f.tutar.toLocaleString('tr-TR') + ' ' + f.satici + ' harcamanız reddedildi. Neden: ' + redNedeni,
@@ -5994,8 +6027,10 @@ function deptOnayla(id) {
         _checkButceUyari(ob, obt);
       }
       /* Kategori geçmişine ekle + limit kontrolü */
+      f.log = f.log || [];
+      f.log.push(_mkLog('onaylandi', ''));
       if (!APP.data.deptGecmis[2]) APP.data.deptGecmis[2] = { onaylandi:[], reddedildi:[] };
-      APP.data.deptGecmis[2].onaylandi.push({ id:f.id, uye:f.uye||'', ini:f.ini||'', satici:f.satici||'', kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptTarih() });
+      APP.data.deptGecmis[2].onaylandi.push({ id:f.id, uye:f.uye||'', ini:f.ini||'', satici:f.satici||'', kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptTarih(), log:f.log });
       var newH = _katHarcanan();
       _checkKatLimit(f.kat, newH[f.kat] || 0);
       updateNotifBadge();
@@ -6015,6 +6050,8 @@ function deptReddet(id) {
       var f = APP.data.deptBekleyen[i];
       var redNedeni = (prompt('Red nedeni girin:') || '').trim();
       if (!redNedeni) { notif('Red nedeni zorunludur — iptal edildi', 'amber'); return; }
+      f.log = f.log || [];
+      f.log.push(_mkLog('reddedildi', redNedeni));
       APP.data.deptBekleyen.splice(i, 1);
       var rb = APP.data.donemButce.find(function(x){ return x.donem === APP.ui.aktifDon; });
       if (rb) rb.reddedildi += f.tutar;
@@ -6023,7 +6060,7 @@ function deptReddet(id) {
         id: f.id, uye: f.uye || '', ini: f.ini || '',
         satici: f.satici || '', kat: f.kat || 'Diger',
         tutar: f.tutar, tarih: f.tarih || _deptTarih(),
-        redNedeni: redNedeni
+        redNedeni: redNedeni, log: f.log
       });
       var fKey = f.fromKey || 's';
       _pushNotif(fKey, 'rd', 'Harcama Reddedildi',
@@ -6311,20 +6348,24 @@ function submitBelgesiz() {
         kat: 'Kiralama', tutar: bTut, durum: 'bekleyen', donem: APP.ui.aktifDon,
         uyari: null, thumb: null, belgesiz: true, aciklama: bAciklama, fotos: fotos,
         dept: bDept, neden: bNeden,
+        log: [_mkLog('olusturuldu', 'Belgesiz harcama bildirildi')],
         kiraMeta: {
           bas:    (document.getElementById('b-ki-bas').value || ''),
           bit:    (document.getElementById('b-ki-bit').value || ''),
           gunluk: parseFloat(document.getElementById('b-ki-gun').value || '0') || 0
         }
       });
+      _addToDeptBekleyen('Belgesiz Kiralama', bKat, bTut, true, bAciklama, fotos);
       renderRecent();
     } else {
       APP.data.fisler.unshift({
         id: Date.now(), tarih: bTarih, personel: bPersonel, satici: 'Belgesiz Harcama',
         kat: bKat, tutar: bTut, durum: 'bekleyen', donem: APP.ui.aktifDon,
         uyari: null, thumb: null, belgesiz: true, aciklama: bAciklama, fotos: fotos,
-        dept: bDept, neden: bNeden
+        dept: bDept, neden: bNeden,
+        log: [_mkLog('olusturuldu', 'Belgesiz harcama bildirildi')]
       });
+      _addToDeptBekleyen('Belgesiz Harcama', bKat, bTut, true, bAciklama, fotos);
       renderRecent();
     }
     notif('Belgesiz harcama bildirildi', 'amber');
@@ -6332,7 +6373,7 @@ function submitBelgesiz() {
   saveAppData();
   /* Form sıfırla */
   var _clr = function(id) { var el = document.getElementById(id); if (el) el.value = ''; };
-  _clr('b-tutar'); _clr('b-aciklama');
+  _clr('b-tutar'); _clr('b-aciklama'); _clr('b-neden');
   _clr('b-ul-km'); _clr('b-ul-binis'); _clr('b-ul-varis');
   _clr('b-ym-kisi'); _clr('b-ko-gece'); _clr('b-ko-kisi');
   _clr('b-ki-bas'); _clr('b-ki-bit'); _clr('b-ki-gun');
@@ -6419,7 +6460,7 @@ function renderDonem(did) {
   }
 
   /* fiş listesi */
-  var myFis = APP.data.fisler.filter(function(x) { return x.donem === did && x.personel === 'Mehmet K.'; });
+  var myFis = APP.data.fisler.filter(function(x) { return x.donem === did && x.personel === 'Mehmet Kaya'; });
   var hdLbl = document.getElementById('fis-hd-lbl');
   var hdCnt = document.getElementById('fis-hd-cnt');
   if (hdLbl) hdLbl.textContent = 'Fişler · ' + d.n;
@@ -6544,7 +6585,7 @@ function yeniDonem() { notif('Yeni dönem başlatıldı', 'green'); }
 function expPDF() {
   var prj   = APP.ui.curProj ? APP.ui.curProj.name : 'PRODAPP';
   var tarih = new Date().toLocaleDateString('tr-TR');
-  var mine  = APP.data.fisler.filter(function(d) { return d.donem === APP.ui.aktifDon && d.personel === 'Mehmet K.'; });
+  var mine  = APP.data.fisler.filter(function(d) { return d.donem === APP.ui.aktifDon && d.personel === 'Mehmet Kaya'; });
   var top   = mine.reduce(function(s, d) { return s + d.tutar; }, 0);
   var w = window.open('', '_blank', 'width=860,height=620');
   if (!w) { notif('Popup engellendi', 'red'); return; }
@@ -6741,6 +6782,32 @@ function openFisDetay(id, ctx) {
     } else {
       fotosEl.innerHTML = '';
     }
+    /* İşlem geçmişi — fotos'un hemen altına ekle */
+    var logHtml = '<div class="fdet-log-sec"><div class="fdet-log-lbl">İşlem Geçmişi</div>';
+    var logList = f.log || [];
+    if (!logList.length) {
+      logHtml += '<div class="fdet-log-bos">Geçmiş kaydı yok</div>';
+    } else {
+      var icoMap = {
+        olusturuldu: '<svg viewBox="0 0 24 24" fill="none" stroke="var(--bl)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>',
+        onaylandi:   '<svg viewBox="0 0 24 24" fill="none" stroke="var(--gr)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+        reddedildi:  '<svg viewBox="0 0 24 24" fill="none" stroke="var(--rd)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
+      };
+      for (var li = 0; li < logList.length; li++) {
+        var le = logList[li];
+        var ico = icoMap[le.aksiyon] || icoMap['olusturuldu'];
+        logHtml += '<div class="fdet-log-item">' +
+          '<div class="fdet-log-ico">' + ico + '</div>' +
+          '<div class="fdet-log-txt">' +
+            '<div class="fdet-log-kisi">' + _escHtml(le.kisi) + ' <span style="font-weight:400;color:var(--tx3)">(' + _escHtml(le.rol) + ')</span></div>' +
+            '<div class="fdet-log-time">' + _fmtLogZaman(le.zaman) + '</div>' +
+            (le.detay ? '<div class="fdet-log-detay">' + _escHtml(le.detay) + '</div>' : '') +
+          '</div>' +
+        '</div>';
+      }
+    }
+    logHtml += '</div>';
+    fotosEl.innerHTML += logHtml;
   }
 
   /* Aksiyon butonları */
@@ -8819,6 +8886,10 @@ function accReddet(id) {
     openM('md-av-red');
   } else {
     /* Normal harcama reddi — direkt işle */
+    var redNedeniAcc = (prompt('Red nedeni girin:') || '').trim();
+    if (!redNedeniAcc) { notif('Red nedeni zorunludur — iptal edildi', 'amber'); return; }
+    item.log = item.log || [];
+    item.log.push(_mkLog('reddedildi', redNedeniAcc));
     APP.data.accBekleyen = APP.data.accBekleyen.filter(function(f){ return f.id !== id; });
     renderAccBek();
     notif('Harcama reddedildi', 'red');
