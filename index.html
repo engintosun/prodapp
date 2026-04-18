@@ -4439,6 +4439,7 @@ function submitOCR() {
       };
     }
     APP.data.fisler.unshift(entry);
+    _addToDeptBekleyen(sat2, kat2, tut2, false, '', [], entry.id);
     renderRecent();
     notif('Harcama onaya gönderildi', 'green');
   }
@@ -4861,11 +4862,11 @@ function _deptTarih() {
   return ('0' + d.getDate()).slice(-2) + '.' + ('0' + (d.getMonth()+1)).slice(-2);
 }
 
-function _addToDeptBekleyen(satici, kat, tutar, belgesiz, aciklama, fotos) {
+function _addToDeptBekleyen(satici, kat, tutar, belgesiz, aciklama, fotos, fisId) {
   var uye = APP.ui.curUser ? APP.ui.curUser.name : 'Dept Sorumlusu';
   var ini = APP.ui.curUser ? APP.ui.curUser.ini  : 'DS';
   APP.data.deptBekleyen.unshift({
-    id: Date.now(), uye: uye, ini: ini,
+    id: Date.now(), uye: uye, ini: ini, fisId: fisId || null,
     satici: satici || 'Yeni Harcama',
     kat: kat || 'Diger',
     tutar: tutar || 0,
@@ -5202,6 +5203,7 @@ function deptOnaylaSecili() {
       f.log.push(_mkLog('dept-onayladi', ''));
       APP.data.accBekleyen.unshift({
         id: Date.now() + Math.floor(Math.random()*1000),
+        fisId: f.fisId || null,
         dept: _curDeptName(),
         uye: f.uye, ini: f.ini,
         satici: f.satici, kat: f.kat,
@@ -6052,6 +6054,7 @@ function deptOnayla(id) {
       f.log.push(_mkLog('dept-onayladi', ''));
       APP.data.accBekleyen.unshift({
         id: Date.now() + Math.floor(Math.random()*1000),
+        fisId: f.fisId || null,
         dept: _curDeptName(),
         uye: f.uye, ini: f.ini,
         satici: f.satici, kat: f.kat,
@@ -6376,8 +6379,9 @@ function submitBelgesiz() {
       bTarih = _pad(bd.getDate()) + '.' + _pad(bd.getMonth()+1) + '.' + bd.getFullYear();
     }
     if (bKat === 'Kiralama') {
+      var bFisIdK = Date.now();
       APP.data.fisler.unshift({
-        id: Date.now(), tarih: bTarih, personel: bPersonel, satici: 'Belgesiz Kiralama',
+        id: bFisIdK, tarih: bTarih, personel: bPersonel, satici: 'Belgesiz Kiralama',
         kat: 'Kiralama', tutar: bTut, durum: 'bekleyen', donem: APP.ui.aktifDon,
         uyari: null, thumb: null, belgesiz: true, aciklama: bAciklama, fotos: fotos,
         dept: bDept, neden: bNeden,
@@ -6388,17 +6392,18 @@ function submitBelgesiz() {
           gunluk: parseFloat(document.getElementById('b-ki-gun').value || '0') || 0
         }
       });
-      _addToDeptBekleyen('Belgesiz Kiralama', bKat, bTut, true, bAciklama, fotos);
+      _addToDeptBekleyen('Belgesiz Kiralama', bKat, bTut, true, bAciklama, fotos, bFisIdK);
       renderRecent();
     } else {
+      var bFisId = Date.now();
       APP.data.fisler.unshift({
-        id: Date.now(), tarih: bTarih, personel: bPersonel, satici: 'Belgesiz Harcama',
+        id: bFisId, tarih: bTarih, personel: bPersonel, satici: 'Belgesiz Harcama',
         kat: bKat, tutar: bTut, durum: 'bekleyen', donem: APP.ui.aktifDon,
         uyari: null, thumb: null, belgesiz: true, aciklama: bAciklama, fotos: fotos,
         dept: bDept, neden: bNeden,
         log: [_mkLog('olusturuldu', 'Belgesiz harcama bildirildi')]
       });
-      _addToDeptBekleyen('Belgesiz Harcama', bKat, bTut, true, bAciklama, fotos);
+      _addToDeptBekleyen('Belgesiz Harcama', bKat, bTut, true, bAciklama, fotos, bFisId);
       renderRecent();
     }
     notif('Belgesiz harcama bildirildi', 'amber');
@@ -8899,12 +8904,19 @@ function accOnayla(id) {
   } else {
     /* Harcama onayı — fisler dizisinde durumu güncelle */
     if (item) {
-      for (var j = 0; j < APP.data.fisler.length; j++) {
-        var fj = APP.data.fisler[j];
-        if (fj.personel === item.uye && fj.satici === item.satici &&
-            fj.tutar === item.tutar && fj.tarih === item.tarih) {
-          fj.durum = 'onaylandi';
-          break;
+      var _found = false;
+      if (item.fisId) {
+        for (var j = 0; j < APP.data.fisler.length; j++) {
+          if (APP.data.fisler[j].id === item.fisId) { APP.data.fisler[j].durum = 'onaylandi'; _found = true; break; }
+        }
+      }
+      if (!_found) {
+        for (var j2 = 0; j2 < APP.data.fisler.length; j2++) {
+          var fj = APP.data.fisler[j2];
+          if (fj.personel === item.uye && fj.satici === item.satici &&
+              fj.tutar === item.tutar && fj.tarih === item.tarih) {
+            fj.durum = 'onaylandi'; break;
+          }
         }
       }
       _pushNotif(item.fromKey || 's', 'gr', 'Harcama Onaylandı ✅',
@@ -8942,13 +8954,23 @@ function accReddet(id) {
     APP.data.accBekleyen = APP.data.accBekleyen.filter(function(f){ return f.id !== id; });
     renderAccBek();
     /* fisler dizisinde durumu güncelle */
-    for (var ri = 0; ri < APP.data.fisler.length; ri++) {
-      var rf = APP.data.fisler[ri];
-      if (rf.personel === item.uye && rf.satici === item.satici &&
-          rf.tutar === item.tutar && rf.tarih === item.tarih) {
-        rf.durum = 'reddedildi';
-        rf.uyari = redNedeniAcc;
-        break;
+    var _rfound = false;
+    if (item.fisId) {
+      for (var ri = 0; ri < APP.data.fisler.length; ri++) {
+        if (APP.data.fisler[ri].id === item.fisId) {
+          APP.data.fisler[ri].durum = 'reddedildi';
+          APP.data.fisler[ri].uyari = redNedeniAcc;
+          _rfound = true; break;
+        }
+      }
+    }
+    if (!_rfound) {
+      for (var ri2 = 0; ri2 < APP.data.fisler.length; ri2++) {
+        var rf = APP.data.fisler[ri2];
+        if (rf.personel === item.uye && rf.satici === item.satici &&
+            rf.tutar === item.tutar && rf.tarih === item.tarih) {
+          rf.durum = 'reddedildi'; rf.uyari = redNedeniAcc; break;
+        }
       }
     }
     _pushNotif(item.fromKey || 's', 'rd', 'Harcama Reddedildi (Muhasebe)',
