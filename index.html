@@ -3218,7 +3218,7 @@ APP.ui    = {
   aktifDon:         2,
   sdSeciliDonem:    2,
   saSeciliDonem:    2,
-  sdGecmisPnlDonem: 1,
+  sdGecmisPnlDonem: 2,
   sdAvansFormAcik:  false,
   sdMesajKisi:      '',
   sdMode:           false,
@@ -5919,10 +5919,10 @@ function renderDeptGecmis() {
   var el = document.getElementById('sd-pnl-gecmis');
   if (!el) return;
 
-  /* Geçmiş dönemler (aktif değil) */
-  var gecmisDon = APP.seed.sdDonemler.filter(function(d) { return !d.aktif; });
+  /* Tüm dönemler (aktif dahil) */
+  var gecmisDon = APP.seed.sdDonemler.slice();
   if (!gecmisDon.length) {
-    el.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--tx3);font-size:13px">Geçmiş dönem verisi yok</div>';
+    el.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--tx3);font-size:13px">Dönem verisi yok</div>';
     return;
   }
   /* Seçili dönem geçerli mi? */
@@ -7520,7 +7520,29 @@ function accButceKaydet() {
   saveAppData();
 }
 
+function _recomputeAccDepts() {
+  for (var _ddi = 0; _ddi < APP.data.accDepts.length; _ddi++) {
+    var _dept = APP.data.accDepts[_ddi];
+    var _mems = APP.cache.accDeptUyeler[_dept.id] || [];
+    var _ns = {};
+    for (var _mmi = 0; _mmi < _mems.length; _mmi++) _ns[_mems[_mmi].name] = true;
+    var _tot = 0, _onay = 0, _bek = 0;
+    for (var _ffi = 0; _ffi < APP.data.fisler.length; _ffi++) {
+      var _ff = APP.data.fisler[_ffi];
+      if (!_ns[_ff.personel]) continue;
+      var _tt = _ff.tutar || 0;
+      _tot += _tt;
+      if      (_ff.durum === 'onaylandi')  _onay += _tt;
+      else if (_ff.durum !== 'reddedildi') _bek  += _tt;
+    }
+    _dept.total    = _tot;
+    _dept.onay     = _onay;
+    _dept.bekleyen = _bek;
+  }
+}
+
 function renderAccDash() {
+  _recomputeAccDepts();
   var el = document.getElementById('sa-pnl-dash');
   if (!el) return;
 
@@ -7838,6 +7860,41 @@ function saRaporToggleDonem(did) {
   _renderAccRaporIc();
 }
 
+function _computeRaporDeptFis(deptId) {
+  var members = APP.cache.accDeptUyeler[deptId] || [];
+  var nameToIni = {};
+  for (var _mi = 0; _mi < members.length; _mi++) {
+    nameToIni[members[_mi].name] = members[_mi].ini;
+  }
+  /* Fallback: deptEkip — deptId yoksa tüm ekip */
+  if (!members.length) {
+    for (var _ei = 0; _ei < APP.seed.deptEkip.length; _ei++) {
+      nameToIni[APP.seed.deptEkip[_ei].name] = APP.seed.deptEkip[_ei].ini;
+    }
+  }
+  var result = [];
+  for (var _fi = 0; _fi < APP.data.fisler.length; _fi++) {
+    var _f = APP.data.fisler[_fi];
+    if (!nameToIni.hasOwnProperty(_f.personel)) continue;
+    var _dur = _f.durum === 'onaylandi' ? 'onay' : (_f.durum === 'reddedildi' ? 'red' : 'bek');
+    result.push({
+      ini:    nameToIni[_f.personel],
+      satici: _f.satici || '',
+      kat:    _f.kat    || 'Diger',
+      tutar:  _f.tutar  || 0,
+      tarih:  _f.tarih  || '',
+      durum:  _dur,
+      donem:  _f.donem,
+      uyari:  _f.uyari  || ''
+    });
+  }
+  result.sort(function(a, b) {
+    if (b.donem !== a.donem) return b.donem - a.donem;
+    return b.tarih > a.tarih ? 1 : -1;
+  });
+  return result;
+}
+
 function _computeRaporPersonel() {
   var _katRenkHex = {
     Yakit:'#F59E0B', Yiyecek:'#22C55E', Ekipman:'#3B82F6',
@@ -7929,6 +7986,11 @@ function renderAccRapor(tip) {
 
 function _renderAccRaporIc() {
   APP.cache.accRaporPersonel = _computeRaporPersonel();
+  APP.cache.accDeptFis = {};
+  var _rDepts = ['yapim','kamera','sanat','ses','kostum'];
+  for (var _rdi = 0; _rdi < _rDepts.length; _rdi++) {
+    APP.cache.accDeptFis[_rDepts[_rdi]] = _computeRaporDeptFis(_rDepts[_rdi]);
+  }
   var el = document.getElementById('sa-pnl-rapor');
   if (!el) return;
 
