@@ -2562,6 +2562,9 @@ body {
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <div class="su-badge" id="sa-badge"></div>
       </div>
+      <div class="su-ib" onclick="openMarka()" title="Marka Ayarları">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </div>
       <button class="btn btn-sm" onclick="goProjectSelect()">↩ Proje</button>
     </div>
   </div>
@@ -3186,6 +3189,32 @@ body {
     </div>
     <div class="mbody">
       <div id="myeni-liste"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     MODAL: MARKA AYARLARI
+════════════════════════════ -->
+<div class="mo" id="m-marka">
+  <div class="ms">
+    <div class="mh"></div>
+    <div class="mhd">
+      <div class="mtitle">⚙️ Marka Ayarları</div>
+      <button class="mclose" onclick="closeM('m-marka')">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="profil-sec-lbl">Şirket</div>
+      <div class="fg"><label>Şirket Adı</label><input class="fgi" id="marka-co-name" type="text" placeholder="Şirket / Prodüksiyon Adı"></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+        <div id="marka-co-prev" style="height:36px;display:flex;align-items:center;flex:1;min-width:0"></div>
+        <button class="btn btn-sm" onclick="_markaPickLogo('co','')">📷 Logo</button>
+        <button class="btn btn-sm btn-r" id="marka-co-rm" onclick="_markaLogoRemove('co','')" style="display:none">Kaldır</button>
+      </div>
+      <div class="profil-sec-lbl">Projeler</div>
+      <div id="marka-proj-list"></div>
+      <input type="file" id="marka-file-inp" accept="image/*" style="display:none" onchange="_markaFileChange(this)">
+      <button class="btn btn-p btn-full" onclick="_markaKaydet()" style="margin-top:12px;justify-content:center">Kaydet</button>
     </div>
   </div>
 </div>
@@ -3987,6 +4016,127 @@ function _avatarRemove() {
   saveAppData();
   _updateAllAvatars();
   notif('Fotoğraf kaldırıldı', 'amber');
+}
+
+/* ═══ MARKA AYARLARI ═══ */
+
+function _projName(id) {
+  if (APP.data.projNames && APP.data.projNames[id]) return APP.data.projNames[id];
+  var p = APP.seed.projs.find(function(x) { return x.id === id; });
+  return p ? p.name : id;
+}
+
+var _markaPickType = '';
+var _markaPickId   = '';
+
+function openMarka() {
+  var co = APP.data.companyInfo || { name: '', logo: null };
+  document.getElementById('marka-co-name').value = co.name || '';
+  var coRm = document.getElementById('marka-co-rm');
+  if (coRm) coRm.style.display = co.logo ? '' : 'none';
+  var coPrev = document.getElementById('marka-co-prev');
+  if (coPrev) coPrev.innerHTML = co.logo ? '<img src="' + co.logo + '" style="max-height:36px;width:auto">' : '';
+  var list = document.getElementById('marka-proj-list');
+  if (list) {
+    list.innerHTML = APP.seed.projs.map(function(p) {
+      var pLogo = APP.data.projLogos && APP.data.projLogos[p.id];
+      var pName = APP.data.projNames && APP.data.projNames[p.id] ? APP.data.projNames[p.id] : '';
+      return '<div style="padding:10px 0;border-bottom:1px solid var(--bo)">' +
+        '<div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:6px">' + p.name + '</div>' +
+        '<div class="fg" style="margin-bottom:6px"><label>Ad (override)</label>' +
+          '<input class="fgi" id="marka-pn-' + p.id + '" type="text" value="' + pName + '" placeholder="' + p.name + '"></div>' +
+        '<div style="display:flex;align-items:center;gap:8px">' +
+          '<div id="marka-pp-' + p.id + '" style="height:36px;display:flex;align-items:center;flex:1;min-width:0">' +
+            (pLogo ? '<img src="' + pLogo + '" style="max-height:36px;width:auto">' : '') +
+          '</div>' +
+          '<button class="btn btn-sm" onclick="_markaPickLogo(\'proj\',\'' + p.id + '\')">📷 Logo</button>' +
+          (pLogo ? '<button class="btn btn-sm btn-r" id="marka-pr-' + p.id + '" onclick="_markaLogoRemove(\'proj\',\'' + p.id + '\')">Kaldır</button>' : '<button class="btn btn-sm btn-r" id="marka-pr-' + p.id + '" onclick="_markaLogoRemove(\'proj\',\'' + p.id + '\')" style="display:none">Kaldır</button>') +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+  openM('m-marka');
+}
+
+function _markaPickLogo(type, id) {
+  _markaPickType = type;
+  _markaPickId   = id;
+  var inp = document.getElementById('marka-file-inp');
+  if (inp) { inp.value = ''; inp.click(); }
+}
+
+function _markaFileChange(inp) {
+  if (!inp.files || !inp.files.length) return;
+  _markaLogoProcess(inp.files[0], _markaPickType, _markaPickId);
+}
+
+function _markaLogoProcess(file, type, id) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      var MAX_W = 400, MAX_H = 120;
+      var ratio = Math.min(MAX_W / img.width, MAX_H / img.height, 1);
+      var w = Math.round(img.width * ratio);
+      var h = Math.round(img.height * ratio);
+      var canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      var b64 = canvas.toDataURL('image/png', 0.92);
+      if (type === 'co') {
+        APP.data.companyInfo.logo = b64;
+        var coPrev = document.getElementById('marka-co-prev');
+        var coRm   = document.getElementById('marka-co-rm');
+        if (coPrev) coPrev.innerHTML = '<img src="' + b64 + '" style="max-height:36px;width:auto">';
+        if (coRm)   coRm.style.display = '';
+      } else {
+        APP.data.projLogos[id] = b64;
+        var ppEl = document.getElementById('marka-pp-' + id);
+        var prEl = document.getElementById('marka-pr-' + id);
+        if (ppEl) ppEl.innerHTML = '<img src="' + b64 + '" style="max-height:36px;width:auto">';
+        if (prEl) prEl.style.display = '';
+      }
+      notif('Logo yüklendi', 'green');
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function _markaLogoRemove(type, id) {
+  if (type === 'co') {
+    APP.data.companyInfo.logo = null;
+    var coPrev = document.getElementById('marka-co-prev');
+    var coRm   = document.getElementById('marka-co-rm');
+    if (coPrev) coPrev.innerHTML = '';
+    if (coRm)   coRm.style.display = 'none';
+  } else {
+    APP.data.projLogos[id] = null;
+    var ppEl = document.getElementById('marka-pp-' + id);
+    var prEl = document.getElementById('marka-pr-' + id);
+    if (ppEl) ppEl.innerHTML = '';
+    if (prEl) prEl.style.display = 'none';
+  }
+}
+
+function _markaKaydet() {
+  APP.data.companyInfo.name = (document.getElementById('marka-co-name').value || '').trim();
+  APP.seed.projs.forEach(function(p) {
+    var inp = document.getElementById('marka-pn-' + p.id);
+    if (inp) {
+      var v = inp.value.trim();
+      if (v && v !== p.name) APP.data.projNames[p.id] = v;
+      else delete APP.data.projNames[p.id];
+    }
+  });
+  saveAppData();
+  /* Header'daki proje adını güncelle */
+  if (APP.ui.curProj) {
+    var hdPrj = document.getElementById('sa-hd-prj');
+    if (hdPrj) hdPrj.textContent = _projName(APP.ui.curProj.id);
+  }
+  closeM('m-marka');
+  notif('Ayarlar kaydedildi', 'green');
 }
 
 /* ═══ PROFİL ═══ */
@@ -6724,7 +6874,10 @@ function yeniDonem() { notif('Yeni dönem başlatıldı', 'green'); }
 
 /* ═══ PDF EXPORT ═══ */
 function expPDF() {
-  var prj   = APP.ui.curProj ? APP.ui.curProj.name : 'PRODAPP';
+  var co       = APP.data.companyInfo || { name: '', logo: null };
+  var pid      = APP.ui.curProj ? APP.ui.curProj.id : '';
+  var projLogo = pid && APP.data.projLogos ? APP.data.projLogos[pid] : null;
+  var projName = pid ? _projName(pid) : 'PRODAPP';
   var tarih = new Date().toLocaleDateString('tr-TR');
   var mine  = APP.data.fisler.filter(function(d) { return d.donem === APP.ui.aktifDon && d.personel === 'Mehmet Kaya'; });
   var top   = mine.reduce(function(s, d) { return s + d.tutar; }, 0);
@@ -6740,10 +6893,20 @@ function expPDF() {
   var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PRODAPP Raporu</title>' +
     '<style>body{font-family:Arial,sans-serif;color:#111;margin:0}table{width:100%;border-collapse:collapse}' +
     'th{background:#E8962E;color:#fff;padding:7px 10px;text-align:left}td{padding:6px 10px;font-size:12px}' +
-    '@media print{.np{display:none}}</style></head><body><div style="padding:24px">' +
-    '<div style="display:flex;justify-content:space-between;padding-bottom:12px;border-bottom:3px solid #E8962E;margin-bottom:16px">' +
-      '<div><div style="font-size:20px;font-weight:800">PRODAPP</div><div style="font-size:11px;color:#666">Dönem Raporu</div></div>' +
-      '<div style="text-align:right"><div style="font-weight:700">' + prj + '</div><div style="font-size:11px;color:#666">' + tarih + '</div></div>' +
+    '@media print{.np{display:none}.pdf-ft{position:fixed;bottom:8px;left:0;right:0;text-align:center;font-size:10px;color:#aaa}}' +
+    '@page{margin-bottom:30px}</style></head><body><div style="padding:24px">' +
+    '<div class="pdf-ft">Bu rapor PRODAPP ile hazırlandı</div>' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:3px solid #E8962E;margin-bottom:16px">' +
+      '<div>' +
+        (co.logo ? '<img src="' + co.logo + '" style="max-height:56px;width:auto">' :
+          '<div style="font-size:20px;font-weight:800">' + (co.name || 'PRODAPP') + '</div>') +
+        '<div style="font-size:11px;color:#666">Dönem Raporu</div>' +
+      '</div>' +
+      '<div style="text-align:right">' +
+        (projLogo ? '<img src="' + projLogo + '" style="max-height:48px;width:auto;display:block;margin-left:auto">' : '') +
+        '<div style="font-weight:700">' + projName + '</div>' +
+        '<div style="font-size:11px;color:#666">' + tarih + '</div>' +
+      '</div>' +
     '</div>' +
     '<table><thead><tr><th>Tarih</th><th>Satıcı</th><th>Kategori</th><th>Tutar</th><th>Durum</th></tr></thead>' +
     '<tbody>' + rows + '</tbody>' +
@@ -6754,7 +6917,7 @@ function expPDF() {
       '<button onclick="window.print()" style="background:#E8962E;color:#fff;border:none;padding:10px 24px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer">Yazdır / PDF Kaydet</button>' +
       '<button onclick="window.close()" style="background:#eee;color:#333;border:none;padding:10px 16px;border-radius:6px;font-size:13px;cursor:pointer;margin-left:6px">Kapat</button>' +
     '</div>' +
-    '<div style="font-size:10px;color:#aaa;text-align:center;margin-top:12px;border-top:1px solid #eee;padding-top:8px">PRODAPP · KVKK Uyumlu · ' + tarih + '</div>' +
+    '<div style="font-size:10px;color:#aaa;text-align:center;margin-top:12px;border-top:1px solid #eee;padding-top:8px">Bu rapor PRODAPP ile hazırlandı · KVKK Uyumlu · ' + tarih + '</div>' +
     '</div></body></html>';
   w.document.write(html);
   w.document.close();
@@ -7534,13 +7697,19 @@ APP.data.sohbetler = [
   }
 ];
 
-/* Avatar kalıcılığı — loadAppData'dan önce tanımlanmalı (key kontrolü için) */
-APP.data.avatars = { s: null, d: null, m: null };
+/* Kalıcı veriler — loadAppData'dan önce tanımlanmalı (key kontrolü için) */
+APP.data.avatars      = { s: null, d: null, m: null };
+APP.data.companyInfo  = { name: '', logo: null };
+APP.data.projLogos    = { ig: null, mr: null, sr: null };
+APP.data.projNames    = {};
 
 /* Tüm demo verileri yüklendi — localStorage'daki kayıtlı veriyi uygula */
 loadAppData();
-/* Migration: eski localStorage'da avatars yoksa default ile doldur */
-if (!APP.data.avatars) APP.data.avatars = { s: null, d: null, m: null };
+/* Migration: eski localStorage'da yeni alanlar yoksa default ile doldur */
+if (!APP.data.avatars)     APP.data.avatars     = { s: null, d: null, m: null };
+if (!APP.data.companyInfo) APP.data.companyInfo = { name: '', logo: null };
+if (!APP.data.projLogos)   APP.data.projLogos   = { ig: null, mr: null, sr: null };
+if (!APP.data.projNames)   APP.data.projNames   = {};
 
 var saRaporDeptId   = ''; /* drill-down: seçili dept ID */
 var saRaporKisiIdx  = -1; /* drill-down: seçili kişi index */
@@ -7550,7 +7719,7 @@ var saRaporSecilenDonemler = [2, 1, 0]; /* dönem karşılaştırma seçimi */
 function renderAcc() {
   if (!APP.ui.curUser || !APP.ui.curProj) return;
   _setAvEl(document.getElementById('sa-hd-av'), APP.ui.curUser, APP.ui.curUserKey);
-  document.getElementById('sa-hd-prj').textContent = APP.ui.curProj.name;
+  document.getElementById('sa-hd-prj').textContent = _projName(APP.ui.curProj.id);
   var bCnt = document.getElementById('satb-bek-cnt');
   if (bCnt) bCnt.textContent = APP.data.accBekleyen.length;
   var sCnt = document.getElementById('satb-suphe-cnt');
@@ -9251,8 +9420,11 @@ function accSupheIsle(id, action) {
 }
 
 function accPDF() {
-  var prj    = APP.ui.curProj ? APP.ui.curProj.name : 'PRODAPP';
-  var tarih  = new Date().toLocaleDateString('tr-TR');
+  var co       = APP.data.companyInfo || { name: '', logo: null };
+  var pid      = APP.ui.curProj ? APP.ui.curProj.id : '';
+  var projLogo = pid && APP.data.projLogos ? APP.data.projLogos[pid] : null;
+  var prj      = pid ? _projName(pid) : 'PRODAPP';
+  var tarih    = new Date().toLocaleDateString('tr-TR');
   var rAdlar = { dept:'Departman Raporu', kat:'Kategori Raporu', personel:'Personel Raporu', donem:'Dönem Karşılaştırma' };
   var rAd    = rAdlar[APP.ui.saRaporTip] || 'Rapor';
   var el     = document.getElementById('sa-pnl-rapor');
@@ -9340,17 +9512,28 @@ function accPDF() {
     '.sa-rep-left{font-size:13px;color:' + tx + ';font-weight:600}.sa-rep-sub{font-size:11px;color:' + tx3 + ';margin-top:1px}.sa-rep-val{font-size:14px;font-weight:800;font-family:' + mo + ';color:' + tx + '}' +
     '.sa-rep-dept-row{background:' + bg2 + ';border:1px solid ' + bo + ';border-radius:10px;padding:12px;margin-bottom:8px}' +
     '.sa-don-sec,.sa-don-sec-pill,.sa-rep-back,.sa-rapor-btns,.sa-pdf-btn{display:none!important}' +
-    '.np-print{display:none}' +
+    '.np-print{display:none}.pdf-ft{display:none}' +
     '@media print{body{background:#fff!important;color:#111!important}.pdf-wrap{padding:16px}' +
+    '.pdf-ft{display:block;position:fixed;bottom:8px;left:0;right:0;text-align:center;font-size:10px;color:#aaa}' +
+    '@page{margin-bottom:30px}' +
       '.sa-rep-stat-c,.sa-rep-kisi-row,.sa-rep-row,.sa-rep-dept-row{background:#f9f9f9!important;border-color:#ddd!important}' +
       '.sa-don-tbl th,.sa-don-tbl td{color:#333!important;border-color:#ddd!important}' +
       '.sa-don-tbl th{background:#f0f0f0}' +
     '}' +
     '</style></head><body>' +
     '<div class="pdf-wrap">' +
+      '<div class="pdf-ft">Bu rapor PRODAPP ile hazırlandı</div>' +
       '<div class="pdf-hd">' +
-        '<div><div class="pdf-hd-title">PRODAPP</div><div class="pdf-hd-sub">' + rAd + '</div></div>' +
-        '<div class="pdf-hd-right"><div style="font-weight:700">' + prj + '</div><div>' + tarih + '</div></div>' +
+        '<div>' +
+          (co.logo ? '<img src="' + co.logo + '" style="max-height:56px;width:auto">' :
+            '<div class="pdf-hd-title">' + (co.name || 'PRODAPP') + '</div>') +
+          '<div class="pdf-hd-sub">' + rAd + '</div>' +
+        '</div>' +
+        '<div class="pdf-hd-right">' +
+          (projLogo ? '<img src="' + projLogo + '" style="max-height:48px;width:auto;display:block;margin-left:auto">' : '') +
+          '<div style="font-weight:700">' + prj + '</div>' +
+          '<div>' + tarih + '</div>' +
+        '</div>' +
       '</div>' +
       tmp.innerHTML +
       '<div class="np-print" style="text-align:center;margin-top:20px">' +
