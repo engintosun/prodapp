@@ -7888,9 +7888,14 @@ function _computeRaporDeptFis(deptId) {
       uyari:  _f.uyari  || ''
     });
   }
+  var parse = function(t) {
+    var p = (t || '').split('.');
+    if (p.length !== 3) return 0;
+    return new Date(+p[2], +p[1]-1, +p[0]).getTime();
+  };
   result.sort(function(a, b) {
-    if (b.donem !== a.donem) return b.donem - a.donem;
-    return b.tarih > a.tarih ? 1 : -1;
+    if (a.donem !== b.donem) return b.donem - a.donem;
+    return parse(b.tarih) - parse(a.tarih);
   });
   return result;
 }
