@@ -1820,8 +1820,10 @@ body {
   background: var(--ac); color: #0C0A08;
   font-size: 19px; font-weight: 800;
   display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; letter-spacing: -.5px;
+  flex-shrink: 0; letter-spacing: -.5px; overflow: hidden;
 }
+.sd-hd-av, .sa-hd-av { overflow: hidden; }
+.sd-hd-av img, .sa-hd-av img, .profil-av img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block; }
 .profil-av-name { font-size: 15px; font-weight: 700; color: var(--tx); }
 .profil-av-role { font-size: 11px; color: var(--tx2); margin-top: 2px; font-family: var(--mo); }
 .profil-av-dept { font-size: 11px; color: var(--tx3); margin-top: 3px; }
@@ -2903,8 +2905,13 @@ body {
         <div>
           <div class="profil-av-name" id="p-av-name">Mehmet Kaya</div>
           <div class="profil-av-role" id="p-av-role">👷 Saha Personeli</div>
+          <div style="margin-top:7px;display:flex;gap:8px;align-items:center">
+            <button class="btn btn-sm" onclick="_avatarPickFile()" style="font-size:11px;padding:4px 10px">📷 Fotoğraf</button>
+            <button class="btn btn-sm btn-r" id="p-av-rm" onclick="_avatarRemove()" style="font-size:11px;padding:4px 10px;display:none">Kaldır</button>
+          </div>
         </div>
       </div>
+      <input type="file" id="av-file-inp" accept="image/*" style="display:none" onchange="_avatarFileChange(this)">
 
       <!-- Kişisel bilgiler -->
       <div class="profil-sec-lbl">Kişisel Bilgiler</div>
@@ -3252,11 +3259,11 @@ function loadAppData() {
 /* ═══ VERİ ═══ */
 APP.seed.users = {
   s: { pass:'1234', name:'Mehmet Kaya',   ini:'MK', role:'user', prjs:['ig','mr'],
-       ad:'Mehmet',  soyad:'Kaya',   tel:'+90 532 418 76 03', email:'mehmet.kaya@igfilm.com',   dept:'Saha' },
+       ad:'Mehmet',  soyad:'Kaya',   tel:'+90 532 418 76 03', email:'mehmet.kaya@igfilm.com',   dept:'Saha',  avatar:null },
   d: { pass:'1234', name:'Zeynep Arslan', ini:'ZA', role:'dept', prjs:['ig'],
-       ad:'Zeynep',  soyad:'Arslan', tel:'+90 541 277 92 15', email:'zeynep.arslan@igfilm.com', dept:'Yapim' },
+       ad:'Zeynep',  soyad:'Arslan', tel:'+90 541 277 92 15', email:'zeynep.arslan@igfilm.com', dept:'Yapim', avatar:null },
   m: { pass:'1234', name:'Ayşe Tekin',   ini:'AT', role:'acc',  prjs:['ig','mr','sr'],
-       ad:'Ayşe',    soyad:'Tekin',  tel:'+90 505 863 44 21', email:'ayse.tekin@igfilm.com',    dept:'Ofis' }
+       ad:'Ayşe',    soyad:'Tekin',  tel:'+90 505 863 44 21', email:'ayse.tekin@igfilm.com',    dept:'Ofis',  avatar:null }
 };
 APP.seed.umap = { saha:'s', dept:'d', muhasebe:'m' };
 APP.seed.projs = [
@@ -3891,7 +3898,7 @@ function selectProj(pid) {
   /* Her oturum açılışında kullanıcının gelen kutusu yüklenir */
   APP.ui.notiflar = APP.data.globalInbox[APP.ui.curUserKey] = APP.data.globalInbox[APP.ui.curUserKey] || [];
   if (APP.ui.curUser.role === 'user') {
-    document.getElementById('su-av').textContent  = APP.ui.curUser.ini;
+    _setAvEl(document.getElementById('su-av'), APP.ui.curUser);
     document.getElementById('su-prj').textContent = APP.ui.curProj ? APP.ui.curProj.name : '—';
     document.getElementById('av-name').textContent = APP.ui.curUser.name;
     showScr('su');
@@ -3916,6 +3923,72 @@ function goProjectSelect() {
   showScr('sp');
 }
 
+/* ═══ AVATAR ═══ */
+
+function _setAvEl(el, user) {
+  if (!el) return;
+  if (user && user.avatar) {
+    el.innerHTML = '<img src="' + user.avatar + '" alt="">';
+  } else {
+    el.innerHTML = '';
+    el.textContent = user ? (user.ini || '') : '';
+  }
+}
+
+function _updateAllAvatars() {
+  var u = APP.ui.curUser;
+  if (!u) return;
+  _setAvEl(document.getElementById('p-av'), u);
+  var rmBtn = document.getElementById('p-av-rm');
+  if (rmBtn) rmBtn.style.display = u.avatar ? '' : 'none';
+  if (u.role === 'user')      _setAvEl(document.getElementById('su-av'),    u);
+  else if (u.role === 'dept') _setAvEl(document.getElementById('sd-hd-av'), u);
+  else if (u.role === 'acc')  _setAvEl(document.getElementById('sa-hd-av'), u);
+}
+
+function _avatarPickFile() {
+  var inp = document.getElementById('av-file-inp');
+  if (inp) { inp.value = ''; inp.click(); }
+}
+
+function _avatarFileChange(inp) {
+  if (!inp.files || !inp.files.length) return;
+  _avatarProcess(inp.files[0]);
+}
+
+function _avatarProcess(file) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      var SIZE = 256;
+      var canvas = document.createElement('canvas');
+      canvas.width = SIZE; canvas.height = SIZE;
+      var ctx = canvas.getContext('2d');
+      var s  = Math.min(img.width, img.height);
+      var sx = (img.width  - s) / 2;
+      var sy = (img.height - s) / 2;
+      ctx.drawImage(img, sx, sy, s, s, 0, 0, SIZE, SIZE);
+      var b64 = canvas.toDataURL('image/jpeg', 0.82);
+      APP.seed.users[APP.ui.curUserKey].avatar = b64;
+      APP.ui.curUser.avatar = b64;
+      saveAppData();
+      _updateAllAvatars();
+      notif('Fotoğraf güncellendi', 'green');
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function _avatarRemove() {
+  APP.seed.users[APP.ui.curUserKey].avatar = null;
+  APP.ui.curUser.avatar = null;
+  saveAppData();
+  _updateAllAvatars();
+  notif('Fotoğraf kaldırıldı', 'amber');
+}
+
 /* ═══ PROFİL ═══ */
 
 /* Ortak: form alanlarını doldur + avatar satırını güncelle */
@@ -3928,7 +4001,9 @@ function _profilFill() {
   for (var i = 0; i < sel.options.length; i++) {
     if (sel.options[i].value === APP.ui.curUser.dept) { sel.selectedIndex = i; break; }
   }
-  document.getElementById('p-av').textContent      = APP.ui.curUser.ini;
+  _setAvEl(document.getElementById('p-av'), APP.ui.curUser);
+  var rmBtn = document.getElementById('p-av-rm');
+  if (rmBtn) rmBtn.style.display = APP.ui.curUser.avatar ? '' : 'none';
   document.getElementById('p-av-name').textContent = APP.ui.curUser.name;
   var roleMap = { user:'👷 Saha Personeli', dept:'🎬 Dept. Sorumlusu', acc:'💼 Muhasebe' };
   document.getElementById('p-av-role').textContent = roleMap[APP.ui.curUser.role] || APP.ui.curUser.role;
@@ -4037,20 +4112,20 @@ function submitProfil() {
   APP.ui.curUser.email = (document.getElementById('p-email').value || '').trim();
   APP.ui.curUser.dept  = document.getElementById('p-dept').value;
   /* Modal avatar güncelle */
-  document.getElementById('p-av').textContent      = APP.ui.curUser.ini;
+  _setAvEl(document.getElementById('p-av'), APP.ui.curUser);
   document.getElementById('p-av-name').textContent = APP.ui.curUser.name;
   /* Aktif ekran header'ını güncelle */
   if (APP.ui.curUser.role === 'user') {
     document.getElementById('av-name').textContent = APP.ui.curUser.name;
-    document.getElementById('su-av').textContent   = APP.ui.curUser.ini;
+    _setAvEl(document.getElementById('su-av'), APP.ui.curUser);
   } else if (APP.ui.curUser.role === 'dept') {
     var sdAv = document.getElementById('sd-hd-av');
     var sdRol = document.getElementById('sd-hd-role');
-    if (sdAv)  sdAv.textContent  = APP.ui.curUser.ini;
+    if (sdAv)  _setAvEl(sdAv, APP.ui.curUser);
     if (sdRol) sdRol.textContent = 'Dept. Sorumlusu · ' + APP.ui.curUser.dept;
   } else if (APP.ui.curUser.role === 'acc') {
     var saAv = document.getElementById('sa-hd-av');
-    if (saAv) saAv.textContent = APP.ui.curUser.ini;
+    if (saAv) _setAvEl(saAv, APP.ui.curUser);
   }
   closeM('mprofil');
   notif('Profil güncellendi', 'green');
@@ -4842,7 +4917,7 @@ function renderDept() {
   var av  = document.getElementById('sd-hd-av');
   var prj = document.getElementById('sd-hd-prj');
   var rol = document.getElementById('sd-hd-role');
-  if (APP.ui.curUser && av)  av.textContent  = APP.ui.curUser.ini;
+  if (APP.ui.curUser && av)  _setAvEl(av, APP.ui.curUser);
   if (APP.ui.curProj && prj) prj.textContent = APP.ui.curProj.name;
   if (APP.ui.curUser && rol) rol.textContent = 'Dept. Sorumlusu · ' + APP.ui.curUser.dept;
   renderDeptDonemSec();
@@ -7469,7 +7544,7 @@ var saRaporSecilenDonemler = [2, 1, 0]; /* dönem karşılaştırma seçimi */
 
 function renderAcc() {
   if (!APP.ui.curUser || !APP.ui.curProj) return;
-  document.getElementById('sa-hd-av').textContent  = APP.ui.curUser.ini || 'MH';
+  _setAvEl(document.getElementById('sa-hd-av'), APP.ui.curUser);
   document.getElementById('sa-hd-prj').textContent = APP.ui.curProj.name;
   var bCnt = document.getElementById('satb-bek-cnt');
   if (bCnt) bCnt.textContent = APP.data.accBekleyen.length;
