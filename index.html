@@ -3516,10 +3516,10 @@ const exportManager = {
         ...gec.reddedildi.map(f => ({ ...f, durum: 'Reddedildi' }))
       ];
       rows.push(['Tarih','Personel','Kategori','Tutar (TL)','Durum','Açıklama']);
-      dataRows = tumFisler.map(f => [
+      tumFisler.forEach(f => rows.push([
         f.tarih || '', f.personel || '', f.kategori || '',
         Number(f.tutar || 0), f.durum || '', f.aciklama || ''
-      ]);
+      ]));
 
     } else if (tip === 'dept-avans') {
       baslik = 'Dept Avans';
@@ -3528,10 +3528,10 @@ const exportManager = {
         ...(APP.data.accAvansGecmis || []).filter(a => a.dept === APP.ui.curDept || true)
       ];
       rows.push(['Tarih','Üye','Tutar (TL)','Durum','Gerekçe']);
-      dataRows = tumAvans.map(a => [
+      tumAvans.forEach(a => rows.push([
         a.tarih || '', a.uye || '',
         Number(a.tutar || 0), a.durum || 'Bekleyen', a.gerekce || ''
-      ]);
+      ]));
 
     } else {
       baslik = 'Tüm Harcamalar';
