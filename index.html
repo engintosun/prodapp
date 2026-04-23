@@ -3428,13 +3428,208 @@ const exportManager = {
   },
 
   excel(tip) {
-    // Commit 3'te doldurulacak
-    console.log('Excel export hazırlanıyor:', tip);
+    const brand = this._getBrandHeader();
+    const now   = new Date().toLocaleDateString('tr-TR');
+    let rows = [];
+    let baslik = '';
+
+    if (tip === 'saha') {
+      baslik = 'Saha Harcamaları';
+      const user   = APP.ui.curUser;
+      const don    = APP.ui.aktifDon || 1;
+      const fisler = (APP.data.fisler || []).filter(f =>
+        f.personel === user && String(f.donem) === String(don)
+      );
+      rows.push(['Tarih','Kategori','Tutar (TL)','Durum','Açıklama']);
+      fisler.forEach(f => rows.push([
+        f.tarih || '', f.kategori || '',
+        Number(f.tutar || 0), f.durum || '', f.aciklama || ''
+      ]));
+
+    } else if (tip === 'acc-personel') {
+      baslik = 'Personel Raporu';
+      const data = _computeRaporPersonel();
+      rows.push(['Personel','Toplam (TL)','Fiş Sayısı']);
+      (data || []).forEach(p => rows.push([
+        p.ad || '', Number(p.toplam || 0), p.fisSayisi || 0
+      ]));
+
+    } else if (tip === 'acc-dept') {
+      baslik = 'Departman Raporu';
+      const depts = APP.data.accDepts || [];
+      rows.push(['Departman','Toplam (TL)','Onaylı (TL)','Bekleyen (TL)']);
+      depts.forEach(d => rows.push([
+        d.ad || '', Number(d.toplam || 0),
+        Number(d.onay || 0), Number(d.bekleyen || 0)
+      ]));
+
+    } else if (tip === 'acc-donem') {
+      baslik = 'Dönem Raporu';
+      rows.push(['Dönem','Personel','Kategori','Tutar (TL)','Durum']);
+      (APP.data.fisler || []).forEach(f => rows.push([
+        f.donem || '', f.personel || '', f.kategori || '',
+        Number(f.tutar || 0), f.durum || ''
+      ]));
+
+    } else {
+      baslik = 'Tüm Harcamalar';
+      rows.push(['Tarih','Personel','Kategori','Tutar (TL)','Durum']);
+      (APP.data.fisler || []).forEach(f => rows.push([
+        f.tarih || '', f.personel || '', f.kategori || '',
+        Number(f.tutar || 0), f.durum || ''
+      ]));
+    }
+
+    if (!window.XLSX) {
+      alert('Excel kütüphanesi henüz yüklenmedi. Lütfen GitHub Pages üzerinden deneyin.');
+      return;
+    }
+
+    const wb = window.XLSX.utils.book_new();
+    const wsData = [
+      [`${brand.sirket}${brand.proje ? ' — ' + brand.proje : ''}`],
+      [`${baslik}   ${now}`],
+      [],
+      ...rows
+    ];
+    const ws = window.XLSX.utils.aoa_to_sheet(wsData);
+    ws['!cols'] = rows[0] ? rows[0].map(() => ({ wch: 20 })) : [];
+    window.XLSX.utils.book_append_sheet(wb, ws, baslik.slice(0,31));
+    window.XLSX.writeFile(wb, this._getFileName(tip, 'xlsx'));
+    closeExportModal();
   },
 
   pdf(tip) {
-    // Commit 3'te doldurulacak
-    console.log('PDF export hazırlanıyor:', tip);
+    if (!window.jspdf) {
+      alert('PDF kütüphanesi henüz yüklenmedi. Lütfen GitHub Pages üzerinden deneyin.');
+      return;
+    }
+    const { jsPDF } = window.jspdf;
+    const brand = this._getBrandHeader();
+    const now   = new Date().toLocaleDateString('tr-TR');
+    const doc   = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const W     = doc.internal.pageSize.getWidth();
+    let y       = 15;
+
+    // Header arka plan
+    doc.setFillColor(12, 10, 8);
+    doc.rect(0, 0, W, 28, 'F');
+
+    // Logo
+    if (brand.logo) {
+      try { doc.addImage(brand.logo, 'PNG', 10, 5, 18, 18); } catch(e) {}
+    }
+
+    // Şirket + proje adı
+    doc.setTextColor(232, 150, 46);
+    doc.setFontSize(13);
+    doc.setFont('helvetica','bold');
+    doc.text(brand.sirket || 'Prodüksiyon', brand.logo ? 32 : 10, 13);
+    if (brand.proje) {
+      doc.setFontSize(9);
+      doc.setFont('helvetica','normal');
+      doc.setTextColor(200, 190, 175);
+      doc.text(brand.proje, brand.logo ? 32 : 10, 20);
+    }
+
+    // Tarih sağda
+    doc.setFontSize(8);
+    doc.setTextColor(200, 190, 175);
+    doc.text(now, W - 10, 13, { align: 'right' });
+
+    y = 36;
+
+    // Rapor başlığı
+    const basliklar = {
+      'saha'         : 'Saha Harcama Raporu',
+      'acc-personel' : 'Personel Harcama Raporu',
+      'acc-dept'     : 'Departman Raporu',
+      'acc-donem'    : 'Dönem Raporu'
+    };
+    doc.setTextColor(30, 30, 30);
+    doc.setFontSize(14);
+    doc.setFont('helvetica','bold');
+    doc.text(basliklar[tip] || 'Harcama Raporu', 10, y);
+    y += 10;
+
+    // Veri satırları
+    let headers = [];
+    let dataRows = [];
+
+    if (tip === 'saha') {
+      const user   = APP.ui.curUser;
+      const don    = APP.ui.aktifDon || 1;
+      const fisler = (APP.data.fisler || []).filter(f =>
+        f.personel === user && String(f.donem) === String(don)
+      );
+      headers  = ['Tarih','Kategori','Tutar (TL)','Durum'];
+      dataRows = fisler.map(f => [
+        f.tarih || '', f.kategori || '',
+        Number(f.tutar || 0).toFixed(2), f.durum || ''
+      ]);
+
+    } else if (tip === 'acc-personel') {
+      const data = _computeRaporPersonel();
+      headers  = ['Personel','Toplam (TL)','Fiş Sayısı'];
+      dataRows = (data || []).map(p => [
+        p.ad || '', Number(p.toplam || 0).toFixed(2), String(p.fisSayisi || 0)
+      ]);
+
+    } else if (tip === 'acc-dept') {
+      headers  = ['Departman','Toplam (TL)','Onaylı','Bekleyen'];
+      dataRows = (APP.data.accDepts || []).map(d => [
+        d.ad || '', Number(d.toplam || 0).toFixed(2),
+        Number(d.onay || 0).toFixed(2), Number(d.bekleyen || 0).toFixed(2)
+      ]);
+
+    } else if (tip === 'acc-donem') {
+      headers  = ['Dönem','Personel','Kategori','Tutar (TL)','Durum'];
+      dataRows = (APP.data.fisler || []).map(f => [
+        String(f.donem || ''), f.personel || '', f.kategori || '',
+        Number(f.tutar || 0).toFixed(2), f.durum || ''
+      ]);
+    }
+
+    // Tablo çiz
+    const colW  = (W - 20) / (headers.length || 1);
+    const rowH  = 8;
+
+    // Tablo başlık satırı
+    doc.setFillColor(232, 150, 46);
+    doc.rect(10, y, W - 20, rowH, 'F');
+    doc.setTextColor(12, 10, 8);
+    doc.setFontSize(8);
+    doc.setFont('helvetica','bold');
+    headers.forEach((h, i) => doc.text(h, 12 + i * colW, y + 5.5));
+    y += rowH;
+
+    // Veri satırları
+    doc.setFont('helvetica','normal');
+    dataRows.forEach((row, ri) => {
+      if (y > 270) {
+        doc.addPage();
+        y = 15;
+      }
+      doc.setFillColor(ri % 2 === 0 ? 248 : 240, ri % 2 === 0 ? 246 : 238, ri % 2 === 0 ? 242 : 234);
+      doc.rect(10, y, W - 20, rowH, 'F');
+      doc.setTextColor(30, 30, 30);
+      row.forEach((cell, i) => {
+        const txt = String(cell).slice(0, 22);
+        doc.text(txt, 12 + i * colW, y + 5.5);
+      });
+      y += rowH;
+    });
+
+    // Footer
+    const fY = doc.internal.pageSize.getHeight() - 8;
+    doc.setFillColor(12, 10, 8);
+    doc.rect(0, fY - 4, W, 12, 'F');
+    doc.setTextColor(232, 150, 46);
+    doc.setFontSize(7);
+    doc.text('Generated by PRODAPP  •  v8.x', W / 2, fY, { align: 'center' });
+
+    doc.save(this._getFileName(tip, 'pdf'));
+    closeExportModal();
   },
 
   png(elementId) {
