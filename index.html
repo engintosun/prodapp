@@ -3360,11 +3360,12 @@ const exportManager = {
 
     } else if (tip === 'acc-personel') {
       const data = _computeRaporPersonel();
-      rows.push(['Personel','Toplam (TL)','Fiş Sayısı']);
+      rows.push(['Personel','Departman','Toplam (TL)','Onaylı (TL)','Bekleyen (TL)']);
       (data || []).forEach(p => rows.push([
-        p.ad || '',
-        Number(p.toplam || 0).toFixed(2),
-        p.fisSayisi || 0
+        p.name || '', p.dept || '',
+        Number(p.total || 0).toFixed(2),
+        Number(p.onay  || 0).toFixed(2),
+        Number(p.bek   || 0).toFixed(2)
       ]));
 
     } else if (tip === 'acc-dept') {
@@ -3449,9 +3450,10 @@ const exportManager = {
     } else if (tip === 'acc-personel') {
       baslik = 'Personel Raporu';
       const data = _computeRaporPersonel();
-      rows.push(['Personel','Toplam (TL)','Fiş Sayısı']);
+      rows.push(['Personel','Departman','Toplam (TL)','Onaylı (TL)','Bekleyen (TL)']);
       (data || []).forEach(p => rows.push([
-        p.ad || '', Number(p.toplam || 0), p.fisSayisi || 0
+        p.name || '', p.dept || '',
+        Number(p.total || 0), Number(p.onay || 0), Number(p.bek || 0)
       ]));
 
     } else if (tip === 'acc-dept') {
@@ -3570,9 +3572,12 @@ const exportManager = {
 
     } else if (tip === 'acc-personel') {
       const data = _computeRaporPersonel();
-      headers  = ['Personel','Toplam (TL)','Fiş Sayısı'];
+      headers  = ['Personel','Departman','Toplam (TL)','Onaylı (TL)','Bekleyen (TL)'];
       dataRows = (data || []).map(p => [
-        p.ad || '', Number(p.toplam || 0).toFixed(2), String(p.fisSayisi || 0)
+        p.name || '', p.dept || '',
+        Number(p.total || 0).toFixed(2),
+        Number(p.onay  || 0).toFixed(2),
+        Number(p.bek   || 0).toFixed(2)
       ]);
 
     } else if (tip === 'acc-dept') {
