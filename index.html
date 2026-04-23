@@ -3326,6 +3326,16 @@ const exportManager = {
     return `PRODAPP_${tip}_${tarih}.${ext}`;
   },
 
+  _tr(str) {
+    return String(str)
+      .replace(/ş/g,'s').replace(/Ş/g,'S')
+      .replace(/ı/g,'i').replace(/İ/g,'I')
+      .replace(/ğ/g,'g').replace(/Ğ/g,'G')
+      .replace(/ü/g,'u').replace(/Ü/g,'U')
+      .replace(/ö/g,'o').replace(/Ö/g,'O')
+      .replace(/ç/g,'c').replace(/Ç/g,'C');
+  },
+
   _getBrandHeader() {
     return {
       sirket : (APP.data.companyInfo?.name  || 'Prodüksiyon'),
@@ -3564,34 +3574,34 @@ const exportManager = {
       const fisler = (APP.data.fisler || []).filter(f =>
         f.personel === user && String(f.donem) === String(don)
       );
-      headers  = ['Tarih','Kategori','Tutar (TL)','Durum'];
+      headers  = [this._tr('Tarih'),this._tr('Kategori'),this._tr('Tutar (TL)'),this._tr('Durum')];
       dataRows = fisler.map(f => [
-        f.tarih || '', f.kategori || '',
-        Number(f.tutar || 0).toFixed(2), f.durum || ''
+        this._tr(f.tarih || ''), this._tr(f.kategori || ''),
+        Number(f.tutar || 0).toFixed(2), this._tr(f.durum || '')
       ]);
 
     } else if (tip === 'acc-personel') {
       const data = _computeRaporPersonel();
-      headers  = ['Personel','Departman','Toplam (TL)','Onaylı (TL)','Bekleyen (TL)'];
+      headers  = [this._tr('Personel'),this._tr('Departman'),this._tr('Toplam (TL)'),this._tr('Onaylı (TL)'),this._tr('Bekleyen (TL)')];
       dataRows = (data || []).map(p => [
-        p.name || '', p.dept || '',
+        this._tr(p.name || ''), this._tr(p.dept || ''),
         Number(p.total || 0).toFixed(2),
         Number(p.onay  || 0).toFixed(2),
         Number(p.bek   || 0).toFixed(2)
       ]);
 
     } else if (tip === 'acc-dept') {
-      headers  = ['Departman','Toplam (TL)','Onaylı','Bekleyen'];
+      headers  = [this._tr('Departman'),this._tr('Toplam (TL)'),this._tr('Onaylı'),this._tr('Bekleyen')];
       dataRows = (APP.data.accDepts || []).map(d => [
-        d.ad || '', Number(d.toplam || 0).toFixed(2),
+        this._tr(d.ad || ''), Number(d.toplam || 0).toFixed(2),
         Number(d.onay || 0).toFixed(2), Number(d.bekleyen || 0).toFixed(2)
       ]);
 
     } else if (tip === 'acc-donem') {
-      headers  = ['Dönem','Personel','Kategori','Tutar (TL)','Durum'];
+      headers  = [this._tr('Dönem'),this._tr('Personel'),this._tr('Kategori'),this._tr('Tutar (TL)'),this._tr('Durum')];
       dataRows = (APP.data.fisler || []).map(f => [
-        String(f.donem || ''), f.personel || '', f.kategori || '',
-        Number(f.tutar || 0).toFixed(2), f.durum || ''
+        this._tr(String(f.donem || '')), this._tr(f.personel || ''), this._tr(f.kategori || ''),
+        Number(f.tutar || 0).toFixed(2), this._tr(f.durum || '')
       ]);
     }
 
