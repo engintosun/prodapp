@@ -182,6 +182,10 @@ Faz 1'in 3 P0/P1 maddesi bitince hemen bu iş başlar. Faz 2 (backend) öncesi �
 - **Skills / GitHub ekosistem:** Claude Skills PRODAPP için pek işe yaramaz
   (genel docx/pptx skill'leri senin işin değil). GitHub Issues ve branches
   Faz 2'de kullan, şu an erken.
+- **Avans akışı notu:** Muhasebe departman avansını doğrudan dept şefine
+  gönderebilir; dept şefi bu avansı personele uygun gördüğü şekilde dağıtır.
+  Avans export'unda bu akış şu an || true ile kapsanıyor — Faz 2'de
+  proper filtreleme gerekecek.
 
 ---
 
