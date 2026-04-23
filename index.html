@@ -2462,7 +2462,7 @@ body {
         <div class="sec-lbl" id="fis-hd-lbl">Fişler</div>
         <div style="display:flex;align-items:center;gap:8px">
           <div style="font-size:12px;color:var(--tx3)" id="fis-hd-cnt"></div>
-          <div class="fis-pdf-btn" onclick="expPDF()" title="PDF olarak indir">
+          <div class="fis-pdf-btn" onclick="showExportModal('saha')" title="PDF olarak indir">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
           </div>
         </div>
@@ -3399,6 +3399,30 @@ const exportManager = {
         f.durum || ''
       ]));
 
+    } else if (tip === 'dept-gecmis') {
+      const donId = APP.ui.sdGecmisPnlDonem || APP.ui.sdSeciliDonem || 1;
+      const gec   = (APP.data.deptGecmis && APP.data.deptGecmis[donId]) || { onaylandi: [], reddedildi: [] };
+      const tumFisler = [
+        ...gec.onaylandi.map(f => ({ ...f, durum: 'Onaylı' })),
+        ...gec.reddedildi.map(f => ({ ...f, durum: 'Reddedildi' }))
+      ];
+      rows.push(['Tarih','Personel','Kategori','Tutar (TL)','Durum','Açıklama']);
+      tumFisler.forEach(f => rows.push([
+        f.tarih || '', f.personel || '', f.kategori || '',
+        Number(f.tutar || 0).toFixed(2), f.durum || '', f.aciklama || ''
+      ]));
+
+    } else if (tip === 'dept-avans') {
+      const tumAvans = [
+        ...(APP.data.deptAvans || []),
+        ...(APP.data.accAvansGecmis || []).filter(a => a.dept === APP.ui.curDept || true)
+      ];
+      rows.push(['Tarih','Üye','Tutar (TL)','Durum','Gerekçe']);
+      tumAvans.forEach(a => rows.push([
+        a.tarih || '', a.uye || '',
+        Number(a.tutar || 0).toFixed(2), a.durum || 'Bekleyen', a.gerekce || ''
+      ]));
+
     } else {
       // fallback — tüm fişler
       rows.push(['Tarih','Personel','Kategori','Tutar (TL)','Durum']);
@@ -3482,6 +3506,32 @@ const exportManager = {
         f.donem || '', f.personel || '', f.kategori || '',
         Number(f.tutar || 0), f.durum || ''
       ]));
+
+    } else if (tip === 'dept-gecmis') {
+      baslik = 'Dept Gecmis';
+      const donId = APP.ui.sdGecmisPnlDonem || APP.ui.sdSeciliDonem || 1;
+      const gec   = (APP.data.deptGecmis && APP.data.deptGecmis[donId]) || { onaylandi: [], reddedildi: [] };
+      const tumFisler = [
+        ...gec.onaylandi.map(f => ({ ...f, durum: 'Onaylı' })),
+        ...gec.reddedildi.map(f => ({ ...f, durum: 'Reddedildi' }))
+      ];
+      rows.push(['Tarih','Personel','Kategori','Tutar (TL)','Durum','Açıklama']);
+      dataRows = tumFisler.map(f => [
+        f.tarih || '', f.personel || '', f.kategori || '',
+        Number(f.tutar || 0), f.durum || '', f.aciklama || ''
+      ]);
+
+    } else if (tip === 'dept-avans') {
+      baslik = 'Dept Avans';
+      const tumAvans = [
+        ...(APP.data.deptAvans || []),
+        ...(APP.data.accAvansGecmis || []).filter(a => a.dept === APP.ui.curDept || true)
+      ];
+      rows.push(['Tarih','Üye','Tutar (TL)','Durum','Gerekçe']);
+      dataRows = tumAvans.map(a => [
+        a.tarih || '', a.uye || '',
+        Number(a.tutar || 0), a.durum || 'Bekleyen', a.gerekce || ''
+      ]);
 
     } else {
       baslik = 'Tüm Harcamalar';
@@ -3602,6 +3652,32 @@ const exportManager = {
       dataRows = (APP.data.fisler || []).map(f => [
         this._tr(String(f.donem || '')), this._tr(f.personel || ''), this._tr(f.kategori || ''),
         Number(f.tutar || 0).toFixed(2), this._tr(f.durum || '')
+      ]);
+
+    } else if (tip === 'dept-gecmis') {
+      const donId = APP.ui.sdGecmisPnlDonem || APP.ui.sdSeciliDonem || 1;
+      const gec   = (APP.data.deptGecmis && APP.data.deptGecmis[donId]) || { onaylandi: [], reddedildi: [] };
+      const tumFisler = [
+        ...gec.onaylandi.map(f => ({ ...f, durum: 'Onayli' })),
+        ...gec.reddedildi.map(f => ({ ...f, durum: 'Reddedildi' }))
+      ];
+      headers  = [this._tr('Tarih'), this._tr('Personel'), this._tr('Kategori'), this._tr('Tutar (TL)'), this._tr('Durum')];
+      dataRows = tumFisler.map(f => [
+        this._tr(f.tarih || ''), this._tr(f.personel || ''),
+        this._tr(f.kategori || ''), Number(f.tutar || 0).toFixed(2),
+        this._tr(f.durum || '')
+      ]);
+
+    } else if (tip === 'dept-avans') {
+      const tumAvans = [
+        ...(APP.data.deptAvans || []),
+        ...(APP.data.accAvansGecmis || []).filter(a => a.dept === APP.ui.curDept || true)
+      ];
+      headers  = [this._tr('Tarih'), this._tr('Üye'), this._tr('Tutar (TL)'), this._tr('Durum'), this._tr('Gerekçe')];
+      dataRows = tumAvans.map(a => [
+        this._tr(a.tarih || ''), this._tr(a.uye || ''),
+        Number(a.tutar || 0).toFixed(2),
+        this._tr(a.durum || 'Bekleyen'), this._tr(a.gerekce || '')
       ]);
     }
 
@@ -6034,7 +6110,7 @@ function renderDeptAvans() {
   if (sortedDeptAv.length) {
     var deptAvTop = 0;
     for (var daii = 0; daii < sortedDeptAv.length; daii++) deptAvTop += sortedDeptAv[daii].tutar;
-    html += '<div class="sd-sec">Saha Onay Bekleyen (' + sortedDeptAv.length + ') · <span style="font-family:var(--mo);color:var(--am2)">₺' + deptAvTop.toLocaleString('tr-TR') + '</span></div>';
+    html += '<div class="sd-sec" style="display:flex;align-items:center;justify-content:space-between;">Saha Onay Bekleyen (' + sortedDeptAv.length + ') · <span style="font-family:var(--mo);color:var(--am2)">₺' + deptAvTop.toLocaleString('tr-TR') + '</span><button style="background:transparent;border:1px solid var(--accent,#E8962E);color:var(--accent,#E8962E);border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer;" onclick="showExportModal(\'dept-avans\')">⬇ Dışa Aktar</button></div>';
     html += sortedDeptAv.map(function(a) {
       return '<div class="sd-avans-card" id="sd-av-' + a.id + '">' +
         '<div class="sd-av-top">' +
@@ -6640,7 +6716,7 @@ function renderDeptGecmis() {
 
   /* Onaylananlar */
   if (gec.onaylandi.length) {
-    html += '<div class="sd-gec-sec-hd">Onaylanan Harcamalar (' + gec.onaylandi.length + ')</div>';
+    html += '<div class="sd-gec-sec-hd" style="display:flex;align-items:center;justify-content:space-between;">Onaylanan Harcamalar (' + gec.onaylandi.length + ')<button style="background:transparent;border:1px solid var(--accent,#E8962E);color:var(--accent,#E8962E);border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer;" onclick="showExportModal(\'dept-gecmis\')">⬇ Dışa Aktar</button></div>';
     html += '<div class="sd-gec-fis-card">';
     html += gec.onaylandi.map(function(f) {
       var kat = SD_KAT_LBL[f.kat] || f.kat;
@@ -7298,58 +7374,6 @@ function renderDonem(did) {
     '</div>';
 }
 function yeniDonem() { notif('Yeni dönem başlatıldı', 'green'); }
-
-/* ═══ PDF EXPORT ═══ */
-function expPDF() {
-  var co       = APP.data.companyInfo || { name: '', logo: null };
-  var pid      = APP.ui.curProj ? APP.ui.curProj.id : '';
-  var projLogo = pid && APP.data.projLogos ? APP.data.projLogos[pid] : null;
-  var projName = pid ? _projName(pid) : 'PRODAPP';
-  var tarih = new Date().toLocaleDateString('tr-TR');
-  var mine  = APP.data.fisler.filter(function(d) { return d.donem === APP.ui.aktifDon && d.personel === 'Mehmet Kaya'; });
-  var top   = mine.reduce(function(s, d) { return s + d.tutar; }, 0);
-  var w = window.open('', '_blank', 'width=860,height=620');
-  if (!w) { notif('Popup engellendi', 'red'); return; }
-  var rows = mine.map(function(d, i) {
-    return '<tr style="background:' + (i%2 ? '#f9f9f9' : '#fff') + '">' +
-      '<td>' + d.tarih + '</td><td>' + d.satici + '</td>' +
-      '<td>' + d.kat   + '</td><td style="text-align:right">₺' + d.tutar.toLocaleString('tr-TR') + '</td>' +
-      '<td>' + d.durum + '</td>' +
-    '</tr>';
-  }).join('');
-  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>PRODAPP Raporu</title>' +
-    '<style>body{font-family:Arial,sans-serif;color:#111;margin:0}table{width:100%;border-collapse:collapse}' +
-    'th{background:#E8962E;color:#fff;padding:7px 10px;text-align:left}td{padding:6px 10px;font-size:12px}' +
-    '@media print{.np{display:none}.pdf-ft{position:fixed;bottom:8px;left:0;right:0;text-align:center;font-size:10px;color:#aaa}}' +
-    '@page{margin-bottom:30px}</style></head><body><div style="padding:24px">' +
-    '<div class="pdf-ft">Bu rapor PRODAPP ile hazırlandı</div>' +
-    '<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:3px solid #E8962E;margin-bottom:16px">' +
-      '<div>' +
-        (co.logo ? '<img src="' + co.logo + '" style="max-height:56px;width:auto">' :
-          '<div style="font-size:20px;font-weight:800">' + (co.name || 'PRODAPP') + '</div>') +
-        '<div style="font-size:11px;color:#666">Dönem Raporu</div>' +
-      '</div>' +
-      '<div style="text-align:right">' +
-        (projLogo ? '<img src="' + projLogo + '" style="max-height:48px;width:auto;display:block;margin-left:auto">' : '') +
-        '<div style="font-weight:700">' + projName + '</div>' +
-        '<div style="font-size:11px;color:#666">' + tarih + '</div>' +
-      '</div>' +
-    '</div>' +
-    '<table><thead><tr><th>Tarih</th><th>Satıcı</th><th>Kategori</th><th>Tutar</th><th>Durum</th></tr></thead>' +
-    '<tbody>' + rows + '</tbody>' +
-    '<tfoot><tr><td colspan="3" style="font-weight:700;padding:7px 10px">TOPLAM</td>' +
-      '<td style="font-weight:700;text-align:right;padding:7px 10px">₺' + top.toLocaleString('tr-TR') + '</td><td></td></tr></tfoot>' +
-    '</table>' +
-    '<div class="np" style="text-align:center;margin-top:16px">' +
-      '<button onclick="window.print()" style="background:#E8962E;color:#fff;border:none;padding:10px 24px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer">Yazdır / PDF Kaydet</button>' +
-      '<button onclick="window.close()" style="background:#eee;color:#333;border:none;padding:10px 16px;border-radius:6px;font-size:13px;cursor:pointer;margin-left:6px">Kapat</button>' +
-    '</div>' +
-    '<div style="font-size:10px;color:#aaa;text-align:center;margin-top:12px;border-top:1px solid #eee;padding-top:8px">Bu rapor PRODAPP ile hazırlandı · KVKK Uyumlu · ' + tarih + '</div>' +
-    '</div></body></html>';
-  w.document.write(html);
-  w.document.close();
-  notif('PDF hazır, yazdırabilirsiniz', 'green');
-}
 
 /* ═══ LİGHTBOX ═══ */
 function openLBFis(fid) {
@@ -8721,7 +8745,7 @@ function _renderAccRaporIc() {
   else if (APP.ui.saRaporTip === 'donem')    content = _raporDonem();
 
   el.innerHTML = btns + content +
-    '<button class="sa-pdf-btn" onclick="accPDF()">📥 PDF Raporu İndir</button>';
+    '<button class="sa-pdf-btn" onclick="showExportModal(\'acc-\' + APP.ui.saRaporTip)">📥 Dışa Aktar</button>';
 }
 
 /* ── Dept Raporu — Liste ── */
@@ -9846,131 +9870,6 @@ function accSupheIsle(id, action) {
   saveAppData();
 }
 
-function accPDF() {
-  var co       = APP.data.companyInfo || { name: '', logo: null };
-  var pid      = APP.ui.curProj ? APP.ui.curProj.id : '';
-  var projLogo = pid && APP.data.projLogos ? APP.data.projLogos[pid] : null;
-  var prj      = pid ? _projName(pid) : 'PRODAPP';
-  var tarih    = new Date().toLocaleDateString('tr-TR');
-  var rAdlar = { dept:'Departman Raporu', kat:'Kategori Raporu', personel:'Personel Raporu', donem:'Dönem Karşılaştırma' };
-  var rAd    = rAdlar[APP.ui.saRaporTip] || 'Rapor';
-  var el     = document.getElementById('sa-pnl-rapor');
-  if (!el)   { notif('Rapor bulunamadı', 'red'); return; }
-
-  /* İçeriği kopyala; PDF butonunu çıkar */
-  var tmp = document.createElement('div');
-  tmp.innerHTML = el.innerHTML;
-  var pdfBtnEl = tmp.querySelector('.sa-pdf-btn');
-  if (pdfBtnEl) pdfBtnEl.parentNode.removeChild(pdfBtnEl);
-
-  /* CSS değişken değerlerini tespit et */
-  var rootStyle = getComputedStyle(document.documentElement);
-  var bg  = rootStyle.getPropertyValue('--bg').trim()  || '#0C0A08';
-  var tx  = rootStyle.getPropertyValue('--tx').trim()  || '#EDF0F5';
-  var tx2 = rootStyle.getPropertyValue('--tx2').trim() || '#8A9090';
-  var tx3 = rootStyle.getPropertyValue('--tx3').trim() || '#4A5060';
-  var bo  = rootStyle.getPropertyValue('--bo').trim()  || '#2A2620';
-  var bg2 = rootStyle.getPropertyValue('--bg2').trim() || '#131110';
-  var bg3 = rootStyle.getPropertyValue('--bg3').trim() || '#1A1816';
-  var ac2 = rootStyle.getPropertyValue('--ac2').trim() || '#F0C080';
-  var gr2 = rootStyle.getPropertyValue('--gr2').trim() || '#4ADE80';
-  var rd2 = rootStyle.getPropertyValue('--rd2').trim() || '#F87171';
-  var am2 = rootStyle.getPropertyValue('--am2').trim() || '#FCD34D';
-  var bl2 = rootStyle.getPropertyValue('--bl2').trim() || '#60A5FA';
-  var fn  = "'DM Sans', Arial, sans-serif";
-  var mo  = "'DM Mono', monospace";
-
-  var w = window.open('', '_blank', 'width=920,height=680');
-  if (!w) { notif('Popup engellendi — tarayıcı ayarlarını kontrol edin', 'red'); return; }
-
-  w.document.write('<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8">' +
-    '<title>' + rAd + ' — ' + prj + '</title>' +
-    '<style>' +
-    'body{background:' + bg + ';color:' + tx + ';font-family:' + fn + ';font-size:13px;margin:0;padding:0}' +
-    '.pdf-wrap{max-width:820px;margin:0 auto;padding:28px 24px}' +
-    '.pdf-hd{display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:14px;border-bottom:2px solid #E8962E;margin-bottom:20px}' +
-    '.pdf-hd-title{font-size:22px;font-weight:800;color:#E8962E}' +
-    '.pdf-hd-sub{font-size:11px;color:' + tx2 + ';margin-top:3px}' +
-    '.pdf-hd-right{text-align:right;font-size:12px;color:' + tx2 + '}' +
-    '.sa-rep-drill-hd{display:flex;align-items:center;gap:10px;padding:0 0 12px;border-bottom:1px solid ' + bo + ';margin-bottom:12px}' +
-    '.sa-rep-back{display:none}' +
-    '.sa-rep-drill-title{font-size:16px;font-weight:700;color:' + tx + '}' +
-    '.sa-rep-sec-hd{font-size:10px;font-weight:700;color:' + tx3 + ';text-transform:uppercase;letter-spacing:.6px;margin:14px 0 8px}' +
-    '.sa-rep-stat-grid,.sa-rep-stat-grid+*{break-inside:avoid}' +
-    'div[style*="grid-template-columns:1fr 1fr"]{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}' +
-    '.sa-rep-stat-c{background:' + bg2 + ';border:1px solid ' + bo + ';border-radius:8px;padding:10px 8px;text-align:center}' +
-    '.sa-rep-stat-v{font-size:14px;font-weight:800;font-family:' + mo + ';color:' + tx + ';margin-bottom:2px}' +
-    '.sa-rep-stat-l{font-size:9px;color:' + tx3 + ';text-transform:uppercase;letter-spacing:.3px}' +
-    '.sa-rep-kisi-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:' + bg2 + ';border:1px solid ' + bo + ';border-radius:8px;margin-bottom:6px}' +
-    '.sa-rep-kisi-av{width:34px;height:34px;border-radius:10px;background:' + bg3 + ';border:1px solid ' + bo + ';font-size:11px;font-weight:800;color:' + tx2 + ';display:flex;align-items:center;justify-content:center;flex-shrink:0}' +
-    '.sa-rep-kisi-info{flex:1;min-width:0}.sa-rep-kisi-name{font-size:13px;font-weight:600;color:' + tx + '}' +
-    '.sa-rep-kisi-sub{font-size:11px;color:' + tx3 + ';margin-top:1px}.sa-rep-kisi-tutar{font-size:14px;font-weight:800;font-family:' + mo + ';color:' + tx + '}' +
-    '.sa-bar-wrap{flex:1;height:6px;background:' + bg3 + ';border-radius:3px;overflow:hidden}.sa-bar-f{height:100%;background:#E8962E;border-radius:3px}' +
-    '.sa-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}' +
-    '.sa-bar-lbl{font-size:12px;color:' + tx2 + ';width:80px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
-    '.sa-bar-val{font-size:12px;font-weight:700;font-family:' + mo + ';color:' + tx2 + ';width:72px;text-align:right;flex-shrink:0}' +
-    '.sa-don-tbl{width:100%;border-collapse:collapse;margin-bottom:10px;font-size:12px}' +
-    '.sa-don-tbl th{font-size:9px;font-weight:700;color:' + tx3 + ';text-transform:uppercase;letter-spacing:.4px;padding:5px 4px;text-align:right;border-bottom:1px solid ' + bo + '}' +
-    '.sa-don-tbl th:first-child{text-align:left}.sa-don-tbl td.pos{color:' + gr2 + '!important}.sa-don-tbl td.neg{color:' + rd2 + '!important}' +
-    '.sa-don-tbl td{padding:8px 4px;border-bottom:1px solid ' + bo + ';text-align:right;font-family:' + mo + ';font-weight:600;color:' + tx2 + '}' +
-    '.sa-don-tbl td:first-child{text-align:left;font-family:' + fn + ';color:' + tx + ';font-weight:600}' +
-    '.sa-don-tbl tr:last-child td{border-bottom:none}' +
-    '.sa-donut-wrap{display:flex;align-items:center;gap:14px;margin-bottom:10px}' +
-    '.sa-donut-legend{flex:1;min-width:0}.sa-donut-leg-item{display:flex;align-items:center;gap:6px;margin-bottom:5px}' +
-    '.sa-donut-leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}' +
-    '.sa-donut-leg-name{font-size:11px;color:' + tx2 + ';flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
-    '.sa-donut-leg-pct{font-size:10px;color:' + tx3 + ';width:30px;text-align:right;flex-shrink:0}' +
-    '.sa-donut-leg-val{font-size:11px;font-weight:700;color:' + tx + ';font-family:' + mo + ';width:58px;text-align:right;flex-shrink:0}' +
-    '.sa-onay-bar-wrap{margin-bottom:14px}.sa-onay-bar-row{display:flex;height:20px;border-radius:6px;overflow:hidden;margin-bottom:6px;gap:2px}' +
-    '.sa-onay-bar-seg{display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;border-radius:4px;min-width:4px}' +
-    '.sa-onay-bar-legs{display:flex;gap:10px;flex-wrap:wrap}.sa-onay-bar-li{display:flex;align-items:center;gap:4px;font-size:11px;color:' + tx2 + '}' +
-    '.sa-onay-bar-ld{width:8px;height:8px;border-radius:2px;flex-shrink:0}' +
-    '.sa-fis-group-hd{font-size:10px;font-weight:700;color:' + tx3 + ';text-transform:uppercase;letter-spacing:.5px;padding:10px 0 5px;border-top:1px solid ' + bo + ';margin-top:4px;display:flex;justify-content:space-between}' +
-    '.sa-fis-group-hd:first-child{border-top:none}' +
-    '.sa-fis-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid ' + bo + '}' +
-    '.sa-fis-item:last-child{border-bottom:none}' +
-    '.sa-fis-ini{width:28px;height:28px;border-radius:8px;background:' + bg3 + ';border:1px solid ' + bo + ';font-size:10px;font-weight:800;color:' + tx2 + ';display:flex;align-items:center;justify-content:center;flex-shrink:0}' +
-    '.sa-fis-mid{flex:1;min-width:0}.sa-fis-satici{font-size:12px;font-weight:600;color:' + tx + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
-    '.sa-fis-meta{font-size:10px;color:' + tx3 + ';margin-top:1px}.sa-fis-right{text-align:right;flex-shrink:0}' +
-    '.sa-fis-tutar{font-size:12px;font-weight:700;font-family:' + mo + ';color:' + tx + '}' +
-    '.sa-fis-durum{font-size:10px;font-weight:700;margin-top:1px}' +
-    '.sa-fis-dur-on{color:' + gr2 + '}.sa-fis-dur-bek{color:' + am2 + '}.sa-fis-dur-red{color:' + rd2 + '}.sa-fis-dur-inc{color:' + bl2 + '}' +
-    '.sa-rep-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:' + bg2 + ';border:1px solid ' + bo + ';border-radius:8px;margin-bottom:6px}' +
-    '.sa-rep-left{font-size:13px;color:' + tx + ';font-weight:600}.sa-rep-sub{font-size:11px;color:' + tx3 + ';margin-top:1px}.sa-rep-val{font-size:14px;font-weight:800;font-family:' + mo + ';color:' + tx + '}' +
-    '.sa-rep-dept-row{background:' + bg2 + ';border:1px solid ' + bo + ';border-radius:10px;padding:12px;margin-bottom:8px}' +
-    '.sa-don-sec,.sa-don-sec-pill,.sa-rep-back,.sa-rapor-btns,.sa-pdf-btn{display:none!important}' +
-    '.np-print{display:none}.pdf-ft{display:none}' +
-    '@media print{body{background:#fff!important;color:#111!important}.pdf-wrap{padding:16px}' +
-    '.pdf-ft{display:block;position:fixed;bottom:8px;left:0;right:0;text-align:center;font-size:10px;color:#aaa}' +
-    '@page{margin-bottom:30px}' +
-      '.sa-rep-stat-c,.sa-rep-kisi-row,.sa-rep-row,.sa-rep-dept-row{background:#f9f9f9!important;border-color:#ddd!important}' +
-      '.sa-don-tbl th,.sa-don-tbl td{color:#333!important;border-color:#ddd!important}' +
-      '.sa-don-tbl th{background:#f0f0f0}' +
-    '}' +
-    '</style></head><body>' +
-    '<div class="pdf-wrap">' +
-      '<div class="pdf-ft">Bu rapor PRODAPP ile hazırlandı</div>' +
-      '<div class="pdf-hd">' +
-        '<div>' +
-          (co.logo ? '<img src="' + co.logo + '" style="max-height:56px;width:auto">' :
-            '<div class="pdf-hd-title">' + (co.name || 'PRODAPP') + '</div>') +
-          '<div class="pdf-hd-sub">' + rAd + '</div>' +
-        '</div>' +
-        '<div class="pdf-hd-right">' +
-          (projLogo ? '<img src="' + projLogo + '" style="max-height:48px;width:auto;display:block;margin-left:auto">' : '') +
-          '<div style="font-weight:700">' + prj + '</div>' +
-          '<div>' + tarih + '</div>' +
-        '</div>' +
-      '</div>' +
-      tmp.innerHTML +
-      '<div class="np-print" style="text-align:center;margin-top:20px">' +
-        '<button onclick="window.print()" style="background:#E8962E;color:#0C0A08;border:none;padding:10px 24px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer">Yazdır / PDF Kaydet</button>' +
-        '<button onclick="window.close()" style="background:' + bg3 + ';color:' + tx + ';border:1px solid ' + bo + ';padding:10px 16px;border-radius:7px;font-size:13px;cursor:pointer;margin-left:8px">Kapat</button>' +
-      '</div>' +
-    '</div></body></html>');
-  w.document.close();
-  notif('PDF penceresi açıldı', 'green');
-}
 
 /* ═══ BAŞLAT ═══ */
 (function init() {
