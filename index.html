@@ -3344,8 +3344,8 @@ const exportManager = {
     let rows = [];
 
     if (tip === 'saha') {
-      const user = APP.state.currentUser;
-      const don  = APP.state.aktivDon || APP.state.aktifDon || 1;
+      const user = APP.ui.curUser;
+      const don  = APP.ui.aktifDon || 1;
       const fisler = (APP.data.fisler || []).filter(f =>
         f.personel === user && String(f.donem) === String(don)
       );
