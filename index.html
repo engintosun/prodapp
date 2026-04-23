@@ -3339,8 +3339,92 @@ const exportManager = {
   },
 
   csv(tip) {
-    // Commit 2'de doldurulacak
-    console.log('CSV export hazırlanıyor:', tip);
+    const brand = this._getBrandHeader();
+    const now   = new Date().toLocaleDateString('tr-TR');
+    let rows = [];
+
+    if (tip === 'saha') {
+      const user = APP.state.currentUser;
+      const don  = APP.state.aktivDon || APP.state.aktifDon || 1;
+      const fisler = (APP.data.fisler || []).filter(f =>
+        f.personel === user && String(f.donem) === String(don)
+      );
+      rows.push(['Tarih','Kategori','Tutar (TL)','Durum','Açıklama']);
+      fisler.forEach(f => rows.push([
+        f.tarih || '',
+        f.kategori || '',
+        Number(f.tutar || 0).toFixed(2),
+        f.durum || '',
+        f.aciklama || ''
+      ]));
+
+    } else if (tip === 'acc-personel') {
+      const data = _computeRaporPersonel();
+      rows.push(['Personel','Toplam (TL)','Fiş Sayısı']);
+      (data || []).forEach(p => rows.push([
+        p.ad || '',
+        Number(p.toplam || 0).toFixed(2),
+        p.fisSayisi || 0
+      ]));
+
+    } else if (tip === 'acc-dept') {
+      const depts = APP.data.accDepts || [];
+      rows.push(['Departman','Toplam (TL)','Onaylı (TL)','Bekleyen (TL)']);
+      depts.forEach(d => rows.push([
+        d.ad || '',
+        Number(d.toplam || 0).toFixed(2),
+        Number(d.onay   || 0).toFixed(2),
+        Number(d.bekleyen || 0).toFixed(2)
+      ]));
+
+    } else if (tip === 'acc-donem') {
+      const fisler = APP.data.fisler || [];
+      rows.push(['Dönem','Personel','Kategori','Tutar (TL)','Durum']);
+      fisler.forEach(f => rows.push([
+        f.donem || '',
+        f.personel || '',
+        f.kategori || '',
+        Number(f.tutar || 0).toFixed(2),
+        f.durum || ''
+      ]));
+
+    } else {
+      // fallback — tüm fişler
+      rows.push(['Tarih','Personel','Kategori','Tutar (TL)','Durum']);
+      (APP.data.fisler || []).forEach(f => rows.push([
+        f.tarih || '',
+        f.personel || '',
+        f.kategori || '',
+        Number(f.tutar || 0).toFixed(2),
+        f.durum || ''
+      ]));
+    }
+
+    // Başlık satırları
+    const header = [
+      [`${brand.sirket}${brand.proje ? ' — ' + brand.proje : ''}`],
+      [`PRODAPP Raporu: ${tip}   Tarih: ${now}`],
+      []
+    ];
+    const allRows = [...header, ...rows];
+
+    // CSV string oluştur
+    const csv = allRows.map(r =>
+      r.map(cell => {
+        const s = String(cell).replace(/"/g, '""');
+        return /[,"\n]/.test(s) ? `"${s}"` : s;
+      }).join(',')
+    ).join('\r\n');
+
+    // İndir
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = this._getFileName(tip, 'csv');
+    a.click();
+    URL.revokeObjectURL(url);
+    closeExportModal();
   },
 
   excel(tip) {
