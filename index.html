@@ -2224,7 +2224,62 @@ body {
 .sb-okunan { font-size: 11px; color: var(--tx3); line-height: 1; }
 .sb.ben .sb-okunan { color: var(--ac); }
 .sb-okunan.bekliyor { opacity: .4; }
+
+#export-modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+}
+#export-modal {
+  background: var(--bg-card, #1a1814);
+  border: 1px solid var(--border, #333);
+  border-radius: 16px;
+  padding: 28px 24px 20px;
+  width: min(320px, 90vw);
+  display: flex; flex-direction: column; align-items: center; gap: 20px;
+}
+#export-modal-title {
+  font-size: 17px; font-weight: 600;
+  color: var(--text-primary, #f0ece6);
+}
+#export-modal-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; width: 100%;
+}
+.exp-btn {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 6px; padding: 16px 8px;
+  background: var(--bg-hover, #242018);
+  border: 1px solid var(--border, #333);
+  border-radius: 12px;
+  color: var(--text-primary, #f0ece6);
+  font-size: 13px; cursor: pointer;
+  min-height: 80px;
+  transition: border-color .15s, background .15s;
+}
+.exp-btn:hover {
+  border-color: var(--accent, #E8962E);
+  background: var(--bg-card, #1a1814);
+}
+.exp-icon { font-size: 26px; }
+#export-modal-cancel {
+  width: 100%; padding: 12px;
+  background: transparent;
+  border: 1px solid var(--border, #333);
+  border-radius: 10px;
+  color: var(--text-secondary, #8a8070);
+  font-size: 14px; cursor: pointer;
+}
+#export-modal-cancel:hover {
+  border-color: var(--accent, #E8962E);
+  color: var(--text-primary, #f0ece6);
+}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
 </head>
 <body>
 
@@ -3219,6 +3274,28 @@ body {
   </div>
 </div>
 
+<div id="export-modal-overlay" style="display:none"
+     onclick="if(event.target===this)closeExportModal()">
+  <div id="export-modal">
+    <div id="export-modal-title">Dışa Aktar</div>
+    <div id="export-modal-grid">
+      <button class="exp-btn" id="exp-btn-pdf"   onclick="exportManager.pdf(exportModal._tip)">
+        <span class="exp-icon">📄</span><span>PDF</span>
+      </button>
+      <button class="exp-btn" id="exp-btn-excel" onclick="exportManager.excel(exportModal._tip)">
+        <span class="exp-icon">📊</span><span>Excel</span>
+      </button>
+      <button class="exp-btn" id="exp-btn-csv"   onclick="exportManager.csv(exportModal._tip)">
+        <span class="exp-icon">📋</span><span>CSV</span>
+      </button>
+      <button class="exp-btn" id="exp-btn-png"   onclick="exportManager.png(exportModal._elId)">
+        <span class="exp-icon">🖼</span><span>PNG</span>
+      </button>
+    </div>
+    <button id="export-modal-cancel" onclick="closeExportModal()">İptal</button>
+  </div>
+</div>
+
 <!-- ════════════════════════════
      LİGHTBOX
 ════════════════════════════ -->
@@ -3241,6 +3318,62 @@ body {
    cache: türetilmiş lookup   |  ui: ekran state
    ═══════════════════════════════════════════════════════════════ */
 var APP = {};
+
+const exportManager = {
+  _getFileName(tip, ext) {
+    const now = new Date();
+    const tarih = now.toISOString().slice(0,10);
+    return `PRODAPP_${tip}_${tarih}.${ext}`;
+  },
+
+  _getBrandHeader() {
+    return {
+      sirket : (APP.data.companyInfo?.name  || 'Prodüksiyon'),
+      logo   : (APP.data.companyInfo?.logo  || null),
+      proje  : (() => {
+        const pid = APP.state?.aktivProje || APP.state?.projId || null;
+        if (!pid) return '';
+        return APP.data.projNames?.[pid] || pid;
+      })()
+    };
+  },
+
+  csv(tip) {
+    // Commit 2'de doldurulacak
+    console.log('CSV export hazırlanıyor:', tip);
+  },
+
+  excel(tip) {
+    // Commit 3'te doldurulacak
+    console.log('Excel export hazırlanıyor:', tip);
+  },
+
+  pdf(tip) {
+    // Commit 3'te doldurulacak
+    console.log('PDF export hazırlanıyor:', tip);
+  },
+
+  png(elementId) {
+    // Commit 4'te doldurulacak
+    console.log('PNG export hazırlanıyor:', elementId);
+  }
+};
+
+const exportModal = {
+  _tip  : null,
+  _elId : null
+};
+
+function showExportModal(tip, elId = null) {
+  exportModal._tip  = tip;
+  exportModal._elId = elId;
+  document.getElementById('export-modal-overlay').style.display = 'flex';
+}
+
+function closeExportModal() {
+  document.getElementById('export-modal-overlay').style.display = 'none';
+}
+
 APP.seed  = {};
 APP.data  = {};
 APP.cache = {};
