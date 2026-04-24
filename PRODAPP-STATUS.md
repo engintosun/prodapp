@@ -4,7 +4,7 @@
 **Aktif sürüm:** v8.x (canlı)
 **Repo:** https://github.com/engintosun/prodapp
 **Deploy:** https://engintosun.github.io/prodapp/
-**Son commit:** ada154c — workflows.md mali iş akışları
+**Son commit:** 8034569 — status güncellemesi
 
 ---
 
@@ -99,7 +99,7 @@
 ### P0 — Demo için şart
 - [x] **Çoklu format export sistemi** (PDF/Excel/CSV, jsPDF + SheetJS, dropdown UI, 4 commit + fix'ler — tamamlandı 24.04.2026)
 - [ ] **Kısmi onay akışı** (dept, tek fişin bir kısmını onay/reddet) *(L)*
-- [ ] **WORKFLOWS.md** — mali iş akışları dokümanı (kısmi onay öncesi)
+- [x] **WORKFLOWS.md** — mali iş akışları dokümanı (tamamlandı 24.04.2026)
 - [ ] **fisler.durum çift-adım riski:** deptOnayla durumu güncellemiyor, sadece accOnayla güncelliyor. 'bekleyen' iki anlam taşıyor. Ayrıştırma gerekli (ör: 'dept-bekleyen', 'acc-bekleyen'). *(M)*
 - [ ] **accGecmis koleksiyonu:** Muhasebe kesin onay sonrası arşiv yok. Denetim için kritik. *(M)*
 - [ ] **Dönem yönetimi:** yeniDonem() ve dönem kapama implement değil. Demo'da 3 sabit dönem var. *(L)*
@@ -112,7 +112,7 @@
 
 ## 🔄 FAZ 1 SONRASI — MODÜLERLEŞME PLANI
 
-Faz 1'in 3 P0/P1 maddesi bitince hemen bu iş başlar. Faz 2 (backend) öncesi şart.
+Faz 1'in 6 P0/P1 maddesi (4 P0 + 2 P1) bitince hemen bu iş başlar. Faz 2 (backend) öncesi şart.
 
 ### Hedef dizin yapısı
 
