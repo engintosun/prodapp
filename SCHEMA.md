@@ -8,6 +8,27 @@ export veya servis katmanı oluştururken field isimlerinde referans budur.
 
 ---
 
+## Bu doküman NE ZAMAN güncellenir
+
+Bu şema canlı bir referans. Aşağıdaki durumlarda AYNI commit içinde
+SCHEMA.md da güncellenir — kod değişir, şema değişmez olmaz.
+
+- APP.data altına yeni koleksiyon eklenirse
+- Mevcut koleksiyondaki bir objeye yeni field eklenirse
+- Field adı değişirse (örn. "kat" → "kategori")
+- Field tipi değişirse (örn. string → number)
+- Enum değerleri değişirse (örn. durum'a yeni bir durum eklenirse)
+- APP.ui'ya yeni state field eklenirse
+- Yeni bir _compute* fonksiyonu yazılırsa
+- Mevcut _compute fonksiyonunun dönüş şeması değişirse
+
+Güncelleme sorumluluğu:
+- Kodu yazan commit'te şema güncellenir.
+- Commit mesajında "schema updated" ibaresi geçer.
+- Yeni oturum başlangıcında Claude SCHEMA.md'yi okur, bağlamı buradan kurar.
+
+---
+
 ## BÖLÜM 1 — APP.data (Mali Veri — KRİTİK)
 
 ### APP.data.fisler
