@@ -4,7 +4,7 @@
 **Aktif sürüm:** v8.x (canlı)
 **Repo:** https://github.com/engintosun/prodapp
 **Deploy:** https://engintosun.github.io/prodapp/
-**Son commit:** 8034569 — status güncellemesi
+**Son commit:** 4d36960 — fisler.durum enum ayrıştırma
 
 ---
 
