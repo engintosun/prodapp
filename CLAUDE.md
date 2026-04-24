@@ -108,3 +108,35 @@ All app state is plain `var` globals at the top of the script block:
 - UI is rendered by setting `innerHTML` strings directly — no templating engine.
 - Adding a new screen: add a `<div id="sX" class="scr">` in HTML, add CSS under a new banner section, call `showScr('sX')` to navigate to it.
 - Adding a new feature section in JS: place it after the nearest related section, delimited with `/* ═══ FEATURE NAME ═══ */`.
+
+---
+
+## Çalışma Kuralları
+
+### 4. Tanı vs Uygulama Prompt'ları
+
+Prompt "SADECE OKU VE RAPORLA" veya "değişiklik yapma" diyorsa:
+- Hiçbir dosyayı değiştirme
+- git commit atma
+- git push yapma
+- Sadece raporu ver
+
+Prompt uygulama prompt'uysa:
+- Değişiklikleri yap
+- Commit at (tek)
+- Push et
+- Özet raporu ver
+
+### 5. Satır Numarası Uyuşmazlığı
+
+Prompt'taki satır numarası dosyada başka bir şey gösteriyorsa:
+- DUR
+- "Satır X'te beklenen Y bulamadım, gerçek içerik Z" diye raporla
+- Tahmin ederek benzer yerde değişiklik yapma
+- Kullanıcı onay bekle
+
+### 6. İletişim Dili
+
+- Türkçe yaz
+- Kısa ve net ol
+- "Yapabilir miyim?", "Uygun mu?" gibi fazla nezaket yerine doğrudan bulguyu sun
