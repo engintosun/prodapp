@@ -2226,6 +2226,7 @@ body {
 .sb-okunan.bekliyor { opacity: .4; }
 
 #export-dropdown {
+  display: none;
   position: fixed;
   background: var(--bg-card, #1a1814);
   border: 1px solid var(--border, #333);
@@ -9878,7 +9879,7 @@ function accSupheIsle(id, action) {
   }
 }());
 </script>
-<div id="export-dropdown" style="display:none">
+<div id="export-dropdown">
   <button class="exp-dd-item" onclick="exportManager.pdf(exportModal._tip)">
     <span class="exp-dd-icon">📄</span><span>PDF</span>
   </button>
