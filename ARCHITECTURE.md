@@ -1,0 +1,248 @@
+# PRODAPP — Mimari Tasarım
+
+**Son güncelleme:** 24 Nisan 2026
+**Durum:** v1
+
+Bu belge PRODAPP'in veri modelini, sorumluluk sınırlarını ve denetim
+motorunu tanımlar. Yeni kod yazarken bu kurallar referans alınır.
+Kural ihlali gerektiren bir ihtiyaç doğarsa önce bu belge güncellenir,
+sonra kod yazılır.
+
+---
+
+## 1. TASARIM İLKELERİ
+
+Her mimari karar şu dört prensibe göre alınır:
+
+### 1.1. Tek kaynak ilkesi
+
+Her bilgi için **bir kaynak koleksiyon** vardır. Diğer yerler o kaynağı
+okuyup görüntüler, kendi kopyasını tutmaz. Örnek: bir fişin durumu
+sadece `APP.data.fisler[i].durum`'dur; `deptBekleyen` veya `accBekleyen`
+bu durumu kendi içinde tekrar tutmaz, sadece referans verir.
+
+Faz 1'de kaynak localStorage'da (tarayıcı). Faz 2'de Supabase tablosunda.
+
+### 1.2. Referans bütünlüğü ilkesi
+
+Bir koleksiyon başka bir koleksiyondaki kayda referans veriyorsa,
+o referans her zaman geçerli olmalı — yetim kayıt olmamalı. Örnek:
+`deptBekleyen[i].fisId` mutlaka `APP.data.fisler` içinde var olan
+bir id'ye karşılık gelmeli.
+
+### 1.3. Denetim şeffaflığı ilkesi
+
+Her mali işlem iz bırakır. Fiş ne zaman, kim tarafından, hangi durumdan
+hangi duruma geçirildi — silinemeyecek şekilde kaydedilir. Denetim
+motoru bu iz üzerinden çalışır.
+
+### 1.4. Değiştirilemezlik ilkesi
+
+Bir işlem arşive girdikten sonra **değiştirilemez, silinemez**.
+Düzeltme gerekiyorsa ters işlem yapılır (iptal + yeni kayıt).
+Bu kural kurumsal denetim gereksinimidir.
+
+---
+
+## 2. VERİ MODELİ
+
+### 2.1. Koleksiyon kategorileri
+
+**A. Kaynak koleksiyonlar**
+Gerçeğin yaşadığı yer.
+- `APP.data.fisler` — tüm mali işlemlerin ana koleksiyonu
+  *(İsim notu: Faz 2'de `islemler` olarak güncellenecek. Fiş dışında
+  belgesiz harcama, avans ve kiralamayı da kapsar. Bugün `fisler` kalır.)*
+- `APP.data.kullanicilar` (Faz 2'de eklenecek)
+
+**B. Kuyruk koleksiyonlar**
+İşlenmeyi bekleyen kayıtların görünümü. Kaynaktan türetilir.
+- `APP.data.deptBekleyen`
+- `APP.data.accBekleyen`
+
+**C. Arşiv koleksiyonlar**
+Değiştirilemez tarihsel kayıt.
+- `APP.data.deptGecmis`
+- `APP.data.accGecmis` (eklenecek)
+- `APP.data.accAvansGecmis`
+
+**D. Türetilmiş koleksiyonlar**
+Kaynak verilerden hesaplanır. Cache amaçlı. Gerçek değil, görüntü.
+- `APP.data.accDepts` — `_recomputeAccDepts()` hesaplar
+- `APP.data.donemButce.harcanan` — fisler'den hesaplanır
+- `APP.cache.*` — tüm cache'ler
+
+### 2.2. Koleksiyon bağları
+
+Bağlar tek yönlüdür. Kuyruk ve arşiv koleksiyonlar kaynağa referans verir.
+
+```
+fisler  <----  deptBekleyen   (fisId ile)
+   ^
+   +----  accBekleyen     (fisId ile)
+   ^
+   +----  deptGecmis      (fisId ile)
+   ^
+   +----  accGecmis       (fisId ile — eklenecek)
+```
+
+### 2.3. fisId kuralı
+
+Her kuyruk ve arşiv kaydı şu iki alanı içermek zorunda:
+- `id` — kaydın kendi benzersiz ID'si
+- `fisId` — kaynak `fisler` kaydının ID'sine referans
+
+Bu kural istisnasız. Şu an seed'de eksik, onarım zorunlu.
+
+---
+
+## 3. SORUMLULUK SINIRLARI
+
+### 3.1. fisler.durum yazım hakkı
+
+Sadece şu fonksiyonlar `APP.data.fisler[i].durum` yazabilir:
+
+| Fonksiyon        | Yazacağı değer     | Koşul                  |
+|------------------|--------------------|------------------------|
+| submitOCR        | 'dept-bekleyen'    | Yeni fiş               |
+| submitBelgesiz   | 'dept-bekleyen'    | Yeni fiş               |
+| deptOnayla       | 'acc-bekleyen'     | Dept onay              |
+| deptReddet       | 'reddedildi'       | Dept red               |
+| accOnayla        | 'onaylandi'        | Muhasebe kesin onay    |
+| accReddet        | 'reddedildi'       | Muhasebe red           |
+
+Başka hiçbir yerde `fisler.durum`'a yazılmaz. Bu kural kod review
+kriteridir.
+
+### 3.2. Arşive yazım hakkı
+
+Arşiv koleksiyonları **sadece ekleme (append)** kabul eder.
+Güncelleme veya silme yasaktır.
+
+| Koleksiyon             | Yazan fonksiyon(lar)             |
+|------------------------|----------------------------------|
+| deptGecmis.onaylandi   | deptOnayla, deptOnaylaSecili     |
+| deptGecmis.reddedildi  | deptReddet, deptReddetSecili     |
+| accGecmis              | accOnayla, accReddet (eklenecek) |
+| accAvansGecmis         | accOnayla (avans), avansRedOnay  |
+
+### 3.3. Türetilmiş veriye yazım
+
+Türetilmiş koleksiyonlar kendi hesaplama fonksiyonları dışında
+yazılamaz:
+
+| Koleksiyon    | Hesaplayan fonksiyon          |
+|---------------|-------------------------------|
+| accDepts      | _recomputeAccDepts()          |
+| donemButce    | ilgili işlem fonksiyonları    |
+| cache.*       | ilgili _compute* fonksiyonu   |
+
+UI render'ı bu koleksiyonları okuyabilir ama yazamaz.
+
+---
+
+## 4. DENETİM MOTORU
+
+PRODAPP'in ayırt edici özelliği. Her mali işlem otomatik kontrolden
+geçer ve şüpheli durumlar kayıt altına alınır.
+
+### 4.1. Tetikleme noktaları
+
+Denetim motoru şu üç noktada otomatik çalışır:
+1. **Yazım sırasında** — Yeni fiş/avans oluşturulurken
+2. **Durum geçişinde** — Onay/red anında
+3. **Periyodik tarama** — Dönem kapama öncesi
+
+### 4.2. Kural kategorileri
+
+**A. Limit kuralları** — Kategori/dönem/personel limiti aşıldı mı
+**B. Tutarlılık kuralları** — Birim × miktar = tutar, km × TL/km = ulaşım
+**C. Tekrar kuralları** — Mükerrer fiş, benzer tutar/satıcı/tarih
+**D. Zamanlama kuralları** — Dönem dışı, ileri tarihli, çok eski
+**E. Doküman kuralları** — Belgesiz oran, eksik alan, düşük OCR skoru
+**F. Desen kuralları** — Aynı personelin tekrarlayan anomalileri
+
+*Her kategorinin spesifik kuralları ayrı belgede: AUDIT-RULES.md
+(eklenecek).*
+
+### 4.3. accDenetim koleksiyonu (eklenecek)
+
+Her denetim bulgusu bu koleksiyona yazılır. Yapı:
+
+```
+{
+  id:         number,
+  fisId:      number,
+  tip:        string,          // 'limit' | 'tekrar' | ...
+  kural:      string,          // 'KAT_LIMIT_ASIM' gibi kural ID
+  siddet:     string,          // 'dusuk' | 'orta' | 'yuksek' | 'kritik'
+  aciklama:   string,
+  detay:      object,
+  tarih:      number,
+  durum:      string,          // 'acik' | 'inceleniyor' | 'cozuldu' | 'kabul'
+  cozumNotu:  string|null,
+  cozenKisi:  string|null
+}
+```
+
+### 4.4. Mevcut accSuphe ile ilişki
+
+Şu anki `accSuphe` koleksiyonu demo amaçlıdır. Yeni `accDenetim`
+koleksiyonu eklenince `accSuphe` kaldırılacak veya view'e dönüşecek.
+
+### 4.5. Denetim raporu çıktısı
+
+Kurumsal sunum için zorunlu format:
+- Dönem bazlı denetim özeti (PDF)
+- Şiddet seviyesine göre sıralı bulgu listesi
+- Her bulgu için: fiş detayı + kural + çözüm durumu
+- İstatistik: toplam denetlenen, bulgu sayısı, tip dağılımı
+- Dashboard canlı görünüm: açık bulgular, kritik seviyedekiler
+
+---
+
+## 5. GÜVENLİK MODELİ
+
+Faz 1'de minimum. Faz 2'de detaylandırılacak.
+
+### 5.1. Roller ve yetkiler
+- **Saha**: Kendi fişleri
+- **Dept**: Kendi departmanının fişleri
+- **Muhasebe**: Tüm fişler, kesin onay
+- **Denetçi** (Faz 2): Sadece okuma
+
+### 5.2. Veri erişim kuralları (Faz 2)
+- Kullanıcı başka departmanın verisini göremez
+- Muhasebe veriyi düzeltemez, sadece işaretler
+- Arşiv kayıtları değiştirilemez (bugün kodda yok, eklenecek)
+
+### 5.3. Kimlik doğrulama
+
+Faz 2'de Supabase Auth. Bugün sadece UI katmanında rol.
+
+---
+
+## 6. FAZ 2 GEÇİŞ NOTU
+
+Bu mimari Supabase'e taşınırken:
+- Koleksiyonlar → PostgreSQL tabloları
+- Kuyruk koleksiyonlar → VIEW (sorgu, tablo değil)
+- Türetilmiş koleksiyonlar → DB function veya materialized view
+- Arşiv koleksiyonlar → UPDATE yetkisi olmayan INSERT-only tablo
+- Denetim motoru → DB trigger
+- fisId referansları → foreign key constraint
+
+Veri modeli değişmez. Sadece depolama katmanı değişir.
+
+---
+
+## 7. DOKÜMAN SORUMLULUĞU
+
+Bu belge şu durumlarda güncellenir:
+- Yeni koleksiyon ekleniyor
+- Mevcut koleksiyonun kategorisi değişiyor
+- Sorumluluk sınırları değişiyor
+- Yeni denetim kural kategorisi tanımlanıyor
+- Faz 2 geçiş notu değişiyor
+
+Güncelleme kodla aynı commit'te yapılır.
