@@ -4,7 +4,7 @@
 **Aktif sürüm:** v8.x (canlı)
 **Repo:** https://github.com/engintosun/prodapp
 **Deploy:** https://engintosun.github.io/prodapp/
-**Son commit:** 4d36960 — fisler.durum enum ayrıştırma
+**Son commit:** 0121150 — ARCHITECTURE.md tam formatlı sürüm
 
 ---
 
@@ -98,6 +98,7 @@
 
 ### P0 — Demo için şart
 - [x] **Çoklu format export sistemi** (PDF/Excel/CSV, jsPDF + SheetJS, dropdown UI, 4 commit + fix'ler — tamamlandı 24.04.2026)
+- [ ] **Seed onarımı** — fisler/deptBekleyen/accBekleyen fisId bağı kopuk, ARCHITECTURE.md'ye uyumlu yeniden yapılacak *(M)*
 - [ ] **Kısmi onay akışı** (dept, tek fişin bir kısmını onay/reddet) *(L)*
 - [x] **WORKFLOWS.md** — mali iş akışları dokümanı (tamamlandı 24.04.2026)
 - [x] **fisler.durum çift-adım riski:** deptOnayla durumu güncellemiyor, sadece accOnayla güncelliyor. 'bekleyen' iki anlam taşıyor. Ayrıştırma gerekli (ör: 'dept-bekleyen', 'acc-bekleyen'). *(M)* (tamamlandı 24.04.2026)
@@ -214,7 +215,8 @@ Proje dokümanları (hepsi /prodapp kök dizininde):
 - **design.md** — görsel kimlik referansı
 - **WORKFLOWS.md** — mali iş akışları: 9 akış + kritik bulgular
 - **AUDIT-RULES.md** — (planlanıyor) anomali/denetim kuralları, accSuphe mantığı
-- **ARCHITECTURE.md** — (modülerleşme ile) modül yapısı, bağımlılık grafiği
+- **CLAUDE.md** — Sonnet çalışma kuralları
+- **ARCHITECTURE.md** — veri modeli, sorumluluk sınırları, denetim motoru
 - **DEPLOYMENT.md** — (pilot öncesi) deploy, rollback, migration
 
 Yeni oturum başında Claude STATUS.md + SCHEMA.md'yi okuyarak bağlam kurar.
