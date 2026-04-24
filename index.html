@@ -3308,7 +3308,7 @@ const exportManager = {
     let rows = [];
 
     if (tip === 'saha') {
-      const user = APP.ui.curUser;
+      const user = (APP.ui.curUser && APP.ui.curUser.name) || APP.ui.curUser;
       const don  = APP.ui.aktifDon || 1;
       const fisler = (APP.data.fisler || []).filter(f =>
         f.personel === user && String(f.donem) === String(don)
@@ -3316,7 +3316,7 @@ const exportManager = {
       rows.push(['Tarih','Kategori','Tutar (TL)','Durum','Açıklama']);
       fisler.forEach(f => rows.push([
         f.tarih || '',
-        f.kategori || '',
+        f.kat || '',
         Number(f.tutar || 0).toFixed(2),
         f.durum || '',
         f.aciklama || ''
@@ -3424,14 +3424,14 @@ const exportManager = {
 
     if (tip === 'saha') {
       baslik = 'Saha Harcamaları';
-      const user   = APP.ui.curUser;
+      const user   = (APP.ui.curUser && APP.ui.curUser.name) || APP.ui.curUser;
       const don    = APP.ui.aktifDon || 1;
       const fisler = (APP.data.fisler || []).filter(f =>
         f.personel === user && String(f.donem) === String(don)
       );
       rows.push(['Tarih','Kategori','Tutar (TL)','Durum','Açıklama']);
       fisler.forEach(f => rows.push([
-        f.tarih || '', f.kategori || '',
+        f.tarih || '', f.kat || '',
         Number(f.tutar || 0), f.durum || '', f.aciklama || ''
       ]));
 
@@ -3573,14 +3573,14 @@ const exportManager = {
     let dataRows = [];
 
     if (tip === 'saha') {
-      const user   = APP.ui.curUser;
+      const user   = (APP.ui.curUser && APP.ui.curUser.name) || APP.ui.curUser;
       const don    = APP.ui.aktifDon || 1;
       const fisler = (APP.data.fisler || []).filter(f =>
         f.personel === user && String(f.donem) === String(don)
       );
       headers  = [this._tr('Tarih'),this._tr('Kategori'),this._tr('Tutar (TL)'),this._tr('Durum')];
       dataRows = fisler.map(f => [
-        this._tr(f.tarih || ''), this._tr(f.kategori || ''),
+        this._tr(f.tarih || ''), this._tr(f.kat || ''),
         Number(f.tutar || 0).toFixed(2), this._tr(f.durum || '')
       ]);
 
