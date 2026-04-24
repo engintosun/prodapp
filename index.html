@@ -3796,10 +3796,10 @@ APP.seed.donemler = [
   { id:1, n:'D1', lbl:'Dönem #1', tarih:'20.03–05.04', durum:'kapali', avans:9460,  harcama:9460,  islem:8 }
 ];
 APP.data.fisler = [
-  { id:1, tarih:'03.04.2026', personel:'Mehmet Kaya', satici:'Petrol Ofisi',   kat:'Yakit',   tutar:1000, durum:'bekleyen',   donem:2, uyari:null,                    thumb:null },
-  { id:2, tarih:'24.03.2026', personel:'Mehmet Kaya', satici:'Tavuk Dünyası',  kat:'Yiyecek', tutar:780,  durum:'bekleyen',   donem:2, uyari:'Ekip 15, 10 porsiyon', thumb:null },
+  { id:1, tarih:'03.04.2026', personel:'Mehmet Kaya', satici:'Petrol Ofisi',   kat:'Yakit',   tutar:1000, durum:'dept-bekleyen',   donem:2, uyari:null,                    thumb:null },
+  { id:2, tarih:'24.03.2026', personel:'Mehmet Kaya', satici:'Tavuk Dünyası',  kat:'Yiyecek', tutar:780,  durum:'dept-bekleyen',   donem:2, uyari:'Ekip 15, 10 porsiyon', thumb:null },
   { id:7, tarih:'03.04.2026', personel:'Mehmet Kaya', satici:'Petrol Ofisi',   kat:'Yakit',   tutar:1000, durum:'reddedildi', donem:2, uyari:'Mükerrer fiş',          thumb:null, duplikat:true },
-  { id:8, tarih:'10.04.2026', personel:'Mehmet Kaya', satici:'Kostüm Deposu', kat:'Sanat',   tutar:320,  durum:'bekleyen',   donem:2, uyari:null, thumb:null, belgesiz:true, aciklama:'Ekstra kostüm aksesuarı — nakit ödeme, fiş verilmedi' },
+  { id:8, tarih:'10.04.2026', personel:'Mehmet Kaya', satici:'Kostüm Deposu', kat:'Sanat',   tutar:320,  durum:'dept-bekleyen',   donem:2, uyari:null, thumb:null, belgesiz:true, aciklama:'Ekstra kostüm aksesuarı — nakit ödeme, fiş verilmedi' },
   /* ── Dönem #1 fişleri (kapali) ── */
   { id:11, tarih:'20.03.2026', personel:'Mehmet Kaya', satici:'Petrol Ofisi A.Ş.',       kat:'Yakit',   tutar:2400, durum:'onaylandi', donem:1, uyari:null, thumb:null },
   { id:12, tarih:'22.03.2026', personel:'Mehmet Kaya', satici:'Çiçek Restaurant',        kat:'Yiyecek', tutar:1850, durum:'onaylandi', donem:1, uyari:null, thumb:null },
@@ -3811,23 +3811,23 @@ APP.data.fisler = [
   /* ── Kiralama demo verileri ── */
   { id:20, tarih:'01.04.2026', personel:'Mehmet Kaya', satici:'Megapol Araç Kiralama',    kat:'Kiralama', tutar:3150, durum:'onaylandi', donem:2, uyari:null, thumb:null,
     kiraMeta:{ bas:'2026-04-01', bit:'2026-04-05', gunluk:450 } },
-  { id:21, tarih:'10.04.2026', personel:'Mehmet Kaya', satici:'Sigma Kamera Ekipmanları', kat:'Kiralama', tutar:4800, durum:'bekleyen', donem:2, uyari:null, thumb:null,
+  { id:21, tarih:'10.04.2026', personel:'Mehmet Kaya', satici:'Sigma Kamera Ekipmanları', kat:'Kiralama', tutar:4800, durum:'dept-bekleyen', donem:2, uyari:null, thumb:null,
     kiraMeta:{ bas:'2026-04-10', bit:'2026-04-16', gunluk:800 } },
-  { id:22, tarih:'12.04.2026', personel:'Mehmet Kaya', satici:'ProAV Ses Ekipmanı',       kat:'Kiralama', tutar:2450, durum:'bekleyen', donem:2, uyari:null, thumb:null,
+  { id:22, tarih:'12.04.2026', personel:'Mehmet Kaya', satici:'ProAV Ses Ekipmanı',       kat:'Kiralama', tutar:2450, durum:'dept-bekleyen', donem:2, uyari:null, thumb:null,
     kiraMeta:{ bas:'2026-04-12', bit:'2026-04-25', gunluk:350 } },
   /* ── Yapım dept — Okan Demir, Aylin Korkmaz, Burhan Çelik, Zeynep Arslan ── */
   { id:30, tarih:'05.04.2026', personel:'Okan Demir',    satici:'Kamera Merkezi',         kat:'Ekipman', tutar:3800, durum:'onaylandi', donem:2, dept:'yapim', uyari:null, thumb:null },
   { id:31, tarih:'22.03.2026', personel:'Okan Demir',    satici:'Çarşı Lokantası',        kat:'Yiyecek', tutar:620,  durum:'onaylandi', donem:1, dept:'yapim', uyari:null, thumb:null },
   { id:32, tarih:'08.04.2026', personel:'Aylin Korkmaz', satici:'Petrol Ofisi',           kat:'Yakit',   tutar:1450, durum:'onaylandi', donem:2, dept:'yapim', uyari:null, thumb:null },
   { id:33, tarih:'28.03.2026', personel:'Aylin Korkmaz', satici:'Kırtasiye Plus',         kat:'Diger',   tutar:280,  durum:'onaylandi', donem:1, dept:'yapim', uyari:null, thumb:null },
-  { id:34, tarih:'11.04.2026', personel:'Burhan Çelik',  satici:'Aydınlatma Tüp A.Ş.',   kat:'Ekipman', tutar:2200, durum:'bekleyen',  donem:2, dept:'yapim', uyari:null, thumb:null },
+  { id:34, tarih:'11.04.2026', personel:'Burhan Çelik',  satici:'Aydınlatma Tüp A.Ş.',   kat:'Ekipman', tutar:2200, durum:'dept-bekleyen',  donem:2, dept:'yapim', uyari:null, thumb:null },
   { id:35, tarih:'25.03.2026', personel:'Burhan Çelik',  satici:'İETT / Taksi',           kat:'Ulasim',  tutar:390,  durum:'onaylandi', donem:1, dept:'yapim', uyari:null, thumb:null },
   { id:36, tarih:'09.04.2026', personel:'Zeynep Arslan', satici:'Set Market TR',          kat:'Diger',   tutar:540,  durum:'onaylandi', donem:2, dept:'yapim', uyari:null, thumb:null },
   { id:37, tarih:'21.03.2026', personel:'Zeynep Arslan', satici:'Migros',                 kat:'Yiyecek', tutar:860,  durum:'reddedildi',donem:1, dept:'yapim', uyari:'Kişisel alışveriş dahil edilmiş', thumb:null },
   /* ── Kamera dept — Fatih Bayrak, Elif Yılmaz ── */
   { id:38, tarih:'07.04.2026', personel:'Fatih Bayrak',  satici:'Lens Kiralık İstanbul',  kat:'Ekipman', tutar:4200, durum:'onaylandi', donem:2, dept:'kamera', uyari:null, thumb:null },
   { id:39, tarih:'24.03.2026', personel:'Fatih Bayrak',  satici:'Petrol Ofisi Bakırköy',  kat:'Yakit',   tutar:980,  durum:'onaylandi', donem:1, dept:'kamera', uyari:null, thumb:null },
-  { id:40, tarih:'10.04.2026', personel:'Elif Yılmaz',   satici:'Kafe Set Bistro',        kat:'Yiyecek', tutar:450,  durum:'bekleyen',  donem:2, dept:'kamera', uyari:null, thumb:null },
+  { id:40, tarih:'10.04.2026', personel:'Elif Yılmaz',   satici:'Kafe Set Bistro',        kat:'Yiyecek', tutar:450,  durum:'dept-bekleyen',  donem:2, dept:'kamera', uyari:null, thumb:null },
   { id:41, tarih:'27.03.2026', personel:'Elif Yılmaz',   satici:'Taksi / Minibüs',        kat:'Ulasim',  tutar:310,  durum:'onaylandi', donem:1, dept:'kamera', uyari:null, thumb:null },
   /* ── Sanat dept — Selin Yıldız, Can Kılıç, Nisan Aydın ── */
   { id:42, tarih:'06.04.2026', personel:'Selin Yıldız',  satici:'Dekor & Aksesuar TR',    kat:'Sanat',   tutar:3100, durum:'onaylandi', donem:2, dept:'sanat', uyari:null, thumb:null },
@@ -3837,7 +3837,7 @@ APP.data.fisler = [
   /* ── Ses dept — Kaan Taş, Mert Öztürk ── */
   { id:46, tarih:'04.04.2026', personel:'Kaan Taş',      satici:'Ses Kablosu Merkez',     kat:'Ekipman', tutar:1100, durum:'onaylandi', donem:2, dept:'ses', uyari:null, thumb:null },
   { id:47, tarih:'19.03.2026', personel:'Kaan Taş',      satici:'Şehir Lokantası',        kat:'Yiyecek', tutar:420,  durum:'onaylandi', donem:1, dept:'ses', uyari:null, thumb:null },
-  { id:48, tarih:'13.04.2026', personel:'Mert Öztürk',   satici:'Müzik Aletleri A.Ş.',   kat:'Ekipman', tutar:2900, durum:'bekleyen',  donem:2, dept:'ses', uyari:null, thumb:null },
+  { id:48, tarih:'13.04.2026', personel:'Mert Öztürk',   satici:'Müzik Aletleri A.Ş.',   kat:'Ekipman', tutar:2900, durum:'dept-bekleyen',  donem:2, dept:'ses', uyari:null, thumb:null },
   /* ── Kostüm dept — Arda Şen, Lale Çetin ── */
   { id:49, tarih:'03.04.2026', personel:'Arda Şen',       satici:'Makyaj Profesyonel TR', kat:'Sanat',   tutar:1850, durum:'onaylandi', donem:2, dept:'kostum', uyari:null, thumb:null },
   { id:50, tarih:'20.03.2026', personel:'Arda Şen',       satici:'Kozmetik Depo',         kat:'Diger',   tutar:730,  durum:'onaylandi', donem:1, dept:'kostum', uyari:null, thumb:null },
@@ -4846,8 +4846,8 @@ function srchList(q) {
     return;
   }
 
-  var durumClr = { bekleyen:'var(--am)', onaylandi:'var(--gr)', reddedildi:'var(--rd)' };
-  var durumTxt = { bekleyen:'Bekleyen', onaylandi:'Onaylandı', reddedildi:'Reddedildi' };
+  var durumClr = { bekleyen:'var(--am)', 'dept-bekleyen':'var(--am)', 'acc-bekleyen':'var(--am)', onaylandi:'var(--gr)', reddedildi:'var(--rd)' };
+  var durumTxt = { bekleyen:'Bekleyen', 'dept-bekleyen':'Bekleyen', 'acc-bekleyen':'Bekleyen', onaylandi:'Onaylandı', reddedildi:'Reddedildi' };
 
   drop.innerHTML =
     '<div class="srch-hd"><span>' + results.length + ' sonuç</span><span>Tıkla → kayda git</span></div>' +
@@ -4901,7 +4901,7 @@ var KAT_IC = {
   Yiyecek: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>',
   def: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>'
 };
-var DOT = { bekleyen:'var(--am)', onaylandi:'var(--gr)', reddedildi:'var(--rd)' };
+var DOT = { bekleyen:'var(--am)', 'dept-bekleyen':'var(--am)', 'acc-bekleyen':'var(--am)', onaylandi:'var(--gr)', reddedildi:'var(--rd)' };
 
 /* ═══ FİŞ THUMBNAIL (SVG data URL) ═══ */
 function fisThumbnail(f) {
@@ -5173,7 +5173,7 @@ function submitOCR() {
     var today2 = new Date();
     var tarih2 = _pad(today2.getDate()) + '.' + _pad(today2.getMonth()+1) + '.' + today2.getFullYear();
     var entry  = { id: Date.now(), tarih: tarih2, personel: APP.ui.curUser ? APP.ui.curUser.name : 'Bilinmeyen', satici: sat2,
-                   kat: kat2, tutar: tut2, durum: 'bekleyen', donem: APP.ui.aktifDon, uyari: null, thumb: null,
+                   kat: kat2, tutar: tut2, durum: 'dept-bekleyen', donem: APP.ui.aktifDon, uyari: null, thumb: null,
                    log: [_mkLog('olusturuldu', 'Harcama sisteme girildi')] };
     if (kat2 === 'Kiralama') {
       entry.kiraMeta = {
@@ -5956,6 +5956,12 @@ function deptOnaylaSecili() {
         aciklama: f.aciklama || '', fotos: f.fotos || [],
         fromKey: f.fromKey || 's', log: f.log
       });
+      /* fisler.durum güncelle: dept-bekleyen → acc-bekleyen */
+      var _fsi = -1;
+      for (var _fsli = 0; _fsli < APP.data.fisler.length; _fsli++) {
+        if (APP.data.fisler[_fsli].id === f.fisId) { _fsi = _fsli; break; }
+      }
+      if (_fsi !== -1) APP.data.fisler[_fsi].durum = 'acc-bekleyen';
       return false;
     }
     return true;
@@ -6794,6 +6800,12 @@ function deptOnayla(id) {
       f.log.push(_mkLog('onaylandi', ''));
       if (!APP.data.deptGecmis[2]) APP.data.deptGecmis[2] = { onaylandi:[], reddedildi:[] };
       APP.data.deptGecmis[2].onaylandi.push({ id:f.id, uye:f.uye||'', ini:f.ini||'', satici:f.satici||'', kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptTarih(), log:f.log });
+      /* fisler.durum güncelle: dept-bekleyen → acc-bekleyen */
+      var _fi = -1;
+      for (var _fli = 0; _fli < APP.data.fisler.length; _fli++) {
+        if (APP.data.fisler[_fli].id === f.fisId) { _fi = _fli; break; }
+      }
+      if (_fi !== -1) APP.data.fisler[_fi].durum = 'acc-bekleyen';
       /* Muhasebe kuyruğuna aktar */
       f.log.push(_mkLog('dept-onayladi', ''));
       APP.data.accBekleyen.unshift({
@@ -7126,7 +7138,7 @@ function submitBelgesiz() {
       var bFisIdK = Date.now();
       APP.data.fisler.unshift({
         id: bFisIdK, tarih: bTarih, personel: bPersonel, satici: 'Belgesiz Kiralama',
-        kat: 'Kiralama', tutar: bTut, durum: 'bekleyen', donem: APP.ui.aktifDon,
+        kat: 'Kiralama', tutar: bTut, durum: 'dept-bekleyen', donem: APP.ui.aktifDon,
         uyari: null, thumb: null, belgesiz: true, aciklama: bAciklama, fotos: fotos,
         dept: bDept, neden: bNeden,
         log: [_mkLog('olusturuldu', 'Belgesiz harcama bildirildi')],
@@ -7142,7 +7154,7 @@ function submitBelgesiz() {
       var bFisId = Date.now();
       APP.data.fisler.unshift({
         id: bFisId, tarih: bTarih, personel: bPersonel, satici: 'Belgesiz Harcama',
-        kat: bKat, tutar: bTut, durum: 'bekleyen', donem: APP.ui.aktifDon,
+        kat: bKat, tutar: bTut, durum: 'dept-bekleyen', donem: APP.ui.aktifDon,
         uyari: null, thumb: null, belgesiz: true, aciklama: bAciklama, fotos: fotos,
         dept: bDept, neden: bNeden,
         log: [_mkLog('olusturuldu', 'Belgesiz harcama bildirildi')]
@@ -7369,9 +7381,9 @@ function openLBFis(fid) {
   if (!f) return;
   var src = f.thumb || fisThumbnail(f);
   document.getElementById('lb-img').src = src;
-  var durumClr = { onaylandi:'#4ADE80', reddedildi:'#F87171', bekleyen:'#FCD34D' };
-  var durumIco = { onaylandi:'✅', reddedildi:'❌', bekleyen:'⏳' };
-  var durumTxt = { onaylandi:'Onaylandı', reddedildi:'Reddedildi', bekleyen:'Bekleyen' };
+  var durumClr = { onaylandi:'#4ADE80', reddedildi:'#F87171', bekleyen:'#FCD34D', 'dept-bekleyen':'#FCD34D', 'acc-bekleyen':'#FCD34D' };
+  var durumIco = { onaylandi:'✅', reddedildi:'❌', bekleyen:'⏳', 'dept-bekleyen':'⏳', 'acc-bekleyen':'⏳' };
+  var durumTxt = { onaylandi:'Onaylandı', reddedildi:'Reddedildi', bekleyen:'Bekleyen', 'dept-bekleyen':'Bekleyen', 'acc-bekleyen':'Bekleyen' };
   var clr = durumClr[f.durum] || '#8A9090';
   var det = document.getElementById('lb-detail');
   det.innerHTML =
@@ -8248,8 +8260,8 @@ function _recomputeAccDepts() {
       if (!_ns[_ff.personel]) continue;
       var _tt = _ff.tutar || 0;
       _tot += _tt;
-      if      (_ff.durum === 'onaylandi')  _onay += _tt;
-      else if (_ff.durum !== 'reddedildi') _bek  += _tt;
+      if      (_ff.durum === 'onaylandi')   _onay += _tt;
+      else if (_ff.durum === 'acc-bekleyen') _bek += _tt;
     }
     _dept.total    = _tot;
     _dept.onay     = _onay;
@@ -8592,7 +8604,11 @@ function _computeRaporDeptFis(deptId) {
   for (var _fi = 0; _fi < APP.data.fisler.length; _fi++) {
     var _f = APP.data.fisler[_fi];
     if (!nameToIni.hasOwnProperty(_f.personel)) continue;
-    var _dur = _f.durum === 'onaylandi' ? 'onay' : (_f.durum === 'reddedildi' ? 'red' : 'bek');
+    var _dur;
+    if      (_f.durum === 'onaylandi')  _dur = 'onay';
+    else if (_f.durum === 'reddedildi') _dur = 'red';
+    else if (_f.durum === 'dept-bekleyen' || _f.durum === 'acc-bekleyen' || _f.durum === 'bekleyen') _dur = 'bek';
+    else _dur = 'bek';
     result.push({
       ini:    nameToIni[_f.personel],
       satici: _f.satici || '',
@@ -8664,12 +8680,12 @@ function _computeRaporPersonel() {
       var _tut = _f.tutar || 0;
       if      (_f.durum === 'onaylandi')  { _onay += _tut; }
       else if (_f.durum === 'reddedildi') { _red  += _tut; }
-      else                                { _bek  += _tut; }
+      else if (_f.durum === 'dept-bekleyen' || _f.durum === 'acc-bekleyen' || _f.durum === 'bekleyen') { _bek += _tut; }
       var _did = _f.donem;
       if (!_donMap[_did]) _donMap[_did] = { total:0, onay:0, bek:0 };
       _donMap[_did].total += _tut;
       if      (_f.durum === 'onaylandi')  _donMap[_did].onay += _tut;
-      else if (_f.durum !== 'reddedildi') _donMap[_did].bek  += _tut;
+      else if (_f.durum === 'dept-bekleyen' || _f.durum === 'acc-bekleyen' || _f.durum === 'bekleyen') _donMap[_did].bek += _tut;
       var _kn = _f.kat || 'Diger';
       _katMap[_kn] = (_katMap[_kn] || 0) + _tut;
     }

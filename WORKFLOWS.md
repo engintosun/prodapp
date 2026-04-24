@@ -43,7 +43,7 @@ Her akış şu formatta yazılır:
 - → `_addToDeptBekleyen(satici, kat, tutar, false, '', [], entry.id)` — satır 5609
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.data.fisler`: unshift (yeni fiş, `durum='bekleyen'`)
+- `APP.data.fisler`: unshift (yeni fiş, `durum='dept-bekleyen'`)
 - `APP.data.deptBekleyen`: unshift (dept kuyruğuna)
 
 **📬 BİLDİRİMLER:** Yok (henüz dept onayı olmadığı için)
@@ -63,7 +63,7 @@ Her akış şu formatta yazılır:
 - → `_addToDeptBekleyen('Belgesiz Harcama', kat, tutar, true, aciklama, fotos, fisId)` — satır 5609
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.data.fisler`: unshift (`durum='bekleyen'`, `belgesiz:true`)
+- `APP.data.fisler`: unshift (`durum='dept-bekleyen'`, `belgesiz:true`)
 - `APP.data.deptBekleyen`: unshift
 
 **⚠️ BİLİNEN RİSKLER:**
@@ -90,8 +90,8 @@ Her akış şu formatta yazılır:
 - `_pushNotif('m', 'bl', ...)` — muhasebeye "yeni bekleyen"
 - `_checkButceUyari()` — bütçe eşiği (%80/%100) geçildiyse dept + muhasebeye otomatik uyarı
 
-**⚠️ BİLİNEN RİSKLER:**
-- `APP.data.fisler[i].durum` GÜNCELLENMEZ — hâlâ `'bekleyen'` kalır; `accOnayla`'da `'onaylandi'` olur. Bu ara durum raporlarda dikkat ister.
+**💾 EK KOLEKSIYON GÜNCELLEMESİ (24.04.2026 eklemesi):**
+- `APP.data.fisler[i].durum`: `'dept-bekleyen'` → `'acc-bekleyen'` (fisId ile eşleştirme)
 
 ---
 
@@ -102,7 +102,7 @@ Her akış şu formatta yazılır:
 **📞 FONKSİYON ZİNCİRİ:**
 - `deptOnaylaSecili()` — satır 5931
 
-**💾 KOLEKSIYON GÜNCELLEMELERİ:** 2A ile aynı, `APP.ui.sdSec`'teki her seçili fiş için döngü
+**💾 KOLEKSIYON GÜNCELLEMELERİ:** 2A ile aynı, `APP.ui.sdSec`'teki her seçili fiş için döngü (her fiş için `fisler[i].durum: 'dept-bekleyen' → 'acc-bekleyen'` dahil)
 
 **📬 BİLDİRİMLER:**
 - `_pushNotif('m', 'bl', ...)` — muhasebeye toplu sayı ile tek bildirim
@@ -156,7 +156,7 @@ Her akış şu formatta yazılır:
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
 - `APP.data.accBekleyen`: filter (fişi çıkar)
-- `APP.data.fisler[i].durum`: `'bekleyen'` → `'onaylandi'`  
+- `APP.data.fisler[i].durum`: `'acc-bekleyen'` → `'onaylandi'`  
   (önce `fisId` ile eşleşir; bulamazsa `uye + satici + tutar + tarih` ile fallback)
 - Avans ise: `APP.data.accAvansGecmis`'e `durum='ödendi'` ile yazılır (`_avGecmisEkle()`)
 
@@ -390,15 +390,13 @@ Her akış şu formatta yazılır:
 
 Bu akışları yazarken tespit edilen, STATUS.md'ye eklenecek riskler:
 
-1. **`APP.data.fisler[i].durum` çift-adımlı güncellenir:** `deptOnayla` durumu güncellemiyor, sadece `accOnayla` güncelliyor. Rapor çekerken `'bekleyen'` durumu iki anlam taşıyor: (a) saha henüz dept'e göndermedi, (b) dept onayladı ama muhasebe bakmadı. Bu ayrıştırılmalı.
+1. **`accGecmis` eksik:** Muhasebe kesin onay sonrası arşiv koleksiyonu yok. Denetim için kritik, mali rapor bütünlüğü risk altında.
 
-2. **`accGecmis` eksik:** Muhasebe kesin onay sonrası arşiv koleksiyonu yok. Denetim için kritik, mali rapor bütünlüğü risk altında.
+2. **Dönem yönetimi eksik:** Yeni dönem / dönem kapama implement değil, demo'da 3 sabit dönem var.
 
-3. **Dönem yönetimi eksik:** Yeni dönem / dönem kapama implement değil, demo'da 3 sabit dönem var.
+3. **Kiralama ceza tutarı persistent değil:** Render-time hesaplanıyor, geçmişe bakmak zor.
 
-4. **Kiralama ceza tutarı persistent değil:** Render-time hesaplanıyor, geçmişe bakmak zor.
-
-5. **Muhasebe → Dept direkt avans akışı eksik:** Faz 2'ye not edildi.
+4. **Muhasebe → Dept direkt avans akışı eksik:** Faz 2'ye not edildi.
 
 ---
 

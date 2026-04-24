@@ -47,7 +47,7 @@ Güncelleme sorumluluğu:
 | kat        | string  | `"Yakit"`, `"Yiyecek"`, `"Ekipman"`, `"Ulasim"`, `"Sanat"`, `"Diger"`, `"Kiralama"` | Kategori — enum (Türkçe karaktersiz) |
 | tutar      | number  | `1000`, `780.5`                                               | TL cinsinden                                       |
 | donem      | number  | `1`, `2`                                                      | Dönem numarası                                     |
-| durum      | string  | `"bekleyen"`, `"onaylandi"`, `"reddedildi"`                   | Onay durumu — enum                                 |
+| durum      | string  | `"dept-bekleyen"`, `"acc-bekleyen"`, `"onaylandi"`, `"reddedildi"` | Onay durumu — enum (eski `"bekleyen"` değeri fallback olarak korunur) |
 | uyari      | string\|null | `"Mükerrer fiş"`, `null`                               | Uyarı mesajı; yoksa null                           |
 | thumb      | null    | `null`                                                        | Demo'da her zaman null (görsel yok)                |
 | dept       | string  | `"yapim"`, `"kamera"`, `"sanat"`, `"ses"`, `"kostum"`        | Opsiyonel — saha personelinin fişlerinde yok       |
@@ -59,7 +59,8 @@ Güncelleme sorumluluğu:
 #### Bilinen tuzaklar
 - Field adı **`kat`**, `kategori` değil
 - `personel` **string**'dir (ad + soyad), obje değil — curUser.name ile karşılaştır
-- `durum` değerleri: `"bekleyen"` / `"onaylandi"` / `"reddedildi"` — `"onay"` veya `"red"` değil
+- `durum` değerleri: `"dept-bekleyen"` (saha→dept bekliyor) / `"acc-bekleyen"` (dept onayladı, muhasebe bekliyor) / `"onaylandi"` / `"reddedildi"` — `"onay"` veya `"red"` değil. Eski `"bekleyen"` değeri localStorage'daki kayıtlar için fallback olarak korunur.
+- **durum ayrıştırıldı (24.04.2026):** `'dept-bekleyen'` saha→dept bekleyen, `'acc-bekleyen'` dept→muhasebe bekleyen. UI'da her ikisi de "Bekleyen" gösterilir.
 - `dept` field'ı sadece multi-personel demo fişlerinde var; saha kullanıcısının kendi fişlerinde yok
 - `kiraMeta.bas` / `kiraMeta.bit`: ISO `YYYY-MM-DD` format (tarih DD.MM.YYYY'dan farklı!)
 - Dönem karşılaştırması için `String(f.donem) === String(aktifDon)` kullan
