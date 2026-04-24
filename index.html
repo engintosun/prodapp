@@ -6007,6 +6007,15 @@ function deptReddetSecili() {
       tutar: f.tutar, tarih: f.tarih || _deptTarih(),
       redNedeni: redNedeni, log: f.log
     });
+    /* fisler.durum güncelle: dept-bekleyen → reddedildi */
+    var _srfi = -1;
+    for (var _srfli = 0; _srfli < APP.data.fisler.length; _srfli++) {
+      if (APP.data.fisler[_srfli].id === f.fisId) { _srfi = _srfli; break; }
+    }
+    if (_srfi !== -1) {
+      APP.data.fisler[_srfi].durum = 'reddedildi';
+      APP.data.fisler[_srfi].uyari = redNedeni;
+    }
     _pushNotif(f.fromKey || 's', 'rd', 'Harcama Reddedildi',
       '₺' + f.tutar.toLocaleString('tr-TR') + ' ' + f.satici + ' harcamanız reddedildi. Neden: ' + redNedeni,
       'Az önce · ' + deptAdSoyad + ' (Dept)');
@@ -6854,6 +6863,15 @@ function deptReddet(id) {
         tutar: f.tutar, tarih: f.tarih || _deptTarih(),
         redNedeni: redNedeni, log: f.log
       });
+      /* fisler.durum güncelle: dept-bekleyen → reddedildi */
+      var _rfi = -1;
+      for (var _rfli = 0; _rfli < APP.data.fisler.length; _rfli++) {
+        if (APP.data.fisler[_rfli].id === f.fisId) { _rfi = _rfli; break; }
+      }
+      if (_rfi !== -1) {
+        APP.data.fisler[_rfi].durum = 'reddedildi';
+        APP.data.fisler[_rfi].uyari = redNedeni;
+      }
       var fKey = f.fromKey || 's';
       _pushNotif(fKey, 'rd', 'Harcama Reddedildi',
         '₺' + f.tutar.toLocaleString('tr-TR') + ' ' + f.satici + ' harcamanız reddedildi. Neden: ' + redNedeni,

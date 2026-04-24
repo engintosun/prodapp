@@ -123,6 +123,8 @@ Her akış şu formatta yazılır:
 - `APP.data.deptBekleyen`: splice
 - `APP.data.deptGecmis[aktifDon].reddedildi`: push (`redNedeni` field'ı ile)
 - `APP.data.donemButce[aktifDon].reddedildi`: `+= tutar`
+- `APP.data.fisler[i].durum`: `'dept-bekleyen'` → `'reddedildi'` (fisId ile eşleştirme)
+- `APP.data.fisler[i].uyari`: `redNedeni` yazılır
 
 **📬 BİLDİRİMLER:**
 - `_pushNotif(f.fromKey, 'rd', ...)` — saha kullanıcısına red nedeni ile
@@ -140,7 +142,7 @@ Her akış şu formatta yazılır:
 - `deptReddetSecili()` — satır 5981
 - `prompt()` tek seferde (aynı red nedeni tüm seçimlere uygulanır)
 
-**💾 KOLEKSIYON GÜNCELLEMELERİ:** 3A ile aynı, her seçili fiş için döngü
+**💾 KOLEKSIYON GÜNCELLEMELERİ:** 3A ile aynı, her seçili fiş için döngü (`fisler[i].durum = 'reddedildi'` ve `fisler[i].uyari = redNedeni` dahil)
 
 **📬 BİLDİRİMLER:**
 - Her reddedilen fiş için ayrı `_pushNotif(f.fromKey, 'rd', ...)`
