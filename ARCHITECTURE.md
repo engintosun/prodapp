@@ -42,6 +42,28 @@ Bir işlem arşive girdikten sonra **değiştirilemez, silinemez**.
 Düzeltme gerekiyorsa ters işlem yapılır (iptal + yeni kayıt).
 Bu kural kurumsal denetim gereksinimidir.
 
+### 1.6. Dönem disiplini ilkesi
+
+Film prodüksiyonunda dönem (çekim bloğu) kapanışı disiplinsiz yürütülürse mali suistimalin kapısı açılır. Saha personeli set koşullarını ve hesap belirsizliklerini bahane ederek dönem kapanışını geciktirebilir; zaman geçtikçe "unutma" beklentisiyle açıkları örtmeye çalışabilir. PRODAPP'in temel iddiası bunu engellemektir.
+
+**Dört ana mekanizma:**
+
+1. **Sıkı kapanış**: Bir dönem açıkken yeni dönem açılamaz. Saha ekibi yeni avans isterse, önce mevcut dönem hesabı kapatılmalıdır. Bu kural muhasebeye dönem disiplini için kaldıraç sağlar ("Dönemi kapat, yeni avansı vereyim").
+
+2. **Pasif onay**: Bekleyen fişler 7 gün içinde işlem görmezse otomatik onaylanmış sayılır. Sorumluluk muhasebededir — "görmedim, atladım" geçerli mazeret değildir.
+
+3. **İstisna izlenebilirliği**: Muhasebe gerektiğinde kapanmış döneme kişiye özel giriş izni verebilir, ama her istisna sistemde işaretlenir ve denetçinin gözünden kaçmaz (özel rozet, log kaydı, denetim raporunda ayrı bölüm).
+
+4. **Kiralama istisnası**: Kiralama (kat:'Kiralama') fişleri ayrı muamele görür. Fatura doğrulama gecikmeleri, kiralama bitiş anlaşmazlıkları (hasar, eksik parça, uzatma ücreti) ve ihtilaf süreçleri nedeniyle belge girişi haftalarca sürebilir — bu suistimal değil, sektör gerçeğidir.
+
+   **Kiralama özel kuralları:**
+   - 7 günlük pasif onay kiralamaya UYGULANMAZ
+   - Dönem kapanışı kiralama bekleyenleri OTOMATİK engellemez (uyarı verilir ama kapanmaya izin verilir, kiralama sonradan bağlanır)
+   - "İhtilaf" durumu ayrı işaretlenebilir (ihtilaf:true + ihtilafNot:string field'ları)
+   - Kiralama kapanış zinciri: belge geldi → onay → ihtilaf yok → kayıt kapanır
+
+Bu ilke ARCHITECTURE 1.3 (denetim şeffaflığı) ve 1.4 (değiştirilemezlik) ile birlikte ürünün rekabet avantajını oluşturur.
+
 ---
 
 ## 2. VERİ MODELİ
@@ -93,6 +115,41 @@ Her kuyruk ve arşiv kaydı şu iki alanı içermek zorunda:
 - `fisId` — kaynak `fisler` kaydının ID'sine referans
 
 Bu kural istisnasız. Şu an seed'de eksik, onarım zorunlu.
+
+### 2.4. Vergi alanları ve özel fatura türleri
+
+Türkiye mali mevzuatında bazı fatura türleri özel muamele gerektirir. PRODAPP bu türleri tanır, işaretler ve görünür kılar — ama hesaplama yapmaz. Hesaplama muhasebenin kendi muhasebe yazılımında yapılır (Logo, Mikro vb.). PRODAPP'in işi: belgenin doğru tanınması, muhasebenin uyarılması, denetim için iz bırakılması.
+
+**Tanınan özel türler:**
+
+| Tür | Açıklama | Sektör örneği |
+|-----|----------|---------------|
+| Tevkifatlı fatura | KDV'nin bir kısmı alıcı tarafından devlete ödenir | Yapım hizmetleri, ekipman kiralama, danışmanlık |
+| Stopajlı ödeme | Gelir vergisi kesintisi (genelde gerçek kişi alacak) | Oyuncu telifleri, freelance ücret |
+| Self-billing | Alıcı kendi adına fatura kesip karşı tarafa gönderir | Bazı yurtdışı işlemler, taşeron süreçleri |
+
+**fisler şemasına eklenecek field'lar (Faz 2):**
+
+- ozelTip: string|null — 'tevkifat' veya 'stopaj' veya 'selfbilling' veya null
+- ozelOran: string|null — "5/10", "9/10" gibi (Faz 2 oran tablosu ile)
+- ozelNot: string|null — Muhasebe için açıklama
+- malBedeli: number|null — KDV hariç tutar (Faz 2)
+- toplamKdv: number|null — Toplam KDV
+- ozelKesinti: number|null — Tevkifat/stopaj kesintisi
+- odenecekTutar: number — Asıl tutar (= mevcut 'tutar' field'ı)
+
+**Faz 1 yaklaşımı (basit):**
+- OCR mock anahtar kelime tespit eder ('tevkifat', 'stopaj', vb.)
+- Fişe ozelTip field'ı atar
+- Saha karıştırmasın diye detay sormaz
+- Muhasebe ekranında işaret + uyarı olarak görünür
+- Dönem listesinde "Bu dönemde X tevkifatlı, Y stopajlı belge" özeti
+
+**Faz 2 (gerçek):**
+- Oran tablosu eklenir (sektör/kategori bazlı)
+- Otomatik kesinti hesabı
+- KDV/vergi raporu çıktısı (e-defter, beyanname için)
+- Logo/Mikro entegrasyonu
 
 ---
 
@@ -165,6 +222,20 @@ config objesine dönüşecek, fonksiyonlar buradan okuyacak.
 
 ERPNext/Frappe Workflow modülünden alınan fikir.
 
+### 3.5. Dönem yazım hakkı
+
+Dönem yönetimi sadece muhasebe rolüne aittir.
+
+| Eylem | Yetkili | Koşul |
+|-------|---------|-------|
+| Yeni dönem aç | muhasebe | Önceki dönem kapalı veya kapama uyarısı kabul edildi |
+| Dönem kapat | muhasebe + sistem | Manuel veya 7 gün pasif onay sonrası otomatik |
+| Kapanmış döneme istisna giriş | muhasebe | Sebep zorunlu, kayıt log'a düşer |
+| Bütçe değiştir | muhasebe | Kapanmadan önce |
+| İhtilaflı kiralama işaretle | muhasebe | Anlaşmazlık varken |
+
+Saha ve dept kullanıcıları dönem yönetiminde yazma yetkisine sahip değildir. UI'da bu yetkilerin görünmemesi yeterli koruma değildir; fonksiyon seviyesinde rol kontrolü zorunludur (Faz 2: backend trigger).
+
 ---
 
 ## 4. DENETİM MOTORU
@@ -224,6 +295,31 @@ Kurumsal sunum için zorunlu format:
 - Her bulgu için: fiş detayı + kural + çözüm durumu
 - İstatistik: toplam denetlenen, bulgu sayısı, tip dağılımı
 - Dashboard canlı görünüm: açık bulgular, kritik seviyedekiler
+
+### 4.6. Dönem kapanış ve özel fatura denetim kuralları
+
+ARCHITECTURE 4.2'deki kural kategorilerine ek iki yeni kategori:
+
+**G. Dönem kuralları**
+- KAPANIŞ_BEKLEYEN: Bekleyen fişle dönem kapatılamaz (kiralama hariç)
+- AVANS_AÇIK: Dönem sonunda kapanmamış avans varsa muhasebe işaretler
+- GEÇ_BELGE: Kapanmış döneme istisna ile eklenen fişler (otomatik flag)
+- 7_GÜN_PASİF: Pasif onay devreye girmeden 1 gün önce muhasebeye uyarı
+- EKİP_BORCU: Saha borçlu çıkarsa (avans > onaylanan harcama) kayıt
+- KIRALAMA_AÇIK: Dönem sonunda hâlâ açık kiralama varsa bilgilendirme (engelleme değil)
+- KIRALAMA_İHTİLAF: İhtilaflı kiralamalar denetim raporunda ayrı bölüm
+
+**H. Özel fatura kuralları**
+- TEVKİFAT_TESPİT: Tevkifatlı fatura tespit edildi, muhasebe uyarısı
+- STOPAJ_TESPİT: Stopajlı ödeme tespit edildi, muhasebe uyarısı
+- SELF_BILLING_TESPİT: Self-billing belge tespit edildi, muhasebe uyarısı
+- TEVKİFAT_DÖNEM_ÖZET: Dönem listesinde tevkifatlı belge sayısı ve toplam tutarı görünür
+- ÖZEL_FATURA_İŞARETSIZ: Tedarikçi/kategori özel türe tabi olabilecek (bilinen liste) ama işaret yok — muhasebe doğrulamalı (Faz 2)
+
+**Tetikleme:** ARCHITECTURE 4.1'deki üç noktaya ek olarak:
+4. Dönem kapanış anında — manuel kapama veya pasif onay tetiği
+5. Pasif onay öncesi — 7 gün dolmadan 1 gün önce muhasebeye uyarı
+6. Özel fatura tespit anında — OCR tarama sırasında, fiş yazımı sırasında
 
 ---
 
