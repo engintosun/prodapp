@@ -3970,6 +3970,9 @@ APP.data.accAvansGecmis = [
   { id:102, dept:'Kamera', uye:'Okan Demir',    ini:'OD', tutar:3000, tarih:'03.02', durum:'ödendi',      gerekce:'Kamera malzeme deposito',             donem:0 }
 ];
 
+/* ── Muhasebe — Onay/Red Geçmişi (arşiv, sadece append) ── */
+APP.data.accGecmis = [];
+
 /* Dönem bütçe tanımları — her dönem için ayrılmış bütçe ve onaylanan harcama */
 APP.data.donemButce = [
   { donem:2, lbl:'Dönem #2', butce:40000, harcanan:26500, reddedildi:3890, _lastPct:0 },
@@ -9813,6 +9816,19 @@ function accOnayla(id) {
           }
         }
       }
+      APP.data.accGecmis.push({
+        id: Date.now(),
+        fisId: item.fisId || null,
+        islem: 'onay',
+        onaylayan: APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe',
+        tarih: Date.now(),
+        tutar: item.tutar,
+        kat: item.kat || '',
+        satici: item.satici || '',
+        uye: item.uye,
+        dept: item.dept || '',
+        donem: APP.ui.aktifDon
+      });
       _pushNotif(item.fromKey || 's', 'gr', 'Harcama Onaylandı ✅',
         item.satici + ' — ₺' + item.tutar.toLocaleString('tr-TR') + ' muhasebe onayından geçti.',
         'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe') + ' (Muhasebe)');
@@ -9867,6 +9883,20 @@ function accReddet(id) {
         }
       }
     }
+    APP.data.accGecmis.push({
+      id: Date.now(),
+      fisId: item.fisId || null,
+      islem: 'red',
+      onaylayan: APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe',
+      tarih: Date.now(),
+      tutar: item.tutar,
+      kat: item.kat || '',
+      satici: item.satici || '',
+      uye: item.uye,
+      dept: item.dept || '',
+      donem: APP.ui.aktifDon,
+      redNedeni: redNedeniAcc
+    });
     _pushNotif(item.fromKey || 's', 'rd', 'Harcama Reddedildi (Muhasebe)',
       item.satici + ' — ₺' + item.tutar.toLocaleString('tr-TR') + ' muhasebe tarafından reddedildi. Neden: ' + redNedeniAcc,
       'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe') + ' (Muhasebe)');

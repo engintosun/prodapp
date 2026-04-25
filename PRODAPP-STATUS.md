@@ -102,7 +102,7 @@
 - [ ] **Kısmi onay akışı** (dept, tek fişin bir kısmını onay/reddet) *(L)*
 - [x] **WORKFLOWS.md** — mali iş akışları dokümanı (tamamlandı 24.04.2026)
 - [x] **fisler.durum çift-adım riski:** deptOnayla durumu güncellemiyor, sadece accOnayla güncelliyor. 'bekleyen' iki anlam taşıyor. Ayrıştırma gerekli (ör: 'dept-bekleyen', 'acc-bekleyen'). *(M)* (tamamlandı 24.04.2026)
-- [ ] **accGecmis koleksiyonu:** Muhasebe kesin onay sonrası arşiv yok. Denetim için kritik. *(M)*
+- [x] **accGecmis koleksiyonu:** Muhasebe kesin onay/red sonrası arşiv kaydı — tamamlandı 25.04.2026
 - [ ] **Dönem yönetimi:** yeniDonem() ve dönem kapama implement değil. Demo'da 3 sabit dönem var. *(L)*
 
 ### P1 — Çok iyi olur, esnek

@@ -183,6 +183,34 @@ Güncelleme sorumluluğu:
 
 ---
 
+### APP.data.accGecmis
+**Tip:** Array\<AccGecmis\>  
+**Kaynak satır:** ~3974 (accAvansGecmis'in hemen altı)  
+**Kullanım:** Muhasebe kesin onay/red arşivi — sadece append, değiştirilemez (ARCHITECTURE 3.2 + 4).  
+Avans işlemleri bu koleksiyona **yazılmaz** — onlar `accAvansGecmis`'e gider.
+
+| Field      | Tip    | Örnek                  | Açıklama                                        |
+|------------|--------|------------------------|-------------------------------------------------|
+| id         | number | `Date.now()`           | Benzersiz arşiv ID                              |
+| fisId      | number | `22`                   | `fisler.id`'ye referans (zorunlu — ARCH 2.3)    |
+| islem      | string | `'onay'` / `'red'`     | İşlem tipi                                      |
+| onaylayan  | string | `'Selin Yıldız'`       | Muhasebeci tam adı (`curUser.name`)             |
+| tarih      | number | `Date.now()` (ms)      | İşlem timestamp                                 |
+| tutar      | number | `1500`                 | Fiş tutarı (snapshot — sonraki değişimden bağımsız) |
+| kat        | string | `'Yakit'`              | Kategori (snapshot)                             |
+| satici     | string | `'Petrol Ofisi'`       | Satıcı (snapshot)                               |
+| uye        | string | `'Mehmet Kaya'`        | Personel (snapshot)                             |
+| dept       | string | `'Yapım'`              | Departman görünen ad (snapshot)                 |
+| donem      | number | `2`                    | Dönem (snapshot)                                |
+| redNedeni  | string | `'Mükerrer fiş'`       | Sadece `islem='red'` ise dolu                   |
+
+**Bilinen tuzaklar:**
+- Bu koleksiyon SADECE EKLEME kabul eder — silme ve güncelleme yasak
+- Snapshot field'lar arşivlenirken kopyalanır; fiş sonradan değişse arşiv değişmez
+- `fisId` null olabilir (eski seed fallback kaydı), ama yeni kayıtlarda her zaman dolu olmalı
+
+---
+
 ### APP.data.donemButce
 **Tip:** Array\<DonemButce\>  
 **Kaynak satır:** 3977  

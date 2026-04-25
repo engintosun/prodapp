@@ -161,13 +161,13 @@ Her akış şu formatta yazılır:
 - `APP.data.fisler[i].durum`: `'acc-bekleyen'` → `'onaylandi'`  
   (önce `fisId` ile eşleşir; bulamazsa `uye + satici + tutar + tarih` ile fallback)
 - Avans ise: `APP.data.accAvansGecmis`'e `durum='ödendi'` ile yazılır (`_avGecmisEkle()`)
+- Harcama ise: `APP.data.accGecmis`: push (arşiv kaydı, fisId + snapshot ile)
 
 **📬 BİLDİRİMLER:**
 - `_pushNotif(item.fromKey, 'gr', ...)` — saha kullanıcısına "onaylandı"
 
 **⚠️ BİLİNEN RİSKLER:**
 - `fisId` yoksa fallback 4 alan eşleşmezse `durum` güncellenmez — sessiz hata
-- `accGecmis` koleksiyonu **yok** — kalıcı muhasebe arşivi yazılmıyor (STATUS.md ertelenmiş)
 
 ---
 
@@ -187,6 +187,7 @@ Her akış şu formatta yazılır:
 - `APP.data.accBekleyen`: filter
 - `APP.data.fisler[i].durum`: `'reddedildi'`
 - `APP.data.fisler[i].uyari`: red nedeni metni
+- `APP.data.accGecmis`: push (arşiv kaydı, fisId + snapshot ile)
 
 ---
 
@@ -392,11 +393,9 @@ Her akış şu formatta yazılır:
 
 Bu akışları yazarken tespit edilen, STATUS.md'ye eklenecek riskler:
 
-1. **`accGecmis` eksik:** Muhasebe kesin onay sonrası arşiv koleksiyonu yok. Denetim için kritik, mali rapor bütünlüğü risk altında.
+1. **Dönem yönetimi eksik:** Yeni dönem / dönem kapama implement değil, demo'da 3 sabit dönem var.
 
-2. **Dönem yönetimi eksik:** Yeni dönem / dönem kapama implement değil, demo'da 3 sabit dönem var.
-
-3. **Kiralama ceza tutarı persistent değil:** Render-time hesaplanıyor, geçmişe bakmak zor.
+2. **Kiralama ceza tutarı persistent değil:** Render-time hesaplanıyor, geçmişe bakmak zor.
 
 4. **Muhasebe → Dept direkt avans akışı eksik:** Faz 2'ye not edildi.
 
