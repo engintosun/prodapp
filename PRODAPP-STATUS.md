@@ -4,7 +4,7 @@
 **Aktif sürüm:** v8.x (canlı)
 **Repo:** https://github.com/engintosun/prodapp
 **Deploy:** https://engintosun.github.io/prodapp/
-**Son commit:** 0121150 — ARCHITECTURE.md tam formatlı sürüm
+**Son commit:** b9bf0ed — schema: fisId field'i deptBekleyen ve accBekleyen tablolarina eklendi
 
 ---
 
