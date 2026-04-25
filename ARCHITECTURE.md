@@ -316,7 +316,49 @@ Veri modeli değişmez. Sadece depolama katmanı değişir.
 
 ---
 
-## 7. DOKÜMAN SORUMLULUĞU
+## 7. POY EKOSİSTEM ENTEGRASYONLARI (FAZ 2)
+
+PRODAPP, POY (Prodüksiyon Otomasyon Yazılımı) ekosisteminin ilk
+modülüdür. Faz 2'de diğer POY modülleriyle entegre çalışacak.
+
+### 7.1. Call Sheet & Çekim Takvimi Entegrasyonu
+
+Film prodüksiyonunda "dönem" terimi muhasebe takvimi değil, **çekim
+bloğu**dır. Bir blok 1 günden 2 haftaya kadar değişir, sayı dinamiktir
+(senaryoya/lokasyona göre 5-20 dönem), call sheet (günlük çağrı belgesi)
+ile paralel ilerler.
+
+**Faz 1 yaklaşımı:**
+- Dönem manuel açılır/kapanır (basit yönetim)
+- Sabit donem field'ı fişlere atanır
+- Dönem-çekim bağı YOK
+
+**Faz 2 entegrasyonu (POY Call Sheet modülü hazır olunca):**
+- Dönem tanımı zenginleşecek: `{id, lbl, baslangic, bitis, lokasyon, callSheetIds:[]}`
+- Fişin tarihi → otomatik dönem önerisi (hangi çekim gününe denk geliyor)
+- Call sheet API'sinden çekim takvimi çekilecek
+- "Bu fiş hangi sahnede çekildi?" zinciri: fis → tarih → callSheet → sahne
+
+**Kapanmış dönem davranışı:**
+- Çekim biter ama belge geç gelebilir (set sonrası 3-7 gün)
+- Faz 1: muhasebe onayı + neden ile kapanmış döneme fiş eklenebilir
+- Faz 2: otomatik "geç belge" penceresi (örn 7 gün), pencere bitince kilit
+
+**Paralel dönem desteği:**
+- 1. ünite + 2. ünite aynı anda farklı lokasyonlarda olabilir
+- Faz 1: tek aktif dönem (basit)
+- Faz 2: çoklu aktif dönem desteği (call sheet'ten ünite ayrımı gelir)
+
+### 7.2. Diğer POY Modülleri (planlanan)
+
+- **Senaryo & Storyboard** — sahne kırılımı, çekim sırası
+- **Cast & Crew** — oyuncu, ekip yönetimi, ödeme bağı PRODAPP'e
+- **Lokasyon & Set** — lokasyon kiralama, izinler
+- **Post-Production Bütçe** — kurgu, renk, ses, VFX harcamaları PRODAPP'le birleşir
+
+---
+
+## 8. DOKÜMAN SORUMLULUĞU
 
 Bu belge şu durumlarda güncellenir:
 - Yeni koleksiyon ekleniyor
