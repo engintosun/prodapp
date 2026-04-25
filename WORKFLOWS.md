@@ -215,8 +215,10 @@ Her akış şu formatta yazılır:
 - `APP.data.accGecmis`: 2 kayıt `push` (her çocuk için, `redNedeni` kayıtlı)
 
 **📬 BİLDİRİMLER:**
-- `_pushNotif(fromKey, 'gr', ...)` — saha'ya kısmi onay
-- `_pushNotif(fromKey, 'rd', ...)` — saha'ya kısmi red
+- `_pushNotif('s', 'gr', ...)` — saha'ya kısmi onay
+- `_pushNotif('d', 'gr', ...)` — dept'e kısmi onay haberi
+- `_pushNotif('s', 'rd', ...)` — saha'ya kısmi red
+- `_pushNotif('d', 'rd', ...)` — dept'e kısmi red haberi
 
 **⚠️ BİLİNEN RİSKLER:** Yok (muhasebe son durak)
 

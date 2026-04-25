@@ -10175,12 +10175,18 @@ function accKismi(id, onayTutar, redNedeni) {
     redNedeni: redNedeni
   });
 
-  /* Bildirimler */
-  _pushNotif(item.fromKey || 's', 'gr', 'Kısmi Onay ✅',
+  /* Bildirimler — saha + dept'e ayrı */
+  _pushNotif('s', 'gr', 'Kısmi Onay ✅',
     item.satici + ' — ₺' + onayTutar.toLocaleString('tr-TR') + ' onaylandı.',
     'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe') + ' (Muhasebe)');
-  _pushNotif(item.fromKey || 's', 'rd', 'Kısmi Red',
+  _pushNotif('d', 'gr', 'Kısmi Onay (Muhasebe)',
+    item.uye + ' — ' + item.satici + ' kısmi onaylandı.',
+    'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe') + ' (Muhasebe)');
+  _pushNotif('s', 'rd', 'Kısmi Red',
     item.satici + ' — ₺' + redTutar.toLocaleString('tr-TR') + ' reddedildi. Neden: ' + redNedeni,
+    'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe') + ' (Muhasebe)');
+  _pushNotif('d', 'rd', 'Kısmi Red (Muhasebe)',
+    item.uye + ' — ' + item.satici + ' kısmi reddedildi.',
     'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe') + ' (Muhasebe)');
   updateNotifBadge();
 
