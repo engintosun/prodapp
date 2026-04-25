@@ -220,6 +220,33 @@ Faz 1'de minimum. Faz 2'de detaylandırılacak.
 
 Faz 2'de Supabase Auth. Bugün sadece UI katmanında rol.
 
+### 5.4. Denetim motorunun korunması
+
+Denetim motoru ürünün ayırt edici özelliği. Bu yüzden hem atlatılmaya
+hem kopyalanmaya karşı korunmalı.
+
+**Faz 1 (bugün):**
+- Hiçbir koruma yok. Tüm kod tek HTML dosyada, kullanıcı F12 ile görür.
+- Kurallar JS içinde, atlatılabilir.
+- Veriye doğrudan müdahale mümkün (`APP.data` üzerinden).
+- Bu kabul edilmiş bir sınır — demo amaçlı.
+
+**Faz 2 (Supabase ile):**
+- Denetim kuralları **server-side database trigger'ı** olarak çalışır.
+- Trigger her yazma işleminde otomatik tetiklenir; kullanıcı atlayamaz.
+- Anomali çıktıları (`accDenetim`) kullanıcının yazma yetkisi olmayan
+  tabloya yazılır.
+- Frontend sadece sonucu görür, kural mantığını görmez.
+- Kuralları kapatma/devre dışı bırakma yetkisi sadece sistem yöneticisinde.
+
+**Kopyalanmaya karşı koruma:**
+- Frontend kodu açık (HTML/JS) — bu kaçınılmaz, ürünün doğası.
+- Ama denetim mantığı backend trigger'larında — kopyalanması zor.
+- Kopyalayan birinin **veritabanı şemasını + tüm trigger'ları + kuralları**
+  yeniden üretmesi gerekir.
+- Asıl koruma: marka, müşteri ilişkisi, sürekli geliştirme,
+  veri ağırlığı (müşteri verisi kendi sisteminde).
+
 ---
 
 ## 6. FAZ 2 GEÇİŞ NOTU
