@@ -99,7 +99,7 @@
 ### P0 — Demo için şart
 - [x] **Çoklu format export sistemi** (PDF/Excel/CSV, jsPDF + SheetJS, dropdown UI, 4 commit + fix'ler — tamamlandı 24.04.2026)
 - [ ] **Seed onarımı** — fisler/deptBekleyen/accBekleyen fisId bağı kopuk, ARCHITECTURE.md'ye uyumlu yeniden yapılacak *(M)*
-- [ ] **Kısmi onay akışı** (dept, tek fişin bir kısmını onay/reddet) *(L)*
+- [x] **Kısmi onay akışı** (dept + muhasebe, tekil, 1 seviye derinlik) — tamamlandı 25.04.2026
 - [x] **WORKFLOWS.md** — mali iş akışları dokümanı (tamamlandı 24.04.2026)
 - [x] **fisler.durum çift-adım riski:** deptOnayla durumu güncellemiyor, sadece accOnayla güncelliyor. 'bekleyen' iki anlam taşıyor. Ayrıştırma gerekli (ör: 'dept-bekleyen', 'acc-bekleyen'). *(M)* (tamamlandı 24.04.2026)
 - [x] **accGecmis koleksiyonu:** Muhasebe kesin onay/red sonrası arşiv kaydı — tamamlandı 25.04.2026
@@ -163,6 +163,7 @@ Faz 1'in 6 P0/P1 maddesi (4 P0 + 2 P1) bitince hemen bu iş başlar. Faz 2 (back
 
 - Belgesiz alt-kategori ağacı
 - accGecmis şeması (muhasebe kesin onay kalıcı izi)
+- Çocuk fişin tekrar bölünmesi (1 seviye derinlik kuralı) — Faz 2'de ihtiyaç çıkarsa açılır
 - Demo data tekrarı düzeltmesi (partial yapıldı)
 - Mevcut accPDF/expPDF — çoklu export sistemi geldiğinde silinecek
 - PNG export — dashboard için ekstra değer az, Faz 1 sonrası

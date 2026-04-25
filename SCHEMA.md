@@ -47,7 +47,7 @@ Güncelleme sorumluluğu:
 | kat        | string  | `"Yakit"`, `"Yiyecek"`, `"Ekipman"`, `"Ulasim"`, `"Sanat"`, `"Diger"`, `"Kiralama"` | Kategori — enum (Türkçe karaktersiz) |
 | tutar      | number  | `1000`, `780.5`                                               | TL cinsinden                                       |
 | donem      | number  | `1`, `2`                                                      | Dönem numarası                                     |
-| durum      | string  | `"dept-bekleyen"`, `"acc-bekleyen"`, `"onaylandi"`, `"reddedildi"` | Onay durumu — enum (eski `"bekleyen"` değeri fallback olarak korunur) |
+| durum      | string  | `"dept-bekleyen"`, `"acc-bekleyen"`, `"onaylandi"`, `"reddedildi"`, `"bolundu"` | Onay durumu — enum. `'bolundu'` = kısmi onay sonrası parent fiş işareti; çocuk fişler `parentFisId` ile bağlanır, parent kayıt değişmez (ARCHITECTURE 1.4). Eski `"bekleyen"` fallback olarak korunur. |
 | uyari      | string\|null | `"Mükerrer fiş"`, `null`                               | Uyarı mesajı; yoksa null                           |
 | thumb      | null    | `null`                                                        | Demo'da her zaman null (görsel yok)                |
 | dept       | string  | `"yapim"`, `"kamera"`, `"sanat"`, `"ses"`, `"kostum"`        | Opsiyonel — saha personelinin fişlerinde yok       |
@@ -55,6 +55,8 @@ Güncelleme sorumluluğu:
 | aciklama   | string  | `"Nakit ödeme, fiş verilmedi"`                                | Opsiyonel — belgesiz fişlerde gerekçe              |
 | kiraMeta   | object  | `{ bas:'2026-04-01', bit:'2026-04-05', gunluk:450 }`          | Opsiyonel — sadece kat:'Kiralama' fişlerinde       |
 | duplikat   | boolean | `true`                                                        | Opsiyonel — mükerrer fiş işareti                   |
+| parentFisId | number\|null | `1`                                                      | Opsiyonel — kısmi onay çocuğu ise parent fişin id'si. ARCHITECTURE 2.3 referansı. |
+| kismiTip   | string\|null | `'onay'` / `'red'`                                        | Opsiyonel — kısmi onay çocuk fişlerinde çocuğun rolünü belirtir.  |
 
 #### Bilinen tuzaklar
 - Field adı **`kat`**, `kategori` değil
@@ -62,6 +64,8 @@ Güncelleme sorumluluğu:
 - `durum` değerleri: `"dept-bekleyen"` (saha→dept bekliyor) / `"acc-bekleyen"` (dept onayladı, muhasebe bekliyor) / `"onaylandi"` / `"reddedildi"` — `"onay"` veya `"red"` değil. Eski `"bekleyen"` değeri localStorage'daki kayıtlar için fallback olarak korunur.
 - **durum ayrıştırıldı (24.04.2026):** `'dept-bekleyen'` saha→dept bekleyen, `'acc-bekleyen'` dept→muhasebe bekleyen. UI'da her ikisi de "Bekleyen" gösterilir.
 - `dept` field'ı sadece multi-personel demo fişlerinde var; saha kullanıcısının kendi fişlerinde yok
+- `'bolundu'` durumundaki parent fişler raporlarda atlanır (çift sayım önlemi). Çocuklar normal durumlarıyla (`acc-bekleyen`/`onaylandi`/`reddedildi`) sayılır.
+- `parentFisId` taşıyan çocuk fişler tekrar bölünmez (1 seviye; Faz 2'de açılabilir)
 - `kiraMeta.bas` / `kiraMeta.bit`: ISO `YYYY-MM-DD` format (tarih DD.MM.YYYY'dan farklı!)
 - Dönem karşılaştırması için `String(f.donem) === String(aktifDon)` kullan
 

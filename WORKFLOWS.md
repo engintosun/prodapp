@@ -171,6 +171,57 @@ Her akış şu formatta yazılır:
 
 ---
 
+## AKIŞ 4.5 — Kısmi Onay (Dept ve Muhasebe)
+
+### 4.5A — Dept kısmi onay
+
+**🟢 TETİKLEYİCİ:** Dept kullanıcısı bekleyen fişin ½ butonuna tıklar
+
+**📞 FONKSİYON ZİNCİRİ:**
+- `openKismi('dept', id)` — modal açar, canlı red tutar hesabı
+- `kismiOnayla()` — modal'dan parametre alır
+- `deptKismi(id, onayTutar, redNedeni)` — gerçek iş
+
+**💾 KOLEKSIYON GÜNCELLEMELERİ:**
+- `APP.data.fisler[parent].durum`: `'bolundu'`
+- `APP.data.fisler`: 2 yeni çocuk `unshift` (`parentFisId` + `kismiTip` ile)
+- `APP.data.deptBekleyen`: parent `splice`
+- `APP.data.deptGecmis[aktifDon]`: `onaylandi` + `reddedildi` push (her biri)
+- `APP.data.accBekleyen`: onay çocuğu `unshift`
+- `APP.data.donemButce`: `harcanan += onayTutar`, `reddedildi += redTutar`
+
+**📬 BİLDİRİMLER:**
+- `_pushNotif('m', 'bl', ...)` — muhasebeye yeni bekleyen
+- `_pushNotif(fromKey, 'rd', ...)` — saha'ya kısmi red
+
+**⚠️ BİLİNEN RİSKLER:**
+- Parent fiş `'bolundu'` durumunda raporlarda atlanır. Üç rapor fonksiyonunda da `continue` eklendi (`_recomputeAccDepts`, `_computeRaporDeptFis`, `_computeRaporPersonel`).
+
+---
+
+### 4.5B — Muhasebe kısmi onay
+
+**🟢 TETİKLEYİCİ:** Muhasebe kullanıcısı bekleyen harcamanın ½ butonu (sadece !isAvans)
+
+**📞 FONKSİYON ZİNCİRİ:**
+- `openKismi('acc', id)`
+- `kismiOnayla()`
+- `accKismi(id, onayTutar, redNedeni)`
+
+**💾 KOLEKSIYON GÜNCELLEMELERİ:**
+- `APP.data.fisler[parent].durum`: `'bolundu'`
+- `APP.data.fisler`: 2 yeni çocuk `unshift` (onay çocuğu `durum='onaylandi'`, red çocuğu `durum='reddedildi'`)
+- `APP.data.accBekleyen`: parent `splice`
+- `APP.data.accGecmis`: 2 kayıt `push` (her çocuk için, `redNedeni` kayıtlı)
+
+**📬 BİLDİRİMLER:**
+- `_pushNotif(fromKey, 'gr', ...)` — saha'ya kısmi onay
+- `_pushNotif(fromKey, 'rd', ...)` — saha'ya kısmi red
+
+**⚠️ BİLİNEN RİSKLER:** Yok (muhasebe son durak)
+
+---
+
 ## AKIŞ 5 — Muhasebe Red
 
 **🟢 TETİKLEYİCİ:** Muhasebe kullanıcısı bekleyen listede red butonu

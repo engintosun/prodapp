@@ -3183,6 +3183,30 @@ body {
   </div>
 </div>
 
+<!-- Kısmi Onay Modalı -->
+<div class="mo" id="md-kismi">
+  <div class="ms">
+    <div class="mh">
+      <span style="font-weight:700;color:#8b5cf6">Kısmi Onay</span>
+      <button class="mclose" onclick="closeM('md-kismi')">✕</button>
+    </div>
+    <div id="md-kismi-info" style="font-size:13px;color:var(--tx2);margin-bottom:12px">—</div>
+    <div class="fg">
+      <label class="fg-lbl">Onaylanacak Tutar (TL)</label>
+      <input type="number" id="md-kismi-tutar" min="1" step="1" class="fgi">
+    </div>
+    <div id="md-kismi-red-tutar" style="margin-bottom:12px;font-size:12px;color:var(--tx3)">Reddedilecek: — TL</div>
+    <div class="fg">
+      <label class="fg-lbl">Red Nedeni <span style="color:var(--rd)">*</span></label>
+      <textarea class="fgi" id="md-kismi-neden" rows="3" placeholder="Reddedilen kısım için gerekçe..."></textarea>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-sm" onclick="closeM('md-kismi')" style="flex:1;justify-content:center">Vazgeç</button>
+      <button class="btn btn-p btn-sm" onclick="kismiOnayla()" style="flex:1;justify-content:center">Uygula</button>
+    </div>
+  </div>
+</div>
+
 <!-- ════════════════════════════
      MODAL: SOHBET İÇİ
 ════════════════════════════ -->
@@ -5872,6 +5896,7 @@ function renderDeptBek() {
       '</div>' +
       '<div class="sd-fis-acts">' +
         '<button class="sd-ok" onclick="event.stopPropagation();deptOnayla(' + f.id + ')">✓ Onayla</button>' +
+        '<button class="sd-rd" onclick="event.stopPropagation();openKismi(\'dept\',' + f.id + ')" title="Kısmi Onay" style="background:#8b5cf6;color:#fff">½</button>' +
         '<button class="sd-rd" onclick="event.stopPropagation();deptReddet(' + f.id + ')">✕ Reddet</button>' +
       '</div>' +
     '</div>';
@@ -6887,6 +6912,109 @@ function deptReddet(id) {
   }
 }
 
+function deptKismi(id, onayTutar, redNedeni) {
+  var _i = -1;
+  for (var _di = 0; _di < APP.data.deptBekleyen.length; _di++) {
+    if (APP.data.deptBekleyen[_di].id === id) { _i = _di; break; }
+  }
+  if (_i < 0) return;
+  var f = APP.data.deptBekleyen[_i];
+
+  if (!onayTutar || onayTutar <= 0 || onayTutar >= f.tutar) return;
+  if (!redNedeni || !redNedeni.trim()) return;
+  var redTutar = f.tutar - onayTutar;
+
+  /* Parent fişi 'bolundu' yap */
+  if (f.fisId) {
+    for (var _pfi = 0; _pfi < APP.data.fisler.length; _pfi++) {
+      if (APP.data.fisler[_pfi].id === f.fisId) { APP.data.fisler[_pfi].durum = 'bolundu'; break; }
+    }
+  }
+
+  /* Yeni id'ler üret */
+  var _maxId = 0;
+  for (var _mi = 0; _mi < APP.data.fisler.length; _mi++) {
+    if (APP.data.fisler[_mi].id > _maxId) _maxId = APP.data.fisler[_mi].id;
+  }
+  var _onayId = _maxId + 1;
+  var _redId  = _maxId + 2;
+
+  /* Parent fişi bul */
+  var _parent = null;
+  for (var _pfi2 = 0; _pfi2 < APP.data.fisler.length; _pfi2++) {
+    if (APP.data.fisler[_pfi2].id === f.fisId) { _parent = APP.data.fisler[_pfi2]; break; }
+  }
+  var _baseDonem    = _parent ? _parent.donem    : APP.ui.aktifDon;
+  var _baseTarih    = _parent ? _parent.tarih    : '';
+  var _basePersonel = _parent ? _parent.personel : f.uye;
+  var _baseDept     = _parent ? _parent.dept     : null;
+
+  /* Onay çocuğu — acc-bekleyen olarak muhasebeye gider */
+  APP.data.fisler.unshift({
+    id: _onayId, tarih: _baseTarih, personel: _basePersonel,
+    satici: f.satici, kat: f.kat, tutar: onayTutar,
+    durum: 'acc-bekleyen', donem: _baseDonem, uyari: null, thumb: null,
+    dept: _baseDept, parentFisId: f.fisId || null, kismiTip: 'onay'
+  });
+
+  /* Red çocuğu — reddedildi */
+  APP.data.fisler.unshift({
+    id: _redId, tarih: _baseTarih, personel: _basePersonel,
+    satici: f.satici, kat: f.kat, tutar: redTutar,
+    durum: 'reddedildi', donem: _baseDonem, uyari: redNedeni, thumb: null,
+    dept: _baseDept, parentFisId: f.fisId || null, kismiTip: 'red'
+  });
+
+  /* deptBekleyen'den çıkar */
+  APP.data.deptBekleyen.splice(_i, 1);
+
+  /* deptGecmis'e yaz */
+  if (!APP.data.deptGecmis[APP.ui.aktifDon]) {
+    APP.data.deptGecmis[APP.ui.aktifDon] = { onaylandi:[], reddedildi:[] };
+  }
+  APP.data.deptGecmis[APP.ui.aktifDon].onaylandi.push({
+    id: _onayId, uye: f.uye, ini: f.ini, satici: f.satici, kat: f.kat,
+    tutar: onayTutar, tarih: f.tarih
+  });
+  APP.data.deptGecmis[APP.ui.aktifDon].reddedildi.push({
+    id: _redId, uye: f.uye, ini: f.ini, satici: f.satici, kat: f.kat,
+    tutar: redTutar, tarih: f.tarih, sebep: redNedeni
+  });
+
+  /* accBekleyen'e onay çocuğunu ekle */
+  APP.data.accBekleyen.unshift({
+    id: _onayId + 1000,
+    fisId: _onayId,
+    dept: _parent && _parent.dept ? _parent.dept : (f.uye || ''),
+    uye: f.uye, ini: f.ini, satici: f.satici, kat: f.kat,
+    tutar: onayTutar, tarih: f.tarih,
+    belgesiz: f.belgesiz || false, uyari: '', fromKey: 'd'
+  });
+
+  /* Bütçe güncelle */
+  var _db = APP.data.donemButce.find(function(x) { return x.donem === APP.ui.aktifDon; });
+  if (_db) {
+    _db.harcanan    += onayTutar;
+    _db.reddedildi  += redTutar;
+    var _bekTop = 0;
+    for (var _bti = 0; _bti < APP.data.deptBekleyen.length; _bti++) _bekTop += APP.data.deptBekleyen[_bti].tutar;
+    _checkButceUyari(_db, _bekTop);
+  }
+
+  /* Bildirimler */
+  _pushNotif('m', 'bl', 'Yeni Bekleyen — Kısmi Onay',
+    f.uye + ' — ₺' + onayTutar.toLocaleString('tr-TR') + ' (' + f.satici + ') muhasebeye iletildi.',
+    'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Dept') + ' (Dept)');
+  _pushNotif(f.fromKey || 's', 'rd', 'Kısmi Red',
+    f.satici + ' — ₺' + redTutar.toLocaleString('tr-TR') + ' reddedildi. Neden: ' + redNedeni,
+    'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Dept') + ' (Dept)');
+  updateNotifBadge();
+
+  saveAppData();
+  renderDept();
+  closeM('md-kismi');
+}
+
 function deptAvansOnayla(id) {
   for (var i = 0; i < APP.data.deptAvans.length; i++) {
     if (APP.data.deptAvans[i].id === id) {
@@ -7438,6 +7566,62 @@ document.getElementById('lb').addEventListener('click', function(e) {
 /* ═══ MODAL ═══ */
 function openM(id) { document.getElementById(id).classList.add('on'); }
 function closeM(id) { document.getElementById(id).classList.remove('on'); }
+
+/* ═══ KISMI ONAY ═══ */
+var _kismiPending = null; /* {id, kaynak:'dept'|'acc', tutar, satici, uye} */
+
+function openKismi(kaynak, id) {
+  var src = kaynak === 'dept' ? APP.data.deptBekleyen : APP.data.accBekleyen;
+  var item = null;
+  for (var _ki = 0; _ki < src.length; _ki++) {
+    if (src[_ki].id === id) { item = src[_ki]; break; }
+  }
+  if (!item) return;
+  if (kaynak === 'acc' && item.tip === 'avans') {
+    notif('Avansta kısmi onay uygulanamaz', 'amber'); return;
+  }
+  _kismiPending = { id: id, kaynak: kaynak, tutar: item.tutar, satici: item.satici, uye: item.uye };
+
+  document.getElementById('md-kismi-info').textContent =
+    item.uye + ' • ' + item.satici + ' • Toplam: ₺' + item.tutar.toLocaleString('tr-TR');
+  var inp = document.getElementById('md-kismi-tutar');
+  inp.value = '';
+  inp.max = item.tutar - 1;
+  document.getElementById('md-kismi-red-tutar').textContent = 'Reddedilecek: — TL';
+  document.getElementById('md-kismi-neden').value = '';
+
+  /* Canlı red tutar hesabı */
+  var _itemTutar = item.tutar;
+  inp.oninput = function() {
+    var t = parseFloat(inp.value) || 0;
+    var r = _itemTutar - t;
+    document.getElementById('md-kismi-red-tutar').textContent =
+      (t > 0 && t < _itemTutar)
+        ? 'Reddedilecek: ₺' + r.toLocaleString('tr-TR')
+        : 'Reddedilecek: — TL (geçersiz tutar)';
+  };
+
+  openM('md-kismi');
+}
+
+function kismiOnayla() {
+  if (!_kismiPending) return;
+  var t = parseFloat(document.getElementById('md-kismi-tutar').value);
+  var n = document.getElementById('md-kismi-neden').value.trim();
+
+  if (!t || t <= 0 || t >= _kismiPending.tutar) {
+    notif('Onaylanacak tutar 0 ile ' + (_kismiPending.tutar - 1) + ' arasında olmalı', 'amber');
+    return;
+  }
+  if (!n) { notif('Red nedeni zorunlu', 'amber'); return; }
+
+  if (_kismiPending.kaynak === 'dept') {
+    deptKismi(_kismiPending.id, t, n);
+  } else {
+    accKismi(_kismiPending.id, t, n);
+  }
+  _kismiPending = null;
+}
 
 /* ═══ HARCAMA DETAY MODALI ═══ */
 /* ctx: 'dept' | 'acc' */
@@ -8273,6 +8457,7 @@ function _recomputeAccDepts() {
     for (var _ffi = 0; _ffi < APP.data.fisler.length; _ffi++) {
       var _ff = APP.data.fisler[_ffi];
       if (!_ns[_ff.personel]) continue;
+      if (_ff.durum === 'bolundu') continue;
       var _tt = _ff.tutar || 0;
       _tot += _tt;
       if      (_ff.durum === 'onaylandi')   _onay += _tt;
@@ -8434,6 +8619,7 @@ function renderAccBek() {
       desc + uyHtml +
       '<div style="display:flex;gap:8px;margin-top:10px">' +
         '<button class="btn btn-g btn-sm" style="flex:1;justify-content:center" onclick="event.stopPropagation();accOnayla(' + f.id + ')">' + (isAvans ? '✓ Onayla & Aktar' : 'Onayla') + '</button>' +
+        (!isAvans ? '<button class="btn btn-sm" style="flex:0 0 40px;background:#8b5cf6;color:#fff;justify-content:center" onclick="event.stopPropagation();openKismi(\'acc\',' + f.id + ')" title="Kısmi Onay">½</button>' : '') +
         '<button class="btn btn-r btn-sm" style="flex:1;justify-content:center" onclick="event.stopPropagation();accReddet(' + f.id + ')">Reddet</button>' +
       '</div>' +
     '</div>';
@@ -8619,6 +8805,7 @@ function _computeRaporDeptFis(deptId) {
   for (var _fi = 0; _fi < APP.data.fisler.length; _fi++) {
     var _f = APP.data.fisler[_fi];
     if (!nameToIni.hasOwnProperty(_f.personel)) continue;
+    if (_f.durum === 'bolundu') continue;
     var _dur;
     if      (_f.durum === 'onaylandi')  _dur = 'onay';
     else if (_f.durum === 'reddedildi') _dur = 'red';
@@ -8692,6 +8879,7 @@ function _computeRaporPersonel() {
     for (var _fi = 0; _fi < APP.data.fisler.length; _fi++) {
       var _f = APP.data.fisler[_fi];
       if (_f.personel !== _name) continue;
+      if (_f.durum === 'bolundu') continue;
       var _tut = _f.tutar || 0;
       if      (_f.durum === 'onaylandi')  { _onay += _tut; }
       else if (_f.durum === 'reddedildi') { _red  += _tut; }
@@ -9905,6 +10093,96 @@ function accReddet(id) {
     notif('Harcama reddedildi', 'red');
     saveAppData();
   }
+}
+
+function accKismi(id, onayTutar, redNedeni) {
+  var _i = -1;
+  for (var _ai = 0; _ai < APP.data.accBekleyen.length; _ai++) {
+    if (APP.data.accBekleyen[_ai].id === id) { _i = _ai; break; }
+  }
+  if (_i < 0) return;
+  var item = APP.data.accBekleyen[_i];
+  if (item.tip === 'avans') return;
+
+  if (!onayTutar || onayTutar <= 0 || onayTutar >= item.tutar) return;
+  if (!redNedeni || !redNedeni.trim()) return;
+  var redTutar = item.tutar - onayTutar;
+
+  /* Parent fişi 'bolundu' yap */
+  if (item.fisId) {
+    for (var _pfi = 0; _pfi < APP.data.fisler.length; _pfi++) {
+      if (APP.data.fisler[_pfi].id === item.fisId) { APP.data.fisler[_pfi].durum = 'bolundu'; break; }
+    }
+  }
+
+  /* Yeni id'ler üret */
+  var _maxId = 0;
+  for (var _mi = 0; _mi < APP.data.fisler.length; _mi++) {
+    if (APP.data.fisler[_mi].id > _maxId) _maxId = APP.data.fisler[_mi].id;
+  }
+  var _onayId = _maxId + 1;
+  var _redId  = _maxId + 2;
+
+  /* Parent fişi bul */
+  var _parent = null;
+  for (var _pfi2 = 0; _pfi2 < APP.data.fisler.length; _pfi2++) {
+    if (APP.data.fisler[_pfi2].id === item.fisId) { _parent = APP.data.fisler[_pfi2]; break; }
+  }
+  var _baseDonem    = _parent ? _parent.donem    : APP.ui.aktifDon;
+  var _baseTarih    = _parent ? _parent.tarih    : '';
+  var _basePersonel = _parent ? _parent.personel : item.uye;
+  var _baseDept     = _parent ? _parent.dept     : null;
+
+  /* Onay çocuğu — direkt 'onaylandi' (muhasebe son durak) */
+  APP.data.fisler.unshift({
+    id: _onayId, tarih: _baseTarih, personel: _basePersonel,
+    satici: item.satici, kat: item.kat, tutar: onayTutar,
+    durum: 'onaylandi', donem: _baseDonem, uyari: null, thumb: null,
+    dept: _baseDept, parentFisId: item.fisId || null, kismiTip: 'onay'
+  });
+
+  /* Red çocuğu */
+  APP.data.fisler.unshift({
+    id: _redId, tarih: _baseTarih, personel: _basePersonel,
+    satici: item.satici, kat: item.kat, tutar: redTutar,
+    durum: 'reddedildi', donem: _baseDonem, uyari: redNedeni, thumb: null,
+    dept: _baseDept, parentFisId: item.fisId || null, kismiTip: 'red'
+  });
+
+  /* accBekleyen'den çıkar */
+  APP.data.accBekleyen.splice(_i, 1);
+
+  /* accGecmis'e iki kayıt */
+  APP.data.accGecmis.push({
+    id: Date.now(), fisId: _onayId, islem: 'onay',
+    onaylayan: APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe',
+    tarih: Date.now(), tutar: onayTutar,
+    kat: item.kat || '', satici: item.satici || '',
+    uye: item.uye, dept: item.dept || '', donem: APP.ui.aktifDon
+  });
+  APP.data.accGecmis.push({
+    id: Date.now() + 1, fisId: _redId, islem: 'red',
+    onaylayan: APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe',
+    tarih: Date.now() + 1, tutar: redTutar,
+    kat: item.kat || '', satici: item.satici || '',
+    uye: item.uye, dept: item.dept || '', donem: APP.ui.aktifDon,
+    redNedeni: redNedeni
+  });
+
+  /* Bildirimler */
+  _pushNotif(item.fromKey || 's', 'gr', 'Kısmi Onay ✅',
+    item.satici + ' — ₺' + onayTutar.toLocaleString('tr-TR') + ' onaylandı.',
+    'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe') + ' (Muhasebe)');
+  _pushNotif(item.fromKey || 's', 'rd', 'Kısmi Red',
+    item.satici + ' — ₺' + redTutar.toLocaleString('tr-TR') + ' reddedildi. Neden: ' + redNedeni,
+    'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe') + ' (Muhasebe)');
+  updateNotifBadge();
+
+  _recomputeAccDepts();
+  renderAccBek();
+  renderRecent();
+  saveAppData();
+  closeM('md-kismi');
 }
 
 function accSupheIsle(id, action) {
