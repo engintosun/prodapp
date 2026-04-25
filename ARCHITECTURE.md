@@ -139,6 +139,32 @@ yazılamaz:
 
 UI render'ı bu koleksiyonları okuyabilir ama yazamaz.
 
+### 3.4. Workflow merkezileştirme
+
+Şu an durum geçişleri ve izinleri kod içinde dağınık (her fonksiyon
+kendi if-else bloğu). Faz 1.5'te (modülerleşme) merkezi bir workflow
+config objesi tanımlanacak:
+
+```javascript
+// /core/workflow.js
+export const FIS_WORKFLOW = {
+  states: ['dept-bekleyen', 'acc-bekleyen', 'onaylandi', 'reddedildi', 'bolundu'],
+  transitions: [
+    { from: 'dept-bekleyen', to: 'acc-bekleyen', role: 'dept', action: 'onayla' },
+    { from: 'dept-bekleyen', to: 'reddedildi',   role: 'dept', action: 'reddet' },
+    { from: 'dept-bekleyen', to: 'bolundu',      role: 'dept', action: 'kismi' },
+    { from: 'acc-bekleyen',  to: 'onaylandi',    role: 'acc',  action: 'onayla' },
+    { from: 'acc-bekleyen',  to: 'reddedildi',   role: 'acc',  action: 'reddet' },
+    { from: 'acc-bekleyen',  to: 'bolundu',      role: 'acc',  action: 'kismi' }
+  ]
+};
+```
+
+Bölüm 3.1'deki tablo bu config'in görsel temsilcisidir. Modülerleşmeyle
+config objesine dönüşecek, fonksiyonlar buradan okuyacak.
+
+ERPNext/Frappe Workflow modülünden alınan fikir.
+
 ---
 
 ## 4. DENETİM MOTORU
@@ -246,6 +272,33 @@ hem kopyalanmaya karşı korunmalı.
   yeniden üretmesi gerekir.
 - Asıl koruma: marka, müşteri ilişkisi, sürekli geliştirme,
   veri ağırlığı (müşteri verisi kendi sisteminde).
+
+### 5.5. Maker-Checker kuralı
+
+Bir kayıt oluşturan kişi onu onaylayamaz. Bu denetim için temel
+kuraldır.
+
+**Mevcut durumda:**
+- Saha kullanıcısı fiş oluşturur, kendi onaylayamaz (rol farkı zaten
+  yapıyor — saha rolünde onay butonu yok)
+- Dept kullanıcısı kendi adına bir fiş eklerse (ileride mümkün olabilir),
+  o fişi kendisi onaylayamaz — başka bir dept üyesi veya muhasebe onaylar
+- Muhasebe avans gerekçesi yazıp onaylama riski: tek muhasebeci varsa
+  kabul, çok muhasebeci varsa farklı kişiler
+
+**Faz 2 zorlamaları:**
+- `fisler.olusturanKey` field'ı eklenecek (kayıt oluşturan kullanıcı key'i)
+- Onay fonksiyonları kontrol edecek: `olusturanKey === curUserKey` ise
+  onay reddedilir
+- Frontend ek: onay butonu kendi kayıtlarında gizlenir
+- Backend trigger: aynı kontrol server-side, atlatılamaz
+
+**İstisna:**
+- Sistem otomatik kayıtları (denetim trigger'ı, otomatik kategorize, vb.)
+  bu kuraldan muaftır — onlar kullanıcı değil
+
+ERPNext/Frappe Accounts modülünden alınan fikir (maker-checker, "self
+approval restriction").
 
 ---
 
