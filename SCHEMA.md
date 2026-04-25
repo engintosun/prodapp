@@ -77,6 +77,7 @@ Güncelleme sorumluluğu:
 | Field    | Tip          | Değerler / Örnek                  | Açıklama                              |
 |----------|--------------|-----------------------------------|---------------------------------------|
 | id       | number       | `101`, `102`                      | Benzersiz kayıt ID'si                 |
+| fisId    | number       | `1`, `2`, `8`, `21`               | fisler.id'ye referans (zorunlu — ARCHITECTURE 2.3) |
 | uye      | string       | `"Mehmet Kaya"`                   | Personel tam adı                      |
 | ini      | string       | `"MK"`, `"OD"`, `"BÇ"`           | İnisiyaller (avatar gösterimi için)   |
 | satici   | string       | `"Petrol Ofisi"`                  | Satıcı adı                            |
@@ -90,6 +91,7 @@ Güncelleme sorumluluğu:
 #### Bilinen tuzaklar
 - `tarih` burada **DD.MM** formatındadır — `fisler.tarih` gibi tam yıl içermez
 - `kat` fisler.kat ile aynı enum değerlerini kullanır
+- `fisId` ile `fisler[i].id` eşleşmeli; eşleşmezse dept onay/red fisler.durum'u güncelleyemez
 
 ---
 
@@ -140,7 +142,8 @@ Güncelleme sorumluluğu:
 
 | Field    | Tip          | Değerler / Örnek                        | Açıklama                                 |
 |----------|--------------|-----------------------------------------|------------------------------------------|
-| id       | number       | `301`, `1`, `2`                         | Benzersiz ID                             |
+| id       | number       | `301`, `401`, `402`                     | Benzersiz ID                             |
+| fisId    | number       | `22`, `34`, `40`, `48`                  | fisler.id'ye referans — sadece harcamalarda (zorunlu — ARCHITECTURE 2.3) |
 | tip      | string\|undefined | `"avans"` (yoksa harcama)          | Sadece avans kayıtlarında bulunur        |
 | dept     | string       | `"Yapım"`, `"Kamera"`                   | Departman adı (Türkçe, görünen ad)       |
 | uye      | string       | `"Okan Demir"`                          | Personel tam adı                         |
@@ -157,6 +160,7 @@ Güncelleme sorumluluğu:
 #### Bilinen tuzaklar
 - `tip === 'avans'` kontrolüyle iki tip ayrıştırılır; `tip` yoksa harcamadır
 - Dept adı burada Türkçe görünen addır (`"Yapım"`), accDepts.id gibi key değil
+- `fisId` ile `fisler[i].id` eşleşmeli; eşleşmezse accOnayla/accReddet fallback (4 alan) devreye girer
 
 ---
 
