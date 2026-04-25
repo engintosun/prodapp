@@ -1742,6 +1742,7 @@ body {
 .sa-fis-durum     { font-size: 10px; font-weight: 700; margin-top: 1px; }
 .sa-fis-dur-on  { color: var(--gr2); }
 .sa-fis-dur-bek { color: var(--am2); }
+.kismi-badge { display:inline-block; background:rgba(232,150,46,0.18); color:var(--ac2); font-size:10px; font-weight:700; padding:1px 5px; border-radius:3px; margin-left:4px; }
 .sa-fis-dur-red { color: var(--rd2); }
 .sa-fis-dur-inc { color: var(--bl2); }
 
@@ -3187,7 +3188,7 @@ body {
 <div class="mo" id="md-kismi">
   <div class="ms">
     <div class="mh">
-      <span style="font-weight:700;color:#8b5cf6">Kısmi Onay</span>
+      <span style="font-weight:700;color:var(--fg)">Kısmi Onay</span>
       <button class="mclose" onclick="closeM('md-kismi')">✕</button>
     </div>
     <div id="md-kismi-info" style="font-size:13px;color:var(--tx2);margin-bottom:12px">—</div>
@@ -5896,7 +5897,6 @@ function renderDeptBek() {
       '</div>' +
       '<div class="sd-fis-acts">' +
         '<button class="sd-ok" onclick="event.stopPropagation();deptOnayla(' + f.id + ')">✓ Onayla</button>' +
-        '<button class="sd-rd" onclick="event.stopPropagation();openKismi(\'dept\',' + f.id + ')" title="Kısmi Onay" style="background:#8b5cf6;color:#fff">½</button>' +
         '<button class="sd-rd" onclick="event.stopPropagation();deptReddet(' + f.id + ')">✕ Reddet</button>' +
       '</div>' +
     '</div>';
@@ -7771,15 +7771,19 @@ function openFisDetay(id, ctx) {
   var actsEl = document.getElementById('fdet-acts');
   if (actsEl) {
     var isAvans2 = f.tip === 'avans';
+    var kismiBtn = !isAvans2
+      ? '<button class="btn" style="background:var(--ac);color:#fff" onclick="_fisDetAksiyon(\'kismi\')">½ Kısmi Onay</button>'
+      : '';
     if (ctx === 'dept') {
       actsEl.innerHTML =
-        '<button class="btn btn-g" onclick="_fisDetAksiyon(\'onayla\')">' +
-          (isAvans2 ? '✓ Onayla' : '✓ Onayla') + '</button>' +
+        '<button class="btn btn-g" onclick="_fisDetAksiyon(\'onayla\')">✓ Onayla</button>' +
+        kismiBtn +
         '<button class="btn btn-r" onclick="_fisDetAksiyon(\'reddet\')">✕ Reddet</button>';
     } else {
       actsEl.innerHTML =
         '<button class="btn btn-g" onclick="_fisDetAksiyon(\'onayla\')">' +
           (isAvans2 ? '✓ Onayla & Aktar' : '✓ Onayla') + '</button>' +
+        kismiBtn +
         '<button class="btn btn-r" onclick="_fisDetAksiyon(\'reddet\')">✕ Reddet</button>';
     }
   }
@@ -7804,11 +7808,13 @@ function _fdetFotoBuyut(fotoIdx, fid) {
 function _fisDetAksiyon(tip) {
   closeM('md-fisdet');
   if (_fisDetCtx === 'dept') {
-    if (tip === 'onayla') deptOnayla(_fisDetId);
-    else deptReddet(_fisDetId);
+    if      (tip === 'onayla') deptOnayla(_fisDetId);
+    else if (tip === 'reddet') deptReddet(_fisDetId);
+    else if (tip === 'kismi')  openKismi('dept', _fisDetId);
   } else {
-    if (tip === 'onayla') accOnayla(_fisDetId);
-    else accReddet(_fisDetId);
+    if      (tip === 'onayla') accOnayla(_fisDetId);
+    else if (tip === 'reddet') accReddet(_fisDetId);
+    else if (tip === 'kismi')  openKismi('acc', _fisDetId);
   }
 }
 
@@ -8619,7 +8625,6 @@ function renderAccBek() {
       desc + uyHtml +
       '<div style="display:flex;gap:8px;margin-top:10px">' +
         '<button class="btn btn-g btn-sm" style="flex:1;justify-content:center" onclick="event.stopPropagation();accOnayla(' + f.id + ')">' + (isAvans ? '✓ Onayla & Aktar' : 'Onayla') + '</button>' +
-        (!isAvans ? '<button class="btn btn-sm" style="flex:0 0 40px;background:#8b5cf6;color:#fff;justify-content:center" onclick="event.stopPropagation();openKismi(\'acc\',' + f.id + ')" title="Kısmi Onay">½</button>' : '') +
         '<button class="btn btn-r btn-sm" style="flex:1;justify-content:center" onclick="event.stopPropagation();accReddet(' + f.id + ')">Reddet</button>' +
       '</div>' +
     '</div>';
@@ -8721,7 +8726,7 @@ function _raporFisRows(liste) {
     return '<div class="sa-fis-item">' +
       '<div class="sa-fis-ini">' + f.ini + '</div>' +
       '<div class="sa-fis-mid">' +
-        '<div class="sa-fis-satici">' + f.satici + '</div>' +
+        '<div class="sa-fis-satici">' + f.satici + (f.isKismi ? '<span class="kismi-badge">½</span>' : '') + '</div>' +
         '<div class="sa-fis-meta">' + f.kat + ' · ' + f.tarih + uyWarn + '</div>' +
       '</div>' +
       '<div class="sa-fis-right">' +
@@ -8812,14 +8817,15 @@ function _computeRaporDeptFis(deptId) {
     else if (_f.durum === 'dept-bekleyen' || _f.durum === 'acc-bekleyen' || _f.durum === 'bekleyen') _dur = 'bek';
     else _dur = 'bek';
     result.push({
-      ini:    nameToIni[_f.personel],
-      satici: _f.satici || '',
-      kat:    _f.kat    || 'Diger',
-      tutar:  _f.tutar  || 0,
-      tarih:  _f.tarih  || '',
-      durum:  _dur,
-      donem:  _f.donem,
-      uyari:  _f.uyari  || ''
+      ini:     nameToIni[_f.personel],
+      satici:  _f.satici || '',
+      kat:     _f.kat    || 'Diger',
+      tutar:   _f.tutar  || 0,
+      tarih:   _f.tarih  || '',
+      durum:   _dur,
+      donem:   _f.donem,
+      uyari:   _f.uyari  || '',
+      isKismi: !!_f.parentFisId
     });
   }
   var parse = function(t) {
