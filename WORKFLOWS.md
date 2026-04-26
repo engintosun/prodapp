@@ -424,21 +424,101 @@ Her akış şu formatta yazılır:
 
 ## AKIŞ 9 — Dönem Yönetimi
 
-### 9A — Yeni dönem başlatma
+Asimetrik kapanış modeli: saha/dept için tam kapanış, muhasebe için soft kapanış (geç işlem işaretli).
 
-**⚠️ HENÜZ İMPLEMENTE DEĞİL**
-- `yeniDonem()` — satır 7364 — sadece toast gösterir, gerçek işlem yok
-- `APP.seed.donemler`, `APP.data.donemButce` güncellenmez
-- Faz 1 açığı
+### 9A — Yeni Dönem Açma
+
+**🟢 TETİKLEYİCİ:** Muhasebe kullanıcısı Dönem Yönetimi şeridinde "+ Yeni Dönem" butonuna tıklar
+
+**📞 FONKSİYON ZİNCİRİ:**
+- `yeniDonem()` — satır 7648
+- → Aktif dönem varsa: sıkı kapanış kontrolü (kiralama hariç bekleyen sayısı)
+  - Bekleyen > 0: `confirm()` → `_dnKapamaModal(aktif.id)` açılır
+  - Bekleyen = 0: `confirm()` → `donemKapa(aktif.id, sebep)` çalışır, yeni dönem açılır
+- → Aktif dönem yoksa: doğrudan yeni dönem oluşturulur
+
+**💾 KOLEKSIYON GÜNCELLEMELERİ:**
+- `APP.seed.donemler`: unshift (yeni dönem objesi — `durum:'aktif'`, yeni id/n/lbl)
+- `APP.seed.sdDonemler`: unshift (dept ekranı dönem seçici)
+- `APP.seed.saDonemler`: unshift (muhasebe ekranı dönem seçici)
+- `APP.data.donemButce`: unshift (yeni dönem bütçe satırı)
+- `APP.ui.aktifDon`: yeni id'ye güncellenir
+
+**📬 BİLDİRİMLER:**
+- `_pushNotif('s', 'bl', 'Yeni Dönem Açıldı', ...)` — saha'ya
+- `_pushNotif('d', 'bl', 'Yeni Dönem Açıldı', ...)` — dept'e
 
 ---
 
-### 9B — Dönem kapama
+### 9B — Dönem Kapama
 
-**⚠️ HENÜZ İMPLEMENTE DEĞİL**
-- Kapama özeti UI'da (`renderDonem(did)`) gösterilir ama veriyi kaydetmez
-- `accGecmis` koleksiyonu yok — kapama kayıtları arşivlenemiyor
-- Faz 1 açığı
+**🟢 TETİKLEYİCİ:** Muhasebe kullanıcısı "Dönem Kapat" butonu → `_dnKapamaModal(id)` → modalda "Kapat"
+
+**📞 FONKSİYON ZİNCİRİ:**
+- `_dnKapamaModal(donemId)` → modal açar (bekleyen sayısı gösterir)
+- `_dnKapamaUygula()` → `donemKapa(donemId, sebep)` çağırır
+- `donemKapa(donemId, sebep)`:
+  1. Rol kontrolü (sadece muhasebe)
+  2. Kiralama hariç bekleyen varsa `notif` ile engel + return
+  3. Kiralama bekleyen varsa `confirm()` — kullanıcı kararı
+  4. Açık avans varsa `_pushNotif('m', 'am', ...)` uyarı
+  5. Dönem durumunu günceller (kapali, bitis, kapanmaTarihi, kapayanKisi)
+
+**💾 KOLEKSIYON GÜNCELLEMELERİ:**
+- `APP.seed.donemler[i].durum`: `'kapali'`, `bitis`, `kapanmaTarihi`, `kapayanKisi` güncellenir
+- `APP.seed.sdDonemler[i].aktif`: `false`
+- `APP.seed.saDonemler[i].aktif`: `false`
+
+**📬 BİLDİRİMLER:**
+- `_pushNotif('s', 'kp', ...)` — saha'ya dönem kapatıldı
+- `_pushNotif('d', 'kp', ...)` — dept'e dönem kapatıldı
+
+**⚠️ BİLİNEN RİSKLER:**
+- Kiralama fişleri bekleyen kalabilir — uyarı verilir ama kapanmaya izin verilir
+
+---
+
+### 9C — Pasif Onay (7 gün)
+
+**🟢 TETİKLEYİCİ:** `_checkPasifOnay()` — her `renderAccBek()`, `renderDept()`, `init()` çağrısında otomatik çalışır
+
+**📞 FONKSİYON ZİNCİRİ:**
+- `_checkPasifOnay()` — satır 7797
+- `accBekleyen` içindeki her item için (avans ve Kiralama hariç): `olusturmaZamani` kontrolü
+  - ≥ 7 gün: `pasifOnaylar` listesine alır → `fisler.durum = 'onaylandi'`, `accGecmis` push, `accBekleyen` splice
+  - ≥ 6 gün (7-1): `uyariVerildi` flag'i yoksa muhasebe'ye yaklaşıyor bildirimi
+
+**💾 KOLEKSIYON GÜNCELLEMELERİ:**
+- `APP.data.fisler[i].durum`: `'onaylandi'`
+- `APP.data.accBekleyen`: splice (7 gün dolmuş itemlar)
+- `APP.data.accGecmis`: push (`pasifOnay:true` field'ı ile — geç işlem değil)
+
+**📬 BİLDİRİMLER:**
+- `_pushNotif('s', 'gr', 'Pasif Onay', ...)` — saha'ya otomatik onay haberi
+- `_pushNotif('m', 'am', 'Pasif Onay Tetiklendi', ...)` — muhasebeye uyarı
+
+---
+
+### 9D — Geç İşlem (Asimetrik Kapanış)
+
+**🟢 TETİKLEYİCİ:** Muhasebe kullanıcısı kapalı dönemdeki bir harcama üzerinde accOnayla / accReddet / accKismi çağırır
+
+**📞 FONKSİYON ZİNCİRİ:**
+- `accOnayla(id)` / `accReddet(id)` / `accKismi(id, ...)` — kapalı dönem kontrolü yapılır
+- Kapalı dönem tespit edilirse: `_gecIslemModal(donemId, islem, callback)` açılır
+- Muhasebe sebep girer → `_gecIslemUygula()` → callback'i çağırır
+- Callback içinde orijinal işlem + `gecIslem:true` field'ları accGecmis kaydına eklenir
+
+**💾 KOLEKSIYON GÜNCELLEMELERİ:**
+- `APP.data.accGecmis`: push — `gecIslem:true`, `gecIslemSebep:string`, `gecIslemDonem:number` field'ları ile
+- `APP.seed.donemler[i].gecIslemSayisi`: `+= 1`
+- Orijinal işlemin tüm koleksiyon güncellemeleri de yapılır (fisler.durum, accBekleyen splice vb.)
+
+**📬 BİLDİRİMLER:** Orijinal akışın bildirimleri aynen devam eder
+
+**⚠️ KRİTİK KURAL:**
+- `gecIslem`, `gecIslemSebep`, `gecIslemDonem` field'ları accGecmis'e yazıldıktan sonra silinemez, override edilemez
+- Saha ve dept kapanmış dönemde işlem yapamaz — deptOnayla/deptReddet/deptKismi ve _addToDeptBekleyen'in başında engel var
 
 ---
 
@@ -446,12 +526,10 @@ Her akış şu formatta yazılır:
 
 Bu akışları yazarken tespit edilen, STATUS.md'ye eklenecek riskler:
 
-1. **Dönem yönetimi eksik:** Yeni dönem / dönem kapama implement değil, demo'da 3 sabit dönem var.
+1. **Kiralama ceza tutarı persistent değil:** Render-time hesaplanıyor, geçmişe bakmak zor.
 
-2. **Kiralama ceza tutarı persistent değil:** Render-time hesaplanıyor, geçmişe bakmak zor.
-
-4. **Muhasebe → Dept direkt avans akışı eksik:** Faz 2'ye not edildi.
+2. **Muhasebe → Dept direkt avans akışı eksik:** Faz 2'ye not edildi.
 
 ---
 
-*Son teyit: index.html toplam satır sayısı ~9900+ (WORKFLOWS yazım tarihi itibarıyla).*
+*Son teyit: index.html toplam satır sayısı ~10300+ (26.04.2026 itibarıyla).*

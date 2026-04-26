@@ -2430,9 +2430,11 @@ body {
 
     <!-- TAB: DÖNEM -->
     <div class="su-tab" id="tab-donem">
+      <div id="don-kapali-banner" style="display:none"></div>
       <div class="don-pills" id="don-pills"></div>
       <div class="don-stats" id="don-stats"></div>
       <div class="don-prog"><div class="don-prog-f" id="don-prog-f" style="width:0%"></div></div>
+      <div id="don-ozel-belgeler" style="padding:8px 0 4px;border-bottom:1px solid var(--bo);margin-bottom:8px"></div>
 
       <div class="fis-hd">
         <div class="sec-lbl" id="fis-hd-lbl">Fişler</div>
@@ -3276,6 +3278,57 @@ body {
 
 
 <!-- ════════════════════════════
+     MODAL: DÖNEM KAPATMA
+════════════════════════════ -->
+<div class="mo" id="md-donem-kapama">
+  <div class="ms">
+    <div class="mh"></div>
+    <div class="mhd">
+      <div class="mtitle">Dönem Kapatma</div>
+      <button class="mclose" onclick="closeM('md-donem-kapama')">✕</button>
+    </div>
+    <div class="mbody">
+      <div id="dn-kapama-info" style="font-size:13px;color:var(--tx2);margin-bottom:14px;line-height:1.5">—</div>
+      <div class="fg">
+        <label style="font-size:12px;color:var(--tx3)">Kapama notu (opsiyonel — bilgi amaçlı)</label>
+        <textarea id="dn-kapama-sebep" class="fgi" rows="3" placeholder="Dönem kapanış notu..."></textarea>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn btn-sm" onclick="closeM('md-donem-kapama')" style="flex:1;justify-content:center">Vazgeç</button>
+        <button class="btn btn-sm btn-r" onclick="_dnKapamaUygula()" style="flex:1;justify-content:center">Kapat</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     MODAL: GEÇ İŞLEM SEBEP
+════════════════════════════ -->
+<div class="mo" id="md-gec-islem">
+  <div class="ms">
+    <div class="mh"></div>
+    <div class="mhd">
+      <div class="mtitle">Geç İşlem — Sebep Gerekli</div>
+      <button class="mclose" onclick="closeM('md-gec-islem')">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="al-rd" style="margin-bottom:12px;font-size:12px">
+        Bu dönem kapalı. Yapacağınız işlem <strong>geç işlem</strong> olarak silinemez şekilde kayıt altına alınacak.
+      </div>
+      <div id="gec-islem-info" style="font-size:12px;color:var(--tx3);margin-bottom:12px">—</div>
+      <div class="fg">
+        <label style="font-size:12px;color:var(--tx2)">Sebep <span style="color:var(--rd2)">*</span> (min. 10 karakter)</label>
+        <textarea id="gec-islem-sebep" class="fgi" rows="3" placeholder="Bu geç işlemin sebebini açıklayın..."></textarea>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn btn-sm" onclick="closeM('md-gec-islem');_gecIslemCb=null;" style="flex:1;justify-content:center">Vazgeç</button>
+        <button class="btn btn-sm btn-p" onclick="_gecIslemUygula()" style="flex:1;justify-content:center">Devam Et</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
      LİGHTBOX
 ════════════════════════════ -->
 <input type="file" id="galeri-input" accept="image/*" multiple style="display:none">
@@ -3817,8 +3870,12 @@ APP.seed.projs = [
   { id:'sr', name:'Sabah Reklamları', type:'Reklam',      status:'Pre-Prod', color:'#22C55E' }
 ];
 APP.seed.donemler = [
-  { id:2, n:'D2', lbl:'Dönem #2', tarih:'06.04 →',     durum:'aktif',  avans:12500, harcama:11240, islem:3 },
-  { id:1, n:'D1', lbl:'Dönem #1', tarih:'20.03–05.04', durum:'kapali', avans:9460,  harcama:9460,  islem:8 }
+  { id:2, n:'D2', lbl:'Dönem #2', tarih:'06.04 →',     durum:'aktif',  avans:12500, harcama:11240, islem:3,
+    baslangic:'01.04.2026', bitis:null,         kapanmaTarihi:null,         kapayanKisi:null,           gecIslemSayisi:0 },
+  { id:1, n:'D1', lbl:'Dönem #1', tarih:'20.03–05.04', durum:'kapali', avans:9460,  harcama:9460,  islem:8,
+    baslangic:'01.03.2026', bitis:'31.03.2026', kapanmaTarihi:'05.04.2026', kapayanKisi:'Ayşe Tekin',   gecIslemSayisi:0 },
+  { id:0, n:'D0', lbl:'Dönem #0', tarih:'01.02–28.02', durum:'kapali', avans:9000,  harcama:8200,  islem:6,
+    baslangic:'01.02.2026', bitis:'28.02.2026', kapanmaTarihi:'01.03.2026', kapayanKisi:'Ayşe Tekin',   gecIslemSayisi:0 }
 ];
 APP.data.fisler = [
   { id:1, tarih:'03.04.2026', personel:'Mehmet Kaya', satici:'Petrol Ofisi',   kat:'Yakit',   tutar:1000, durum:'dept-bekleyen',   donem:2, uyari:null,                    thumb:null },
@@ -3949,10 +4006,10 @@ APP.seed.deptEkip = [
   { id:'ak', ini:'AK', name:'Aylin Korkmaz',  rol:'Ses Kaydı',             tutar:2670  }
 ];
 APP.data.deptBekleyen = [
-  { id:101, fisId:1,  uye:'Mehmet Kaya', ini:'MK', satici:'Petrol Ofisi',             kat:'Yakit',    tutar:1000, tarih:'03.04', uyari:null,                    belgesiz:false },
-  { id:102, fisId:2,  uye:'Mehmet Kaya', ini:'MK', satici:'Tavuk Dünyası',            kat:'Yiyecek',  tutar:780,  tarih:'24.03', uyari:'Ekip 15, 10 porsiyon', belgesiz:false },
-  { id:103, fisId:8,  uye:'Mehmet Kaya', ini:'MK', satici:'Kostüm Deposu',            kat:'Sanat',    tutar:320,  tarih:'10.04', uyari:null,                    belgesiz:true, aciklama:'Ekstra kostüm aksesuarı — nakit ödeme, fiş verilmedi' },
-  { id:104, fisId:21, uye:'Mehmet Kaya', ini:'MK', satici:'Sigma Kamera Ekipmanları', kat:'Kiralama', tutar:4800, tarih:'10.04', uyari:null,                    belgesiz:false }
+  { id:101, fisId:1,  uye:'Mehmet Kaya', ini:'MK', satici:'Petrol Ofisi',             kat:'Yakit',    tutar:1000, tarih:'03.04', uyari:null,                    belgesiz:false, donem:2, olusturmaZamani: Date.now() - Math.floor(6.5 * 24 * 60 * 60 * 1000) },
+  { id:102, fisId:2,  uye:'Mehmet Kaya', ini:'MK', satici:'Tavuk Dünyası',            kat:'Yiyecek',  tutar:780,  tarih:'24.03', uyari:'Ekip 15, 10 porsiyon', belgesiz:false, donem:2, olusturmaZamani: Date.now() - Math.floor(6.5 * 24 * 60 * 60 * 1000) },
+  { id:103, fisId:8,  uye:'Mehmet Kaya', ini:'MK', satici:'Kostüm Deposu',            kat:'Sanat',    tutar:320,  tarih:'10.04', uyari:null,                    belgesiz:true, aciklama:'Ekstra kostüm aksesuarı — nakit ödeme, fiş verilmedi', donem:2, olusturmaZamani: Date.now() - Math.floor(2 * 24 * 60 * 60 * 1000) },
+  { id:104, fisId:21, uye:'Mehmet Kaya', ini:'MK', satici:'Sigma Kamera Ekipmanları', kat:'Kiralama', tutar:4800, tarih:'10.04', uyari:null,                    belgesiz:false, donem:2, olusturmaZamani: Date.now() - Math.floor(1 * 24 * 60 * 60 * 1000) }
 ];
 APP.data.deptAvans = [
   { id:201, uye:'Okan Demir',   ini:'OD', tutar:5000, tarih:'11.04', gerekce:'Dış çekim ekipman kira ön ödemesi — 2 günlük set kurulumu', fromKey:'s' },
@@ -5578,6 +5635,7 @@ function _checkKatLimit(kat, newTotal) {
 }
 
 function renderDept() {
+  _checkPasifOnay();
   APP.ui.sdSec = {}; /* yeni oturumda seçimi temizle */
   APP.ui.sdSeciliDonem = 2; /* aktif dönemden başla */
   var av  = document.getElementById('sd-hd-av');
@@ -5632,6 +5690,10 @@ function _deptTarih() {
 }
 
 function _addToDeptBekleyen(satici, kat, tutar, belgesiz, aciklama, fotos, fisId) {
+  if (APP.ui.curUser && APP.ui.curUser.role === 'user' && _isDonemKapali(APP.ui.aktifDon)) {
+    notif('Bu dönem kapanmış. Yeni fiş eklenemez.', 'red');
+    return;
+  }
   var uye = APP.ui.curUser ? APP.ui.curUser.name : 'Dept Sorumlusu';
   var ini = APP.ui.curUser ? APP.ui.curUser.ini  : 'DS';
   APP.data.deptBekleyen.unshift({
@@ -5644,6 +5706,8 @@ function _addToDeptBekleyen(satici, kat, tutar, belgesiz, aciklama, fotos, fisId
     belgesiz: !!belgesiz,
     aciklama: aciklama || '',
     fotos: fotos || [],
+    donem: APP.ui.aktifDon,
+    olusturmaZamani: Date.now(),
     log: [_mkLog('olusturuldu', 'Harcama bildirildi')]
   });
   /* Bütçe eşik kontrolü */
@@ -5979,7 +6043,9 @@ function deptOnaylaSecili() {
         tutar: f.tutar, tarih: f.tarih,
         belgesiz: !!f.belgesiz, uyari: f.uyari || '',
         aciklama: f.aciklama || '', fotos: f.fotos || [],
-        fromKey: f.fromKey || 's', log: f.log
+        fromKey: f.fromKey || 's', log: f.log,
+        donem: f.donem !== undefined ? f.donem : APP.ui.aktifDon,
+        olusturmaZamani: Date.now()
       });
       /* fisler.durum güncelle: dept-bekleyen → acc-bekleyen */
       var _fsi = -1;
@@ -6820,6 +6886,11 @@ function deptOnayla(id) {
   for (var i = 0; i < APP.data.deptBekleyen.length; i++) {
     if (APP.data.deptBekleyen[i].id === id) {
       var f = APP.data.deptBekleyen[i];
+      var _fDon = f.donem !== undefined ? f.donem : APP.ui.aktifDon;
+      if (_isDonemKapali(_fDon)) {
+        notif('Bu dönem kapanmış. Dept rolünde işlem yapılamaz. Muhasebeye yönlendirin.', 'red');
+        return;
+      }
       APP.data.deptBekleyen.splice(i, 1);
       /* Onaylanan tutarı bütçeye ekle */
       var ob = APP.data.donemButce.find(function(x){ return x.donem === APP.ui.aktifDon; });
@@ -6851,7 +6922,9 @@ function deptOnayla(id) {
         tutar: f.tutar, tarih: f.tarih,
         belgesiz: !!f.belgesiz, uyari: f.uyari || '',
         aciklama: f.aciklama || '', fotos: f.fotos || [],
-        fromKey: f.fromKey || 's', log: f.log
+        fromKey: f.fromKey || 's', log: f.log,
+        donem: _fDon,
+        olusturmaZamani: Date.now()
       });
       _pushNotif('m', 'bl', 'Dept Onayı — Yeni Harcama',
         f.satici + ' (₺' + f.tutar.toLocaleString('tr-TR') + ') dept onayından geçti.',
@@ -6874,6 +6947,11 @@ function deptReddet(id) {
   for (var i = 0; i < APP.data.deptBekleyen.length; i++) {
     if (APP.data.deptBekleyen[i].id === id) {
       var f = APP.data.deptBekleyen[i];
+      var _fDon2 = f.donem !== undefined ? f.donem : APP.ui.aktifDon;
+      if (_isDonemKapali(_fDon2)) {
+        notif('Bu dönem kapanmış. Dept rolünde işlem yapılamaz. Muhasebeye yönlendirin.', 'red');
+        return;
+      }
       var redNedeni = (prompt('Red nedeni girin:') || '').trim();
       if (!redNedeni) { notif('Red nedeni zorunludur — iptal edildi', 'amber'); return; }
       f.log = f.log || [];
@@ -6919,6 +6997,11 @@ function deptKismi(id, onayTutar, redNedeni) {
   }
   if (_i < 0) return;
   var f = APP.data.deptBekleyen[_i];
+  var _fDon3 = f.donem !== undefined ? f.donem : APP.ui.aktifDon;
+  if (_isDonemKapali(_fDon3)) {
+    notif('Bu dönem kapanmış. Dept rolünde işlem yapılamaz. Muhasebeye yönlendirin.', 'red');
+    return;
+  }
 
   if (!onayTutar || onayTutar <= 0 || onayTutar >= f.tutar) return;
   if (!redNedeni || !redNedeni.trim()) return;
@@ -6988,7 +7071,9 @@ function deptKismi(id, onayTutar, redNedeni) {
     dept: _parent && _parent.dept ? _parent.dept : (f.uye || ''),
     uye: f.uye, ini: f.ini, satici: f.satici, kat: f.kat,
     tutar: onayTutar, tarih: f.tarih,
-    belgesiz: f.belgesiz || false, uyari: '', fromKey: 'd'
+    belgesiz: f.belgesiz || false, uyari: '', fromKey: 'd',
+    donem: _fDon3,
+    olusturmaZamani: Date.now()
   });
 
   /* Bütçe güncelle */
@@ -7369,6 +7454,23 @@ function renderDonem(did) {
   var kalan = d.avans - d.harcama;
   var pct   = Math.min(100, Math.round(d.harcama / d.avans * 100));
 
+  /* Kapalı dönem uyarı bandı */
+  var kapaliDonBanner = document.getElementById('don-kapali-banner');
+  if (kapaliDonBanner) {
+    if (d.durum === 'kapali') {
+      var _role = APP.ui.curUser ? APP.ui.curUser.role : '';
+      if (_role === 'acc') {
+        kapaliDonBanner.style.display = 'block';
+        kapaliDonBanner.innerHTML = '<div style="background:rgba(232,150,46,.15);border:1px solid rgba(232,150,46,.4);border-radius:8px;padding:9px 12px;font-size:12px;color:var(--ac2);margin-bottom:10px">⚠ Kapalı dönem — yapacağınız işlemler geç işlem olarak kaydedilir ve silinemez işaret taşır.</div>';
+      } else {
+        kapaliDonBanner.style.display = 'block';
+        kapaliDonBanner.innerHTML = '<div style="background:rgba(100,116,139,.1);border:1px solid var(--bo);border-radius:8px;padding:9px 12px;font-size:12px;color:var(--tx3);margin-bottom:10px">🔒 Bu dönem kapanmış. Yeni fiş eklenemez veya işlem yapılamaz.</div>';
+      }
+    } else {
+      kapaliDonBanner.style.display = 'none';
+    }
+  }
+
   /* pills */
   var pillsEl = document.getElementById('don-pills');
   if (pillsEl) {
@@ -7392,6 +7494,29 @@ function renderDonem(did) {
     }).join('');
   }
 
+  /* Özel Belgeler + Geç İşlem kartları */
+  var ozelEl = document.getElementById('don-ozel-belgeler');
+  if (ozelEl) {
+    var _tevSay = 0, _stopSay = 0, _selfSay = 0;
+    var _donemFisler = APP.data.fisler.filter(function(x) { return x.donem === did; });
+    for (var _obi = 0; _obi < _donemFisler.length; _obi++) {
+      var _ob = _donemFisler[_obi];
+      if (_ob.ozelTip === 'tevkifat') _tevSay++;
+      else if (_ob.ozelTip === 'stopaj') _stopSay++;
+      else if (_ob.ozelTip === 'selfbilling') _selfSay++;
+    }
+    var _gecSay = d.gecIslemSayisi || 0;
+    var _gecClr = _gecSay > 0 ? 'color:var(--am2)' : 'color:var(--tx3)';
+    ozelEl.innerHTML =
+      '<div style="font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Özel Belgeler</div>' +
+      '<div style="display:flex;gap:12px;flex-wrap:wrap">' +
+        '<span style="font-size:12px;color:var(--tx2)">Tevkifat: <b>' + _tevSay + '</b></span>' +
+        '<span style="font-size:12px;color:var(--tx2)">Stopaj: <b>' + _stopSay + '</b></span>' +
+        '<span style="font-size:12px;color:var(--tx2)">Self-billing: <b>' + _selfSay + '</b></span>' +
+        '<span style="font-size:12px;' + _gecClr + '">Geç İşlem: <b>' + _gecSay + '</b></span>' +
+      '</div>';
+  }
+
   /* progress */
   var pf = document.getElementById('don-prog-f');
   if (pf) {
@@ -7400,7 +7525,8 @@ function renderDonem(did) {
   }
 
   /* fiş listesi */
-  var myFis = APP.data.fisler.filter(function(x) { return x.donem === did && x.personel === 'Mehmet Kaya'; });
+  var _curName = APP.ui.curUser ? APP.ui.curUser.name : 'Mehmet Kaya';
+  var myFis = APP.data.fisler.filter(function(x) { return x.donem === did && x.personel === _curName; });
   var hdLbl = document.getElementById('fis-hd-lbl');
   var hdCnt = document.getElementById('fis-hd-cnt');
   if (hdLbl) hdLbl.textContent = 'Fişler · ' + d.n;
@@ -7519,7 +7645,207 @@ function renderDonem(did) {
       '</div>' +
     '</div>';
 }
-function yeniDonem() { notif('Yeni dönem başlatıldı', 'green'); }
+function yeniDonem() {
+  if (!APP.ui.curUser || APP.ui.curUser.role !== 'acc') {
+    notif('Dönem yönetimi sadece muhasebe yetkisindedir.', 'red');
+    return;
+  }
+  var aktif = null;
+  for (var _ai = 0; _ai < APP.seed.donemler.length; _ai++) {
+    if (APP.seed.donemler[_ai].durum === 'aktif') { aktif = APP.seed.donemler[_ai]; break; }
+  }
+  if (aktif) {
+    var deptBek = APP.data.deptBekleyen.filter(function(f) { return f.donem === aktif.id && f.kat !== 'Kiralama'; });
+    var accBek  = APP.data.accBekleyen.filter(function(f)  { return f.donem === aktif.id && f.tip !== 'avans' && f.kat !== 'Kiralama'; });
+    var bekTop  = deptBek.length + accBek.length;
+    if (bekTop > 0) {
+      if (confirm(aktif.lbl + ' açık ve ' + bekTop + ' bekleyen var. Önce kapatılmalı. Devam edip kapatma modalını açayım mı?')) {
+        _dnKapamaModal(aktif.id);
+      }
+      return;
+    }
+    if (!confirm(aktif.lbl + ' açık ama bekleyeni yok. Otomatik kapatıp yeni dönem açayım mı?')) return;
+    donemKapa(aktif.id, 'Yeni dönem açılışı için otomatik kapama');
+  }
+  var _ids = APP.seed.donemler.map(function(x) { return x.id; });
+  var yeniId = Math.max.apply(null, _ids) + 1;
+  var yeniN  = yeniId + 1;
+  var bugun  = new Date().toLocaleDateString('tr-TR');
+  APP.seed.donemler.unshift({
+    id: yeniId, n: 'D' + yeniN, lbl: 'Dönem #' + yeniN,
+    tarih: bugun + ' →', durum: 'aktif',
+    avans: 0, harcama: 0, islem: 0,
+    baslangic: bugun, bitis: null, kapanmaTarihi: null, kapayanKisi: null, gecIslemSayisi: 0
+  });
+  APP.seed.sdDonemler.unshift({ id: yeniId, lbl: 'Dönem #' + yeniN, tarih: bugun, aktif: true });
+  for (var _si = 1; _si < APP.seed.sdDonemler.length; _si++) APP.seed.sdDonemler[_si].aktif = false;
+  APP.seed.saDonemler.unshift({ id: yeniId, lbl: 'Dönem #' + yeniN, tarih: bugun, aktif: true });
+  for (var _sai = 1; _sai < APP.seed.saDonemler.length; _sai++) APP.seed.saDonemler[_sai].aktif = false;
+  APP.data.donemButce.unshift({ donem: yeniId, lbl: 'Dönem #' + yeniN, butce: 40000, harcanan: 0, reddedildi: 0, _lastPct: 0 });
+  APP.ui.aktifDon = yeniId;
+  saveAppData();
+  renderDonem(yeniId);
+  renderAccBek();
+  _recomputeAccDepts();
+  _pushNotif('s', 'bl', 'Yeni Dönem Açıldı', 'Dönem #' + yeniN + ' başladı.', 'Az önce · Sistem');
+  _pushNotif('d', 'bl', 'Yeni Dönem Açıldı', 'Dönem #' + yeniN + ' başladı.', 'Az önce · Sistem');
+  updateNotifBadge();
+  notif('Dönem #' + yeniN + ' açıldı', 'green');
+}
+
+function donemKapa(donemId, sebep) {
+  if (!APP.ui.curUser || APP.ui.curUser.role !== 'acc') return;
+  var d = APP.seed.donemler.find(function(x) { return x.id === donemId; });
+  if (!d) return;
+  if (d.durum === 'kapali') { notif('Bu dönem zaten kapalı.', 'red'); return; }
+
+  var deptBek = APP.data.deptBekleyen.filter(function(f) { return f.donem === donemId && f.kat !== 'Kiralama'; });
+  var accBek  = APP.data.accBekleyen.filter(function(f)  { return f.donem === donemId && f.tip !== 'avans' && f.kat !== 'Kiralama'; });
+  var bekTop  = deptBek.length + accBek.length;
+  if (bekTop > 0) {
+    notif('Bu dönemde ' + bekTop + ' bekleyen fiş var. Önce işlem yapılmalı.', 'red');
+    return;
+  }
+
+  var kiralamaBek = APP.data.deptBekleyen.filter(function(f) { return f.donem === donemId && f.kat === 'Kiralama'; }).length +
+                    APP.data.accBekleyen.filter(function(f)  { return f.donem === donemId && f.tip !== 'avans' && f.kat === 'Kiralama'; }).length;
+  if (kiralamaBek > 0) {
+    if (!confirm('Bu dönemde ' + kiralamaBek + ' açık kiralama var. Kiralamalar sonradan bağlanabilir. Yine de kapatılsın mı?')) return;
+  }
+
+  var acikAvans = (APP.data.accAvansGecmis || []).filter(function(av) { return av.donem === donemId && av.durum !== 'ödendi'; }).length;
+  if (acikAvans > 0) {
+    _pushNotif('m', 'am', 'Açık Avans Uyarısı',
+      d.lbl + ' kapatıldı — ' + acikAvans + ' avans takipte.', 'Az önce · Sistem');
+  }
+
+  var bugun = new Date().toLocaleDateString('tr-TR');
+  d.durum = 'kapali';
+  d.bitis = bugun;
+  d.kapanmaTarihi = bugun;
+  d.kapayanKisi = APP.ui.curUser.name;
+
+  for (var _sdi = 0; _sdi < APP.seed.sdDonemler.length; _sdi++) {
+    if (APP.seed.sdDonemler[_sdi].id === donemId) { APP.seed.sdDonemler[_sdi].aktif = false; break; }
+  }
+  for (var _ssdi = 0; _ssdi < APP.seed.saDonemler.length; _ssdi++) {
+    if (APP.seed.saDonemler[_ssdi].id === donemId) { APP.seed.saDonemler[_ssdi].aktif = false; break; }
+  }
+
+  saveAppData();
+  renderDonem(donemId);
+  _recomputeAccDepts();
+  _pushNotif('s', 'kp', d.lbl + ' Kapatıldı', d.lbl + ' kapandı.', 'Az önce · Sistem');
+  _pushNotif('d', 'kp', d.lbl + ' Kapatıldı', d.lbl + ' kapandı.', 'Az önce · Sistem');
+  updateNotifBadge();
+  notif(d.lbl + ' kapatıldı', 'green');
+}
+
+function _isDonemKapali(donemId) {
+  var d = APP.seed.donemler.find(function(x) { return x.id === donemId; });
+  return !!(d && d.durum === 'kapali');
+}
+
+var _gecIslemCb = null;
+var _dnKapamaDonemId = null;
+
+function _gecIslemModal(donemId, islem, callback) {
+  _gecIslemCb = callback;
+  var d = APP.seed.donemler.find(function(x) { return x.id === donemId; });
+  var dLbl = d ? d.lbl : ('Dönem #' + donemId);
+  var infoEl = document.getElementById('gec-islem-info');
+  if (infoEl) infoEl.textContent = dLbl + ' kapalı. Bu işlem (' + islem + ') geç işlem olarak silinemez şekilde kaydedilecek. Sebep zorunludur (min. 10 karakter).';
+  var ta = document.getElementById('gec-islem-sebep');
+  if (ta) ta.value = '';
+  openM('md-gec-islem');
+}
+
+function _gecIslemUygula() {
+  var ta = document.getElementById('gec-islem-sebep');
+  var sebep = ta ? ta.value.trim() : '';
+  if (sebep.length < 10) { notif('Sebep en az 10 karakter olmalı', 'red'); return; }
+  closeM('md-gec-islem');
+  if (_gecIslemCb) { var cb = _gecIslemCb; _gecIslemCb = null; cb(sebep); }
+}
+
+function _dnKapamaModal(donemId) {
+  _dnKapamaDonemId = donemId;
+  var d = APP.seed.donemler.find(function(x) { return x.id === donemId; });
+  var dLbl = d ? d.lbl : ('Dönem #' + donemId);
+  var deptBek = APP.data.deptBekleyen.filter(function(f) { return f.donem === donemId && f.kat !== 'Kiralama'; });
+  var accBek  = APP.data.accBekleyen.filter(function(f)  { return f.donem === donemId && f.tip !== 'avans' && f.kat !== 'Kiralama'; });
+  var bekTop  = deptBek.length + accBek.length;
+  var infoEl = document.getElementById('dn-kapama-info');
+  if (infoEl) infoEl.innerHTML =
+    '<strong>' + dLbl + '</strong> kapatılacak.<br>' +
+    'Saha ve dept için tam kapanış — muhasebe geç işlem olarak müdahale edebilir.<br><br>' +
+    (bekTop > 0
+      ? '<span style="color:var(--rd)">⚠ ' + bekTop + ' bekleyen (kiralama hariç) var — önce işlenmeli.</span>'
+      : '<span style="color:var(--gr)">✓ Kiralama hariç bekleyen yok.</span>');
+  var ta = document.getElementById('dn-kapama-sebep');
+  if (ta) ta.value = '';
+  openM('md-donem-kapama');
+}
+
+function _dnKapamaUygula() {
+  var ta = document.getElementById('dn-kapama-sebep');
+  var sebep = ta ? ta.value.trim() : '';
+  closeM('md-donem-kapama');
+  donemKapa(_dnKapamaDonemId, sebep);
+}
+
+function _checkPasifOnay() {
+  var simdi = Date.now();
+  var yedi_gun = 7 * 24 * 60 * 60 * 1000;
+  var bir_gun  = 24 * 60 * 60 * 1000;
+  var pasifOnaylar = [];
+  var uyarilar = [];
+  for (var i = APP.data.accBekleyen.length - 1; i >= 0; i--) {
+    var item = APP.data.accBekleyen[i];
+    if (item.tip === 'avans') continue;
+    if (item.kat === 'Kiralama') continue;
+    if (!item.olusturmaZamani) continue;
+    var gecen = simdi - item.olusturmaZamani;
+    if (gecen >= yedi_gun) { pasifOnaylar.push({ item: item, idx: i }); }
+    else if (gecen >= (yedi_gun - bir_gun)) { uyarilar.push(item); }
+  }
+  for (var pi = pasifOnaylar.length - 1; pi >= 0; pi--) {
+    var po = pasifOnaylar[pi];
+    var pItem = po.item;
+    if (pItem.fisId) {
+      for (var fi = 0; fi < APP.data.fisler.length; fi++) {
+        if (APP.data.fisler[fi].id === pItem.fisId) { APP.data.fisler[fi].durum = 'onaylandi'; break; }
+      }
+    }
+    APP.data.accGecmis.push({
+      id: Date.now() + Math.floor(Math.random() * 1000),
+      fisId: pItem.fisId || null,
+      islem: 'onay',
+      onaylayan: 'SİSTEM (7-gün pasif onay)',
+      tarih: Date.now(),
+      tutar: pItem.tutar,
+      kat: pItem.kat || '',
+      satici: pItem.satici || '',
+      uye: pItem.uye,
+      dept: pItem.dept || '',
+      donem: pItem.donem !== undefined ? pItem.donem : APP.ui.aktifDon,
+      pasifOnay: true
+    });
+    APP.data.accBekleyen.splice(po.idx, 1);
+    _pushNotif('s', 'gr', 'Pasif Onay',
+      (pItem.satici || '') + ' — 7 gün doldu, otomatik onaylandı.', 'Az önce · Sistem');
+    _pushNotif('m', 'am', 'Pasif Onay Tetiklendi',
+      (pItem.uye || '') + ' — ' + (pItem.satici || '') + ' otomatik onaylandı.', 'Az önce · Sistem');
+  }
+  for (var ui = 0; ui < uyarilar.length; ui++) {
+    var uw = uyarilar[ui];
+    if (uw.uyariVerildi) continue;
+    uw.uyariVerildi = true;
+    _pushNotif('m', 'am', 'Pasif Onay Yaklaşıyor',
+      (uw.uye || '') + ' — ' + (uw.satici || '') + ' 1 gün içinde otomatik onaylanacak.', 'Az önce · Sistem');
+  }
+  if (pasifOnaylar.length > 0) { saveAppData(); _recomputeAccDepts(); updateNotifBadge(); }
+}
 
 /* ═══ LİGHTBOX ═══ */
 function openLBFis(fid) {
@@ -8308,13 +8634,13 @@ APP.data.accDepts = [
 ];
 
 APP.data.accBekleyen = [
-  { id:301, tip:'avans', dept:'Yapım',  uye:'Okan Demir',   ini:'OD', tutar:5000, tarih:'11.04', gerekce:'Dış çekim ekipman kira ön ödemesi', fromKey:'d' },
-  { id:302, tip:'avans', dept:'Yapım',  uye:'Burhan Çelik', ini:'BÇ', tutar:2500, tarih:'10.04', gerekce:'Set kurulum lojistik harcaması',    fromKey:'d' },
-  { id:304, tip:'avans', dept:'Kostüm', uye:'Burhan Çelik', ini:'BÇ', tutar:2500, tarih:'10.04', gerekce:'Kostüm alım & kiralama',            fromKey:'d' },
-  { id:401, fisId:22, dept:'Yapım',  uye:'Mehmet Kaya',  ini:'MK', satici:'ProAV Ses Ekipmanı',      kat:'Kiralama', tutar:2450, tarih:'12.04', belgesiz:false, uyari:'', fromKey:'d' },
-  { id:402, fisId:34, dept:'Yapım',  uye:'Burhan Çelik', ini:'BÇ', satici:'Aydınlatma Tüp A.Ş.',    kat:'Ekipman',  tutar:2200, tarih:'11.04', belgesiz:false, uyari:'', fromKey:'d' },
-  { id:403, fisId:40, dept:'Kamera', uye:'Elif Yılmaz',  ini:'EY', satici:'Kafe Set Bistro',         kat:'Yiyecek',  tutar:450,  tarih:'10.04', belgesiz:false, uyari:'', fromKey:'d' },
-  { id:404, fisId:48, dept:'Ses',    uye:'Mert Öztürk',  ini:'MÖ', satici:'Müzik Aletleri A.Ş.',    kat:'Ekipman',  tutar:2900, tarih:'13.04', belgesiz:false, uyari:'', fromKey:'d' }
+  { id:301, tip:'avans', dept:'Yapım',  uye:'Okan Demir',   ini:'OD', tutar:5000, tarih:'11.04', gerekce:'Dış çekim ekipman kira ön ödemesi', fromKey:'d', donem:2 },
+  { id:302, tip:'avans', dept:'Yapım',  uye:'Burhan Çelik', ini:'BÇ', tutar:2500, tarih:'10.04', gerekce:'Set kurulum lojistik harcaması',    fromKey:'d', donem:2 },
+  { id:304, tip:'avans', dept:'Kostüm', uye:'Burhan Çelik', ini:'BÇ', tutar:2500, tarih:'10.04', gerekce:'Kostüm alım & kiralama',            fromKey:'d', donem:2 },
+  { id:401, fisId:22, dept:'Yapım',  uye:'Mehmet Kaya',  ini:'MK', satici:'ProAV Ses Ekipmanı',      kat:'Kiralama', tutar:2450, tarih:'12.04', belgesiz:false, uyari:'', fromKey:'d', donem:2, olusturmaZamani: Date.now() - Math.floor(3 * 24 * 60 * 60 * 1000) },
+  { id:402, fisId:34, dept:'Yapım',  uye:'Burhan Çelik', ini:'BÇ', satici:'Aydınlatma Tüp A.Ş.',    kat:'Ekipman',  tutar:2200, tarih:'11.04', belgesiz:false, uyari:'', fromKey:'d', donem:2, olusturmaZamani: Date.now() - Math.floor(4 * 24 * 60 * 60 * 1000) },
+  { id:403, fisId:40, dept:'Kamera', uye:'Elif Yılmaz',  ini:'EY', satici:'Kafe Set Bistro',         kat:'Yiyecek',  tutar:450,  tarih:'10.04', belgesiz:false, uyari:'', fromKey:'d', donem:2, olusturmaZamani: Date.now() - Math.floor(3 * 24 * 60 * 60 * 1000) },
+  { id:404, fisId:48, dept:'Ses',    uye:'Mert Öztürk',  ini:'MÖ', satici:'Müzik Aletleri A.Ş.',    kat:'Ekipman',  tutar:2900, tarih:'13.04', belgesiz:false, uyari:'', fromKey:'d', donem:2, olusturmaZamani: Date.now() - Math.floor(2 * 24 * 60 * 60 * 1000) }
 ];
 
 APP.data.accSuphe = [
@@ -8509,7 +8835,18 @@ function renderAccDash() {
     totalRed  += (depts[i].red || 0);
   }
 
-  var html = donBar;
+  /* Dönem Yönetimi şeridi */
+  var aktifDon = APP.seed.donemler.find(function(x) { return x.id === APP.ui.aktifDon; });
+  var donYonHtml = '<div style="display:flex;align-items:center;gap:8px;padding:10px 0 4px;margin-bottom:8px;border-bottom:1px solid var(--bo)">' +
+    '<span style="font-size:12px;font-weight:700;color:var(--tx2)">Dönem Yönetimi</span>' +
+    '<span style="flex:1;font-size:12px;color:var(--tx3)">' +
+      (aktifDon ? aktifDon.lbl + ' — <span style="color:var(--gr2)">Açık</span>' : 'Dönem yok') +
+    '</span>' +
+    '<button class="btn btn-sm btn-p" onclick="yeniDonem()" style="font-size:11px;padding:4px 10px">+ Yeni Dönem</button>' +
+    (aktifDon ? '<button class="btn btn-sm" onclick="_dnKapamaModal(' + APP.ui.aktifDon + ')" style="font-size:11px;padding:4px 10px;background:rgba(239,68,68,.12);color:var(--rd2);border:1px solid rgba(239,68,68,.3)">Dönem Kapat</button>' : '') +
+  '</div>';
+
+  var html = donYonHtml + donBar;
 
   /* Genel özet kartı */
   html += '<div class="sa-genel">';
@@ -8599,6 +8936,7 @@ function renderAccDash() {
 }
 
 function renderAccBek() {
+  _checkPasifOnay();
   var el = document.getElementById('sa-pnl-bek');
   if (!el) return;
   var bCnt = document.getElementById('satb-bek-cnt');
@@ -9960,10 +10298,18 @@ function startYeniSohbet(hedefKey) {
   openSohbet(yeni.id);
 }
 
-function accOnayla(id) {
+function accOnayla(id, _gecSebep) {
   var item = null;
   for (var i = 0; i < APP.data.accBekleyen.length; i++) {
     if (APP.data.accBekleyen[i].id === id) { item = APP.data.accBekleyen[i]; break; }
+  }
+  if (!item) return;
+  var _aDon = (item.donem !== undefined) ? item.donem : APP.ui.aktifDon;
+  if (!item.tip || item.tip !== 'avans') {
+    if (_isDonemKapali(_aDon) && !_gecSebep) {
+      _gecIslemModal(_aDon, 'onay', function(sebep) { accOnayla(id, sebep); });
+      return;
+    }
   }
   APP.data.accBekleyen = APP.data.accBekleyen.filter(function(f){ return f.id !== id; });
   renderAccBek();
@@ -10010,7 +10356,7 @@ function accOnayla(id) {
           }
         }
       }
-      APP.data.accGecmis.push({
+      var _aGecEntry = {
         id: Date.now(),
         fisId: item.fisId || null,
         islem: 'onay',
@@ -10021,8 +10367,16 @@ function accOnayla(id) {
         satici: item.satici || '',
         uye: item.uye,
         dept: item.dept || '',
-        donem: APP.ui.aktifDon
-      });
+        donem: _aDon
+      };
+      if (_gecSebep) {
+        _aGecEntry.gecIslem = true;
+        _aGecEntry.gecIslemSebep = _gecSebep;
+        _aGecEntry.gecIslemDonem = _aDon;
+        var _gd = APP.seed.donemler.find(function(x) { return x.id === _aDon; });
+        if (_gd) _gd.gecIslemSayisi = (_gd.gecIslemSayisi || 0) + 1;
+      }
+      APP.data.accGecmis.push(_aGecEntry);
       _pushNotif(item.fromKey || 's', 'gr', 'Harcama Onaylandı ✅',
         item.satici + ' — ₺' + item.tutar.toLocaleString('tr-TR') + ' muhasebe onayından geçti.',
         'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe') + ' (Muhasebe)');
@@ -10034,12 +10388,13 @@ function accOnayla(id) {
   saveAppData();
 }
 
-function accReddet(id) {
+function accReddet(id, _gecSebep) {
   var item = null;
   for (var i = 0; i < APP.data.accBekleyen.length; i++) {
     if (APP.data.accBekleyen[i].id === id) { item = APP.data.accBekleyen[i]; break; }
   }
   if (!item) return;
+  var _rDon = (item.donem !== undefined) ? item.donem : APP.ui.aktifDon;
 
   if (item.tip === 'avans') {
     /* Avans reddi — önce modal ile red nedeni al, sonra işle */
@@ -10050,6 +10405,10 @@ function accReddet(id) {
     if (ta) ta.value = '';
     openM('md-av-red');
   } else {
+    if (_isDonemKapali(_rDon) && !_gecSebep) {
+      _gecIslemModal(_rDon, 'red', function(sebep) { accReddet(id, sebep); });
+      return;
+    }
     /* Normal harcama reddi — direkt işle */
     var redNedeniAcc = (prompt('Red nedeni girin:') || '').trim();
     if (!redNedeniAcc) { notif('Red nedeni zorunludur — iptal edildi', 'amber'); return; }
@@ -10077,7 +10436,7 @@ function accReddet(id) {
         }
       }
     }
-    APP.data.accGecmis.push({
+    var _rGecEntry = {
       id: Date.now(),
       fisId: item.fisId || null,
       islem: 'red',
@@ -10088,9 +10447,17 @@ function accReddet(id) {
       satici: item.satici || '',
       uye: item.uye,
       dept: item.dept || '',
-      donem: APP.ui.aktifDon,
+      donem: _rDon,
       redNedeni: redNedeniAcc
-    });
+    };
+    if (_gecSebep) {
+      _rGecEntry.gecIslem = true;
+      _rGecEntry.gecIslemSebep = _gecSebep;
+      _rGecEntry.gecIslemDonem = _rDon;
+      var _rgd = APP.seed.donemler.find(function(x) { return x.id === _rDon; });
+      if (_rgd) _rgd.gecIslemSayisi = (_rgd.gecIslemSayisi || 0) + 1;
+    }
+    APP.data.accGecmis.push(_rGecEntry);
     _pushNotif(item.fromKey || 's', 'rd', 'Harcama Reddedildi (Muhasebe)',
       item.satici + ' — ₺' + item.tutar.toLocaleString('tr-TR') + ' muhasebe tarafından reddedildi. Neden: ' + redNedeniAcc,
       'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe') + ' (Muhasebe)');
@@ -10101,7 +10468,7 @@ function accReddet(id) {
   }
 }
 
-function accKismi(id, onayTutar, redNedeni) {
+function accKismi(id, onayTutar, redNedeni, _gecSebep) {
   var _i = -1;
   for (var _ai = 0; _ai < APP.data.accBekleyen.length; _ai++) {
     if (APP.data.accBekleyen[_ai].id === id) { _i = _ai; break; }
@@ -10109,6 +10476,11 @@ function accKismi(id, onayTutar, redNedeni) {
   if (_i < 0) return;
   var item = APP.data.accBekleyen[_i];
   if (item.tip === 'avans') return;
+  var _kDon = (item.donem !== undefined) ? item.donem : APP.ui.aktifDon;
+  if (_isDonemKapali(_kDon) && !_gecSebep) {
+    _gecIslemModal(_kDon, 'kismi', function(sebep) { accKismi(id, onayTutar, redNedeni, sebep); });
+    return;
+  }
 
   if (!onayTutar || onayTutar <= 0 || onayTutar >= item.tutar) return;
   if (!redNedeni || !redNedeni.trim()) return;
@@ -10159,21 +10531,29 @@ function accKismi(id, onayTutar, redNedeni) {
   APP.data.accBekleyen.splice(_i, 1);
 
   /* accGecmis'e iki kayıt */
-  APP.data.accGecmis.push({
+  var _kOnayEntry = {
     id: Date.now(), fisId: _onayId, islem: 'onay',
     onaylayan: APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe',
     tarih: Date.now(), tutar: onayTutar,
     kat: item.kat || '', satici: item.satici || '',
-    uye: item.uye, dept: item.dept || '', donem: APP.ui.aktifDon
-  });
-  APP.data.accGecmis.push({
+    uye: item.uye, dept: item.dept || '', donem: _kDon
+  };
+  var _kRedEntry = {
     id: Date.now() + 1, fisId: _redId, islem: 'red',
     onaylayan: APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe',
     tarih: Date.now() + 1, tutar: redTutar,
     kat: item.kat || '', satici: item.satici || '',
-    uye: item.uye, dept: item.dept || '', donem: APP.ui.aktifDon,
+    uye: item.uye, dept: item.dept || '', donem: _kDon,
     redNedeni: redNedeni
-  });
+  };
+  if (_gecSebep) {
+    _kOnayEntry.gecIslem = true; _kOnayEntry.gecIslemSebep = _gecSebep; _kOnayEntry.gecIslemDonem = _kDon;
+    _kRedEntry.gecIslem  = true; _kRedEntry.gecIslemSebep  = _gecSebep; _kRedEntry.gecIslemDonem  = _kDon;
+    var _kgd = APP.seed.donemler.find(function(x) { return x.id === _kDon; });
+    if (_kgd) _kgd.gecIslemSayisi = (_kgd.gecIslemSayisi || 0) + 1;
+  }
+  APP.data.accGecmis.push(_kOnayEntry);
+  APP.data.accGecmis.push(_kRedEntry);
 
   /* Bildirimler — saha + dept'e ayrı */
   _pushNotif('s', 'gr', 'Kısmi Onay ✅',
@@ -10209,6 +10589,7 @@ function accSupheIsle(id, action) {
 
 /* ═══ BAŞLAT ═══ */
 (function init() {
+  _checkPasifOnay();
   /* kayıtlı temayı uygula */
   var savedTheme = localStorage.getItem('prodapp-theme');
   if (savedTheme) applyTheme(savedTheme);

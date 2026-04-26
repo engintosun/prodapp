@@ -103,11 +103,14 @@
 - [x] **WORKFLOWS.md** — mali iş akışları dokümanı (tamamlandı 24.04.2026)
 - [x] **fisler.durum çift-adım riski:** deptOnayla durumu güncellemiyor, sadece accOnayla güncelliyor. 'bekleyen' iki anlam taşıyor. Ayrıştırma gerekli (ör: 'dept-bekleyen', 'acc-bekleyen'). *(M)* (tamamlandı 24.04.2026)
 - [x] **accGecmis koleksiyonu:** Muhasebe kesin onay/red sonrası arşiv kaydı — tamamlandı 25.04.2026
-- [ ] **Dönem yönetimi:** yeniDonem() ve dönem kapama implement değil. Demo'da 3 sabit dönem var. *(L)*
+- [x] **Dönem yönetimi:** yeniDonem(), donemKapa(), asimetrik kapanış (5. mekanizma), pasif onay, geç işlem — tamamlandı 26.04.2026
 
 ### P1 — Çok iyi olur, esnek
 - [ ] **Onboarding tutorial** (3 rol × 3 adım, skip'lenebilir) *(L)*
 - [ ] **Kiralama ceza persist:** Ceza tutarı render-time hesaplanıyor, kaydedilmiyor. Geçmişe bakmak zor. *(S)*
+- [x] **deptBekleyen donem field eksik:** seed'de donem:2 field'ı yoktu — eklendi 26.04.2026
+- [x] **APP.seed.donemler donem 0 tutarsızlığı:** sdDonemler/saDonemler'de donem 0 vardı ama donemler dizisinde yoktu — eklendi 26.04.2026
+- [x] **renderDonem hardcoded 'Mehmet Kaya':** personel filtresi APP.ui.curUser.name ile değiştirildi 26.04.2026
 
 ---
 
@@ -161,6 +164,10 @@ Faz 1'in 6 P0/P1 maddesi (4 P0 + 2 P1) bitince hemen bu iş başlar. Faz 2 (back
 
 ## ⏸ ERTELENMİŞ (bilinçli karar)
 
+- Tevkifat/stopaj/self-billing oran tablosu — UI placeholder var, hesap yok (Faz 2)
+- Call sheet entegrasyonu — dönem-çekim bağı (Faz 2 — POY ekosistemi)
+- Otomatik kilit penceresi kapanış sonrası 7 gün — kapanmış döneme "geç belge" penceresi (Faz 2)
+- Çoklu muhasebeci için geç işlem onay zinciri (Faz 2)
 - Belgesiz alt-kategori ağacı
 - accGecmis şeması (muhasebe kesin onay kalıcı izi)
 - Çocuk fişin tekrar bölünmesi (1 seviye derinlik kuralı) — Faz 2'de ihtiyaç çıkarsa açılır
