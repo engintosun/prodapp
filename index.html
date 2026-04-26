@@ -3295,7 +3295,7 @@ body {
       </div>
       <div style="display:flex;gap:8px;margin-top:4px">
         <button class="btn btn-sm" onclick="closeM('md-donem-kapama')" style="flex:1;justify-content:center">Vazgeç</button>
-        <button class="btn btn-sm btn-r" onclick="_dnKapamaUygula()" style="flex:1;justify-content:center">Kapat</button>
+        <button class="btn btn-sm btn-r" id="dn-kapama-btn" onclick="_dnKapamaUygula()" style="flex:1;justify-content:center">Kapat</button>
       </div>
     </div>
   </div>
@@ -7780,10 +7780,25 @@ function _dnKapamaModal(donemId) {
     '<strong>' + dLbl + '</strong> kapatılacak.<br>' +
     'Saha ve dept için tam kapanış — muhasebe geç işlem olarak müdahale edebilir.<br><br>' +
     (bekTop > 0
-      ? '<span style="color:var(--rd)">⚠ ' + bekTop + ' bekleyen (kiralama hariç) var — önce işlenmeli.</span>'
+      ? '<span style="color:var(--rd)">⚠ ' + bekTop + ' bekleyen (kiralama hariç) var — önce işlenmeli.</span>' +
+        '<br><span style="color:var(--rd2);font-size:12px">Bekleyen fişler işlenmeden bu dönem kapatılamaz. Önce muhasebe ekranından her bekleyeni onaylayın veya reddedin.</span>'
       : '<span style="color:var(--gr)">✓ Kiralama hariç bekleyen yok.</span>');
   var ta = document.getElementById('dn-kapama-sebep');
   if (ta) ta.value = '';
+  var kapatBtn = document.getElementById('dn-kapama-btn');
+  if (kapatBtn) {
+    if (bekTop > 0) {
+      kapatBtn.disabled = true;
+      kapatBtn.style.opacity = '0.4';
+      kapatBtn.style.cursor  = 'not-allowed';
+      kapatBtn.onclick = null;
+    } else {
+      kapatBtn.disabled = false;
+      kapatBtn.style.opacity = '';
+      kapatBtn.style.cursor  = '';
+      kapatBtn.onclick = function() { _dnKapamaUygula(); };
+    }
+  }
   openM('md-donem-kapama');
 }
 
