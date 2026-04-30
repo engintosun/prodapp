@@ -180,3 +180,18 @@ A) KÜÇÜK yan etki (aynı field, aynı pattern, mekanik düzeltme):
 
 B) BÜYÜK yan etki (farklı akış, risk belirsiz):
    - DOKUNMA
+   - Konsola bildir: "🛑 YAN ETKİ BULUNDU: [detay] — onay bekleniyor"
+   - Orijinal fix'i uygula, yan etkiyi YAPMA
+
+Küçük/büyük ayrımı: Aynı field, aynı pattern, aynı fix → küçük.
+Farklı akış, farklı fonksiyon grubu, belirsiz sonuç → büyük.
+
+### ADIM SON — Dokümantasyon (commit ÖNCE)
+1. git diff --stat ile değişen dosyaları listele
+2. Etki analizinde bulunan yan etkiler (fix'lenen veya bekleyen)
+   → STATUS.md "Teknik Notlar" bölümüne ekle
+3. Veri yapısı değiştiyse → SCHEMA.md güncelle
+4. Mimari kural değiştiyse → ARCHITECTURE.md güncelle
+5. Tüm güncellenen md dosyaları AYNI commit'e dahil et
+
+Bu üç adımdan herhangi biri atlanırsa commit YAPILMAZ.
