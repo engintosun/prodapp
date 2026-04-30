@@ -57,12 +57,14 @@ Güncelleme sorumluluğu:
 | duplikat   | boolean | `true`                                                        | Opsiyonel — mükerrer fiş işareti                   |
 | parentFisId | number\|null | `1`                                                      | Opsiyonel — kısmi onay çocuğu ise parent fişin id'si. ARCHITECTURE 2.3 referansı. |
 | kismiTip   | string\|null | `'onay'` / `'red'`                                        | Opsiyonel — kısmi onay çocuk fişlerinde çocuğun rolünü belirtir.  |
+| gecIslem   | boolean | `true`                                                         | Opsiyonel — istisna izniyle kapalı döneme girilmişse `true`        |
+| istisnaIzniId | number | `1712345678900`                                             | Opsiyonel — gecIslem:true ise izin kaydının id'si (APP.data.istisnaIzinleri) |
 
 #### Bilinen tuzaklar
 - Field adı **`kat`**, `kategori` değil
 - `personel` **string**'dir (ad + soyad), obje değil — curUser.name ile karşılaştır
 - `durum` değerleri: `"dept-bekleyen"` (saha→dept bekliyor) / `"acc-bekleyen"` (dept onayladı, muhasebe bekliyor) / `"onaylandi"` / `"reddedildi"` — `"onay"` veya `"red"` değil. Eski `"bekleyen"` değeri localStorage'daki kayıtlar için fallback olarak korunur.
-- `pasifOnay`, `gecIslem`, `gecIslemSebep`, `gecIslemDonem` field'ları sadece accGecmis'te bulunur — fisler'de arama
+- `pasifOnay`, `gecIslemSebep`, `gecIslemDonem` field'ları sadece accGecmis'te bulunur. `gecIslem` ve `istisnaIzniId` ise fisler'de de bulunabilir (istisna izniyle girilen fişlerde)
 - **durum ayrıştırıldı (24.04.2026):** `'dept-bekleyen'` saha→dept bekleyen, `'acc-bekleyen'` dept→muhasebe bekleyen. UI'da her ikisi de "Bekleyen" gösterilir.
 - `dept` field'ı sadece multi-personel demo fişlerinde var; saha kullanıcısının kendi fişlerinde yok
 - `'bolundu'` durumundaki parent fişler raporlarda atlanır (çift sayım önlemi). Çocuklar normal durumlarıyla (`acc-bekleyen`/`onaylandi`/`reddedildi`) sayılır.

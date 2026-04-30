@@ -93,6 +93,7 @@
 - [x] Seed fisler çeşitlendirme (multi-personel demo data)
 - [x] Bekleyen sayım BUG-2: deptBekleyen/accBekleyen donem migration (loadAppData) — 30.04.2026
 - [x] Bekleyen sayım BUG-3: dönem kapama modal + donemKapa cross-check (stale kayıt koruması) — 30.04.2026
+- [x] donemIstisnaIzni tam implementasyon (veri modeli + muhasebe modal + saha kontrol + limit denetimi + rozet) — 30.04.2026
 
 ---
 

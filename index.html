@@ -5146,11 +5146,12 @@ function renderRecent() {
     var media = d.thumb
       ? '<img src="' + d.thumb + '" class="fis-thumb" style="width:100%;height:52px;margin-bottom:6px" onclick="event.stopPropagation();openLBFis(' + d.id + ')" alt="">'
       : '<div class="rc-ic" style="background:' + icBg + ';color:' + icClr + '">' + icStr + '</div>';
-    var belgesizTag = d.belgesiz ? '<div class="rc-blgsz-tag">BELGESİZ</div>' : '';
+    var belgesizTag  = d.belgesiz   ? '<div class="rc-blgsz-tag">BELGESİZ</div>' : '';
+    var gecIslemTag  = d.gecIslem   ? '<div style="font-size:9px;color:var(--am2);font-weight:700;margin-top:1px;line-height:1">⚠ İSTİSNA</div>' : '';
     return '<div class="' + cls + '" onclick="openLBFis(' + d.id + ')">' +
       media +
       '<div class="rc-name">' + d.satici + '</div>' +
-      belgesizTag +
+      belgesizTag + gecIslemTag +
       '<div class="rc-amt">₺' + d.tutar.toLocaleString('tr-TR') + '</div>' +
       '<div class="rc-dot" style="background:' + (DOT[d.durum] || 'var(--tx3)') + '"></div>' +
     '</div>';
@@ -5742,12 +5743,61 @@ function _deptTarih() {
 }
 
 function _addToDeptBekleyen(satici, kat, tutar, belgesiz, aciklama, fotos, fisId) {
-  if (APP.ui.curUser && APP.ui.curUser.role === 'user' && _isDonemKapali(APP.ui.aktifDon)) {
-    notif('Bu dönem kapanmış. Yeni fiş eklenemez.', 'red');
-    return;
-  }
   var uye = APP.ui.curUser ? APP.ui.curUser.name : 'Dept Sorumlusu';
   var ini = APP.ui.curUser ? APP.ui.curUser.ini  : 'DS';
+  if (APP.ui.curUser && APP.ui.curUser.role === 'user' && _isDonemKapali(APP.ui.aktifDon)) {
+    var _izin = _aktifIstisnaIzni(APP.ui.aktifDon, uye);
+    if (!_izin || !_istisnaIzniGecerliMi(_izin)) {
+      notif('Bu dönem kapanmış. Yeni fiş eklenemez.', 'red');
+      return;
+    }
+    /* İzin geçerli — dept atlayarak doğrudan accBekleyen'e */
+    var _effFisId = fisId;
+    if (!_effFisId) {
+      var _d = new Date();
+      var _td = ('0'+_d.getDate()).slice(-2)+'.'+('0'+(_d.getMonth()+1)).slice(-2)+'.'+_d.getFullYear();
+      var _nf = {
+        id: Date.now(), tarih: _td, personel: uye,
+        satici: satici || 'Yeni Harcama', kat: kat || 'Diger', tutar: tutar || 0,
+        durum: 'acc-bekleyen', donem: APP.ui.aktifDon,
+        uyari: null, thumb: null, belgesiz: !!belgesiz, aciklama: aciklama || '',
+        gecIslem: true, istisnaIzniId: _izin.id,
+        log: [_mkLog('olusturuldu', 'İstisna izniyle kapalı döneme eklendi')]
+      };
+      APP.data.fisler.unshift(_nf);
+      _effFisId = _nf.id;
+    } else {
+      for (var _fi = 0; _fi < APP.data.fisler.length; _fi++) {
+        if (APP.data.fisler[_fi].id === _effFisId) {
+          APP.data.fisler[_fi].durum = 'acc-bekleyen';
+          APP.data.fisler[_fi].gecIslem = true;
+          APP.data.fisler[_fi].istisnaIzniId = _izin.id;
+          break;
+        }
+      }
+    }
+    APP.data.accBekleyen.unshift({
+      id: Date.now() + 1, fisId: _effFisId,
+      dept: (APP.ui.curUser && APP.ui.curUser.dept) || '',
+      uye: uye, ini: ini,
+      satici: satici || 'Yeni Harcama', kat: kat || 'Diger',
+      tutar: tutar || 0, tarih: _deptTarih(), belgesiz: !!belgesiz, uyari: '',
+      fromKey: APP.ui.curUserKey || 's', donem: APP.ui.aktifDon,
+      olusturmaZamani: Date.now(), gecIslem: true, istisnaIzniId: _izin.id
+    });
+    _izin.girilenAdet++;
+    _izin.girilenTutar += (tutar || 0);
+    if (_izin.maxAdet  !== null && _izin.girilenAdet  >= _izin.maxAdet)  _izin.durum = 'adetDoldu';
+    else if (_izin.maxTutar !== null && _izin.girilenTutar >= _izin.maxTutar) _izin.durum = 'tutarDoldu';
+    var _dLbl = (APP.seed.donemler.find(function(x){return x.id===APP.ui.aktifDon;})||{lbl:'Dönem'}).lbl;
+    _pushNotif('m', 'am', 'İstisna İzni — Yeni Fiş',
+      uye + ', ' + _dLbl + ' için fiş ekledi. (İzinli giriş)',
+      'Az önce · Sistem');
+    updateNotifBadge();
+    saveAppData();
+    notif('Fiş istisna izniyle muhasebe onayına gönderildi', 'amber');
+    return;
+  }
   APP.data.deptBekleyen.unshift({
     id: Date.now(), uye: uye, ini: ini, fisId: fisId || null,
     satici: satici || 'Yeni Harcama',
@@ -7640,11 +7690,44 @@ function renderDonem(did) {
   var redTop   = redFis.reduce(function(s, f) { return s + f.tutar; }, 0);
   var iade     = d.avans - onayTop;
   var _isAcc   = APP.ui.curUser && APP.ui.curUser.role === 'acc';
-  var _istisnaBtn = _isAcc
-    ? '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--bo)">' +
-        '<button class="btn btn-sm" style="width:100%;justify-content:center;background:rgba(232,150,46,.12);color:var(--ac2);border:1px solid rgba(232,150,46,.3)" onclick="openIstisnaIzniModal(' + did + ')">🔓 İstisna İzni Ver</button>' +
-      '</div>'
-    : '';
+  var _istisnaBtn = '';
+  if (_isAcc) {
+    var _simdi = Date.now();
+    var _donIzinler = APP.data.istisnaIzinleri.filter(function(iz) { return iz.donemId === did; });
+    if (_donIzinler.length) {
+      var _durumLbl = { aktif:'Aktif', sureDoldu:'Süre Doldu', adetDoldu:'Adet Doldu', tutarDoldu:'Tutar Doldu', iptal:'İptal' };
+      _istisnaBtn += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--bo)">' +
+        '<div style="font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">İstisna İzinleri</div>' +
+        _donIzinler.map(function(iz) {
+          var gecenSaat    = ((_simdi - iz.baslangicTs) / (1000*60*60)).toFixed(1);
+          var kalanSaat    = Math.max(0, iz.sure - parseFloat(gecenSaat)).toFixed(1);
+          var durumClr     = iz.durum === 'aktif' ? 'var(--gr2)' : 'var(--rd2)';
+          var durumTxt     = _durumLbl[iz.durum] || iz.durum;
+          var iptalBtn     = iz.durum === 'aktif'
+            ? '<button class="btn btn-sm btn-r" style="font-size:10px;padding:3px 8px" onclick="istisnaIzniIptal(' + iz.id + ')">İptal</button>'
+            : '';
+          var limitBilgi = [];
+          if (iz.maxAdet  !== null) limitBilgi.push(iz.girilenAdet  + '/' + iz.maxAdet  + ' belge');
+          if (iz.maxTutar !== null) limitBilgi.push('₺' + iz.girilenTutar.toLocaleString('tr-TR') + '/₺' + iz.maxTutar.toLocaleString('tr-TR'));
+          if (iz.durum === 'aktif') limitBilgi.push(kalanSaat + ' saat kalan');
+          return '<div style="background:var(--bg2);border:1px solid var(--bo);border-radius:8px;padding:8px 10px;margin-bottom:6px">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">' +
+              '<span style="font-size:13px;font-weight:700;color:var(--tx)">' + iz.kisiAd + '</span>' +
+              '<div style="display:flex;align-items:center;gap:6px">' +
+                '<span style="font-size:11px;font-weight:700;color:' + durumClr + '">' + durumTxt + '</span>' +
+                iptalBtn +
+              '</div>' +
+            '</div>' +
+            '<div style="font-size:11px;color:var(--tx3)">' + iz.verilisTarihi + ' · ' + iz.sure + ' saat · ' + iz.sebep + '</div>' +
+            (limitBilgi.length ? '<div style="font-size:11px;color:var(--ac2);margin-top:3px">' + limitBilgi.join(' · ') + '</div>' : '') +
+          '</div>';
+        }).join('') +
+      '</div>';
+    }
+    _istisnaBtn += '<div style="margin-top:8px">' +
+      '<button class="btn btn-sm" style="width:100%;justify-content:center;background:rgba(232,150,46,.12);color:var(--ac2);border:1px solid rgba(232,150,46,.3)" onclick="openIstisnaIzniModal(' + did + ')">🔓 İstisna İzni Ver</button>' +
+    '</div>';
+  }
 
   kapamaEl.style.display = 'block';
   kapamaEl.innerHTML =
@@ -7913,6 +7996,33 @@ function donemIstisnaIzniVer() {
   notif('İstisna izni verildi — ' + uyeObj.name, 'green');
 }
 
+function _aktifIstisnaIzni(donemId, kisiAd) {
+  for (var _ai = 0; _ai < APP.data.istisnaIzinleri.length; _ai++) {
+    var _iz = APP.data.istisnaIzinleri[_ai];
+    if (_iz.donemId === donemId && _iz.kisiAd === kisiAd && _iz.durum === 'aktif') return _iz;
+  }
+  return null;
+}
+
+function _istisnaIzniGecerliMi(izin) {
+  var gecenSaat = (Date.now() - izin.baslangicTs) / (1000 * 60 * 60);
+  if (gecenSaat >= izin.sure) { izin.durum = 'sureDoldu'; saveAppData(); return false; }
+  if (izin.maxAdet  !== null && izin.girilenAdet  >= izin.maxAdet)  { izin.durum = 'adetDoldu';  saveAppData(); return false; }
+  if (izin.maxTutar !== null && izin.girilenTutar >= izin.maxTutar) { izin.durum = 'tutarDoldu'; saveAppData(); return false; }
+  return true;
+}
+
+function istisnaIzniIptal(izinId) {
+  for (var _ii = 0; _ii < APP.data.istisnaIzinleri.length; _ii++) {
+    if (APP.data.istisnaIzinleri[_ii].id === izinId) {
+      APP.data.istisnaIzinleri[_ii].durum = 'iptal';
+      break;
+    }
+  }
+  saveAppData();
+  renderDonem(APP.ui.aktifDon);
+  notif('İstisna izni iptal edildi', 'amber');
+}
 
 var _gecIslemCb = null;
 var _dnKapamaDonemId = null;
@@ -9142,6 +9252,7 @@ function renderAccBek() {
     var isAvans = f.tip === 'avans';
     var avTag   = isAvans ? '<span style="margin-left:5px;font-size:10px;font-weight:700;background:rgba(232,150,46,.15);color:var(--ac2);border:1px solid rgba(232,150,46,.3);border-radius:5px;padding:1px 6px">💰 AVANS</span>' : '';
     var bgsz    = (!isAvans && f.belgesiz) ? '<span class="tag-am" style="margin-left:4px;font-size:10px">Belgesiz</span>' : '';
+    var gecTag  = f.gecIslem ? '<span style="margin-left:4px;font-size:10px;font-weight:700;background:rgba(245,158,11,.15);color:var(--am2);border:1px solid rgba(245,158,11,.3);border-radius:5px;padding:1px 6px" title="Kapanmış döneme istisna izniyle girildi">⚠ İSTİSNA</span>' : '';
     var uyHtml  = (!isAvans && f.uyari) ? '<div style="font-size:11px;color:var(--am2);margin-top:4px">⚠ ' + f.uyari + '</div>' : '';
     var desc    = isAvans
       ? '<div style="font-size:12px;color:var(--tx2);margin-bottom:4px">Gerekçe: ' + (f.gerekce || '—') + '</div>'
@@ -9150,7 +9261,7 @@ function renderAccBek() {
     return '<div class="sa-dept-card" style="' + avBorder + 'cursor:pointer" onclick="openFisDetay(' + f.id + ',\'acc\')">' +
       '<div class="sa-dc-hd" style="margin-bottom:8px">' +
         '<div style="width:32px;height:32px;border-radius:9px;background:' + (isAvans ? 'rgba(232,150,46,.15)' : 'var(--bg3)') + ';color:' + (isAvans ? 'var(--ac2)' : 'var(--tx2)') + ';font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + f.ini + '</div>' +
-        '<div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--tx)">' + f.uye + avTag + bgsz + '</div><div style="font-size:11px;color:var(--tx3)">' + f.dept + ' · ' + f.tarih + '</div></div>' +
+        '<div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--tx)">' + f.uye + avTag + bgsz + gecTag + '</div><div style="font-size:11px;color:var(--tx3)">' + f.dept + ' · ' + f.tarih + '</div></div>' +
         '<div style="font-size:15px;font-weight:800;font-family:var(--mo);color:' + (isAvans ? 'var(--ac2)' : 'var(--tx)') + '">₺' + f.tutar.toLocaleString('tr-TR') + '</div>' +
       '</div>' +
       desc + uyHtml +

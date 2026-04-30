@@ -522,19 +522,34 @@ Asimetrik kapanış modeli: saha/dept için tam kapanış, muhasebe için soft k
 
 ---
 
-### 9E — İstisna İzni (Planlanıyor)
+### 9E — İstisna İzni
 
-**⚠️ HENÜZ İMPLEMENTE DEĞİL**
+**🟢 TETİKLEYİCİ:** Muhasebe kullanıcısı kapanmış dönem ekranında "İstisna İzni Ver" butonuna tıklar
 
-ARCHITECTURE 1.6 Mekanizma 3'te tanımlanan istisna izni akışı. Muhasebe kapanmış döneme kişiye özel giriş izni verebilecek; her istisna sistemde işaretlenecek.
+**📞 FONKSİYON ZİNCİRİ:**
+- `openIstisnaIzniModal(donemId)` — modal açar, deptEkip dropdown doldurur
+- Muhasebe formu doldurur (kişi, sebep, süre, max adet/tutar) → "İzin Ver"
+- `donemIstisnaIzniVer()` — validasyon, push, bildirim, saveAppData
+- **Saha kullanıcısı fişi eklerken:** `_addToDeptBekleyen()` → `_aktifIstisnaIzni()` + `_istisnaIzniGecerliMi()` → doğrudan accBekleyen'e yönlendir
 
-**Planlanan fonksiyon:** `donemIstisnaIzni(donemId, kisiKey, sebep)`
+**💾 KOLEKSIYON GÜNCELLEMELERİ:**
+- `APP.data.istisnaIzinleri`: push (muhasebe izin verir)
+- `APP.data.fisler`: gecIslem:true, istisnaIzniId, durum:'acc-bekleyen' (saha fişi eklerken)
+- `APP.data.accBekleyen`: unshift — gecIslem:true, istisnaIzniId (dept atlanır)
+- `izin.girilenAdet++`, `izin.girilenTutar += tutar` — her fiş girişinde
+- `izin.durum`: 'aktif' → 'sureDoldu'|'adetDoldu'|'tutarDoldu'|'iptal'
 
-**Planlanan koleksiyon güncellemeleri:**
-- `APP.seed.donemler[i].istisnaIzni`: push (`{ kisi, sebep, tarih }`)
-- Denetim raporunda ayrı bölüm
+**📬 BİLDİRİMLER:**
+- `_pushNotif(toKey, 'am', 'İstisna İzni', ...)` — kişiye izin verildi (donemIstisnaIzniVer)
+- `_pushNotif('m', 'am', 'İstisna İzni — Yeni Fiş', ...)` — muhasebe'ye fiş eklendi (_addToDeptBekleyen)
 
-**Durum:** Faz 1 kalan iş olarak bekliyor.
+**⚠️ KRİTİK KURALLAR:**
+- Dept ATLANIR — fiş doğrudan accBekleyen'e gider
+- gecIslem:true ve istisnaIzniId fisler + accBekleyen kayıtlarına eklenir (silinemez)
+- Süre/adet/tutar dolunca izin otomatik kapanır, sonraki fiş girişi engellenir
+- İptal: muhasebe `istisnaIzniIptal(id)` ile iptal edebilir → renderDonem yenilenir
+
+**Durum:** Tamamlandı (30.04.2026)
 
 ---
 
