@@ -1,7 +1,7 @@
 # PRODAPP — Mimari Tasarım
 
-**Son güncelleme:** 24 Nisan 2026
-**Durum:** v1
+**Son güncelleme:** 30 Nisan 2026
+**Durum:** v2
 
 Bu belge PRODAPP'in veri modelini, sorumluluk sınırlarını ve denetim
 motorunu tanımlar. Yeni kod yazarken bu kurallar referans alınır.
@@ -41,6 +41,10 @@ motoru bu iz üzerinden çalışır.
 Bir işlem arşive girdikten sonra **değiştirilemez, silinemez**.
 Düzeltme gerekiyorsa ters işlem yapılır (iptal + yeni kayıt).
 Bu kural kurumsal denetim gereksinimidir.
+
+### 1.5. Versiyonlama ilkesi
+
+*(Bu bölüm Faz 1.5 modülerleşme ile birlikte detaylandırılacak. Şu an versiyon takibi title tag'inde yapılıyor: `PRODAPP v8.0`.)*
 
 ### 1.6. Dönem disiplini ilkesi
 
@@ -104,7 +108,7 @@ Gerçeğin yaşadığı yer.
 **C. Arşiv koleksiyonlar**
 Değiştirilemez tarihsel kayıt.
 - `APP.data.deptGecmis`
-- `APP.data.accGecmis` (eklenecek)
+- `APP.data.accGecmis`
 - `APP.data.accAvansGecmis`
 
 **D. Türetilmiş koleksiyonlar**
@@ -112,6 +116,16 @@ Kaynak verilerden hesaplanır. Cache amaçlı. Gerçek değil, görüntü.
 - `APP.data.accDepts` — `_recomputeAccDepts()` hesaplar
 - `APP.data.donemButce.harcanan` — fisler'den hesaplanır
 - `APP.cache.*` — tüm cache'ler
+
+**E. Yardımcı koleksiyonlar (Faz 1)**
+Faz 1'de eklenen, ana mali akışı destekleyen koleksiyonlar.
+- `APP.data.deptAvans` — dept ekranı avans talepleri
+- `APP.data.deptKira` — dept ekranı kiralama takibi
+- `APP.data.accKiralamalar` — muhasebe kiralama takibi
+- `APP.data.accSuphe` — şüpheli harcama listesi (demo, Faz 2'de accDenetim'e dönüşecek)
+- `APP.data.globalInbox` — kullanıcı bazlı bildirim kuyrukları
+- `APP.data.sohbetler` — mesajlaşma sistemi
+- `APP.seed.katLimit` — kategori harcama limitleri
 
 ### 2.2. Koleksiyon bağları
 
@@ -124,7 +138,7 @@ fisler  <----  deptBekleyen   (fisId ile)
    ^
    +----  deptGecmis      (fisId ile)
    ^
-   +----  accGecmis       (fisId ile — eklenecek)
+   +----  accGecmis       (fisId ile)
 ```
 
 ### 2.3. fisId kuralı
@@ -186,6 +200,9 @@ Sadece şu fonksiyonlar `APP.data.fisler[i].durum` yazabilir:
 | deptReddet       | 'reddedildi'       | Dept red               |
 | accOnayla        | 'onaylandi'        | Muhasebe kesin onay    |
 | accReddet        | 'reddedildi'       | Muhasebe red           |
+| deptKismi        | 'bolundu'          | Dept kısmi onay          |
+| accKismi         | 'bolundu'          | Muhasebe kısmi onay      |
+| _checkPasifOnay  | 'onaylandi'        | 7-gün pasif onay (sistem)|
 
 Başka hiçbir yerde `fisler.durum`'a yazılmaz. Bu kural kod review
 kriteridir.
@@ -199,7 +216,7 @@ Güncelleme veya silme yasaktır.
 |------------------------|----------------------------------|
 | deptGecmis.onaylandi   | deptOnayla, deptOnaylaSecili     |
 | deptGecmis.reddedildi  | deptReddet, deptReddetSecili     |
-| accGecmis              | accOnayla, accReddet (eklenecek) |
+| accGecmis              | accOnayla, accReddet, accKismi, _checkPasifOnay |
 | accAvansGecmis         | accOnayla (avans), avansRedOnay  |
 
 ### 3.3. Türetilmiş veriye yazım

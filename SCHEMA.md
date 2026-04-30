@@ -1,6 +1,6 @@
 # PRODAPP — APP Namespace Şeması
 
-**Son güncelleme:** 24 Nisan 2026  
+**Son güncelleme:** 30 Nisan 2026  
 **Kaynak:** index.html  
 
 Bu doküman APP namespace'inin tam yapısını tanımlar. Yeni kod yazarken,
@@ -33,7 +33,7 @@ Güncelleme sorumluluğu:
 
 ### APP.data.fisler
 **Tip:** Array\<Fis\>  
-**Kaynak satır:** 3798  
+**Kaynak satır:** ~3880 (grep ile doğrula)  
 **Kullanım:** Mali işlemlerin ana koleksiyonu — saha girişi, onay zinciri, rapor kaynağı.
 
 #### Fis objesi field listesi
@@ -62,6 +62,7 @@ Güncelleme sorumluluğu:
 - Field adı **`kat`**, `kategori` değil
 - `personel` **string**'dir (ad + soyad), obje değil — curUser.name ile karşılaştır
 - `durum` değerleri: `"dept-bekleyen"` (saha→dept bekliyor) / `"acc-bekleyen"` (dept onayladı, muhasebe bekliyor) / `"onaylandi"` / `"reddedildi"` — `"onay"` veya `"red"` değil. Eski `"bekleyen"` değeri localStorage'daki kayıtlar için fallback olarak korunur.
+- `pasifOnay`, `gecIslem`, `gecIslemSebep`, `gecIslemDonem` field'ları sadece accGecmis'te bulunur — fisler'de arama
 - **durum ayrıştırıldı (24.04.2026):** `'dept-bekleyen'` saha→dept bekleyen, `'acc-bekleyen'` dept→muhasebe bekleyen. UI'da her ikisi de "Bekleyen" gösterilir.
 - `dept` field'ı sadece multi-personel demo fişlerinde var; saha kullanıcısının kendi fişlerinde yok
 - `'bolundu'` durumundaki parent fişler raporlarda atlanır (çift sayım önlemi). Çocuklar normal durumlarıyla (`acc-bekleyen`/`onaylandi`/`reddedildi`) sayılır.
@@ -73,7 +74,7 @@ Güncelleme sorumluluğu:
 
 ### APP.data.deptBekleyen
 **Tip:** Array\<DeptBekleyen\>  
-**Kaynak satır:** 3926  
+**Kaynak satır:** ~4008 (grep ile doğrula)  
 **Kullanım:** Dept ekranında onay bekleyen harcama listesi. Dept onaylayınca accBekleyen'e taşınır.
 
 #### DeptBekleyen objesi field listesi
@@ -91,6 +92,8 @@ Güncelleme sorumluluğu:
 | uyari    | string\|null | `"Ekip 15 kişi, 10 porsiyon"`    | Uyarı metni; yoksa null               |
 | belgesiz | boolean      | `true`, `false`                   | Belgesiz fiş mi?                      |
 | aciklama | string       | `"Nakit ödeme, fiş verilmedi"`    | Opsiyonel — belgesiz ise gerekçe      |
+| donem    | number       | `2`                               | Dönem numarası (zorunlu)          |
+| olusturmaZamani | number | `Date.now() - ...`               | Oluşturma timestamp — pasif onay hesabı için |
 
 #### Bilinen tuzaklar
 - `tarih` burada **DD.MM** formatındadır — `fisler.tarih` gibi tam yıl içermez
@@ -101,7 +104,7 @@ Güncelleme sorumluluğu:
 
 ### APP.data.deptAvans
 **Tip:** Array\<DeptAvans\>  
-**Kaynak satır:** 3935  
+**Kaynak satır:** ~4014 (grep ile doğrula)  
 **Kullanım:** Dept ekranında saha personelinin avans talepleri.
 
 | Field    | Tip    | Değerler / Örnek                                | Açıklama                         |
@@ -118,7 +121,7 @@ Güncelleme sorumluluğu:
 
 ### APP.data.accDepts
 **Tip:** Array\<AccDept\>  
-**Kaynak satır:** 8082  
+**Kaynak satır:** ~8643 (grep ile doğrula)  
 **Kullanım:** Muhasebe dashboard'unun departman özet kartları. `_recomputeAccDepts()` ile güncellenir.
 
 | Field    | Tip    | Değerler / Örnek                                         | Açıklama                        |
@@ -141,7 +144,7 @@ Güncelleme sorumluluğu:
 
 ### APP.data.accBekleyen
 **Tip:** Array\<AccBekleyen\>  
-**Kaynak satır:** 8090  
+**Kaynak satır:** ~8651 (grep ile doğrula)  
 **Kullanım:** Muhasebe ekranında onay bekleyen harcama ve avanslar (iki farklı tip karışık).
 
 | Field    | Tip          | Değerler / Örnek                        | Açıklama                                 |
@@ -160,6 +163,8 @@ Güncelleme sorumluluğu:
 | kat      | string       | `"Ulaşım"`, `"Konaklama"`              | Kategori — sadece harcamalarda           |
 | belgesiz | boolean      | `true`, `false`                         | Sadece harcamalarda                      |
 | uyari    | string       | `"Km başına 38 TL — limit aşımı"`      | Sadece harcamalarda                      |
+| donem    | number       | `2`                               | Dönem numarası                    |
+| olusturmaZamani | number | `Date.now() - ...`               | Oluşturma timestamp — pasif onay hesabı için |
 
 #### Bilinen tuzaklar
 - `tip === 'avans'` kontrolüyle iki tip ayrıştırılır; `tip` yoksa harcamadır
@@ -170,7 +175,7 @@ Güncelleme sorumluluğu:
 
 ### APP.data.accAvansGecmis
 **Tip:** Array\<AccAvans\>  
-**Kaynak satır:** 3962  
+**Kaynak satır:** ~4041 (grep ile doğrula)  
 **Kullanım:** Muhasebe avans geçmişi — dönem bazlı, tüm personel.
 
 | Field   | Tip    | Değerler / Örnek                       | Açıklama                                        |
@@ -189,7 +194,7 @@ Güncelleme sorumluluğu:
 
 ### APP.data.accGecmis
 **Tip:** Array\<AccGecmis\>  
-**Kaynak satır:** ~3974 (accAvansGecmis'in hemen altı)  
+**Kaynak satır:** ~4056 (grep ile doğrula)  
 **Kullanım:** Muhasebe kesin onay/red arşivi — sadece append, değiştirilemez (ARCHITECTURE 3.2 + 4).  
 Avans işlemleri bu koleksiyona **yazılmaz** — onlar `accAvansGecmis`'e gider.
 
@@ -207,6 +212,10 @@ Avans işlemleri bu koleksiyona **yazılmaz** — onlar `accAvansGecmis`'e gider
 | dept       | string | `'Yapım'`              | Departman görünen ad (snapshot)                 |
 | donem      | number | `2`                    | Dönem (snapshot)                                |
 | redNedeni  | string | `'Mükerrer fiş'`       | Sadece `islem='red'` ise dolu                   |
+| pasifOnay      | boolean | `true`                 | Opsiyonel — _checkPasifOnay tarafından otomatik onaylanan   |
+| gecIslem       | boolean | `true`                 | Opsiyonel — kapalı döneme yapılan müdahale                  |
+| gecIslemSebep  | string  | `'Geç gelen fatura'`  | Opsiyonel — gecIslem:true ise zorunlu (min 10 karakter)     |
+| gecIslemDonem  | number  | `1`                    | Opsiyonel — gecIslem:true ise hangi kapalı dönem            |
 
 **Bilinen tuzaklar:**
 - Bu koleksiyon SADECE EKLEME kabul eder — silme ve güncelleme yasak
@@ -217,7 +226,7 @@ Avans işlemleri bu koleksiyona **yazılmaz** — onlar `accAvansGecmis`'e gider
 
 ### APP.data.donemButce
 **Tip:** Array\<DonemButce\>  
-**Kaynak satır:** 3977  
+**Kaynak satır:** ~4059 (grep ile doğrula)  
 **Kullanım:** Dönem bütçe bilgisi — muhasebe bütçe barı ve raporlarda kullanılır.
 
 | Field       | Tip    | Değerler / Örnek       | Açıklama                                    |
@@ -233,7 +242,7 @@ Avans işlemleri bu koleksiyona **yazılmaz** — onlar `accAvansGecmis`'e gider
 
 ### APP.data.deptGecmis
 **Tip:** Object (dönem ID → { onaylandi: Array, reddedildi: Array })  
-**Kaynak satır:** 4053  
+**Kaynak satır:** ~4135 (grep ile doğrula)  
 **Kullanım:** Dept ekranı — geçmiş dönem onaylı/reddedilmiş harcamaları.
 
 **Yapı:** `APP.data.deptGecmis[donemId].onaylandi` ve `.reddedildi`
@@ -260,7 +269,7 @@ Reddedilenlerde ek:
 
 ### APP.data.companyInfo
 **Tip:** Object  
-**Kaynak satır:** 8141  
+**Kaynak satır:** ~8699 (grep ile doğrula)  
 **Kullanım:** Marka ayarları — PDF başlığı ve footer'da kullanılır.
 
 | Field | Tip          | Örnek  | Açıklama                     |
@@ -272,7 +281,7 @@ Reddedilenlerde ek:
 
 ### APP.data.projNames
 **Tip:** Object (proje ID → string)  
-**Kaynak satır:** 8143  
+**Kaynak satır:** ~8701 (grep ile doğrula)  
 **Kullanım:** Kullanıcının özelleştirdiği proje adları (varsayılan: APP.seed.projs'tan).
 
 **Örnek:** `{ ig: "Yeni Proje Adı" }`  
@@ -300,7 +309,7 @@ Boş başlar (`{}`), kullanıcı marka ayarlarından doldurur.
 
 ## BÖLÜM 2 — APP.ui (UI State — KRİTİK)
 
-**Kaynak satır:** 3738
+**Kaynak satır:** ~3816 (grep ile doğrula)
 
 | Field              | Tip          | Başlangıç değeri | Açıklama                                                    |
 |--------------------|--------------|------------------|-------------------------------------------------------------|
@@ -349,7 +358,7 @@ Boş başlar (`{}`), kullanıcı marka ayarlarından doldurur.
 
 ## BÖLÜM 3 — APP.seed (Başlangıç Verisi — REFERANS)
 
-**Kaynak satırları:** 3780–4050
+**Kaynak satırları:** ~3813 (grep ile doğrula)
 
 APP.seed salt-okunur demo/konfigürasyon verisi tutar. Kullanıcılar, projeler ve dönem tanımları burada saklanır. Runtime'da değiştirilmez.
 
@@ -357,7 +366,7 @@ APP.seed salt-okunur demo/konfigürasyon verisi tutar. Kullanıcılar, projeler 
 - `APP.seed.users` — kullanıcı objesi haritası (`s`, `d`, `m` key'leri)
 - `APP.seed.umap` — alias → key haritası (`{ saha:'s', dept:'d', muhasebe:'m' }`)
 - `APP.seed.projs` — proje listesi (`[{ id, name, type, status, color }]`)
-- `APP.seed.donemler` — dönem listesi (`[{ id, n, lbl, tarih, durum, avans, harcama, islem }]`)
+- `APP.seed.donemler` — dönem listesi (`[{ id, n, lbl, tarih, durum, avans, harcama, islem, baslangic, bitis, kapanmaTarihi, kapayanKisi, gecIslemSayisi }]`)
 - `APP.seed.deptEkip` — dept ekranı ekip üyeleri (`[{ id, ini, name, rol, tutar }]`)
 - `APP.seed.sdDonemler` — dept dönem seçici için (`[{ id, lbl, tarih, aktif }]`)
 - `APP.seed.saDonemler` — muhasebe dönem seçici için (`[{ id, lbl, tarih, aktif }]`)
@@ -368,7 +377,7 @@ APP.seed salt-okunur demo/konfigürasyon verisi tutar. Kullanıcılar, projeler 
 
 ## BÖLÜM 4 — APP.cache (Runtime Cache — TÜRETİLMİŞ)
 
-**Kaynak satırları:** 3984–4238, 8709
+**Kaynak satırları:** ~3815 (grep ile doğrula)
 
 APP.cache hesaplanmış verileri tutar; `_compute*` ve `_recompute*` fonksiyonları tarafından doldurulur. Her rapor render çağrısında ilgili fonksiyon cache'i yeniler.
 
@@ -460,7 +469,7 @@ Kodda gözlemlenen isimlendirme kuralları:
 | Tutar             | number (TL, virgülsüz)                            | `1000` — string değil                        |
 | Dönem             | number (`0`, `1`, `2`)                            | Karşılaştırma için String() ile çevir        |
 | Kategori key      | **`kat`** — `"Yakit"`, `"Yiyecek"`, `"Ekipman"`, `"Ulasim"`, `"Sanat"`, `"Diger"`, `"Kiralama"` | `kategori` değil; Türkçe karaktersiz |
-| Durum (fisler)    | `"bekleyen"`, `"onaylandi"`, `"reddedildi"`       | Hesaplarda `"onay"/"red"/"bek"`'e dönüştür  |
+| Durum (fisler)    | `"dept-bekleyen"`, `"acc-bekleyen"`, `"onaylandi"`, `"reddedildi"`, `"bolundu"` | 5 değer. Eski `"bekleyen"` localStorage fallback olarak korunur. Hesaplarda `"onay"/"red"/"bek"`'e dönüştürülür |
 | Kullanıcı adı     | `personel` (fisler'de), `name` (curUser'da), `uye` (dept*'de) | Hepsi tam ad string               |
 | Dept anahtarı     | `"yapim"`, `"kamera"`, `"sanat"`, `"ses"`, `"kostum"` | Küçük harf, Türkçe karaktersiz           |
 | İnisiyaller       | `ini`: 2 karakter, büyük harf (`"MK"`, `"BÇ"`)   | Türkçe karakter içerebilir (Ç, Ş vb.)       |
@@ -468,4 +477,4 @@ Kodda gözlemlenen isimlendirme kuralları:
 
 ---
 
-*Son teyit: index.html toplam satır sayısı ~9900+ (SCHEMA yazım tarihi itibarıyla). Bu dokümandaki satır numaraları o versiyona aittir.*
+*Son teyit: index.html toplam satır sayısı ~10641 (30.04.2026 itibarıyla). Bu dokümandaki satır numaraları eski versiyona aittir, kodda grep ile doğrula.*

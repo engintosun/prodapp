@@ -1,10 +1,10 @@
 # PRODAPP — Durum Raporu
 
-**Son güncelleme:** 24 Nisan 2026
+**Son güncelleme:** 30 Nisan 2026
 **Aktif sürüm:** v8.x (canlı)
 **Repo:** https://github.com/engintosun/prodapp
 **Deploy:** https://engintosun.github.io/prodapp/
-**Son commit:** 93e23f0 — feat: kismi onay (dept + muhasebe)
+**Son commit:** ef6538a — docs: tüm md dosyaları index.html ile senkronize
 
 ---
 
@@ -98,7 +98,7 @@
 
 ### P0 — Demo için şart
 - [x] **Çoklu format export sistemi** (PDF/Excel/CSV, jsPDF + SheetJS, dropdown UI, 4 commit + fix'ler — tamamlandı 24.04.2026)
-- [ ] **Seed onarımı** — fisler/deptBekleyen/accBekleyen fisId bağı kopuk, ARCHITECTURE.md'ye uyumlu yeniden yapılacak *(M)*
+- [x] **Seed onarımı** — fisler/deptBekleyen/accBekleyen fisId bağı onarıldı (25.04.2026)
 - [x] **Kısmi onay akışı** (dept + muhasebe, tekil, 1 seviye derinlik) — tamamlandı 25.04.2026
 - [x] **WORKFLOWS.md** — mali iş akışları dokümanı (tamamlandı 24.04.2026)
 - [x] **fisler.durum çift-adım riski:** deptOnayla durumu güncellemiyor, sadece accOnayla güncelliyor. 'bekleyen' iki anlam taşıyor. Ayrıştırma gerekli (ör: 'dept-bekleyen', 'acc-bekleyen'). *(M)* (tamamlandı 24.04.2026)
@@ -169,7 +169,6 @@ Faz 1'in 6 P0/P1 maddesi (4 P0 + 2 P1) bitince hemen bu iş başlar. Faz 2 (back
 - Otomatik kilit penceresi kapanış sonrası 7 gün — kapanmış döneme "geç belge" penceresi (Faz 2)
 - Çoklu muhasebeci için geç işlem onay zinciri (Faz 2)
 - Belgesiz alt-kategori ağacı
-- accGecmis şeması (muhasebe kesin onay kalıcı izi)
 - Çocuk fişin tekrar bölünmesi (1 seviye derinlik kuralı) — Faz 2'de ihtiyaç çıkarsa açılır
 - Demo data tekrarı düzeltmesi (partial yapıldı)
 - Mevcut accPDF/expPDF — çoklu export sistemi geldiğinde silinecek
@@ -203,8 +202,8 @@ Faz 1'in 6 P0/P1 maddesi (4 P0 + 2 P1) bitince hemen bu iş başlar. Faz 2 (back
 
 ## 🔧 TEKNİK NOTLAR
 
-- Tek HTML ~6000+ satır, Faz 1 sonrası modülerleşme şart
-- Source of truth: `APP.data.fisler` + `deptBekleyen` + `accBekleyen`
+- Tek HTML ~10641 satır, Faz 1 sonrası modülerleşme şart
+- Source of truth: `APP.data.fisler` + `deptBekleyen` + `accBekleyen` + `accGecmis` (arşiv)
 - localStorage kalıcılığı var — seed değişince `localStorage.clear()` gerek
 - Modülerleşmeden önce: "sadece şu fonksiyonları oku" prompt disiplini
 - PDF export Türkçe karakter sorunu: jsPDF built-in font Türkçe desteklemiyor,
@@ -224,7 +223,7 @@ Proje dokümanları (hepsi /prodapp kök dizininde):
 - **WORKFLOWS.md** — mali iş akışları: 9 akış + kritik bulgular
 - **AUDIT-RULES.md** — (planlanıyor) anomali/denetim kuralları, accSuphe mantığı
 - **CLAUDE.md** — Sonnet çalışma kuralları
-- **ARCHITECTURE.md** — veri modeli, sorumluluk sınırları, denetim motoru
+- **ARCHITECTURE.md** — veri modeli (8 bölüm), sorumluluk sınırları, denetim motoru, dönem disiplini, güvenlik modeli, POY ekosistem, maker-checker
 - **DEPLOYMENT.md** — (pilot öncesi) deploy, rollback, migration
 
 Yeni oturum başında Claude STATUS.md + SCHEMA.md'yi okuyarak bağlam kurar.

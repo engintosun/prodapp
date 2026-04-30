@@ -1,6 +1,6 @@
 # PRODAPP — Mali İş Akışları
 
-**Son güncelleme:** 24 Nisan 2026  
+**Son güncelleme:** 30 Nisan 2026  
 **Kaynak:** index.html + SCHEMA.md
 
 Bu doküman mali işlem akışlarını tanımlar. Her akış: kim tetikler, hangi
@@ -522,6 +522,22 @@ Asimetrik kapanış modeli: saha/dept için tam kapanış, muhasebe için soft k
 
 ---
 
+### 9E — İstisna İzni (Planlanıyor)
+
+**⚠️ HENÜZ İMPLEMENTE DEĞİL**
+
+ARCHITECTURE 1.6 Mekanizma 3'te tanımlanan istisna izni akışı. Muhasebe kapanmış döneme kişiye özel giriş izni verebilecek; her istisna sistemde işaretlenecek.
+
+**Planlanan fonksiyon:** `donemIstisnaIzni(donemId, kisiKey, sebep)`
+
+**Planlanan koleksiyon güncellemeleri:**
+- `APP.seed.donemler[i].istisnaIzni`: push (`{ kisi, sebep, tarih }`)
+- Denetim raporunda ayrı bölüm
+
+**Durum:** Faz 1 kalan iş olarak bekliyor.
+
+---
+
 ## KRİTİK BULGULAR
 
 Bu akışları yazarken tespit edilen, STATUS.md'ye eklenecek riskler:
@@ -530,6 +546,8 @@ Bu akışları yazarken tespit edilen, STATUS.md'ye eklenecek riskler:
 
 2. **Muhasebe → Dept direkt avans akışı eksik:** Faz 2'ye not edildi.
 
+3. **Bekleyen sayım bug'ı:** Dönem kapama modal'ı yanlış bekleyen sayısı gösterebiliyor (örn. "3 bekleyen" diyor ama gerçekte yok). Tanı + fix bekliyor.
+
 ---
 
-*Son teyit: index.html toplam satır sayısı ~10300+ (26.04.2026 itibarıyla).*
+*Son teyit: index.html toplam satır sayısı ~10641 (30.04.2026 itibarıyla).*
