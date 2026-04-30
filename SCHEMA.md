@@ -305,6 +305,29 @@ Boş başlar (`{}`), kullanıcı marka ayarlarından doldurur.
 
 **APP.data.projLogos** — Proje logoları. `{ ig: null|base64, mr: null|base64, sr: null|base64 }`. PDF'te kullanılır.
 
+**APP.data.istisnaIzinleri** — Kapanmış döneme kişiye özel giriş izinleri. Boş başlar (`[]`), runtime'da push edilir, localStorage'a kaydedilir. Her öğe:
+
+| Field | Tip | Açıklama |
+|---|---|---|
+| id | number | `Date.now()` — benzersiz arşiv ID |
+| donemId | number | Hangi kapalı dönem |
+| kisiKey | string | deptEkip.id (`'mk'`, `'od'` vb.) |
+| kisiAd | string | Kişi tam adı (snapshot) |
+| sebep | string | Zorunlu, min 10 karakter |
+| sure | number | Saat cinsinden izin süresi (varsayılan 8) |
+| maxAdet | number\|null | Null = sınırsız belge adedi |
+| maxTutar | number\|null | Null = sınırsız TL tutarı |
+| verenKisi | string | İzni veren muhasebeci adı |
+| verilisTarihi | string | `'DD.MM.YYYY HH:MM'` |
+| baslangicTs | number | `Date.now()` — süre hesabı için |
+| durum | string | `'aktif'`\|`'sureDoldu'`\|`'adetDoldu'`\|`'tutarDoldu'`\|`'iptal'` |
+| girilenAdet | number | 0'dan başlar, her fiş girişinde artar |
+| girilenTutar | number | 0'dan başlar, her fiş girişinde artar |
+
+**Bilinen tuzaklar:**
+- `kisiKey` deptEkip.id'dir (`'mk'`, `'od'`) — globalInbox user key'i (`'s'`, `'d'`) değil. Bildirim için `APP.seed.users` adı üzerinden eşleşme yapılır.
+- `durum` geçişleri Bölüm 2'de (saha tarafı — Faz 1/2) implement edilecek.
+
 ---
 
 ## BÖLÜM 2 — APP.ui (UI State — KRİTİK)

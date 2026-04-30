@@ -3329,6 +3329,51 @@ body {
 </div>
 
 <!-- ════════════════════════════
+     MODAL: İSTİSNA İZNİ VER
+════════════════════════════ -->
+<div class="mo" id="md-istisna-izni">
+  <div class="ms">
+    <div class="mh"></div>
+    <div class="mhd">
+      <div class="mtitle">İstisna İzni Ver</div>
+      <button class="mclose" onclick="closeM('md-istisna-izni')">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="al-am" style="margin-bottom:12px;font-size:12px">
+        Kapanmış döneme kişiye özel geçici giriş izni. Her istisna sistemde kalıcı olarak kaydedilir.
+      </div>
+      <div id="istisna-donem-info" style="font-size:12px;color:var(--tx3);margin-bottom:12px">—</div>
+      <div class="fg">
+        <label style="font-size:12px;color:var(--tx2)">Kişi <span style="color:var(--rd2)">*</span></label>
+        <select class="fgi" id="istisna-kisi-sel"></select>
+      </div>
+      <div class="fg">
+        <label style="font-size:12px;color:var(--tx2)">Sebep <span style="color:var(--rd2)">*</span> (min. 10 karakter)</label>
+        <textarea class="fgi" id="istisna-sebep" rows="3" placeholder="İstisna izninin sebebini açıklayın..."></textarea>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="fg" style="margin-bottom:0">
+          <label style="font-size:12px;color:var(--tx2)">Süre (saat) <span style="color:var(--rd2)">*</span></label>
+          <input class="fgi" type="number" id="istisna-sure" value="8" min="1" placeholder="8">
+        </div>
+        <div class="fg" style="margin-bottom:0">
+          <label style="font-size:12px;color:var(--tx2)">Max belge adedi</label>
+          <input class="fgi" type="number" id="istisna-max-adet" placeholder="Sınırsız">
+        </div>
+      </div>
+      <div class="fg" style="margin-top:8px">
+        <label style="font-size:12px;color:var(--tx2)">Max tutar (TL)</label>
+        <input class="fgi" type="number" id="istisna-max-tutar" placeholder="Sınırsız">
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-sm" onclick="closeM('md-istisna-izni')" style="flex:1;justify-content:center">Vazgeç</button>
+        <button class="btn btn-sm btn-p" onclick="donemIstisnaIzniVer()" style="flex:1;justify-content:center">İzin Ver</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
      LİGHTBOX
 ════════════════════════════ -->
 <input type="file" id="galeri-input" accept="image/*" multiple style="display:none">
@@ -7594,6 +7639,12 @@ function renderDonem(did) {
   var onayTop  = onayFis.reduce(function(s, f) { return s + f.tutar; }, 0);
   var redTop   = redFis.reduce(function(s, f) { return s + f.tutar; }, 0);
   var iade     = d.avans - onayTop;
+  var _isAcc   = APP.ui.curUser && APP.ui.curUser.role === 'acc';
+  var _istisnaBtn = _isAcc
+    ? '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--bo)">' +
+        '<button class="btn btn-sm" style="width:100%;justify-content:center;background:rgba(232,150,46,.12);color:var(--ac2);border:1px solid rgba(232,150,46,.3)" onclick="openIstisnaIzniModal(' + did + ')">🔓 İstisna İzni Ver</button>' +
+      '</div>'
+    : '';
 
   kapamaEl.style.display = 'block';
   kapamaEl.innerHTML =
@@ -7650,7 +7701,8 @@ function renderDonem(did) {
         '</div>' +
         '<span style="font-size:11px;color:var(--gr2);font-weight:600">✓</span>' +
       '</div>' +
-    '</div>';
+    '</div>' +
+    _istisnaBtn;
 }
 function yeniDonem() {
   if (!APP.ui.curUser || APP.ui.curUser.role !== 'acc') {
@@ -7760,6 +7812,107 @@ function _isDonemKapali(donemId) {
   var d = APP.seed.donemler.find(function(x) { return x.id === donemId; });
   return !!(d && d.durum === 'kapali');
 }
+
+/* ═══ İSTİSNA İZNİ ═══ */
+var _istisnaDonemId = null;
+
+function openIstisnaIzniModal(donemId) {
+  _istisnaDonemId = donemId;
+  var d = APP.seed.donemler.find(function(x) { return x.id === donemId; });
+  var dLbl = d ? d.lbl : ('Dönem #' + donemId);
+  var infoEl = document.getElementById('istisna-donem-info');
+  if (infoEl) infoEl.textContent = dLbl + ' — kapanmış döneme kişiye özel giriş izni';
+  var sel = document.getElementById('istisna-kisi-sel');
+  if (sel) {
+    sel.innerHTML = '<option value="">— Kişi seçin —</option>' +
+      APP.seed.deptEkip.map(function(u) {
+        return '<option value="' + u.id + '">' + u.name + ' (' + u.rol + ')</option>';
+      }).join('');
+  }
+  var sebepEl = document.getElementById('istisna-sebep');
+  if (sebepEl) sebepEl.value = '';
+  var sureEl = document.getElementById('istisna-sure');
+  if (sureEl) sureEl.value = '8';
+  var adetEl = document.getElementById('istisna-max-adet');
+  if (adetEl) adetEl.value = '';
+  var tutarEl = document.getElementById('istisna-max-tutar');
+  if (tutarEl) tutarEl.value = '';
+  openM('md-istisna-izni');
+}
+
+function donemIstisnaIzniVer() {
+  var donemId  = _istisnaDonemId;
+  var sel      = document.getElementById('istisna-kisi-sel');
+  var sebepEl  = document.getElementById('istisna-sebep');
+  var sureEl   = document.getElementById('istisna-sure');
+  var adetEl   = document.getElementById('istisna-max-adet');
+  var tutarEl  = document.getElementById('istisna-max-tutar');
+  var kisiKey  = sel     ? sel.value.trim()             : '';
+  var sebep    = sebepEl ? sebepEl.value.trim()          : '';
+  var sure     = sureEl  ? parseInt(sureEl.value, 10)    : 0;
+  var maxAdet  = adetEl  && adetEl.value.trim()  !== '' ? parseInt(adetEl.value,  10) : null;
+  var maxTutar = tutarEl && tutarEl.value.trim() !== '' ? parseFloat(tutarEl.value)   : null;
+
+  if (!kisiKey)           { notif('Kişi seçilmeli', 'red'); return; }
+  if (sebep.length < 10)  { notif('Sebep en az 10 karakter olmalı', 'red'); return; }
+  if (!sure || sure <= 0) { notif('Süre 0\'dan büyük olmalı', 'red'); return; }
+
+  var d = APP.seed.donemler.find(function(x) { return x.id === donemId; });
+  if (!d || d.durum !== 'kapali') { notif('Sadece kapalı dönemlere izin verilebilir', 'red'); return; }
+
+  var uyeObj = null;
+  for (var _ui = 0; _ui < APP.seed.deptEkip.length; _ui++) {
+    if (APP.seed.deptEkip[_ui].id === kisiKey) { uyeObj = APP.seed.deptEkip[_ui]; break; }
+  }
+  if (!uyeObj) { notif('Geçersiz kişi', 'red'); return; }
+
+  for (var _ii = 0; _ii < APP.data.istisnaIzinleri.length; _ii++) {
+    var _iz = APP.data.istisnaIzinleri[_ii];
+    if (_iz.donemId === donemId && _iz.kisiKey === kisiKey && _iz.durum === 'aktif') {
+      notif(uyeObj.name + ' için bu dönemde zaten aktif izin var', 'red');
+      return;
+    }
+  }
+
+  var now = new Date();
+  var _p  = function(n) { return n < 10 ? '0' + n : String(n); };
+  var verilisTarihi = _p(now.getDate()) + '.' + _p(now.getMonth() + 1) + '.' + now.getFullYear() +
+    ' ' + _p(now.getHours()) + ':' + _p(now.getMinutes());
+
+  APP.data.istisnaIzinleri.push({
+    id: Date.now(),
+    donemId: donemId,
+    kisiKey: kisiKey,
+    kisiAd: uyeObj.name,
+    sebep: sebep,
+    sure: sure,
+    maxAdet: maxAdet,
+    maxTutar: maxTutar,
+    verenKisi: APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe',
+    verilisTarihi: verilisTarihi,
+    baslangicTs: Date.now(),
+    durum: 'aktif',
+    girilenAdet: 0,
+    girilenTutar: 0
+  });
+
+  /* Bildirim: kisi adını user key'e eşleştirmeye çalış */
+  var toKey = null;
+  for (var _uk in APP.seed.users) {
+    if (APP.seed.users[_uk].name === uyeObj.name) { toKey = _uk; break; }
+  }
+  if (toKey) {
+    _pushNotif(toKey, 'am', 'İstisna İzni',
+      d.lbl + ' — ' + sure + ' saatlik giriş izniniz var. Sebep: ' + sebep,
+      'Az önce · Muhasebe');
+    updateNotifBadge();
+  }
+
+  saveAppData();
+  closeM('md-istisna-izni');
+  notif('İstisna izni verildi — ' + uyeObj.name, 'green');
+}
+
 
 var _gecIslemCb = null;
 var _dnKapamaDonemId = null;
@@ -8718,18 +8871,20 @@ APP.data.sohbetler = [
 ];
 
 /* Kalıcı veriler — loadAppData'dan önce tanımlanmalı (key kontrolü için) */
-APP.data.avatars      = { s: null, d: null, m: null };
-APP.data.companyInfo  = { name: '', logo: null };
-APP.data.projLogos    = { ig: null, mr: null, sr: null };
-APP.data.projNames    = {};
+APP.data.avatars         = { s: null, d: null, m: null };
+APP.data.companyInfo     = { name: '', logo: null };
+APP.data.projLogos       = { ig: null, mr: null, sr: null };
+APP.data.projNames       = {};
+APP.data.istisnaIzinleri = [];
 
 /* Tüm demo verileri yüklendi — localStorage'daki kayıtlı veriyi uygula */
 loadAppData();
 /* Migration: eski localStorage'da yeni alanlar yoksa default ile doldur */
-if (!APP.data.avatars)     APP.data.avatars     = { s: null, d: null, m: null };
-if (!APP.data.companyInfo) APP.data.companyInfo = { name: '', logo: null };
-if (!APP.data.projLogos)   APP.data.projLogos   = { ig: null, mr: null, sr: null };
-if (!APP.data.projNames)   APP.data.projNames   = {};
+if (!APP.data.avatars)         APP.data.avatars         = { s: null, d: null, m: null };
+if (!APP.data.companyInfo)     APP.data.companyInfo     = { name: '', logo: null };
+if (!APP.data.projLogos)       APP.data.projLogos       = { ig: null, mr: null, sr: null };
+if (!APP.data.projNames)       APP.data.projNames       = {};
+if (!APP.data.istisnaIzinleri) APP.data.istisnaIzinleri = [];
 
 var saRaporDeptId   = ''; /* drill-down: seçili dept ID */
 var saRaporKisiIdx  = -1; /* drill-down: seçili kişi index */

@@ -126,6 +126,7 @@ Faz 1'de eklenen, ana mali akışı destekleyen koleksiyonlar.
 - `APP.data.globalInbox` — kullanıcı bazlı bildirim kuyrukları
 - `APP.data.sohbetler` — mesajlaşma sistemi
 - `APP.seed.katLimit` — kategori harcama limitleri
+- `APP.data.istisnaIzinleri` — kapanmış döneme kişiye özel giriş izinleri (ARCHITECTURE 1.6 Mekanizma 3)
 
 ### 2.2. Koleksiyon bağları
 
