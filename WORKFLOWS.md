@@ -546,7 +546,7 @@ Bu akışları yazarken tespit edilen, STATUS.md'ye eklenecek riskler:
 
 2. **Muhasebe → Dept direkt avans akışı eksik:** Faz 2'ye not edildi.
 
-3. **Bekleyen sayım bug'ı:** Dönem kapama modal'ı yanlış bekleyen sayısı gösterebiliyor (örn. "3 bekleyen" diyor ama gerçekte yok). Tanı + fix bekliyor.
+3. ~~**Bekleyen sayım bug'ı:** Dönem kapama modal'ı yanlış bekleyen sayısı gösterebiliyor.~~ **Düzeltildi (30.04.2026):** `_dnKapamaModal` + `donemKapa` — çift cross-check eklendi (`fisler.durum` kontrolü) + `loadAppData` migration (donem field eksik eski kayıtlar). Bkz. BUG-2 + BUG-3.
 
 ---
 

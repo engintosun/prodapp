@@ -3850,6 +3850,13 @@ function loadAppData() {
     Object.keys(parsed).forEach(function(k) {
       if (APP.data[k] !== undefined) APP.data[k] = parsed[k];
     });
+    /* BUG-2 migration: eski localStorage kayıtlarında donem field'ı yoksa aktifDon ata */
+    for (var _mi = 0; _mi < APP.data.deptBekleyen.length; _mi++) {
+      if (APP.data.deptBekleyen[_mi].donem === undefined) APP.data.deptBekleyen[_mi].donem = APP.ui.aktifDon;
+    }
+    for (var _mj = 0; _mj < APP.data.accBekleyen.length; _mj++) {
+      if (APP.data.accBekleyen[_mj].donem === undefined) APP.data.accBekleyen[_mj].donem = APP.ui.aktifDon;
+    }
     return true;
   } catch(e) { console.warn('Yükleme başarısız:', e); return false; }
 }
@@ -7699,8 +7706,16 @@ function donemKapa(donemId, sebep) {
   if (!d) return;
   if (d.durum === 'kapali') { notif('Bu dönem zaten kapalı.', 'red'); return; }
 
-  var deptBek = APP.data.deptBekleyen.filter(function(f) { return f.donem === donemId && f.kat !== 'Kiralama'; });
-  var accBek  = APP.data.accBekleyen.filter(function(f)  { return f.donem === donemId && f.tip !== 'avans' && f.kat !== 'Kiralama'; });
+  var deptBek = APP.data.deptBekleyen.filter(function(f) {
+    if (String(f.donem) !== String(donemId) || f.kat === 'Kiralama') return false;
+    var _fis = APP.data.fisler.find(function(x) { return x.id === f.fisId; });
+    return _fis && _fis.durum === 'dept-bekleyen';
+  });
+  var accBek  = APP.data.accBekleyen.filter(function(f) {
+    if (String(f.donem) !== String(donemId) || f.tip === 'avans' || f.kat === 'Kiralama') return false;
+    var _fis = APP.data.fisler.find(function(x) { return x.id === f.fisId; });
+    return _fis && _fis.durum === 'acc-bekleyen';
+  });
   var bekTop  = deptBek.length + accBek.length;
   if (bekTop > 0) {
     notif('Bu dönemde ' + bekTop + ' bekleyen fiş var. Önce işlem yapılmalı.', 'red');
@@ -7772,8 +7787,16 @@ function _dnKapamaModal(donemId) {
   _dnKapamaDonemId = donemId;
   var d = APP.seed.donemler.find(function(x) { return x.id === donemId; });
   var dLbl = d ? d.lbl : ('Dönem #' + donemId);
-  var deptBek = APP.data.deptBekleyen.filter(function(f) { return f.donem === donemId && f.kat !== 'Kiralama'; });
-  var accBek  = APP.data.accBekleyen.filter(function(f)  { return f.donem === donemId && f.tip !== 'avans' && f.kat !== 'Kiralama'; });
+  var deptBek = APP.data.deptBekleyen.filter(function(f) {
+    if (String(f.donem) !== String(donemId) || f.kat === 'Kiralama') return false;
+    var _fis = APP.data.fisler.find(function(x) { return x.id === f.fisId; });
+    return _fis && _fis.durum === 'dept-bekleyen';
+  });
+  var accBek  = APP.data.accBekleyen.filter(function(f) {
+    if (String(f.donem) !== String(donemId) || f.tip === 'avans' || f.kat === 'Kiralama') return false;
+    var _fis = APP.data.fisler.find(function(x) { return x.id === f.fisId; });
+    return _fis && _fis.durum === 'acc-bekleyen';
+  });
   var bekTop  = deptBek.length + accBek.length;
   var infoEl = document.getElementById('dn-kapama-info');
   if (infoEl) infoEl.innerHTML =
