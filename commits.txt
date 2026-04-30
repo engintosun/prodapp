@@ -62,3 +62,5 @@ bb3d056 feat: dönem #1 kapama özeti, belgeler ve onay/red fişleri eklendi
 6eae8a2 feat: bildirimler modalı yeniden yapılandırıldı, muhasebe mesajı ve okundu/okunmadı durumu eklendi
 27f1eca feat: belgesiz harcama demo kaydı ve rozet gösterimi eklendi
 aaf4ce3 fix: galeri butonu dosya seçici açıyor, çoklu seçim destekleniyor
+e0c1546 fix: dönem kapama bekleyen sayım bug'ları (BUG-2 + BUG-3)
+f1e8a2e docs: CLAUDE.md etki analizi kuralı + STATUS.md bug fix kayıtları
