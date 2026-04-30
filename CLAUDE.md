@@ -158,3 +158,25 @@ Prompt'taki satır numarası dosyada başka bir şey gösteriyorsa:
 - Türkçe yaz
 - Kısa ve net ol
 - "Yapabilir miyim?", "Uygun mu?" gibi fazla nezaket yerine doğrudan bulguyu sun
+
+---
+
+## ETKİ ANALİZİ KURALI (her kod değişikliğinde zorunlu)
+
+### ADIM 0 — Analiz (kod değiştirmeden ÖNCE)
+1. Değişecek veri yapılarını / fonksiyonları belirle
+2. grep -n "değişenŞey" index.html → tüm kullanım noktalarını listele
+3. Her kullanım için tek satırda raporla:
+   Satır no | fonksiyon adı | okuma/yazma/filtre/render | etkilenir mi?
+4. Etkilenen noktaların HEPSİNİN fix kapsamında olduğunu teyit et
+
+### ADIM 0.5 — Karar ve bildirim
+Etki analizinde orijinal görev dışında etkilenen nokta bulursan:
+
+A) KÜÇÜK yan etki (aynı field, aynı pattern, mekanik düzeltme):
+   - Düzelt
+   - Konsola bildir: "⚠️ YAN ETKİ FIX: [fonksiyon:satır] — [ne yapıldı]"
+   - Commit mesajına ekle
+
+B) BÜYÜK yan etki (farklı akış, risk belirsiz):
+   - DOKUNMA

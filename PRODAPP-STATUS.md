@@ -4,7 +4,7 @@
 **Aktif sürüm:** v8.x (canlı)
 **Repo:** https://github.com/engintosun/prodapp
 **Deploy:** https://engintosun.github.io/prodapp/
-**Son commit:** ef6538a — docs: tüm md dosyaları index.html ile senkronize
+**Son commit:** 3376e60 — docs: etki analizi kuralı (CLAUDE.md) + STATUS commit hash güncelle
 
 ---
 
