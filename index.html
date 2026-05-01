@@ -5369,9 +5369,11 @@ function checkKiralamaBit(p) {
   var diffGun = Math.floor(diffMs / 86400000);
   var gunluk  = parseFloat((gunEl && gunEl.value) || '0') || 0;
   if (isNaN(diffGun)) { uyEl.style.display = 'none'; return; }
-  if (diffGun < 0) {
-    var gecGun = -diffGun;
-    var ceza   = gecGun * gunluk;
+  var _tempK = { bit: bitEl.value, gunluk: gunluk, iade: false };
+  var c = _kiraCeza(_tempK);
+  var gecGun = c.gecGun;
+  var ceza   = c.ceza;
+  if (c.gecGun > 0) {
     uyEl.className = 'al-rd';
     uyEl.style.display = 'block';
     uyEl.innerHTML = '⚠ Bitiş tarihi ' + gecGun + ' gün geçti — iade edilmedi!' +
