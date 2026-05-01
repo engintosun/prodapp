@@ -220,7 +220,7 @@ Faz 1'in 6 P0/P1 maddesi (4 P0 + 2 P1) bitince hemen bu iş başlar. Faz 2 (back
 ## 📚 DOKÜMANLAR
 
 Proje dokümanları (hepsi /prodapp kök dizininde):
-- **PRODAPP-STATUS.md** — bu dosya, ne yapıldı / ne kaldı / kararlar
+- **Status.md** — bu dosya, ne yapıldı / ne kaldı / kararlar
 - **SCHEMA.md** — APP namespace tam veri şeması (her kod değişiminde güncellenir)
 - **design.md** — görsel kimlik referansı
 - **WORKFLOWS.md** — mali iş akışları: 9 akış + kritik bulgular
