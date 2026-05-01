@@ -5366,7 +5366,7 @@ function checkKiralamaBit(p) {
   var today   = _today();
   var bit     = new Date(bitEl.value + 'T00:00:00');
   var diffMs  = bit - today;
-  var diffGun = Math.round(diffMs / 86400000);
+  var diffGun = Math.floor(diffMs / 86400000);
   var gunluk  = parseFloat((gunEl && gunEl.value) || '0') || 0;
   if (isNaN(diffGun)) { uyEl.style.display = 'none'; return; }
   if (diffGun < 0) {
