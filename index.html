@@ -6455,6 +6455,12 @@ function _kiraDurum(k) {
   if (fark <= 2) return 'yak';
   return 'ak';
 }
+function _kiraCeza(k) {
+  if (k.iade) return { gecGun: k.cezaGun || 0, ceza: k.cezaTutar || 0 };
+  if (_kiraDurum(k) !== 'gec') return { gecGun: 0, ceza: 0 };
+  var gecGun = Math.abs(_gunFarki(_todayISO(), k.bit));
+  return { gecGun: gecGun, ceza: gecGun * k.gunluk };
+}
 
 function renderDeptKira() {
   var el = document.getElementById('sd-pnl-kira');
@@ -6489,10 +6495,11 @@ function renderDeptKira() {
   function kiraCard(k) {
     var dur   = _kiraDurum(k);
     var kalan = _gunFarki(today, k.bit);
+    var c     = _kiraCeza(k);
     var tagCls, tagTxt;
     if (dur === 'gec') {
       tagCls = 'sd-kira-tag sd-kira-tag-gec';
-      tagTxt = Math.abs(kalan) + ' gün gecikmiş';
+      tagTxt = c.gecGun + ' gün gecikmiş';
     } else if (dur === 'yak') {
       tagCls = 'sd-kira-tag sd-kira-tag-yak';
       tagTxt = kalan === 0 ? 'Bugün bitiyor' : kalan + ' gün kaldı';
@@ -6504,7 +6511,7 @@ function renderDeptKira() {
       tagTxt = 'İade Edildi';
     }
     var cardCls = 'sd-kira-card' + (dur === 'gec' ? ' gec' : dur === 'yak' ? ' yak' : dur === 'iade' ? ' iade' : '');
-    var ceza = dur === 'gec' ? ('<div class="sd-kira-ceza">⚠ Gecikme: ' + Math.abs(kalan) + ' gün × ₺' + k.gunluk.toLocaleString('tr-TR') + ' = ₺' + (Math.abs(kalan) * k.gunluk).toLocaleString('tr-TR') + ' olası ceza</div>') : '';
+    var ceza = dur === 'gec' ? ('<div class="sd-kira-ceza">⚠ Gecikme: ' + c.gecGun + ' gün × ₺' + k.gunluk.toLocaleString('tr-TR') + ' = ₺' + c.ceza.toLocaleString('tr-TR') + ' olası ceza</div>') : '';
     var iadeBtn = dur !== 'iade'
       ? '<button class="sd-ok btn-sm" style="font-size:12px" onclick="deptKiraIade(' + k.id + ')">✓ İade Edildi</button>'
       : '<span style="font-size:12px;color:var(--tx3)">✓ Teslim Edildi</span>';
@@ -6545,11 +6552,21 @@ function renderDeptKira() {
 
 function deptKiraIade(id) {
   for (var i = 0; i < APP.data.deptKira.length; i++) {
-    if (APP.data.deptKira[i].id === id) { APP.data.deptKira[i].iade = true; break; }
+    if (APP.data.deptKira[i].id === id) {
+      var _kd = APP.data.deptKira[i];
+      var _cd = _kiraCeza(_kd);
+      _kd.cezaGun = _cd.gecGun; _kd.cezaTutar = _cd.ceza;
+      _kd.iade = true; break;
+    }
   }
   /* Muhasebe listesinde de güncelle */
   for (var j = 0; j < APP.data.accKiralamalar.length; j++) {
-    if (APP.data.accKiralamalar[j].id === id) { APP.data.accKiralamalar[j].iade = true; break; }
+    if (APP.data.accKiralamalar[j].id === id) {
+      var _ka = APP.data.accKiralamalar[j];
+      var _ca = _kiraCeza(_ka);
+      _ka.cezaGun = _ca.gecGun; _ka.cezaTutar = _ca.ceza;
+      _ka.iade = true; break;
+    }
   }
   renderDeptKira();
   notif('Kiralama iadesi işaretlendi', 'green');
@@ -6574,7 +6591,7 @@ function renderAccKira() {
     var k = APP.data.accKiralamalar[i];
     var dur = _kiraDurum(k);
     if (dur !== 'iade') topAktif += k.tutar;
-    if (dur === 'gec') { topGec += Math.abs(_gunFarki(today, k.bit)) * k.gunluk; gecSay++; }
+    if (dur === 'gec') { var _oc = _kiraCeza(k); topGec += _oc.ceza; gecSay++; }
     if (dur === 'iade') iadeSay++;
   }
   var aktifSay = APP.data.accKiralamalar.length - iadeSay;
@@ -6603,7 +6620,7 @@ function renderAccKira() {
       var dk2 = dKiralar[dki2];
       var dkDur = _kiraDurum(dk2);
       if (dkDur !== 'iade') { dAktif++; dTop += dk2.tutar; }
-      if (dkDur === 'gec') { dGec++; dCeza += Math.abs(_gunFarki(today, dk2.bit)) * dk2.gunluk; }
+      if (dkDur === 'gec') { dGec++; var _dc = _kiraCeza(dk2); dCeza += _dc.ceza; }
     }
     html += '<tr>' +
       '<td class="nm"><div class="sa-kira-dept-dot" style="background:' + deptClr[dId] + '"></div>' + deptNm[dId] + '</td>' +
@@ -6620,8 +6637,9 @@ function renderAccKira() {
     html += '<div class="sa-kira-sec-hd" style="color:var(--rd2)">🔴 Gecikmiş Kiralamalar (' + gecmisler.length + ')</div>';
     html += gecmisler.map(function(k) {
       var kalan = _gunFarki(today, k.bit);
-      var gecGun = Math.abs(kalan);
-      var topCeza = gecGun * k.gunluk;
+      var c = _kiraCeza(k);
+      var gecGun = c.gecGun;
+      var topCeza = c.ceza;
       return '<div class="sa-kira-card gec">' +
         '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">' +
           '<div>' +
@@ -6665,14 +6683,15 @@ function renderAccKira() {
     html += dKiralar.map(function(k) {
       var dur   = _kiraDurum(k);
       var kalan = _gunFarki(today, k.bit);
+      var c     = _kiraCeza(k);
       var tagCls, tagTxt;
-      if (dur === 'gec') { tagCls = 'sd-kira-tag sd-kira-tag-gec'; tagTxt = Math.abs(kalan) + ' gün geç'; }
+      if (dur === 'gec') { tagCls = 'sd-kira-tag sd-kira-tag-gec'; tagTxt = c.gecGun + ' gün geç'; }
       else if (dur === 'yak') { tagCls = 'sd-kira-tag sd-kira-tag-yak'; tagTxt = kalan === 0 ? 'Bugün' : kalan + ' gün'; }
       else if (dur === 'ak') { tagCls = 'sd-kira-tag sd-kira-tag-ak'; tagTxt = kalan + ' gün kaldı'; }
       else { tagCls = 'sd-kira-tag sd-kira-tag-iad'; tagTxt = 'İade'; }
 
       var cezaTxt = dur === 'gec'
-        ? '<div style="font-size:11px;color:var(--rd2);font-weight:600;margin-top:5px">Gecikme cezası: ₺' + (Math.abs(kalan) * k.gunluk).toLocaleString('tr-TR') + ' (' + Math.abs(kalan) + ' gün × ₺' + k.gunluk.toLocaleString('tr-TR') + ')</div>'
+        ? '<div style="font-size:11px;color:var(--rd2);font-weight:600;margin-top:5px">Gecikme cezası: ₺' + c.ceza.toLocaleString('tr-TR') + ' (' + c.gecGun + ' gün × ₺' + k.gunluk.toLocaleString('tr-TR') + ')</div>'
         : '';
       var iadeBtn = dur !== 'iade'
         ? '<button class="btn btn-g btn-sm" style="margin-top:8px" onclick="accKiraIade(' + k.id + ')">✓ İade Alındı</button>'
@@ -6703,10 +6722,20 @@ function renderAccKira() {
 
 function accKiraIade(id) {
   for (var i = 0; i < APP.data.accKiralamalar.length; i++) {
-    if (APP.data.accKiralamalar[i].id === id) { APP.data.accKiralamalar[i].iade = true; break; }
+    if (APP.data.accKiralamalar[i].id === id) {
+      var _ki = APP.data.accKiralamalar[i];
+      var _ci = _kiraCeza(_ki);
+      _ki.cezaGun = _ci.gecGun; _ki.cezaTutar = _ci.ceza;
+      _ki.iade = true; break;
+    }
   }
   for (var j = 0; j < APP.data.deptKira.length; j++) {
-    if (APP.data.deptKira[j].id === id) { APP.data.deptKira[j].iade = true; break; }
+    if (APP.data.deptKira[j].id === id) {
+      var _kj = APP.data.deptKira[j];
+      var _cj = _kiraCeza(_kj);
+      _kj.cezaGun = _cj.gecGun; _kj.cezaTutar = _cj.ceza;
+      _kj.iade = true; break;
+    }
   }
   renderAccKira();
   notif('İade alındı olarak işaretlendi', 'green');

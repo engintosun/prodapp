@@ -295,9 +295,9 @@ Boş başlar (`{}`), kullanıcı marka ayarlarından doldurur.
 
 **APP.data.globalInbox** — Kullanıcı bazlı bildirim listesi. `{ s: [...], d: [...], m: [...] }` şeklinde key-value. Her öğe: `{ id, tip, title, body, meta, read }`. `tip`: `'gr'`/`'am'`/`'rd'`/`'bl'`. Login sonrası `APP.ui.notiflar = APP.data.globalInbox[curUserKey]` ile bağlanır.
 
-**APP.data.deptKira** — Dept ekranındaki kiralama listesi. Her öğe: `{ id, uye, ini, kat, satici, tutar, gunluk, bas, bit, iade }`. `bas`/`bit` ISO YYYY-MM-DD format. `iade: true/false`.
+**APP.data.deptKira** — Dept ekranındaki kiralama listesi. Her öğe: `{ id, uye, ini, kat, satici, tutar, gunluk, bas, bit, iade, cezaGun?, cezaTutar? }`. `bas`/`bit` ISO YYYY-MM-DD format. `iade: true/false`. `cezaGun` ve `cezaTutar` iade anında yazılır (`deptKiraIade`/`accKiraIade`); iade öncesinde yoktur.
 
-**APP.data.accKiralamalar** — Muhasebe ekranındaki tüm aktif kiralamalar. deptKira ile aynı yapı + `dept` ve `deptId` field'ları eklenir.
+**APP.data.accKiralamalar** — Muhasebe ekranındaki tüm aktif kiralamalar. deptKira ile aynı yapı + `dept` ve `deptId` field'ları eklenir. `cezaGun`/`cezaTutar` aynı şekilde iade anında kalıcı olarak kaydedilir.
 
 **APP.data.accSuphe** — Muhasebe şüpheli harcama listesi. Her öğe: `{ id, dept, uye, ini, satici, kat, tutar, tarih, sebep, durum }`. `durum`: `'bek'`/`'inc'`.
 
