@@ -1,10 +1,10 @@
 # PRODAPP — Durum Raporu
 
-**Son güncelleme:** 30 Nisan 2026
+**Son güncelleme:** 1 Mayıs 2026
 **Aktif sürüm:** v8.x (canlı)
 **Repo:** https://github.com/engintosun/prodapp
 **Deploy:** https://engintosun.github.io/prodapp/
-**Son commit:** 3376e60 — docs: etki analizi kuralı (CLAUDE.md) + STATUS commit hash güncelle
+**Son commit:** 4ae15c9 — docs: reddedilmiş fiş duplikat tespiti notu (Faz 2)
 
 ---
 
@@ -109,8 +109,8 @@
 - [x] **Dönem yönetimi:** yeniDonem(), donemKapa(), asimetrik kapanış (5. mekanizma), pasif onay, geç işlem — tamamlandı 26.04.2026
 
 ### P1 — Çok iyi olur, esnek
-- [x] **Onboarding tutorial** (3 rol × 3 adım, skip'lenebilir, localStorage flag, Yardım bağlantısı) — tamamlandı 01.05.2026
-- [x] **Kiralama ceza persist:** `_kiraCeza()` helper + iade anında `cezaGun`/`cezaTutar` kaydı — tamamlandı 01.05.2026
+- [x] **Onboarding tutorial** (3 rol × 3 adım, skip'lenebilir, localStorage flag, Yardım bağlantısı) — tamamlandı 01.05.2026 (917ed2c)
+- [x] **Kiralama ceza persist:** `_kiraCeza()` helper + iade anında `cezaGun`/`cezaTutar` kaydı — tamamlandı 01.05.2026 (87ac2d2, 09b328d, 22d9c74)
 - [x] **deptBekleyen donem field eksik:** seed'de donem:2 field'ı yoktu — eklendi 26.04.2026
 - [x] **APP.seed.donemler donem 0 tutarsızlığı:** sdDonemler/saDonemler'de donem 0 vardı ama donemler dizisinde yoktu — eklendi 26.04.2026
 - [x] **renderDonem hardcoded 'Mehmet Kaya':** personel filtresi APP.ui.curUser.name ile değiştirildi 26.04.2026
@@ -118,6 +118,8 @@
 ---
 
 ## 🔄 FAZ 1 SONRASI — MODÜLERLEŞME PLANI
+
+**Durum:** Faz 1 tamamlandı (1 Mayıs 2026). Modülerleşme başlıyor.
 
 Faz 1'in 6 P0/P1 maddesi (4 P0 + 2 P1) bitince hemen bu iş başlar. Faz 2 (backend) öncesi şart.
 
