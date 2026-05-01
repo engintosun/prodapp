@@ -296,8 +296,7 @@ Denetim motoru şu üç noktada otomatik çalışır:
 **E. Doküman kuralları** — Belgesiz oran, eksik alan, düşük OCR skoru
 **F. Desen kuralları** — Aynı personelin tekrarlayan anomalileri
 
-*Her kategorinin spesifik kuralları ayrı belgede: AUDIT-RULES.md
-(eklenecek).*
+*Her kategorinin spesifik kuralları ayrı belgede: AUDIT-RULES.md — Faz 2'ye ertelendi (accSuphe otomatik motoru backend ile birlikte tasarlanacak).*
 
 ### 4.3. accDenetim koleksiyonu (eklenecek)
 

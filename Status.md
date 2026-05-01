@@ -224,7 +224,7 @@ Proje dokümanları (hepsi /prodapp kök dizininde):
 - **SCHEMA.md** — APP namespace tam veri şeması (her kod değişiminde güncellenir)
 - **design.md** — görsel kimlik referansı
 - **WORKFLOWS.md** — mali iş akışları: 9 akış + kritik bulgular
-- **AUDIT-RULES.md** — (planlanıyor) anomali/denetim kuralları, accSuphe mantığı
+- **AUDIT-RULES.md** — Faz 2'ye ertelendi (accSuphe otomatik motoru backend ile birlikte tasarlanacak)
 - **CLAUDE.md** — Sonnet çalışma kuralları
 - **ARCHITECTURE.md** — veri modeli (8 bölüm), sorumluluk sınırları, denetim motoru, dönem disiplini, güvenlik modeli, POY ekosistem, maker-checker
 - **DEPLOYMENT.md** — (pilot öncesi) deploy, rollback, migration
