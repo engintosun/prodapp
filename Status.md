@@ -119,7 +119,17 @@
 
 ## 🔄 FAZ 1 SONRASI — MODÜLERLEŞME PLANI
 
-**Durum:** Faz 1 tamamlandı (1 Mayıs 2026). Modülerleşme başlıyor.
+**Durum:** Faz 1 tamamlandı (1 Mayıs 2026). Modülerleşme başladı.
+
+### İlerleme
+
+- [x] **Adım 1** (01975ac) — constants.js + design-tokens.css + boş klasörler
+- [x] **Adım 2** (0e23c6e) — state.js + utils.js
+- [x] **Adım 3** (8507186) — services katmanı (storage, fis, dept, report — 4 dosya)
+- [ ] **Adım 4** — shared logic (ocr, export, onboarding) — SIRADA
+- [ ] **Adım 5** — saha modülü
+- [ ] **Adım 6** — dept modülü
+- [ ] **Adım 7** — muhasebe modülü + index.html iskelet (~200 satır)
 
 Faz 1'in 6 P0/P1 maddesi (4 P0 + 2 P1) bitince hemen bu iş başlar. Faz 2 (backend) öncesi şart.
 
