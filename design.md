@@ -454,3 +454,50 @@ Tema ikonları `.theme-icon-dark` ve `.theme-icon-light` class'ı ile toggle edi
 - **Kontrast:** `--tx` (#EDF0F5) üzerinde `--ac` (#E8962E) → AA sınırında; `--ac` üzerinde `#0C0A08` → AAA geçer (btn-p, lbtn, avatar)
 - **Kaydırma:** `-webkit-overflow-scrolling: touch` tüm scroll alanlarda
 - **Zoom engeli:** `user-scalable=no` viewport meta + `touch-action: manipulation` OCR butonunda
+
+---
+
+## 10. LEVEL 3 TASARIM YÖNELİMİ
+
+**Durum:** TASLAK — kesinleşmemiş, modülerleşme öncesi tekrar tartışılacak.  
+**Referans:** Level 2 (mevcut) vs Level 3 (yeni) karşılaştırma mockup'ı (30.04.2026)
+
+Hedef: Premium ürün hissi — sadelikten ödün vermeden. Kullanıcıda "profesyonel araç" algısı, aşırıya kaçmadan.
+
+Metafor: **Karanlık odada altın yüzük parıltısı** — fark edilir ama bağırmaz.
+
+### Koyu tema evrimi
+
+- Yazı, çizgi ve separator'larda çok düşük opacity warm glow:
+  ```
+  text-shadow: 0 0 8px rgba(232,150,46,0.2)
+  border-bottom: 1px solid rgba(232,150,46,0.15)
+  ```
+- Glow sadece vurgulanan öğelerde — her yere uygulanırsa etkisini kaybeder
+- Mevcut altın halka (FİŞ TARA butonu) referans noktası — aynı ışık dili diğer öğelere uzatılacak
+- Neon/cyberpunk estetiğinden kaçınma: glow rengi her zaman warm palette içinde kalmalı
+
+### Açık tema (yeni yön)
+
+- Neumorphic/skeuomorphic yaklaşım: butonlarda kabartma + yönlü gölge
+- Yazı renkleri: warm koyu tonlar (`#0C0A08` birincil, `#3a3530` ikincil) — saf griden (`#666`, `#999`) kaçınma
+- FİŞ TARA butonu: fiziksel düğme hissi, metalik kenar, hafif parlama
+- Galeri/Belgesiz butonları: neumorphic gölge, touch target min 44px korunmalı
+
+### Tasarım prensipleri (mockup'tan)
+
+1. **Doğal malzeme hissi** — gerçek malzeme dokusu ve yüzey hissi
+2. **Sıcak & dengeli renkler** — doğal ve düşük doygunluklu palet
+3. **Yumuşak ışık & gölge** — yumuşak ve yönlü ışık kullanımı
+4. **Net hiyerarşi** — önem sırasına göre belirgin yapı
+5. **Kusursuz çizgi kalitesi** — ince çizgiler, tutarlı boşluklar
+
+### Açık sorular (modülerleşmede tartışılacak)
+
+- [ ] Dış çekim (güneş altı) kontrast testi — light tema yeterince okunabilir mi?
+- [ ] Glow yoğunluğu: 0.2 mi 0.3 mü? Cihaz bazlı test gerek
+- [ ] Tab bar ve bottom nav'da glow uygulanacak mı?
+- [ ] Neumorphic gölge derinliği — flat ile skeuomorphic arası denge nerede?
+- [ ] Animasyon: buton basımında gölge değişimi (pressed state) eklenecek mi?
+
+*CSS token'ları modülerleşme aşamasında (`design-tokens.css`) somutlaşacak.*
