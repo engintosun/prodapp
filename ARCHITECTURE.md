@@ -507,3 +507,9 @@ Bu belge şu durumlarda güncellenir:
 - Faz 2 geçiş notu değişiyor
 
 Güncelleme kodla aynı commit'te yapılır.
+
+---
+
+## 9. YARDIM SİSTEMİ NOTU
+
+Yardım sistemi: Faz 1'de sadece onboarding tutorial (3 adım, ilk giriş). Detaylı kullanım kılavuzu Faz 2-3'te ayrı modül olarak planlanacak.

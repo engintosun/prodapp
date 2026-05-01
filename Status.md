@@ -182,6 +182,7 @@ Faz 1'in 6 P0/P1 maddesi (4 P0 + 2 P1) bitince hemen bu iş başlar. Faz 2 (back
 - Backend geçişi: Supabase + Auth + Realtime — Faz 2
 - Gerçek OCR (Google Vision/Textract) — Faz 2
 - Muhasebe → Dept şefi direkt avans akışı — Faz 2
+- Detaylı Yardım / Kullanım Kılavuzu — Faz 2-3 (tutorial sadece ilk karşılama, kapsamlı yardım bölümü ayrı iş olarak planlanacak, ciddi mesai gerektirir)
 
 ---
 
