@@ -109,7 +109,7 @@
 - [x] **Dönem yönetimi:** yeniDonem(), donemKapa(), asimetrik kapanış (5. mekanizma), pasif onay, geç işlem — tamamlandı 26.04.2026
 
 ### P1 — Çok iyi olur, esnek
-- [ ] **Onboarding tutorial** (3 rol × 3 adım, skip'lenebilir) *(L)*
+- [x] **Onboarding tutorial** (3 rol × 3 adım, skip'lenebilir, localStorage flag, Yardım bağlantısı) — tamamlandı 01.05.2026
 - [x] **Kiralama ceza persist:** `_kiraCeza()` helper + iade anında `cezaGun`/`cezaTutar` kaydı — tamamlandı 01.05.2026
 - [x] **deptBekleyen donem field eksik:** seed'de donem:2 field'ı yoktu — eklendi 26.04.2026
 - [x] **APP.seed.donemler donem 0 tutarsızlığı:** sdDonemler/saDonemler'de donem 0 vardı ama donemler dizisinde yoktu — eklendi 26.04.2026

@@ -2252,6 +2252,16 @@ body {
 }
 .exp-dd-item:hover { background: var(--bg-hover, #242018); }
 .exp-dd-icon { font-size: 18px; width: 22px; text-align: center; }
+/* ══ ONBOARDING ══ */
+#md-onboard { align-items: center; background: rgba(12,10,8,.92); }
+.onb-card {
+  background: #1a1714; border-radius: 16px; padding: 32px;
+  max-width: 360px; width: calc(100% - 32px);
+  animation: mslide .28s ease;
+}
+.onb-dots { display: flex; gap: 6px; justify-content: center; margin: 20px 0 24px; }
+.onb-dot  { width: 7px; height: 7px; border-radius: 50%; background: #444; transition: background .2s; }
+.onb-dot.on { background: #E8962E; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
@@ -2327,7 +2337,7 @@ body {
       <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
       <span class="theme-icon-dark">Açık Tema</span><span class="theme-icon-light">Koyu Tema</span>
     </div>
-    <div class="av-item" onclick="closeAvMenu(); notif('Yardım yakında', 'blue')">
+    <div class="av-item" onclick="closeAvMenu(); startOnboard()">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       Yardım
     </div>
@@ -3369,6 +3379,22 @@ body {
         <button class="btn btn-sm" onclick="closeM('md-istisna-izni')" style="flex:1;justify-content:center">Vazgeç</button>
         <button class="btn btn-sm btn-p" onclick="donemIstisnaIzniVer()" style="flex:1;justify-content:center">İzin Ver</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     MODAL: ONBOARDING
+════════════════════════════ -->
+<div class="mo" id="md-onboard">
+  <div class="onb-card">
+    <div id="onb-icon" style="text-align:center;margin-bottom:18px"></div>
+    <div id="onb-title" style="font-size:18px;font-weight:700;color:var(--tx);text-align:center;margin-bottom:10px"></div>
+    <div id="onb-desc" style="font-size:14px;color:#b0a89e;text-align:center;line-height:1.55"></div>
+    <div id="onb-dots" class="onb-dots"></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-sm" onclick="onboardDone()" style="flex:1;justify-content:center;color:var(--tx3)">Atla</button>
+      <button class="btn btn-sm btn-p" id="onb-next" onclick="onboardStep(1)" style="flex:2;justify-content:center">Sonraki</button>
     </div>
   </div>
 </div>
@@ -4569,6 +4595,7 @@ function selectProj(pid) {
     updateNotifBadge();
     notif(APP.ui.curProj.name + ' muhasebesine giriş yapıldı', 'blue');
   }
+  if (APP.ui.curUser && !localStorage.getItem('onboardDone_' + APP.ui.curUser.role)) startOnboard();
 }
 function goProjectSelect() {
   if (!APP.ui.curUser) return;
@@ -10921,6 +10948,80 @@ function accSupheIsle(id, action) {
   saveAppData();
 }
 
+
+/* ═══ ONBOARDING ═══ */
+var _onbStep  = 0;
+var _onbSteps = [];
+
+var _ONB_SVG = {
+  Camera:          '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>',
+  CalendarDays:    '<rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><line x1="8" x2="8.01" y1="14" y2="14"/><line x1="12" x2="12.01" y1="14" y2="14"/><line x1="8" x2="8.01" y1="18" y2="18"/><line x1="12" x2="12.01" y1="18" y2="18"/>',
+  MessageCircle:   '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
+  CheckSquare:     '<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+  BarChart3:       '<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
+  Package:         '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 2 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" x2="12" y1="22.08" y2="12"/>',
+  LayoutDashboard: '<rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>',
+  ClipboardCheck:  '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/>',
+  FileSpreadsheet: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h2"/><path d="M14 13h2"/><path d="M8 17h2"/><path d="M14 17h2"/>'
+};
+
+var _ONB_DATA = {
+  user: [
+    { icon:'Camera',          title:'Fiş Ekle',        desc:'Kamera ile fotoğraf çekin, galeriden seçin veya belgesiz harcama girin.' },
+    { icon:'CalendarDays',    title:'Dönem Takibi',    desc:'Fişlerinizin onay durumunu ve avans talebinizi buradan takip edin.' },
+    { icon:'MessageCircle',   title:'Mesajlar',        desc:'Departman şefiniz ve muhasebe ile iletişim kurun.' }
+  ],
+  dept: [
+    { icon:'CheckSquare',     title:'Onay Kutusu',     desc:'Ekibinizden gelen fişleri tek tek veya toplu olarak onaylayın, reddedin.' },
+    { icon:'BarChart3',       title:'Dönem Yönetimi',  desc:'Bütçe durumunu takip edin, dönemi kapatın.' },
+    { icon:'Package',         title:'Kiralama Takibi', desc:'Ekipman kiralamalarını, gecikmeleri ve cezaları görüntüleyin.' }
+  ],
+  acc: [
+    { icon:'LayoutDashboard', title:'Dashboard',       desc:'Departman kartları, harcama özeti ve şüpheli işlemleri görün.' },
+    { icon:'ClipboardCheck',  title:'Kesin Onay',      desc:'Departmanlardan gelen fişleri inceleyip son kararı verin.' },
+    { icon:'FileSpreadsheet', title:'Raporlar',        desc:'Personel ve departman raporlarına ulaşın, dışa aktarın.' }
+  ]
+};
+
+function _onbRender() {
+  var s  = _onbSteps[_onbStep];
+  var ic = document.getElementById('onb-icon');
+  var ti = document.getElementById('onb-title');
+  var de = document.getElementById('onb-desc');
+  var dt = document.getElementById('onb-dots');
+  var nx = document.getElementById('onb-next');
+  if (ic) ic.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#E8962E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px">' + _ONB_SVG[s.icon] + '</svg>';
+  if (ti) ti.textContent = s.title;
+  if (de) de.textContent = s.desc;
+  if (dt) {
+    var dots = '';
+    for (var i = 0; i < _onbSteps.length; i++) {
+      dots += '<span class="onb-dot' + (i === _onbStep ? ' on' : '') + '"></span>';
+    }
+    dt.innerHTML = dots;
+  }
+  if (nx) nx.textContent = (_onbStep === _onbSteps.length - 1) ? 'Başla' : 'Sonraki';
+}
+
+function startOnboard() {
+  var role = APP.ui.curUser ? APP.ui.curUser.role : 'user';
+  _onbSteps = _ONB_DATA[role] || _ONB_DATA.user;
+  _onbStep  = 0;
+  _onbRender();
+  openM('md-onboard');
+}
+
+function onboardStep(dir) {
+  _onbStep += dir;
+  if (_onbStep < 0) { _onbStep = 0; return; }
+  if (_onbStep >= _onbSteps.length) { onboardDone(); return; }
+  _onbRender();
+}
+
+function onboardDone() {
+  if (APP.ui.curUser) localStorage.setItem('onboardDone_' + APP.ui.curUser.role, '1');
+  closeM('md-onboard');
+}
 
 /* ═══ BAŞLAT ═══ */
 (function init() {
