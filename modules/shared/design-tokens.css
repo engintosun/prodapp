@@ -1,0 +1,55 @@
+/* /modules/shared/design-tokens.css
+   PRODAPP — CSS Design Tokens (modülerleşme Adım 1 — kopyalama, index.html orijinal yerinde)
+*/
+
+:root {
+  --bg:  #0C0A08;
+  --bg2: #131110;
+  --bg3: #1A1816;
+  --bg4: #222018;
+  --bo:  #2A2620;
+  --bo2: #38322A;
+  --tx:  #EDF0F5;
+  --tx2: #8A9090;
+  --tx3: #4A5060;
+  --ac:  #E8962E;
+  --ac2: #F0C080;
+  --gr:  #22C55E;
+  --gr2: #4ADE80;
+  --rd:  #EF4444;
+  --rd2: #F87171;
+  --am:  #F59E0B;
+  --am2: #FCD34D;
+  --bl:  #3B82F6;
+  --bl2: #60A5FA;
+  --r:   14px;
+  --rs:  9px;
+  --fn:  'DM Sans', system-ui, sans-serif;
+  --mo:  'DM Mono', monospace;
+  --sh:  0 8px 32px rgba(0,0,0,.6);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bot: env(safe-area-inset-bottom, 0px);
+}
+
+/* Açık tema override */
+[data-theme="light"] {
+  --bg:  #F5F3F0;
+  --bg2: #EDEAE4;
+  --bg3: #E4E0D8;
+  --bg4: #DAD5CC;
+  --bo:  #C4BDB0;
+  --bo2: #ADA69A;
+  --tx:  #1A1714;
+  --tx2: #55504A;
+  --tx3: #8A857E;
+  --ac2: #CF7A10;
+  --gr:  #16A34A;
+  --gr2: #166534;
+  --rd:  #DC2626;
+  --rd2: #991B1B;
+  --am:  #D97706;
+  --am2: #92400E;
+  --bl:  #2563EB;
+  --bl2: #1E3A8A;
+  --sh:  0 8px 32px rgba(0,0,0,.10);
+}

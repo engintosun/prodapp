@@ -11058,5 +11058,10 @@ function onboardDone() {
     <span class="exp-dd-icon">🖼</span><span>PNG</span>
   </button>
 </div>
+<!-- Modülerleşme entry point — Adım 1 (kopyalama, silme yok) -->
+<script type="module">
+  import * as CONST from './modules/core/constants.js';
+  console.log('[PRODAPP] Modülerleşme aktif, sabit sayısı:', Object.keys(CONST).length);
+</script>
 </body>
 </html>
