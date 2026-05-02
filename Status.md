@@ -127,7 +127,7 @@
 - [x] **Adım 2** (0e23c6e) — state.js + utils.js
 - [x] **Adım 3** (8507186) — services katmanı (storage, fis, dept, report — 4 dosya)
 - [x] **Adım 4** — shared logic (ocr.js, export.js, onboarding.js) — modules/shared/ altında
-- [ ] **Adım 5** — saha modülü
+- [x] **Adım 5** — saha modülü (saha.js + donem.js) — modules/saha/ altında
 - [ ] **Adım 6** — dept modülü
 - [ ] **Adım 7** — muhasebe modülü + index.html iskelet (~200 satır)
 
