@@ -128,7 +128,7 @@
 - [x] **Adım 3** (8507186) — services katmanı (storage, fis, dept, report — 4 dosya)
 - [x] **Adım 4** — shared logic (ocr.js, export.js, onboarding.js) — modules/shared/ altında
 - [x] **Adım 5** — saha modülü (saha.js + donem.js) — modules/saha/ altında
-- [ ] **Adım 6** — dept modülü
+- [x] **Adım 6** — dept modülü (dept.js) — modules/dept/ altında
 - [ ] **Adım 7** — muhasebe modülü + index.html iskelet (~200 satır)
 
 Faz 1'in 6 P0/P1 maddesi (4 P0 + 2 P1) bitince hemen bu iş başlar. Faz 2 (backend) öncesi şart.
