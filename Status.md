@@ -129,7 +129,7 @@
 - [x] **Adım 4** — shared logic (ocr.js, export.js, onboarding.js) — modules/shared/ altında
 - [x] **Adım 5** — saha modülü (saha.js + donem.js) — modules/saha/ altında
 - [x] **Adım 6** — dept modülü (dept.js) — modules/dept/ altında
-- [ ] **Adım 7** — muhasebe modülü + index.html iskelet (~200 satır)
+- [x] **Adım 7A** — muhasebe modülü kopyalandı (modules/muhasebe/muhasebe.js, 1533 satır, 45 fonksiyon)
 
 Faz 1'in 6 P0/P1 maddesi (4 P0 + 2 P1) bitince hemen bu iş başlar. Faz 2 (backend) öncesi şart.
 
