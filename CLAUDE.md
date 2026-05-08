@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**PRODAPP v8.0** — A Turkish-language, mobile-first film/production crew expense management PWA. The entire application is a single self-contained file: `index.html`. There is no build system, no package manager, no bundler, and no server-side code.
+**PRODAPP v8.0** — A Turkish-language, mobile-first film/production crew expense management PWA. Core application lives in `index.html`; a parallel `modules/` tree is being built incrementally (see Modülerleşme Gerçeği below). No build system, no package manager, no bundler, no server-side code.
 
-To run: open `index.html` directly in a browser. No build step required.
+To run: `python -m http.server 8000` (veya VS Code Live Server) gerekli — ES6 module CORS kuralı nedeniyle `file://` ile açmak artık çalışmıyor.
 
 ## Proje Bağlamı
 
@@ -49,11 +49,16 @@ Mevcut tüm demo verisi (`USERS`, `PROJS`, `DONEMLER`, `DATA`, `FIS_DEMO`) ileri
 
 ## Architecture
 
-Everything lives in `index.html` in three sequential sections:
+Uygulama iki katmanlı:
 
+**Aktif katman — `index.html` (~11077 satır):**
 1. **CSS** (`<style>` block, lines ~11–3346) — all styles inline, organized by screen with `/* ══ SECTION ══ */` banner comments.
-2. **HTML** (lines ~3346–3350) — thin shell; most UI is rendered via JS `innerHTML`.
-3. **JavaScript** (`<script>` block, lines ~3350–10641) — organized by feature with `/* ═══ SECTION ═══ */` banners.
+2. **HTML** (lines ~3346–3415) — thin shell; most UI is rendered via JS `innerHTML`.
+3. **JavaScript** (`<script>` block, lines ~3415–11060) — organized by feature with `/* ═══ SECTION ═══ */` banners. **Bu blok tüm çalışan kodu içeriyor.**
+4. **Module entry** (`<script type="module">`, satır ~11062) — sadece import + console.log; şu an pasif.
+
+**Modül katmanı — `modules/` (14 dosya, 6167 satır — şu an dead code):**
+Adım 1–7A kopyalama aşaması tamamlandı. 7B Strategy B uygulanana kadar bu dosyalar çalışmıyor — sadece `state.js` aktif (`window.APP` yazıyor). Detay: docs/7B-SCOPE-DISCOVERY.md.
 
 ### Screen System
 
@@ -114,6 +119,40 @@ All app state lives under the `APP` namespace object:
 - UI is rendered by setting `innerHTML` strings directly — no templating engine.
 - Adding a new screen: add a `<div id="sX" class="scr">` in HTML, add CSS under a new banner section, call `showScr('sX')` to navigate to it.
 - Adding a new feature section in JS: place it after the nearest related section, delimited with `/* ═══ FEATURE NAME ═══ */`.
+
+---
+
+## Modülerleşme Gerçeği (8 Mayıs 2026)
+
+**Şu anki durum:** Modüller dead code. Ana `<script>` bloğu `type="module"` değil, modüllerden import edemiyor. 14 modül dosyası kopyalanmış ama sadece `state.js` aktif (`window.APP = APP` yazıyor). Adım 7A "kopyalama" idi, "aktive etme" değildi.
+
+**7B Strategy B uygulanana kadar:**
+- Tüm gerçek kod index.html'de — hem index.html hem modüller aynı kodu çalıştırmıyor, sadece index.html çalışıyor.
+- Modül dosyalarına kod ekleme/düzenleme yapma — henüz etkisi yok.
+- index.html'deki `<script>` bloğuna normal şekilde yaz.
+
+**7B Strategy B uygulandıktan sonra:**
+- HTML attribute'lara (`onclick`, `onchange`, `oninput`) DOKUNMA — bunlar `window.X` üzerinden çalışmaya devam eder.
+- `_` prefix'li fonksiyonlar HTML'den çağrılıyor — bunlar da window'a expose edilecek, davranış değişmez.
+- Dynamic onclick'ler (`innerHTML` string içinde) Strategy B ile zaten çalışır.
+- `_gecIslemCb` özel: var ataması olan tek onclick (`_gecIslemCb=null`) — window üzerinden erişilebilir yapılmış olacak.
+
+---
+
+## Naming Refactor Kuralları (henüz uygulanmadı)
+
+Naming envanteri 3 raporda: `NAMING-INVENTORY.md`, `CALLMAP-P0.md`, `7B1-CONSTANTS-DISCOVERY.md`.
+
+**Bulk replace YASAK — özellikle şu kökler için:**
+
+| Kök | Neden tehlikeli |
+|---|---|
+| `gec` | 3 anlam: kira overdue (`'gec'`), geçmiş kayıtlar (`gecmis`), geç işlem (`gecIslem`) |
+| `tip` | 4 alan: sohbet type, item type (avans), export type, rapor type — value'lar karışır |
+| `durum` | 5 obje tipinde farklı value setleri (fis/donem/istisna/avans/accSuphe) |
+| `kat` | 12 yapıda eş zamanlı değişmeli (KAT_IC, SD_KAT_CLR, katLimit, dropdown option value'ları...) |
+
+**Sektörel terim kararları alınmadan refactor başlatılmaz** — 6 karar STATUS.md'de bekliyor.
 
 ---
 

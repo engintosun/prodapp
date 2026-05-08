@@ -1,7 +1,7 @@
 # PRODAPP — Mimari Tasarım
 
-**Son güncelleme:** 30 Nisan 2026
-**Durum:** v2
+**Son güncelleme:** 8 Mayıs 2026
+**Durum:** v3
 
 Bu belge PRODAPP'in veri modelini, sorumluluk sınırlarını ve denetim
 motorunu tanımlar. Yeni kod yazarken bu kurallar referans alınır.
@@ -513,3 +513,129 @@ Güncelleme kodla aynı commit'te yapılır.
 ## 9. YARDIM SİSTEMİ NOTU
 
 Yardım sistemi: Faz 1'de sadece onboarding tutorial (3 adım, ilk giriş). Detaylı kullanım kılavuzu Faz 2-3'te ayrı modül olarak planlanacak.
+
+---
+
+## 10. MODÜLERLEŞME STRATEJİSİ
+
+### 10.1. 7A (Kopyalama) vs 7B (Aktive Etme) Ayrımı
+
+Modülerleşme iki ayrı fazda:
+
+**7A — Kopyalama aşaması (tamamlandı, 8 Mayıs 2026):**
+Tüm index.html kodu `modules/` ağacına kopyalandı. 14 dosya, 6167 satır. Hiçbir şey silinmedi, hiçbir şey değiştirilmedi. index.html tek çalışan kaynak olmaya devam ediyor. Kopyalar dead code.
+
+```
+modules/
+  core/
+    constants.js     (123 satır)
+    state.js         (38 satır — tek aktif: window.APP = APP)
+    utils.js         (151 satır)
+    services/
+      storage.service.js  (46 satır)
+      fis.service.js      (362 satır)
+      dept.service.js     (113 satır)
+      report.service.js   (157 satır)
+  dept/dept.js       (1308 satır)
+  muhasebe/muhasebe.js (1533 satır)
+  saha/
+    saha.js          (961 satır)
+    donem.js         (593 satır)
+  shared/
+    export.js        (457 satır)
+    ocr.js           (265 satır)
+    onboarding.js    (60 satır)
+```
+
+**7B — Aktive etme aşaması (sıradaki iş):**
+Ana `<script>` tag'ini `<script type="module">` yap. Modülleri import et. Fonksiyonları `window` üzerine expose et. index.html HTML attribute'ları (`onclick`, `onchange` vb.) değişmez — `window.X` üzerinden çalışmaya devam eder.
+
+### 10.2. Strategy B: Window Exposure Köprüsü (8 Mayıs 2026 kararı)
+
+**Karar tarihi:** 8 Mayıs 2026  
+**Referans:** docs/7B-SCOPE-DISCOVERY.md
+
+**Mevcut durum:**
+```html
+<script>                      ← tüm uygulama kodu, global scope
+  var KAT_IC = {...}
+  function deptOnayla() {...}
+  ...
+</script>
+<script type="module">        ← sadece import + console.log, pasif
+  import * as CONST from './modules/core/constants.js';
+  ...
+</script>
+```
+
+**Hedef durum (Strategy B sonrası):**
+```html
+<script type="module">        ← tek script bloğu
+  import { deptOnayla, accOnayla, ... } from './modules/...';
+  import { exportManager } from './modules/shared/export.js';
+  // 126 expose satırı:
+  window.deptOnayla = deptOnayla;
+  window.accOnayla  = accOnayla;
+  // ...
+</script>
+```
+
+**Neden Strategy B, Strategy A değil:**
+- Strategy A (tüm onclick → addEventListener): 134 dynamic onclick (innerHTML string'leri) için event delegation altyapısı, 2–3 oturum ek iş.
+- Strategy B: 126 mekanik expose satırı, tek tag değişikliği, tek oturum. HTML attribute'lar dokunulmaz.
+
+**Expose sayımı:**
+| Tip | Adet |
+|---|---|
+| Public fonksiyon | 99 |
+| Private fonksiyon (HTML'den çağrılan) | 25 |
+| `exportManager` objesi | 1 |
+| `_gecIslemCb` var (setter) | 1 |
+| **Toplam** | **126** |
+
+**Özel durum:** `onclick="closeM('md-gec-islem');_gecIslemCb=null;"` — var ataması içeriyor. `window._gecIslemCb` erişilebilir yapılacak.
+
+Strategy A'ya kademeli geçiş engelli değil — 7B sonrası isteğe bağlı cleanup olarak planlanabilir.
+
+### 10.3. Naming Convention
+
+| Kapsam | Stil |
+|---|---|
+| JS değişken / fonksiyon | camelCase |
+| Supabase tablo / kolon | snake_case |
+| ID field'ları | camelCase (`fisId`, `donemId`) |
+| Yeni dosya adları | kebab-case |
+| Mevcut dosya adları | değiştirilmez |
+
+**Türkçe → İngilizce geçişi:** Supabase entegrasyonu ÖNCESİ, tek geçişte yapılacak. `toDb()` / `fromDb()` dönüştürücüler service.js katmanında yer alacak — UI kodu veri adlarından bağımsız kalır.
+
+**Mapping katmanı örneği:**
+```javascript
+function toDb(fis) {
+  return { receipt_date: fis.tarih, vendor: fis.satici, amount: fis.tutar, ... };
+}
+function fromDb(row) {
+  return { tarih: row.receipt_date, satici: row.vendor, tutar: row.amount, ... };
+}
+```
+
+### 10.4. constants.js Durumu (8 Mayıs 2026)
+
+17 export var, 4 kategori. Referans: `7B1-CONSTANTS-DISCOVERY.md`.
+
+**Kategori A — Aktif duplikat (5 adet, iki kaynaktan okunuyor):**
+`KAT_IC`, `SD_KAT_CLR`, `SD_KAT_LBL`, `DOT`, `DYN_PANEL_IDS`
+→ 7B sonrası index.html `var` tanımları silinecek, modüller import'tan okumaya devam edecek.
+
+**Kategori B — İsim farkıyla duplikat (2 adet, içerik aynı):**
+`ONB_SVG` ↔ `_ONB_SVG`, `ONB_DATA` ↔ `_ONB_DATA`
+→ 7B sırasında underscore prefix'li index.html versiyonları silinecek.
+
+**Kategori C — Yakın ama farklı (3 adet, dikkat gerektiren):**
+- `DEPT_MAP` ↔ `_B_DEPT_MAP` + `_DEPT_LBL_MAP` + `muhasebe.js:deptNm` — üçlü birleşme, `yapim` İngilizce kararı verildikten sonra
+- `DEPT_KEYS` ↔ `_B_DEPT_KEYS` — içerik aynı, naming refactor'da birleştirilecek
+- `KAT_LIMIT_DEFAULT` ↔ `APP.seed.katLimit` — statik default vs runtime mutable, bağlantısı kopuk, Supabase aşamasında çözülecek
+
+**Kategori D — Etkinleştirilmemiş (7 adet, import yok):**
+`FIS_DURUM`, `ROL`, `KATEGORILER`, `UL_SEHIRICI_RATE`, `UL_SEHIRDISI_RATE`, `PASIF_ONAY_GUN`, `PASIF_ONAY_MS`
+→ Naming refactor aşamasında etkinleştirilecek. `FIS_DURUM` ve `ROL` key'leri zaten İngilizce, value'lar Türkçe — naming refactor'ın canonical başlangıç noktası bunlar.
