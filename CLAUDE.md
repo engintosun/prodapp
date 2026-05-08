@@ -41,6 +41,8 @@ Tüm renkler `:root` CSS değişkeni olarak tanımlıdır. **Asla doğrudan hex 
 - `let`, `const`, arrow function (`=>`), class, template literal kullanılmayacak.
 - Dış kütüphane veya framework eklenmeyecek.
 
+**Modül istisnası (7B Strategy B sonrası):** `modules/*.js` dosyalarında `import`/`export` ifadeleri ve modül entry point'inde (`<script type="module">` bloğu) `window.X = X` expose satırları ES6 sözdizimi gerektirir — bu satırlar istisnadır. Fonksiyon gövdeleri ve `var` bildirimleri yine ES5 kalır.
+
 ### Gelecek Hedef: Supabase Entegrasyonu
 
 Mevcut tüm demo verisi (`USERS`, `PROJS`, `DONEMLER`, `DATA`, `FIS_DEMO`) ileride Supabase ile değiştirilecek. Yeni özellikler eklerken bu geçişi kolaylaştıracak şekilde veri erişimini fonksiyon içine izole et — veri objesine script genelinde doğrudan erişmek yerine bir okuma fonksiyonu üzerinden geç.
@@ -115,7 +117,7 @@ All app state lives under the `APP` namespace object:
 
 ## Editing Guidelines
 
-- The JS block uses `var` and `function` declarations (ES5 style) — maintain this style; do not introduce `let`/`const`/arrow functions/classes unless refactoring the whole file.
+- The JS block uses `var` and `function` declarations (ES5 style) — maintain this style; do not introduce `let`/`const`/arrow functions/classes unless refactoring the whole file. **Exception:** module entry-level statements in `modules/*.js` (`import`/`export`/`window.X = X`) require ES6 syntax and are exempt from this rule.
 - UI is rendered by setting `innerHTML` strings directly — no templating engine.
 - Adding a new screen: add a `<div id="sX" class="scr">` in HTML, add CSS under a new banner section, call `showScr('sX')` to navigate to it.
 - Adding a new feature section in JS: place it after the nearest related section, delimited with `/* ═══ FEATURE NAME ═══ */`.

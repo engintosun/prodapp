@@ -259,6 +259,8 @@ config objesine dönüşecek, fonksiyonlar buradan okuyacak.
 
 ERPNext/Frappe Workflow modülünden alınan fikir.
 
+**Sıra notu:** Workflow config'inin yazımı naming refactor SONRASINA bırakılacak. Şu anki state isimleri (`'dept-bekleyen'`, `'acc-bekleyen'` vb.) Türkçe — naming refactor bunları İngilizce canonical'lara çevirecek (`'dept-pending'`, `'acc-pending'` veya benzeri). Workflow config'i naming refactor öncesi yazılırsa iki kez güncellemek gerekir. Sıra: 7B Strategy B → naming refactor → workflow config (Faz 1.5).
+
 ### 3.5. Dönem yazım hakkı
 
 Dönem yönetimi sadece muhasebe rolüne aittir.
