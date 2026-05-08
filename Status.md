@@ -1,10 +1,10 @@
 # PRODAPP — Durum Raporu
 
-**Son güncelleme:** 1 Mayıs 2026
+**Son güncelleme:** 8 Mayıs 2026
 **Aktif sürüm:** v8.x (canlı)
 **Repo:** https://github.com/engintosun/prodapp
 **Deploy:** https://engintosun.github.io/prodapp/
-**Son commit:** 4ae15c9 — docs: reddedilmiş fiş duplikat tespiti notu (Faz 2)
+**Son commit:** 484550e — docs(7B-discovery): scope analysis - onclick mapping and global exposure
 
 ---
 
@@ -129,7 +129,23 @@
 - [x] **Adım 4** — shared logic (ocr.js, export.js, onboarding.js) — modules/shared/ altında
 - [x] **Adım 5** — saha modülü (saha.js + donem.js) — modules/saha/ altında
 - [x] **Adım 6** — dept modülü (dept.js) — modules/dept/ altında
-- [x] **Adım 7A** — muhasebe modülü kopyalandı (modules/muhasebe/muhasebe.js, 1533 satır, 45 fonksiyon)
+- [x] **Adım 7A** — muhasebe modülü kopyalandı (modules/muhasebe/muhasebe.js, 1533 satır, 45 fonksiyon) — 8 Mayıs 2026
+- [x] **Naming envanteri** — 3 rapor dosyası çıkarıldı — 8 Mayıs 2026
+  - `NAMING-INVENTORY.md` — 340+ Türkçe tanımlayıcı (fonksiyon, enum, APP key, field, ID, CSS class)
+  - `CALLMAP-P0.md` — 24 P0/★ fonksiyon için çağrı haritası (satır bazında)
+  - `7B1-CONSTANTS-DISCOVERY.md` — 17 constants.js export analizi (aktif duplikat / yalnız / yakın-farklı)
+- [x] **7B Kapsam Keşfi** (docs/7B-SCOPE-DISCOVERY.md) — 8 Mayıs 2026
+  - 218 event attribute (197 onclick + 12 oninput + 8 onchange + 1 onkeydown)
+  - 99 public + 25 private fonksiyon HTML attribute'tan çağrılıyor
+  - 134 dynamic onclick (JS string içinde) — event delegation gerektiriyor
+  - 6167 satır modül kodu yazılı ama dead code (sadece state.js aktif)
+  - Script tag `<script>` (module değil) — import edilemiyor
+- 🎯 **Adım 7B** — Strategy B: window exposure köprüsü (sıradaki iş)
+
+**Sıradaki adımlar:**
+1. 7B — Strategy B uygula: `<script>` → `<script type="module">`, 126 expose satırı
+2. Naming + İngilizceleştirme refactor (Türkçe → İngilizce, sektörel terim kararları alındıktan sonra)
+3. Supabase mimari + entegrasyon (Faz 2)
 
 Faz 1'in 6 P0/P1 maddesi (4 P0 + 2 P1) bitince hemen bu iş başlar. Faz 2 (backend) öncesi şart.
 
@@ -201,6 +217,36 @@ Faz 1'in 6 P0/P1 maddesi (4 P0 + 2 P1) bitince hemen bu iş başlar. Faz 2 (back
 
 ## 📝 KARAR NOTLARI
 
+### 7B Strategy B kararı (8 Mayıs 2026)
+
+Modülerleşme aktivasyonu için iki strateji değerlendirildi:
+
+- **Strategy A** (tüm onclick → addEventListener): 134 dynamic onclick için event delegation altyapısı gerekiyor, 2–3 oturum ek iş. Seçilmedi.
+- **Strategy B** (window exposure köprüsü): `<script type="module">` geçişi + 126 `window.X = X` satırı + `_gecIslemCb` için 1 setter. HTML attribute'lar olduğu gibi kalıyor, modüller canonical kaynak oluyor. **Seçildi.**
+
+Strategy A'ya kademeli geçiş engelli değil — 7B sonrası isteğe bağlı cleanup.
+
+### Naming refactor — sektörel terim kararları bekliyor
+
+Aşağıdaki 6 karar alınmadan naming refactor başlatılmayacak:
+
+| # | Terim | Seçenek A | Seçenek B | Karar |
+|---|---|---|---|---|
+| 1 | `'user'` role key | `'field'` | `'crew'` | ❓ |
+| 2 | `'yapim'` dept key | `'production'` | `'prod'` | ❓ |
+| 3 | `'Yiyecek'` kategori | `'food'` | `'catering'` | ❓ |
+| 4 | `simGIB` fonksiyonu | `'simulateTaxVerification'` | `'simGIB'` (bırak) | ❓ |
+| 5 | `'Konaklama'` kategori | `'accommodation'` | `'lodging'` | ❓ |
+| 6 | `'Diger'` kategori | `'other'` | `'misc'` | ❓ |
+
+### Erteleme kararları (7B.1 keşfinden, 8 Mayıs 2026)
+
+- **DEPT_MAP üçlü birleşme** (`_B_DEPT_MAP` + `_DEPT_LBL_MAP` + `muhasebe.js:deptNm`): naming refactor sırasında, `'yapim'` İngilizce kararı verildikten sonra
+- **`KAT_LIMIT_DEFAULT` ↔ `APP.seed.katLimit` bağlantısı**: localStorage migration ile birlikte, Supabase aşamasında
+- **`FIS_DURUM`, `ROL`, `KATEGORILER` enum etkinleştirme**: naming refactor'ın asli işi; şu an constants.js'te tanımlı ama hiçbir yerde kullanılmıyor
+
+---
+
 - **Muhasebe rolü fiş girmez** — sadece onaylar
 - **Her kullanıcı kendi adına fiş girer**
 - **GİB:** Phase 1 MVP QR kod public sorgu, Phase 2 integrator
@@ -219,9 +265,10 @@ Faz 1'in 6 P0/P1 maddesi (4 P0 + 2 P1) bitince hemen bu iş başlar. Faz 2 (back
 
 ## 🔧 TEKNİK NOTLAR
 
-- Tek HTML ~10641 satır, Faz 1 sonrası modülerleşme şart
+- Tek HTML ~11077 satır, modülerleşme devam ediyor
 - Source of truth: `APP.data.fisler` + `deptBekleyen` + `accBekleyen` + `accGecmis` (arşiv)
 - localStorage kalıcılığı var — seed değişince `localStorage.clear()` gerek
+- **Modüller şu an dead code** — 14 modül dosyası (6167 satır) yazılı ama `<script>` bloğu module değil; sadece `state.js` aktif (`window.APP` yazıyor). 7B Strategy B uygulanana kadar tüm gerçek kod hâlâ index.html'de.
 - Modülerleşmeden önce: "sadece şu fonksiyonları oku" prompt disiplini
 - PDF export Türkçe karakter sorunu: jsPDF built-in font Türkçe desteklemiyor,
   şu an _tr() ile ASCII transliterasyon uygulanıyor (ş→s, ı→i vb.).
@@ -240,8 +287,12 @@ Proje dokümanları (hepsi /prodapp kök dizininde):
 - **WORKFLOWS.md** — mali iş akışları: 9 akış + kritik bulgular
 - **AUDIT-RULES.md** — Faz 2'ye ertelendi (accSuphe otomatik motoru backend ile birlikte tasarlanacak)
 - **CLAUDE.md** — Sonnet çalışma kuralları
-- **ARCHITECTURE.md** — veri modeli (8 bölüm), sorumluluk sınırları, denetim motoru, dönem disiplini, güvenlik modeli, POY ekosistem, maker-checker
+- **ARCHITECTURE.md** — veri modeli, modülerleşme stratejisi, naming convention, constants.js durumu
 - **DEPLOYMENT.md** — (pilot öncesi) deploy, rollback, migration
+- **NAMING-INVENTORY.md** — 340+ Türkçe tanımlayıcı envanteri (fonksiyon, enum, APP key, field, ID, CSS)
+- **CALLMAP-P0.md** — P0/★ fonksiyon çağrı haritası (24 fonksiyon, satır bazında)
+- **7B1-CONSTANTS-DISCOVERY.md** — constants.js 17 export analizi
+- **docs/7B-SCOPE-DISCOVERY.md** — modülerleşme aktivasyon kapsam keşfi
 
 Yeni oturum başında Claude STATUS.md + SCHEMA.md'yi okuyarak bağlam kurar.
 
