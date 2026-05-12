@@ -18,6 +18,8 @@ import { _pad, _mkLog, _fmtLogZaman } from '../core/utils.js';
 import { saveAppData }           from '../core/services/storage.service.js';
 import { KAT_IC, DOT, SD_KAT_LBL, DYN_PANEL_IDS } from '../core/constants.js';
 
+var FIS_DEMO = window.FIS_DEMO;
+
 /* ═══ SAHA NAV ═══ */
 
 export function suNav(id, el) {

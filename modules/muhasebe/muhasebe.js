@@ -33,6 +33,8 @@ var saRaporSecilenDonemler = [2, 1, 0];
    showExportModal, SA_DONEM_DEPTS, _avRedPending,
    renderSohbetListesi, openYeniSohbetModal              ────── */
 
+var SA_DONEM_DEPTS = window.SA_DONEM_DEPTS;
+
 /* ═══ KİRA ═══════════════════════════════════════════════════ */
 
 export function renderAccKira() {
@@ -1496,7 +1498,7 @@ export function renderAccMesaj() {
       '<button class="btn btn-sm" onclick="openYeniSohbetModal()" style="padding:4px 10px;font-size:12px">+ Yeni</button>' +
     '</div>' +
     '<div id="sa-sohbet-liste"></div>';
-  renderSohbetListesi(document.getElementById('sa-sohbet-liste'), 'm');
+  window.renderSohbetListesi(document.getElementById('sa-sohbet-liste'), 'm');
 }
 
 /* ═══ WINDOW EXPORTS (inline onclick uyumluluğu) ═════════════ */

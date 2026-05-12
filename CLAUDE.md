@@ -124,20 +124,25 @@ All app state lives under the `APP` namespace object:
 
 ---
 
-## Modülerleşme Gerçeği (8 Mayıs 2026)
+## Modülerleşme Durumu (12 Mayıs 2026)
 
-**Şu anki durum:** Modüller dead code. Ana `<script>` bloğu `type="module"` değil, modüllerden import edemiyor. 14 modül dosyası kopyalanmış ama sadece `state.js` aktif (`window.APP = APP` yazıyor). Adım 7A "kopyalama" idi, "aktive etme" değildi.
+**Şu anki durum:** 7B Strategy B tamamlandı. Modüller aktif kaynak. index.html ~5600 satır (CSS + HTML + expose bloğu + marka/sohbet kodu). 14 modül dosyası çalışıyor.
 
-**7B Strategy B uygulanana kadar:**
-- Tüm gerçek kod index.html'de — hem index.html hem modüller aynı kodu çalıştırmıyor, sadece index.html çalışıyor.
-- Modül dosyalarına kod ekleme/düzenleme yapma — henüz etkisi yok.
-- index.html'deki `<script>` bloğuna normal şekilde yaz.
+**Çalışan mimari:**
+- `<script type="module">` bloğu: import satırları + ~187 `window.X = X` expose satırı
+- Modüller (`modules/`) canonical kaynak — yeni kod buraya yazılır
+- index.html'de kalan kod: CSS (~3346 satır), HTML shell (~70 satır), expose bloğu (~200 satır), marka ayarları (~112 satır), sohbet sistemi (~489 satır)
+- HTML attribute'lar (`onclick`, `onchange`) `window.X` üzerinden çalışıyor — dokunma
 
-**7B Strategy B uygulandıktan sonra:**
-- HTML attribute'lara (`onclick`, `onchange`, `oninput`) DOKUNMA — bunlar `window.X` üzerinden çalışmaya devam eder.
-- `_` prefix'li fonksiyonlar HTML'den çağrılıyor — bunlar da window'a expose edilecek, davranış değişmez.
-- Dynamic onclick'ler (`innerHTML` string içinde) Strategy B ile zaten çalışır.
-- `_gecIslemCb` özel: var ataması olan tek onclick (`_gecIslemCb=null`) — window üzerinden erişilebilir yapılmış olacak.
+**Modüle taşınmamış 2 feature (7B.1 işi):**
+- Marka ayarları: 6 fonksiyon + 2 var (~112 satır) — self-contained, saha ekranından erişim
+- Sohbet sistemi: 17 fonksiyon + 3 var (~489 satır) — cross-role, muhasebe.js bare name bağımlılığı var
+
+**Modül dosyasına kod yazarken:**
+- `var` ve `function` stili korunur (ES5 gövde), sadece `import`/`export`/`window.X = X` ES6
+- Yeni fonksiyon eklenirse: expose bloğuna `window.newFunc = newFunc;` satırı da ekle
+- HTML attribute eklenirse: `window.` üzerinden erişim sağla
+- Modülden index.html global'ine erişim gerekirse: dosya başına `var X = window.X;` alias ekle
 
 ---
 

@@ -140,11 +140,16 @@
   - 134 dynamic onclick (JS string içinde) — event delegation gerektiriyor
   - 6167 satır modül kodu yazılı ama dead code (sadece state.js aktif)
   - Script tag `<script>` (module değil) — import edilemiyor
-- 🎯 **Adım 7B** — Strategy B: window exposure köprüsü (sıradaki iş)
+- [x] **Adım 7B** — Strategy B: window exposure köprüsü — 8 Mayıs 2026
+  - `<script>` → `<script type="module">` dönüşümü
+  - 14 modül import, ~187 fonksiyon/var window'a expose
+  - Modüllere taşınmış kod index.html'den silindi (~5470 satır azaldı)
+  - Bare name fix: SA_DONEM_DEPTS, FIS_DEMO (alias), _avRedPending (window. prefix)
+  - Marka + sohbet kodu index.html'de kaldı (modüle taşınmamış)
 
 **Sıradaki adımlar:**
-1. 7B — Strategy B uygula: `<script>` → `<script type="module">`, 126 expose satırı
-2. Naming + İngilizceleştirme refactor (Türkçe → İngilizce, sektörel terim kararları alındıktan sonra)
+1. 7B.1 — Marka ayarları + sohbet sistemi modüle taşıma (~600 satır, index.html'den modules/'a)
+2. Naming + İngilizceleştirme refactor (Türkçe → İngilizce, 6 sektörel terim kararı bekliyor)
 3. Supabase mimari + entegrasyon (Faz 2)
 
 Faz 1'in 6 P0/P1 maddesi (4 P0 + 2 P1) bitince hemen bu iş başlar. Faz 2 (backend) öncesi şart.
@@ -265,10 +270,10 @@ Aşağıdaki 6 karar alınmadan naming refactor başlatılmayacak:
 
 ## 🔧 TEKNİK NOTLAR
 
-- Tek HTML ~11077 satır, modülerleşme devam ediyor
+- Tek HTML ~5600 satır (7B sonrası), modülerleşme devam ediyor
 - Source of truth: `APP.data.fisler` + `deptBekleyen` + `accBekleyen` + `accGecmis` (arşiv)
 - localStorage kalıcılığı var — seed değişince `localStorage.clear()` gerek
-- **Modüller şu an dead code** — 14 modül dosyası (6167 satır) yazılı ama `<script>` bloğu module değil; sadece `state.js` aktif (`window.APP` yazıyor). 7B Strategy B uygulanana kadar tüm gerçek kod hâlâ index.html'de.
+- **7B tamamlandı (8 Mayıs 2026):** index.html ~11077 → ~5600 satır. 14 modül aktif. Marka (~112 satır) ve sohbet (~489 satır) henüz modüle taşınmadı — index.html'de kaldı, window'a expose edildi.
 - Modülerleşmeden önce: "sadece şu fonksiyonları oku" prompt disiplini
 - PDF export Türkçe karakter sorunu: jsPDF built-in font Türkçe desteklemiyor,
   şu an _tr() ile ASCII transliterasyon uygulanıyor (ş→s, ı→i vb.).
@@ -293,6 +298,8 @@ Proje dokümanları (hepsi /prodapp kök dizininde):
 - **CALLMAP-P0.md** — P0/★ fonksiyon çağrı haritası (24 fonksiyon, satır bazında)
 - **7B1-CONSTANTS-DISCOVERY.md** — constants.js 17 export analizi
 - **docs/7B-SCOPE-DISCOVERY.md** — modülerleşme aktivasyon kapsam keşfi
+- **7B-VARS-DIAGNOSIS.md** — 35 top-level var modül karşılaştırması
+- **7B-FEATURES-DIAGNOSIS.md** — Marka + sohbet modülerleşme tanısı
 
 Yeni oturum başında Claude STATUS.md + SCHEMA.md'yi okuyarak bağlam kurar.
 

@@ -549,10 +549,10 @@ modules/
     onboarding.js    (60 satır)
 ```
 
-**7B — Aktive etme aşaması (sıradaki iş):**
-Ana `<script>` tag'ini `<script type="module">` yap. Modülleri import et. Fonksiyonları `window` üzerine expose et. index.html HTML attribute'ları (`onclick`, `onchange` vb.) değişmez — `window.X` üzerinden çalışmaya devam eder.
+**7B — Aktive etme aşaması (tamamlandı, 8 Mayıs 2026):**
+Ana `<script>` tag'i `<script type="module">` yapıldı. 14 modül import edildi. ~187 fonksiyon/var `window` üzerine expose edildi. Modüllere taşınmış kod index.html'den silindi (~5470 satır). Marka ayarları ve sohbet sistemi henüz modüle taşınmadı — index.html'de kaldı (7B.1 işi).
 
-### 10.2. Strategy B: Window Exposure Köprüsü (8 Mayıs 2026 kararı)
+### 10.2. Strategy B: Window Exposure Köprüsü (8 Mayıs 2026 — tamamlandı)
 
 **Karar tarihi:** 8 Mayıs 2026  
 **Referans:** docs/7B-SCOPE-DISCOVERY.md

@@ -251,7 +251,7 @@ export function accReddet(id, _gecSebep) {
   var _rDon = (item.donem !== undefined) ? item.donem : APP.ui.aktifDon;
 
   if (item.tip === 'avans') {
-    _avRedPending = { id: id, kaynak: 'acc', _item: item };
+    window._avRedPending = { id: id, kaynak: 'acc', _item: item };
     var infoEl = document.getElementById('md-av-red-info');
     if (infoEl) infoEl.textContent = item.uye + ' · ₺' + item.tutar.toLocaleString('tr-TR') + ' · Talep: ' + (item.gerekce || '—');
     var ta = document.getElementById('av-red-nedeni');

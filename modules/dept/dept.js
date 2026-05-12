@@ -17,7 +17,7 @@
 //   showExportModal,                       (export.js'ten)
 //   renderAccBek, renderAccAvans,          (muhasebe bölümünden)
 //   renderDeptMesaj,                       (sohbet bölümünden)
-//   _avRedPending                          (global var)
+//   window._avRedPending                          (global var)
 
 import { APP }                              from '../core/state.js';
 import { _mkLog, _todayISO, _gunFarki,
@@ -56,13 +56,13 @@ export function _avGecmisEkle(kayit) {
 /* ═══ AVANS RED MODALI ═══ */
 
 export function avansRedOnay() {
-  if (!_avRedPending) return;
+  if (!window._avRedPending) return;
   var ta = document.getElementById('av-red-nedeni');
   var redNedeni = ta ? (ta.value || '').trim() : '';
   if (!redNedeni) { notif('Red nedeni zorunludur', 'red'); return; }
 
-  if (_avRedPending.kaynak === 'dept') {
-    var id = _avRedPending.id;
+  if (window._avRedPending.kaynak === 'dept') {
+    var id = window._avRedPending.id;
     for (var i = 0; i < APP.data.deptAvans.length; i++) {
       if (APP.data.deptAvans[i].id === id) {
         var a = APP.data.deptAvans[i];
@@ -82,8 +82,8 @@ export function avansRedOnay() {
         break;
       }
     }
-  } else if (_avRedPending.kaynak === 'acc') {
-    var item = _avRedPending._item;
+  } else if (window._avRedPending.kaynak === 'acc') {
+    var item = window._avRedPending._item;
     APP.data.accBekleyen = APP.data.accBekleyen.filter(function(f) { return f.id !== item.id; });
     renderAccBek();
     _avGecmisEkle({
@@ -107,12 +107,12 @@ export function avansRedOnay() {
   }
 
   saveAppData();
-  _avRedPending = null;
+  window._avRedPending = null;
   closeM('md-av-red');
 }
 
 export function avansRedIptal() {
-  _avRedPending = null;
+  window._avRedPending = null;
   closeM('md-av-red');
 }
 
@@ -1235,7 +1235,7 @@ export function deptAvansReddet(id) {
   for (var i = 0; i < APP.data.deptAvans.length; i++) {
     if (APP.data.deptAvans[i].id !== id) continue;
     var a = APP.data.deptAvans[i];
-    _avRedPending = { id: id, kaynak: 'dept' };
+    window._avRedPending = { id: id, kaynak: 'dept' };
     var infoEl = document.getElementById('md-av-red-info');
     if (infoEl) infoEl.textContent = a.uye + ' · ₺' + a.tutar.toLocaleString('tr-TR') + ' · Talep: ' + a.gerekce;
     var ta = document.getElementById('av-red-nedeni');

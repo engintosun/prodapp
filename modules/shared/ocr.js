@@ -10,6 +10,8 @@ import { APP }        from '../core/state.js';
 import { _pad, _mkLog } from '../core/utils.js';
 import { saveAppData }  from '../core/services/storage.service.js';
 
+var FIS_DEMO = window.FIS_DEMO;
+
 /* ═══ OCR UZUN BAS ═══ */
 
 (function() {
