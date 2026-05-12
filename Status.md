@@ -148,7 +148,9 @@
   - Marka + sohbet kodu index.html'de kaldı (modüle taşınmamış)
 
 **Sıradaki adımlar:**
-1. 7B.1 — Marka ayarları + sohbet sistemi modüle taşıma (~600 satır, index.html'den modules/'a)
+1. 7B.1 — Marka ayarları + sohbet sistemi modüle taşıma
+   - [x] 7B.1a — Marka ayarları → modules/shared/marka.js (~112 satır) ✅
+   - [ ] 7B.1b — Sohbet sistemi → modules/shared/sohbet.js (~489 satır)
 2. Naming + İngilizceleştirme refactor (Türkçe → İngilizce, 6 sektörel terim kararı bekliyor)
 3. Supabase mimari + entegrasyon (Faz 2)
 
