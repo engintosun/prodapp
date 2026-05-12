@@ -4,7 +4,7 @@
 **Aktif sürüm:** v8.x (canlı)
 **Repo:** https://github.com/engintosun/prodapp
 **Deploy:** https://engintosun.github.io/prodapp/
-**Son commit:** 484550e — docs(7B-discovery): scope analysis - onclick mapping and global exposure
+**Son commit:** 91111e9 — fix+docs: 7B bare name alias fix, doküman güncellemesi
 
 ---
 
