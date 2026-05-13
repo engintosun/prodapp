@@ -2614,13 +2614,13 @@ body {
   <!-- Scrollable tab bar -->
   <div class="sa-tabs-wrap">
     <div class="sa-tabs">
-      <button class="sa-tb on" id="satb-dash"  onclick="saTab('dash',  this)">Dashboard</button>
-      <button class="sa-tb"    id="satb-bek"   onclick="saTab('bek',   this)">Bekleyen <span class="sa-tb-bj" id="satb-bek-cnt">0</span></button>
-      <button class="sa-tb"    id="satb-suphe" onclick="saTab('suphe', this)">Şüpheli <span class="sa-tb-bj" id="satb-suphe-cnt" style="background:var(--rd)">0</span></button>
-      <button class="sa-tb"    id="satb-rapor" onclick="saTab('rapor', this)">Raporlar</button>
-      <button class="sa-tb"    id="satb-kira"  onclick="saTab('kira',  this)">Kiralama <span class="sa-tb-bj" id="satb-kira-cnt" style="background:var(--bl)">0</span></button>
-      <button class="sa-tb"    id="satb-avans" onclick="saTab('avans', this)">Avanslar</button>
-      <button class="sa-tb"    id="satb-mesaj" onclick="saTab('mesaj', this)">Mesaj</button>
+      <button class="sa-tb on" id="satb-dash"  onclick="accTab('dash',  this)">Dashboard</button>
+      <button class="sa-tb"    id="satb-bek"   onclick="accTab('bek',   this)">Bekleyen <span class="sa-tb-bj" id="satb-bek-cnt">0</span></button>
+      <button class="sa-tb"    id="satb-suphe" onclick="accTab('suphe', this)">Şüpheli <span class="sa-tb-bj" id="satb-suphe-cnt" style="background:var(--rd)">0</span></button>
+      <button class="sa-tb"    id="satb-rapor" onclick="accTab('rapor', this)">Raporlar</button>
+      <button class="sa-tb"    id="satb-kira"  onclick="accTab('kira',  this)">Kiralama <span class="sa-tb-bj" id="satb-kira-cnt" style="background:var(--bl)">0</span></button>
+      <button class="sa-tb"    id="satb-avans" onclick="accTab('avans', this)">Avanslar</button>
+      <button class="sa-tb"    id="satb-mesaj" onclick="accTab('mesaj', this)">Mesaj</button>
     </div>
   </div>
   <!-- Panel body -->
@@ -2927,7 +2927,7 @@ body {
       <div id="mbutce-body"></div>
       <div style="display:flex;gap:8px;margin-top:16px">
         <button class="btn" onclick="closeM('mbutce')" style="flex:1;justify-content:center">İptal</button>
-        <button class="btn btn-p" onclick="accButceKaydet()" style="flex:2;justify-content:center">✓ Kaydet</button>
+        <button class="btn btn-p" onclick="accBudgetSave()" style="flex:2;justify-content:center">✓ Kaydet</button>
       </div>
     </div>
   </div>
@@ -3167,9 +3167,9 @@ body {
     </div>
     <div class="uye-stats" id="acuye-stats"></div>
     <div class="adept-tabs">
-      <button class="adept-tb on" id="acuyetb-bek"   onclick="accUyeTab('bek',this)">Harcamalar</button>
-      <button class="adept-tb"    id="acuyetb-don"   onclick="accUyeTab('don',this)">Dönemler</button>
-      <button class="adept-tb"    id="acuyetb-avans" onclick="accUyeTab('avans',this)">Avanslar</button>
+      <button class="adept-tb on" id="acuyetb-bek"   onclick="accMemberTab('bek',this)">Harcamalar</button>
+      <button class="adept-tb"    id="acuyetb-don"   onclick="accMemberTab('don',this)">Dönemler</button>
+      <button class="adept-tb"    id="acuyetb-avans" onclick="accMemberTab('avans',this)">Avanslar</button>
     </div>
     <div id="acuye-pnl-bek"></div>
     <div id="acuye-pnl-don"   style="display:none"></div>

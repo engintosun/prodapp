@@ -11,19 +11,19 @@ import { _todayISO, _dayDiff, _deptTarih,
 import { saveAppData }                         from '../core/services/storage.service.js';
 import { accOnayla, accReddet, accKismi }      from '../core/services/fis.service.js';
 import { _recomputeAccDepts,
-         _computeRaporDeptFis,
+         _computeDeptReceiptReport,
          _computeRaporPersonel }              from '../core/services/report.service.js';
-import { _avGecmisEkle,
-         _curDeptName, _avSortDesc }           from '../dept/dept.js';
+import { _advanceHistoryAdd,
+         _curDeptName, _advanceSortDesc }       from '../dept/dept.js';
 
 /* ── Modül değişkenleri ──────────────────────────────────────── */
 var _accDeptId            = '';
-var _accUyeName           = '';
-var _accUyeDept           = '';
-var saRaporDeptId         = '';
-var saRaporKisiIdx        = -1;
-var saRaporKisiFrom       = '';
-var saRaporSecilenDonemler = [2, 1, 0];
+var _accMemberName           = '';
+var _accMemberDept           = '';
+var accReportDeptId         = '';
+var accReportPersonIdx        = -1;
+var accReportPersonFrom       = '';
+var accReportSelectedPeriods = [2, 1, 0];
 
 /* ── Global bağımlılıklar (index.html global scope'tan erişilir)
    notif, openM, closeM, _pushNotif, updateNotifBadge,
@@ -36,7 +36,7 @@ var saRaporSecilenDonemler = [2, 1, 0];
 
 /* ═══ KİRA ═══════════════════════════════════════════════════ */
 
-export function renderAccKira() {
+export function renderAccRental() {
   var el = document.getElementById('sa-pnl-kira');
   if (!el) return;
   var today = _todayISO();
@@ -113,7 +113,7 @@ export function renderAccKira() {
           '<div style="font-size:11px;color:var(--tx2);margin-top:4px">' + gecGun + ' gün × ₺' + k.gunluk.toLocaleString('tr-TR') + ' = <strong style="color:var(--rd2)">₺' + topCeza.toLocaleString('tr-TR') + '</strong></div>' +
           '<div style="font-size:10px;color:var(--tx3);margin-top:2px">İade tarihine kadar her gün ₺' + k.gunluk.toLocaleString('tr-TR') + ' eklenir</div>' +
         '</div>' +
-        '<button class="btn btn-g btn-sm" style="margin-top:8px" onclick="accKiraIade(' + k.id + ')">✓ İade Alındı</button>' +
+        '<button class="btn btn-g btn-sm" style="margin-top:8px" onclick="accRentalReturn(' + k.id + ')">✓ İade Alındı</button>' +
       '</div>';
     }).join('');
   }
@@ -149,7 +149,7 @@ export function renderAccKira() {
         ? '<div style="font-size:11px;color:var(--rd2);font-weight:600;margin-top:5px">Gecikme cezası: ₺' + c.ceza.toLocaleString('tr-TR') + ' (' + c.gecGun + ' gün × ₺' + k.gunluk.toLocaleString('tr-TR') + ')</div>'
         : '';
       var iadeBtn = dur !== 'iade'
-        ? '<button class="btn btn-g btn-sm" style="margin-top:8px" onclick="accKiraIade(' + k.id + ')">✓ İade Alındı</button>'
+        ? '<button class="btn btn-g btn-sm" style="margin-top:8px" onclick="accRentalReturn(' + k.id + ')">✓ İade Alındı</button>'
         : '<span style="font-size:11px;color:var(--tx3);display:block;margin-top:6px">✓ İade edildi</span>';
       return '<div class="sa-kira-card' + (dur === 'gec' ? ' gec' : dur === 'yak' ? ' yak' : '') + '">' +
         '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">' +
@@ -175,7 +175,7 @@ export function renderAccKira() {
   el.innerHTML = html;
 }
 
-export function accKiraIade(id) {
+export function accRentalReturn(id) {
   for (var i = 0; i < APP.data.accKiralamalar.length; i++) {
     if (APP.data.accKiralamalar[i].id === id) {
       var _ki = APP.data.accKiralamalar[i];
@@ -192,24 +192,24 @@ export function accKiraIade(id) {
       _kj.iade = true; break;
     }
   }
-  renderAccKira();
+  renderAccRental();
   notif('İade alındı olarak işaretlendi', 'green');
   saveAppData();
 }
 
 /* ═══ AVANS ══════════════════════════════════════════════════ */
 
-export function renderAccAvans() {
+export function renderAccAdvance() {
   var el = document.getElementById('sa-pnl-avans');
   if (!el) return;
 
-  var aktifAv = _avSortDesc(APP.data.accBekleyen.filter(function(a){ return a.tip === 'avans'; }));
+  var aktifAv = _advanceSortDesc(APP.data.accBekleyen.filter(function(a){ return a.tip === 'avans'; }));
 
   var donBar = '<div class="sa-donem-bar" style="margin-bottom:14px">';
   for (var di = 0; di < APP.seed.saDonemler.length; di++) {
     var dp = APP.seed.saDonemler[di];
     var dpOn = APP.ui.saAvansDonem === dp.id ? ' on' : '';
-    donBar += '<button class="sa-donem-pill' + dpOn + '" onclick="saAvansSetDonem(' + dp.id + ')">' +
+    donBar += '<button class="sa-donem-pill' + dpOn + '" onclick="accAdvanceSetPeriod(' + dp.id + ')">' +
       '<div style="font-size:12px;font-weight:700;color:' + (APP.ui.saAvansDonem === dp.id ? 'var(--ac2)' : 'var(--tx2)') + '">' + dp.lbl + '</div>' +
       (dp.aktif ? '<div style="font-size:9px;color:var(--gr);font-weight:700;margin-top:1px">● Aktif</div>' : '<div style="font-size:10px;color:var(--tx3);margin-top:1px">' + dp.tarih + '</div>') +
     '</button>';
@@ -240,7 +240,7 @@ export function renderAccAvans() {
     html += '<div style="text-align:right;font-size:11px;color:var(--tx3);padding:2px 2px 12px">Bekleyen toplam: <strong style="color:var(--am2)">₺' + bekTop.toLocaleString('tr-TR') + '</strong></div>';
   }
 
-  var gecmisDonem = _avSortDesc(APP.data.accAvansGecmis.filter(function(av){ return av.donem === APP.ui.saAvansDonem; }));
+  var gecmisDonem = _advanceSortDesc(APP.data.accAvansGecmis.filter(function(av){ return av.donem === APP.ui.saAvansDonem; }));
 
   if (!gecmisDonem.length && !aktifAv.length) {
     el.innerHTML = html + '<div style="text-align:center;padding:30px 0;color:var(--tx3);font-size:13px">Bu dönem için avans kaydı yok</div>';
@@ -257,7 +257,7 @@ export function renderAccAvans() {
     var redSatirAcc = (av.durum === 'reddedildi' && av.redNedeni)
       ? '<div style="font-size:11px;color:var(--rd2);margin-top:2px">Red nedeni: ' + av.redNedeni + '</div>'
       : '';
-    return '<div class="sa-av-row" style="cursor:pointer" onclick="accAvansOpenKisi(\'' + av.uye.replace(/'/g, '\\x27') + '\')">' +
+    return '<div class="sa-av-row" style="cursor:pointer" onclick="accAdvanceOpenPerson(\'' + av.uye.replace(/'/g, '\\x27') + '\')">' +
       '<div class="sa-av-av">' + av.ini + '</div>' +
       '<div class="sa-av-info">' +
         '<div class="sa-av-name">' + av.uye + '</div>' +
@@ -302,32 +302,32 @@ export function renderAccAvans() {
   el.innerHTML = html;
 }
 
-export function saAvansSetDonem(id) {
+export function accAdvanceSetPeriod(id) {
   APP.ui.saAvansDonem = id;
-  renderAccAvans();
+  renderAccAdvance();
 }
 
-export function accAvansOpenKisi(name) {
+export function accAdvanceOpenPerson(name) {
   var idx = -1;
   for (var i = 0; i < APP.cache.accRaporPersonel.length; i++) {
     if (APP.cache.accRaporPersonel[i].name === name) { idx = i; break; }
   }
   if (idx < 0) { notif('Personel raporu bulunamadı', 'amber'); return; }
   APP.ui.saRaporTip = 'personel';
-  saRaporDeptId     = '';
-  saRaporKisiIdx    = idx;
-  saRaporKisiFrom   = 'list';
-  saTab('rapor', document.getElementById('satb-rapor'));
+  accReportDeptId     = '';
+  accReportPersonIdx    = idx;
+  accReportPersonFrom   = 'list';
+  accTab('rapor', document.getElementById('satb-rapor'));
 }
 
-export function saSetDonem(id) {
+export function accSetPeriod(id) {
   APP.ui.saSeciliDonem = id;
   renderAccDash();
 }
 
 /* ═══ DEPT DETAY MODALI ══════════════════════════════════════ */
 
-export function openAccDeptDetay(deptId) {
+export function openAccDeptDetail(deptId) {
   _accDeptId = deptId;
   var d = null;
   for (var i = 0; i < APP.data.accDepts.length; i++) {
@@ -362,20 +362,20 @@ export function accDeptTab(t, el) {
     if (b) b.classList.remove('on');
   }
   if (el) el.classList.add('on');
-  if (t === 'ekip')   _renderAdeptEkip(_accDeptId);
-  if (t === 'bek')    _renderAdeptBek(_accDeptId);
-  if (t === 'don')    _renderAdeptDon(_accDeptId);
-  if (t === 'avans')  _renderAdeptAvans(_accDeptId);
-  if (t === 'gecmis') _renderAdeptGecmis(_accDeptId);
+  if (t === 'ekip')   _renderAccDeptCrew(_accDeptId);
+  if (t === 'bek')    _renderAccDeptPending(_accDeptId);
+  if (t === 'don')    _renderAccDeptPeriod(_accDeptId);
+  if (t === 'avans')  _renderAccDeptAdvance(_accDeptId);
+  if (t === 'gecmis') _renderAccDeptHistory(_accDeptId);
 }
 
-function _renderAdeptEkip(deptId) {
+function _renderAccDeptCrew(deptId) {
   var el   = document.getElementById('adept-pnl-ekip');
   var list = APP.cache.accDeptUyeler[deptId] || [];
   if (!el) return;
   if (!list.length) { el.innerHTML = '<div style="padding:20px 16px;color:var(--tx3);font-size:13px">Ekip verisi yok</div>'; return; }
   el.innerHTML = list.map(function(u) {
-    return '<div class="adept-uye-row" onclick="openAccUyeDetay(\'' + u.name.replace(/'/g, "\\'") + '\',\'' + deptId + '\')">' +
+    return '<div class="adept-uye-row" onclick="openAccMemberDetail(\'' + u.name.replace(/'/g, "\\'") + '\',\'' + deptId + '\')">' +
       '<div class="adept-uye-av">' + u.ini + '</div>' +
       '<div>' +
         '<div class="adept-uye-name">' + u.name + '</div>' +
@@ -391,7 +391,7 @@ function _renderAdeptEkip(deptId) {
   }).join('');
 }
 
-function _renderAdeptBek(deptId) {
+function _renderAccDeptPending(deptId) {
   var el = document.getElementById('adept-pnl-bek');
   if (!el) return;
   var deptName = '';
@@ -412,7 +412,7 @@ function _renderAdeptBek(deptId) {
   }).join('');
 }
 
-function _renderAdeptDon(deptId) {
+function _renderAccDeptPeriod(deptId) {
   var el   = document.getElementById('adept-pnl-don');
   var list = APP.cache.accDeptDonemler[deptId] || [];
   if (!el) return;
@@ -431,7 +431,7 @@ function _renderAdeptDon(deptId) {
   }).join('');
 }
 
-function _renderAdeptAvans(deptId) {
+function _renderAccDeptAdvance(deptId) {
   var el   = document.getElementById('adept-pnl-avans');
   var list = APP.cache.accDeptAvans[deptId] || [];
   if (!el) return;
@@ -452,7 +452,7 @@ function _renderAdeptAvans(deptId) {
   }).join('');
 }
 
-function _renderAdeptGecmis(deptId) {
+function _renderAccDeptHistory(deptId) {
   var el   = document.getElementById('adept-pnl-gecmis');
   var list = APP.cache.accDeptGecmis[deptId] || [];
   if (!el) return;
@@ -479,9 +479,9 @@ function _renderAdeptGecmis(deptId) {
 
 /* ═══ ÜYE DETAY MODALI ═══════════════════════════════════════ */
 
-export function openAccUyeDetay(uyeName, deptId) {
-  _accUyeName = uyeName;
-  _accUyeDept = deptId;
+export function openAccMemberDetail(uyeName, deptId) {
+  _accMemberName = uyeName;
+  _accMemberDept = deptId;
 
   var list = APP.cache.accDeptUyeler[deptId] || [];
   var u = null;
@@ -508,11 +508,11 @@ export function openAccUyeDetay(uyeName, deptId) {
       '<div class="uye-stat-c"><div class="uye-stat-val" style="color:' + (u.bek > 0 ? 'var(--am2)' : 'var(--tx3)') + '">₺' + u.bek.toLocaleString('tr-TR') + '</div><div class="uye-stat-lbl">Bekleyen</div></div>';
   }
 
-  accUyeTab('bek', document.getElementById('acuyetb-bek'));
+  accMemberTab('bek', document.getElementById('acuyetb-bek'));
   openM('md-acc-uye');
 }
 
-export function accUyeTab(t, el) {
+export function accMemberTab(t, el) {
   var tabs = ['bek','don','avans'];
   for (var i = 0; i < tabs.length; i++) {
     var p = document.getElementById('acuye-pnl-' + tabs[i]);
@@ -521,15 +521,15 @@ export function accUyeTab(t, el) {
     if (b) b.classList.remove('on');
   }
   if (el) el.classList.add('on');
-  if (t === 'bek')   _renderAccUyeBek();
-  if (t === 'don')   _renderAccUyeDon();
-  if (t === 'avans') _renderAccUyeAvans();
+  if (t === 'bek')   _renderAccMemberPending();
+  if (t === 'don')   _renderAccMemberPeriod();
+  if (t === 'avans') _renderAccMemberAdvance();
 }
 
-function _renderAccUyeBek() {
+function _renderAccMemberPending() {
   var el = document.getElementById('acuye-pnl-bek');
   if (!el) return;
-  var items = APP.data.accBekleyen.filter(function(f) { return f.uye === _accUyeName; });
+  var items = APP.data.accBekleyen.filter(function(f) { return f.uye === _accMemberName; });
   if (!items.length) {
     el.innerHTML = '<div style="padding:20px 16px;color:var(--tx3);font-size:13px">Bekleyen harcama yok</div>';
     return;
@@ -551,10 +551,10 @@ function _renderAccUyeBek() {
   }).join('');
 }
 
-function _renderAccUyeDon() {
+function _renderAccMemberPeriod() {
   var el = document.getElementById('acuye-pnl-don');
   if (!el) return;
-  var donList = APP.cache.accDeptDonemler[_accUyeDept] || [];
+  var donList = APP.cache.accDeptDonemler[_accMemberDept] || [];
   if (!donList.length) { el.innerHTML = '<div style="padding:20px 16px;color:var(--tx3);font-size:13px">Dönem verisi yok</div>'; return; }
   el.innerHTML = donList.map(function(d) {
     return '<div class="adept-don-card">' +
@@ -569,11 +569,11 @@ function _renderAccUyeDon() {
   }).join('');
 }
 
-function _renderAccUyeAvans() {
+function _renderAccMemberAdvance() {
   var el = document.getElementById('acuye-pnl-avans');
   if (!el) return;
-  var deptAvans = APP.cache.accDeptAvans[_accUyeDept] || [];
-  var items = deptAvans.filter(function(a) { return a.name === _accUyeName; });
+  var deptAvans = APP.cache.accDeptAvans[_accMemberDept] || [];
+  var items = deptAvans.filter(function(a) { return a.name === _accMemberName; });
   if (!items.length) { el.innerHTML = '<div style="padding:20px 16px;color:var(--tx3);font-size:13px">Avans kaydı yok</div>'; return; }
   el.innerHTML = items.map(function(a) {
     var tagCls = a.durum === 'ödendi' ? 'uye-av-tag uye-av-tag-ok' : 'uye-av-tag uye-av-tag-bek';
@@ -599,15 +599,15 @@ export function renderAcc() {
   var sCnt = document.getElementById('satb-suphe-cnt');
   if (sCnt) sCnt.textContent = APP.data.accSuphe.filter(function(s){ return s.durum === 'bek' || s.durum === 'inc'; }).length;
   renderAccDash();
-  renderAccBek();
-  renderAccSuphe();
-  renderAccRapor(APP.ui.saRaporTip);
-  renderAccKira();
-  renderAccMesaj();
-  saTab('dash', document.getElementById('satb-dash'));
+  renderAccPending();
+  renderAccSuspicion();
+  renderAccReport(APP.ui.saRaporTip);
+  renderAccRental();
+  renderAccMessages();
+  accTab('dash', document.getElementById('satb-dash'));
 }
 
-export function saTab(t, el) {
+export function accTab(t, el) {
   var panels = ['dash','bek','suphe','rapor','kira','avans','mesaj'];
   for (var i = 0; i < panels.length; i++) {
     var p = document.getElementById('sa-pnl-' + panels[i]);
@@ -616,11 +616,11 @@ export function saTab(t, el) {
   var btns = document.querySelectorAll('.sa-tb');
   for (var j = 0; j < btns.length; j++) btns[j].classList.remove('on');
   if (el) el.classList.add('on');
-  if (t === 'kira')  renderAccKira();
-  if (t === 'avans') renderAccAvans();
+  if (t === 'kira')  renderAccRental();
+  if (t === 'avans') renderAccAdvance();
 }
 
-export function openAccButceDuzenle() {
+export function openAccBudgetEdit() {
   var el = document.getElementById('mbutce-body');
   if (!el) return;
   var deptRows = '<div class="butce-modal-sec-hd">Departman Bütçeleri</div>' +
@@ -643,7 +643,7 @@ export function openAccButceDuzenle() {
   openM('mbutce');
 }
 
-export function accButceKaydet() {
+export function accBudgetSave() {
   for (var i = 0; i < APP.data.accDepts.length; i++) {
     var di = document.getElementById('butce-inp-' + APP.data.accDepts[i].id);
     if (di) { var dv = parseInt(di.value, 10); if (!isNaN(dv) && dv >= 0) APP.data.accDepts[i].butce = dv; }
@@ -679,7 +679,7 @@ export function renderAccDash() {
     var dpSub = dp.aktif
       ? '<div style="font-size:9px;color:var(--gr);font-weight:700;margin-top:1px">● Aktif</div>'
       : '<div style="font-size:10px;color:var(--tx3);margin-top:1px">' + dp.tarih + '</div>';
-    donBar += '<button class="sa-donem-pill' + dpOn + '" onclick="saSetDonem(' + dp.id + ')">' +
+    donBar += '<button class="sa-donem-pill' + dpOn + '" onclick="accSetPeriod(' + dp.id + ')">' +
       '<div style="font-size:12px;font-weight:700;color:' + (APP.ui.saSeciliDonem === dp.id ? 'var(--ac2)' : 'var(--tx2)') + '">' + dp.lbl + '</div>' +
       dpSub +
     '</button>';
@@ -729,14 +729,14 @@ export function renderAccDash() {
 
   if (isAktif) {
     html += '<div style="display:flex;justify-content:flex-end;margin-bottom:10px">' +
-      '<button class="sa-edit-butce-btn" onclick="openAccButceDuzenle()">✏ Bütçeleri Düzenle</button>' +
+      '<button class="sa-edit-butce-btn" onclick="openAccBudgetEdit()">✏ Bütçeleri Düzenle</button>' +
     '</div>';
   }
 
   for (var k = 0; k < depts.length; k++) {
     var d = depts[k];
     var pct = totalTop > 0 ? Math.round(d.total / totalTop * 100) : 0;
-    var clickHandler = isAktif ? 'onclick="openAccDeptDetay(\'' + d.id + '\')"' : '';
+    var clickHandler = isAktif ? 'onclick="openAccDeptDetail(\'' + d.id + '\')"' : '';
     html += '<div class="sa-dept-card" style="cursor:' + (isAktif ? 'pointer' : 'default') + '" ' + clickHandler + '>';
     html += '<div class="sa-dc-hd"><div class="sa-dc-dot" style="background:' + d.renk + '"></div><div class="sa-dc-name">' + d.name + '</div><div class="sa-dc-uye">' + d.uye + ' kişi' + (isAktif ? ' ›' : '') + '</div></div>';
     html += '<div class="sa-dc-stats">';
@@ -795,7 +795,7 @@ export function renderAccDash() {
 
 /* ═══ BEKLEYEN ═══════════════════════════════════════════════ */
 
-export function renderAccBek() {
+export function renderAccPending() {
   _checkPassiveApproval();
   var el = document.getElementById('sa-pnl-bek');
   if (!el) return;
@@ -832,7 +832,7 @@ export function renderAccBek() {
 
 /* ═══ ŞÜPHELİ ════════════════════════════════════════════════ */
 
-export function renderAccSuphe() {
+export function renderAccSuspicion() {
   var el = document.getElementById('sa-pnl-suphe');
   if (!el) return;
   var sCnt = document.getElementById('satb-suphe-cnt');
@@ -856,8 +856,8 @@ export function renderAccSuphe() {
       '<div style="display:flex;align-items:center;justify-content:space-between">' +
         '<span class="sa-suphe-tag ' + tagCls + '">' + tagTxt + '</span>' +
         '<div style="display:flex;gap:6px">' +
-          '<button class="btn btn-g btn-sm" onclick="accSupheIsle(' + f.id + ',\'ok\')">Temizle</button>' +
-          '<button class="btn btn-r btn-sm" onclick="accSupheIsle(' + f.id + ',\'red\')">Reddet</button>' +
+          '<button class="btn btn-g btn-sm" onclick="accSuspicionHandle(' + f.id + ',\'ok\')">Temizle</button>' +
+          '<button class="btn btn-r btn-sm" onclick="accSuspicionHandle(' + f.id + ',\'red\')">Reddet</button>' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -865,18 +865,18 @@ export function renderAccSuphe() {
   el.innerHTML = html;
 }
 
-export function accSupheIsle(id, action) {
+export function accSuspicionHandle(id, action) {
   for (var i = 0; i < APP.data.accSuphe.length; i++) {
     if (APP.data.accSuphe[i].id === id) { APP.data.accSuphe[i].durum = action; break; }
   }
-  renderAccSuphe();
+  renderAccSuspicion();
   notif(action === 'ok' ? 'Kayıt temiz olarak işaretlendi' : 'Harcama reddedildi', action === 'ok' ? 'green' : 'red');
   saveAppData();
 }
 
 /* ═══ RAPOR HELPERS ══════════════════════════════════════════ */
 
-function _saOnayBar(onay, bek, red, total) {
+function _accApprovalBar(onay, bek, red, total) {
   if (!total) return '';
   var pO = Math.round(onay / total * 100);
   var pB = Math.round(bek  / total * 100);
@@ -895,7 +895,7 @@ function _saOnayBar(onay, bek, red, total) {
   return html;
 }
 
-function _raporFisRows(liste) {
+function _reportReceiptRows(liste) {
   if (!liste.length) return '<div style="text-align:center;padding:14px 0;color:var(--tx3);font-size:12px">Kayıt bulunamadı</div>';
   return liste.map(function(f) {
     var durCls = f.durum === 'onay' ? 'sa-fis-dur-on' : (f.durum === 'red' ? 'sa-fis-dur-red' : (f.durum === 'inc' ? 'sa-fis-dur-inc' : 'sa-fis-dur-bek'));
@@ -915,7 +915,7 @@ function _raporFisRows(liste) {
   }).join('');
 }
 
-function _raporFisGrouped(liste) {
+function _reportReceiptGrouped(liste) {
   var donLbls = { 2:'Dönem #2 (Nisan 2026)', 1:'Dönem #1 (Mart 2026)', 0:'Dönem #0 (Şubat 2026)' };
   var groups  = {};
   var order   = [];
@@ -935,12 +935,12 @@ function _raporFisGrouped(liste) {
       '<span>' + (donLbls[did] || 'Dönem #' + did) + '</span>' +
       '<span style="font-family:var(--mo);color:var(--tx2)">₺' + top.toLocaleString('tr-TR') + '</span>' +
     '</div>';
-    html += _raporFisRows(grp);
+    html += _reportReceiptRows(grp);
   }
   return html;
 }
 
-function _saDonemSecPills() {
+function _accPeriodSelectPills() {
   var donems = [
     { id:2, lbl:'Dönem #2' },
     { id:1, lbl:'Dönem #1' },
@@ -949,8 +949,8 @@ function _saDonemSecPills() {
   var html = '<div class="sa-don-sec">';
   for (var i = 0; i < donems.length; i++) {
     var d  = donems[i];
-    var on = saRaporSecilenDonemler.indexOf(d.id) >= 0;
-    html += '<div class="sa-don-sec-pill' + (on ? ' on' : '') + '" onclick="saRaporToggleDonem(' + d.id + ')">' +
+    var on = accReportSelectedPeriods.indexOf(d.id) >= 0;
+    html += '<div class="sa-don-sec-pill' + (on ? ' on' : '') + '" onclick="accReportTogglePeriod(' + d.id + ')">' +
       '<div class="sa-don-sec-chk">✓</div>' + d.lbl +
     '</div>';
   }
@@ -958,33 +958,33 @@ function _saDonemSecPills() {
   return html;
 }
 
-export function saRaporToggleDonem(did) {
-  var idx = saRaporSecilenDonemler.indexOf(did);
+export function accReportTogglePeriod(did) {
+  var idx = accReportSelectedPeriods.indexOf(did);
   if (idx >= 0) {
-    if (saRaporSecilenDonemler.length <= 2) { notif('En az 2 dönem seçili olmalı', 'amber'); return; }
-    saRaporSecilenDonemler.splice(idx, 1);
+    if (accReportSelectedPeriods.length <= 2) { notif('En az 2 dönem seçili olmalı', 'amber'); return; }
+    accReportSelectedPeriods.splice(idx, 1);
   } else {
-    saRaporSecilenDonemler.push(did);
-    saRaporSecilenDonemler.sort(function(a,b){ return b-a; });
+    accReportSelectedPeriods.push(did);
+    accReportSelectedPeriods.sort(function(a,b){ return b-a; });
   }
-  _renderAccRaporIc();
+  _renderAccReportBody();
 }
 
-export function renderAccRapor(tip) {
+export function renderAccReport(tip) {
   APP.ui.saRaporTip = tip;
-  saRaporDeptId     = '';
-  saRaporKisiIdx    = -1;
-  _renderAccRaporIc();
+  accReportDeptId     = '';
+  accReportPersonIdx    = -1;
+  _renderAccReportBody();
 }
 
 /* ═══ RAPOR — DEPT ═══════════════════════════════════════════ */
 
-function _renderAccRaporIc() {
+function _renderAccReportBody() {
   APP.cache.accRaporPersonel = _computeRaporPersonel();
   APP.cache.accDeptFis = {};
   var _rDepts = ['yapim','kamera','sanat','ses','kostum'];
   for (var _rdi = 0; _rdi < _rDepts.length; _rdi++) {
-    APP.cache.accDeptFis[_rDepts[_rdi]] = _computeRaporDeptFis(_rDepts[_rdi]);
+    APP.cache.accDeptFis[_rDepts[_rdi]] = _computeDeptReceiptReport(_rDepts[_rdi]);
   }
   var el = document.getElementById('sa-pnl-rapor');
   if (!el) return;
@@ -993,7 +993,7 @@ function _renderAccRaporIc() {
     ['dept','kat','personel','donem'].map(function(t) {
       var icons = { dept:'🏢', kat:'🏷', personel:'👤', donem:'📅' };
       var lbls  = { dept:'Departman', kat:'Kategori', personel:'Personel', donem:'Dönem' };
-      return '<button class="sa-rapor-btn' + (t === APP.ui.saRaporTip ? ' on' : '') + '" onclick="renderAccRapor(\'' + t + '\')">' +
+      return '<button class="sa-rapor-btn' + (t === APP.ui.saRaporTip ? ' on' : '') + '" onclick="renderAccReport(\'' + t + '\')">' +
         '<div class="sa-rapor-btn-ic">' + icons[t] + '</div>' +
         '<div class="sa-rapor-btn-lbl">' + lbls[t] + '</div>' +
       '</button>';
@@ -1001,22 +1001,22 @@ function _renderAccRaporIc() {
   '</div>';
 
   var content = '';
-  if      (APP.ui.saRaporTip === 'dept')     content = saRaporDeptId   ? _raporDeptDetay()    : _raporDeptList();
-  else if (APP.ui.saRaporTip === 'kat')      content = _raporKat();
-  else if (APP.ui.saRaporTip === 'personel') content = saRaporKisiIdx >= 0 ? _raporKisiDetay() : _raporPersonelList();
-  else if (APP.ui.saRaporTip === 'donem')    content = _raporDonem();
+  if      (APP.ui.saRaporTip === 'dept')     content = accReportDeptId   ? _reportDeptDetail()    : _reportDeptList();
+  else if (APP.ui.saRaporTip === 'kat')      content = _reportCategory();
+  else if (APP.ui.saRaporTip === 'personel') content = accReportPersonIdx >= 0 ? _reportPersonDetail() : _reportPersonnelList();
+  else if (APP.ui.saRaporTip === 'donem')    content = _reportPeriod();
 
   el.innerHTML = btns + content +
     '<button class="sa-pdf-btn" onclick="showExportModal(\'acc-\' + APP.ui.saRaporTip)">📥 Dışa Aktar</button>';
 }
 
-function _raporDeptList() {
+function _reportDeptList() {
   var maxD = 0;
   for (var i = 0; i < APP.data.accDepts.length; i++) if (APP.data.accDepts[i].total > maxD) maxD = APP.data.accDepts[i].total;
   var html = '<div class="sa-rep-hd"><span>Departmana göre</span><span style="font-weight:400;font-size:11px">Detay için tıkla</span></div>';
   html += APP.data.accDepts.map(function(d) {
     var pct = maxD > 0 ? Math.round(d.total / maxD * 100) : 0;
-    return '<div class="sa-rep-dept-row" onclick="_saRaporDept(\'' + d.id + '\')">' +
+    return '<div class="sa-rep-dept-row" onclick="_accReportDept(\'' + d.id + '\')">' +
       '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">' +
         '<div class="sa-dc-dot" style="background:' + d.renk + '"></div>' +
         '<div style="flex:1;font-size:13px;font-weight:700;color:var(--tx)">' + d.name + '</div>' +
@@ -1034,27 +1034,27 @@ function _raporDeptList() {
   return html;
 }
 
-function _saRaporDept(id) {
-  saRaporDeptId = id;
-  _renderAccRaporIc();
+function _accReportDept(id) {
+  accReportDeptId = id;
+  _renderAccReportBody();
 }
 
-function _raporDeptDetay() {
+function _reportDeptDetail() {
   var dept = null;
-  for (var i = 0; i < APP.data.accDepts.length; i++) if (APP.data.accDepts[i].id === saRaporDeptId) { dept = APP.data.accDepts[i]; break; }
+  for (var i = 0; i < APP.data.accDepts.length; i++) if (APP.data.accDepts[i].id === accReportDeptId) { dept = APP.data.accDepts[i]; break; }
   if (!dept) return '';
 
-  var uyeler   = APP.cache.accDeptUyeler[saRaporDeptId]   || [];
-  var katlar   = APP.cache.accDeptKatlar[saRaporDeptId]   || [];
-  var donemler = APP.cache.accDeptDonemler[saRaporDeptId] || [];
-  var avanslar = APP.cache.accDeptAvans[saRaporDeptId]    || [];
-  var fisler   = APP.cache.accDeptFis[saRaporDeptId]      || [];
+  var uyeler   = APP.cache.accDeptUyeler[accReportDeptId]   || [];
+  var katlar   = APP.cache.accDeptKatlar[accReportDeptId]   || [];
+  var donemler = APP.cache.accDeptDonemler[accReportDeptId] || [];
+  var avanslar = APP.cache.accDeptAvans[accReportDeptId]    || [];
+  var fisler   = APP.cache.accDeptFis[accReportDeptId]      || [];
 
   var totalRed = 0;
   for (var ri = 0; ri < donemler.length; ri++) totalRed += (donemler[ri].red || 0);
 
   var html = '<div class="sa-rep-drill-hd">' +
-    '<button class="sa-rep-back" onclick="_saRaporDeptBack()">← Geri</button>' +
+    '<button class="sa-rep-back" onclick="_accReportDeptBack()">← Geri</button>' +
     '<div style="flex:1">' +
       '<div class="sa-rep-drill-title">' + dept.name + '</div>' +
       '<div style="font-size:11px;color:var(--tx3)">' + dept.uye + ' kişi · ' + donemler.length + ' dönem</div>' +
@@ -1069,7 +1069,7 @@ function _raporDeptDetay() {
   html += '<div class="sa-rep-stat-c"><div class="sa-rep-stat-v" style="color:var(--rd2)">₺' + totalRed.toLocaleString('tr-TR') + '</div><div class="sa-rep-stat-l">Reddedildi</div></div>';
   html += '</div>';
 
-  html += _saOnayBar(dept.onay, dept.bekleyen, totalRed, dept.total);
+  html += _accApprovalBar(dept.onay, dept.bekleyen, totalRed, dept.total);
 
   html += '<div class="sa-rep-sec-hd">Kişi Bazlı Döküm</div>';
   var maxU = 0;
@@ -1080,7 +1080,7 @@ function _raporDeptDetay() {
     for (var ki = 0; ki < APP.cache.accRaporPersonel.length; ki++) {
       if (APP.cache.accRaporPersonel[ki].name === u.name) { kisiIdx = ki; break; }
     }
-    return '<div class="sa-rep-kisi-row" onclick="' + (kisiIdx >= 0 ? '_saRaporKisiFromDept(' + kisiIdx + ')' : '') + '">' +
+    return '<div class="sa-rep-kisi-row" onclick="' + (kisiIdx >= 0 ? '_accReportPersonFromDept(' + kisiIdx + ')' : '') + '">' +
       '<div class="sa-rep-kisi-av">' + u.ini + '</div>' +
       '<div class="sa-rep-kisi-info">' +
         '<div style="display:flex;justify-content:space-between;align-items:baseline">' +
@@ -1120,7 +1120,7 @@ function _raporDeptDetay() {
 
   if (fisler.length) {
     html += '<div class="sa-rep-sec-hd">Harcama Detayları</div>';
-    html += _raporFisGrouped(fisler);
+    html += _reportReceiptGrouped(fisler);
   }
 
   if (donemler.length) {
@@ -1152,15 +1152,15 @@ function _raporDeptDetay() {
   return html;
 }
 
-function _saRaporDeptBack() {
-  saRaporDeptId  = '';
-  saRaporKisiIdx = -1;
-  _renderAccRaporIc();
+function _accReportDeptBack() {
+  accReportDeptId  = '';
+  accReportPersonIdx = -1;
+  _renderAccReportBody();
 }
 
 /* ═══ RAPOR — KATEGORİ ═══════════════════════════════════════ */
 
-function _raporKat() {
+function _reportCategory() {
   var katlar = APP.cache.accDonemKatlar[2] || [];
   var total = 0;
   for (var i = 0; i < katlar.length; i++) total += katlar[i].tutar;
@@ -1184,7 +1184,7 @@ function _raporKat() {
 
 /* ═══ RAPOR — PERSONEL ═══════════════════════════════════════ */
 
-function _raporPersonelList() {
+function _reportPersonnelList() {
   var sorted = APP.cache.accRaporPersonel.slice().sort(function(a,b){ return b.total - a.total; });
   var maxP = sorted[0] ? sorted[0].total : 0;
   var html = '<div class="sa-rep-hd"><span>Personele göre</span><span style="font-weight:400;font-size:11px">Detay için tıkla</span></div>';
@@ -1192,7 +1192,7 @@ function _raporPersonelList() {
     var origIdx = -1;
     for (var i = 0; i < APP.cache.accRaporPersonel.length; i++) if (APP.cache.accRaporPersonel[i].name === p.name) { origIdx = i; break; }
     var pct = maxP > 0 ? Math.round(p.total / maxP * 100) : 0;
-    return '<div class="sa-rep-kisi-row" onclick="_saRaporKisi(' + origIdx + ')">' +
+    return '<div class="sa-rep-kisi-row" onclick="_accReportPerson(' + origIdx + ')">' +
       '<div class="sa-rep-kisi-av">' + p.ini + '</div>' +
       '<div class="sa-rep-kisi-info">' +
         '<div style="display:flex;justify-content:space-between;align-items:baseline">' +
@@ -1208,20 +1208,20 @@ function _raporPersonelList() {
   return html;
 }
 
-function _saRaporKisi(idx) {
-  saRaporKisiFrom = 'list';
-  saRaporKisiIdx  = idx;
-  _renderAccRaporIc();
+function _accReportPerson(idx) {
+  accReportPersonFrom = 'list';
+  accReportPersonIdx  = idx;
+  _renderAccReportBody();
 }
 
-function _saRaporKisiFromDept(idx) {
-  saRaporKisiFrom = 'dept';
-  saRaporKisiIdx  = idx;
-  _renderAccRaporIc();
+function _accReportPersonFromDept(idx) {
+  accReportPersonFrom = 'dept';
+  accReportPersonIdx  = idx;
+  _renderAccReportBody();
 }
 
-function _raporKisiDetay() {
-  var p = APP.cache.accRaporPersonel[saRaporKisiIdx];
+function _reportPersonDetail() {
+  var p = APP.cache.accRaporPersonel[accReportPersonIdx];
   if (!p) return '';
 
   var totalRed = p.total - p.onay - p.bek;
@@ -1242,11 +1242,11 @@ function _raporKisiDetay() {
     else                                      bekFis++;
   }
 
-  var backLabel = saRaporKisiFrom === 'dept' ? '← ' + p.dept : '← Geri';
+  var backLabel = accReportPersonFrom === 'dept' ? '← ' + p.dept : '← Geri';
   var deptRenk  = { yapim:'#E8962E', kamera:'#3B82F6', sanat:'#22C55E', ses:'#A855F7', kostum:'#EC4899' }[p.deptId] || 'var(--ac)';
 
   var html = '<div class="sa-rep-drill-hd">' +
-    '<button class="sa-rep-back" onclick="_saRaporKisiBack()">' + backLabel + '</button>' +
+    '<button class="sa-rep-back" onclick="_accReportPersonBack()">' + backLabel + '</button>' +
     '<div style="display:flex;align-items:center;gap:10px;flex:1">' +
       '<div class="sa-rep-kisi-av" style="background:' + deptRenk + ';color:#fff">' + p.ini + '</div>' +
       '<div><div class="sa-rep-drill-title">' + p.name + '</div><div style="font-size:11px;color:var(--tx3)">' + p.dept + ' · ' + p.rol + '</div></div>' +
@@ -1261,7 +1261,7 @@ function _raporKisiDetay() {
   html += '</div>';
 
   html += '<div class="sa-rep-sec-hd">Onay / Red Oranı</div>';
-  html += _saOnayBar(p.onay, p.bek, totalRed, p.total);
+  html += _accApprovalBar(p.onay, p.bek, totalRed, p.total);
   if (totalFis > 0) {
     var pctOnayFis = Math.round(onayFis / totalFis * 100);
     var pctRedFis  = Math.round(redFis  / totalFis * 100);
@@ -1306,7 +1306,7 @@ function _raporKisiDetay() {
 
   if (kisFisler.length) {
     html += '<div class="sa-rep-sec-hd">Tüm Dönemler — Harcama Geçmişi</div>';
-    html += _raporFisGrouped(kisFisler);
+    html += _reportReceiptGrouped(kisFisler);
   }
 
   var avansOdendi = 0, avansBek = 0, avansRed = 0;
@@ -1365,26 +1365,26 @@ function _raporKisiDetay() {
   return html;
 }
 
-function _saRaporKisiBack() {
-  saRaporKisiIdx = -1;
-  if (saRaporKisiFrom === 'dept') {
-    saRaporKisiFrom = '';
-    _renderAccRaporIc();
+function _accReportPersonBack() {
+  accReportPersonIdx = -1;
+  if (accReportPersonFrom === 'dept') {
+    accReportPersonFrom = '';
+    _renderAccReportBody();
   } else {
-    saRaporKisiFrom = '';
-    saRaporDeptId   = '';
-    _renderAccRaporIc();
+    accReportPersonFrom = '';
+    accReportDeptId   = '';
+    _renderAccReportBody();
   }
 }
 
 /* ═══ RAPOR — DÖNEM ══════════════════════════════════════════ */
 
-function _raporDonem() {
-  var sel = saRaporSecilenDonemler.slice().sort(function(a,b){ return b-a; });
+function _reportPeriod() {
+  var sel = accReportSelectedPeriods.slice().sort(function(a,b){ return b-a; });
   var selCount = sel.length;
   var html = '<div class="sa-rep-hd"><span>Dönem Karşılaştırması</span><span style="font-weight:400;font-size:11px">' + selCount + ' dönem seçili</span></div>';
 
-  html += _saDonemSecPills();
+  html += _accPeriodSelectPills();
 
   if (selCount < 1) {
     html += '<div class="sa-don-sec-min-warn">⚠ Lütfen en az bir dönem seçin.</div>';
@@ -1488,7 +1488,7 @@ function _raporDonem() {
 
 /* ═══ MESAJ ══════════════════════════════════════════════════ */
 
-export function renderAccMesaj() {
+export function renderAccMessages() {
   var el = document.getElementById('sa-pnl-mesaj');
   if (!el) return;
   el.innerHTML =
@@ -1502,33 +1502,33 @@ export function renderAccMesaj() {
 
 /* ═══ WINDOW EXPORTS (inline onclick uyumluluğu) ═════════════ */
 window.renderAcc              = renderAcc;
-window.saTab                  = saTab;
-window.saSetDonem             = saSetDonem;
-window.openAccButceDuzenle    = openAccButceDuzenle;
-window.accButceKaydet         = accButceKaydet;
+window.accTab                  = accTab;
+window.accSetPeriod             = accSetPeriod;
+window.openAccBudgetEdit    = openAccBudgetEdit;
+window.accBudgetSave         = accBudgetSave;
 window.renderAccDash          = renderAccDash;
-window.renderAccBek           = renderAccBek;
-window.renderAccSuphe         = renderAccSuphe;
-window.renderAccKira          = renderAccKira;
-window.renderAccAvans         = renderAccAvans;
-window.saAvansSetDonem        = saAvansSetDonem;
-window.accAvansOpenKisi       = accAvansOpenKisi;
-window.accKiraIade            = accKiraIade;
-window.openAccDeptDetay       = openAccDeptDetay;
+window.renderAccPending           = renderAccPending;
+window.renderAccSuspicion         = renderAccSuspicion;
+window.renderAccRental          = renderAccRental;
+window.renderAccAdvance         = renderAccAdvance;
+window.accAdvanceSetPeriod        = accAdvanceSetPeriod;
+window.accAdvanceOpenPerson       = accAdvanceOpenPerson;
+window.accRentalReturn            = accRentalReturn;
+window.openAccDeptDetail       = openAccDeptDetail;
 window.accDeptTab             = accDeptTab;
-window.openAccUyeDetay        = openAccUyeDetay;
-window.accUyeTab              = accUyeTab;
-window.renderAccRapor         = renderAccRapor;
-window.saRaporToggleDonem     = saRaporToggleDonem;
-window.accSupheIsle           = accSupheIsle;
-window.renderAccMesaj         = renderAccMesaj;
+window.openAccMemberDetail        = openAccMemberDetail;
+window.accMemberTab              = accMemberTab;
+window.renderAccReport         = renderAccReport;
+window.accReportTogglePeriod     = accReportTogglePeriod;
+window.accSuspicionHandle           = accSuspicionHandle;
+window.renderAccMessages         = renderAccMessages;
 /* fis.service.js'den re-export */
 window.accOnayla              = accOnayla;
 window.accReddet              = accReddet;
 window.accKismi               = accKismi;
 /* rapor drill-down (onclick inline) */
-window._saRaporDept           = _saRaporDept;
-window._saRaporDeptBack       = _saRaporDeptBack;
-window._saRaporKisi           = _saRaporKisi;
-window._saRaporKisiFromDept   = _saRaporKisiFromDept;
-window._saRaporKisiBack       = _saRaporKisiBack;
+window._accReportDept           = _accReportDept;
+window._accReportDeptBack       = _accReportDeptBack;
+window._accReportPerson           = _accReportPerson;
+window._accReportPersonFromDept   = _accReportPersonFromDept;
+window._accReportPersonBack       = _accReportPersonBack;

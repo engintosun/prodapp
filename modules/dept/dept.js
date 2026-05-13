@@ -43,11 +43,11 @@ export function _deptDate() {
   return ('0' + d.getDate()).slice(-2) + '.' + ('0' + (d.getMonth()+1)).slice(-2);
 }
 
-export function _avSortDesc(arr) {
+export function _advanceSortDesc(arr) {
   return arr.slice().sort(function(a, b) { return (b.id || 0) - (a.id || 0); });
 }
 
-export function _avGecmisEkle(kayit) {
+export function _advanceHistoryAdd(kayit) {
   APP.data.accAvansGecmis.unshift(kayit);
   renderDeptAdvance();
   renderAccAvans();
@@ -67,7 +67,7 @@ export function advanceRejectConfirm() {
       if (APP.data.deptAvans[i].id === id) {
         var a = APP.data.deptAvans[i];
         APP.data.deptAvans.splice(i, 1);
-        _avGecmisEkle({
+        _advanceHistoryAdd({
           id: Date.now(), dept: _curDeptName(),
           uye: a.uye, ini: a.ini,
           tutar: a.tutar, tarih: _deptDate(),
@@ -86,7 +86,7 @@ export function advanceRejectConfirm() {
     var item = window._avRedPending._item;
     APP.data.accBekleyen = APP.data.accBekleyen.filter(function(f) { return f.id !== item.id; });
     renderAccBek();
-    _avGecmisEkle({
+    _advanceHistoryAdd({
       id: Date.now(), dept: item.dept || _curDeptName(),
       uye: item.uye, ini: item.ini,
       tutar: item.tutar, tarih: _deptDate(),
@@ -715,7 +715,7 @@ export function renderDeptAdvance() {
   }
   html += formHtml;
 
-  var sortedDeptAv = _avSortDesc(APP.data.deptAvans);
+  var sortedDeptAv = _advanceSortDesc(APP.data.deptAvans);
   if (sortedDeptAv.length) {
     var deptAvTop = 0;
     for (var daii = 0; daii < sortedDeptAv.length; daii++) deptAvTop += sortedDeptAv[daii].tutar;
@@ -752,7 +752,7 @@ export function renderDeptAdvance() {
     html += '<div class="sd-av-gec-hd"><span>Avans Geçmişi (' + gecmisAvans.length + ' kayıt)</span><span style="color:var(--tx2)">₺' + gecmisTopAll.toLocaleString('tr-TR') + '</span></div>';
     for (var dki = 0; dki < donKeys.length; dki++) {
       var avDon = donKeys[dki];
-      var avRows = _avSortDesc(donGrp[avDon]);
+      var avRows = _advanceSortDesc(donGrp[avDon]);
       var dkTop = 0;
       for (var ri = 0; ri < avRows.length; ri++) dkTop += avRows[ri].tutar;
       var isAktif = avDon === 2;
@@ -1269,8 +1269,8 @@ export function sendMesaj() {
 
 window._curDeptName        = _curDeptName;
 window._deptDate          = _deptDate;
-window._avSortDesc         = _avSortDesc;
-window._avGecmisEkle       = _avGecmisEkle;
+window._advanceSortDesc         = _advanceSortDesc;
+window._advanceHistoryAdd       = _advanceHistoryAdd;
 window.advanceRejectConfirm        = advanceRejectConfirm;
 window.advanceRejectCancel       = advanceRejectCancel;
 window.demoDataConfirm        = demoDataConfirm;

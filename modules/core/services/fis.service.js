@@ -8,7 +8,7 @@
 //   renderAccBek, renderRecent, closeM,
 //   saveAppData, _isPeriodClosed, _lateEntryModal, _recomputeAccDepts,
 //   _mkLog, _deptTarih, _checkBudgetWarning, _categorySpent, _checkCategoryLimit,
-//   _curDeptName, _avRedPending, openM, _avGecmisEkle
+//   _curDeptName, _avRedPending, openM, _advanceHistoryAdd
 
 import { APP } from '../state.js';
 
@@ -204,7 +204,7 @@ export function accOnayla(id, _gecSebep) {
   renderAccBek();
 
   if (item && item.tip === 'avans') {
-    _avGecmisEkle({ id: Date.now(), dept: item.dept || _curDeptName(), uye: item.uye, ini: item.ini, tutar: item.tutar, tarih: _deptTarih(), durum: 'ödendi', gerekce: item.gerekce || '', donem: APP.ui.aktifDon });
+    _advanceHistoryAdd({ id: Date.now(), dept: item.dept || _curDeptName(), uye: item.uye, ini: item.ini, tutar: item.tutar, tarih: _deptTarih(), durum: 'ödendi', gerekce: item.gerekce || '', donem: APP.ui.aktifDon });
     var fk = item.fromKey || 's';
     _pushNotif(fk, 'gr', 'Avans Talebiniz Onaylandı ✅', '₺' + item.tutar.toLocaleString('tr-TR') + ' avans talebiniz muhasebe tarafından onaylandı.', 'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe') + ' (Muhasebe)');
     if (fk !== 'd') {

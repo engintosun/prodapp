@@ -29,7 +29,7 @@ export function _recomputeAccDepts() {
 
 /* ── Departman Fiş Listesi (Rapor) ──────────────────────────────────────── */
 
-export function _computeRaporDeptFis(deptId) {
+export function _computeDeptReceiptReport(deptId) {
   var members = APP.cache.accDeptUyeler[deptId] || [];
   var nameToIni = {};
   for (var _mi = 0; _mi < members.length; _mi++) {
