@@ -131,11 +131,10 @@ All app state lives under the `APP` namespace object:
 **Çalışan mimari:**
 - `<script type="module">` bloğu: import satırları + ~187 `window.X = X` expose satırı
 - Modüller (`modules/`) canonical kaynak — yeni kod buraya yazılır
-- index.html'de kalan kod: CSS (~3346 satır), HTML shell (~70 satır), expose bloğu (~200 satır), sohbet sistemi (~489 satır)
+- index.html'de kalan kod: CSS (~3346 satır), HTML shell (~70 satır), expose bloğu (~200 satır)
 - HTML attribute'lar (`onclick`, `onchange`) `window.X` üzerinden çalışıyor — dokunma
 
-**Modüle taşınmamış feature (7B.1b işi):**
-- Sohbet sistemi: 17 fonksiyon + 3 var (~489 satır) — cross-role, muhasebe.js bare name bağımlılığı var
+**7B.1 tamamlandı:** Marka + sohbet modüle taşındı. index.html artık CSS + HTML shell + expose bloğundan ibaret.
 
 **Modül dosyasına kod yazarken:**
 - `var` ve `function` stili korunur (ES5 gövde), sadece `import`/`export`/`window.X = X` ES6
