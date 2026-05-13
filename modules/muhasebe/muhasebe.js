@@ -33,7 +33,6 @@ var saRaporSecilenDonemler = [2, 1, 0];
    showExportModal, SA_DONEM_DEPTS, _avRedPending,
    renderSohbetListesi, openYeniSohbetModal              ────── */
 
-var SA_DONEM_DEPTS = window.SA_DONEM_DEPTS;
 
 /* ═══ KİRA ═══════════════════════════════════════════════════ */
 
@@ -687,7 +686,7 @@ export function renderAccDash() {
   }
   donBar += '</div>';
 
-  var depts = APP.ui.saSeciliDonem === 2 ? APP.data.accDepts : (SA_DONEM_DEPTS[APP.ui.saSeciliDonem] || []);
+  var depts = APP.ui.saSeciliDonem === 2 ? APP.data.accDepts : (window.SA_DONEM_DEPTS[APP.ui.saSeciliDonem] || []);
   var donRec = null;
   for (var dri = 0; dri < APP.seed.saDonemler.length; dri++) if (APP.seed.saDonemler[dri].id === APP.ui.saSeciliDonem) { donRec = APP.seed.saDonemler[dri]; break; }
   var isAktif = APP.ui.saSeciliDonem === 2;
@@ -768,9 +767,9 @@ export function renderAccDash() {
     html += '</div>';
   }
 
-  if (!isAktif && SA_DONEM_DEPTS[APP.ui.saSeciliDonem]) {
+  if (!isAktif && window.SA_DONEM_DEPTS[APP.ui.saSeciliDonem]) {
     var prevId = APP.ui.saSeciliDonem - 1;
-    var prevDepts = SA_DONEM_DEPTS[prevId] || null;
+    var prevDepts = window.SA_DONEM_DEPTS[prevId] || null;
     if (prevDepts) {
       var prevTotal = 0, curTotal = totalTop;
       for (var pi = 0; pi < prevDepts.length; pi++) prevTotal += prevDepts[pi].total;
@@ -1393,7 +1392,7 @@ function _raporDonem() {
   }
 
   function _getDonemData(did) {
-    var depts = did === 2 ? APP.data.accDepts : (SA_DONEM_DEPTS[did] || []);
+    var depts = did === 2 ? APP.data.accDepts : (window.SA_DONEM_DEPTS[did] || []);
     var t = 0, o = 0, r = 0, bek = 0;
     for (var i = 0; i < depts.length; i++) {
       t   += depts[i].total;
@@ -1448,7 +1447,7 @@ function _raporDonem() {
       var dept0   = APP.data.accDepts[di];
       var colVals = colDids.map(function(ddid) {
         if (ddid === 2) return dept0.total;
-        var srcArr = SA_DONEM_DEPTS[ddid] || [];
+        var srcArr = window.SA_DONEM_DEPTS[ddid] || [];
         for (var si2 = 0; si2 < srcArr.length; si2++) if (srcArr[si2].id === dept0.id) return srcArr[si2].total;
         return 0;
       });

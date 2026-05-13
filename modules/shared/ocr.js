@@ -10,7 +10,6 @@ import { APP }        from '../core/state.js';
 import { _pad, _mkLog } from '../core/utils.js';
 import { saveAppData }  from '../core/services/storage.service.js';
 
-var FIS_DEMO = window.FIS_DEMO;
 
 /* ═══ OCR UZUN BAS ═══ */
 
@@ -77,7 +76,7 @@ document.getElementById('galeri-input').addEventListener('change', function(e) {
 /* ═══ OCR MODAL ═══ */
 
 export function openOCR(idx, imgSrc) {
-  var f = FIS_DEMO[idx] || FIS_DEMO[0];
+  var f = window.FIS_DEMO[idx] || window.FIS_DEMO[0];
   openM('mo');
   document.getElementById('ocr-s1').style.display = 'block';
   document.getElementById('ocr-s2').style.display = 'none';
