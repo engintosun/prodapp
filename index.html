@@ -3226,7 +3226,7 @@ body {
 <div class="mo" id="msohbet">
   <div class="ms">
     <div class="sic-hd">
-      <button class="sic-geri" onclick="closeSohbet()">&#8592;</button>
+      <button class="sic-geri" onclick="closeChat()">&#8592;</button>
       <div class="sic-av" id="sic-av"></div>
       <div class="sic-adi" id="sic-adi"></div>
     </div>
@@ -3234,7 +3234,7 @@ body {
     <div class="sic-compose">
       <textarea class="sic-txt" id="sic-txt" rows="1" placeholder="Mesaj yaz..."
         oninput="sicAutoResize(this)" onkeydown="sicKeydown(event)"></textarea>
-      <button class="sic-send" onclick="sohbetGonder()">
+      <button class="sic-send" onclick="chatSend()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;transform:rotate(90deg)">
           <line x1="12" y1="19" x2="12" y2="5"/>
           <polyline points="5 12 12 5 19 12"/>
@@ -3492,7 +3492,7 @@ const exportManager = {
       ]));
 
     } else if (tip === 'acc-personel') {
-      const data = _computeRaporPersonel();
+      const data = _computePersonnelReport();
       rows.push(['Personel','Departman','Toplam (TL)','Onaylı (TL)','Bekleyen (TL)']);
       (data || []).forEach(p => rows.push([
         p.name || '', p.dept || '',
@@ -3606,7 +3606,7 @@ const exportManager = {
 
     } else if (tip === 'acc-personel') {
       baslik = 'Personel Raporu';
-      const data = _computeRaporPersonel();
+      const data = _computePersonnelReport();
       rows.push(['Personel','Departman','Toplam (TL)','Onaylı (TL)','Bekleyen (TL)']);
       (data || []).forEach(p => rows.push([
         p.name || '', p.dept || '',
@@ -3754,7 +3754,7 @@ const exportManager = {
       ]);
 
     } else if (tip === 'acc-personel') {
-      const data = _computeRaporPersonel();
+      const data = _computePersonnelReport();
       headers  = [this._tr('Personel'),this._tr('Departman'),this._tr('Toplam (TL)'),this._tr('Onaylı (TL)'),this._tr('Bekleyen (TL)')];
       dataRows = (data || []).map(p => [
         this._tr(p.name || ''), this._tr(p.dept || ''),

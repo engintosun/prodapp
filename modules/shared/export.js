@@ -8,7 +8,7 @@
 // ES6 modül olduğu için bu stil korundu (dönüştürme yapılmadı).
 
 import { APP }                  from '../core/state.js';
-import { _computeRaporPersonel } from '../core/services/report.service.js';
+import { _computePersonnelReport } from '../core/services/report.service.js';
 
 /* ═══ EXPORT MANAGER ═══ */
 
@@ -59,7 +59,7 @@ export const exportManager = {
       ]));
 
     } else if (tip === 'acc-personel') {
-      const data = _computeRaporPersonel();
+      const data = _computePersonnelReport();
       rows.push(['Personel','Departman','Toplam (TL)','Onaylı (TL)','Bekleyen (TL)']);
       (data || []).forEach(p => rows.push([
         p.name || '', p.dept || '',
@@ -162,7 +162,7 @@ export const exportManager = {
 
     } else if (tip === 'acc-personel') {
       baslik = 'Personel Raporu';
-      const data = _computeRaporPersonel();
+      const data = _computePersonnelReport();
       rows.push(['Personel','Departman','Toplam (TL)','Onaylı (TL)','Bekleyen (TL)']);
       (data || []).forEach(p => rows.push([
         p.name || '', p.dept || '',
@@ -303,7 +303,7 @@ export const exportManager = {
       ]);
 
     } else if (tip === 'acc-personel') {
-      const data = _computeRaporPersonel();
+      const data = _computePersonnelReport();
       headers  = [this._tr('Personel'), this._tr('Departman'), this._tr('Toplam (TL)'), this._tr('Onaylı (TL)'), this._tr('Bekleyen (TL)')];
       dataRows = (data || []).map(p => [
         this._tr(p.name || ''), this._tr(p.dept || ''),

@@ -12,7 +12,7 @@ import { saveAppData }                         from '../core/services/storage.se
 import { accOnayla, accReddet, accKismi }      from '../core/services/fis.service.js';
 import { _recomputeAccDepts,
          _computeDeptReceiptReport,
-         _computeRaporPersonel }              from '../core/services/report.service.js';
+         _computePersonnelReport }              from '../core/services/report.service.js';
 import { _advanceHistoryAdd,
          _curDeptName, _advanceSortDesc }       from '../dept/dept.js';
 
@@ -980,7 +980,7 @@ export function renderAccReport(tip) {
 /* ═══ RAPOR — DEPT ═══════════════════════════════════════════ */
 
 function _renderAccReportBody() {
-  APP.cache.accRaporPersonel = _computeRaporPersonel();
+  APP.cache.accRaporPersonel = _computePersonnelReport();
   APP.cache.accDeptFis = {};
   var _rDepts = ['yapim','kamera','sanat','ses','kostum'];
   for (var _rdi = 0; _rdi < _rDepts.length; _rdi++) {

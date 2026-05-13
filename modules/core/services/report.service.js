@@ -76,7 +76,7 @@ export function _computeDeptReceiptReport(deptId) {
 
 /* ── Personel Raporu ─────────────────────────────────────────────────────── */
 
-export function _computeRaporPersonel() {
+export function _computePersonnelReport() {
   var _katRenkHex = {
     Yakit:'#F59E0B', Yiyecek:'#22C55E', Ekipman:'#3B82F6',
     Sanat:'#E8962E', Ulasim:'#60A5FA', Diger:'#64748B',

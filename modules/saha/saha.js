@@ -7,7 +7,7 @@
 //
 // Bağımlılıklar (window globals — henüz index.html'den):
 //   notif, renderPeriod, renderDeptAdvance, _addToDeptPending,
-//   _pushNotif, updateNotifBadge, renderSuMesaj,
+//   _pushNotif, updateNotifBadge, renderFieldMessages,
 //   bFotolar, _bFotoRender,                (ocr.js modülünden)
 //   _escHtml,                              (sohbet bölümünden)
 //   deptApprove, deptReject, deptPartial,     (dept bölümünden)
@@ -32,7 +32,7 @@ export function suNav(id, el) {
     renderPeriod(APP.ui.aktifDon);
   } else if (id === 'mesaj') {
     document.getElementById('tab-mesaj').classList.add('on');
-    renderSuMesaj();
+    renderFieldMessages();
   }
 }
 

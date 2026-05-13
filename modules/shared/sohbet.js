@@ -6,7 +6,7 @@
 // Global dependencies (window üzerinden erişilir):
 // APP, notif, openM, closeM, saveAppData, showScr
 
-function _fmtSohbetZaman(ts) {
+function _fmtChatTime(ts) {
   if (!ts) return '';
   var d = new Date(ts);
   var now = new Date();
@@ -20,7 +20,7 @@ function _fmtSohbetZaman(ts) {
   return (d.getDate() < 10 ? '0' : '') + d.getDate() + '.' + (d.getMonth() + 1 < 10 ? '0' : '') + (d.getMonth() + 1);
 }
 
-function _getSohbetAdi(sohbet, userKey) {
+function _getChatName(sohbet, userKey) {
   if (sohbet.tip === 'grup') return sohbet.grupAdi || 'Grup';
   var diger = '';
   for (var i = 0; i < sohbet.katilimcilar.length; i++) {
@@ -30,7 +30,7 @@ function _getSohbetAdi(sohbet, userKey) {
   return u ? u.name : diger;
 }
 
-function _getSohbetOkunmamis(sohbet, userKey) {
+function _getChatUnread(sohbet, userKey) {
   var cnt = 0;
   var msgs = sohbet.mesajlar || [];
   for (var i = 0; i < msgs.length; i++) {
@@ -41,12 +41,12 @@ function _getSohbetOkunmamis(sohbet, userKey) {
   return cnt;
 }
 
-function _getSonMesaj(sohbet) {
+function _getLastMessage(sohbet) {
   var msgs = sohbet.mesajlar || [];
   return msgs.length ? msgs[msgs.length - 1] : null;
 }
 
-function _sohbetFiltre(userKey) {
+function _chatFilter(userKey) {
   var list = APP.data.sohbetler || [];
   if (userKey === 'm') return list;
   /* dept: kendi dept sohbetleri + muhasebeyle olanlar */
@@ -63,20 +63,20 @@ function _sohbetFiltre(userKey) {
   });
 }
 
-function _sohbetAvHtml(sohbet, userKey) {
+function _chatAvatarHtml(sohbet, userKey) {
   if (sohbet.tip === 'grup') {
     return '<div class="sohbet-av sohbet-av-grup">' +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' +
     '</div>';
   }
-  var adi = _getSohbetAdi(sohbet, userKey);
+  var adi = _getChatName(sohbet, userKey);
   var ini = adi.split(' ').map(function(w) { return w[0]; }).join('').toUpperCase().slice(0, 2);
   return '<div class="sohbet-av">' + ini + '</div>';
 }
 
-function renderSohbetListesi(containerEl, userKey) {
+function renderChatList(containerEl, userKey) {
   if (!containerEl) return;
-  var list = _sohbetFiltre(userKey);
+  var list = _chatFilter(userKey);
   if (!list.length) {
     containerEl.innerHTML = '<div class="sohbet-bos">Henüz sohbet yok</div>';
     return;
@@ -84,13 +84,13 @@ function renderSohbetListesi(containerEl, userKey) {
   var html = '';
   for (var i = 0; i < list.length; i++) {
     var s      = list[i];
-    var son    = _getSonMesaj(s);
-    var adi    = _getSohbetAdi(s, userKey);
-    var okunmamis = _getSohbetOkunmamis(s, userKey);
+    var son    = _getLastMessage(s);
+    var adi    = _getChatName(s, userKey);
+    var okunmamis = _getChatUnread(s, userKey);
     var onizleme  = son ? son.icerik : 'Mesaj yok';
-    var zaman     = son ? _fmtSohbetZaman(son.tarih) : '';
-    html += '<div class="sohbet-item" onclick="openSohbet(\'' + s.id + '\')">' +
-      _sohbetAvHtml(s, userKey) +
+    var zaman     = son ? _fmtChatTime(son.tarih) : '';
+    html += '<div class="sohbet-item" onclick="openChat(\'' + s.id + '\')">' +
+      _chatAvatarHtml(s, userKey) +
       '<div class="sohbet-body">' +
         '<div class="sohbet-adi">' + adi + '</div>' +
         '<div class="sohbet-onizleme">' + onizleme + '</div>' +
@@ -106,8 +106,8 @@ function renderSohbetListesi(containerEl, userKey) {
 
 /* ── Sohbet içi ekranı ── */
 
-var _aktifSohbetId = '';
-var _sicNearBottom = true;
+var _activeChatId = '';
+var _chatNearBottom = true;
 
 function _escHtml(s) {
   return String(s)
@@ -117,18 +117,18 @@ function _escHtml(s) {
     .replace(/"/g, '&quot;');
 }
 
-function openSohbet(id) {
+function openChat(id) {
   var sohbet = null;
   for (var i = 0; i < APP.data.sohbetler.length; i++) {
     if (APP.data.sohbetler[i].id === id) { sohbet = APP.data.sohbetler[i]; break; }
   }
   if (!sohbet) return;
-  _aktifSohbetId = id;
+  _activeChatId = id;
   var userKey = APP.ui.curUserKey || 's';
 
-  _sohbetMarkRead(sohbet, userKey);
+  _chatMarkRead(sohbet, userKey);
 
-  var adi = _getSohbetAdi(sohbet, userKey);
+  var adi = _getChatName(sohbet, userKey);
   document.getElementById('sic-adi').textContent = adi;
 
   var avEl = document.getElementById('sic-av');
@@ -141,11 +141,11 @@ function openSohbet(id) {
     avEl.textContent = ini;
   }
 
-  _renderSohbetIci(sohbet, userKey);
+  _renderChatBody(sohbet, userKey);
   openM('msohbet');
 
   setTimeout(function() {
-    _scrollSonaMesaj(true);
+    _scrollToLatestMsg(true);
     var txt = document.getElementById('sic-txt');
     if (txt) txt.focus();
   }, 60);
@@ -153,18 +153,18 @@ function openSohbet(id) {
   var mesajlarEl = document.getElementById('sic-mesajlar');
   if (mesajlarEl) {
     mesajlarEl.onscroll = function() {
-      _sicNearBottom = (this.scrollHeight - this.scrollTop - this.clientHeight) < 80;
+      _chatNearBottom = (this.scrollHeight - this.scrollTop - this.clientHeight) < 80;
     };
   }
 }
 
-function closeSohbet() {
+function closeChat() {
   closeM('msohbet');
-  _aktifSohbetId = '';
-  _refreshSohbetListeler();
+  _activeChatId = '';
+  _refreshChatLists();
 }
 
-function _sohbetMarkRead(sohbet, userKey) {
+function _chatMarkRead(sohbet, userKey) {
   var changed = false;
   var msgs = sohbet.mesajlar || [];
   for (var i = 0; i < msgs.length; i++) {
@@ -177,7 +177,7 @@ function _sohbetMarkRead(sohbet, userKey) {
   if (changed) saveAppData();
 }
 
-function _renderSohbetIci(sohbet, userKey) {
+function _renderChatBody(sohbet, userKey) {
   var el = document.getElementById('sic-mesajlar');
   if (!el) return;
   var msgs = sohbet.mesajlar || [];
@@ -189,7 +189,7 @@ function _renderSohbetIci(sohbet, userKey) {
   for (var i = 0; i < msgs.length; i++) {
     var m = msgs[i];
     var benMi = (m.gonderen === userKey);
-    var zaman = _fmtSohbetZaman(m.tarih);
+    var zaman = _fmtChatTime(m.tarih);
 
     /* Okundu göstergesi */
     var okuduHtml = '';
@@ -224,7 +224,7 @@ function _renderSohbetIci(sohbet, userKey) {
   el.innerHTML = html;
 }
 
-function sohbetGonder() {
+function chatSend() {
   var txtEl = document.getElementById('sic-txt');
   if (!txtEl) return;
   var icerik = txtEl.value.trim();
@@ -233,7 +233,7 @@ function sohbetGonder() {
   var userKey = APP.ui.curUserKey || 's';
   var sohbet = null;
   for (var i = 0; i < APP.data.sohbetler.length; i++) {
-    if (APP.data.sohbetler[i].id === _aktifSohbetId) { sohbet = APP.data.sohbetler[i]; break; }
+    if (APP.data.sohbetler[i].id === _activeChatId) { sohbet = APP.data.sohbetler[i]; break; }
   }
   if (!sohbet) return;
 
@@ -249,38 +249,38 @@ function sohbetGonder() {
   txtEl.value = '';
   txtEl.style.height = '';
 
-  _renderSohbetIci(sohbet, userKey);
-  _scrollSonaMesaj(true);
-  _refreshSohbetListeler();
+  _renderChatBody(sohbet, userKey);
+  _scrollToLatestMsg(true);
+  _refreshChatLists();
 }
 
-function sicAutoResize(el) {
+function chatInputAutoResize(el) {
   el.style.height = 'auto';
   el.style.height = Math.min(el.scrollHeight, 120) + 'px';
 }
 
-function sicKeydown(e) {
+function chatInputKeydown(e) {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
-    sohbetGonder();
+    chatSend();
   }
 }
 
-function _scrollSonaMesaj(force) {
+function _scrollToLatestMsg(force) {
   var el = document.getElementById('sic-mesajlar');
   if (!el) return;
-  if (force || _sicNearBottom) el.scrollTop = el.scrollHeight;
+  if (force || _chatNearBottom) el.scrollTop = el.scrollHeight;
 }
 
-function _refreshSohbetListeler() {
+function _refreshChatLists() {
   var userKey = APP.ui.curUserKey || 's';
 
   /* Saha nav dot */
   var dot = document.getElementById('ni-mesaj-dot');
   if (dot) {
-    var sList = _sohbetFiltre('s');
+    var sList = _chatFilter('s');
     var sTop = 0;
-    for (var i = 0; i < sList.length; i++) sTop += _getSohbetOkunmamis(sList[i], 's');
+    for (var i = 0; i < sList.length; i++) sTop += _getChatUnread(sList[i], 's');
     dot.style.background = sTop ? 'var(--rd)' : 'transparent';
   }
 
@@ -288,7 +288,7 @@ function _refreshSohbetListeler() {
   var tabMesaj = document.getElementById('tab-mesaj');
   if (tabMesaj && tabMesaj.classList.contains('on') && userKey === 's') {
     var suListe = document.getElementById('su-sohbet-liste');
-    if (suListe) renderSuMesaj();
+    if (suListe) renderFieldMessages();
   }
 
   /* Dept panel */
@@ -297,7 +297,7 @@ function _refreshSohbetListeler() {
 
   /* Acc sohbet listesi (sadece kısmı) */
   var saListe = document.getElementById('sa-sohbet-liste');
-  if (saListe) renderSohbetListesi(saListe, 'm');
+  if (saListe) renderChatList(saListe, 'm');
 }
 
 /* ── Sohbet listeleri — ekrana özel render ── */
@@ -309,24 +309,24 @@ function renderDeptMessages() {
   el.innerHTML =
     '<div class="sohbet-sec-hd-row">' +
       '<span class="sohbet-sec-hd">Sohbetler</span>' +
-      '<button class="btn btn-sm" onclick="openYeniSohbetModal()" style="padding:4px 10px;font-size:12px">+ Yeni</button>' +
+      '<button class="btn btn-sm" onclick="openNewChatModal()" style="padding:4px 10px;font-size:12px">+ Yeni</button>' +
     '</div>' +
     '<div id="sd-sohbet-liste"></div>';
-  renderSohbetListesi(document.getElementById('sd-sohbet-liste'), userKey);
+  renderChatList(document.getElementById('sd-sohbet-liste'), userKey);
 }
 
-function renderSuMesaj() {
+function renderFieldMessages() {
   var el = document.getElementById('su-sohbet-liste');
   if (!el) return;
   var userKey = APP.ui.curUserKey || 's';
-  var list = _sohbetFiltre(userKey);
+  var list = _chatFilter(userKey);
   el.innerHTML = '<div class="sohbet-sec-hd">Mesajlar</div>';
   var inner = document.createElement('div');
   el.appendChild(inner);
-  renderSohbetListesi(inner, userKey);
+  renderChatList(inner, userKey);
   /* okunmamış varsa nav dotunu renklendir */
   var toplamOkunmamis = 0;
-  for (var i = 0; i < list.length; i++) toplamOkunmamis += _getSohbetOkunmamis(list[i], userKey);
+  for (var i = 0; i < list.length; i++) toplamOkunmamis += _getChatUnread(list[i], userKey);
   var dot = document.getElementById('ni-mesaj-dot');
   if (dot) dot.style.background = toplamOkunmamis ? 'var(--rd)' : 'transparent';
 }
@@ -336,7 +336,7 @@ function renderSuMesaj() {
 
 /* ═══ YENİ SOHBET BAŞLATMA ═══ */
 
-function _yeniSohbetAliciListe(userKey) {
+function _newChatRecipientList(userKey) {
   var users  = APP.seed.users;
   var iniMap = {};
   for (var k in users) {
@@ -372,43 +372,43 @@ function _yeniSohbetAliciListe(userKey) {
   return result;
 }
 
-var _yeniSohbetTab = 'bireysel';
+var _newChatTab = 'bireysel';
 
-function openYeniSohbetModal() {
+function openNewChatModal() {
   var userKey = APP.ui.curUserKey || 'm';
   if (userKey === 's') return;
-  _yeniSohbetTab = 'bireysel';
-  _renderYeniSohbetTabs(userKey);
+  _newChatTab = 'bireysel';
+  _renderNewChatTabs(userKey);
   openM('myeni');
 }
 
-function _yeniTabSec(tab) {
-  _yeniSohbetTab = tab;
-  _renderYeniSohbetTabs(APP.ui.curUserKey || 'm');
+function _newChatTabSelect(tab) {
+  _newChatTab = tab;
+  _renderNewChatTabs(APP.ui.curUserKey || 'm');
 }
 
-function _renderYeniSohbetTabs(userKey) {
+function _renderNewChatTabs(userKey) {
   var el = document.getElementById('myeni-liste');
   if (!el) return;
-  var isBireysel = _yeniSohbetTab === 'bireysel';
+  var isBireysel = _newChatTab === 'bireysel';
   var html =
     '<div class="yeni-tabs">' +
-      '<button class="yeni-tab' + (isBireysel ? ' on' : '') + '" onclick="_yeniTabSec(\'bireysel\')">Bireysel</button>' +
-      '<button class="yeni-tab' + (!isBireysel ? ' on' : '') + '" onclick="_yeniTabSec(\'grup\')">Grup Kur</button>' +
+      '<button class="yeni-tab' + (isBireysel ? ' on' : '') + '" onclick="_newChatTabSelect(\'bireysel\')">Bireysel</button>' +
+      '<button class="yeni-tab' + (!isBireysel ? ' on' : '') + '" onclick="_newChatTabSelect(\'grup\')">Grup Kur</button>' +
     '</div>';
-  html += isBireysel ? _renderBireyselListe(userKey) : _renderGrupForm(userKey);
+  html += isBireysel ? _renderDirectList(userKey) : _renderGroupForm(userKey);
   el.innerHTML = html;
 }
 
-function _renderBireyselListe(userKey) {
-  var alicilar = _yeniSohbetAliciListe(userKey);
+function _renderDirectList(userKey) {
+  var alicilar = _newChatRecipientList(userKey);
   if (!alicilar.length) {
     return '<div style="padding:16px;color:var(--tx3);text-align:center">Uygun alıcı bulunamadı</div>';
   }
   var html = '';
   for (var i = 0; i < alicilar.length; i++) {
     var a = alicilar[i];
-    html += '<div class="yeni-s-row" onclick="startYeniSohbet(\'' + a.key + '\')">' +
+    html += '<div class="yeni-s-row" onclick="startNewChat(\'' + a.key + '\')">' +
       '<div class="sohbet-av">' + a.ini + '</div>' +
       '<div class="yeni-s-info">' +
         '<div class="yeni-s-name">' + a.name + '</div>' +
@@ -419,8 +419,8 @@ function _renderBireyselListe(userKey) {
   return html;
 }
 
-function _renderGrupForm(userKey) {
-  var alicilar = _yeniSohbetAliciListe(userKey);
+function _renderGroupForm(userKey) {
+  var alicilar = _newChatRecipientList(userKey);
   var html =
     '<div class="yeni-grup-form">' +
       '<input id="yeni-grup-adi" class="fgi" type="text" placeholder="Grup adı..." style="margin-bottom:12px">' +
@@ -441,12 +441,12 @@ function _renderGrupForm(userKey) {
     }
   }
   html +=
-      '<button class="btn btn-p btn-full" style="margin-top:14px;justify-content:center" onclick="yeniGrupOlustur()">Oluştur</button>' +
+      '<button class="btn btn-p btn-full" style="margin-top:14px;justify-content:center" onclick="createNewGroup()">Oluştur</button>' +
     '</div>';
   return html;
 }
 
-function yeniGrupOlustur() {
+function createNewGroup() {
   var userKey  = APP.ui.curUserKey || 'm';
   var adiEl    = document.getElementById('yeni-grup-adi');
   var grupAdi  = adiEl ? adiEl.value.trim() : '';
@@ -459,10 +459,10 @@ function yeniGrupOlustur() {
   APP.data.sohbetler.push(yeni);
   saveAppData();
   closeM('myeni');
-  openSohbet(yeni.id);
+  openChat(yeni.id);
 }
 
-function startYeniSohbet(hedefKey) {
+function startNewChat(hedefKey) {
   var userKey = APP.ui.curUserKey || 'm';
   var list    = APP.data.sohbetler || [];
   for (var i = 0; i < list.length; i++) {
@@ -472,7 +472,7 @@ function startYeniSohbet(hedefKey) {
         s.katilimcilar.indexOf(userKey)  !== -1 &&
         s.katilimcilar.indexOf(hedefKey) !== -1) {
       closeM('myeni');
-      openSohbet(s.id);
+      openChat(s.id);
       return;
     }
   }
@@ -480,34 +480,34 @@ function startYeniSohbet(hedefKey) {
   APP.data.sohbetler.push(yeni);
   saveAppData();
   closeM('myeni');
-  openSohbet(yeni.id);
+  openChat(yeni.id);
 }
 
 // === Window Exposure (HTML onclick + muhasebe.js erişimi için) ===
-window.renderSohbetListesi = renderSohbetListesi;
-window.openSohbet = openSohbet;
-window.closeSohbet = closeSohbet;
-window.sohbetGonder = sohbetGonder;
-window.openYeniSohbetModal = openYeniSohbetModal;
-window.startYeniSohbet = startYeniSohbet;
-window.yeniGrupOlustur = yeniGrupOlustur;
-window._yeniTabSec = _yeniTabSec;
-window.sicAutoResize = sicAutoResize;
-window.sicKeydown = sicKeydown;
+window.renderChatList = renderChatList;
+window.openChat = openChat;
+window.closeChat = closeChat;
+window.chatSend = chatSend;
+window.openNewChatModal = openNewChatModal;
+window.startNewChat = startNewChat;
+window.createNewGroup = createNewGroup;
+window._newChatTabSelect = _newChatTabSelect;
+window.chatInputAutoResize = chatInputAutoResize;
+window.chatInputKeydown = chatInputKeydown;
 window.renderDeptMessages = renderDeptMessages;
-window.renderSuMesaj = renderSuMesaj;
-window._fmtSohbetZaman = _fmtSohbetZaman;
-window._getSohbetAdi = _getSohbetAdi;
-window._getSohbetOkunmamis = _getSohbetOkunmamis;
-window._getSonMesaj = _getSonMesaj;
-window._sohbetFiltre = _sohbetFiltre;
-window._sohbetAvHtml = _sohbetAvHtml;
+window.renderFieldMessages = renderFieldMessages;
+window._fmtChatTime = _fmtChatTime;
+window._getChatName = _getChatName;
+window._getChatUnread = _getChatUnread;
+window._getLastMessage = _getLastMessage;
+window._chatFilter = _chatFilter;
+window._chatAvatarHtml = _chatAvatarHtml;
 window._escHtml = _escHtml;
-window._sohbetMarkRead = _sohbetMarkRead;
-window._renderSohbetIci = _renderSohbetIci;
-window._scrollSonaMesaj = _scrollSonaMesaj;
-window._refreshSohbetListeler = _refreshSohbetListeler;
-window._yeniSohbetAliciListe = _yeniSohbetAliciListe;
-window._renderYeniSohbetTabs = _renderYeniSohbetTabs;
-window._renderBireyselListe = _renderBireyselListe;
-window._renderGrupForm = _renderGrupForm;
+window._chatMarkRead = _chatMarkRead;
+window._renderChatBody = _renderChatBody;
+window._scrollToLatestMsg = _scrollToLatestMsg;
+window._refreshChatLists = _refreshChatLists;
+window._newChatRecipientList = _newChatRecipientList;
+window._renderNewChatTabs = _renderNewChatTabs;
+window._renderDirectList = _renderDirectList;
+window._renderGroupForm = _renderGroupForm;
