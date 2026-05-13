@@ -1,8 +1,8 @@
 // /modules/saha/donem.js
 // PRODAPP — Dönem Yönetimi (Adım 5 — kopyalama, index.html orijinaller yerinde)
 //
-// Kapsam: renderDonem (saha+dept+acc ortak), yeniDonem, donemKapa,
-//         istisna izni, geç işlem modal, _checkPasifOnay.
+// Kapsam: renderPeriod (saha+dept+acc ortak), newPeriod, closePeriod,
+//         istisna izni, geç işlem modal, _checkPassiveApproval.
 //
 // Çapraz-rol: Bu modül saha/dept/muhasebe üçü tarafından da kullanılır.
 //             Adım 5'te saha kapsamında çıkarıldı; dept/acc modülleri
@@ -21,7 +21,7 @@ import { KAT_IC, DOT } from '../core/constants.js';
 
 /* ═══ DÖNEM — SAHA GÖRÜNÜMÜ ═══ */
 
-export function renderDonem(did) {
+export function renderPeriod(did) {
   APP.ui.aktifDon = did;
   var d = APP.seed.donemler.find(function(x) { return x.id === did; });
   if (!d) return;
@@ -49,7 +49,7 @@ export function renderDonem(did) {
   var pillsEl = document.getElementById('don-pills');
   if (pillsEl) {
     pillsEl.innerHTML = APP.seed.donemler.map(function(x) {
-      return '<div class="dp' + (x.id === did ? ' on' : '') + '" onclick="renderDonem(' + x.id + ')">' +
+      return '<div class="dp' + (x.id === did ? ' on' : '') + '" onclick="renderPeriod(' + x.id + ')">' +
         x.n + (x.durum === 'aktif' ? ' Aktif' : ' Kapandı') +
       '</div>';
     }).join('');
@@ -176,7 +176,7 @@ export function renderDonem(did) {
           var durumClr  = iz.durum === 'aktif' ? 'var(--gr2)' : 'var(--rd2)';
           var durumTxt  = _durumLbl[iz.durum] || iz.durum;
           var iptalBtn  = iz.durum === 'aktif'
-            ? '<button class="btn btn-sm btn-r" style="font-size:10px;padding:3px 8px" onclick="istisnaIzniIptal(' + iz.id + ')">İptal</button>'
+            ? '<button class="btn btn-sm btn-r" style="font-size:10px;padding:3px 8px" onclick="cancelException(' + iz.id + ')">İptal</button>'
             : '';
           var limitBilgi = [];
           if (iz.maxAdet  !== null) limitBilgi.push(iz.girilenAdet  + '/' + iz.maxAdet  + ' belge');
@@ -197,7 +197,7 @@ export function renderDonem(did) {
       '</div>';
     }
     _istisnaBtn += '<div style="margin-top:8px">' +
-      '<button class="btn btn-sm" style="width:100%;justify-content:center;background:rgba(232,150,46,.12);color:var(--ac2);border:1px solid rgba(232,150,46,.3)" onclick="openIstisnaIzniModal(' + did + ')">🔓 İstisna İzni Ver</button>' +
+      '<button class="btn btn-sm" style="width:100%;justify-content:center;background:rgba(232,150,46,.12);color:var(--ac2);border:1px solid rgba(232,150,46,.3)" onclick="openExceptionPermitModal(' + did + ')">🔓 İstisna İzni Ver</button>' +
     '</div>';
   }
 
@@ -225,7 +225,7 @@ export function renderDonem(did) {
 
 /* ═══ DÖNEM YÖNETİMİ (muhasebe yetkili) ═══ */
 
-export function yeniDonem() {
+export function newPeriod() {
   if (!APP.ui.curUser || APP.ui.curUser.role !== 'acc') {
     notif('Dönem yönetimi sadece muhasebe yetkisindedir.', 'red'); return;
   }
@@ -239,12 +239,12 @@ export function yeniDonem() {
     var bekTop  = deptBek.length + accBek.length;
     if (bekTop > 0) {
       if (confirm(aktif.lbl + ' açık ve ' + bekTop + ' bekleyen var. Önce kapatılmalı. Devam edip kapatma modalını açayım mı?')) {
-        _dnKapamaModal(aktif.id);
+        _periodCloseModal(aktif.id);
       }
       return;
     }
     if (!confirm(aktif.lbl + ' açık ama bekleyeni yok. Otomatik kapatıp yeni dönem açayım mı?')) return;
-    donemKapa(aktif.id, 'Yeni dönem açılışı için otomatik kapama');
+    closePeriod(aktif.id, 'Yeni dönem açılışı için otomatik kapama');
   }
   var _ids  = APP.seed.donemler.map(function(x) { return x.id; });
   var yeniId = Math.max.apply(null, _ids) + 1;
@@ -263,7 +263,7 @@ export function yeniDonem() {
   APP.data.donemButce.unshift({ donem: yeniId, lbl: 'Dönem #' + yeniN, butce: 40000, harcanan: 0, reddedildi: 0, _lastPct: 0 });
   APP.ui.aktifDon = yeniId;
   saveAppData();
-  renderDonem(yeniId);
+  renderPeriod(yeniId);
   renderAccBek();
   _recomputeAccDepts();
   _pushNotif('s', 'bl', 'Yeni Dönem Açıldı', 'Dönem #' + yeniN + ' başladı.', 'Az önce · Sistem');
@@ -272,7 +272,7 @@ export function yeniDonem() {
   notif('Dönem #' + yeniN + ' açıldı', 'green');
 }
 
-export function donemKapa(donemId, sebep) {
+export function closePeriod(donemId, sebep) {
   if (!APP.ui.curUser || APP.ui.curUser.role !== 'acc') return;
   var d = APP.seed.donemler.find(function(x) { return x.id === donemId; });
   if (!d) return;
@@ -318,7 +318,7 @@ export function donemKapa(donemId, sebep) {
   }
 
   saveAppData();
-  renderDonem(donemId);
+  renderPeriod(donemId);
   _recomputeAccDepts();
   _pushNotif('s', 'kp', d.lbl + ' Kapatıldı', d.lbl + ' kapandı.', 'Az önce · Sistem');
   _pushNotif('d', 'kp', d.lbl + ' Kapatıldı', d.lbl + ' kapandı.', 'Az önce · Sistem');
@@ -326,7 +326,7 @@ export function donemKapa(donemId, sebep) {
   notif(d.lbl + ' kapatıldı', 'green');
 }
 
-export function _isDonemKapali(donemId) {
+export function _isPeriodClosed(donemId) {
   var d = APP.seed.donemler.find(function(x) { return x.id === donemId; });
   return !!(d && d.durum === 'kapali');
 }
@@ -335,7 +335,7 @@ export function _isDonemKapali(donemId) {
 
 var _istisnaDonemId = null;
 
-export function openIstisnaIzniModal(donemId) {
+export function openExceptionPermitModal(donemId) {
   _istisnaDonemId = donemId;
   var d = APP.seed.donemler.find(function(x) { return x.id === donemId; });
   var dLbl = d ? d.lbl : ('Dönem #' + donemId);
@@ -359,7 +359,7 @@ export function openIstisnaIzniModal(donemId) {
   openM('md-istisna-izni');
 }
 
-export function donemIstisnaIzniVer() {
+export function grantPeriodException() {
   var donemId  = _istisnaDonemId;
   var sel      = document.getElementById('istisna-kisi-sel');
   var sebepEl  = document.getElementById('istisna-sebep');
@@ -421,7 +421,7 @@ export function donemIstisnaIzniVer() {
   notif('İstisna izni verildi — ' + uyeObj.name, 'green');
 }
 
-export function _aktifIstisnaIzni(donemId, kisiAd) {
+export function _activeException(donemId, kisiAd) {
   for (var _ai = 0; _ai < APP.data.istisnaIzinleri.length; _ai++) {
     var _iz = APP.data.istisnaIzinleri[_ai];
     if (_iz.donemId === donemId && _iz.kisiAd === kisiAd && _iz.durum === 'aktif') return _iz;
@@ -429,7 +429,7 @@ export function _aktifIstisnaIzni(donemId, kisiAd) {
   return null;
 }
 
-export function _istisnaIzniGecerliMi(izin) {
+export function _isExceptionValid(izin) {
   var gecenSaat = (Date.now() - izin.baslangicTs) / (1000 * 60 * 60);
   if (gecenSaat >= izin.sure) { izin.durum = 'sureDoldu'; saveAppData(); return false; }
   if (izin.maxAdet  !== null && izin.girilenAdet  >= izin.maxAdet)  { izin.durum = 'adetDoldu';  saveAppData(); return false; }
@@ -437,14 +437,14 @@ export function _istisnaIzniGecerliMi(izin) {
   return true;
 }
 
-export function istisnaIzniIptal(izinId) {
+export function cancelException(izinId) {
   for (var _ii = 0; _ii < APP.data.istisnaIzinleri.length; _ii++) {
     if (APP.data.istisnaIzinleri[_ii].id === izinId) {
       APP.data.istisnaIzinleri[_ii].durum = 'iptal'; break;
     }
   }
   saveAppData();
-  renderDonem(APP.ui.aktifDon);
+  renderPeriod(APP.ui.aktifDon);
   notif('İstisna izni iptal edildi', 'amber');
 }
 
@@ -453,7 +453,7 @@ export function istisnaIzniIptal(izinId) {
 var _gecIslemCb      = null;
 var _dnKapamaDonemId = null;
 
-export function _gecIslemModal(donemId, islem, callback) {
+export function _lateEntryModal(donemId, islem, callback) {
   _gecIslemCb = callback;
   var d = APP.seed.donemler.find(function(x) { return x.id === donemId; });
   var dLbl = d ? d.lbl : ('Dönem #' + donemId);
@@ -464,7 +464,7 @@ export function _gecIslemModal(donemId, islem, callback) {
   openM('md-gec-islem');
 }
 
-export function _gecIslemUygula() {
+export function _lateEntryApply() {
   var ta    = document.getElementById('gec-islem-sebep');
   var sebep = ta ? ta.value.trim() : '';
   if (sebep.length < 10) { notif('Sebep en az 10 karakter olmalı', 'red'); return; }
@@ -472,7 +472,7 @@ export function _gecIslemUygula() {
   if (_gecIslemCb) { var cb = _gecIslemCb; _gecIslemCb = null; cb(sebep); }
 }
 
-export function _dnKapamaModal(donemId) {
+export function _periodCloseModal(donemId) {
   _dnKapamaDonemId = donemId;
   var d = APP.seed.donemler.find(function(x) { return x.id === donemId; });
   var dLbl = d ? d.lbl : ('Dönem #' + donemId);
@@ -508,22 +508,22 @@ export function _dnKapamaModal(donemId) {
       kapatBtn.disabled = false;
       kapatBtn.style.opacity = '';
       kapatBtn.style.cursor  = '';
-      kapatBtn.onclick = function() { _dnKapamaUygula(); };
+      kapatBtn.onclick = function() { _periodCloseApply(); };
     }
   }
   openM('md-donem-kapama');
 }
 
-export function _dnKapamaUygula() {
+export function _periodCloseApply() {
   var ta    = document.getElementById('dn-kapama-sebep');
   var sebep = ta ? ta.value.trim() : '';
   closeM('md-donem-kapama');
-  donemKapa(_dnKapamaDonemId, sebep);
+  closePeriod(_dnKapamaDonemId, sebep);
 }
 
 /* ═══ PASİF ONAY ═══ */
 
-export function _checkPasifOnay() {
+export function _checkPassiveApproval() {
   var simdi    = Date.now();
   var yedi_gun = 7 * 24 * 60 * 60 * 1000;
   var bir_gun  = 24 * 60 * 60 * 1000;
@@ -577,17 +577,17 @@ export function _checkPasifOnay() {
 
 /* ─── window global uyumluluk (inline onclick) ──────────────────────────── */
 
-window.renderDonem           = renderDonem;
-window.yeniDonem             = yeniDonem;
-window.donemKapa             = donemKapa;
-window._isDonemKapali        = _isDonemKapali;
-window.openIstisnaIzniModal  = openIstisnaIzniModal;
-window.donemIstisnaIzniVer   = donemIstisnaIzniVer;
-window._aktifIstisnaIzni     = _aktifIstisnaIzni;
-window._istisnaIzniGecerliMi = _istisnaIzniGecerliMi;
-window.istisnaIzniIptal      = istisnaIzniIptal;
-window._gecIslemModal        = _gecIslemModal;
-window._gecIslemUygula       = _gecIslemUygula;
-window._dnKapamaModal        = _dnKapamaModal;
-window._dnKapamaUygula       = _dnKapamaUygula;
-window._checkPasifOnay       = _checkPasifOnay;
+window.renderPeriod           = renderPeriod;
+window.newPeriod             = newPeriod;
+window.closePeriod             = closePeriod;
+window._isPeriodClosed        = _isPeriodClosed;
+window.openExceptionPermitModal  = openExceptionPermitModal;
+window.grantPeriodException   = grantPeriodException;
+window._activeException     = _activeException;
+window._isExceptionValid = _isExceptionValid;
+window.cancelException      = cancelException;
+window._lateEntryModal        = _lateEntryModal;
+window._lateEntryApply       = _lateEntryApply;
+window._periodCloseModal        = _periodCloseModal;
+window._periodCloseApply       = _periodCloseApply;
+window._checkPassiveApproval       = _checkPassiveApproval;

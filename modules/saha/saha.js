@@ -6,7 +6,7 @@
 //         lightbox, modal sistemi, kısmi onay, harcama detay modalı.
 //
 // Bağımlılıklar (window globals — henüz index.html'den):
-//   notif, renderDonem, renderDeptAdvance, _addToDeptPending,
+//   notif, renderPeriod, renderDeptAdvance, _addToDeptPending,
 //   _pushNotif, updateNotifBadge, renderSuMesaj,
 //   bFotolar, _bFotoRender,                (ocr.js modülünden)
 //   _escHtml,                              (sohbet bölümünden)
@@ -14,7 +14,7 @@
 //   accOnayla, accReddet, accKismi         (muhasebe bölümünden)
 
 import { APP }                   from '../core/state.js';
-import { _pad, _mkLog, _fmtLogZaman } from '../core/utils.js';
+import { _pad, _mkLog, _fmtLogTime } from '../core/utils.js';
 import { saveAppData }           from '../core/services/storage.service.js';
 import { KAT_IC, DOT, SD_KAT_LBL, DYN_PANEL_IDS } from '../core/constants.js';
 
@@ -29,14 +29,14 @@ export function suNav(id, el) {
     document.getElementById('tab-ana').classList.add('on');
   } else if (id === 'donem') {
     document.getElementById('tab-donem').classList.add('on');
-    renderDonem(APP.ui.aktifDon);
+    renderPeriod(APP.ui.aktifDon);
   } else if (id === 'mesaj') {
     document.getElementById('tab-mesaj').classList.add('on');
     renderSuMesaj();
   }
 }
 
-export function openNavSrch() {
+export function openNavSearch() {
   var srch = document.getElementById('nav-srch');
   var nav  = document.getElementById('su-nav');
   srch.classList.add('on');
@@ -60,7 +60,7 @@ export function closeNavSrch() {
   document.getElementById('ni-ana').classList.add('on');
 }
 
-export function srchList(q) {
+export function searchList(q) {
   var drop = document.getElementById('srch-drop');
   var lq   = (q || '').trim().toLowerCase();
   if (!lq) { drop.classList.remove('on'); drop.innerHTML = ''; return; }
@@ -90,7 +90,7 @@ export function srchList(q) {
       var bsz = d.belgesiz
         ? ' <span style="font-size:9px;background:rgba(59,130,246,.15);color:var(--bl2);border:1px solid rgba(59,130,246,.3);border-radius:3px;padding:1px 4px;font-weight:700;vertical-align:middle">BSZ</span>'
         : '';
-      return '<div class="srch-row" onclick="srchGoTo(' + d.id + ')">' +
+      return '<div class="srch-row" onclick="searchGoTo(' + d.id + ')">' +
         '<div class="srch-dot" style="background:' + dot + '"></div>' +
         '<div style="flex:1;min-width:0">' +
           '<div class="srch-name">' + d.satici + bsz + '</div>' +
@@ -106,12 +106,12 @@ export function srchList(q) {
   drop.classList.add('on');
 }
 
-export function srchGoTo(id) {
+export function searchGoTo(id) {
   var f = APP.data.fisler.find(function(x) { return x.id === id; });
   if (!f) return;
   closeNavSrch();
   suNav('donem', document.getElementById('ni-donem'));
-  renderDonem(f.donem);
+  renderPeriod(f.donem);
   setTimeout(function() {
     var _curName = APP.ui.curUser ? APP.ui.curUser.name : 'Mehmet Kaya';
     var myFis = APP.data.fisler.filter(function(x) { return x.donem === f.donem && x.personel === _curName; });
@@ -156,7 +156,7 @@ export function fisThumbnail(f) {
 
 /* ═══ SON HARCAMALAR ═══ */
 
-export function renderSahaButce() {
+export function renderFieldBudget() {
   var el = document.getElementById('su-butce-bar');
   if (!el) return;
   var b = null;
@@ -186,14 +186,14 @@ export function renderSahaButce() {
     '</div>';
 }
 
-export function _katHarcanan() {
+export function _categorySpent() {
   var h = {};
   var on = (APP.data.deptGecmis[2] && APP.data.deptGecmis[2].onaylandi) ? APP.data.deptGecmis[2].onaylandi : [];
   for (var i = 0; i < on.length; i++) h[on[i].kat] = (h[on[i].kat] || 0) + on[i].tutar;
   return h;
 }
 
-export function _katBekleyen() {
+export function _categoryPending() {
   var b = {};
   for (var i = 0; i < APP.data.deptBekleyen.length; i++) {
     var k = APP.data.deptBekleyen[i].kat;
@@ -202,7 +202,7 @@ export function _katBekleyen() {
   return b;
 }
 
-export function _checkKatLimit(kat, newTotal) {
+export function _checkCategoryLimit(kat, newTotal) {
   var km = null;
   for (var i = 0; i < APP.seed.katLimit.length; i++) { if (APP.seed.katLimit[i].kat === kat) { km = APP.seed.katLimit[i]; break; } }
   if (!km || !km.limit) return;
@@ -220,11 +220,11 @@ export function _checkKatLimit(kat, newTotal) {
   }
 }
 
-export function renderSahaKatLimits() {
+export function renderFieldCategoryLimits() {
   var el = document.getElementById('su-kat-bar');
   if (!el) return;
-  var katH   = _katHarcanan();
-  var katBek = _katBekleyen();
+  var katH   = _categorySpent();
+  var katBek = _categoryPending();
   var rows = [];
   for (var i = 0; i < APP.seed.katLimit.length; i++) {
     var km = APP.seed.katLimit[i];
@@ -251,8 +251,8 @@ export function renderSahaKatLimits() {
 }
 
 export function renderRecent() {
-  renderSahaButce();
-  renderSahaKatLimits();
+  renderFieldBudget();
+  renderFieldCategoryLimits();
   var _curName = APP.ui.curUser ? APP.ui.curUser.name : 'Mehmet Kaya';
   var mine = APP.data.fisler.filter(function(d) { return d.personel === _curName && d.donem === APP.ui.aktifDon; });
   var el = document.getElementById('recent-list');
@@ -297,7 +297,7 @@ export function _showDynPanel(p, kat) {
     if (el) el.style.display = 'block';
   }
   if (kat === 'Ulasim') {
-    if (p === 'b-') checkBUlasimLimit(); else checkUlasimLimit();
+    if (p === 'b-') checkDoclessTransportLimit(); else checkTransportLimit();
   }
 }
 
@@ -330,7 +330,7 @@ export function _detectKatFromFis(f) {
   return kat;
 }
 
-export function onKatChange() {
+export function onCategoryChange() {
   var kat = document.getElementById('f-kat');
   if (!kat) return;
   _showDynPanel('', kat.value);
@@ -374,13 +374,13 @@ export function _applyUlasimLimit(kmId, tipId, tutId, uyId) {
   }
 }
 
-export function checkUlasimLimit() {
+export function checkTransportLimit() {
   var kat = document.getElementById('f-kat');
   if (!kat || kat.value !== 'Ulasim') return;
   _applyUlasimLimit('ul-km', 'ul-tip', 'f-tutar', 'ul-uyari');
 }
 
-export function checkBUlasimLimit() {
+export function checkDoclessTransportLimit() {
   var kat = document.getElementById('b-kat');
   if (!kat || kat.value !== 'Ulasim') return;
   _applyUlasimLimit('b-ul-km', 'b-ul-tip', 'b-tutar', 'b-ul-uyari');
@@ -391,7 +391,7 @@ export function checkBUlasimLimit() {
 var _B_DEPT_MAP  = { yapim:'Yapım', kamera:'Kamera', sanat:'Sanat', ses:'Ses & Müzik', kostum:'Kostüm & Makyaj', diger:'Diğer' };
 var _B_DEPT_KEYS = ['yapim','kamera','sanat','ses','kostum','diger'];
 
-export function openBelgesizModal() {
+export function openDoclessModal() {
   _resetDynFields('b-');
   var kat = document.getElementById('b-kat');
   if (kat) kat.selectedIndex = 0;
@@ -414,7 +414,7 @@ export function openBelgesizModal() {
   openM('mb');
 }
 
-export function submitBelgesiz() {
+export function submitDocless() {
   var t = document.getElementById('b-tutar').value;
   if (!t) { notif('Tutar giriniz', 'red'); return; }
   var fotos = bFotolar.slice();
@@ -690,7 +690,7 @@ export function closeM(id) { document.getElementById(id).classList.remove('on');
 
 var _kismiPending = null;
 
-export function openKismi(kaynak, id) {
+export function openPartial(kaynak, id) {
   var src = kaynak === 'dept' ? APP.data.deptBekleyen : APP.data.accBekleyen;
   var item = null;
   for (var _ki = 0; _ki < src.length; _ki++) {
@@ -723,7 +723,7 @@ export function openKismi(kaynak, id) {
   openM('md-kismi');
 }
 
-export function kismiOnayla() {
+export function partialApprove() {
   if (!_kismiPending) return;
   var t = parseFloat(document.getElementById('md-kismi-tutar').value);
   var n = document.getElementById('md-kismi-neden').value.trim();
@@ -861,7 +861,7 @@ export function openFisDetay(id, ctx) {
           '<div class="fdet-log-ico">' + ico + '</div>' +
           '<div class="fdet-log-txt">' +
             '<div class="fdet-log-kisi">' + _escHtml(le.kisi) + ' <span style="font-weight:400;color:var(--tx3)">(' + _escHtml(le.rol) + ')</span></div>' +
-            '<div class="fdet-log-time">' + _fmtLogZaman(le.zaman) + '</div>' +
+            '<div class="fdet-log-time">' + _fmtLogTime(le.zaman) + '</div>' +
             (le.detay ? '<div class="fdet-log-detay">' + _escHtml(le.detay) + '</div>' : '') +
           '</div>' +
         '</div>';
@@ -875,19 +875,19 @@ export function openFisDetay(id, ctx) {
   if (actsEl) {
     var isAvans2 = f.tip === 'avans';
     var kismiBtn = !isAvans2
-      ? '<button class="btn" style="background:var(--ac);color:#fff" onclick="_fisDetAksiyon(\'kismi\')">½ Kısmi Onay</button>'
+      ? '<button class="btn" style="background:var(--ac);color:#fff" onclick="_receiptDetailAction(\'kismi\')">½ Kısmi Onay</button>'
       : '';
     if (ctx === 'dept') {
       actsEl.innerHTML =
-        '<button class="btn btn-g" onclick="_fisDetAksiyon(\'onayla\')">✓ Onayla</button>' +
+        '<button class="btn btn-g" onclick="_receiptDetailAction(\'onayla\')">✓ Onayla</button>' +
         kismiBtn +
-        '<button class="btn btn-r" onclick="_fisDetAksiyon(\'reddet\')">✕ Reddet</button>';
+        '<button class="btn btn-r" onclick="_receiptDetailAction(\'reddet\')">✕ Reddet</button>';
     } else {
       actsEl.innerHTML =
-        '<button class="btn btn-g" onclick="_fisDetAksiyon(\'onayla\')">' +
+        '<button class="btn btn-g" onclick="_receiptDetailAction(\'onayla\')">' +
           (isAvans2 ? '✓ Onayla & Aktar' : '✓ Onayla') + '</button>' +
         kismiBtn +
-        '<button class="btn btn-r" onclick="_fisDetAksiyon(\'reddet\')">✕ Reddet</button>';
+        '<button class="btn btn-r" onclick="_receiptDetailAction(\'reddet\')">✕ Reddet</button>';
     }
   }
 
@@ -905,44 +905,44 @@ export function _fdetFotoBuyut(fotoIdx, fid) {
   if (f && f.fotos && f.fotos[fotoIdx]) openLB(f.fotos[fotoIdx].dataUrl);
 }
 
-export function _fisDetAksiyon(tip) {
+export function _receiptDetailAction(tip) {
   closeM('md-fisdet');
   if (_fisDetCtx === 'dept') {
     if      (tip === 'onayla') deptApprove(_fisDetId);
     else if (tip === 'reddet') deptReject(_fisDetId);
-    else if (tip === 'kismi')  openKismi('dept', _fisDetId);
+    else if (tip === 'kismi')  openPartial('dept', _fisDetId);
   } else {
     if      (tip === 'onayla') accOnayla(_fisDetId);
     else if (tip === 'reddet') accReddet(_fisDetId);
-    else if (tip === 'kismi')  openKismi('acc', _fisDetId);
+    else if (tip === 'kismi')  openPartial('acc', _fisDetId);
   }
 }
 
 /* ─── window global uyumluluk (inline onclick) ──────────────────────────── */
 
 window.suNav              = suNav;
-window.openNavSrch        = openNavSrch;
+window.openNavSearch        = openNavSearch;
 window.closeNavSrch       = closeNavSrch;
-window.srchList           = srchList;
-window.srchGoTo           = srchGoTo;
+window.searchList           = searchList;
+window.searchGoTo           = searchGoTo;
 window.fisThumbnail       = fisThumbnail;
-window.renderSahaButce    = renderSahaButce;
-window.renderSahaKatLimits = renderSahaKatLimits;
-window._katHarcanan       = _katHarcanan;
-window._katBekleyen       = _katBekleyen;
-window._checkKatLimit     = _checkKatLimit;
+window.renderFieldBudget    = renderFieldBudget;
+window.renderFieldCategoryLimits = renderFieldCategoryLimits;
+window._categorySpent       = _categorySpent;
+window._categoryPending       = _categoryPending;
+window._checkCategoryLimit     = _checkCategoryLimit;
 window.renderRecent       = renderRecent;
 window._hideAllDynPanels  = _hideAllDynPanels;
 window._showDynPanel      = _showDynPanel;
 window._resetDynFields    = _resetDynFields;
 window._detectKatFromFis  = _detectKatFromFis;
-window.onKatChange        = onKatChange;
+window.onCategoryChange        = onCategoryChange;
 window.onBKatChange       = onBKatChange;
 window._applyUlasimLimit  = _applyUlasimLimit;
-window.checkUlasimLimit   = checkUlasimLimit;
-window.checkBUlasimLimit  = checkBUlasimLimit;
-window.openBelgesizModal  = openBelgesizModal;
-window.submitBelgesiz     = submitBelgesiz;
+window.checkTransportLimit   = checkTransportLimit;
+window.checkDoclessTransportLimit  = checkDoclessTransportLimit;
+window.openDoclessModal  = openDoclessModal;
+window.submitDocless     = submitDocless;
 window.submitAvans        = submitAvans;
 window.simGIB             = simGIB;
 window.initSig            = initSig;
@@ -955,8 +955,8 @@ window.openLB             = openLB;
 window.closeLB            = closeLB;
 window.openM              = openM;
 window.closeM             = closeM;
-window.openKismi          = openKismi;
-window.kismiOnayla        = kismiOnayla;
+window.openPartial          = openPartial;
+window.partialApprove        = partialApprove;
 window.openFisDetay       = openFisDetay;
 window._fdetFotoBuyut     = _fdetFotoBuyut;
-window._fisDetAksiyon     = _fisDetAksiyon;
+window._receiptDetailAction     = _receiptDetailAction;

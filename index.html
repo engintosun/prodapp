@@ -2324,7 +2324,7 @@ body {
       <div class="av-top-name" id="av-name">Mehmet Kaya</div>
       <div class="av-top-role">👷 Saha Personeli</div>
     </div>
-    <div class="av-item" onclick="openProfil()">
+    <div class="av-item" onclick="openProfile()">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       Profil
     </div>
@@ -2357,7 +2357,7 @@ body {
       </div>
     </div>
     <div class="su-hd-right">
-      <div class="su-ib" onclick="openNotifModal()">
+      <div class="su-ib" onclick="openNotificationModal()">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <div class="su-badge" id="su-badge"></div>
       </div>
@@ -2398,7 +2398,7 @@ body {
             <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
             Galeriden Seç
           </div>
-          <div class="ocr-sub-item" onclick="closeSub(); openBelgesizModal()">
+          <div class="ocr-sub-item" onclick="closeSub(); openDoclessModal()">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
             Belgesiz Harcama
           </div>
@@ -2417,7 +2417,7 @@ body {
           </div>
           <span class="qbtn-lbl">Galeri</span>
         </button>
-        <button class="qbtn" onclick="openBelgesizModal()">
+        <button class="qbtn" onclick="openDoclessModal()">
           <div class="qbtn-ic">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
           </div>
@@ -2471,7 +2471,7 @@ body {
         </div>
       </div>
 
-      <div class="yeni-donem-btn" onclick="yeniDonem()">
+      <div class="yeni-donem-btn" onclick="newPeriod()">
         + Yeni Dönem Başlat
       </div>
     </div>
@@ -2497,7 +2497,7 @@ body {
         id="nav-srch-inp"
         placeholder="Fiş ara — satıcı, tarih, tutar..."
         autocomplete="off"
-        oninput="srchList(this.value)"
+        oninput="searchList(this.value)"
       >
       <div class="nav-srch-x" onclick="closeNavSrch()">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -2513,7 +2513,7 @@ body {
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         <div class="ni-dot"></div>
       </div>
-      <div class="ni" id="ni-ara" onclick="openNavSrch()">
+      <div class="ni" id="ni-ara" onclick="openNavSearch()">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <div class="ni-dot"></div>
       </div>
@@ -2533,7 +2533,7 @@ body {
   <!-- Header -->
   <div class="sd-hd">
     <div class="sd-hd-left">
-      <div class="sd-hd-av" id="sd-hd-av" onclick="openSdProfil()">ZA</div>
+      <div class="sd-hd-av" id="sd-hd-av" onclick="openDeptProfile()">ZA</div>
       <div>
         <div class="sd-hd-prj" id="sd-hd-prj">İstanbul Gecesi</div>
         <div class="sd-hd-role" id="sd-hd-role">Dept. Sorumlusu · Yapım</div>
@@ -2544,7 +2544,7 @@ body {
         <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
       </div>
-      <div class="su-ib" onclick="openNotifModal()">
+      <div class="su-ib" onclick="openNotificationModal()">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <div class="su-badge" id="sd-badge"></div>
       </div>
@@ -2590,7 +2590,7 @@ body {
   <!-- Header -->
   <div class="sa-hd">
     <div class="sa-hd-left">
-      <div class="sa-hd-av" id="sa-hd-av" onclick="openSaProfil()">MH</div>
+      <div class="sa-hd-av" id="sa-hd-av" onclick="openAccProfile()">MH</div>
       <div>
         <div class="sa-hd-prj" id="sa-hd-prj">İstanbul Gecesi</div>
         <div class="sa-hd-role">Muhasebe · Tüm Departmanlar</div>
@@ -2601,7 +2601,7 @@ body {
         <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
       </div>
-      <div class="su-ib" onclick="openNotifModal()">
+      <div class="su-ib" onclick="openNotificationModal()">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <div class="su-badge" id="sa-badge"></div>
       </div>
@@ -2670,7 +2670,7 @@ body {
         </div>
         <div class="fr2">
           <div class="fg"><label>Satıcı</label><input class="fgi" id="f-satici" type="text"></div>
-          <div class="fg"><label>Tutar (₺)</label><input class="fgi" id="f-tutar" type="text" oninput="checkUlasimLimit()"></div>
+          <div class="fg"><label>Tutar (₺)</label><input class="fgi" id="f-tutar" type="text" oninput="checkTransportLimit()"></div>
         </div>
         <div class="fr2">
           <div class="fg"><label>KDV</label><input class="fgi" id="f-kdv" type="text"></div>
@@ -2680,7 +2680,7 @@ body {
           <div class="fg"><label>Fiş No</label><input class="fgi" id="f-fisno" type="text"></div>
           <div class="fg">
             <label>Kategori</label>
-            <select class="fgi" id="f-kat" onchange="onKatChange()">
+            <select class="fgi" id="f-kat" onchange="onCategoryChange()">
               <option value="Yakit">⛽ Yakıt</option>
               <option value="Yiyecek">🍽 Yiyecek/Yemek</option>
               <option value="Ekipman">🔧 Ekipman</option>
@@ -2699,10 +2699,10 @@ body {
             <div class="fg"><label>Varış Noktası</label><input class="fgi" id="ul-varis" type="text" placeholder="Varış yeri"></div>
           </div>
           <div class="fr2">
-            <div class="fg"><label>Mesafe (km)</label><input class="fgi" id="ul-km" type="number" min="0" step="1" placeholder="0" oninput="checkUlasimLimit()"></div>
+            <div class="fg"><label>Mesafe (km)</label><input class="fgi" id="ul-km" type="number" min="0" step="1" placeholder="0" oninput="checkTransportLimit()"></div>
             <div class="fg">
               <label>Güzergâh</label>
-              <select class="fgi" id="ul-tip" onchange="checkUlasimLimit()">
+              <select class="fgi" id="ul-tip" onchange="checkTransportLimit()">
                 <option value="ic">🏙 Şehiriçi (max 15₺/km)</option>
                 <option value="dis">🛣 Şehirdışı (max 25₺/km)</option>
               </select>
@@ -2783,7 +2783,7 @@ body {
     <div class="mbody">
       <div class="al al-am" style="margin-bottom:12px"><span>⚠️</span><div>Belgesiz harcama muhasebe onayına tabidir ve raporlara işlenir.</div></div>
       <div class="fr2">
-        <div class="fg"><label>Tutar (₺)</label><input class="fgi" type="number" id="b-tutar" placeholder="0.00" oninput="checkBUlasimLimit()"></div>
+        <div class="fg"><label>Tutar (₺)</label><input class="fgi" type="number" id="b-tutar" placeholder="0.00" oninput="checkDoclessTransportLimit()"></div>
         <div class="fg">
           <label>Kategori</label>
           <select class="fgi" id="b-kat" onchange="onBKatChange()">
@@ -2805,10 +2805,10 @@ body {
           <div class="fg"><label>Varış Noktası</label><input class="fgi" id="b-ul-varis" type="text" placeholder="Varış yeri"></div>
         </div>
         <div class="fr2">
-          <div class="fg"><label>Mesafe (km)</label><input class="fgi" id="b-ul-km" type="number" min="0" step="1" placeholder="0" oninput="checkBUlasimLimit()"></div>
+          <div class="fg"><label>Mesafe (km)</label><input class="fgi" id="b-ul-km" type="number" min="0" step="1" placeholder="0" oninput="checkDoclessTransportLimit()"></div>
           <div class="fg">
             <label>Güzergâh</label>
-            <select class="fgi" id="b-ul-tip" onchange="checkBUlasimLimit()">
+            <select class="fgi" id="b-ul-tip" onchange="checkDoclessTransportLimit()">
               <option value="ic">🏙 Şehiriçi (max 15₺/km)</option>
               <option value="dis">🛣 Şehirdışı (max 25₺/km)</option>
             </select>
@@ -2881,7 +2881,7 @@ body {
           <div style="flex:2;background:var(--bg3);border:1px solid var(--bo);border-radius:var(--rs);padding:6px 10px;font-size:12px;color:var(--tx3);display:flex;align-items:center" id="sig2-st">✍️ İmzalanmadı</div>
         </div>
       </div>
-      <button class="btn btn-p btn-full" onclick="submitBelgesiz()" style="margin-bottom:4px">⚠️ Bildir</button>
+      <button class="btn btn-p btn-full" onclick="submitDocless()" style="margin-bottom:4px">⚠️ Bildir</button>
     </div>
   </div>
 </div>
@@ -3008,7 +3008,7 @@ body {
       <!-- Butonlar -->
       <div style="display:flex;gap:8px;margin-top:8px;padding-bottom:4px">
         <button class="btn" onclick="closeM('mprofil')" style="flex:1;justify-content:center">İptal</button>
-        <button class="btn btn-p" onclick="submitProfil()" style="flex:2;justify-content:center">
+        <button class="btn btn-p" onclick="submitProfile()" style="flex:2;justify-content:center">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
           Kaydet
         </button>
@@ -3031,7 +3031,7 @@ body {
       <div class="al-rd" style="margin-bottom:12px">Tüm veriler silinip demo verisine dönülecek. Bu işlem geri alınamaz.</div>
       <div style="display:flex;gap:8px;margin-top:4px">
         <button class="btn btn-sm" onclick="closeM('md-demo-reset')" style="flex:1;justify-content:center">İptal</button>
-        <button class="btn btn-r btn-sm" onclick="demoVeriOnay()" style="flex:1;justify-content:center">Evet, Sıfırla</button>
+        <button class="btn btn-r btn-sm" onclick="demoDataConfirm()" style="flex:1;justify-content:center">Evet, Sıfırla</button>
       </div>
     </div>
   </div>
@@ -3215,7 +3215,7 @@ body {
     </div>
     <div style="display:flex;gap:8px;margin-top:4px">
       <button class="btn btn-sm" onclick="closeM('md-kismi')" style="flex:1;justify-content:center">Vazgeç</button>
-      <button class="btn btn-p btn-sm" onclick="kismiOnayla()" style="flex:1;justify-content:center">Uygula</button>
+      <button class="btn btn-p btn-sm" onclick="partialApprove()" style="flex:1;justify-content:center">Uygula</button>
     </div>
   </div>
 </div>
@@ -3305,7 +3305,7 @@ body {
       </div>
       <div style="display:flex;gap:8px;margin-top:4px">
         <button class="btn btn-sm" onclick="closeM('md-donem-kapama')" style="flex:1;justify-content:center">Vazgeç</button>
-        <button class="btn btn-sm btn-r" id="dn-kapama-btn" onclick="_dnKapamaUygula()" style="flex:1;justify-content:center">Kapat</button>
+        <button class="btn btn-sm btn-r" id="dn-kapama-btn" onclick="_periodCloseApply()" style="flex:1;justify-content:center">Kapat</button>
       </div>
     </div>
   </div>
@@ -3332,7 +3332,7 @@ body {
       </div>
       <div style="display:flex;gap:8px;margin-top:4px">
         <button class="btn btn-sm" onclick="closeM('md-gec-islem');window._gecIslemCb=null;" style="flex:1;justify-content:center">Vazgeç</button>
-        <button class="btn btn-sm btn-p" onclick="_gecIslemUygula()" style="flex:1;justify-content:center">Devam Et</button>
+        <button class="btn btn-sm btn-p" onclick="_lateEntryApply()" style="flex:1;justify-content:center">Devam Et</button>
       </div>
     </div>
   </div>
@@ -3377,7 +3377,7 @@ body {
       </div>
       <div style="display:flex;gap:8px;margin-top:12px">
         <button class="btn btn-sm" onclick="closeM('md-istisna-izni')" style="flex:1;justify-content:center">Vazgeç</button>
-        <button class="btn btn-sm btn-p" onclick="donemIstisnaIzniVer()" style="flex:1;justify-content:center">İzin Ver</button>
+        <button class="btn btn-sm btn-p" onclick="grantPeriodException()" style="flex:1;justify-content:center">İzin Ver</button>
       </div>
     </div>
   </div>
@@ -4615,7 +4615,7 @@ function _avatarRemove() {
 /* ═══ PROFİL ═══ */
 
 /* Ortak: form alanlarını doldur + avatar satırını güncelle */
-function _profilFill() {
+function _profileFill() {
   document.getElementById('p-ad').value    = APP.ui.curUser.ad    || '';
   document.getElementById('p-soyad').value = APP.ui.curUser.soyad || '';
   document.getElementById('p-tel').value   = APP.ui.curUser.tel   || '';
@@ -4636,17 +4636,17 @@ function _profilFill() {
 }
 
 /* Saha — avatar menüsünden */
-function openProfil() {
+function openProfile() {
   closeAvMenu();
   if (!APP.ui.curUser) return;
-  _profilFill();
+  _profileFill();
   openM('mprofil');
 }
 
 /* Dept — header avatarından */
-function openSdProfil() {
+function openDeptProfile() {
   if (!APP.ui.curUser) return;
-  _profilFill();
+  _profileFill();
 
   /* Departman özeti bölümünü göster ve doldur */
   var sec = document.getElementById('p-dept-section');
@@ -4682,9 +4682,9 @@ function openSdProfil() {
 }
 
 /* Muhasebe — header avatarından */
-function openSaProfil() {
+function openAccProfile() {
   if (!APP.ui.curUser) return;
-  _profilFill();
+  _profileFill();
 
   /* Proje & dönem bölümünü göster ve doldur */
   document.getElementById('p-acc-section').style.display = '';
@@ -4722,7 +4722,7 @@ function openSaProfil() {
   openM('mprofil');
 }
 
-function submitProfil() {
+function submitProfile() {
   if (!APP.ui.curUser) return;
   var ad    = (document.getElementById('p-ad').value    || '').trim();
   var soyad = (document.getElementById('p-soyad').value || '').trim();
@@ -4920,7 +4920,7 @@ document.getElementById('lb').addEventListener('click', function(e) {
 
 
 /* ═══ EKİP ÜYESİ PROFİL MODALI ═══ */
-function openUyeProfil(uyeId) {
+function openMemberProfile(uyeId) {
   var u = null;
   for (var i = 0; i < APP.seed.deptEkip.length; i++) {
     if (APP.seed.deptEkip[i].id === uyeId) { u = APP.seed.deptEkip[i]; break; }
@@ -5067,13 +5067,13 @@ function markNotifRead(id) {
     if (APP.ui.notiflar[i].id === id && !APP.ui.notiflar[i].read) {
       APP.ui.notiflar[i].read = true;
       updateNotifBadge();
-      renderNotifModal();
+      renderNotificationModal();
       break;
     }
   }
 }
 
-function renderNotifModal() {
+function renderNotificationModal() {
   var el = document.getElementById('mnotif-body');
   if (!el) return;
   var unread = 0;
@@ -5100,8 +5100,8 @@ function renderNotifModal() {
   el.innerHTML = html;
 }
 
-function openNotifModal() {
-  renderNotifModal();
+function openNotificationModal() {
+  renderNotificationModal();
   openM('mnotif');
 }
 /* ESC ile kapat */
@@ -5289,20 +5289,20 @@ window._avatarPickFile = _avatarPickFile;
 window._avatarFileChange = _avatarFileChange;
 window._avatarProcess = _avatarProcess;
 window._avatarRemove = _avatarRemove;
-window._profilFill = _profilFill;
-window.openProfil = openProfil;
-window.openSdProfil = openSdProfil;
-window.openSaProfil = openSaProfil;
-window.submitProfil = submitProfil;
+window._profileFill = _profileFill;
+window.openProfile = openProfile;
+window.openDeptProfile = openDeptProfile;
+window.openAccProfile = openAccProfile;
+window.submitProfile = submitProfile;
 window.toggleAvMenu = toggleAvMenu;
 window.closeAvMenu = closeAvMenu;
 window.checkKiralamaBit = checkKiralamaBit;
-window.openUyeProfil = openUyeProfil;
+window.openMemberProfile = openMemberProfile;
 window._pushNotif = _pushNotif;
 window.updateNotifBadge = updateNotifBadge;
 window.markNotifRead = markNotifRead;
-window.renderNotifModal = renderNotifModal;
-window.openNotifModal = openNotifModal;
+window.renderNotificationModal = renderNotificationModal;
+window.openNotificationModal = openNotificationModal;
 window.notif = notif;
 
 /* ═══ WINDOW EXPOSE — index.html var'ları ═══ */
@@ -5313,7 +5313,7 @@ window._gecIslemCb = null;
 
 /* ═══ BAŞLAT ═══ */
 (function init() {
-  _checkPasifOnay();
+  _checkPassiveApproval();
   /* kayıtlı temayı uygula */
   var savedTheme = localStorage.getItem('prodapp-theme');
   if (savedTheme) applyTheme(savedTheme);

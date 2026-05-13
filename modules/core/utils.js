@@ -37,7 +37,7 @@ export function _todayISO() {
 }
 
 // İki ISO tarih arasındaki gün farkı (b - a); negatif = b geçmişte
-export function _gunFarki(a, b) {
+export function _dayDiff(a, b) {
   var ms = new Date(b).getTime() - new Date(a).getTime();
   return Math.floor(ms / 86400000);
 }
@@ -57,7 +57,7 @@ export function _formatKiraTarih(dateStr) {
 }
 
 // Log timestamp: ms → "DD.MM HH:MM"
-export function _fmtLogZaman(ts) {
+export function _fmtLogTime(ts) {
   var d = new Date(ts);
   return _pad(d.getDate()) + '.' + _pad(d.getMonth()+1) + ' ' + _pad(d.getHours()) + ':' + _pad(d.getMinutes());
 }
@@ -103,7 +103,7 @@ export function _setAvEl(el, user, userKey) {
 export function _kiraDurum(k) {
   if (k.iade) return 'iade';
   var today = _todayISO();
-  var fark  = _gunFarki(today, k.bit);
+  var fark  = _dayDiff(today, k.bit);
   if (fark < 0)  return 'gec';
   if (fark <= 2) return 'yak';
   return 'ak';
@@ -114,7 +114,7 @@ export function _kiraDurum(k) {
 export function _kiraCeza(k) {
   if (k.iade) return { gecGun: k.cezaGun || 0, ceza: k.cezaTutar || 0 };
   if (_kiraDurum(k) !== 'gec') return { gecGun: 0, ceza: 0 };
-  var gecGun = Math.abs(_gunFarki(_todayISO(), k.bit));
+  var gecGun = Math.abs(_dayDiff(_todayISO(), k.bit));
   return { gecGun: gecGun, ceza: gecGun * k.gunluk };
 }
 

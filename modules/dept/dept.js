@@ -10,17 +10,17 @@
 // Bağımlılıklar (window globals — henüz index.html'den):
 //   notif, openM, closeM, updateNotifBadge, _pushNotif,
 //   _setAvEl,                              (auth bölümünden)
-//   _katHarcanan, _katBekleyen, _checkKatLimit,  (saha.js'ten)
-//   _checkPasifOnay, _isDonemKapali,       (donem.js'ten)
-//   _aktifIstisnaIzni, _istisnaIzniGecerliMi,    (donem.js'ten)
-//   openFisDetay, openUyeProfil,           (saha.js'ten)
+//   _categorySpent, _categoryPending, _checkCategoryLimit,  (saha.js'ten)
+//   _checkPassiveApproval, _isPeriodClosed,       (donem.js'ten)
+//   _activeException, _isExceptionValid,    (donem.js'ten)
+//   openFisDetay, openMemberProfile,           (saha.js'ten)
 //   showExportModal,                       (export.js'ten)
 //   renderAccBek, renderAccAvans,          (muhasebe bölümünden)
 //   renderDeptMessages,                       (sohbet bölümünden)
 //   window._avRedPending                          (global var)
 
 import { APP }                              from '../core/state.js';
-import { _mkLog, _todayISO, _gunFarki,
+import { _mkLog, _todayISO, _dayDiff,
          _kiraDurum as _rentalStatus, _kiraCeza as _rentalPenalty } from '../core/utils.js';
 import { saveAppData }                      from '../core/services/storage.service.js';
 import { SD_KAT_CLR, SD_KAT_LBL }          from '../core/constants.js';
@@ -116,7 +116,7 @@ export function advanceRejectCancel() {
   closeM('md-av-red');
 }
 
-export function demoVeriOnay() {
+export function demoDataConfirm() {
   localStorage.removeItem('prodapp-data');
   location.reload();
 }
@@ -147,7 +147,7 @@ export function _checkBudgetWarning(b, bekTop) {
 /* ═══ DEPT EKRANI ANA RENDER ═══ */
 
 export function renderDept() {
-  _checkPasifOnay();
+  _checkPassiveApproval();
   APP.ui.sdSec = {};
   APP.ui.sdSeciliDonem = 2;
   var av  = document.getElementById('sd-hd-av');
@@ -194,7 +194,7 @@ export function openDeptOCR() {
 
 export function openDeptDocless() {
   APP.ui.sdMode = true;
-  openBelgesizModal();
+  openDoclessModal();
 }
 
 /* ═══ DEPT BEKLEYENLERİ EKLEME ═══ */
@@ -204,9 +204,9 @@ export function _addToDeptPending(satici, kat, tutar, belgesiz, aciklama, fotos,
   var ini = APP.ui.curUser ? APP.ui.curUser.ini  : 'DS';
 
   /* Kapalı dönem — istisna izni kontrolü */
-  if (APP.ui.curUser && APP.ui.curUser.role === 'user' && _isDonemKapali(APP.ui.aktifDon)) {
-    var _izin = _aktifIstisnaIzni(APP.ui.aktifDon, uye);
-    if (!_izin || !_istisnaIzniGecerliMi(_izin)) {
+  if (APP.ui.curUser && APP.ui.curUser.role === 'user' && _isPeriodClosed(APP.ui.aktifDon)) {
+    var _izin = _activeException(APP.ui.aktifDon, uye);
+    if (!_izin || !_isExceptionValid(_izin)) {
       notif('Bu dönem kapanmış. Yeni fiş eklenemez.', 'red'); return;
     }
     /* İzin geçerli — dept atlayarak doğrudan accBekleyen'e */
@@ -304,8 +304,8 @@ export function renderDeptSummary() {
     } else if (pct >= 80) {
       uyariBan = '<div class="sd-butce-uyari-ban bk-am">⚠ Bütçenin %' + pctExact + '\'i kullanıldı — harcamaları yavaşlatın</div>';
     }
-    var katH   = _katHarcanan();
-    var katBek = _katBekleyen();
+    var katH   = _categorySpent();
+    var katBek = _categoryPending();
     var katRows = '';
     for (var ki = 0; ki < APP.seed.katLimit.length; ki++) {
       var km = APP.seed.katLimit[ki];
@@ -584,8 +584,8 @@ export function deptApproveSelected() {
     for (var i = 0; i < APP.data.deptBekleyen.length; i++) bt += APP.data.deptBekleyen[i].tutar;
     _checkBudgetWarning(ob, bt);
   }
-  var newH2 = _katHarcanan();
-  for (var ki = 0; ki < APP.seed.katLimit.length; ki++) _checkKatLimit(APP.seed.katLimit[ki].kat, newH2[APP.seed.katLimit[ki].kat] || 0);
+  var newH2 = _categorySpent();
+  for (var ki = 0; ki < APP.seed.katLimit.length; ki++) _checkCategoryLimit(APP.seed.katLimit[ki].kat, newH2[APP.seed.katLimit[ki].kat] || 0);
   _pushNotif('m', 'bl', 'Dept Onayı — ' + cnt + ' Harcama',
     _curDeptName() + ' departmanı ' + cnt + ' harcamayı (₺' + top.toLocaleString('tr-TR') + ') onayladı. Muhasebe onayına hazır.',
     'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Dept') + ' (Dept)');
@@ -648,7 +648,7 @@ export function renderDeptCrew() {
   }
   var rows = APP.seed.deptEkip.map(function(u) {
     var bek = bekMap[u.name] || 0;
-    return '<div class="sd-uye" onclick="openUyeProfil(\'' + u.id + '\')">' +
+    return '<div class="sd-uye" onclick="openMemberProfile(\'' + u.id + '\')">' +
       '<div class="sd-uye-av">' + u.ini + '</div>' +
       '<div>' +
         '<div class="sd-uye-name">' + u.name + '</div>' +
@@ -850,7 +850,7 @@ export function renderDeptRental() {
 
   function kiraCard(k) {
     var dur   = _rentalStatus(k);
-    var kalan = _gunFarki(today, k.bit);
+    var kalan = _dayDiff(today, k.bit);
     var c     = _rentalPenalty(k);
     var tagCls, tagTxt;
     if      (dur === 'gec') { tagCls = 'sd-kira-tag sd-kira-tag-gec'; tagTxt = c.gecGun + ' gün gecikmiş'; }
@@ -1044,7 +1044,7 @@ export function deptApprove(id) {
     if (APP.data.deptBekleyen[i].id !== id) continue;
     var f     = APP.data.deptBekleyen[i];
     var _fDon = f.donem !== undefined ? f.donem : APP.ui.aktifDon;
-    if (_isDonemKapali(_fDon)) {
+    if (_isPeriodClosed(_fDon)) {
       notif('Bu dönem kapanmış. Dept rolünde işlem yapılamaz. Muhasebeye yönlendirin.', 'red'); return;
     }
     APP.data.deptBekleyen.splice(i, 1);
@@ -1079,8 +1079,8 @@ export function deptApprove(id) {
     _pushNotif('m', 'bl', 'Dept Onayı — Yeni Harcama',
       f.satici + ' (₺' + f.tutar.toLocaleString('tr-TR') + ') dept onayından geçti.',
       'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Dept') + ' (Dept)');
-    var newH = _katHarcanan();
-    _checkKatLimit(f.kat, newH[f.kat] || 0);
+    var newH = _categorySpent();
+    _checkCategoryLimit(f.kat, newH[f.kat] || 0);
     updateNotifBadge();
     notif(f.satici + ' onaylandı', 'green');
     saveAppData();
@@ -1094,7 +1094,7 @@ export function deptReject(id) {
     if (APP.data.deptBekleyen[i].id !== id) continue;
     var f      = APP.data.deptBekleyen[i];
     var _fDon2 = f.donem !== undefined ? f.donem : APP.ui.aktifDon;
-    if (_isDonemKapali(_fDon2)) {
+    if (_isPeriodClosed(_fDon2)) {
       notif('Bu dönem kapanmış. Dept rolünde işlem yapılamaz. Muhasebeye yönlendirin.', 'red'); return;
     }
     var redNedeni = (prompt('Red nedeni girin:') || '').trim();
@@ -1137,7 +1137,7 @@ export function deptPartial(id, onayTutar, redNedeni) {
   if (_i < 0) return;
   var f     = APP.data.deptBekleyen[_i];
   var _fDon3 = f.donem !== undefined ? f.donem : APP.ui.aktifDon;
-  if (_isDonemKapali(_fDon3)) {
+  if (_isPeriodClosed(_fDon3)) {
     notif('Bu dönem kapanmış. Dept rolünde işlem yapılamaz. Muhasebeye yönlendirin.', 'red'); return;
   }
   if (!onayTutar || onayTutar <= 0 || onayTutar >= f.tutar) return;
@@ -1273,7 +1273,7 @@ window._avSortDesc         = _avSortDesc;
 window._avGecmisEkle       = _avGecmisEkle;
 window.advanceRejectConfirm        = advanceRejectConfirm;
 window.advanceRejectCancel       = advanceRejectCancel;
-window.demoVeriOnay        = demoVeriOnay;
+window.demoDataConfirm        = demoDataConfirm;
 window._checkBudgetWarning    = _checkBudgetWarning;
 window.renderDept          = renderDept;
 window.renderDeptPeriodSelector  = renderDeptPeriodSelector;

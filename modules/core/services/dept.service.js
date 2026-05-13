@@ -3,8 +3,8 @@
 // deptBekleyen ve accBekleyen koleksiyonlarına ekleme/çıkarma primitifleri.
 //
 // Bağımlılıklar (hâlâ window globals — index.html'den):
-//   _isDonemKapali, notif, _checkBudgetWarning, _mkLog, _deptTarih,
-//   _pushNotif, updateNotifBadge, _aktifIstisnaIzni, _istisnaIzniGecerliMi,
+//   _isPeriodClosed, notif, _checkBudgetWarning, _mkLog, _deptTarih,
+//   _pushNotif, updateNotifBadge, _activeException, _isExceptionValid,
 //   saveAppData, renderDeptPending, renderDeptCrew, renderDeptSummary
 
 import { APP } from '../state.js';
@@ -15,9 +15,9 @@ export function deptBekleyenEkle(satici, kat, tutar, belgesiz, aciklama, fotos, 
   var uye = APP.ui.curUser ? APP.ui.curUser.name : 'Dept Sorumlusu';
   var ini = APP.ui.curUser ? APP.ui.curUser.ini  : 'DS';
 
-  if (APP.ui.curUser && APP.ui.curUser.role === 'user' && _isDonemKapali(APP.ui.aktifDon)) {
-    var _izin = _aktifIstisnaIzni(APP.ui.aktifDon, uye);
-    if (!_izin || !_istisnaIzniGecerliMi(_izin)) {
+  if (APP.ui.curUser && APP.ui.curUser.role === 'user' && _isPeriodClosed(APP.ui.aktifDon)) {
+    var _izin = _activeException(APP.ui.aktifDon, uye);
+    if (!_izin || !_isExceptionValid(_izin)) {
       notif('Bu dönem kapanmış. Yeni fiş eklenemez.', 'red');
       return;
     }

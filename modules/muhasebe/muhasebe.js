@@ -4,7 +4,7 @@
    ═══════════════════════════════════════════════════════════════ */
 
 import { APP }                                from '../core/state.js';
-import { _todayISO, _gunFarki, _deptTarih,
+import { _todayISO, _dayDiff, _deptTarih,
          _projName, _setAvEl,
          _kiraDurum, _kiraCeza,
          _svgDonut, _mkLog }                  from '../core/utils.js';
@@ -27,9 +27,9 @@ var saRaporSecilenDonemler = [2, 1, 0];
 
 /* ── Global bağımlılıklar (index.html global scope'tan erişilir)
    notif, openM, closeM, _pushNotif, updateNotifBadge,
-   renderRecent, renderSahaButce, renderDeptSummary,
-   openFisDetay, _checkPasifOnay, _isDonemKapali,
-   _gecIslemModal, yeniDonem, _dnKapamaModal,
+   renderRecent, renderFieldBudget, renderDeptSummary,
+   openFisDetay, _checkPassiveApproval, _isPeriodClosed,
+   _lateEntryModal, newPeriod, _periodCloseModal,
    showExportModal, SA_DONEM_DEPTS, _avRedPending,
    renderSohbetListesi, openYeniSohbetModal              ────── */
 
@@ -92,7 +92,7 @@ export function renderAccKira() {
   if (gecmisler.length) {
     html += '<div class="sa-kira-sec-hd" style="color:var(--rd2)">🔴 Gecikmiş Kiralamalar (' + gecmisler.length + ')</div>';
     html += gecmisler.map(function(k) {
-      var kalan = _gunFarki(today, k.bit);
+      var kalan = _dayDiff(today, k.bit);
       var c = _kiraCeza(k);
       var gecGun = c.gecGun;
       var topCeza = c.ceza;
@@ -137,7 +137,7 @@ export function renderAccKira() {
 
     html += dKiralar.map(function(k) {
       var dur   = _kiraDurum(k);
-      var kalan = _gunFarki(today, k.bit);
+      var kalan = _dayDiff(today, k.bit);
       var c     = _kiraCeza(k);
       var tagCls, tagTxt;
       if (dur === 'gec') { tagCls = 'sd-kira-tag sd-kira-tag-gec'; tagTxt = c.gecGun + ' gün geç'; }
@@ -659,7 +659,7 @@ export function accButceKaydet() {
   }
   closeM('mbutce');
   renderAccDash();
-  renderSahaButce();
+  renderFieldBudget();
   renderDeptSummary();
   notif('Bütçe ve kategori limitleri güncellendi', 'green');
   saveAppData();
@@ -705,8 +705,8 @@ export function renderAccDash() {
     '<span style="flex:1;font-size:12px;color:var(--tx3)">' +
       (aktifDon ? aktifDon.lbl + ' — <span style="color:var(--gr2)">Açık</span>' : 'Dönem yok') +
     '</span>' +
-    '<button class="btn btn-sm btn-p" onclick="yeniDonem()" style="font-size:11px;padding:4px 10px">+ Yeni Dönem</button>' +
-    (aktifDon ? '<button class="btn btn-sm" onclick="_dnKapamaModal(' + APP.ui.aktifDon + ')" style="font-size:11px;padding:4px 10px;background:rgba(239,68,68,.12);color:var(--rd2);border:1px solid rgba(239,68,68,.3)">Dönem Kapat</button>' : '') +
+    '<button class="btn btn-sm btn-p" onclick="newPeriod()" style="font-size:11px;padding:4px 10px">+ Yeni Dönem</button>' +
+    (aktifDon ? '<button class="btn btn-sm" onclick="_periodCloseModal(' + APP.ui.aktifDon + ')" style="font-size:11px;padding:4px 10px;background:rgba(239,68,68,.12);color:var(--rd2);border:1px solid rgba(239,68,68,.3)">Dönem Kapat</button>' : '') +
   '</div>';
 
   var html = donYonHtml + donBar;
@@ -796,7 +796,7 @@ export function renderAccDash() {
 /* ═══ BEKLEYEN ═══════════════════════════════════════════════ */
 
 export function renderAccBek() {
-  _checkPasifOnay();
+  _checkPassiveApproval();
   var el = document.getElementById('sa-pnl-bek');
   if (!el) return;
   var bCnt = document.getElementById('satb-bek-cnt');

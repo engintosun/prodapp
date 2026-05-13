@@ -6,8 +6,8 @@
 //   notif, prompt, _pushNotif, updateNotifBadge,
 //   renderDeptPending, renderDeptCrew, renderDeptSummary, renderDept,
 //   renderAccBek, renderRecent, closeM,
-//   saveAppData, _isDonemKapali, _gecIslemModal, _recomputeAccDepts,
-//   _mkLog, _deptTarih, _checkBudgetWarning, _katHarcanan, _checkKatLimit,
+//   saveAppData, _isPeriodClosed, _lateEntryModal, _recomputeAccDepts,
+//   _mkLog, _deptTarih, _checkBudgetWarning, _categorySpent, _checkCategoryLimit,
 //   _curDeptName, _avRedPending, openM, _avGecmisEkle
 
 import { APP } from '../state.js';
@@ -19,7 +19,7 @@ export function deptApprove(id) {
     if (APP.data.deptBekleyen[i].id === id) {
       var f = APP.data.deptBekleyen[i];
       var _fDon = f.donem !== undefined ? f.donem : APP.ui.aktifDon;
-      if (_isDonemKapali(_fDon)) {
+      if (_isPeriodClosed(_fDon)) {
         notif('Bu dönem kapanmış. Dept rolünde işlem yapılamaz. Muhasebeye yönlendirin.', 'red');
         return;
       }
@@ -57,8 +57,8 @@ export function deptApprove(id) {
       _pushNotif('m', 'bl', 'Dept Onayı — Yeni Harcama',
         f.satici + ' (₺' + f.tutar.toLocaleString('tr-TR') + ') dept onayından geçti.',
         'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Dept') + ' (Dept)');
-      var newH = _katHarcanan();
-      _checkKatLimit(f.kat, newH[f.kat] || 0);
+      var newH = _categorySpent();
+      _checkCategoryLimit(f.kat, newH[f.kat] || 0);
       updateNotifBadge();
       notif(f.satici + ' onaylandı', 'green');
       saveAppData();
@@ -76,7 +76,7 @@ export function deptReject(id) {
     if (APP.data.deptBekleyen[i].id === id) {
       var f = APP.data.deptBekleyen[i];
       var _fDon2 = f.donem !== undefined ? f.donem : APP.ui.aktifDon;
-      if (_isDonemKapali(_fDon2)) {
+      if (_isPeriodClosed(_fDon2)) {
         notif('Bu dönem kapanmış. Dept rolünde işlem yapılamaz. Muhasebeye yönlendirin.', 'red');
         return;
       }
@@ -124,7 +124,7 @@ export function deptPartial(id, onayTutar, redNedeni) {
   if (_i < 0) return;
   var f = APP.data.deptBekleyen[_i];
   var _fDon3 = f.donem !== undefined ? f.donem : APP.ui.aktifDon;
-  if (_isDonemKapali(_fDon3)) {
+  if (_isPeriodClosed(_fDon3)) {
     notif('Bu dönem kapanmış. Dept rolünde işlem yapılamaz. Muhasebeye yönlendirin.', 'red');
     return;
   }
@@ -195,8 +195,8 @@ export function accOnayla(id, _gecSebep) {
   if (!item) return;
   var _aDon = (item.donem !== undefined) ? item.donem : APP.ui.aktifDon;
   if (!item.tip || item.tip !== 'avans') {
-    if (_isDonemKapali(_aDon) && !_gecSebep) {
-      _gecIslemModal(_aDon, 'onay', function(sebep) { accOnayla(id, sebep); });
+    if (_isPeriodClosed(_aDon) && !_gecSebep) {
+      _lateEntryModal(_aDon, 'onay', function(sebep) { accOnayla(id, sebep); });
       return;
     }
   }
@@ -258,8 +258,8 @@ export function accReddet(id, _gecSebep) {
     if (ta) ta.value = '';
     openM('md-av-red');
   } else {
-    if (_isDonemKapali(_rDon) && !_gecSebep) {
-      _gecIslemModal(_rDon, 'red', function(sebep) { accReddet(id, sebep); });
+    if (_isPeriodClosed(_rDon) && !_gecSebep) {
+      _lateEntryModal(_rDon, 'red', function(sebep) { accReddet(id, sebep); });
       return;
     }
     var redNedeniAcc = (prompt('Red nedeni girin:') || '').trim();
@@ -304,8 +304,8 @@ export function accKismi(id, onayTutar, redNedeni, _gecSebep) {
   var item = APP.data.accBekleyen[_i];
   if (item.tip === 'avans') return;
   var _kDon = (item.donem !== undefined) ? item.donem : APP.ui.aktifDon;
-  if (_isDonemKapali(_kDon) && !_gecSebep) {
-    _gecIslemModal(_kDon, 'kismi', function(sebep) { accKismi(id, onayTutar, redNedeni, sebep); });
+  if (_isPeriodClosed(_kDon) && !_gecSebep) {
+    _lateEntryModal(_kDon, 'kismi', function(sebep) { accKismi(id, onayTutar, redNedeni, sebep); });
     return;
   }
   if (!onayTutar || onayTutar <= 0 || onayTutar >= item.tutar) return;
