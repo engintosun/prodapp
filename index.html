@@ -2556,12 +2556,12 @@ body {
     <div class="sd-ozet" id="sd-ozet"></div>
     <div class="sd-donem-sec" id="sd-donem-sec"></div>
     <div class="sd-tabs">
-      <button class="sd-tb on" id="sdtb-bek"   onclick="sdTab('bek',   this)">Bekleyen <span class="sd-tb-bj" id="sdtb-bek-cnt">7</span></button>
-      <button class="sd-tb"     id="sdtb-ekip"  onclick="sdTab('ekip',  this)">Ekip</button>
-      <button class="sd-tb"     id="sdtb-avans" onclick="sdTab('avans', this)">Avanslar <span class="sd-tb-bj" id="sdtb-av-cnt">2</span></button>
-      <button class="sd-tb"     id="sdtb-kira"  onclick="sdTab('kira',  this)">Kiralama <span class="sd-tb-bj" id="sdtb-kira-cnt">0</span></button>
-      <button class="sd-tb"     id="sdtb-gecmis" onclick="sdTab('gecmis', this)">Geçmiş</button>
-      <button class="sd-tb"     id="sdtb-mesaj"  onclick="sdTab('mesaj',  this)">Mesajlar</button>
+      <button class="sd-tb on" id="sdtb-bek"   onclick="deptTab('bek',   this)">Bekleyen <span class="sd-tb-bj" id="sdtb-bek-cnt">7</span></button>
+      <button class="sd-tb"     id="sdtb-ekip"  onclick="deptTab('ekip',  this)">Ekip</button>
+      <button class="sd-tb"     id="sdtb-avans" onclick="deptTab('avans', this)">Avanslar <span class="sd-tb-bj" id="sdtb-av-cnt">2</span></button>
+      <button class="sd-tb"     id="sdtb-kira"  onclick="deptTab('kira',  this)">Kiralama <span class="sd-tb-bj" id="sdtb-kira-cnt">0</span></button>
+      <button class="sd-tb"     id="sdtb-gecmis" onclick="deptTab('gecmis', this)">Geçmiş</button>
+      <button class="sd-tb"     id="sdtb-mesaj"  onclick="deptTab('mesaj',  this)">Mesajlar</button>
     </div>
     <div id="sd-pnl-bek"></div>
     <div id="sd-pnl-ekip"   style="display:none"></div>
@@ -2576,7 +2576,7 @@ body {
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg>
       Fiş Tara
     </button>
-    <button class="btn" onclick="openDeptBelgesiz()" style="flex:1;justify-content:center;gap:7px">
+    <button class="btn" onclick="openDeptDocless()" style="flex:1;justify-content:center;gap:7px">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
       Belgesiz
     </button>
@@ -3182,7 +3182,7 @@ body {
   <div class="ms">
     <div class="mh">
       <span style="font-weight:700;color:var(--rd)">Avans Talebini Reddet</span>
-      <button class="mclose" onclick="avansRedIptal()">✕</button>
+      <button class="mclose" onclick="advanceRejectCancel()">✕</button>
     </div>
     <div style="font-size:13px;color:var(--tx2);margin-bottom:12px" id="md-av-red-info">—</div>
     <div class="fg">
@@ -3190,8 +3190,8 @@ body {
       <textarea class="fgi" id="av-red-nedeni" rows="3" placeholder="Red gerekçesini yazınız..." style="resize:vertical;min-height:72px"></textarea>
     </div>
     <div style="display:flex;gap:8px;margin-top:4px">
-      <button class="btn btn-sm" onclick="avansRedIptal()" style="flex:1;justify-content:center">İptal</button>
-      <button class="btn btn-r btn-sm" onclick="avansRedOnay()" style="flex:1;justify-content:center">Reddet</button>
+      <button class="btn btn-sm" onclick="advanceRejectCancel()" style="flex:1;justify-content:center">İptal</button>
+      <button class="btn btn-r btn-sm" onclick="advanceRejectConfirm()" style="flex:1;justify-content:center">Reddet</button>
     </div>
   </div>
 </div>

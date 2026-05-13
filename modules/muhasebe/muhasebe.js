@@ -27,7 +27,7 @@ var saRaporSecilenDonemler = [2, 1, 0];
 
 /* ── Global bağımlılıklar (index.html global scope'tan erişilir)
    notif, openM, closeM, _pushNotif, updateNotifBadge,
-   renderRecent, renderSahaButce, renderDeptOzet,
+   renderRecent, renderSahaButce, renderDeptSummary,
    openFisDetay, _checkPasifOnay, _isDonemKapali,
    _gecIslemModal, yeniDonem, _dnKapamaModal,
    showExportModal, SA_DONEM_DEPTS, _avRedPending,
@@ -661,7 +661,7 @@ export function accButceKaydet() {
   closeM('mbutce');
   renderAccDash();
   renderSahaButce();
-  renderDeptOzet();
+  renderDeptSummary();
   notif('Bütçe ve kategori limitleri güncellendi', 'green');
   saveAppData();
 }

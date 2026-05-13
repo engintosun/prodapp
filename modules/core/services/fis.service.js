@@ -1,20 +1,20 @@
 // /modules/core/services/fis.service.js
 // PRODAPP — Fiş İş Mantığı Servisi (Adım 3 — kopyalama, silme yok)
-// Onay zinciri: deptOnayla, deptReddet, deptKismi, accOnayla, accReddet, accKismi
+// Onay zinciri: deptApprove, deptReject, deptPartial, accOnayla, accReddet, accKismi
 //
 // Bağımlılıklar (hâlâ window globals — index.html'den):
 //   notif, prompt, _pushNotif, updateNotifBadge,
-//   renderDeptBek, renderDeptEkip, renderDeptOzet, renderDept,
+//   renderDeptPending, renderDeptCrew, renderDeptSummary, renderDept,
 //   renderAccBek, renderRecent, closeM,
 //   saveAppData, _isDonemKapali, _gecIslemModal, _recomputeAccDepts,
-//   _mkLog, _deptTarih, _checkButceUyari, _katHarcanan, _checkKatLimit,
+//   _mkLog, _deptTarih, _checkBudgetWarning, _katHarcanan, _checkKatLimit,
 //   _curDeptName, _avRedPending, openM, _avGecmisEkle
 
 import { APP } from '../state.js';
 
 /* ── Dept Onay ────────────────────────────────────────────────────────────── */
 
-export function deptOnayla(id) {
+export function deptApprove(id) {
   for (var i = 0; i < APP.data.deptBekleyen.length; i++) {
     if (APP.data.deptBekleyen[i].id === id) {
       var f = APP.data.deptBekleyen[i];
@@ -29,7 +29,7 @@ export function deptOnayla(id) {
         ob.harcanan += f.tutar;
         var obt = 0;
         for (var oi = 0; oi < APP.data.deptBekleyen.length; oi++) obt += APP.data.deptBekleyen[oi].tutar;
-        _checkButceUyari(ob, obt);
+        _checkBudgetWarning(ob, obt);
       }
       f.log = f.log || [];
       f.log.push(_mkLog('onaylandi', ''));
@@ -62,16 +62,16 @@ export function deptOnayla(id) {
       updateNotifBadge();
       notif(f.satici + ' onaylandı', 'green');
       saveAppData();
-      renderDeptBek();
-      renderDeptEkip();
-      renderDeptOzet();
+      renderDeptPending();
+      renderDeptCrew();
+      renderDeptSummary();
       renderAccBek();
       return;
     }
   }
 }
 
-export function deptReddet(id) {
+export function deptReject(id) {
   for (var i = 0; i < APP.data.deptBekleyen.length; i++) {
     if (APP.data.deptBekleyen[i].id === id) {
       var f = APP.data.deptBekleyen[i];
@@ -108,15 +108,15 @@ export function deptReddet(id) {
       updateNotifBadge();
       notif(f.satici + ' reddedildi', 'red');
       saveAppData();
-      renderDeptBek();
-      renderDeptEkip();
-      renderDeptOzet();
+      renderDeptPending();
+      renderDeptCrew();
+      renderDeptSummary();
       return;
     }
   }
 }
 
-export function deptKismi(id, onayTutar, redNedeni) {
+export function deptPartial(id, onayTutar, redNedeni) {
   var _i = -1;
   for (var _di = 0; _di < APP.data.deptBekleyen.length; _di++) {
     if (APP.data.deptBekleyen[_di].id === id) { _i = _di; break; }
@@ -175,7 +175,7 @@ export function deptKismi(id, onayTutar, redNedeni) {
     _db.reddedildi += redTutar;
     var _bekTop = 0;
     for (var _bti = 0; _bti < APP.data.deptBekleyen.length; _bti++) _bekTop += APP.data.deptBekleyen[_bti].tutar;
-    _checkButceUyari(_db, _bekTop);
+    _checkBudgetWarning(_db, _bekTop);
   }
   _pushNotif('m', 'bl', 'Yeni Bekleyen — Kısmi Onay', f.uye + ' — ₺' + onayTutar.toLocaleString('tr-TR') + ' (' + f.satici + ') muhasebeye iletildi.', 'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Dept') + ' (Dept)');
   _pushNotif(f.fromKey || 's', 'rd', 'Kısmi Red', f.satici + ' — ₺' + redTutar.toLocaleString('tr-TR') + ' reddedildi. Neden: ' + redNedeni, 'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Dept') + ' (Dept)');

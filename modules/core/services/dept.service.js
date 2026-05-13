@@ -3,9 +3,9 @@
 // deptBekleyen ve accBekleyen koleksiyonlarına ekleme/çıkarma primitifleri.
 //
 // Bağımlılıklar (hâlâ window globals — index.html'den):
-//   _isDonemKapali, notif, _checkButceUyari, _mkLog, _deptTarih,
+//   _isDonemKapali, notif, _checkBudgetWarning, _mkLog, _deptTarih,
 //   _pushNotif, updateNotifBadge, _aktifIstisnaIzni, _istisnaIzniGecerliMi,
-//   saveAppData, renderDeptBek, renderDeptEkip, renderDeptOzet
+//   saveAppData, renderDeptPending, renderDeptCrew, renderDeptSummary
 
 import { APP } from '../state.js';
 
@@ -86,12 +86,12 @@ export function deptBekleyenEkle(satici, kat, tutar, belgesiz, aciklama, fotos, 
   if (_cb) {
     var _cbt = 0;
     for (var _ci = 0; _ci < APP.data.deptBekleyen.length; _ci++) _cbt += APP.data.deptBekleyen[_ci].tutar;
-    _checkButceUyari(_cb, _cbt);
+    _checkBudgetWarning(_cb, _cbt);
   }
-  renderDeptBek();
-  renderDeptEkip();
-  renderDeptOzet();
-  sdTab('bek', document.getElementById('sdtb-bek'));
+  renderDeptPending();
+  renderDeptCrew();
+  renderDeptSummary();
+  deptTab('bek', document.getElementById('sdtb-bek'));
 }
 
 export function deptBekleyenSil(id) {

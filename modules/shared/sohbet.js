@@ -293,7 +293,7 @@ function _refreshSohbetListeler() {
 
   /* Dept panel */
   var sdPnl = document.getElementById('sd-pnl-mesaj');
-  if (sdPnl && sdPnl.style.display !== 'none') renderDeptMesaj();
+  if (sdPnl && sdPnl.style.display !== 'none') renderDeptMessages();
 
   /* Acc sohbet listesi (sadece kısmı) */
   var saListe = document.getElementById('sa-sohbet-liste');
@@ -302,7 +302,7 @@ function _refreshSohbetListeler() {
 
 /* ── Sohbet listeleri — ekrana özel render ── */
 
-function renderDeptMesaj() {
+function renderDeptMessages() {
   var el = document.getElementById('sd-pnl-mesaj');
   if (!el) return;
   var userKey = APP.ui.curUserKey || 'd';
@@ -494,7 +494,7 @@ window.yeniGrupOlustur = yeniGrupOlustur;
 window._yeniTabSec = _yeniTabSec;
 window.sicAutoResize = sicAutoResize;
 window.sicKeydown = sicKeydown;
-window.renderDeptMesaj = renderDeptMesaj;
+window.renderDeptMessages = renderDeptMessages;
 window.renderSuMesaj = renderSuMesaj;
 window._fmtSohbetZaman = _fmtSohbetZaman;
 window._getSohbetAdi = _getSohbetAdi;

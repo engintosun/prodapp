@@ -6,11 +6,11 @@
 //         lightbox, modal sistemi, kısmi onay, harcama detay modalı.
 //
 // Bağımlılıklar (window globals — henüz index.html'den):
-//   notif, renderDonem, renderDeptAvans, _addToDeptBekleyen,
+//   notif, renderDonem, renderDeptAdvance, _addToDeptPending,
 //   _pushNotif, updateNotifBadge, renderSuMesaj,
 //   bFotolar, _bFotoRender,                (ocr.js modülünden)
 //   _escHtml,                              (sohbet bölümünden)
-//   deptOnayla, deptReddet, deptKismi,     (dept bölümünden)
+//   deptApprove, deptReject, deptPartial,     (dept bölümünden)
 //   accOnayla, accReddet, accKismi         (muhasebe bölümünden)
 
 import { APP }                   from '../core/state.js';
@@ -425,7 +425,7 @@ export function submitBelgesiz() {
     var kat      = document.getElementById('b-kat').value || 'Diger';
     var tutar    = parseFloat(t) || 0;
     var aciklama = (document.getElementById('b-aciklama') || {}).value || '';
-    _addToDeptBekleyen('Belgesiz Harcama', kat, tutar, true, aciklama, fotos);
+    _addToDeptPending('Belgesiz Harcama', kat, tutar, true, aciklama, fotos);
     notif('Belgesiz harcama bekleyene eklendi', 'amber');
   } else {
     var bKat      = document.getElementById('b-kat').value || 'Diger';
@@ -457,7 +457,7 @@ export function submitBelgesiz() {
           gunluk: parseFloat(document.getElementById('b-ki-gun').value || '0') || 0
         }
       });
-      _addToDeptBekleyen('Belgesiz Kiralama', bKat, bTut, true, bAciklama, fotos, bFisIdK);
+      _addToDeptPending('Belgesiz Kiralama', bKat, bTut, true, bAciklama, fotos, bFisIdK);
       renderRecent();
     } else {
       var bFisId = Date.now();
@@ -468,7 +468,7 @@ export function submitBelgesiz() {
         dept: bDept, neden: bNeden,
         log: [_mkLog('olusturuldu', 'Belgesiz harcama bildirildi')]
       });
-      _addToDeptBekleyen('Belgesiz Harcama', bKat, bTut, true, bAciklama, fotos, bFisId);
+      _addToDeptPending('Belgesiz Harcama', bKat, bTut, true, bAciklama, fotos, bFisId);
       renderRecent();
     }
     notif('Belgesiz harcama bildirildi', 'amber');
@@ -505,7 +505,7 @@ export function submitAvans() {
 
   APP.data.deptAvans.unshift({ id: Date.now(), uye: uye, ini: ini,
     tutar: tutar, tarih: tarih, gerekce: g, fromKey: fKey });
-  renderDeptAvans();
+  renderDeptAdvance();
 
   _pushNotif(fKey, 'bl', 'Avans Talebi Gönderildi',
     '₺' + tutar.toLocaleString('tr-TR') + ' avans talebi dept onayına iletildi.',
@@ -736,7 +736,7 @@ export function kismiOnayla() {
   if (!n) { notif('Red nedeni zorunlu', 'amber'); return; }
 
   if (_kismiPending.kaynak === 'dept') {
-    deptKismi(_kismiPending.id, t, n);
+    deptPartial(_kismiPending.id, t, n);
   } else {
     accKismi(_kismiPending.id, t, n);
   }
@@ -909,8 +909,8 @@ export function _fdetFotoBuyut(fotoIdx, fid) {
 export function _fisDetAksiyon(tip) {
   closeM('md-fisdet');
   if (_fisDetCtx === 'dept') {
-    if      (tip === 'onayla') deptOnayla(_fisDetId);
-    else if (tip === 'reddet') deptReddet(_fisDetId);
+    if      (tip === 'onayla') deptApprove(_fisDetId);
+    else if (tip === 'reddet') deptReject(_fisDetId);
     else if (tip === 'kismi')  openKismi('dept', _fisDetId);
   } else {
     if      (tip === 'onayla') accOnayla(_fisDetId);

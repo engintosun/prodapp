@@ -16,12 +16,12 @@
 //   openFisDetay, openUyeProfil,           (saha.js'ten)
 //   showExportModal,                       (export.js'ten)
 //   renderAccBek, renderAccAvans,          (muhasebe bölümünden)
-//   renderDeptMesaj,                       (sohbet bölümünden)
+//   renderDeptMessages,                       (sohbet bölümünden)
 //   window._avRedPending                          (global var)
 
 import { APP }                              from '../core/state.js';
 import { _mkLog, _todayISO, _gunFarki,
-         _kiraDurum, _kiraCeza }            from '../core/utils.js';
+         _rentalStatus as _rentalStatus, _rentalPenalty as _rentalPenalty } from '../core/utils.js';
 import { saveAppData }                      from '../core/services/storage.service.js';
 import { SD_KAT_CLR, SD_KAT_LBL }          from '../core/constants.js';
 
@@ -38,7 +38,7 @@ export function _curDeptName() {
   return _DEPT_LBL_MAP[APP.ui.curUser.dept] || APP.ui.curUser.dept;
 }
 
-export function _deptTarih() {
+export function _deptDate() {
   var d = new Date();
   return ('0' + d.getDate()).slice(-2) + '.' + ('0' + (d.getMonth()+1)).slice(-2);
 }
@@ -49,13 +49,13 @@ export function _avSortDesc(arr) {
 
 export function _avGecmisEkle(kayit) {
   APP.data.accAvansGecmis.unshift(kayit);
-  renderDeptAvans();
+  renderDeptAdvance();
   renderAccAvans();
 }
 
 /* ═══ AVANS RED MODALI ═══ */
 
-export function avansRedOnay() {
+export function advanceRejectConfirm() {
   if (!window._avRedPending) return;
   var ta = document.getElementById('av-red-nedeni');
   var redNedeni = ta ? (ta.value || '').trim() : '';
@@ -70,7 +70,7 @@ export function avansRedOnay() {
         _avGecmisEkle({
           id: Date.now(), dept: _curDeptName(),
           uye: a.uye, ini: a.ini,
-          tutar: a.tutar, tarih: _deptTarih(),
+          tutar: a.tutar, tarih: _deptDate(),
           durum: 'reddedildi', gerekce: a.gerekce, redNedeni: redNedeni,
           donem: APP.ui.aktifDon
         });
@@ -89,7 +89,7 @@ export function avansRedOnay() {
     _avGecmisEkle({
       id: Date.now(), dept: item.dept || _curDeptName(),
       uye: item.uye, ini: item.ini,
-      tutar: item.tutar, tarih: _deptTarih(),
+      tutar: item.tutar, tarih: _deptDate(),
       durum: 'reddedildi', gerekce: item.gerekce || '', redNedeni: redNedeni,
       donem: APP.ui.aktifDon
     });
@@ -111,7 +111,7 @@ export function avansRedOnay() {
   closeM('md-av-red');
 }
 
-export function avansRedIptal() {
+export function advanceRejectCancel() {
   window._avRedPending = null;
   closeM('md-av-red');
 }
@@ -123,7 +123,7 @@ export function demoVeriOnay() {
 
 /* ═══ BÜTÇE EŞİK UYARISI ═══ */
 
-export function _checkButceUyari(b, bekTop) {
+export function _checkBudgetWarning(b, bekTop) {
   var committed = (b.harcanan || 0) + (bekTop || 0);
   var pct  = b.butce > 0 ? (committed / b.butce * 100) : 0;
   var prev = b._lastPct || 0;
@@ -156,17 +156,17 @@ export function renderDept() {
   if (APP.ui.curUser && av)  _setAvEl(av, APP.ui.curUser, APP.ui.curUserKey);
   if (APP.ui.curProj && prj) prj.textContent = APP.ui.curProj.name;
   if (APP.ui.curUser && rol) rol.textContent = 'Dept. Sorumlusu · ' + APP.ui.curUser.dept;
-  renderDeptDonemSec();
-  renderDeptOzet();
-  renderDeptEkip();
-  renderDeptAvans();
-  renderDeptKira();
-  sdTab('bek', document.getElementById('sdtb-bek'));
+  renderDeptPeriodSelector();
+  renderDeptSummary();
+  renderDeptCrew();
+  renderDeptAdvance();
+  renderDeptRental();
+  deptTab('bek', document.getElementById('sdtb-bek'));
 }
 
 /* ── Dönem Seçici ── */
 
-export function renderDeptDonemSec() {
+export function renderDeptPeriodSelector() {
   var el = document.getElementById('sd-donem-sec');
   if (!el) return;
   el.innerHTML = APP.seed.sdDonemler.map(function(d) {
@@ -174,17 +174,17 @@ export function renderDeptDonemSec() {
     var sub = d.aktif
       ? '<div class="sd-donem-aktif">● Aktif</div>'
       : '<div class="sd-donem-pill-sub">' + d.tarih + '</div>';
-    return '<button class="sd-donem-pill' + on + '" onclick="sdSetDonem(' + d.id + ')">' +
+    return '<button class="sd-donem-pill' + on + '" onclick="deptSetPeriod(' + d.id + ')">' +
       '<div class="sd-donem-pill-lbl">' + d.lbl + '</div>' + sub +
     '</button>';
   }).join('');
 }
 
-export function sdSetDonem(id) {
+export function deptSetPeriod(id) {
   APP.ui.sdSeciliDonem = id;
-  renderDeptDonemSec();
-  renderDeptOzet();
-  renderDeptBek();
+  renderDeptPeriodSelector();
+  renderDeptSummary();
+  renderDeptPending();
 }
 
 export function openDeptOCR() {
@@ -192,14 +192,14 @@ export function openDeptOCR() {
   openOCR(0, null);
 }
 
-export function openDeptBelgesiz() {
+export function openDeptDocless() {
   APP.ui.sdMode = true;
   openBelgesizModal();
 }
 
 /* ═══ DEPT BEKLEYENLERİ EKLEME ═══ */
 
-export function _addToDeptBekleyen(satici, kat, tutar, belgesiz, aciklama, fotos, fisId) {
+export function _addToDeptPending(satici, kat, tutar, belgesiz, aciklama, fotos, fisId) {
   var uye = APP.ui.curUser ? APP.ui.curUser.name : 'Dept Sorumlusu';
   var ini = APP.ui.curUser ? APP.ui.curUser.ini  : 'DS';
 
@@ -239,7 +239,7 @@ export function _addToDeptBekleyen(satici, kat, tutar, belgesiz, aciklama, fotos
       dept: (APP.ui.curUser && APP.ui.curUser.dept) || '',
       uye: uye, ini: ini,
       satici: satici || 'Yeni Harcama', kat: kat || 'Diger',
-      tutar: tutar || 0, tarih: _deptTarih(), belgesiz: !!belgesiz, uyari: '',
+      tutar: tutar || 0, tarih: _deptDate(), belgesiz: !!belgesiz, uyari: '',
       fromKey: APP.ui.curUserKey || 's', donem: APP.ui.aktifDon,
       olusturmaZamani: Date.now(), gecIslem: true, istisnaIzniId: _izin.id
     });
@@ -259,7 +259,7 @@ export function _addToDeptBekleyen(satici, kat, tutar, belgesiz, aciklama, fotos
   APP.data.deptBekleyen.unshift({
     id: Date.now(), uye: uye, ini: ini, fisId: fisId || null,
     satici: satici || 'Yeni Harcama', kat: kat || 'Diger',
-    tutar: tutar || 0, tarih: _deptTarih(), uyari: null,
+    tutar: tutar || 0, tarih: _deptDate(), uyari: null,
     belgesiz: !!belgesiz, aciklama: aciklama || '', fotos: fotos || [],
     donem: APP.ui.aktifDon, olusturmaZamani: Date.now(),
     log: [_mkLog('olusturuldu', 'Harcama bildirildi')]
@@ -270,17 +270,17 @@ export function _addToDeptBekleyen(satici, kat, tutar, belgesiz, aciklama, fotos
   if (_cb) {
     var _cbt = 0;
     for (var _ci = 0; _ci < APP.data.deptBekleyen.length; _ci++) _cbt += APP.data.deptBekleyen[_ci].tutar;
-    _checkButceUyari(_cb, _cbt);
+    _checkBudgetWarning(_cb, _cbt);
   }
-  renderDeptBek();
-  renderDeptEkip();
-  renderDeptOzet();
-  sdTab('bek', document.getElementById('sdtb-bek'));
+  renderDeptPending();
+  renderDeptCrew();
+  renderDeptSummary();
+  deptTab('bek', document.getElementById('sdtb-bek'));
 }
 
 /* ═══ DEPT ÖZET DASHBOARD ═══ */
 
-export function renderDeptOzet() {
+export function renderDeptSummary() {
   var el = document.getElementById('sd-ozet');
   if (!el) return;
 
@@ -372,7 +372,7 @@ export function renderDeptOzet() {
 
 /* ═══ DEPT BEKLEYENLERİ LİSTESİ ═══ */
 
-export function _renderDeptBekGecmis(el, donemId) {
+export function _renderDeptPendingHistory(el, donemId) {
   var gec = APP.data.deptGecmis[donemId] || { onaylandi:[], reddedildi:[] };
   var on  = gec.onaylandi  || [];
   var red = gec.reddedildi || [];
@@ -416,14 +416,14 @@ export function _renderDeptBekGecmis(el, donemId) {
   el.innerHTML = html;
 }
 
-export function renderDeptBek() {
+export function renderDeptPending() {
   var el  = document.getElementById('sd-pnl-bek');
   if (!el) return;
   var cnt = document.getElementById('sdtb-bek-cnt');
 
   if (APP.ui.sdSeciliDonem !== 2) {
     if (cnt) cnt.textContent = '0';
-    _renderDeptBekGecmis(el, APP.ui.sdSeciliDonem);
+    _renderDeptPendingHistory(el, APP.ui.sdSeciliDonem);
     return;
   }
 
@@ -453,15 +453,15 @@ export function renderDeptBek() {
   var toolbar =
     '<div class="sd-bek-tb" id="sd-bek-tb">' +
       '<div class="sd-bek-tb-r1">' +
-        '<div class="sd-bek-cb-row" onclick="_sdToggleAll()">' +
+        '<div class="sd-bek-cb-row" onclick="_deptToggleAll()">' +
           '<div class="' + cbAllCls + '" id="sd-cb-all"></div>' +
           '<span class="sd-bek-cb-lbl">Tümünü Seç</span>' +
         '</div>' +
         '<span class="' + infoCls + '" id="sd-bek-sel-info">' + infoTxt + '</span>' +
       '</div>' +
       '<div class="sd-bek-tb-r2">' +
-        '<button class="sd-ok"' + btnDis + ' onclick="deptOnaylaSecili()" id="sd-bek-ok">✓ Seçilenleri Onayla</button>' +
-        '<button class="sd-rd"' + btnDis + ' onclick="deptReddetSecili()" id="sd-bek-rd">✕ Seçilenleri Reddet</button>' +
+        '<button class="sd-ok"' + btnDis + ' onclick="deptApproveSelected()" id="sd-bek-ok">✓ Seçilenleri Onayla</button>' +
+        '<button class="sd-rd"' + btnDis + ' onclick="deptRejectSelected()" id="sd-bek-rd">✕ Seçilenleri Reddet</button>' +
       '</div>' +
     '</div>';
 
@@ -476,7 +476,7 @@ export function renderDeptBek() {
     if (f.belgesiz) extras += '<div class="sd-fis-belgesiz">📋 Belgesiz · ' + (f.aciklama || '') + '</div>';
     return '<div class="' + fisCls + '" id="sd-fis-' + f.id + '" onclick="openFisDetay(' + f.id + ',\'dept\')">' +
       '<div class="sd-fis-top">' +
-        '<div class="' + cbCls + '" id="sd-cb-' + f.id + '" onclick="event.stopPropagation();_sdToggle(' + f.id + ')"></div>' +
+        '<div class="' + cbCls + '" id="sd-cb-' + f.id + '" onclick="event.stopPropagation();_deptToggle(' + f.id + ')"></div>' +
         '<div class="sd-fis-dot" style="background:' + clr + ';margin-top:6px"></div>' +
         '<div class="sd-fis-main">' +
           '<div class="sd-fis-row">' +
@@ -488,8 +488,8 @@ export function renderDeptBek() {
         '</div>' +
       '</div>' +
       '<div class="sd-fis-acts">' +
-        '<button class="sd-ok" onclick="event.stopPropagation();deptOnayla(' + f.id + ')">✓ Onayla</button>' +
-        '<button class="sd-rd" onclick="event.stopPropagation();deptReddet(' + f.id + ')">✕ Reddet</button>' +
+        '<button class="sd-ok" onclick="event.stopPropagation();deptApprove(' + f.id + ')">✓ Onayla</button>' +
+        '<button class="sd-rd" onclick="event.stopPropagation();deptReject(' + f.id + ')">✕ Reddet</button>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -499,16 +499,16 @@ export function renderDeptBek() {
 
 /* ─── Toplu seçim ─── */
 
-export function _sdToggle(id) {
+export function _deptToggle(id) {
   if (APP.ui.sdSec[id]) { delete APP.ui.sdSec[id]; } else { APP.ui.sdSec[id] = true; }
   var card = document.getElementById('sd-fis-' + id);
   if (card) card.classList.toggle('secili', !!APP.ui.sdSec[id]);
   var cb = document.getElementById('sd-cb-' + id);
   if (cb) cb.className = 'sd-cb' + (APP.ui.sdSec[id] ? ' on' : '');
-  _sdUpdateToolbar();
+  _deptUpdateToolbar();
 }
 
-export function _sdToggleAll() {
+export function _deptToggleAll() {
   var selCnt = 0;
   for (var i = 0; i < APP.data.deptBekleyen.length; i++) {
     if (APP.ui.sdSec[APP.data.deptBekleyen[i].id]) selCnt++;
@@ -518,10 +518,10 @@ export function _sdToggleAll() {
   if (selectAll) {
     for (var j = 0; j < APP.data.deptBekleyen.length; j++) APP.ui.sdSec[APP.data.deptBekleyen[j].id] = true;
   }
-  renderDeptBek();
+  renderDeptPending();
 }
 
-export function _sdUpdateToolbar() {
+export function _deptUpdateToolbar() {
   var selCnt = 0, selTop = 0;
   for (var i = 0; i < APP.data.deptBekleyen.length; i++) {
     if (APP.ui.sdSec[APP.data.deptBekleyen[i].id]) { selCnt++; selTop += APP.data.deptBekleyen[i].tutar; }
@@ -544,7 +544,7 @@ export function _sdUpdateToolbar() {
 
 /* ═══ TOPLU ONAY / RED ═══ */
 
-export function deptOnaylaSecili() {
+export function deptApproveSelected() {
   var ids = {};
   for (var kk in APP.ui.sdSec) { if (APP.ui.sdSec[kk]) ids[kk] = true; }
   var keys = Object.keys(ids);
@@ -560,7 +560,7 @@ export function deptOnaylaSecili() {
     f.log.push(_mkLog('onaylandi', ''));
     APP.data.deptGecmis[2].onaylandi.push({
       id:f.id, uye:f.uye||'', ini:f.ini||'', satici:f.satici||'',
-      kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptTarih(), log:f.log
+      kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptDate(), log:f.log
     });
     f.log.push(_mkLog('dept-onayladi', ''));
     APP.data.accBekleyen.unshift({
@@ -582,7 +582,7 @@ export function deptOnaylaSecili() {
   if (ob) {
     var bt = 0;
     for (var i = 0; i < APP.data.deptBekleyen.length; i++) bt += APP.data.deptBekleyen[i].tutar;
-    _checkButceUyari(ob, bt);
+    _checkBudgetWarning(ob, bt);
   }
   var newH2 = _katHarcanan();
   for (var ki = 0; ki < APP.seed.katLimit.length; ki++) _checkKatLimit(APP.seed.katLimit[ki].kat, newH2[APP.seed.katLimit[ki].kat] || 0);
@@ -592,11 +592,11 @@ export function deptOnaylaSecili() {
   APP.ui.sdSec = {};
   notif(cnt + ' harcama onaylandı · ₺' + top.toLocaleString('tr-TR'), 'green');
   saveAppData();
-  renderDeptBek(); renderDeptEkip(); renderDeptOzet(); renderAccBek();
+  renderDeptPending(); renderDeptCrew(); renderDeptSummary(); renderAccBek();
   updateNotifBadge();
 }
 
-export function deptReddetSecili() {
+export function deptRejectSelected() {
   var ids = {};
   for (var kk in APP.ui.sdSec) { if (APP.ui.sdSec[kk]) ids[kk] = true; }
   var keys = Object.keys(ids);
@@ -616,7 +616,7 @@ export function deptReddetSecili() {
     APP.data.deptGecmis[APP.ui.aktifDon].reddedildi.push({
       id: f.id, uye: f.uye||'', ini: f.ini||'',
       satici: f.satici||'', kat: f.kat||'Diger',
-      tutar: f.tutar, tarih: f.tarih||_deptTarih(), redNedeni: redNedeni, log: f.log
+      tutar: f.tutar, tarih: f.tarih||_deptDate(), redNedeni: redNedeni, log: f.log
     });
     for (var _srfli = 0; _srfli < APP.data.fisler.length; _srfli++) {
       if (APP.data.fisler[_srfli].id === f.fisId) {
@@ -633,12 +633,12 @@ export function deptReddetSecili() {
   APP.ui.sdSec = {};
   notif(cnt + ' harcama reddedildi · ₺' + top.toLocaleString('tr-TR'), 'red');
   saveAppData();
-  renderDeptBek(); renderDeptEkip(); renderDeptOzet();
+  renderDeptPending(); renderDeptCrew(); renderDeptSummary();
 }
 
 /* ═══ EKİP LİSTESİ ═══ */
 
-export function renderDeptEkip() {
+export function renderDeptCrew() {
   var el = document.getElementById('sd-pnl-ekip');
   if (!el) return;
   var bekMap = {};
@@ -669,7 +669,7 @@ export function renderDeptEkip() {
 
 /* ═══ AVANS YÖNETİMİ ═══ */
 
-export function renderDeptAvans() {
+export function renderDeptAdvance() {
   var el = document.getElementById('sd-pnl-avans');
   if (!el) return;
   var cnt = document.getElementById('sdtb-av-cnt');
@@ -695,21 +695,21 @@ export function renderDeptAvans() {
     '</div>';
 
   var formHtml;
-  if (APP.ui.sdAvansFormAcik) {
+  if (APP.ui.deptAdvanceFormOpenik) {
     var uyeOpts = APP.seed.deptEkip.map(function(u) {
       return '<option value="' + u.id + '">' + u.name + '</option>';
     }).join('');
     formHtml =
       '<div class="sd-av-form">' +
-        '<div class="sd-av-form-hd"><span class="sd-av-form-title">Yeni Avans Talebi</span><button class="btn btn-sm" onclick="sdAvansFormKapat()" style="padding:4px 10px">✕</button></div>' +
+        '<div class="sd-av-form-hd"><span class="sd-av-form-title">Yeni Avans Talebi</span><button class="btn btn-sm" onclick="deptAdvanceFormClose()" style="padding:4px 10px">✕</button></div>' +
         '<div class="fg"><label class="fg-lbl">Ekip Üyesi</label><select class="fgi" id="sdav-uye" style="width:100%">' + uyeOpts + '</select></div>' +
         '<div class="fg"><label class="fg-lbl">Tutar (₺)</label><input class="fgi" id="sdav-tutar" type="number" placeholder="0" min="0"></div>' +
         '<div class="fg"><label class="fg-lbl">Gerekçe</label><input class="fgi" id="sdav-gerekce" type="text" placeholder="Avans gerekçesi..."></div>' +
-        '<button class="btn btn-p btn-full" onclick="sdAvansEkle()" style="justify-content:center;margin-top:2px">Avans Talebi Oluştur</button>' +
+        '<button class="btn btn-p btn-full" onclick="deptAdvanceAdd()" style="justify-content:center;margin-top:2px">Avans Talebi Oluştur</button>' +
       '</div>';
   } else {
     formHtml =
-      '<button class="btn btn-p" onclick="sdAvansFormAc()" style="margin-bottom:12px;gap:6px">' +
+      '<button class="btn btn-p" onclick="deptAdvanceFormOpen()" style="margin-bottom:12px;gap:6px">' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
         'Yeni Avans Talebi</button>';
   }
@@ -729,8 +729,8 @@ export function renderDeptAvans() {
         '<div class="sd-av-meta">' + a.tarih + ' tarihli talep</div>' +
         '<div class="sd-av-gerekce">' + a.gerekce + '</div>' +
         '<div class="sd-fis-acts">' +
-          '<button class="sd-ok" onclick="deptAvansOnayla(' + a.id + ')">✓ Onayla → Muhasebe</button>' +
-          '<button class="sd-rd" onclick="deptAvansReddet(' + a.id + ')">✕ Reddet</button>' +
+          '<button class="sd-ok" onclick="deptAdvanceApprove(' + a.id + ')">✓ Onayla → Muhasebe</button>' +
+          '<button class="sd-rd" onclick="deptAdvanceReject(' + a.id + ')">✕ Reddet</button>' +
         '</div>' +
       '</div>';
     }).join('');
@@ -783,10 +783,10 @@ export function renderDeptAvans() {
   el.innerHTML = html;
 }
 
-export function sdAvansFormAc()    { APP.ui.sdAvansFormAcik = true;  renderDeptAvans(); }
-export function sdAvansFormKapat() { APP.ui.sdAvansFormAcik = false; renderDeptAvans(); }
+export function deptAdvanceFormOpen()    { APP.ui.deptAdvanceFormOpenik = true;  renderDeptAdvance(); }
+export function deptAdvanceFormClose() { APP.ui.deptAdvanceFormOpenik = false; renderDeptAdvance(); }
 
-export function sdAvansEkle() {
+export function deptAdvanceAdd() {
   var uyeSel    = document.getElementById('sdav-uye');
   var tutarEl   = document.getElementById('sdav-tutar');
   var gerekceEl = document.getElementById('sdav-gerekce');
@@ -805,15 +805,15 @@ export function sdAvansEkle() {
   APP.data.accBekleyen.unshift({
     id: Date.now(), tip: 'avans', dept: _curDeptName(),
     uye: uyeObj.name, ini: uyeObj.ini, satici: 'Avans Talebi (Dept)',
-    kat: 'Avans', tutar: tutar, tarih: _deptTarih(),
+    kat: 'Avans', tutar: tutar, tarih: _deptDate(),
     belgesiz: false, uyari: '', gerekce: gerekce, fromKey: 'd'
   });
   _pushNotif('m', 'am', 'Yeni Avans Talebi (Dept)',
     (APP.ui.curUser ? APP.ui.curUser.name : 'Dept Sorumlusu') + ' · ' + uyeObj.name + ' için ₺' + tutar.toLocaleString('tr-TR') + ' · ' + gerekce,
     'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Dept'));
   updateNotifBadge();
-  APP.ui.sdAvansFormAcik = false;
-  renderDeptAvans();
+  APP.ui.deptAdvanceFormOpenik = false;
+  renderDeptAdvance();
   renderAccAvans();
   notif('Avans talebi muhasebeye gönderildi', 'green');
   saveAppData();
@@ -821,14 +821,14 @@ export function sdAvansEkle() {
 
 /* ═══ KİRALAMA TAKİBİ ═══ */
 
-export function renderDeptKira() {
+export function renderDeptRental() {
   var el = document.getElementById('sd-pnl-kira');
   if (!el) return;
   var today = _todayISO();
 
   var aktifSay = 0;
   for (var ci = 0; ci < APP.data.deptKira.length; ci++) {
-    if (_kiraDurum(APP.data.deptKira[ci]) !== 'iade') aktifSay++;
+    if (_rentalStatus(APP.data.deptKira[ci]) !== 'iade') aktifSay++;
   }
   var cnt = document.getElementById('sdtb-kira-cnt');
   if (cnt) cnt.textContent = aktifSay;
@@ -841,7 +841,7 @@ export function renderDeptKira() {
   var gecmis = [], yaklasan = [], aktif = [], iade = [];
   for (var i = 0; i < APP.data.deptKira.length; i++) {
     var k   = APP.data.deptKira[i];
-    var dur = _kiraDurum(k);
+    var dur = _rentalStatus(k);
     if      (dur === 'gec') gecmis.push(k);
     else if (dur === 'yak') yaklasan.push(k);
     else if (dur === 'ak')  aktif.push(k);
@@ -849,9 +849,9 @@ export function renderDeptKira() {
   }
 
   function kiraCard(k) {
-    var dur   = _kiraDurum(k);
+    var dur   = _rentalStatus(k);
     var kalan = _gunFarki(today, k.bit);
-    var c     = _kiraCeza(k);
+    var c     = _rentalPenalty(k);
     var tagCls, tagTxt;
     if      (dur === 'gec') { tagCls = 'sd-kira-tag sd-kira-tag-gec'; tagTxt = c.gecGun + ' gün gecikmiş'; }
     else if (dur === 'yak') { tagCls = 'sd-kira-tag sd-kira-tag-yak'; tagTxt = kalan === 0 ? 'Bugün bitiyor' : kalan + ' gün kaldı'; }
@@ -862,7 +862,7 @@ export function renderDeptKira() {
       ? '<div class="sd-kira-ceza">⚠ Gecikme: ' + c.gecGun + ' gün × ₺' + k.gunluk.toLocaleString('tr-TR') + ' = ₺' + c.ceza.toLocaleString('tr-TR') + ' olası ceza</div>'
       : '';
     var iadeBtn = dur !== 'iade'
-      ? '<button class="sd-ok btn-sm" style="font-size:12px" onclick="deptKiraIade(' + k.id + ')">✓ İade Edildi</button>'
+      ? '<button class="sd-ok btn-sm" style="font-size:12px" onclick="deptRentalReturn(' + k.id + ')">✓ İade Edildi</button>'
       : '<span style="font-size:12px;color:var(--tx3)">✓ Teslim Edildi</span>';
     return '<div class="' + cardCls + '">' +
       '<div class="sd-kira-hd">' +
@@ -887,11 +887,11 @@ export function renderDeptKira() {
   el.innerHTML = html;
 }
 
-export function deptKiraIade(id) {
+export function deptRentalReturn(id) {
   for (var i = 0; i < APP.data.deptKira.length; i++) {
     if (APP.data.deptKira[i].id === id) {
       var _kd = APP.data.deptKira[i];
-      var _cd = _kiraCeza(_kd);
+      var _cd = _rentalPenalty(_kd);
       _kd.cezaGun = _cd.gecGun; _kd.cezaTutar = _cd.ceza; _kd.iade = true;
       break;
     }
@@ -899,19 +899,19 @@ export function deptKiraIade(id) {
   for (var j = 0; j < APP.data.accKiralamalar.length; j++) {
     if (APP.data.accKiralamalar[j].id === id) {
       var _ka = APP.data.accKiralamalar[j];
-      var _ca = _kiraCeza(_ka);
+      var _ca = _rentalPenalty(_ka);
       _ka.cezaGun = _ca.gecGun; _ka.cezaTutar = _ca.ceza; _ka.iade = true;
       break;
     }
   }
-  renderDeptKira();
+  renderDeptRental();
   notif('Kiralama iadesi işaretlendi', 'green');
   saveAppData();
 }
 
 /* ═══ TAB YÖNETİMİ ═══ */
 
-export function sdTab(t, el) {
+export function deptTab(t, el) {
   var tabs = ['bek', 'ekip', 'avans', 'kira', 'gecmis', 'mesaj'];
   for (var i = 0; i < tabs.length; i++) {
     var btn = document.getElementById('sdtb-' + tabs[i]);
@@ -922,21 +922,21 @@ export function sdTab(t, el) {
   if (el) el.classList.add('on');
   var active = document.getElementById('sd-pnl-' + t);
   if (active) active.style.display = 'block';
-  if (t === 'bek')    renderDeptBek();
-  if (t === 'avans')  renderDeptAvans();
-  if (t === 'kira')   renderDeptKira();
-  if (t === 'gecmis') renderDeptGecmis();
-  if (t === 'mesaj')  renderDeptMesaj();
+  if (t === 'bek')    renderDeptPending();
+  if (t === 'avans')  renderDeptAdvance();
+  if (t === 'kira')   renderDeptRental();
+  if (t === 'gecmis') renderDeptHistory();
+  if (t === 'mesaj')  renderDeptMessages();
 }
 
 /* ═══ GEÇMİŞ DÖNEM SEKMESİ ═══ */
 
-export function sdGecmisSetDonem(id) {
+export function deptHistorySetPeriod(id) {
   APP.ui.sdGecmisPnlDonem = id;
-  renderDeptGecmis();
+  renderDeptHistory();
 }
 
-export function renderDeptGecmis() {
+export function renderDeptHistory() {
   var el = document.getElementById('sd-pnl-gecmis');
   if (!el) return;
   var gecmisDon = APP.seed.sdDonemler.slice();
@@ -954,7 +954,7 @@ export function renderDeptGecmis() {
   var html = '<div class="sd-gec-donem-row">';
   for (var pi = 0; pi < gecmisDon.length; pi++) {
     var dp = gecmisDon[pi];
-    html += '<button class="sd-gec-don-pill' + (dp.id === donId ? ' on' : '') + '" onclick="sdGecmisSetDonem(' + dp.id + ')">' +
+    html += '<button class="sd-gec-don-pill' + (dp.id === donId ? ' on' : '') + '" onclick="deptHistorySetPeriod(' + dp.id + ')">' +
       '<div class="sd-gec-don-pill-lbl">' + dp.lbl + '</div>' +
       '<div class="sd-gec-don-pill-sub">' + dp.tarih + '</div>' +
     '</button>';
@@ -1039,7 +1039,7 @@ export function renderDeptGecmis() {
 
 /* ═══ TEKLİ ONAY / RED / KISMİ ═══ */
 
-export function deptOnayla(id) {
+export function deptApprove(id) {
   for (var i = 0; i < APP.data.deptBekleyen.length; i++) {
     if (APP.data.deptBekleyen[i].id !== id) continue;
     var f     = APP.data.deptBekleyen[i];
@@ -1053,14 +1053,14 @@ export function deptOnayla(id) {
       ob.harcanan += f.tutar;
       var obt = 0;
       for (var oi = 0; oi < APP.data.deptBekleyen.length; oi++) obt += APP.data.deptBekleyen[oi].tutar;
-      _checkButceUyari(ob, obt);
+      _checkBudgetWarning(ob, obt);
     }
     f.log = f.log || [];
     f.log.push(_mkLog('onaylandi', ''));
     if (!APP.data.deptGecmis[2]) APP.data.deptGecmis[2] = { onaylandi:[], reddedildi:[] };
     APP.data.deptGecmis[2].onaylandi.push({
       id:f.id, uye:f.uye||'', ini:f.ini||'', satici:f.satici||'',
-      kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptTarih(), log:f.log
+      kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptDate(), log:f.log
     });
     for (var _fli = 0; _fli < APP.data.fisler.length; _fli++) {
       if (APP.data.fisler[_fli].id === f.fisId) { APP.data.fisler[_fli].durum = 'acc-bekleyen'; break; }
@@ -1084,12 +1084,12 @@ export function deptOnayla(id) {
     updateNotifBadge();
     notif(f.satici + ' onaylandı', 'green');
     saveAppData();
-    renderDeptBek(); renderDeptEkip(); renderDeptOzet(); renderAccBek();
+    renderDeptPending(); renderDeptCrew(); renderDeptSummary(); renderAccBek();
     return;
   }
 }
 
-export function deptReddet(id) {
+export function deptReject(id) {
   for (var i = 0; i < APP.data.deptBekleyen.length; i++) {
     if (APP.data.deptBekleyen[i].id !== id) continue;
     var f      = APP.data.deptBekleyen[i];
@@ -1108,7 +1108,7 @@ export function deptReddet(id) {
     APP.data.deptGecmis[APP.ui.aktifDon].reddedildi.push({
       id: f.id, uye: f.uye||'', ini: f.ini||'',
       satici: f.satici||'', kat: f.kat||'Diger',
-      tutar: f.tutar, tarih: f.tarih||_deptTarih(), redNedeni: redNedeni, log: f.log
+      tutar: f.tutar, tarih: f.tarih||_deptDate(), redNedeni: redNedeni, log: f.log
     });
     for (var _rfli = 0; _rfli < APP.data.fisler.length; _rfli++) {
       if (APP.data.fisler[_rfli].id === f.fisId) {
@@ -1124,12 +1124,12 @@ export function deptReddet(id) {
     updateNotifBadge();
     notif(f.satici + ' reddedildi', 'red');
     saveAppData();
-    renderDeptBek(); renderDeptEkip(); renderDeptOzet();
+    renderDeptPending(); renderDeptCrew(); renderDeptSummary();
     return;
   }
 }
 
-export function deptKismi(id, onayTutar, redNedeni) {
+export function deptPartial(id, onayTutar, redNedeni) {
   var _i = -1;
   for (var _di = 0; _di < APP.data.deptBekleyen.length; _di++) {
     if (APP.data.deptBekleyen[_di].id === id) { _i = _di; break; }
@@ -1193,7 +1193,7 @@ export function deptKismi(id, onayTutar, redNedeni) {
     _db.reddedildi += redTutar;
     var _bekTop = 0;
     for (var _bti = 0; _bti < APP.data.deptBekleyen.length; _bti++) _bekTop += APP.data.deptBekleyen[_bti].tutar;
-    _checkButceUyari(_db, _bekTop);
+    _checkBudgetWarning(_db, _bekTop);
   }
   _pushNotif('m', 'bl', 'Yeni Bekleyen — Kısmi Onay',
     f.uye + ' — ₺' + onayTutar.toLocaleString('tr-TR') + ' (' + f.satici + ') muhasebeye iletildi.',
@@ -1209,7 +1209,7 @@ export function deptKismi(id, onayTutar, redNedeni) {
 
 /* ═══ AVANS ONAY / RED ═══ */
 
-export function deptAvansOnayla(id) {
+export function deptAdvanceApprove(id) {
   for (var i = 0; i < APP.data.deptAvans.length; i++) {
     if (APP.data.deptAvans[i].id !== id) continue;
     var a = APP.data.deptAvans[i];
@@ -1217,21 +1217,21 @@ export function deptAvansOnayla(id) {
     APP.data.accBekleyen.unshift({
       id: Date.now(), tip: 'avans', dept: _curDeptName(),
       uye: a.uye, ini: a.ini, satici: 'Avans Talebi', kat: 'Avans',
-      tutar: a.tutar, tarih: _deptTarih(),
+      tutar: a.tutar, tarih: _deptDate(),
       belgesiz: false, uyari: '', gerekce: a.gerekce, fromKey: a.fromKey || 's'
     });
     _pushNotif('m', 'am', 'Avans Onay Bekliyor',
       a.uye + ' — ₺' + a.tutar.toLocaleString('tr-TR') + ' avans talebi dept onayından geçti.',
       'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Dept') + ' (Dept)');
     updateNotifBadge();
-    renderDeptAvans();
+    renderDeptAdvance();
     notif(a.uye + ' avansı onaylandı → muhasebede bekliyor', 'green');
     saveAppData();
     return;
   }
 }
 
-export function deptAvansReddet(id) {
+export function deptAdvanceReject(id) {
   for (var i = 0; i < APP.data.deptAvans.length; i++) {
     if (APP.data.deptAvans[i].id !== id) continue;
     var a = APP.data.deptAvans[i];
@@ -1268,41 +1268,41 @@ export function sendMesaj() {
 /* ─── window global uyumluluk (inline onclick) ──────────────────────────── */
 
 window._curDeptName        = _curDeptName;
-window._deptTarih          = _deptTarih;
+window._deptDate          = _deptDate;
 window._avSortDesc         = _avSortDesc;
 window._avGecmisEkle       = _avGecmisEkle;
-window.avansRedOnay        = avansRedOnay;
-window.avansRedIptal       = avansRedIptal;
+window.advanceRejectConfirm        = advanceRejectConfirm;
+window.advanceRejectCancel       = advanceRejectCancel;
 window.demoVeriOnay        = demoVeriOnay;
-window._checkButceUyari    = _checkButceUyari;
+window._checkBudgetWarning    = _checkBudgetWarning;
 window.renderDept          = renderDept;
-window.renderDeptDonemSec  = renderDeptDonemSec;
-window.sdSetDonem          = sdSetDonem;
+window.renderDeptPeriodSelector  = renderDeptPeriodSelector;
+window.deptSetPeriod          = deptSetPeriod;
 window.openDeptOCR         = openDeptOCR;
-window.openDeptBelgesiz    = openDeptBelgesiz;
-window._addToDeptBekleyen  = _addToDeptBekleyen;
-window.renderDeptOzet      = renderDeptOzet;
-window._renderDeptBekGecmis = _renderDeptBekGecmis;
-window.renderDeptBek       = renderDeptBek;
-window._sdToggle           = _sdToggle;
-window._sdToggleAll        = _sdToggleAll;
-window._sdUpdateToolbar    = _sdUpdateToolbar;
-window.deptOnaylaSecili    = deptOnaylaSecili;
-window.deptReddetSecili    = deptReddetSecili;
-window.renderDeptEkip      = renderDeptEkip;
-window.renderDeptAvans     = renderDeptAvans;
-window.sdAvansFormAc       = sdAvansFormAc;
-window.sdAvansFormKapat    = sdAvansFormKapat;
-window.sdAvansEkle         = sdAvansEkle;
-window.renderDeptKira      = renderDeptKira;
-window.deptKiraIade        = deptKiraIade;
-window.sdTab               = sdTab;
-window.sdGecmisSetDonem    = sdGecmisSetDonem;
-window.renderDeptGecmis    = renderDeptGecmis;
-window.deptOnayla          = deptOnayla;
-window.deptReddet          = deptReddet;
-window.deptKismi           = deptKismi;
-window.deptAvansOnayla     = deptAvansOnayla;
-window.deptAvansReddet     = deptAvansReddet;
+window.openDeptDocless    = openDeptDocless;
+window._addToDeptPending  = _addToDeptPending;
+window.renderDeptSummary      = renderDeptSummary;
+window._renderDeptPendingHistory = _renderDeptPendingHistory;
+window.renderDeptPending       = renderDeptPending;
+window._deptToggle           = _deptToggle;
+window._deptToggleAll        = _deptToggleAll;
+window._deptUpdateToolbar    = _deptUpdateToolbar;
+window.deptApproveSelected    = deptApproveSelected;
+window.deptRejectSelected    = deptRejectSelected;
+window.renderDeptCrew      = renderDeptCrew;
+window.renderDeptAdvance     = renderDeptAdvance;
+window.deptAdvanceFormOpen       = deptAdvanceFormOpen;
+window.deptAdvanceFormClose    = deptAdvanceFormClose;
+window.deptAdvanceAdd         = deptAdvanceAdd;
+window.renderDeptRental      = renderDeptRental;
+window.deptRentalReturn        = deptRentalReturn;
+window.deptTab               = deptTab;
+window.deptHistorySetPeriod    = deptHistorySetPeriod;
+window.renderDeptHistory    = renderDeptHistory;
+window.deptApprove          = deptApprove;
+window.deptReject          = deptReject;
+window.deptPartial           = deptPartial;
+window.deptAdvanceApprove     = deptAdvanceApprove;
+window.deptAdvanceReject     = deptAdvanceReject;
 window.openMesaj           = openMesaj;
 window.sendMesaj           = sendMesaj;

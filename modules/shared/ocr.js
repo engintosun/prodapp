@@ -4,7 +4,7 @@
 // Bağımlılıklar (window globals — henüz index.html'den):
 //   FIS_DEMO, notif, openM, closeM, renderRecent, openLB,
 //   _resetDynFields, _detectKatFromFis, _showDynPanel, clearSig,
-//   _addToDeptBekleyen
+//   _addToDeptPending
 
 import { APP }        from '../core/state.js';
 import { _pad, _mkLog } from '../core/utils.js';
@@ -157,7 +157,7 @@ export function submitOCR() {
     var satici = (document.getElementById('f-satici').value || '').trim() || 'Bilinmiyor';
     var kat    = document.getElementById('f-kat').value || 'Diger';
     var tutar  = parseFloat((document.getElementById('f-tutar').value || '0').replace(',', '.')) || 0;
-    _addToDeptBekleyen(satici, kat, tutar, false, '');
+    _addToDeptPending(satici, kat, tutar, false, '');
     notif(satici + ' bekleyene eklendi', 'green');
   } else {
     var kat2   = document.getElementById('f-kat').value || 'Diger';
@@ -180,7 +180,7 @@ export function submitOCR() {
       };
     }
     APP.data.fisler.unshift(entry);
-    _addToDeptBekleyen(sat2, kat2, tut2, false, '', [], entry.id);
+    _addToDeptPending(sat2, kat2, tut2, false, '', [], entry.id);
     renderRecent();
     notif('Harcama onaya gönderildi', 'green');
   }
