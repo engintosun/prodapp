@@ -18,7 +18,6 @@ import { _pad, _mkLog, _fmtLogZaman } from '../core/utils.js';
 import { saveAppData }           from '../core/services/storage.service.js';
 import { KAT_IC, DOT, SD_KAT_LBL, DYN_PANEL_IDS } from '../core/constants.js';
 
-var FIS_DEMO = window.FIS_DEMO;
 
 /* ═══ SAHA NAV ═══ */
 
@@ -779,8 +778,8 @@ export function openFisDetay(id, ctx) {
         thumbEl.innerHTML = '<div class="fdet-thumb-ph">📋</div><div class="fdet-thumb-lbl">Belge Yok</div>';
       }
     } else {
-      var demoIdx = id % (FIS_DEMO ? FIS_DEMO.length : 1);
-      var demo    = FIS_DEMO && FIS_DEMO[demoIdx];
+      var demoIdx = id % (window.FIS_DEMO ? window.FIS_DEMO.length : 1);
+      var demo    = window.FIS_DEMO && window.FIS_DEMO[demoIdx];
       if (demo && demo.img) {
         thumbEl.innerHTML = '<img src="' + demo.img + '" alt="fiş">';
       } else {
