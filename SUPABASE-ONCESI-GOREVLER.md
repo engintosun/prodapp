@@ -1,6 +1,6 @@
 # SUPABASE ÖNCESİ GÖREV LİSTESİ
 
-**Derlenme tarihi:** 14 Mayıs 2026
+**Son güncelleme:** 14 Mayıs 2026
 **Kaynak:** Memory (30 kayıt) + geçmiş chat arşivi + bu seans kararları
 
 ---
@@ -11,8 +11,16 @@
 |---|---|---|---|
 | A1–A5 | Fonksiyon rename (~150 fonksiyon) | ✅ Tamamlandı | 9 commit |
 | A-hotfix | sicAutoResize/sicKeydown + renderSohbetListesi | ✅ Tamamlandı | |
-| B | APP.data / APP.ui key rename + localStorage migration script | ❓ Sırada | ~80 APP.data.fisler ref, ~58 APP.ui.aktifDon ref |
-| C | durum/kat enum value rename + migration script | ❓ B'den sonra | 5 obje tipinde farklı value, gec kökü 3 anlam |
+| B1 | APP.data key rename (13 key) + localStorage migration | ✅ Tamamlandı | commit 721b9cb |
+| B2 | APP.ui (11) + APP.seed (5) key rename | ✅ Tamamlandı | commit 52170c2 |
+| B3 | APP.cache key rename (8 key) | ✅ Tamamlandı | commit c042148 |
+| C1 | Fiş durum enum rename (5 değer) + migration | ✅ Tamamlandı | commit ec46dfc |
+| C2 | Kategori enum rename (8 değer) + HTML option + migration | ✅ Tamamlandı | commit 5cdc398 |
+| C3 | Avans durum enum rename | 🎯 Sırada | ödendi>paid, bekleyen>pending |
+| C4 | Sohbet tip enum rename | ❓ C3'ten sonra | bireysel>direct, grup>group |
+| C5 | Kira durum enum rename + CSS class | ❓ | aktif/gec/yak/iade — CSS coupling var |
+| C6 | Log aksiyon enum rename | ❓ | olusturuldu>created, dept-onayladi>dept-approved |
+| D | CSS class rename (.fis-, .sohbet-, .avans-, .donem-, .kat-) | ❓ Batch C sonrası | Bileşen sınıfları, veri enum'undan bağımsız |
 
 ---
 
@@ -25,11 +33,12 @@
 | B3 | Dept ekranı kart yapısı revizyonu | ❓ Engin çizim yükleyecek | |
 | B4 | Muhasebe ekranı kart yapısı revizyonu | ❓ Engin çizim yükleyecek | |
 | B5 | Muhasebe dashboard görünümü | ❓ Tartışılacak | Mevcut donut chart + departman kartları |
-| B6 | Saha submenu bug — fiş tara sonrası kapanmıyor | 🐛 Tespit edildi | closeM() veya overlay click handler eksik |
+| B6 | Saha submenu bug — fiş tara sonrası kapanmıyor | ✅ Düzeltildi | commit 488a98a |
 | B7 | Emoji → Lucide SVG geçişi (kalan yerler) | ❓ | 💰, ✓, ✕, ●, ⚠️ hâlâ var |
 | B8 | Tab CSS prefix birleştirme | ❓ | su-tab, sd-tb, sa-tb, adept-tb, acuye-tb — 4 ayrı stil seti |
 | B9 | Inline style temizliği → utility class | ❓ | Çok sayıda inline padding/margin |
 | B10 | CSS ayrıştırma — design-tokens.css | ❓ | Level 3 tema için ön koşul |
+| B11 | Kısmi onay UX revizyonu — ½ butonu fiş detay modal'ına taşınacak, listeden kaldırılacak, renk paleti düzeltme (mor→orange) | ❓ | Eski sohbette tartışıldı, kısmi onay mantığı çalışıyor ama UX sorunlu |
 
 ---
 
@@ -46,6 +55,8 @@
 | C7 | Core Finance Engine | ❓ | Para birimi çevirimi, bütçe hesaplamaları, KDV limitleri |
 | C8 | Data Validation katmanı | ❓ Bilinçli erteleme | Zorunlu alan, format, tip kontrolü. Supabase şemasıyla birlikte yazılacak — Batch B sonrası |
 | C9 | Supabase Service Layer | ❓ Bilinçli erteleme | Supabase şema tasarımıyla birlikte tek seferde yazılacak. Kapsamı: (a) Error handling — try-catch + toast, (b) Connection state — offline queue + retry, (c) Storage service — foto/dosya Supabase Storage'a, DB'de URL only, (d) UUID — crypto.randomUUID() + migration, (e) Soft delete — deleted_at + RLS (karar alınmış), (f) Optimistic UI + debounce — buton disable/loading/re-enable, mükerrer kayıt önleme, (g) Rehydration + caching — başlangıç veri çekme stratejisi, lazy load, cache invalidation |
+| C10 | Kategori listesi gözden geçirme | ❓ | Teknik silindi, mevcut 8 kategori yeterli mi, sektörel ihtiyaç analizi |
+| C11 | Galeriden çoklu fotoğraf seçimi + OCR kuyruğu | ❓ | Şu an tek fotoğraf işleniyor, çoklu seçimde sıralı OCR gerekli |
 
 ---
 
@@ -83,34 +94,50 @@
 
 | # | Görev | Durum | Not |
 |---|---|---|---|
-| G1 | STATUS.md güncelleme (A1–A5 yansıtma) | 🎯 Sonnet'e prompt hazır | |
-| G2 | NAMING-INVENTORY.md repo'ya ekleme | 🎯 G1 ile birlikte | |
-| G3 | CALLMAP-P0.md repo'ya ekleme | 🎯 G1 ile birlikte | |
-| G4 | 7B1-CONSTANTS-DISCOVERY.md repo'ya ekleme | 🎯 G1 ile birlikte | |
-| G5 | _7b_delete.js / _7b_scan.js silme | 🎯 G1 ile birlikte | |
-| G6 | .claude/ → .gitignore | 🎯 G1 ile birlikte | |
+| G1 | STATUS.md güncelleme (A1–A5 yansıtma) | ✅ Tamamlandı | commit ec9723b |
+| G2 | NAMING-INVENTORY.md repo'ya ekleme | ✅ Tamamlandı | commit ec9723b |
+| G3 | CALLMAP-P0.md repo'ya ekleme | ✅ Tamamlandı | commit ec9723b |
+| G4 | 7B1-CONSTANTS-DISCOVERY.md repo'ya ekleme | ✅ Tamamlandı | commit ec9723b |
+| G5 | _7b_delete.js / _7b_scan.js silme | ✅ Tamamlandı | commit ec9723b |
+| G6 | .claude/ → .gitignore | ✅ Tamamlandı | commit ec9723b |
 | G7 | design.md güncelleme (Level 3 notları, güncel durum) | ❓ | Eski fonksiyon isimleri geçiyor olabilir |
 | G8 | CLAUDE.md güncelleme | ❓ | Naming convention kuralları eklenmeli |
 | G9 | ARCHITECTURE.md güncelleme | ❓ | Modüler yapı yansıtılmalı |
-| G10 | SCHEMA.md güncelleme | ❓ | Naming refactor sonrası field adları |
+| G10 | SCHEMA.md güncelleme | ✅ Tamamlandı | commit 9575d1a + 5cdc398 |
+| G11 | ARCHITECTURE.md eski key kontrolü + güncelleme | ❓ Batch C sonrası toplu | |
+| G12 | WORKFLOWS.md eski key kontrolü + güncelleme | ❓ Batch C sonrası toplu | |
+| G13 | BATCH-C-SCAN-REPORT.md güncelleme (tamamlanan adımlar) | ❓ Batch C sonrası | |
 
 ---
 
-## ÖNCELİK ÖNERİSİ (sıralama)
+## H. VERİ MODELİ NOTLARI (Supabase şema tasarımında ele alınacak)
 
-1. **G1–G6** — Dokümantasyon borcu (prompt hazır, hemen yapılır)
-2. **B6** — Saha submenu bug (küçük, hızlı fix)
-3. **B1–B5** — Tasarım revizyonu tartışması (Engin çizim yükler, birlikte karar)
-4. **B7–B9** — Görsel tutarlılık (emoji, tab prefix, inline style)
-5. **A-B** — Naming Batch B (APP.data key rename)
-6. **A-C** — Naming Batch C (enum value rename)
-7. **C1–C2** — Messaging Step C
-8. **D1–D2** — i18n hazırlığı
-9. **B10** — CSS tokens (Level 3 tema ön koşulu)
-10. **C7** — Core Finance Engine
-11. **E1–E3** — Rol/modül kararları (Supabase ile birlikte)
-12. **F1–F3** — Yasal uyum (pilot öncesi)
-13. → **Supabase**
+| # | Not | Kaynak |
+|---|---|---|
+| H1 | Sanat hem kategori hem departman adı — dept_id ve category_id ayrı tablo/enum olmalı | 14 May 2026 sohbet |
+| H2 | Cross-company dedup modeli (A: silent / B: company-internal / C: consortium opt-in) | 6 May 2026 memory |
+| H3 | Mixed receipt handling — "fiş çek gerisi bizde" tension | 6 May 2026 memory |
+
+---
+
+## ÖNCELİK ÖNERİSİ (güncel sıralama — 14 Mayıs 2026)
+
+1. ~~G1–G6~~ ✅ — Dokümantasyon borcu
+2. ~~B6~~ ✅ — Saha submenu bug
+3. ~~A-B (B1–B3)~~ ✅ — Naming Batch B
+4. ~~A-C (C1–C2)~~ ✅ — Naming Batch C (kısmi)
+5. **A-C (C3–C6)** — Naming Batch C (devam) ← ŞU AN BURADAYIZ
+6. **G11–G12** — ARCHITECTURE.md + WORKFLOWS.md senkron (Batch C sonrası toplu)
+7. **B1–B5** — Tasarım revizyonu tartışması (Engin çizim yükler, birlikte karar)
+8. **B7–B9** — Görsel tutarlılık (emoji, tab prefix, inline style)
+9. **C1–C2** — Messaging Step C
+10. **D1–D2** — i18n hazırlığı
+11. **B10** — CSS tokens (Level 3 tema ön koşulu)
+12. **A-D** — CSS class rename batch
+13. **C7** — Core Finance Engine
+14. **E1–E3** — Rol/modül kararları (Supabase ile birlikte)
+15. **F1–F3** — Yasal uyum (pilot öncesi)
+16. → **Supabase**
 
 ---
 
