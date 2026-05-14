@@ -4,7 +4,7 @@
 **Aktif sürüm:** v8.x (canlı)
 **Repo:** https://github.com/engintosun/prodapp
 **Deploy:** https://engintosun.github.io/prodapp/
-**Son commit:** 2777a01 — refactor(naming): Batch A5 — utils.js + dept.service.js function rename (8 renames)
+**Son commit:** c042148 — refactor: APP.cache key rename (B3) — 8 key Türkçe>İngilizce
 
 ---
 
@@ -150,10 +150,13 @@
 **Tamamlanan:**
 - ~~7B.1 — Marka ayarları + sohbet sistemi modüle taşıma~~ ✅
 - ~~Naming A1–A5 — Fonksiyon adları İngilizceye çevrildi~~ ✅ (9 commit, ~150 fonksiyon, 14 Mayıs 2026)
+- ~~Naming Batch B — APP.data/APP.ui/APP.seed/APP.cache key rename~~ ✅ (3 commit, 36 key, 14 Mayıs 2026)
+  - B1 (APP.data, 13 key + localStorage migration): commit 721b9cb
+  - B2 (APP.ui 11 key + APP.seed 5 key): commit 52170c2
+  - B3 (APP.cache 8 key): commit c042148
 
 **Sıradaki adımlar:**
-1. 🎯 Naming Batch B — APP.data/APP.ui key rename + localStorage migration
-2. 🎯 Naming Batch C — enum value rename + migration script
+1. 🎯 Naming Batch C — enum value rename + migration script
 3. Tasarım revizyonu (OCR sadeleştirme + Dept/Muhasebe kart yapısı)
 4. Supabase mimari + entegrasyon (Faz 2)
 
@@ -242,8 +245,8 @@ Fonksiyon rename batch'leri tamamlandı (~150 fonksiyon, 9 commit). Kalan:
 
 | Batch | Kapsam | Durum |
 |---|---|---|
-| **Batch B** | APP.data/APP.ui/APP.seed key rename + localStorage migration | 🎯 sıradaki |
-| **Batch C** | Enum value rename (durum, kat, rol string'leri) + migration script | bekliyor |
+| **Batch B** | APP.data/APP.ui/APP.seed/APP.cache key rename + localStorage migration | ✅ tamamlandı (B1: 721b9cb, B2: 52170c2, B3: c042148) |
+| **Batch C** | Enum value rename (durum, kat, rol string'leri) + migration script | 🎯 sıradaki |
 
 Batch B/C için sektörel terim kararları (Batch B'ye girilince alınacak):
 
@@ -283,7 +286,7 @@ Batch B/C için sektörel terim kararları (Batch B'ye girilince alınacak):
 ## 🔧 TEKNİK NOTLAR
 
 - Tek HTML ~5600 satır (7B sonrası), modülerleşme devam ediyor
-- Source of truth: `APP.data.fisler` + `deptBekleyen` + `accBekleyen` + `accGecmis` (arşiv)
+- Source of truth: `APP.data.receipts` + `deptPending` + `accPending` + `accHistory` (arşiv)
 - localStorage kalıcılığı var — seed değişince `localStorage.clear()` gerek
 - **7B tamamlandı (8 Mayıs 2026):** index.html ~11077 → ~5600 satır. 14 modül aktif. Marka (~112 satır) ve sohbet (~489 satır) henüz modüle taşınmadı — index.html'de kaldı, window'a expose edildi.
 - Modülerleşmeden önce: "sadece şu fonksiyonları oku" prompt disiplini

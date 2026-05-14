@@ -1,6 +1,6 @@
 # PRODAPP — APP Namespace Şeması
 
-**Son güncelleme:** 30 Nisan 2026  
+**Son güncelleme:** 14 Mayıs 2026  
 **Kaynak:** index.html  
 
 Bu doküman APP namespace'inin tam yapısını tanımlar. Yeni kod yazarken,
@@ -31,7 +31,7 @@ Güncelleme sorumluluğu:
 
 ## BÖLÜM 1 — APP.data (Mali Veri — KRİTİK)
 
-### APP.data.fisler
+### APP.data.receipts
 **Tip:** Array\<Fis\>  
 **Kaynak satır:** ~3880 (grep ile doğrula)  
 **Kullanım:** Mali işlemlerin ana koleksiyonu — saha girişi, onay zinciri, rapor kaynağı.
@@ -58,7 +58,7 @@ Güncelleme sorumluluğu:
 | parentFisId | number\|null | `1`                                                      | Opsiyonel — kısmi onay çocuğu ise parent fişin id'si. ARCHITECTURE 2.3 referansı. |
 | kismiTip   | string\|null | `'onay'` / `'red'`                                        | Opsiyonel — kısmi onay çocuk fişlerinde çocuğun rolünü belirtir.  |
 | gecIslem   | boolean | `true`                                                         | Opsiyonel — istisna izniyle kapalı döneme girilmişse `true`        |
-| istisnaIzniId | number | `1712345678900`                                             | Opsiyonel — gecIslem:true ise izin kaydının id'si (APP.data.istisnaIzinleri) |
+| istisnaIzniId | number | `1712345678900`                                             | Opsiyonel — gecIslem:true ise izin kaydının id'si (APP.data.exceptionPermits) |
 
 #### Bilinen tuzaklar
 - Field adı **`kat`**, `kategori` değil
@@ -74,10 +74,10 @@ Güncelleme sorumluluğu:
 
 ---
 
-### APP.data.deptBekleyen
+### APP.data.deptPending
 **Tip:** Array\<DeptBekleyen\>  
 **Kaynak satır:** ~4008 (grep ile doğrula)  
-**Kullanım:** Dept ekranında onay bekleyen harcama listesi. Dept onaylayınca accBekleyen'e taşınır.
+**Kullanım:** Dept ekranında onay bekleyen harcama listesi. Dept onaylayınca accPending'e taşınır.
 
 #### DeptBekleyen objesi field listesi
 
@@ -104,7 +104,7 @@ Güncelleme sorumluluğu:
 
 ---
 
-### APP.data.deptAvans
+### APP.data.deptAdvances
 **Tip:** Array\<DeptAvans\>  
 **Kaynak satır:** ~4014 (grep ile doğrula)  
 **Kullanım:** Dept ekranında saha personelinin avans talepleri.
@@ -139,12 +139,12 @@ Güncelleme sorumluluğu:
 | butce    | number | `55000`                                                  | Departman bütçe limiti (TL)     |
 
 #### Bilinen tuzaklar
-- `total`, `onay`, `bekleyen` `_recomputeAccDepts()` tarafından `APP.data.fisler`'den yeniden hesaplanır — doğrudan yazma
+- `total`, `onay`, `bekleyen` `_recomputeAccDepts()` tarafından `APP.data.receipts`'ten yeniden hesaplanır — doğrudan yazma
 - `id` (dept anahtarı) küçük harf (`"yapim"`), `name` Türkçe büyük harf (`"Yapım"`) — ikisi farklı
 
 ---
 
-### APP.data.accBekleyen
+### APP.data.accPending
 **Tip:** Array\<AccBekleyen\>  
 **Kaynak satır:** ~8651 (grep ile doğrula)  
 **Kullanım:** Muhasebe ekranında onay bekleyen harcama ve avanslar (iki farklı tip karışık).
@@ -171,11 +171,11 @@ Güncelleme sorumluluğu:
 #### Bilinen tuzaklar
 - `tip === 'avans'` kontrolüyle iki tip ayrıştırılır; `tip` yoksa harcamadır
 - Dept adı burada Türkçe görünen addır (`"Yapım"`), accDepts.id gibi key değil
-- `fisId` ile `fisler[i].id` eşleşmeli; eşleşmezse accOnayla/accReddet fallback (4 alan) devreye girer
+- `fisId` ile `receipts[i].id` eşleşmeli; eşleşmezse accOnayla/accReddet fallback (4 alan) devreye girer
 
 ---
 
-### APP.data.accAvansGecmis
+### APP.data.accAdvanceHistory
 **Tip:** Array\<AccAvans\>  
 **Kaynak satır:** ~4041 (grep ile doğrula)  
 **Kullanım:** Muhasebe avans geçmişi — dönem bazlı, tüm personel.
@@ -194,11 +194,11 @@ Güncelleme sorumluluğu:
 
 ---
 
-### APP.data.accGecmis
+### APP.data.accHistory
 **Tip:** Array\<AccGecmis\>  
 **Kaynak satır:** ~4056 (grep ile doğrula)  
 **Kullanım:** Muhasebe kesin onay/red arşivi — sadece append, değiştirilemez (ARCHITECTURE 3.2 + 4).  
-Avans işlemleri bu koleksiyona **yazılmaz** — onlar `accAvansGecmis`'e gider.
+Avans işlemleri bu koleksiyona **yazılmaz** — onlar `accAdvanceHistory`'e gider.
 
 | Field      | Tip    | Örnek                  | Açıklama                                        |
 |------------|--------|------------------------|-------------------------------------------------|
@@ -226,7 +226,7 @@ Avans işlemleri bu koleksiyona **yazılmaz** — onlar `accAvansGecmis`'e gider
 
 ---
 
-### APP.data.donemButce
+### APP.data.periodBudget
 **Tip:** Array\<DonemButce\>  
 **Kaynak satır:** ~4059 (grep ile doğrula)  
 **Kullanım:** Dönem bütçe bilgisi — muhasebe bütçe barı ve raporlarda kullanılır.
@@ -242,12 +242,12 @@ Avans işlemleri bu koleksiyona **yazılmaz** — onlar `accAvansGecmis`'e gider
 
 ---
 
-### APP.data.deptGecmis
+### APP.data.deptHistory
 **Tip:** Object (dönem ID → { onaylandi: Array, reddedildi: Array })  
 **Kaynak satır:** ~4135 (grep ile doğrula)  
 **Kullanım:** Dept ekranı — geçmiş dönem onaylı/reddedilmiş harcamaları.
 
-**Yapı:** `APP.data.deptGecmis[donemId].onaylandi` ve `.reddedildi`
+**Yapı:** `APP.data.deptHistory[donemId].onaylandi` ve `.reddedildi`
 
 Her item (onaylandi):
 
@@ -293,21 +293,21 @@ Boş başlar (`{}`), kullanıcı marka ayarlarından doldurur.
 
 ### Kısa Açıklamalı Koleksiyonlar
 
-**APP.data.globalInbox** — Kullanıcı bazlı bildirim listesi. `{ s: [...], d: [...], m: [...] }` şeklinde key-value. Her öğe: `{ id, tip, title, body, meta, read }`. `tip`: `'gr'`/`'am'`/`'rd'`/`'bl'`. Login sonrası `APP.ui.notiflar = APP.data.globalInbox[curUserKey]` ile bağlanır.
+**APP.data.globalInbox** — Kullanıcı bazlı bildirim listesi. `{ s: [...], d: [...], m: [...] }` şeklinde key-value. Her öğe: `{ id, tip, title, body, meta, read }`. `tip`: `'gr'`/`'am'`/`'rd'`/`'bl'`. Login sonrası `APP.ui.notifications = APP.data.globalInbox[curUserKey]` ile bağlanır.
 
-**APP.data.deptKira** — Dept ekranındaki kiralama listesi. Her öğe: `{ id, uye, ini, kat, satici, tutar, gunluk, bas, bit, iade, cezaGun?, cezaTutar? }`. `bas`/`bit` ISO YYYY-MM-DD format. `iade: true/false`. `cezaGun` ve `cezaTutar` iade anında yazılır (`deptKiraIade`/`accKiraIade`); iade öncesinde yoktur.
+**APP.data.deptRentals** — Dept ekranındaki kiralama listesi. Her öğe: `{ id, uye, ini, kat, satici, tutar, gunluk, bas, bit, iade, cezaGun?, cezaTutar? }`. `bas`/`bit` ISO YYYY-MM-DD format. `iade: true/false`. `cezaGun` ve `cezaTutar` iade anında yazılır (`deptKiraIade`/`accKiraIade`); iade öncesinde yoktur.
 
-**APP.data.accKiralamalar** — Muhasebe ekranındaki tüm aktif kiralamalar. deptKira ile aynı yapı + `dept` ve `deptId` field'ları eklenir. `cezaGun`/`cezaTutar` aynı şekilde iade anında kalıcı olarak kaydedilir.
+**APP.data.accRentals** — Muhasebe ekranındaki tüm aktif kiralamalar. deptRentals ile aynı yapı + `dept` ve `deptId` field'ları eklenir. `cezaGun`/`cezaTutar` aynı şekilde iade anında kalıcı olarak kaydedilir.
 
-**APP.data.accSuphe** — Muhasebe şüpheli harcama listesi. Her öğe: `{ id, dept, uye, ini, satici, kat, tutar, tarih, sebep, durum }`. `durum`: `'bek'`/`'inc'`.
+**APP.data.accSuspicion** — Muhasebe şüpheli harcama listesi. Her öğe: `{ id, dept, uye, ini, satici, kat, tutar, tarih, sebep, durum }`. `durum`: `'bek'`/`'inc'`.
 
-**APP.data.sohbetler** — Mesajlaşma sohbetleri. Her öğe: `{ id, tip:'bireysel'|'grup', katilimcilar:[], mesajlar:[], grupAdi?, grupDept? }`. Her mesaj: `{ id, gonderen, icerik, tarih:number(ms), okunanlar:[] }`.
+**APP.data.chats** — Mesajlaşma sohbetleri. Her öğe: `{ id, tip:'bireysel'|'grup', katilimcilar:[], mesajlar:[], grupAdi?, grupDept? }`. Her mesaj: `{ id, gonderen, icerik, tarih:number(ms), okunanlar:[] }`.
 
 **APP.data.avatars** — Kullanıcı avatar fotoğrafları. `{ s: null|base64, d: null|base64, m: null|base64 }`. Canvas 256×256 ile sıkıştırılmış.
 
 **APP.data.projLogos** — Proje logoları. `{ ig: null|base64, mr: null|base64, sr: null|base64 }`. PDF'te kullanılır.
 
-**APP.data.istisnaIzinleri** — Kapanmış döneme kişiye özel giriş izinleri. Boş başlar (`[]`), runtime'da push edilir, localStorage'a kaydedilir. Her öğe:
+**APP.data.exceptionPermits** — Kapanmış döneme kişiye özel giriş izinleri. Boş başlar (`[]`), runtime'da push edilir, localStorage'a kaydedilir. Her öğe:
 
 | Field | Tip | Açıklama |
 |---|---|---|
@@ -327,7 +327,7 @@ Boş başlar (`{}`), kullanıcı marka ayarlarından doldurur.
 | girilenTutar | number | 0'dan başlar, her fiş girişinde artar |
 
 **Bilinen tuzaklar:**
-- `kisiKey` deptEkip.id'dir (`'mk'`, `'od'`) — globalInbox user key'i (`'s'`, `'d'`) değil. Bildirim için `APP.seed.users` adı üzerinden eşleşme yapılır.
+- `kisiKey` deptCrew.id'dir (`'mk'`, `'od'`) — globalInbox user key'i (`'s'`, `'d'`) değil. Bildirim için `APP.seed.users` adı üzerinden eşleşme yapılır.
 - `durum` geçişleri Bölüm 2'de (saha tarafı — Faz 1/2) implement edilecek.
 
 ---
@@ -338,20 +338,20 @@ Boş başlar (`{}`), kullanıcı marka ayarlarından doldurur.
 
 | Field              | Tip          | Başlangıç değeri | Açıklama                                                    |
 |--------------------|--------------|------------------|-------------------------------------------------------------|
-| curUser            | Object\|null | `null`           | Giriş yapmış kullanıcı OBJESİ — `curUser.name` ile ada eriş |
-| curUserKey         | string       | `'s'`            | `APP.seed.users` anahtarı: `'s'`, `'d'`, `'m'`             |
-| curProj            | Object\|null | `null`           | Seçili proje objesi (`APP.seed.projs`'tan)                  |
-| aktifDon           | number       | `2`              | Aktif dönem numarası                                        |
-| sdSec              | Object       | `{}`             | Dept toplu seçim: `{ [fisId]: true }`                       |
-| notiflar           | Array        | `[]`             | Aktif kullanıcının bildirim dizisi (globalInbox'tan ref)    |
-| sdSeciliDonem      | number       | `2`              | Dept ekranı seçili dönem                                    |
-| saSeciliDonem      | number       | `2`              | Muhasebe ekranı seçili dönem                                |
-| sdGecmisPnlDonem   | number       | `2`              | Dept geçmiş paneli seçili dönem                             |
-| sdAvansFormAcik    | boolean      | `false`          | Dept avans form açık mı?                                    |
-| sdMesajKisi        | string       | `''`             | Dept mesaj hedef kişi                                       |
-| sdMode             | boolean      | `false`          | Dept ek mod flag (?)                                        |
-| saAvansDonem       | number       | `2`              | Muhasebe avans seçili dönem                                 |
-| saRaporTip         | string       | `'dept'`         | Muhasebe rapor sekmesi: `'dept'`, `'kat'`, `'personel'`, `'donem'` |
+| curUser                  | Object\|null | `null`           | Giriş yapmış kullanıcı OBJESİ — `curUser.name` ile ada eriş |
+| curUserKey               | string       | `'s'`            | `APP.seed.users` anahtarı: `'s'`, `'d'`, `'m'`             |
+| curProj                  | Object\|null | `null`           | Seçili proje objesi (`APP.seed.projs`'tan)                  |
+| activePeriod             | number       | `2`              | Aktif dönem numarası                                        |
+| deptSelected             | Object       | `{}`             | Dept toplu seçim: `{ [fisId]: true }`                       |
+| notifications            | Array        | `[]`             | Aktif kullanıcının bildirim dizisi (globalInbox'tan ref)    |
+| deptSelectedPeriod       | number       | `2`              | Dept ekranı seçili dönem                                    |
+| accSelectedPeriod        | number       | `2`              | Muhasebe ekranı seçili dönem                                |
+| deptHistoryPanelPeriod   | number       | `2`              | Dept geçmiş paneli seçili dönem                             |
+| deptAdvanceFormOpen      | boolean      | `false`          | Dept avans form açık mı?                                    |
+| deptMessagePerson        | string       | `''`             | Dept mesaj hedef kişi                                       |
+| deptMode                 | boolean      | `false`          | Dept ek mod flag (?)                                        |
+| accAdvancePeriod         | number       | `2`              | Muhasebe avans seçili dönem                                 |
+| accReportType            | string       | `'dept'`         | Muhasebe rapor sekmesi: `'dept'`, `'kat'`, `'personel'`, `'donem'` |
 | longTimer          | any\|null    | `null`           | OCR uzun basış timer referansı                              |
 | longFired          | boolean      | `false`          | Uzun basış tetiklendi mi?                                   |
 | isRec              | boolean      | `false`          | Ses kaydı aktif mi?                                         |
@@ -376,8 +376,8 @@ Boş başlar (`{}`), kullanıcı marka ayarlarından doldurur.
 #### Bilinen tuzaklar
 - `curUser` **obje**'dir — kullanıcı adı için `curUser.name`, fisler'de filtre için de `curUser.name` kullan
 - `curUserKey` değeri `curUser` ile ayrı tutulur — bildirim, sohbet gibi key-value yapılarda `curUserKey` kullan
-- `aktifDon` number'dır ama `fisler.donem` ile karşılaştırırken `String()` ile dönüştür (bazı yerlerde string olarak gelir)
-- `saRaporTip` export için kritik: `showExportModal('acc-' + APP.ui.saRaporTip)` ile export tipi belirlenir
+- `activePeriod` number'dır ama `receipts.donem` ile karşılaştırırken `String()` ile dönüştür (bazı yerlerde string olarak gelir)
+- `accReportType` export için kritik: `showExportModal('acc-' + APP.ui.accReportType)` ile export tipi belirlenir
 
 ---
 
@@ -391,10 +391,11 @@ APP.seed salt-okunur demo/konfigürasyon verisi tutar. Kullanıcılar, projeler 
 - `APP.seed.users` — kullanıcı objesi haritası (`s`, `d`, `m` key'leri)
 - `APP.seed.umap` — alias → key haritası (`{ saha:'s', dept:'d', muhasebe:'m' }`)
 - `APP.seed.projs` — proje listesi (`[{ id, name, type, status, color }]`)
-- `APP.seed.donemler` — dönem listesi (`[{ id, n, lbl, tarih, durum, avans, harcama, islem, baslangic, bitis, kapanmaTarihi, kapayanKisi, gecIslemSayisi }]`)
-- `APP.seed.deptEkip` — dept ekranı ekip üyeleri (`[{ id, ini, name, rol, tutar }]`)
-- `APP.seed.sdDonemler` — dept dönem seçici için (`[{ id, lbl, tarih, aktif }]`)
-- `APP.seed.saDonemler` — muhasebe dönem seçici için (`[{ id, lbl, tarih, aktif }]`)
+- `APP.seed.periods` — dönem listesi (`[{ id, n, lbl, tarih, durum, avans, harcama, islem, baslangic, bitis, kapanmaTarihi, kapayanKisi, gecIslemSayisi }]`)
+- `APP.seed.deptCrew` — dept ekranı ekip üyeleri (`[{ id, ini, name, rol, tutar }]`)
+- `APP.seed.deptPeriods` — dept dönem seçici için (`[{ id, lbl, tarih, aktif }]`)
+- `APP.seed.accPeriods` — muhasebe dönem seçici için (`[{ id, lbl, tarih, aktif }]`)
+- `APP.seed.categoryLimits` — kategori bazlı harcama limitleri
 
 **Faz 2 notu:** Faz 2'de Supabase entegrasyonuyla seed verisi API çağrılarına dönüşecek. Kullanıcı ve proje listesi server-side saklanacak; `APP.seed` kaldırılacak ya da sadece konfigürasyon sabitleri için küçülecek. Yeni özellik eklerken seed'e doğrudan bağımlılık yerine fonksiyon katmanı üzerinden geçilmeli.
 
@@ -407,17 +408,17 @@ APP.seed salt-okunur demo/konfigürasyon verisi tutar. Kullanıcılar, projeler 
 APP.cache hesaplanmış verileri tutar; `_compute*` ve `_recompute*` fonksiyonları tarafından doldurulur. Her rapor render çağrısında ilgili fonksiyon cache'i yeniler.
 
 **Ana cache anahtarları:**
-- `APP.cache.accDeptKatlar` — departman başına kategori dağılımı (`{ yapim: [{name, tutar, renk}] }`)
-- `APP.cache.accRaporPersonel` — personel raporu hesaplanmış listesi (`[{name, ini, dept, deptId, rol, total, onay, bek, avans, donemler, katlar}]`)
-- `APP.cache.accDonemKatlar` — dönem başına kategori karşılaştırması (`{ 0:{}, 1:{}, 2:{} }`)
-- `APP.cache.uyeGecmis` — dept üye geçmiş bilgisi (`{ mk: { donemler, avanslar } }`)
-- `APP.cache.accDeptUyeler` — dept başına üye listesi (`{ yapim: [{ini, name, rol, total, onay, bek}] }`)
-- `APP.cache.accDeptDonemler` — dept başına dönem özetleri
-- `APP.cache.accDeptAvans` — dept başına avans listesi
-- `APP.cache.accDeptGecmis` — dept başına geçmiş fiş listesi
-- `APP.cache.accDeptFis` — dept başına canlı hesaplanmış fiş listesi (`_computeRaporDeptFis` doldurur)
+- `APP.cache.accDeptCategories` — departman başına kategori dağılımı (`{ yapim: [{name, tutar, renk}] }`)
+- `APP.cache.accReportPersonnel` — personel raporu hesaplanmış listesi (`[{name, ini, dept, deptId, rol, total, onay, bek, avans, donemler, katlar}]`)
+- `APP.cache.accPeriodCategories` — dönem başına kategori karşılaştırması (`{ 0:{}, 1:{}, 2:{} }`)
+- `APP.cache.memberHistory` — dept üye geçmiş bilgisi (`{ mk: { donemler, avanslar } }`)
+- `APP.cache.accDeptMembers` — dept başına üye listesi (`{ yapim: [{ini, name, rol, total, onay, bek}] }`)
+- `APP.cache.accDeptPeriods` — dept başına dönem özetleri
+- `APP.cache.accDeptAdvances` — dept başına avans listesi
+- `APP.cache.accDeptHistory` — dept başına geçmiş fiş listesi
+- `APP.cache.accDeptReceipts` — dept başına canlı hesaplanmış fiş listesi (`_computeRaporDeptFis` doldurur)
 
-Cache'e doğrudan yazılmaz; ilgili `_compute*` / `_recompute*` fonksiyonu çağrılarak güncellenir. Bazı cache değerleri (`accDeptKatlar`, `uyeGecmis`) demo sabit değerlerle başlar ve henüz canlı hesaplanmaz.
+Cache'e doğrudan yazılmaz; ilgili `_compute*` / `_recompute*` fonksiyonu çağrılarak güncellenir. Bazı cache değerleri (`accDeptCategories`, `memberHistory`) demo sabit değerlerle başlar ve henüz canlı hesaplanmaz.
 
 ---
 
@@ -426,7 +427,7 @@ Cache'e doğrudan yazılmaz; ilgili `_compute*` / `_recompute*` fonksiyonu çağ
 ### _recomputeAccDepts()
 **Satır:** 8239  
 **Dönüş tipi:** void — `APP.data.accDepts` dizisini in-place günceller  
-**Ne yapar:** `APP.data.fisler`'i okuyarak her departmanın `total`, `onay`, `bekleyen` değerlerini yeniden hesaplar. `APP.cache.accDeptUyeler`'den departman üye listesini alır.  
+**Ne yapar:** `APP.data.receipts`'i okuyarak her departmanın `total`, `onay`, `bekleyen` değerlerini yeniden hesaplar. `APP.cache.accDeptMembers`'den departman üye listesini alır.  
 **Çağrıldığı yer:** `renderAccDash()` başında
 
 ---
@@ -434,7 +435,7 @@ Cache'e doğrudan yazılmaz; ilgili `_compute*` / `_recompute*` fonksiyonu çağ
 ### _computeRaporDeptFis(deptId)
 **Satır:** 8579  
 **Dönüş tipi:** Array\<DeptFisItem\>  
-**Ne yapar:** `APP.data.fisler`'den verilen `deptId`'ye ait üyelerin fişlerini süzerek tarih+dönem sıralamasıyla döndürür. `APP.cache.accDeptFis[deptId]`'ye kaydedilir.
+**Ne yapar:** `APP.data.receipts`'ten verilen `deptId`'ye ait üyelerin fişlerini süzerek tarih+dönem sıralamasıyla döndürür. `APP.cache.accDeptReceipts[deptId]`'ye kaydedilir.
 
 **Örnek item:**
 ```json
@@ -457,7 +458,7 @@ Cache'e doğrudan yazılmaz; ilgili `_compute*` / `_recompute*` fonksiyonu çağ
 ### _computeRaporPersonel()
 **Satır:** 8619  
 **Dönüş tipi:** Array\<PersonelRapor\>  
-**Ne yapar:** `APP.data.fisler` ve `APP.seed.deptEkip`'ten tüm personeli toplar; dönem/kategori dağılımını, avans toplamını hesaplar. `APP.cache.accRaporPersonel`'e kaydedilir.
+**Ne yapar:** `APP.data.receipts` ve `APP.seed.deptCrew`'dan tüm personeli toplar; dönem/kategori dağılımını, avans toplamını hesaplar. `APP.cache.accReportPersonnel`'e kaydedilir.
 
 **Örnek item:**
 ```json
@@ -489,7 +490,7 @@ Kodda gözlemlenen isimlendirme kuralları:
 | Konu              | Standart                                          | Dikkat                                       |
 |-------------------|---------------------------------------------------|----------------------------------------------|
 | Tarih (tam)       | `"DD.MM.YYYY"` string                             | fisler.tarih, accAvansGecmis yok             |
-| Tarih (kısa)      | `"DD.MM"` string                                  | deptBekleyen, deptGecmis, accBekleyen        |
+| Tarih (kısa)      | `"DD.MM"` string                                  | deptPending, deptHistory, accPending         |
 | Tarih (ISO)       | `"YYYY-MM-DD"` string                             | kiraMeta.bas, kiraMeta.bit, deptKira.bas/bit |
 | Tutar             | number (TL, virgülsüz)                            | `1000` — string değil                        |
 | Dönem             | number (`0`, `1`, `2`)                            | Karşılaştırma için String() ile çevir        |
@@ -498,7 +499,7 @@ Kodda gözlemlenen isimlendirme kuralları:
 | Kullanıcı adı     | `personel` (fisler'de), `name` (curUser'da), `uye` (dept*'de) | Hepsi tam ad string               |
 | Dept anahtarı     | `"yapim"`, `"kamera"`, `"sanat"`, `"ses"`, `"kostum"` | Küçük harf, Türkçe karaktersiz           |
 | İnisiyaller       | `ini`: 2 karakter, büyük harf (`"MK"`, `"BÇ"`)   | Türkçe karakter içerebilir (Ç, Ş vb.)       |
-| Export tipi       | `'saha'`, `'acc-dept'`, `'acc-personel'`, `'acc-kat'`, `'acc-donem'`, `'dept-gecmis'`, `'dept-avans'` | showExportModal'a geçilir |
+| Export tipi       | `'saha'`, `'acc-dept'`, `'acc-personel'`, `'acc-kat'`, `'acc-donem'`, `'dept-gecmis'`, `'dept-avans'` | showExportModal'a geçilir; `accReportType` ile birlikte `showExportModal('acc-' + APP.ui.accReportType)` |
 
 ---
 
