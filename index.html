@@ -3478,7 +3478,7 @@ const exportManager = {
 
     if (tip === 'saha') {
       const user = (APP.ui.curUser && APP.ui.curUser.name) || APP.ui.curUser;
-      const don  = APP.ui.aktifDon || 1;
+      const don  = APP.ui.activePeriod || 1;
       const fisler = (APP.data.receipts || []).filter(f =>
         f.personel === user && String(f.donem) === String(don)
       );
@@ -3523,7 +3523,7 @@ const exportManager = {
       ]));
 
     } else if (tip === 'dept-gecmis') {
-      const donId = APP.ui.sdGecmisPnlDonem || APP.ui.sdSeciliDonem || 1;
+      const donId = APP.ui.deptHistoryPanelPeriod || APP.ui.deptSelectedPeriod || 1;
       const gec   = (APP.data.deptHistory && APP.data.deptHistory[donId]) || { onaylandi: [], reddedildi: [] };
       const tumFisler = [
         ...gec.onaylandi.map(f => ({ ...f, durum: 'Onaylı' })),
@@ -3594,7 +3594,7 @@ const exportManager = {
     if (tip === 'saha') {
       baslik = 'Saha Harcamaları';
       const user   = (APP.ui.curUser && APP.ui.curUser.name) || APP.ui.curUser;
-      const don    = APP.ui.aktifDon || 1;
+      const don    = APP.ui.activePeriod || 1;
       const fisler = (APP.data.receipts || []).filter(f =>
         f.personel === user && String(f.donem) === String(don)
       );
@@ -3632,7 +3632,7 @@ const exportManager = {
 
     } else if (tip === 'dept-gecmis') {
       baslik = 'Dept Gecmis';
-      const donId = APP.ui.sdGecmisPnlDonem || APP.ui.sdSeciliDonem || 1;
+      const donId = APP.ui.deptHistoryPanelPeriod || APP.ui.deptSelectedPeriod || 1;
       const gec   = (APP.data.deptHistory && APP.data.deptHistory[donId]) || { onaylandi: [], reddedildi: [] };
       const tumFisler = [
         ...gec.onaylandi.map(f => ({ ...f, durum: 'Onaylı' })),
@@ -3743,7 +3743,7 @@ const exportManager = {
 
     if (tip === 'saha') {
       const user   = (APP.ui.curUser && APP.ui.curUser.name) || APP.ui.curUser;
-      const don    = APP.ui.aktifDon || 1;
+      const don    = APP.ui.activePeriod || 1;
       const fisler = (APP.data.receipts || []).filter(f =>
         f.personel === user && String(f.donem) === String(don)
       );
@@ -3778,7 +3778,7 @@ const exportManager = {
       ]);
 
     } else if (tip === 'dept-gecmis') {
-      const donId = APP.ui.sdGecmisPnlDonem || APP.ui.sdSeciliDonem || 1;
+      const donId = APP.ui.deptHistoryPanelPeriod || APP.ui.deptSelectedPeriod || 1;
       const gec   = (APP.data.deptHistory && APP.data.deptHistory[donId]) || { onaylandi: [], reddedildi: [] };
       const tumFisler = [
         ...gec.onaylandi.map(f => ({ ...f, durum: 'Onayli' })),
@@ -3862,25 +3862,25 @@ APP.seed  = {};
 APP.data  = {};
 APP.cache = {};
 APP.ui    = {
-  sdSec:    {},   /* seçili bekleyen id → true */
-  notiflar: [],   /* aktif kullanıcının bildirim dizisi */
+  deptSelected:    {},   /* seçili bekleyen id → true */
+  notifications: [],   /* aktif kullanıcının bildirim dizisi */
   /* Primitives — login/navigasyon sırasında güncellenir */
-  curUser:          null,
-  curUserKey:       's',
-  curProj:          null,
-  aktifDon:         2,
-  sdSeciliDonem:    2,
-  saSeciliDonem:    2,
-  sdGecmisPnlDonem: 2,
-  sdAvansFormAcik:  false,
-  sdMesajKisi:      '',
-  sdMode:           false,
-  saAvansDonem:     2,
-  saRaporTip:       'dept',
-  longTimer:        null,
-  longFired:        false,
-  isRec:            false,
-  speechRecog:      null
+  curUser:                  null,
+  curUserKey:               's',
+  curProj:                  null,
+  activePeriod:             2,
+  deptSelectedPeriod:       2,
+  accSelectedPeriod:        2,
+  deptHistoryPanelPeriod:   2,
+  deptAdvanceFormOpen:      false,
+  deptMessagePerson:        '',
+  deptMode:                 false,
+  accAdvancePeriod:         2,
+  accReportType:            'dept',
+  longTimer:                null,
+  longFired:                false,
+  isRec:                    false,
+  speechRecog:              null
 };
 
 
@@ -3899,7 +3899,7 @@ APP.seed.projs = [
   { id:'mr', name:'Mavi Rüzgar',      type:'Dizi B3',     status:'Post',     color:'#3B82F6' },
   { id:'sr', name:'Sabah Reklamları', type:'Reklam',      status:'Pre-Prod', color:'#22C55E' }
 ];
-APP.seed.donemler = [
+APP.seed.periods = [
   { id:2, n:'D2', lbl:'Dönem #2', tarih:'06.04 →',     durum:'aktif',  avans:12500, harcama:11240, islem:3,
     baslangic:'01.04.2026', bitis:null,         kapanmaTarihi:null,         kapayanKisi:null,           gecIslemSayisi:0 },
   { id:1, n:'D1', lbl:'Dönem #1', tarih:'20.03–05.04', durum:'kapali', avans:9460,  harcama:9460,  islem:8,
@@ -4025,10 +4025,10 @@ APP.data.globalInbox = {
   ]
 };
 /* Aktif kullanıcının referansı — selectProj'da APP.data.globalInbox[APP.ui.curUserKey]'e bağlanır */
-APP.ui.notiflar = APP.data.globalInbox['s'];
+APP.ui.notifications = APP.data.globalInbox['s'];
 
 /* ─── DEPT demo verisi ─── */
-APP.seed.deptEkip = [
+APP.seed.deptCrew = [
   { id:'mk', ini:'MK', name:'Mehmet Kaya',    rol:'Saha / Araç Sorumlusu', tutar:11240 },
   { id:'od', ini:'OD', name:'Okan Demir',     rol:'Kamera Asistanı',       tutar:6840  },
   { id:'sy', ini:'SY', name:'Selin Yıldız',   rol:'Sanat Departmanı',      tutar:4290  },
@@ -4155,7 +4155,7 @@ APP.cache.accDonemKatlar = {
 };
 
 /* ── Dönem tanımları (Dept & Muhasebe) ── */
-APP.seed.sdDonemler = [
+APP.seed.deptPeriods = [
   { id:2, lbl:'Dönem #2', tarih:'Nis 2026', aktif:true  },
   { id:1, lbl:'Dönem #1', tarih:'Mar 2026', aktif:false },
   { id:0, lbl:'Dönem #0', tarih:'Şub 2026', aktif:false }
@@ -4207,7 +4207,7 @@ APP.data.deptHistory = {
 };
 
 /* ── Muhasebe — Dönem bazlı departman özetleri ── */
-APP.seed.saDonemler = [
+APP.seed.accPeriods = [
   { id:2, lbl:'Dönem #2', tarih:'Nis 2026', aktif:true  },
   { id:1, lbl:'Dönem #1', tarih:'Mar 2026', aktif:false },
   { id:0, lbl:'Dönem #0', tarih:'Şub 2026', aktif:false }
@@ -4417,7 +4417,7 @@ APP.cache.accDeptFis = {
 };
 
 var _avRedPending     = null;  /* { id, kaynak:'dept'|'acc' } — red nedeni modalı için */
-APP.ui.sdSec = {};   /* seçili bekleyen id → true */
+APP.ui.deptSelected = {};   /* seçili bekleyen id → true */
 
 
 /* ═══ EKRAN SİSTEMİ ═══ */
@@ -4528,7 +4528,7 @@ function selectProj(pid) {
   APP.ui.curProj = APP.seed.projs.find(function(p) { return p.id === pid; }) || null;
   if (!APP.ui.curUser) return;
   /* Her oturum açılışında kullanıcının gelen kutusu yüklenir */
-  APP.ui.notiflar = APP.data.globalInbox[APP.ui.curUserKey] = APP.data.globalInbox[APP.ui.curUserKey] || [];
+  APP.ui.notifications = APP.data.globalInbox[APP.ui.curUserKey] = APP.data.globalInbox[APP.ui.curUserKey] || [];
   if (APP.ui.curUser.role === 'user') {
     _setAvEl(document.getElementById('su-av'), APP.ui.curUser, APP.ui.curUserKey);
     document.getElementById('su-prj').textContent = APP.ui.curProj ? APP.ui.curProj.name : '—';
@@ -4656,18 +4656,18 @@ function openDeptProfile() {
 
   /* İstatistik kutuları */
   var toplamTutar = 0;
-  for (var i = 0; i < APP.seed.deptEkip.length; i++) { toplamTutar += APP.seed.deptEkip[i].tutar || 0; }
+  for (var i = 0; i < APP.seed.deptCrew.length; i++) { toplamTutar += APP.seed.deptCrew[i].tutar || 0; }
   var bekSay = APP.data.deptPending ? APP.data.deptPending.length : 0;
   document.getElementById('p-dept-stats').innerHTML =
-    '<div class="profil-stat-c"><div class="profil-stat-v">' + APP.seed.deptEkip.length + '</div><div class="profil-stat-l">Ekip Üyesi</div></div>' +
+    '<div class="profil-stat-c"><div class="profil-stat-v">' + APP.seed.deptCrew.length + '</div><div class="profil-stat-l">Ekip Üyesi</div></div>' +
     '<div class="profil-stat-c"><div class="profil-stat-v">' + bekSay + '</div><div class="profil-stat-l">Bekleyen Fiş</div></div>' +
     '<div class="profil-stat-c"><div class="profil-stat-v">₺' + toplamTutar.toLocaleString('tr-TR') + '</div><div class="profil-stat-l">Toplam Harcama</div></div>' +
-    '<div class="profil-stat-c"><div class="profil-stat-v">' + APP.seed.sdDonemler.length + '</div><div class="profil-stat-l">Dönem</div></div>';
+    '<div class="profil-stat-c"><div class="profil-stat-v">' + APP.seed.deptPeriods.length + '</div><div class="profil-stat-l">Dönem</div></div>';
 
   /* Ekip listesi */
   var rows = '';
-  for (var j = 0; j < APP.seed.deptEkip.length; j++) {
-    var u = APP.seed.deptEkip[j];
+  for (var j = 0; j < APP.seed.deptCrew.length; j++) {
+    var u = APP.seed.deptCrew[j];
     rows += '<div class="profil-prj-row">' +
       '<div>' +
         '<div class="profil-prj-name">' + u.name + '</div>' +
@@ -4704,8 +4704,8 @@ function openAccProfile() {
 
   /* Aktif dönem özeti */
   var aktifDon2 = null;
-  for (var i = 0; i < APP.seed.saDonemler.length; i++) {
-    if (APP.seed.saDonemler[i].aktif) { aktifDon2 = APP.seed.saDonemler[i]; break; }
+  for (var i = 0; i < APP.seed.accPeriods.length; i++) {
+    if (APP.seed.accPeriods[i].aktif) { aktifDon2 = APP.seed.accPeriods[i]; break; }
   }
   var topBek = 0, topOnay = 0, topSuphe = 0, deptSay = APP.data.accDepts.length;
   for (var j = 0; j < APP.data.accDepts.length; j++) {
@@ -4867,7 +4867,7 @@ function checkKiralamaBit(p) {
 
 
 /* Kategori alt limitleri — düzenlenebilir */
-APP.seed.katLimit = [
+APP.seed.categoryLimits = [
   { kat:'Yakit',     lbl:'Yakıt',     limit:5000,  clr:'var(--am)'  },
   { kat:'Yiyecek',   lbl:'Yiyecek',   limit:4000,  clr:'var(--gr)'  },
   { kat:'Ekipman',   lbl:'Ekipman',   limit:14000, clr:'var(--bl)'  },
@@ -4922,8 +4922,8 @@ document.getElementById('lb').addEventListener('click', function(e) {
 /* ═══ EKİP ÜYESİ PROFİL MODALI ═══ */
 function openMemberProfile(uyeId) {
   var u = null;
-  for (var i = 0; i < APP.seed.deptEkip.length; i++) {
-    if (APP.seed.deptEkip[i].id === uyeId) { u = APP.seed.deptEkip[i]; break; }
+  for (var i = 0; i < APP.seed.deptCrew.length; i++) {
+    if (APP.seed.deptCrew[i].id === uyeId) { u = APP.seed.deptCrew[i]; break; }
   }
   if (!u) return;
 
@@ -5039,16 +5039,16 @@ function _pushNotif(toKey, tip, title, body, meta) {
     id: Date.now() + Math.floor(Math.random() * 1000),
     tip: tip, title: title, body: body, meta: meta, read: false
   });
-  /* Hedef aktif kullanıcıysa APP.ui.notiflar'ı güncelle ve rozeti yenile */
+  /* Hedef aktif kullanıcıysa APP.ui.notifications'ı güncelle ve rozeti yenile */
   if (APP.ui.curUserKey === toKey) {
-    APP.ui.notiflar = APP.data.globalInbox[toKey];
+    APP.ui.notifications = APP.data.globalInbox[toKey];
     updateNotifBadge();
   }
 }
 
 function updateNotifBadge() {
   var cnt = 0;
-  for (var i = 0; i < APP.ui.notiflar.length; i++) { if (!APP.ui.notiflar[i].read) cnt++; }
+  for (var i = 0; i < APP.ui.notifications.length; i++) { if (!APP.ui.notifications[i].read) cnt++; }
   var ids = ['su-badge', 'sd-badge', 'sa-badge'];
   for (var j = 0; j < ids.length; j++) {
     var b = document.getElementById(ids[j]);
@@ -5063,9 +5063,9 @@ function updateNotifBadge() {
 }
 
 function markNotifRead(id) {
-  for (var i = 0; i < APP.ui.notiflar.length; i++) {
-    if (APP.ui.notiflar[i].id === id && !APP.ui.notiflar[i].read) {
-      APP.ui.notiflar[i].read = true;
+  for (var i = 0; i < APP.ui.notifications.length; i++) {
+    if (APP.ui.notifications[i].id === id && !APP.ui.notifications[i].read) {
+      APP.ui.notifications[i].read = true;
       updateNotifBadge();
       renderNotificationModal();
       break;
@@ -5077,15 +5077,15 @@ function renderNotificationModal() {
   var el = document.getElementById('mnotif-body');
   if (!el) return;
   var unread = 0;
-  for (var i = 0; i < APP.ui.notiflar.length; i++) { if (!APP.ui.notiflar[i].read) unread++; }
+  for (var i = 0; i < APP.ui.notifications.length; i++) { if (!APP.ui.notifications[i].read) unread++; }
   var cntHtml = unread > 0
     ? '<span class="notif-cnt">' + unread + ' okunmadı</span>'
     : '<span class="notif-cnt" style="background:var(--tx3)">Tümü okundu</span>';
   var html = '<div class="notif-header">' +
-    '<div style="font-size:12px;color:var(--tx2)">' + APP.ui.notiflar.length + ' bildirim</div>' +
+    '<div style="font-size:12px;color:var(--tx2)">' + APP.ui.notifications.length + ' bildirim</div>' +
     cntHtml + '</div>';
-  for (var j = 0; j < APP.ui.notiflar.length; j++) {
-    var n = APP.ui.notiflar[j];
+  for (var j = 0; j < APP.ui.notifications.length; j++) {
+    var n = APP.ui.notifications[j];
     var readCls = n.read ? ' nm-read' : '';
     var cursor  = n.read ? '' : ' style="cursor:pointer"';
     html += '<div class="nm nm-' + n.tip + readCls + '"' + cursor +

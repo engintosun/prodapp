@@ -36,8 +36,8 @@ export function _computeDeptReceiptReport(deptId) {
     nameToIni[members[_mi].name] = members[_mi].ini;
   }
   if (!members.length) {
-    for (var _ei = 0; _ei < APP.seed.deptEkip.length; _ei++) {
-      nameToIni[APP.seed.deptEkip[_ei].name] = APP.seed.deptEkip[_ei].ini;
+    for (var _ei = 0; _ei < APP.seed.deptCrew.length; _ei++) {
+      nameToIni[APP.seed.deptCrew[_ei].name] = APP.seed.deptCrew[_ei].ini;
     }
   }
   var result = [];
@@ -88,8 +88,8 @@ export function _computePersonnelReport() {
     Konaklama:'Konaklama', Kiralama:'Kiralama', Avans:'Avans'
   };
   var donLbl = {};
-  for (var _di = 0; _di < APP.seed.donemler.length; _di++) {
-    donLbl[APP.seed.donemler[_di].id] = APP.seed.donemler[_di].lbl;
+  for (var _di = 0; _di < APP.seed.periods.length; _di++) {
+    donLbl[APP.seed.periods[_di].id] = APP.seed.periods[_di].lbl;
   }
   var seedMap = {};
   for (var _si = 0; _si < APP.cache.accRaporPersonel.length; _si++) {
@@ -101,8 +101,8 @@ export function _computePersonnelReport() {
     var _fpn = APP.data.receipts[_fxi].personel;
     if (_fpn) nameSet[_fpn] = true;
   }
-  for (var _exi = 0; _exi < APP.seed.deptEkip.length; _exi++) {
-    nameSet[APP.seed.deptEkip[_exi].name] = true;
+  for (var _exi = 0; _exi < APP.seed.deptCrew.length; _exi++) {
+    nameSet[APP.seed.deptCrew[_exi].name] = true;
   }
   var result = [];
   for (var _name in nameSet) {

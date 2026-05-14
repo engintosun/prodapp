@@ -48,7 +48,7 @@ export const exportManager = {
 
     if (tip === 'saha') {
       const user   = (APP.ui.curUser && APP.ui.curUser.name) || APP.ui.curUser;
-      const don    = APP.ui.aktifDon || 1;
+      const don    = APP.ui.activePeriod || 1;
       const fisler = (APP.data.receipts || []).filter(f =>
         f.personel === user && String(f.donem) === String(don)
       );
@@ -87,7 +87,7 @@ export const exportManager = {
       ]));
 
     } else if (tip === 'dept-gecmis') {
-      const donId = APP.ui.sdGecmisPnlDonem || APP.ui.sdSeciliDonem || 1;
+      const donId = APP.ui.deptHistoryPanelPeriod || APP.ui.deptSelectedPeriod || 1;
       const gec   = (APP.data.deptHistory && APP.data.deptHistory[donId]) || { onaylandi: [], reddedildi: [] };
       const tumFisler = [
         ...gec.onaylandi.map(f => ({ ...f, durum: 'Onaylı' })),
@@ -150,7 +150,7 @@ export const exportManager = {
     if (tip === 'saha') {
       baslik = 'Saha Harcamaları';
       const user   = (APP.ui.curUser && APP.ui.curUser.name) || APP.ui.curUser;
-      const don    = APP.ui.aktifDon || 1;
+      const don    = APP.ui.activePeriod || 1;
       const fisler = (APP.data.receipts || []).filter(f =>
         f.personel === user && String(f.donem) === String(don)
       );
@@ -188,7 +188,7 @@ export const exportManager = {
 
     } else if (tip === 'dept-gecmis') {
       baslik = 'Dept Gecmis';
-      const donId = APP.ui.sdGecmisPnlDonem || APP.ui.sdSeciliDonem || 1;
+      const donId = APP.ui.deptHistoryPanelPeriod || APP.ui.deptSelectedPeriod || 1;
       const gec   = (APP.data.deptHistory && APP.data.deptHistory[donId]) || { onaylandi: [], reddedildi: [] };
       const tumFisler = [
         ...gec.onaylandi.map(f => ({ ...f, durum: 'Onaylı' })),
@@ -292,7 +292,7 @@ export const exportManager = {
 
     if (tip === 'saha') {
       const user   = (APP.ui.curUser && APP.ui.curUser.name) || APP.ui.curUser;
-      const don    = APP.ui.aktifDon || 1;
+      const don    = APP.ui.activePeriod || 1;
       const fisler = (APP.data.receipts || []).filter(f =>
         f.personel === user && String(f.donem) === String(don)
       );
@@ -327,7 +327,7 @@ export const exportManager = {
       ]);
 
     } else if (tip === 'dept-gecmis') {
-      const donId = APP.ui.sdGecmisPnlDonem || APP.ui.sdSeciliDonem || 1;
+      const donId = APP.ui.deptHistoryPanelPeriod || APP.ui.deptSelectedPeriod || 1;
       const gec   = (APP.data.deptHistory && APP.data.deptHistory[donId]) || { onaylandi: [], reddedildi: [] };
       const tumFisler = [
         ...gec.onaylandi.map(f => ({ ...f, durum: 'Onayli' })),

@@ -22,8 +22,8 @@ import { KAT_IC, DOT } from '../core/constants.js';
 /* ═══ DÖNEM — SAHA GÖRÜNÜMÜ ═══ */
 
 export function renderPeriod(did) {
-  APP.ui.aktifDon = did;
-  var d = APP.seed.donemler.find(function(x) { return x.id === did; });
+  APP.ui.activePeriod = did;
+  var d = APP.seed.periods.find(function(x) { return x.id === did; });
   if (!d) return;
   var kalan = d.avans - d.harcama;
   var pct   = Math.min(100, Math.round(d.harcama / d.avans * 100));
@@ -48,7 +48,7 @@ export function renderPeriod(did) {
   /* Dönem pill seçici */
   var pillsEl = document.getElementById('don-pills');
   if (pillsEl) {
-    pillsEl.innerHTML = APP.seed.donemler.map(function(x) {
+    pillsEl.innerHTML = APP.seed.periods.map(function(x) {
       return '<div class="dp' + (x.id === did ? ' on' : '') + '" onclick="renderPeriod(' + x.id + ')">' +
         x.n + (x.durum === 'aktif' ? ' Aktif' : ' Kapandı') +
       '</div>';
@@ -230,8 +230,8 @@ export function newPeriod() {
     notif('Dönem yönetimi sadece muhasebe yetkisindedir.', 'red'); return;
   }
   var aktif = null;
-  for (var _ai = 0; _ai < APP.seed.donemler.length; _ai++) {
-    if (APP.seed.donemler[_ai].durum === 'aktif') { aktif = APP.seed.donemler[_ai]; break; }
+  for (var _ai = 0; _ai < APP.seed.periods.length; _ai++) {
+    if (APP.seed.periods[_ai].durum === 'aktif') { aktif = APP.seed.periods[_ai]; break; }
   }
   if (aktif) {
     var deptBek = APP.data.deptPending.filter(function(f) { return f.donem === aktif.id && f.kat !== 'Kiralama'; });
@@ -246,22 +246,22 @@ export function newPeriod() {
     if (!confirm(aktif.lbl + ' açık ama bekleyeni yok. Otomatik kapatıp yeni dönem açayım mı?')) return;
     closePeriod(aktif.id, 'Yeni dönem açılışı için otomatik kapama');
   }
-  var _ids  = APP.seed.donemler.map(function(x) { return x.id; });
+  var _ids  = APP.seed.periods.map(function(x) { return x.id; });
   var yeniId = Math.max.apply(null, _ids) + 1;
   var yeniN  = yeniId + 1;
   var bugun  = new Date().toLocaleDateString('tr-TR');
-  APP.seed.donemler.unshift({
+  APP.seed.periods.unshift({
     id: yeniId, n: 'D' + yeniN, lbl: 'Dönem #' + yeniN,
     tarih: bugun + ' →', durum: 'aktif',
     avans: 0, harcama: 0, islem: 0,
     baslangic: bugun, bitis: null, kapanmaTarihi: null, kapayanKisi: null, gecIslemSayisi: 0
   });
-  APP.seed.sdDonemler.unshift({ id: yeniId, lbl: 'Dönem #' + yeniN, tarih: bugun, aktif: true });
-  for (var _si = 1; _si < APP.seed.sdDonemler.length; _si++) APP.seed.sdDonemler[_si].aktif = false;
-  APP.seed.saDonemler.unshift({ id: yeniId, lbl: 'Dönem #' + yeniN, tarih: bugun, aktif: true });
-  for (var _sai = 1; _sai < APP.seed.saDonemler.length; _sai++) APP.seed.saDonemler[_sai].aktif = false;
+  APP.seed.deptPeriods.unshift({ id: yeniId, lbl: 'Dönem #' + yeniN, tarih: bugun, aktif: true });
+  for (var _si = 1; _si < APP.seed.deptPeriods.length; _si++) APP.seed.deptPeriods[_si].aktif = false;
+  APP.seed.accPeriods.unshift({ id: yeniId, lbl: 'Dönem #' + yeniN, tarih: bugun, aktif: true });
+  for (var _sai = 1; _sai < APP.seed.accPeriods.length; _sai++) APP.seed.accPeriods[_sai].aktif = false;
   APP.data.periodBudget.unshift({ donem: yeniId, lbl: 'Dönem #' + yeniN, butce: 40000, harcanan: 0, reddedildi: 0, _lastPct: 0 });
-  APP.ui.aktifDon = yeniId;
+  APP.ui.activePeriod = yeniId;
   saveAppData();
   renderPeriod(yeniId);
   renderAccBek();
@@ -274,7 +274,7 @@ export function newPeriod() {
 
 export function closePeriod(donemId, sebep) {
   if (!APP.ui.curUser || APP.ui.curUser.role !== 'acc') return;
-  var d = APP.seed.donemler.find(function(x) { return x.id === donemId; });
+  var d = APP.seed.periods.find(function(x) { return x.id === donemId; });
   if (!d) return;
   if (d.durum === 'kapali') { notif('Bu dönem zaten kapalı.', 'red'); return; }
 
@@ -310,11 +310,11 @@ export function closePeriod(donemId, sebep) {
   d.kapanmaTarihi = bugun;
   d.kapayanKisi   = APP.ui.curUser.name;
 
-  for (var _sdi = 0; _sdi < APP.seed.sdDonemler.length; _sdi++) {
-    if (APP.seed.sdDonemler[_sdi].id === donemId) { APP.seed.sdDonemler[_sdi].aktif = false; break; }
+  for (var _sdi = 0; _sdi < APP.seed.deptPeriods.length; _sdi++) {
+    if (APP.seed.deptPeriods[_sdi].id === donemId) { APP.seed.deptPeriods[_sdi].aktif = false; break; }
   }
-  for (var _ssdi = 0; _ssdi < APP.seed.saDonemler.length; _ssdi++) {
-    if (APP.seed.saDonemler[_ssdi].id === donemId) { APP.seed.saDonemler[_ssdi].aktif = false; break; }
+  for (var _ssdi = 0; _ssdi < APP.seed.accPeriods.length; _ssdi++) {
+    if (APP.seed.accPeriods[_ssdi].id === donemId) { APP.seed.accPeriods[_ssdi].aktif = false; break; }
   }
 
   saveAppData();
@@ -327,7 +327,7 @@ export function closePeriod(donemId, sebep) {
 }
 
 export function _isPeriodClosed(donemId) {
-  var d = APP.seed.donemler.find(function(x) { return x.id === donemId; });
+  var d = APP.seed.periods.find(function(x) { return x.id === donemId; });
   return !!(d && d.durum === 'kapali');
 }
 
@@ -337,14 +337,14 @@ var _istisnaDonemId = null;
 
 export function openExceptionPermitModal(donemId) {
   _istisnaDonemId = donemId;
-  var d = APP.seed.donemler.find(function(x) { return x.id === donemId; });
+  var d = APP.seed.periods.find(function(x) { return x.id === donemId; });
   var dLbl = d ? d.lbl : ('Dönem #' + donemId);
   var infoEl = document.getElementById('istisna-donem-info');
   if (infoEl) infoEl.textContent = dLbl + ' — kapanmış döneme kişiye özel giriş izni';
   var sel = document.getElementById('istisna-kisi-sel');
   if (sel) {
     sel.innerHTML = '<option value="">— Kişi seçin —</option>' +
-      APP.seed.deptEkip.map(function(u) {
+      APP.seed.deptCrew.map(function(u) {
         return '<option value="' + u.id + '">' + u.name + ' (' + u.rol + ')</option>';
       }).join('');
   }
@@ -376,12 +376,12 @@ export function grantPeriodException() {
   if (sebep.length < 10)  { notif('Sebep en az 10 karakter olmalı', 'red'); return; }
   if (!sure || sure <= 0) { notif("Süre 0'dan büyük olmalı", 'red'); return; }
 
-  var d = APP.seed.donemler.find(function(x) { return x.id === donemId; });
+  var d = APP.seed.periods.find(function(x) { return x.id === donemId; });
   if (!d || d.durum !== 'kapali') { notif('Sadece kapalı dönemlere izin verilebilir', 'red'); return; }
 
   var uyeObj = null;
-  for (var _ui = 0; _ui < APP.seed.deptEkip.length; _ui++) {
-    if (APP.seed.deptEkip[_ui].id === kisiKey) { uyeObj = APP.seed.deptEkip[_ui]; break; }
+  for (var _ui = 0; _ui < APP.seed.deptCrew.length; _ui++) {
+    if (APP.seed.deptCrew[_ui].id === kisiKey) { uyeObj = APP.seed.deptCrew[_ui]; break; }
   }
   if (!uyeObj) { notif('Geçersiz kişi', 'red'); return; }
 
@@ -444,7 +444,7 @@ export function cancelException(izinId) {
     }
   }
   saveAppData();
-  renderPeriod(APP.ui.aktifDon);
+  renderPeriod(APP.ui.activePeriod);
   notif('İstisna izni iptal edildi', 'amber');
 }
 
@@ -455,7 +455,7 @@ var _dnKapamaDonemId = null;
 
 export function _lateEntryModal(donemId, islem, callback) {
   _gecIslemCb = callback;
-  var d = APP.seed.donemler.find(function(x) { return x.id === donemId; });
+  var d = APP.seed.periods.find(function(x) { return x.id === donemId; });
   var dLbl = d ? d.lbl : ('Dönem #' + donemId);
   var infoEl = document.getElementById('gec-islem-info');
   if (infoEl) infoEl.textContent = dLbl + ' kapalı. Bu işlem (' + islem + ') geç işlem olarak silinemez şekilde kaydedilecek. Sebep zorunludur (min. 10 karakter).';
@@ -474,7 +474,7 @@ export function _lateEntryApply() {
 
 export function _periodCloseModal(donemId) {
   _dnKapamaDonemId = donemId;
-  var d = APP.seed.donemler.find(function(x) { return x.id === donemId; });
+  var d = APP.seed.periods.find(function(x) { return x.id === donemId; });
   var dLbl = d ? d.lbl : ('Dönem #' + donemId);
   var deptBek = APP.data.deptPending.filter(function(f) {
     if (String(f.donem) !== String(donemId) || f.kat === 'Kiralama') return false;
@@ -554,7 +554,7 @@ export function _checkPassiveApproval() {
       onaylayan: 'SİSTEM (7-gün pasif onay)', tarih: Date.now(),
       tutar: pItem.tutar, kat: pItem.kat || '', satici: pItem.satici || '',
       uye: pItem.uye, dept: pItem.dept || '',
-      donem: pItem.donem !== undefined ? pItem.donem : APP.ui.aktifDon,
+      donem: pItem.donem !== undefined ? pItem.donem : APP.ui.activePeriod,
       pasifOnay: true
     });
     APP.data.accPending.splice(po.idx, 1);

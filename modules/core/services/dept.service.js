@@ -15,8 +15,8 @@ export function deptPendingAdd(satici, kat, tutar, belgesiz, aciklama, fotos, fi
   var uye = APP.ui.curUser ? APP.ui.curUser.name : 'Dept Sorumlusu';
   var ini = APP.ui.curUser ? APP.ui.curUser.ini  : 'DS';
 
-  if (APP.ui.curUser && APP.ui.curUser.role === 'user' && _isPeriodClosed(APP.ui.aktifDon)) {
-    var _izin = _activeException(APP.ui.aktifDon, uye);
+  if (APP.ui.curUser && APP.ui.curUser.role === 'user' && _isPeriodClosed(APP.ui.activePeriod)) {
+    var _izin = _activeException(APP.ui.activePeriod, uye);
     if (!_izin || !_isExceptionValid(_izin)) {
       notif('Bu dönem kapanmış. Yeni fiş eklenemez.', 'red');
       return;
@@ -29,7 +29,7 @@ export function deptPendingAdd(satici, kat, tutar, belgesiz, aciklama, fotos, fi
       var _nf = {
         id: Date.now(), tarih: _td, personel: uye,
         satici: satici || 'Yeni Harcama', kat: kat || 'Diger', tutar: tutar || 0,
-        durum: 'acc-bekleyen', donem: APP.ui.aktifDon,
+        durum: 'acc-bekleyen', donem: APP.ui.activePeriod,
         uyari: null, thumb: null, belgesiz: !!belgesiz, aciklama: aciklama || '',
         gecIslem: true, istisnaIzniId: _izin.id,
         log: [_mkLog('olusturuldu', 'İstisna izniyle kapalı döneme eklendi')]
@@ -52,14 +52,14 @@ export function deptPendingAdd(satici, kat, tutar, belgesiz, aciklama, fotos, fi
       uye: uye, ini: ini,
       satici: satici || 'Yeni Harcama', kat: kat || 'Diger',
       tutar: tutar || 0, tarih: _deptDate(), belgesiz: !!belgesiz, uyari: '',
-      fromKey: APP.ui.curUserKey || 's', donem: APP.ui.aktifDon,
+      fromKey: APP.ui.curUserKey || 's', donem: APP.ui.activePeriod,
       olusturmaZamani: Date.now(), gecIslem: true, istisnaIzniId: _izin.id
     });
     _izin.girilenAdet++;
     _izin.girilenTutar += (tutar || 0);
     if (_izin.maxAdet  !== null && _izin.girilenAdet  >= _izin.maxAdet)  _izin.durum = 'adetDoldu';
     else if (_izin.maxTutar !== null && _izin.girilenTutar >= _izin.maxTutar) _izin.durum = 'tutarDoldu';
-    var _dLbl = (APP.seed.donemler.find(function(x){return x.id===APP.ui.aktifDon;})||{lbl:'Dönem'}).lbl;
+    var _dLbl = (APP.seed.periods.find(function(x){return x.id===APP.ui.activePeriod;})||{lbl:'Dönem'}).lbl;
     _pushNotif('m', 'am', 'İstisna İzni — Yeni Fiş',
       uye + ', ' + _dLbl + ' için fiş ekledi. (İzinli giriş)', 'Az önce · Sistem');
     updateNotifBadge();
@@ -78,11 +78,11 @@ export function deptPendingAdd(satici, kat, tutar, belgesiz, aciklama, fotos, fi
     belgesiz: !!belgesiz,
     aciklama: aciklama || '',
     fotos: fotos || [],
-    donem: APP.ui.aktifDon,
+    donem: APP.ui.activePeriod,
     olusturmaZamani: Date.now(),
     log: [_mkLog('olusturuldu', 'Harcama bildirildi')]
   });
-  var _cb = APP.data.periodBudget.find(function(x){ return x.donem === APP.ui.aktifDon; });
+  var _cb = APP.data.periodBudget.find(function(x){ return x.donem === APP.ui.activePeriod; });
   if (_cb) {
     var _cbt = 0;
     for (var _ci = 0; _ci < APP.data.deptPending.length; _ci++) _cbt += APP.data.deptPending[_ci].tutar;

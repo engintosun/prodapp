@@ -20,18 +20,18 @@ if (typeof window !== 'undefined') {
 
 // ─── Şema referansı (ilk Adımda kopyalanmadı — Adım 4'te buraya taşınacak) ──
 //
-// APP.data :  fisler, deptBekleyen, accBekleyen, accGecmis, deptGecmis,
-//             accAvansGecmis, accDepts, accKiralamalar, accSuphe, deptAvans,
-//             deptKira, donemButce, globalInbox, sohbetler, avatars,
-//             companyInfo, projNames, projLogos, istisnaIzinleri
+// APP.data :  receipts, deptPending, accPending, accHistory, deptHistory,
+//             accAdvanceHistory, accDepts, accRentals, accSuspicion, deptAdvances,
+//             deptRentals, periodBudget, globalInbox, chats, avatars,
+//             companyInfo, projNames, projLogos, exceptionPermits
 //
-// APP.ui   :  curUser, curUserKey, curProj, aktifDon, sdSec, notiflar,
-//             sdSeciliDonem, saSeciliDonem, sdGecmisPnlDonem,
-//             sdAvansFormAcik, sdMesajKisi, sdMode, saAvansDonem,
-//             saRaporTip, longTimer, longFired, isRec, speechRecog
+// APP.ui   :  curUser, curUserKey, curProj, activePeriod, deptSelected, notifications,
+//             deptSelectedPeriod, accSelectedPeriod, deptHistoryPanelPeriod,
+//             deptAdvanceFormOpen, deptMessagePerson, deptMode, accAdvancePeriod,
+//             accReportType, longTimer, longFired, isRec, speechRecog
 //
-// APP.seed :  users, umap, projs, donemler, deptEkip, sdDonemler,
-//             saDonemler, katLimit
+// APP.seed :  users, umap, projs, periods, deptCrew, deptPeriods,
+//             accPeriods, categoryLimits
 //
 // APP.cache:  accDeptKatlar, accRaporPersonel, accDonemKatlar,
 //             uyeGecmis, accDeptUyeler, accDeptDonemler,

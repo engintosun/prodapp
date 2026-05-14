@@ -206,11 +206,11 @@ export function renderAccAdvance() {
   var aktifAv = _advanceSortDesc(APP.data.accPending.filter(function(a){ return a.tip === 'avans'; }));
 
   var donBar = '<div class="sa-donem-bar" style="margin-bottom:14px">';
-  for (var di = 0; di < APP.seed.saDonemler.length; di++) {
-    var dp = APP.seed.saDonemler[di];
-    var dpOn = APP.ui.saAvansDonem === dp.id ? ' on' : '';
+  for (var di = 0; di < APP.seed.accPeriods.length; di++) {
+    var dp = APP.seed.accPeriods[di];
+    var dpOn = APP.ui.accAdvancePeriod === dp.id ? ' on' : '';
     donBar += '<button class="sa-donem-pill' + dpOn + '" onclick="accAdvanceSetPeriod(' + dp.id + ')">' +
-      '<div style="font-size:12px;font-weight:700;color:' + (APP.ui.saAvansDonem === dp.id ? 'var(--ac2)' : 'var(--tx2)') + '">' + dp.lbl + '</div>' +
+      '<div style="font-size:12px;font-weight:700;color:' + (APP.ui.accAdvancePeriod === dp.id ? 'var(--ac2)' : 'var(--tx2)') + '">' + dp.lbl + '</div>' +
       (dp.aktif ? '<div style="font-size:9px;color:var(--gr);font-weight:700;margin-top:1px">● Aktif</div>' : '<div style="font-size:10px;color:var(--tx3);margin-top:1px">' + dp.tarih + '</div>') +
     '</button>';
   }
@@ -240,7 +240,7 @@ export function renderAccAdvance() {
     html += '<div style="text-align:right;font-size:11px;color:var(--tx3);padding:2px 2px 12px">Bekleyen toplam: <strong style="color:var(--am2)">₺' + bekTop.toLocaleString('tr-TR') + '</strong></div>';
   }
 
-  var gecmisDonem = _advanceSortDesc(APP.data.accAdvanceHistory.filter(function(av){ return av.donem === APP.ui.saAvansDonem; }));
+  var gecmisDonem = _advanceSortDesc(APP.data.accAdvanceHistory.filter(function(av){ return av.donem === APP.ui.accAdvancePeriod; }));
 
   if (!gecmisDonem.length && !aktifAv.length) {
     el.innerHTML = html + '<div style="text-align:center;padding:30px 0;color:var(--tx3);font-size:13px">Bu dönem için avans kaydı yok</div>';
@@ -303,7 +303,7 @@ export function renderAccAdvance() {
 }
 
 export function accAdvanceSetPeriod(id) {
-  APP.ui.saAvansDonem = id;
+  APP.ui.accAdvancePeriod = id;
   renderAccAdvance();
 }
 
@@ -313,7 +313,7 @@ export function accAdvanceOpenPerson(name) {
     if (APP.cache.accRaporPersonel[i].name === name) { idx = i; break; }
   }
   if (idx < 0) { notif('Personel raporu bulunamadı', 'amber'); return; }
-  APP.ui.saRaporTip = 'personel';
+  APP.ui.accReportType = 'personel';
   accReportDeptId     = '';
   accReportPersonIdx    = idx;
   accReportPersonFrom   = 'list';
@@ -321,7 +321,7 @@ export function accAdvanceOpenPerson(name) {
 }
 
 export function accSetPeriod(id) {
-  APP.ui.saSeciliDonem = id;
+  APP.ui.accSelectedPeriod = id;
   renderAccDash();
 }
 
@@ -601,7 +601,7 @@ export function renderAcc() {
   renderAccDash();
   renderAccPending();
   renderAccSuspicion();
-  renderAccReport(APP.ui.saRaporTip);
+  renderAccReport(APP.ui.accReportType);
   renderAccRental();
   renderAccMessages();
   accTab('dash', document.getElementById('satb-dash'));
@@ -632,7 +632,7 @@ export function openAccBudgetEdit() {
       '</div>';
     }).join('');
   var katRows = '<div class="butce-modal-sec-hd">Kategori Limitleri</div>' +
-    APP.seed.katLimit.map(function(km) {
+    APP.seed.categoryLimits.map(function(km) {
       return '<div class="butce-modal-row">' +
         '<div class="butce-modal-dot" style="background:' + km.clr + '"></div>' +
         '<div class="butce-modal-name">' + km.lbl + '</div>' +
@@ -651,11 +651,11 @@ export function accBudgetSave() {
   var toplamButce = 0;
   for (var t = 0; t < APP.data.accDepts.length; t++) toplamButce += APP.data.accDepts[t].butce || 0;
   for (var b = 0; b < APP.data.periodBudget.length; b++) {
-    if (APP.data.periodBudget[b].donem === APP.ui.aktifDon) { APP.data.periodBudget[b].butce = toplamButce; break; }
+    if (APP.data.periodBudget[b].donem === APP.ui.activePeriod) { APP.data.periodBudget[b].butce = toplamButce; break; }
   }
-  for (var j = 0; j < APP.seed.katLimit.length; j++) {
-    var ki = document.getElementById('kat-inp-' + APP.seed.katLimit[j].kat);
-    if (ki) { var kv = parseInt(ki.value, 10); if (!isNaN(kv) && kv >= 0) APP.seed.katLimit[j].limit = kv; }
+  for (var j = 0; j < APP.seed.categoryLimits.length; j++) {
+    var ki = document.getElementById('kat-inp-' + APP.seed.categoryLimits[j].kat);
+    if (ki) { var kv = parseInt(ki.value, 10); if (!isNaN(kv) && kv >= 0) APP.seed.categoryLimits[j].limit = kv; }
   }
   closeM('mbutce');
   renderAccDash();
@@ -673,23 +673,23 @@ export function renderAccDash() {
   if (!el) return;
 
   var donBar = '<div class="sa-donem-bar">';
-  for (var di = 0; di < APP.seed.saDonemler.length; di++) {
-    var dp = APP.seed.saDonemler[di];
-    var dpOn = APP.ui.saSeciliDonem === dp.id ? ' on' : '';
+  for (var di = 0; di < APP.seed.accPeriods.length; di++) {
+    var dp = APP.seed.accPeriods[di];
+    var dpOn = APP.ui.accSelectedPeriod === dp.id ? ' on' : '';
     var dpSub = dp.aktif
       ? '<div style="font-size:9px;color:var(--gr);font-weight:700;margin-top:1px">● Aktif</div>'
       : '<div style="font-size:10px;color:var(--tx3);margin-top:1px">' + dp.tarih + '</div>';
     donBar += '<button class="sa-donem-pill' + dpOn + '" onclick="accSetPeriod(' + dp.id + ')">' +
-      '<div style="font-size:12px;font-weight:700;color:' + (APP.ui.saSeciliDonem === dp.id ? 'var(--ac2)' : 'var(--tx2)') + '">' + dp.lbl + '</div>' +
+      '<div style="font-size:12px;font-weight:700;color:' + (APP.ui.accSelectedPeriod === dp.id ? 'var(--ac2)' : 'var(--tx2)') + '">' + dp.lbl + '</div>' +
       dpSub +
     '</button>';
   }
   donBar += '</div>';
 
-  var depts = APP.ui.saSeciliDonem === 2 ? APP.data.accDepts : (window.SA_DONEM_DEPTS[APP.ui.saSeciliDonem] || []);
+  var depts = APP.ui.accSelectedPeriod === 2 ? APP.data.accDepts : (window.SA_DONEM_DEPTS[APP.ui.accSelectedPeriod] || []);
   var donRec = null;
-  for (var dri = 0; dri < APP.seed.saDonemler.length; dri++) if (APP.seed.saDonemler[dri].id === APP.ui.saSeciliDonem) { donRec = APP.seed.saDonemler[dri]; break; }
-  var isAktif = APP.ui.saSeciliDonem === 2;
+  for (var dri = 0; dri < APP.seed.accPeriods.length; dri++) if (APP.seed.accPeriods[dri].id === APP.ui.accSelectedPeriod) { donRec = APP.seed.accPeriods[dri]; break; }
+  var isAktif = APP.ui.accSelectedPeriod === 2;
 
   var totalTop = 0, totalOnay = 0, totalBek = 0, totalRed = 0;
   for (var i = 0; i < depts.length; i++) {
@@ -699,14 +699,14 @@ export function renderAccDash() {
     totalRed  += (depts[i].red || 0);
   }
 
-  var aktifDon = APP.seed.donemler.find(function(x) { return x.id === APP.ui.aktifDon; });
+  var aktifDon = APP.seed.periods.find(function(x) { return x.id === APP.ui.activePeriod; });
   var donYonHtml = '<div style="display:flex;align-items:center;gap:8px;padding:10px 0 4px;margin-bottom:8px;border-bottom:1px solid var(--bo)">' +
     '<span style="font-size:12px;font-weight:700;color:var(--tx2)">Dönem Yönetimi</span>' +
     '<span style="flex:1;font-size:12px;color:var(--tx3)">' +
       (aktifDon ? aktifDon.lbl + ' — <span style="color:var(--gr2)">Açık</span>' : 'Dönem yok') +
     '</span>' +
     '<button class="btn btn-sm btn-p" onclick="newPeriod()" style="font-size:11px;padding:4px 10px">+ Yeni Dönem</button>' +
-    (aktifDon ? '<button class="btn btn-sm" onclick="_periodCloseModal(' + APP.ui.aktifDon + ')" style="font-size:11px;padding:4px 10px;background:rgba(239,68,68,.12);color:var(--rd2);border:1px solid rgba(239,68,68,.3)">Dönem Kapat</button>' : '') +
+    (aktifDon ? '<button class="btn btn-sm" onclick="_periodCloseModal(' + APP.ui.activePeriod + ')" style="font-size:11px;padding:4px 10px;background:rgba(239,68,68,.12);color:var(--rd2);border:1px solid rgba(239,68,68,.3)">Dönem Kapat</button>' : '') +
   '</div>';
 
   var html = donYonHtml + donBar;
@@ -767,14 +767,14 @@ export function renderAccDash() {
     html += '</div>';
   }
 
-  if (!isAktif && window.SA_DONEM_DEPTS[APP.ui.saSeciliDonem]) {
-    var prevId = APP.ui.saSeciliDonem - 1;
+  if (!isAktif && window.SA_DONEM_DEPTS[APP.ui.accSelectedPeriod]) {
+    var prevId = APP.ui.accSelectedPeriod - 1;
     var prevDepts = window.SA_DONEM_DEPTS[prevId] || null;
     if (prevDepts) {
       var prevTotal = 0, curTotal = totalTop;
       for (var pi = 0; pi < prevDepts.length; pi++) prevTotal += prevDepts[pi].total;
       var prevDonRec = null;
-      for (var pri = 0; pri < APP.seed.saDonemler.length; pri++) if (APP.seed.saDonemler[pri].id === prevId) { prevDonRec = APP.seed.saDonemler[pri]; break; }
+      for (var pri = 0; pri < APP.seed.accPeriods.length; pri++) if (APP.seed.accPeriods[pri].id === prevId) { prevDonRec = APP.seed.accPeriods[pri]; break; }
       var diff = curTotal - prevTotal;
       var diffSign = diff >= 0 ? '+' : '';
       var diffClr  = diff > 0 ? 'var(--rd2)' : 'var(--gr2)';
@@ -971,7 +971,7 @@ export function accReportTogglePeriod(did) {
 }
 
 export function renderAccReport(tip) {
-  APP.ui.saRaporTip = tip;
+  APP.ui.accReportType = tip;
   accReportDeptId     = '';
   accReportPersonIdx    = -1;
   _renderAccReportBody();
@@ -993,7 +993,7 @@ function _renderAccReportBody() {
     ['dept','kat','personel','donem'].map(function(t) {
       var icons = { dept:'🏢', kat:'🏷', personel:'👤', donem:'📅' };
       var lbls  = { dept:'Departman', kat:'Kategori', personel:'Personel', donem:'Dönem' };
-      return '<button class="sa-rapor-btn' + (t === APP.ui.saRaporTip ? ' on' : '') + '" onclick="renderAccReport(\'' + t + '\')">' +
+      return '<button class="sa-rapor-btn' + (t === APP.ui.accReportType ? ' on' : '') + '" onclick="renderAccReport(\'' + t + '\')">' +
         '<div class="sa-rapor-btn-ic">' + icons[t] + '</div>' +
         '<div class="sa-rapor-btn-lbl">' + lbls[t] + '</div>' +
       '</button>';
@@ -1001,13 +1001,13 @@ function _renderAccReportBody() {
   '</div>';
 
   var content = '';
-  if      (APP.ui.saRaporTip === 'dept')     content = accReportDeptId   ? _reportDeptDetail()    : _reportDeptList();
-  else if (APP.ui.saRaporTip === 'kat')      content = _reportCategory();
-  else if (APP.ui.saRaporTip === 'personel') content = accReportPersonIdx >= 0 ? _reportPersonDetail() : _reportPersonnelList();
-  else if (APP.ui.saRaporTip === 'donem')    content = _reportPeriod();
+  if      (APP.ui.accReportType === 'dept')     content = accReportDeptId   ? _reportDeptDetail()    : _reportDeptList();
+  else if (APP.ui.accReportType === 'kat')      content = _reportCategory();
+  else if (APP.ui.accReportType === 'personel') content = accReportPersonIdx >= 0 ? _reportPersonDetail() : _reportPersonnelList();
+  else if (APP.ui.accReportType === 'donem')    content = _reportPeriod();
 
   el.innerHTML = btns + content +
-    '<button class="sa-pdf-btn" onclick="showExportModal(\'acc-\' + APP.ui.saRaporTip)">📥 Dışa Aktar</button>';
+    '<button class="sa-pdf-btn" onclick="showExportModal(\'acc-\' + APP.ui.accReportType)">📥 Dışa Aktar</button>';
 }
 
 function _reportDeptList() {

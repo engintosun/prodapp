@@ -38,11 +38,11 @@ export function loadAppData() {
     /* BUG-2 migration: donem field'ı eksik eski kayıtlara aktifDon ata */
     for (var _mi = 0; _mi < APP.data.deptPending.length; _mi++) {
       if (APP.data.deptPending[_mi].donem === undefined)
-        APP.data.deptPending[_mi].donem = APP.ui.aktifDon;
+        APP.data.deptPending[_mi].donem = APP.ui.activePeriod;
     }
     for (var _mj = 0; _mj < APP.data.accPending.length; _mj++) {
       if (APP.data.accPending[_mj].donem === undefined)
-        APP.data.accPending[_mj].donem = APP.ui.aktifDon;
+        APP.data.accPending[_mj].donem = APP.ui.activePeriod;
     }
     if (!APP.data.exceptionPermits) APP.data.exceptionPermits = [];
     return true;

@@ -152,8 +152,8 @@ export function fillOCR(f) {
 
 export function submitOCR() {
   closeM('mo');
-  if (APP.ui.sdMode) {
-    APP.ui.sdMode = false;
+  if (APP.ui.deptMode) {
+    APP.ui.deptMode = false;
     var satici = (document.getElementById('f-satici').value || '').trim() || 'Bilinmiyor';
     var kat    = document.getElementById('f-kat').value || 'Diger';
     var tutar  = parseFloat((document.getElementById('f-tutar').value || '0').replace(',', '.')) || 0;
@@ -169,7 +169,7 @@ export function submitOCR() {
       id: Date.now(), tarih: tarih2,
       personel: APP.ui.curUser ? APP.ui.curUser.name : 'Bilinmeyen',
       satici: sat2, kat: kat2, tutar: tut2,
-      durum: 'dept-bekleyen', donem: APP.ui.aktifDon, uyari: null, thumb: null,
+      durum: 'dept-bekleyen', donem: APP.ui.activePeriod, uyari: null, thumb: null,
       log: [_mkLog('olusturuldu', 'Harcama sisteme girildi')]
     };
     if (kat2 === 'Kiralama') {
@@ -188,7 +188,7 @@ export function submitOCR() {
 }
 
 export function openDeptOCR() {
-  APP.ui.sdMode = true;
+  APP.ui.deptMode = true;
   openOCR(0, null);
 }
 
