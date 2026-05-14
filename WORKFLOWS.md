@@ -1,6 +1,6 @@
 # PRODAPP — Mali İş Akışları
 
-**Son güncelleme:** 30 Nisan 2026  
+**Son güncelleme:** 14 Mayıs 2026  
 **Kaynak:** index.html + SCHEMA.md
 
 Bu doküman mali işlem akışlarını tanımlar. Her akış: kim tetikler, hangi
@@ -43,8 +43,8 @@ Her akış şu formatta yazılır:
 - → `_addToDeptBekleyen(satici, kat, tutar, false, '', [], entry.id)` — satır 5609
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.data.fisler`: unshift (yeni fiş, `durum='dept-bekleyen'`)
-- `APP.data.deptBekleyen`: unshift (dept kuyruğuna)
+- `APP.data.receipts`: unshift (yeni fiş, `durum='dept-pending'`)
+- `APP.data.deptPending`: unshift (dept kuyruğuna)
 
 **📬 BİLDİRİMLER:** Yok (henüz dept onayı olmadığı için)
 
@@ -63,8 +63,8 @@ Her akış şu formatta yazılır:
 - → `_addToDeptBekleyen('Belgesiz Harcama', kat, tutar, true, aciklama, fotos, fisId)` — satır 5609
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.data.fisler`: unshift (`durum='dept-bekleyen'`, `belgesiz:true`)
-- `APP.data.deptBekleyen`: unshift
+- `APP.data.receipts`: unshift (`durum='dept-pending'`, `belgesiz:true`)
+- `APP.data.deptPending`: unshift
 
 **⚠️ BİLİNEN RİSKLER:**
 - Belgesiz alt-kategori ağacı yok (STATUS.md'de ertelenmiş)
@@ -81,17 +81,17 @@ Her akış şu formatta yazılır:
 - `deptOnayla(id)` — satır 6779
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.data.deptBekleyen`: splice (fişi çıkar)
-- `APP.data.deptGecmis[aktifDon].onaylandi`: push (arşiv kaydı)
-- `APP.data.accBekleyen`: unshift (muhasebe kuyruğuna — `fisId` referansı korunur)
-- `APP.data.donemButce[aktifDon].harcanan`: `+= tutar`
+- `APP.data.deptPending`: splice (fişi çıkar)
+- `APP.data.deptHistory[activePeriod].onaylandi`: push (arşiv kaydı)
+- `APP.data.accPending`: unshift (muhasebe kuyruğuna — `fisId` referansı korunur)
+- `APP.data.periodBudget[activePeriod].harcanan`: `+= tutar`
 
 **📬 BİLDİRİMLER:**
 - `_pushNotif('m', 'bl', ...)` — muhasebeye "yeni bekleyen"
 - `_checkButceUyari()` — bütçe eşiği (%80/%100) geçildiyse dept + muhasebeye otomatik uyarı
 
 **💾 EK KOLEKSIYON GÜNCELLEMESİ (24.04.2026 eklemesi):**
-- `APP.data.fisler[i].durum`: `'dept-bekleyen'` → `'acc-bekleyen'` (fisId ile eşleştirme)
+- `APP.data.receipts[i].durum`: `'dept-pending'` → `'acc-pending'` (fisId ile eşleştirme)
 
 ---
 
@@ -102,7 +102,7 @@ Her akış şu formatta yazılır:
 **📞 FONKSİYON ZİNCİRİ:**
 - `deptOnaylaSecili()` — satır 5931
 
-**💾 KOLEKSIYON GÜNCELLEMELERİ:** 2A ile aynı, `APP.ui.sdSec`'teki her seçili fiş için döngü (her fiş için `fisler[i].durum: 'dept-bekleyen' → 'acc-bekleyen'` dahil)
+**💾 KOLEKSIYON GÜNCELLEMELERİ:** 2A ile aynı, `APP.ui.deptSelected`'teki her seçili fiş için döngü (her fiş için `receipts[i].durum: 'dept-pending' → 'acc-pending'` dahil)
 
 **📬 BİLDİRİMLER:**
 - `_pushNotif('m', 'bl', ...)` — muhasebeye toplu sayı ile tek bildirim
@@ -120,11 +120,11 @@ Her akış şu formatta yazılır:
 - `prompt()` ile red nedeni alınır (zorunlu — boşsa iptal)
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.data.deptBekleyen`: splice
-- `APP.data.deptGecmis[aktifDon].reddedildi`: push (`redNedeni` field'ı ile)
-- `APP.data.donemButce[aktifDon].reddedildi`: `+= tutar`
-- `APP.data.fisler[i].durum`: `'dept-bekleyen'` → `'reddedildi'` (fisId ile eşleştirme)
-- `APP.data.fisler[i].uyari`: `redNedeni` yazılır
+- `APP.data.deptPending`: splice
+- `APP.data.deptHistory[activePeriod].reddedildi`: push (`redNedeni` field'ı ile)
+- `APP.data.periodBudget[activePeriod].reddedildi`: `+= tutar`
+- `APP.data.receipts[i].durum`: `'dept-pending'` → `'rejected'` (fisId ile eşleştirme)
+- `APP.data.receipts[i].uyari`: `redNedeni` yazılır
 
 **📬 BİLDİRİMLER:**
 - `_pushNotif(f.fromKey, 'rd', ...)` — saha kullanıcısına red nedeni ile
@@ -142,7 +142,7 @@ Her akış şu formatta yazılır:
 - `deptReddetSecili()` — satır 5981
 - `prompt()` tek seferde (aynı red nedeni tüm seçimlere uygulanır)
 
-**💾 KOLEKSIYON GÜNCELLEMELERİ:** 3A ile aynı, her seçili fiş için döngü (`fisler[i].durum = 'reddedildi'` ve `fisler[i].uyari = redNedeni` dahil)
+**💾 KOLEKSIYON GÜNCELLEMELERİ:** 3A ile aynı, her seçili fiş için döngü (`receipts[i].durum = 'rejected'` ve `receipts[i].uyari = redNedeni` dahil)
 
 **📬 BİLDİRİMLER:**
 - Her reddedilen fiş için ayrı `_pushNotif(f.fromKey, 'rd', ...)`
@@ -157,11 +157,11 @@ Her akış şu formatta yazılır:
 - `accOnayla(id)` — satır 9738
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.data.accBekleyen`: filter (fişi çıkar)
-- `APP.data.fisler[i].durum`: `'acc-bekleyen'` → `'onaylandi'`  
+- `APP.data.accPending`: filter (fişi çıkar)
+- `APP.data.receipts[i].durum`: `'acc-pending'` → `'approved'`  
   (önce `fisId` ile eşleşir; bulamazsa `uye + satici + tutar + tarih` ile fallback)
-- Avans ise: `APP.data.accAvansGecmis`'e `durum='ödendi'` ile yazılır (`_avGecmisEkle()`)
-- Harcama ise: `APP.data.accGecmis`: push (arşiv kaydı, fisId + snapshot ile)
+- Avans ise: `APP.data.accAdvanceHistory`'e `durum='paid'` ile yazılır (`_avGecmisEkle()`)
+- Harcama ise: `APP.data.accHistory`: push (arşiv kaydı, fisId + snapshot ile)
 
 **📬 BİLDİRİMLER:**
 - `_pushNotif(item.fromKey, 'gr', ...)` — saha kullanıcısına "onaylandı"
@@ -183,19 +183,19 @@ Her akış şu formatta yazılır:
 - `deptKismi(id, onayTutar, redNedeni)` — gerçek iş
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.data.fisler[parent].durum`: `'bolundu'`
-- `APP.data.fisler`: 2 yeni çocuk `unshift` (`parentFisId` + `kismiTip` ile)
-- `APP.data.deptBekleyen`: parent `splice`
-- `APP.data.deptGecmis[aktifDon]`: `onaylandi` + `reddedildi` push (her biri)
-- `APP.data.accBekleyen`: onay çocuğu `unshift`
-- `APP.data.donemButce`: `harcanan += onayTutar`, `reddedildi += redTutar`
+- `APP.data.receipts[parent].durum`: `'split'`
+- `APP.data.receipts`: 2 yeni çocuk `unshift` (`parentFisId` + `kismiTip` ile)
+- `APP.data.deptPending`: parent `splice`
+- `APP.data.deptHistory[activePeriod]`: `onaylandi` + `reddedildi` push (her biri)
+- `APP.data.accPending`: onay çocuğu `unshift`
+- `APP.data.periodBudget`: `harcanan += onayTutar`, `reddedildi += redTutar`
 
 **📬 BİLDİRİMLER:**
 - `_pushNotif('m', 'bl', ...)` — muhasebeye yeni bekleyen
 - `_pushNotif(fromKey, 'rd', ...)` — saha'ya kısmi red
 
 **⚠️ BİLİNEN RİSKLER:**
-- Parent fiş `'bolundu'` durumunda raporlarda atlanır. Üç rapor fonksiyonunda da `continue` eklendi (`_recomputeAccDepts`, `_computeRaporDeptFis`, `_computeRaporPersonel`).
+- Parent fiş `'split'` durumunda raporlarda atlanır. Üç rapor fonksiyonunda da `continue` eklendi (`_recomputeAccDepts`, `_computeRaporDeptFis`, `_computeRaporPersonel`).
 
 ---
 
@@ -209,10 +209,10 @@ Her akış şu formatta yazılır:
 - `accKismi(id, onayTutar, redNedeni)`
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.data.fisler[parent].durum`: `'bolundu'`
-- `APP.data.fisler`: 2 yeni çocuk `unshift` (onay çocuğu `durum='onaylandi'`, red çocuğu `durum='reddedildi'`)
-- `APP.data.accBekleyen`: parent `splice`
-- `APP.data.accGecmis`: 2 kayıt `push` (her çocuk için, `redNedeni` kayıtlı)
+- `APP.data.receipts[parent].durum`: `'split'`
+- `APP.data.receipts`: 2 yeni çocuk `unshift` (onay çocuğu `durum='approved'`, red çocuğu `durum='rejected'`)
+- `APP.data.accPending`: parent `splice`
+- `APP.data.accHistory`: 2 kayıt `push` (her çocuk için, `redNedeni` kayıtlı)
 
 **📬 BİLDİRİMLER:**
 - `_pushNotif('s', 'gr', ...)` — saha'ya kısmi onay
@@ -233,14 +233,14 @@ Her akış şu formatta yazılır:
 **📞 FONKSİYON ZİNCİRİ:**
 - `accReddet(id)` — satır 9799
 - `prompt()` ile red nedeni
-- `APP.data.fisler[i].durum = 'reddedildi'`, `fisler[i].uyari = redNedeni`
+- `APP.data.receipts[i].durum = 'rejected'`, `receipts[i].uyari = redNedeni`
 - `_pushNotif(item.fromKey, 'rd', ...)` — saha'ya bildirim
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.data.accBekleyen`: filter
-- `APP.data.fisler[i].durum`: `'reddedildi'`
-- `APP.data.fisler[i].uyari`: red nedeni metni
-- `APP.data.accGecmis`: push (arşiv kaydı, fisId + snapshot ile)
+- `APP.data.accPending`: filter
+- `APP.data.receipts[i].durum`: `'rejected'`
+- `APP.data.receipts[i].uyari`: red nedeni metni
+- `APP.data.accHistory`: push (arşiv kaydı, fisId + snapshot ile)
 
 ---
 
@@ -251,11 +251,11 @@ Her akış şu formatta yazılır:
 - → `_avRedPending = { id, kaynak:'acc', _item: item }` yazar
 - → `openM('md-av-red')` modal açılır
 - → Modaldan "Reddet" → `avansRedOnay()` — satır 5423 (`kaynak:'acc'` dalı)
-- → `_avGecmisEkle({durum:'reddedildi'})` — satır 5416
+- → `_avGecmisEkle({durum:'rejected'})` — satır 5416
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.data.accBekleyen`: filter
-- `APP.data.accAvansGecmis`: unshift (`durum='reddedildi'`, `redNedeni` ile)
+- `APP.data.accPending`: filter
+- `APP.data.accAdvanceHistory`: unshift (`durum='rejected'`, `redNedeni` ile)
 
 **📬 BİLDİRİMLER:**
 - `_pushNotif(fromKey, 'rd', ...)` — saha'ya
@@ -273,7 +273,7 @@ Her akış şu formatta yazılır:
 - `submitAvans()` — satır 7172
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.data.deptAvans`: unshift (`{ id, uye, ini, tutar, tarih, gerekce, fromKey }`)
+- `APP.data.deptAdvances`: unshift (`{ id, uye, ini, tutar, tarih, gerekce, fromKey }`)
 
 **📬 BİLDİRİMLER:**
 - `_pushNotif(fromKey, 'bl', ...)` — saha'ya "talep gönderildi"
@@ -289,8 +289,8 @@ Her akış şu formatta yazılır:
 - `deptAvansOnayla(id)` — satır 6860
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.data.deptAvans`: splice (talebi çıkar)
-- `APP.data.accBekleyen`: unshift (`tip:'avans'` ile)
+- `APP.data.deptAdvances`: splice (talebi çıkar)
+- `APP.data.accPending`: unshift (`tip:'avans'` ile)
 
 **📬 BİLDİRİMLER:**
 - `_pushNotif('m', 'am', ...)` — muhasebeye "avans onay bekliyor"
@@ -306,11 +306,11 @@ Her akış şu formatta yazılır:
 - → `_avRedPending = { id, kaynak:'dept' }` yazar
 - → `openM('md-av-red')` modal açılır
 - → `avansRedOnay()` — satır 5423 (`kaynak:'dept'` dalı)
-- → `_avGecmisEkle({durum:'reddedildi'})` + `_pushNotif(fromKey, 'rd', ...)`
+- → `_avGecmisEkle({durum:'rejected'})` + `_pushNotif(fromKey, 'rd', ...)`
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.data.deptAvans`: splice
-- `APP.data.accAvansGecmis`: unshift (`durum='reddedildi'`, `redNedeni` ile)
+- `APP.data.deptAdvances`: splice
+- `APP.data.accAdvanceHistory`: unshift (`durum='rejected'`, `redNedeni` ile)
 
 ---
 
@@ -322,8 +322,8 @@ Her akış şu formatta yazılır:
 - `accOnayla(id)` — satır 9738, `item.tip === 'avans'` dalı
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.data.accBekleyen`: filter
-- `APP.data.accAvansGecmis`: unshift (`durum='ödendi'`)
+- `APP.data.accPending`: filter
+- `APP.data.accAdvanceHistory`: unshift (`durum='paid'`)
 
 **📬 BİLDİRİMLER:**
 - `_pushNotif(fromKey, 'gr', ...)` — saha'ya "avans onaylandı"
@@ -336,7 +336,7 @@ Her akış şu formatta yazılır:
 **⚠️ HENÜZ İMPLEMENTE DEĞİL**
 - Muhasebe dept şefine toplu avans gönderir, şef personele dağıtır senaryosu
 - `accOnayla`'nın avans dalı yeni avans oluşturmuyor, sadece onaylıyor
-- `accBekleyen` filtresi şu an `|| true` geçici kod ile kapsanıyor
+- `accPending` filtresi şu an `|| true` geçici kod ile kapsanıyor
 - Faz 2'de proper akış yazılacak
 
 ---
@@ -345,13 +345,13 @@ Her akış şu formatta yazılır:
 
 ### 7A — Kiralama başlatma
 
-**🟢 TETİKLEYİCİ:** Saha kullanıcısı OCR/Belgesiz formda `kat='Kiralama'` seçer + `kiraMeta` field'larını doldurur
+**🟢 TETİKLEYİCİ:** Saha kullanıcısı OCR/Belgesiz formda `kat='rental'` seçer + `kiraMeta` field'larını doldurur
 
 **📞 FONKSİYON ZİNCİRİ:** `submitOCR()` / `submitBelgesiz()` normal akışı (ayrı başlatma fonksiyonu yok)
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.data.fisler`: unshift (`kiraMeta: { bas, bit, gunluk }` ile — tarihler ISO `YYYY-MM-DD`)
-- `APP.data.deptBekleyen`: unshift
+- `APP.data.receipts`: unshift (`kiraMeta: { bas, bit, gunluk }` ile — tarihler ISO `YYYY-MM-DD`)
+- `APP.data.deptPending`: unshift
 
 **⚠️ BİLİNEN RİSKLER:**
 - Ayrı kiralama entity yok, normal fiş olarak sayılıyor — modüler akışta ayrılması gerekebilir
@@ -367,8 +367,8 @@ Her akış şu formatta yazılır:
 - `accKiraIade(id)` — satır 6496 (muhasebe ekranından)
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.data.deptKira[i].iade = true`
-- `APP.data.accKiralamalar[j].iade = true`
+- `APP.data.deptRentals[i].iade = true`
+- `APP.data.accRentals[j].iade = true`
 - (Her iki fonksiyon da her iki diziyi günceller)
 
 ---
@@ -376,7 +376,7 @@ Her akış şu formatta yazılır:
 ### 7C — Gecikme ve ceza hesabı
 
 **📞 FONKSİYON ZİNCİRİ (render-time):**
-- `_kiraDurum(k)` — satır 6242 — `'iade'` / `'gec'` / `'yak'` / `'normal'` döndürür
+- `_rentalStatus(k)` — (satır no güncellenmeli) — `'returned'` / `'overdue'` / `'upcoming'` / `'ak'` döndürür
 - `_gunFarki(a, b)` — satır 6236 — `Math.floor((b-a) / 86400000)` ms farkı
 - Ceza: `gecGun * k.gunluk` — render esnasında hesaplanır
 
@@ -404,7 +404,7 @@ Her akış şu formatta yazılır:
 - `_checkKatLimit()` — kategori limiti aşılınca
 
 **📬 HEDEF:**
-- Hedef aktif kullanıcıysa `APP.ui.notiflar` referansı güncellenir
+- Hedef aktif kullanıcıysa `APP.ui.notifications` referansı güncellenir
 - `updateNotifBadge()` çağrılır (rozet sayısı)
 
 ---
@@ -417,7 +417,7 @@ Her akış şu formatta yazılır:
 - `markNotifRead(id)` — satır 8014
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.ui.notiflar[i].read = true`
+- `APP.ui.notifications[i].read = true`
 - `updateNotifBadge()` + `renderNotifModal()` çağrılır
 
 ---
@@ -433,16 +433,16 @@ Asimetrik kapanış modeli: saha/dept için tam kapanış, muhasebe için soft k
 **📞 FONKSİYON ZİNCİRİ:**
 - `yeniDonem()` — satır 7648
 - → Aktif dönem varsa: sıkı kapanış kontrolü (kiralama hariç bekleyen sayısı)
-  - Bekleyen > 0: `confirm()` → `_dnKapamaModal(aktif.id)` açılır
+  - Bekleyen > 0: `confirm()` → `_periodCloseModal(aktif.id)` açılır
   - Bekleyen = 0: `confirm()` → `donemKapa(aktif.id, sebep)` çalışır, yeni dönem açılır
 - → Aktif dönem yoksa: doğrudan yeni dönem oluşturulur
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.seed.donemler`: unshift (yeni dönem objesi — `durum:'aktif'`, yeni id/n/lbl)
-- `APP.seed.sdDonemler`: unshift (dept ekranı dönem seçici)
-- `APP.seed.saDonemler`: unshift (muhasebe ekranı dönem seçici)
-- `APP.data.donemButce`: unshift (yeni dönem bütçe satırı)
-- `APP.ui.aktifDon`: yeni id'ye güncellenir
+- `APP.seed.periods`: unshift (yeni dönem objesi — `durum:'active'`, yeni id/n/lbl)
+- `APP.seed.deptPeriods`: unshift (dept ekranı dönem seçici)
+- `APP.seed.accPeriods`: unshift (muhasebe ekranı dönem seçici)
+- `APP.data.periodBudget`: unshift (yeni dönem bütçe satırı)
+- `APP.ui.activePeriod`: yeni id'ye güncellenir
 
 **📬 BİLDİRİMLER:**
 - `_pushNotif('s', 'bl', 'Yeni Dönem Açıldı', ...)` — saha'ya
@@ -452,10 +452,10 @@ Asimetrik kapanış modeli: saha/dept için tam kapanış, muhasebe için soft k
 
 ### 9B — Dönem Kapama
 
-**🟢 TETİKLEYİCİ:** Muhasebe kullanıcısı "Dönem Kapat" butonu → `_dnKapamaModal(id)` → modalda "Kapat"
+**🟢 TETİKLEYİCİ:** Muhasebe kullanıcısı "Dönem Kapat" butonu → `_periodCloseModal(id)` → modalda "Kapat"
 
 **📞 FONKSİYON ZİNCİRİ:**
-- `_dnKapamaModal(donemId)` → modal açar (bekleyen sayısı gösterir)
+- `_periodCloseModal(donemId)` → modal açar (bekleyen sayısı gösterir)
 - `_dnKapamaUygula()` → `donemKapa(donemId, sebep)` çağırır
 - `donemKapa(donemId, sebep)`:
   1. Rol kontrolü (sadece muhasebe)
@@ -465,9 +465,9 @@ Asimetrik kapanış modeli: saha/dept için tam kapanış, muhasebe için soft k
   5. Dönem durumunu günceller (kapali, bitis, kapanmaTarihi, kapayanKisi)
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.seed.donemler[i].durum`: `'kapali'`, `bitis`, `kapanmaTarihi`, `kapayanKisi` güncellenir
-- `APP.seed.sdDonemler[i].aktif`: `false`
-- `APP.seed.saDonemler[i].aktif`: `false`
+- `APP.seed.periods[i].durum`: `'kapali'`, `bitis`, `kapanmaTarihi`, `kapayanKisi` güncellenir
+- `APP.seed.deptPeriods[i].aktif`: `false`
+- `APP.seed.accPeriods[i].aktif`: `false`
 
 **📬 BİLDİRİMLER:**
 - `_pushNotif('s', 'kp', ...)` — saha'ya dönem kapatıldı
@@ -484,14 +484,15 @@ Asimetrik kapanış modeli: saha/dept için tam kapanış, muhasebe için soft k
 
 **📞 FONKSİYON ZİNCİRİ:**
 - `_checkPasifOnay()` — satır 7797
-- `accBekleyen` içindeki her item için (avans ve Kiralama hariç): `olusturmaZamani` kontrolü
-  - ≥ 7 gün: `pasifOnaylar` listesine alır → `fisler.durum = 'onaylandi'`, `accGecmis` push, `accBekleyen` splice
+- `accPending` içindeki her item için (avans ve rental hariç): `olusturmaZamani` kontrolü
+  - ≥ 7 gün: `pasifOnaylar` listesine alır → `receipts.durum = 'approved'`, `accHistory` push, `accPending` splice
   - ≥ 6 gün (7-1): `uyariVerildi` flag'i yoksa muhasebe'ye yaklaşıyor bildirimi
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.data.fisler[i].durum`: `'onaylandi'`
-- `APP.data.accBekleyen`: splice (7 gün dolmuş itemlar)
-- `APP.data.accGecmis`: push (`pasifOnay:true` field'ı ile — geç işlem değil)
+- `APP.data.receipts[i].durum`: `'approved'`
+- `APP.data.accPending`: splice (7 gün dolmuş itemlar)
+- `APP.data.accHistory`: push (`pasifOnay:true` field'ı ile — geç işlem değil)
+
 
 **📬 BİLDİRİMLER:**
 - `_pushNotif('s', 'gr', 'Pasif Onay', ...)` — saha'ya otomatik onay haberi
@@ -507,17 +508,17 @@ Asimetrik kapanış modeli: saha/dept için tam kapanış, muhasebe için soft k
 - `accOnayla(id)` / `accReddet(id)` / `accKismi(id, ...)` — kapalı dönem kontrolü yapılır
 - Kapalı dönem tespit edilirse: `_gecIslemModal(donemId, islem, callback)` açılır
 - Muhasebe sebep girer → `_gecIslemUygula()` → callback'i çağırır
-- Callback içinde orijinal işlem + `gecIslem:true` field'ları accGecmis kaydına eklenir
+- Callback içinde orijinal işlem + `gecIslem:true` field'ları accHistory kaydına eklenir
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.data.accGecmis`: push — `gecIslem:true`, `gecIslemSebep:string`, `gecIslemDonem:number` field'ları ile
-- `APP.seed.donemler[i].gecIslemSayisi`: `+= 1`
-- Orijinal işlemin tüm koleksiyon güncellemeleri de yapılır (fisler.durum, accBekleyen splice vb.)
+- `APP.data.accHistory`: push — `gecIslem:true`, `gecIslemSebep:string`, `gecIslemDonem:number` field'ları ile
+- `APP.seed.periods[i].gecIslemSayisi`: `+= 1`
+- Orijinal işlemin tüm koleksiyon güncellemeleri de yapılır (receipts.durum, accPending splice vb.)
 
 **📬 BİLDİRİMLER:** Orijinal akışın bildirimleri aynen devam eder
 
 **⚠️ KRİTİK KURAL:**
-- `gecIslem`, `gecIslemSebep`, `gecIslemDonem` field'ları accGecmis'e yazıldıktan sonra silinemez, override edilemez
+- `gecIslem`, `gecIslemSebep`, `gecIslemDonem` field'ları accHistory'e yazıldıktan sonra silinemez, override edilemez
 - Saha ve dept kapanmış dönemde işlem yapamaz — deptOnayla/deptReddet/deptKismi ve _addToDeptBekleyen'in başında engel var
 
 ---
@@ -527,25 +528,25 @@ Asimetrik kapanış modeli: saha/dept için tam kapanış, muhasebe için soft k
 **🟢 TETİKLEYİCİ:** Muhasebe kullanıcısı kapanmış dönem ekranında "İstisna İzni Ver" butonuna tıklar
 
 **📞 FONKSİYON ZİNCİRİ:**
-- `openIstisnaIzniModal(donemId)` — modal açar, deptEkip dropdown doldurur
+- `openIstisnaIzniModal(donemId)` — modal açar, deptCrew dropdown doldurur
 - Muhasebe formu doldurur (kişi, sebep, süre, max adet/tutar) → "İzin Ver"
 - `donemIstisnaIzniVer()` — validasyon, push, bildirim, saveAppData
-- **Saha kullanıcısı fişi eklerken:** `_addToDeptBekleyen()` → `_aktifIstisnaIzni()` + `_istisnaIzniGecerliMi()` → doğrudan accBekleyen'e yönlendir
+- **Saha kullanıcısı fişi eklerken:** `_addToDeptPending()` → `_activeException()` + `_isExceptionValid()` → doğrudan accPending'e yönlendir
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
-- `APP.data.istisnaIzinleri`: push (muhasebe izin verir)
-- `APP.data.fisler`: gecIslem:true, istisnaIzniId, durum:'acc-bekleyen' (saha fişi eklerken)
-- `APP.data.accBekleyen`: unshift — gecIslem:true, istisnaIzniId (dept atlanır)
+- `APP.data.exceptionPermits`: push (muhasebe izin verir)
+- `APP.data.receipts`: gecIslem:true, istisnaIzniId, durum:'acc-pending' (saha fişi eklerken)
+- `APP.data.accPending`: unshift — gecIslem:true, istisnaIzniId (dept atlanır)
 - `izin.girilenAdet++`, `izin.girilenTutar += tutar` — her fiş girişinde
-- `izin.durum`: 'aktif' → 'sureDoldu'|'adetDoldu'|'tutarDoldu'|'iptal'
+- `izin.durum`: `'active'` → `'sureDoldu'`|`'adetDoldu'`|`'tutarDoldu'`|`'iptal'`
 
 **📬 BİLDİRİMLER:**
 - `_pushNotif(toKey, 'am', 'İstisna İzni', ...)` — kişiye izin verildi (donemIstisnaIzniVer)
 - `_pushNotif('m', 'am', 'İstisna İzni — Yeni Fiş', ...)` — muhasebe'ye fiş eklendi (_addToDeptBekleyen)
 
 **⚠️ KRİTİK KURALLAR:**
-- Dept ATLANIR — fiş doğrudan accBekleyen'e gider
-- gecIslem:true ve istisnaIzniId fisler + accBekleyen kayıtlarına eklenir (silinemez)
+- Dept ATLANIR — fiş doğrudan accPending'e gider
+- gecIslem:true ve istisnaIzniId receipts + accPending kayıtlarına eklenir (silinemez)
 - Süre/adet/tutar dolunca izin otomatik kapanır, sonraki fiş girişi engellenir
 - İptal: muhasebe `istisnaIzniIptal(id)` ile iptal edebilir → renderDonem yenilenir
 
@@ -561,8 +562,8 @@ Bu akışları yazarken tespit edilen, STATUS.md'ye eklenecek riskler:
 
 2. **Muhasebe → Dept direkt avans akışı eksik:** Faz 2'ye not edildi.
 
-3. ~~**Bekleyen sayım bug'ı:** Dönem kapama modal'ı yanlış bekleyen sayısı gösterebiliyor.~~ **Düzeltildi (30.04.2026):** `_dnKapamaModal` + `donemKapa` — çift cross-check eklendi (`fisler.durum` kontrolü) + `loadAppData` migration (donem field eksik eski kayıtlar). Bkz. BUG-2 + BUG-3.
+3. ~~**Bekleyen sayım bug'ı:** Dönem kapama modal'ı yanlış bekleyen sayısı gösterebiliyor.~~ **Düzeltildi (30.04.2026):** `_periodCloseModal` + `donemKapa` — çift cross-check eklendi (`receipts.durum` kontrolü) + `loadAppData` migration (donem field eksik eski kayıtlar). Bkz. BUG-2 + BUG-3.
 
 ---
 
-*Son teyit: index.html toplam satır sayısı ~10641 (30.04.2026 itibarıyla).*
+*Son teyit: index.html toplam satır sayısı ~5322 (14.05.2026 itibarıyla — 7B modülerleşme sonrası ~10641'den düştü).*
