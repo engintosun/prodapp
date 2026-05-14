@@ -119,7 +119,7 @@ export function renderPeriod(did) {
     var icStr  = KAT_IC[f.kat] || KAT_IC.def;
     var icBg   = f.duplikat ? 'rgba(239,68,68,.1)' : f.belgesiz ? 'rgba(59,130,246,.1)' : f.uyari ? 'rgba(245,158,11,.1)' : 'var(--bg3)';
     var icClr  = f.duplikat ? 'var(--rd)' : f.belgesiz ? 'var(--bl)'  : f.uyari ? 'var(--am)' : 'var(--ac)';
-    var amtClr = f.duplikat ? 'color:var(--rd2)' : f.durum === 'reddedildi' ? 'color:var(--rd2);text-decoration:line-through' : '';
+    var amtClr = f.duplikat ? 'color:var(--rd2)' : f.durum === 'rejected' ? 'color:var(--rd2);text-decoration:line-through' : '';
     var uyHtml = f.uyari    ? ' <span style="font-size:11px;color:var(--am2)" title="' + f.uyari + '">⚠️</span>' : '';
     var dpHtml = f.duplikat ? ' <span style="font-size:11px;color:var(--rd2)">🔴</span>' : '';
     var blHtml = f.belgesiz ? ' <span style="font-size:10px;background:rgba(59,130,246,.15);color:var(--bl2);border-radius:3px;padding:1px 4px;font-weight:700">BSZ</span>' : '';
@@ -155,8 +155,8 @@ export function renderPeriod(did) {
   if (!kapamaEl) return;
   if (d.durum !== 'kapali') { kapamaEl.style.display = 'none'; return; }
 
-  var onayFis = myFis.filter(function(f) { return f.durum === 'onaylandi'; });
-  var redFis  = myFis.filter(function(f) { return f.durum === 'reddedildi'; });
+  var onayFis = myFis.filter(function(f) { return f.durum === 'approved'; });
+  var redFis  = myFis.filter(function(f) { return f.durum === 'rejected'; });
   var onayTop = onayFis.reduce(function(s, f) { return s + f.tutar; }, 0);
   var redTop  = redFis.reduce(function(s, f) { return s + f.tutar; }, 0);
   var iade    = d.avans - onayTop;
@@ -260,7 +260,7 @@ export function newPeriod() {
   for (var _si = 1; _si < APP.seed.deptPeriods.length; _si++) APP.seed.deptPeriods[_si].aktif = false;
   APP.seed.accPeriods.unshift({ id: yeniId, lbl: 'Dönem #' + yeniN, tarih: bugun, aktif: true });
   for (var _sai = 1; _sai < APP.seed.accPeriods.length; _sai++) APP.seed.accPeriods[_sai].aktif = false;
-  APP.data.periodBudget.unshift({ donem: yeniId, lbl: 'Dönem #' + yeniN, butce: 40000, harcanan: 0, reddedildi: 0, _lastPct: 0 });
+  APP.data.periodBudget.unshift({ donem: yeniId, lbl: 'Dönem #' + yeniN, butce: 40000, harcanan: 0, rejected: 0, _lastPct: 0 });
   APP.ui.activePeriod = yeniId;
   saveAppData();
   renderPeriod(yeniId);
@@ -281,12 +281,12 @@ export function closePeriod(donemId, sebep) {
   var deptBek = APP.data.deptPending.filter(function(f) {
     if (String(f.donem) !== String(donemId) || f.kat === 'Kiralama') return false;
     var _fis = APP.data.receipts.find(function(x) { return x.id === f.fisId; });
-    return _fis && _fis.durum === 'dept-bekleyen';
+    return _fis && _fis.durum === 'dept-pending';
   });
   var accBek = APP.data.accPending.filter(function(f) {
     if (String(f.donem) !== String(donemId) || f.tip === 'avans' || f.kat === 'Kiralama') return false;
     var _fis = APP.data.receipts.find(function(x) { return x.id === f.fisId; });
-    return _fis && _fis.durum === 'acc-bekleyen';
+    return _fis && _fis.durum === 'acc-pending';
   });
   var bekTop = deptBek.length + accBek.length;
   if (bekTop > 0) {
@@ -479,12 +479,12 @@ export function _periodCloseModal(donemId) {
   var deptBek = APP.data.deptPending.filter(function(f) {
     if (String(f.donem) !== String(donemId) || f.kat === 'Kiralama') return false;
     var _fis = APP.data.receipts.find(function(x) { return x.id === f.fisId; });
-    return _fis && _fis.durum === 'dept-bekleyen';
+    return _fis && _fis.durum === 'dept-pending';
   });
   var accBek = APP.data.accPending.filter(function(f) {
     if (String(f.donem) !== String(donemId) || f.tip === 'avans' || f.kat === 'Kiralama') return false;
     var _fis = APP.data.receipts.find(function(x) { return x.id === f.fisId; });
-    return _fis && _fis.durum === 'acc-bekleyen';
+    return _fis && _fis.durum === 'acc-pending';
   });
   var bekTop = deptBek.length + accBek.length;
   var infoEl = document.getElementById('dn-kapama-info');
@@ -545,7 +545,7 @@ export function _checkPassiveApproval() {
     var pItem = po.item;
     if (pItem.fisId) {
       for (var fi = 0; fi < APP.data.receipts.length; fi++) {
-        if (APP.data.receipts[fi].id === pItem.fisId) { APP.data.receipts[fi].durum = 'onaylandi'; break; }
+        if (APP.data.receipts[fi].id === pItem.fisId) { APP.data.receipts[fi].durum = 'approved'; break; }
       }
     }
     APP.data.accHistory.push({

@@ -249,12 +249,12 @@ export function renderAccAdvance() {
 
   var bek  = gecmisDonem.filter(function(a){ return a.durum === 'bekleyen'; });
   var ode  = gecmisDonem.filter(function(a){ return a.durum === 'ödendi'; });
-  var red  = gecmisDonem.filter(function(a){ return a.durum === 'reddedildi'; });
+  var red  = gecmisDonem.filter(function(a){ return a.durum === 'rejected'; });
 
   function avRow(av) {
-    var clr = av.durum === 'ödendi' ? 'sa-av-durum-ok' : (av.durum === 'reddedildi' ? 'sa-av-durum-red' : 'sa-av-durum-bek');
-    var ico = av.durum === 'ödendi' ? '✅' : (av.durum === 'reddedildi' ? '❌' : '⏳');
-    var redSatirAcc = (av.durum === 'reddedildi' && av.redNedeni)
+    var clr = av.durum === 'ödendi' ? 'sa-av-durum-ok' : (av.durum === 'rejected' ? 'sa-av-durum-red' : 'sa-av-durum-bek');
+    var ico = av.durum === 'ödendi' ? '✅' : (av.durum === 'rejected' ? '❌' : '⏳');
+    var redSatirAcc = (av.durum === 'rejected' && av.redNedeni)
       ? '<div style="font-size:11px;color:var(--rd2);margin-top:2px">Red nedeni: ' + av.redNedeni + '</div>'
       : '';
     return '<div class="sa-av-row" style="cursor:pointer" onclick="accAdvanceOpenPerson(\'' + av.uye.replace(/'/g, '\\x27') + '\')">' +
@@ -461,7 +461,7 @@ function _renderAccDeptHistory(deptId) {
     var isOnay = g.durum === 'onay';
     var isInc  = g.durum === 'inc';
     var dotClr = isOnay ? 'var(--gr)' : (isInc ? 'var(--am)' : 'var(--rd)');
-    var tag    = isOnay ? 'Onaylandı' : (isInc ? 'İnceleniyor' : 'Reddedildi');
+    var tag    = isOnay ? 'Onaylandı' : (isInc ? 'İnceleniyor' : 'rejected');
     var tagClr = isOnay ? 'var(--gr2)' : (isInc ? 'var(--am2)' : 'var(--rd2)');
     return '<div class="adept-gc-row">' +
       '<div class="adept-gc-dot" style="background:' + dotClr + '"></div>' +
@@ -845,7 +845,7 @@ export function renderAccSuspicion() {
   var html = '<div style="font-size:12px;color:var(--tx3);margin-bottom:12px">Otomatik olarak tespit edilen anormal harcamalar. İnceleyip onaylayabilir veya reddedebilirsiniz.</div>';
   html += APP.data.accSuspicion.map(function(f) {
     var tagCls = f.durum === 'bek' ? 'sa-suphe-tag-bek' : (f.durum === 'inc' ? 'sa-suphe-tag-inc' : 'sa-suphe-tag-red');
-    var tagTxt = f.durum === 'bek' ? 'Beklemede' : (f.durum === 'inc' ? 'İnceleniyor' : (f.durum === 'ok' ? 'Temiz' : 'Reddedildi'));
+    var tagTxt = f.durum === 'bek' ? 'Beklemede' : (f.durum === 'inc' ? 'İnceleniyor' : (f.durum === 'ok' ? 'Temiz' : 'rejected'));
     return '<div class="sa-suphe-card">' +
       '<div class="sa-suphe-hd">' +
         '<div><div class="sa-suphe-kisi">' + f.uye + ' <span style="font-size:11px;color:var(--tx3)">· ' + f.dept + '</span></div></div>' +
@@ -899,7 +899,7 @@ function _reportReceiptRows(liste) {
   if (!liste.length) return '<div style="text-align:center;padding:14px 0;color:var(--tx3);font-size:12px">Kayıt bulunamadı</div>';
   return liste.map(function(f) {
     var durCls = f.durum === 'onay' ? 'sa-fis-dur-on' : (f.durum === 'red' ? 'sa-fis-dur-red' : (f.durum === 'inc' ? 'sa-fis-dur-inc' : 'sa-fis-dur-bek'));
-    var durTxt = { onay:'Onaylandı', red:'Reddedildi', inc:'İnceleniyor', bek:'Bekleyen' }[f.durum] || f.durum;
+    var durTxt = { onay:'Onaylandı', red:'rejected', inc:'İnceleniyor', bek:'Bekleyen' }[f.durum] || f.durum;
     var uyWarn = f.uyari ? ' · <span style="color:var(--am2)">' + f.uyari + '</span>' : '';
     return '<div class="sa-fis-item">' +
       '<div class="sa-fis-ini">' + f.ini + '</div>' +
@@ -1313,7 +1313,7 @@ function _reportPersonDetail() {
   for (var avo = 0; avo < kisiAvanslar.length; avo++) {
     var avx = kisiAvanslar[avo];
     if (avx.durum === 'ödendi') avansOdendi += avx.tutar;
-    else if (avx.durum === 'reddedildi') avansRed += avx.tutar;
+    else if (avx.durum === 'rejected') avansRed += avx.tutar;
     else avansBek += avx.tutar;
   }
 
@@ -1343,8 +1343,8 @@ function _reportPersonDetail() {
         ' · ₺' + avDkTop.toLocaleString('tr-TR') + ' · ' + avRows.length + ' avans' +
       '</div>';
       html += avRows.map(function(av) {
-        var clr = av.durum === 'ödendi' ? 'var(--gr2)' : (av.durum === 'reddedildi' ? 'var(--rd2)' : 'var(--am2)');
-        var ico = av.durum === 'ödendi' ? '✅' : (av.durum === 'reddedildi' ? '❌' : '⏳');
+        var clr = av.durum === 'ödendi' ? 'var(--gr2)' : (av.durum === 'rejected' ? 'var(--rd2)' : 'var(--am2)');
+        var ico = av.durum === 'ödendi' ? '✅' : (av.durum === 'rejected' ? '❌' : '⏳');
         return '<div class="sa-rep-row">' +
           '<div class="sa-rep-left">' +
             '<div style="font-size:13px;font-weight:700;color:var(--tx)">₺' + av.tutar.toLocaleString('tr-TR') + '</div>' +

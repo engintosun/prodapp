@@ -169,7 +169,7 @@ export function submitOCR() {
       id: Date.now(), tarih: tarih2,
       personel: APP.ui.curUser ? APP.ui.curUser.name : 'Bilinmeyen',
       satici: sat2, kat: kat2, tutar: tut2,
-      durum: 'dept-bekleyen', donem: APP.ui.activePeriod, uyari: null, thumb: null,
+      durum: 'dept-pending', donem: APP.ui.activePeriod, uyari: null, thumb: null,
       log: [_mkLog('olusturuldu', 'Harcama sisteme girildi')]
     };
     if (kat2 === 'Kiralama') {

@@ -79,8 +79,8 @@ export function searchList(q) {
     return;
   }
 
-  var durumClr = { bekleyen:'var(--am)', 'dept-bekleyen':'var(--am)', 'acc-bekleyen':'var(--am)', onaylandi:'var(--gr)', reddedildi:'var(--rd)' };
-  var durumTxt = { bekleyen:'Bekleyen', 'dept-bekleyen':'Bekleyen', 'acc-bekleyen':'Bekleyen', onaylandi:'Onaylandı', reddedildi:'Reddedildi' };
+  var durumClr = { bekleyen:'var(--am)', 'dept-pending':'var(--am)', 'acc-pending':'var(--am)', approved:'var(--gr)', rejected:'var(--rd)' };
+  var durumTxt = { bekleyen:'Bekleyen', 'dept-pending':'Bekleyen', 'acc-pending':'Bekleyen', approved:'Onaylandı', rejected:'rejected' };
 
   drop.innerHTML =
     '<div class="srch-hd"><span>' + results.length + ' sonuç</span><span>Tıkla → kayda git</span></div>' +
@@ -131,8 +131,8 @@ export function searchGoTo(id) {
 /* ═══ FİŞ THUMBNAIL (SVG data URL) ═══ */
 
 export function fisThumbnail(f) {
-  var accent = f.durum === 'reddedildi' ? '#EF4444'
-             : f.durum === 'onaylandi'  ? '#22C55E'
+  var accent = f.durum === 'rejected' ? '#EF4444'
+             : f.durum === 'approved'  ? '#22C55E'
              : '#E8962E';
   var svg =
     '<svg xmlns="http://www.w3.org/2000/svg" width="76" height="96">' +
@@ -446,7 +446,7 @@ export function submitDocless() {
       var bFisIdK = Date.now();
       APP.data.receipts.unshift({
         id: bFisIdK, tarih: bTarih, personel: bPersonel, satici: 'Belgesiz Kiralama',
-        kat: 'Kiralama', tutar: bTut, durum: 'dept-bekleyen', donem: APP.ui.activePeriod,
+        kat: 'Kiralama', tutar: bTut, durum: 'dept-pending', donem: APP.ui.activePeriod,
         uyari: null, thumb: null, belgesiz: true, aciklama: bAciklama, fotos: fotos,
         dept: bDept, neden: bNeden,
         log: [_mkLog('olusturuldu', 'Belgesiz harcama bildirildi')],
@@ -462,7 +462,7 @@ export function submitDocless() {
       var bFisId = Date.now();
       APP.data.receipts.unshift({
         id: bFisId, tarih: bTarih, personel: bPersonel, satici: 'Belgesiz Harcama',
-        kat: bKat, tutar: bTut, durum: 'dept-bekleyen', donem: APP.ui.activePeriod,
+        kat: bKat, tutar: bTut, durum: 'dept-pending', donem: APP.ui.activePeriod,
         uyari: null, thumb: null, belgesiz: true, aciklama: bAciklama, fotos: fotos,
         dept: bDept, neden: bNeden,
         log: [_mkLog('olusturuldu', 'Belgesiz harcama bildirildi')]
@@ -642,9 +642,9 @@ export function openLBFis(fid) {
   if (!f) return;
   var src = f.thumb || fisThumbnail(f);
   document.getElementById('lb-img').src = src;
-  var durumClr = { onaylandi:'#4ADE80', reddedildi:'#F87171', bekleyen:'#FCD34D', 'dept-bekleyen':'#FCD34D', 'acc-bekleyen':'#FCD34D' };
-  var durumIco = { onaylandi:'✅', reddedildi:'❌', bekleyen:'⏳', 'dept-bekleyen':'⏳', 'acc-bekleyen':'⏳' };
-  var durumTxt = { onaylandi:'Onaylandı', reddedildi:'Reddedildi', bekleyen:'Bekleyen', 'dept-bekleyen':'Bekleyen', 'acc-bekleyen':'Bekleyen' };
+  var durumClr = { approved:'#4ADE80', rejected:'#F87171', bekleyen:'#FCD34D', 'dept-pending':'#FCD34D', 'acc-pending':'#FCD34D' };
+  var durumIco = { approved:'✅', rejected:'❌', bekleyen:'⏳', 'dept-pending':'⏳', 'acc-pending':'⏳' };
+  var durumTxt = { approved:'Onaylandı', rejected:'rejected', bekleyen:'Bekleyen', 'dept-pending':'Bekleyen', 'acc-pending':'Bekleyen' };
   var clr = durumClr[f.durum] || '#8A9090';
   var det = document.getElementById('lb-detail');
   det.innerHTML =
@@ -851,8 +851,8 @@ export function openFisDetay(id, ctx) {
     } else {
       var icoMap = {
         olusturuldu: '<svg viewBox="0 0 24 24" fill="none" stroke="var(--bl)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>',
-        onaylandi:   '<svg viewBox="0 0 24 24" fill="none" stroke="var(--gr)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
-        reddedildi:  '<svg viewBox="0 0 24 24" fill="none" stroke="var(--rd)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
+        approved:   '<svg viewBox="0 0 24 24" fill="none" stroke="var(--gr)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+        rejected:  '<svg viewBox="0 0 24 24" fill="none" stroke="var(--rd)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
       };
       for (var li = 0; li < logList.length; li++) {
         var le  = logList[li];

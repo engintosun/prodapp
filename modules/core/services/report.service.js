@@ -15,11 +15,11 @@ export function _recomputeAccDepts() {
     for (var _ffi = 0; _ffi < APP.data.receipts.length; _ffi++) {
       var _ff = APP.data.receipts[_ffi];
       if (!_ns[_ff.personel]) continue;
-      if (_ff.durum === 'bolundu') continue;
+      if (_ff.durum === 'split') continue;
       var _tt = _ff.tutar || 0;
       _tot += _tt;
-      if      (_ff.durum === 'onaylandi')    _onay += _tt;
-      else if (_ff.durum === 'acc-bekleyen') _bek  += _tt;
+      if      (_ff.durum === 'approved')    _onay += _tt;
+      else if (_ff.durum === 'acc-pending') _bek  += _tt;
     }
     _dept.total    = _tot;
     _dept.onay     = _onay;
@@ -44,11 +44,11 @@ export function _computeDeptReceiptReport(deptId) {
   for (var _fi = 0; _fi < APP.data.receipts.length; _fi++) {
     var _f = APP.data.receipts[_fi];
     if (!nameToIni.hasOwnProperty(_f.personel)) continue;
-    if (_f.durum === 'bolundu') continue;
+    if (_f.durum === 'split') continue;
     var _dur;
-    if      (_f.durum === 'onaylandi')  _dur = 'onay';
-    else if (_f.durum === 'reddedildi') _dur = 'red';
-    else if (_f.durum === 'dept-bekleyen' || _f.durum === 'acc-bekleyen' || _f.durum === 'bekleyen') _dur = 'bek';
+    if      (_f.durum === 'approved')  _dur = 'onay';
+    else if (_f.durum === 'rejected') _dur = 'red';
+    else if (_f.durum === 'dept-pending' || _f.durum === 'acc-pending' || _f.durum === 'bekleyen') _dur = 'bek';
     else _dur = 'bek';
     result.push({
       ini:     nameToIni[_f.personel],
@@ -118,16 +118,16 @@ export function _computePersonnelReport() {
     for (var _fi = 0; _fi < APP.data.receipts.length; _fi++) {
       var _f = APP.data.receipts[_fi];
       if (_f.personel !== _name) continue;
-      if (_f.durum === 'bolundu') continue;
+      if (_f.durum === 'split') continue;
       var _tut = _f.tutar || 0;
-      if      (_f.durum === 'onaylandi')  { _onay += _tut; }
-      else if (_f.durum === 'reddedildi') { _red  += _tut; }
-      else if (_f.durum === 'dept-bekleyen' || _f.durum === 'acc-bekleyen' || _f.durum === 'bekleyen') { _bek += _tut; }
+      if      (_f.durum === 'approved')  { _onay += _tut; }
+      else if (_f.durum === 'rejected') { _red  += _tut; }
+      else if (_f.durum === 'dept-pending' || _f.durum === 'acc-pending' || _f.durum === 'bekleyen') { _bek += _tut; }
       var _did = _f.donem;
       if (!_donMap[_did]) _donMap[_did] = { total:0, onay:0, bek:0 };
       _donMap[_did].total += _tut;
-      if      (_f.durum === 'onaylandi')  _donMap[_did].onay += _tut;
-      else if (_f.durum === 'dept-bekleyen' || _f.durum === 'acc-bekleyen' || _f.durum === 'bekleyen') _donMap[_did].bek += _tut;
+      if      (_f.durum === 'approved')  _donMap[_did].onay += _tut;
+      else if (_f.durum === 'dept-pending' || _f.durum === 'acc-pending' || _f.durum === 'bekleyen') _donMap[_did].bek += _tut;
       var _kn = _f.kat || 'Diger';
       _katMap[_kn] = (_katMap[_kn] || 0) + _tut;
     }

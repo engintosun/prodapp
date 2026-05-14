@@ -1,4 +1,4 @@
-// /modules/core/constants.js
+﻿// /modules/core/constants.js
 // PRODAPP — Sabitler (modülerleşme Adım 1 — kopyalama, index.html orijinaller yerinde)
 
 // ─── Kategoriler ───────────────────────────────────────────────────────────
@@ -41,20 +41,20 @@ export var KAT_LIMIT_DEFAULT = [
 // ─── Durum sabitleri ────────────────────────────────────────────────────────
 
 export var FIS_DURUM = {
-  DEPT_BEKLEYEN: 'dept-bekleyen',
-  ACC_BEKLEYEN:  'acc-bekleyen',
-  ONAYLANDI:     'onaylandi',
-  REDDEDILDI:    'reddedildi',
-  BOLUNDU:       'bolundu'
+  DEPT_BEKLEYEN: 'dept-pending',
+  ACC_BEKLEYEN:  'acc-pending',
+  ONAYLANDI:     'approved',
+  REDDEDILDI:    'rejected',
+  BOLUNDU:       'split'
 };
 
 // Durum → CSS renk (dot indicator)
 export var DOT = {
   bekleyen:        'var(--am)',
-  'dept-bekleyen': 'var(--am)',
-  'acc-bekleyen':  'var(--am)',
-  onaylandi:       'var(--gr)',
-  reddedildi:      'var(--rd)'
+  'dept-pending': 'var(--am)',
+  'acc-pending':  'var(--am)',
+  approved:       'var(--gr)',
+  rejected:      'var(--rd)'
 };
 
 // ─── Roller ─────────────────────────────────────────────────────────────────

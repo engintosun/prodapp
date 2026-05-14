@@ -29,7 +29,7 @@ export function deptPendingAdd(satici, kat, tutar, belgesiz, aciklama, fotos, fi
       var _nf = {
         id: Date.now(), tarih: _td, personel: uye,
         satici: satici || 'Yeni Harcama', kat: kat || 'Diger', tutar: tutar || 0,
-        durum: 'acc-bekleyen', donem: APP.ui.activePeriod,
+        durum: 'acc-pending', donem: APP.ui.activePeriod,
         uyari: null, thumb: null, belgesiz: !!belgesiz, aciklama: aciklama || '',
         gecIslem: true, istisnaIzniId: _izin.id,
         log: [_mkLog('olusturuldu', 'İstisna izniyle kapalı döneme eklendi')]
@@ -39,7 +39,7 @@ export function deptPendingAdd(satici, kat, tutar, belgesiz, aciklama, fotos, fi
     } else {
       for (var _fi = 0; _fi < APP.data.receipts.length; _fi++) {
         if (APP.data.receipts[_fi].id === _effFisId) {
-          APP.data.receipts[_fi].durum = 'acc-bekleyen';
+          APP.data.receipts[_fi].durum = 'acc-pending';
           APP.data.receipts[_fi].gecIslem = true;
           APP.data.receipts[_fi].istisnaIzniId = _izin.id;
           break;

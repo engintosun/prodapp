@@ -32,6 +32,25 @@ export function loadAppData() {
       }
     }
     // --- /B1 Migration ---
+    // --- C1 Migration: receipts.durum enum değerleri Türkçe→İngilizce ---
+    var _c1DurumMap = {
+      'dept-bekleyen':'dept-pending', 'acc-bekleyen':'acc-pending',
+      'onaylandi':'approved', 'reddedildi':'rejected', 'bolundu':'split',
+      'bekleyen':'dept-pending'
+    };
+    if (parsed.receipts && Array.isArray(parsed.receipts)) {
+      parsed.receipts.forEach(function(f) {
+        if (f.durum && _c1DurumMap[f.durum]) f.durum = _c1DurumMap[f.durum];
+      });
+    }
+    if (parsed.accHistory && Array.isArray(parsed.accHistory)) {
+      parsed.accHistory.forEach(function(r) {
+        if (r.islem === 'onay') { /* koru — kısa form */ }
+        else if (r.islem === 'red') { /* koru — kısa form */ }
+      });
+    }
+    // deptPending ve accPending'de durum field'ı yok — migration gerekmez
+    // --- /C1 Migration ---
     Object.keys(parsed).forEach(function(k) {
       if (APP.data[k] !== undefined) APP.data[k] = parsed[k];
     });

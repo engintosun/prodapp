@@ -3524,10 +3524,10 @@ const exportManager = {
 
     } else if (tip === 'dept-gecmis') {
       const donId = APP.ui.deptHistoryPanelPeriod || APP.ui.deptSelectedPeriod || 1;
-      const gec   = (APP.data.deptHistory && APP.data.deptHistory[donId]) || { onaylandi: [], reddedildi: [] };
+      const gec   = (APP.data.deptHistory && APP.data.deptHistory[donId]) || { approved: [], rejected: [] };
       const tumFisler = [
         ...gec.onaylandi.map(f => ({ ...f, durum: 'Onaylı' })),
-        ...gec.reddedildi.map(f => ({ ...f, durum: 'Reddedildi' }))
+        ...gec.reddedildi.map(f => ({ ...f, durum: 'rejected' }))
       ];
       rows.push(['Tarih','Personel','Kategori','Tutar (TL)','Durum','Açıklama']);
       tumFisler.forEach(f => rows.push([
@@ -3633,10 +3633,10 @@ const exportManager = {
     } else if (tip === 'dept-gecmis') {
       baslik = 'Dept Gecmis';
       const donId = APP.ui.deptHistoryPanelPeriod || APP.ui.deptSelectedPeriod || 1;
-      const gec   = (APP.data.deptHistory && APP.data.deptHistory[donId]) || { onaylandi: [], reddedildi: [] };
+      const gec   = (APP.data.deptHistory && APP.data.deptHistory[donId]) || { approved: [], rejected: [] };
       const tumFisler = [
         ...gec.onaylandi.map(f => ({ ...f, durum: 'Onaylı' })),
-        ...gec.reddedildi.map(f => ({ ...f, durum: 'Reddedildi' }))
+        ...gec.reddedildi.map(f => ({ ...f, durum: 'rejected' }))
       ];
       rows.push(['Tarih','Personel','Kategori','Tutar (TL)','Durum','Açıklama']);
       tumFisler.forEach(f => rows.push([
@@ -3779,10 +3779,10 @@ const exportManager = {
 
     } else if (tip === 'dept-gecmis') {
       const donId = APP.ui.deptHistoryPanelPeriod || APP.ui.deptSelectedPeriod || 1;
-      const gec   = (APP.data.deptHistory && APP.data.deptHistory[donId]) || { onaylandi: [], reddedildi: [] };
+      const gec   = (APP.data.deptHistory && APP.data.deptHistory[donId]) || { approved: [], rejected: [] };
       const tumFisler = [
         ...gec.onaylandi.map(f => ({ ...f, durum: 'Onayli' })),
-        ...gec.reddedildi.map(f => ({ ...f, durum: 'Reddedildi' }))
+        ...gec.reddedildi.map(f => ({ ...f, durum: 'rejected' }))
       ];
       headers  = [this._tr('Tarih'), this._tr('Personel'), this._tr('Kategori'), this._tr('Tutar (TL)'), this._tr('Durum')];
       dataRows = tumFisler.map(f => [
@@ -3908,53 +3908,53 @@ APP.seed.periods = [
     baslangic:'01.02.2026', bitis:'28.02.2026', kapanmaTarihi:'01.03.2026', kapayanKisi:'Ayşe Tekin',   gecIslemSayisi:0 }
 ];
 APP.data.receipts = [
-  { id:1, tarih:'03.04.2026', personel:'Mehmet Kaya', satici:'Petrol Ofisi',   kat:'Yakit',   tutar:1000, durum:'dept-bekleyen',   donem:2, uyari:null,                    thumb:null },
-  { id:2, tarih:'24.03.2026', personel:'Mehmet Kaya', satici:'Tavuk Dünyası',  kat:'Yiyecek', tutar:780,  durum:'dept-bekleyen',   donem:2, uyari:'Ekip 15, 10 porsiyon', thumb:null },
-  { id:7, tarih:'03.04.2026', personel:'Mehmet Kaya', satici:'Petrol Ofisi',   kat:'Yakit',   tutar:1000, durum:'reddedildi', donem:2, uyari:'Mükerrer fiş',          thumb:null, duplikat:true },
-  { id:8, tarih:'10.04.2026', personel:'Mehmet Kaya', satici:'Kostüm Deposu', kat:'Sanat',   tutar:320,  durum:'dept-bekleyen',   donem:2, uyari:null, thumb:null, belgesiz:true, aciklama:'Ekstra kostüm aksesuarı — nakit ödeme, fiş verilmedi' },
+  { id:1, tarih:'03.04.2026', personel:'Mehmet Kaya', satici:'Petrol Ofisi',   kat:'Yakit',   tutar:1000, durum:'dept-pending',   donem:2, uyari:null,                    thumb:null },
+  { id:2, tarih:'24.03.2026', personel:'Mehmet Kaya', satici:'Tavuk Dünyası',  kat:'Yiyecek', tutar:780,  durum:'dept-pending',   donem:2, uyari:'Ekip 15, 10 porsiyon', thumb:null },
+  { id:7, tarih:'03.04.2026', personel:'Mehmet Kaya', satici:'Petrol Ofisi',   kat:'Yakit',   tutar:1000, durum:'rejected', donem:2, uyari:'Mükerrer fiş',          thumb:null, duplikat:true },
+  { id:8, tarih:'10.04.2026', personel:'Mehmet Kaya', satici:'Kostüm Deposu', kat:'Sanat',   tutar:320,  durum:'dept-pending',   donem:2, uyari:null, thumb:null, belgesiz:true, aciklama:'Ekstra kostüm aksesuarı — nakit ödeme, fiş verilmedi' },
   /* ── Dönem #1 fişleri (kapali) ── */
-  { id:11, tarih:'20.03.2026', personel:'Mehmet Kaya', satici:'Petrol Ofisi A.Ş.',       kat:'Yakit',   tutar:2400, durum:'onaylandi', donem:1, uyari:null, thumb:null },
-  { id:12, tarih:'22.03.2026', personel:'Mehmet Kaya', satici:'Çiçek Restaurant',        kat:'Yiyecek', tutar:1850, durum:'onaylandi', donem:1, uyari:null, thumb:null },
-  { id:13, tarih:'25.03.2026', personel:'Mehmet Kaya', satici:'Megapol Ekipman Kiralık', kat:'Ekipman', tutar:3200, durum:'onaylandi', donem:1, uyari:null, thumb:null },
-  { id:14, tarih:'28.03.2026', personel:'Mehmet Kaya', satici:'Taksi / İETT',            kat:'Ulasim',  tutar:680,  durum:'onaylandi', donem:1, uyari:null, thumb:null },
-  { id:15, tarih:'01.04.2026', personel:'Mehmet Kaya', satici:'Set Malzeme Market',      kat:'Diger',   tutar:1330, durum:'onaylandi', donem:1, uyari:null, thumb:null },
-  { id:16, tarih:'24.03.2026', personel:'Mehmet Kaya', satici:'Şehir Lokantası',         kat:'Yiyecek', tutar:480,  durum:'reddedildi', donem:1, uyari:'Ekip dışı 3 kişi dahil edilmiş', thumb:null },
-  { id:17, tarih:'29.03.2026', personel:'Mehmet Kaya', satici:'Kırtasiye Merkez',        kat:'Diger',   tutar:150,  durum:'reddedildi', donem:1, uyari:'Fiş okunamıyor — yeniden yükle', thumb:null },
+  { id:11, tarih:'20.03.2026', personel:'Mehmet Kaya', satici:'Petrol Ofisi A.Ş.',       kat:'Yakit',   tutar:2400, durum:'approved', donem:1, uyari:null, thumb:null },
+  { id:12, tarih:'22.03.2026', personel:'Mehmet Kaya', satici:'Çiçek Restaurant',        kat:'Yiyecek', tutar:1850, durum:'approved', donem:1, uyari:null, thumb:null },
+  { id:13, tarih:'25.03.2026', personel:'Mehmet Kaya', satici:'Megapol Ekipman Kiralık', kat:'Ekipman', tutar:3200, durum:'approved', donem:1, uyari:null, thumb:null },
+  { id:14, tarih:'28.03.2026', personel:'Mehmet Kaya', satici:'Taksi / İETT',            kat:'Ulasim',  tutar:680,  durum:'approved', donem:1, uyari:null, thumb:null },
+  { id:15, tarih:'01.04.2026', personel:'Mehmet Kaya', satici:'Set Malzeme Market',      kat:'Diger',   tutar:1330, durum:'approved', donem:1, uyari:null, thumb:null },
+  { id:16, tarih:'24.03.2026', personel:'Mehmet Kaya', satici:'Şehir Lokantası',         kat:'Yiyecek', tutar:480,  durum:'rejected', donem:1, uyari:'Ekip dışı 3 kişi dahil edilmiş', thumb:null },
+  { id:17, tarih:'29.03.2026', personel:'Mehmet Kaya', satici:'Kırtasiye Merkez',        kat:'Diger',   tutar:150,  durum:'rejected', donem:1, uyari:'Fiş okunamıyor — yeniden yükle', thumb:null },
   /* ── Kiralama demo verileri ── */
-  { id:20, tarih:'01.04.2026', personel:'Mehmet Kaya', satici:'Megapol Araç Kiralama',    kat:'Kiralama', tutar:3150, durum:'onaylandi', donem:2, uyari:null, thumb:null,
+  { id:20, tarih:'01.04.2026', personel:'Mehmet Kaya', satici:'Megapol Araç Kiralama',    kat:'Kiralama', tutar:3150, durum:'approved', donem:2, uyari:null, thumb:null,
     kiraMeta:{ bas:'2026-04-01', bit:'2026-04-05', gunluk:450 } },
-  { id:21, tarih:'10.04.2026', personel:'Mehmet Kaya', satici:'Sigma Kamera Ekipmanları', kat:'Kiralama', tutar:4800, durum:'dept-bekleyen', donem:2, uyari:null, thumb:null,
+  { id:21, tarih:'10.04.2026', personel:'Mehmet Kaya', satici:'Sigma Kamera Ekipmanları', kat:'Kiralama', tutar:4800, durum:'dept-pending', donem:2, uyari:null, thumb:null,
     kiraMeta:{ bas:'2026-04-10', bit:'2026-04-16', gunluk:800 } },
-  { id:22, tarih:'12.04.2026', personel:'Mehmet Kaya', satici:'ProAV Ses Ekipmanı',       kat:'Kiralama', tutar:2450, durum:'acc-bekleyen', donem:2, uyari:null, thumb:null,
+  { id:22, tarih:'12.04.2026', personel:'Mehmet Kaya', satici:'ProAV Ses Ekipmanı',       kat:'Kiralama', tutar:2450, durum:'acc-pending', donem:2, uyari:null, thumb:null,
     kiraMeta:{ bas:'2026-04-12', bit:'2026-04-25', gunluk:350 } },
   /* ── Yapım dept — Okan Demir, Aylin Korkmaz, Burhan Çelik, Zeynep Arslan ── */
-  { id:30, tarih:'05.04.2026', personel:'Okan Demir',    satici:'Kamera Merkezi',         kat:'Ekipman', tutar:3800, durum:'onaylandi', donem:2, dept:'yapim', uyari:null, thumb:null },
-  { id:31, tarih:'22.03.2026', personel:'Okan Demir',    satici:'Çarşı Lokantası',        kat:'Yiyecek', tutar:620,  durum:'onaylandi', donem:1, dept:'yapim', uyari:null, thumb:null },
-  { id:32, tarih:'08.04.2026', personel:'Aylin Korkmaz', satici:'Petrol Ofisi',           kat:'Yakit',   tutar:1450, durum:'onaylandi', donem:2, dept:'yapim', uyari:null, thumb:null },
-  { id:33, tarih:'28.03.2026', personel:'Aylin Korkmaz', satici:'Kırtasiye Plus',         kat:'Diger',   tutar:280,  durum:'onaylandi', donem:1, dept:'yapim', uyari:null, thumb:null },
-  { id:34, tarih:'11.04.2026', personel:'Burhan Çelik',  satici:'Aydınlatma Tüp A.Ş.',   kat:'Ekipman', tutar:2200, durum:'acc-bekleyen',  donem:2, dept:'yapim', uyari:null, thumb:null },
-  { id:35, tarih:'25.03.2026', personel:'Burhan Çelik',  satici:'İETT / Taksi',           kat:'Ulasim',  tutar:390,  durum:'onaylandi', donem:1, dept:'yapim', uyari:null, thumb:null },
-  { id:36, tarih:'09.04.2026', personel:'Zeynep Arslan', satici:'Set Market TR',          kat:'Diger',   tutar:540,  durum:'onaylandi', donem:2, dept:'yapim', uyari:null, thumb:null },
-  { id:37, tarih:'21.03.2026', personel:'Zeynep Arslan', satici:'Migros',                 kat:'Yiyecek', tutar:860,  durum:'reddedildi',donem:1, dept:'yapim', uyari:'Kişisel alışveriş dahil edilmiş', thumb:null },
+  { id:30, tarih:'05.04.2026', personel:'Okan Demir',    satici:'Kamera Merkezi',         kat:'Ekipman', tutar:3800, durum:'approved', donem:2, dept:'yapim', uyari:null, thumb:null },
+  { id:31, tarih:'22.03.2026', personel:'Okan Demir',    satici:'Çarşı Lokantası',        kat:'Yiyecek', tutar:620,  durum:'approved', donem:1, dept:'yapim', uyari:null, thumb:null },
+  { id:32, tarih:'08.04.2026', personel:'Aylin Korkmaz', satici:'Petrol Ofisi',           kat:'Yakit',   tutar:1450, durum:'approved', donem:2, dept:'yapim', uyari:null, thumb:null },
+  { id:33, tarih:'28.03.2026', personel:'Aylin Korkmaz', satici:'Kırtasiye Plus',         kat:'Diger',   tutar:280,  durum:'approved', donem:1, dept:'yapim', uyari:null, thumb:null },
+  { id:34, tarih:'11.04.2026', personel:'Burhan Çelik',  satici:'Aydınlatma Tüp A.Ş.',   kat:'Ekipman', tutar:2200, durum:'acc-pending',  donem:2, dept:'yapim', uyari:null, thumb:null },
+  { id:35, tarih:'25.03.2026', personel:'Burhan Çelik',  satici:'İETT / Taksi',           kat:'Ulasim',  tutar:390,  durum:'approved', donem:1, dept:'yapim', uyari:null, thumb:null },
+  { id:36, tarih:'09.04.2026', personel:'Zeynep Arslan', satici:'Set Market TR',          kat:'Diger',   tutar:540,  durum:'approved', donem:2, dept:'yapim', uyari:null, thumb:null },
+  { id:37, tarih:'21.03.2026', personel:'Zeynep Arslan', satici:'Migros',                 kat:'Yiyecek', tutar:860,  durum:'rejected',donem:1, dept:'yapim', uyari:'Kişisel alışveriş dahil edilmiş', thumb:null },
   /* ── Kamera dept — Fatih Bayrak, Elif Yılmaz ── */
-  { id:38, tarih:'07.04.2026', personel:'Fatih Bayrak',  satici:'Lens Kiralık İstanbul',  kat:'Ekipman', tutar:4200, durum:'onaylandi', donem:2, dept:'kamera', uyari:null, thumb:null },
-  { id:39, tarih:'24.03.2026', personel:'Fatih Bayrak',  satici:'Petrol Ofisi Bakırköy',  kat:'Yakit',   tutar:980,  durum:'onaylandi', donem:1, dept:'kamera', uyari:null, thumb:null },
-  { id:40, tarih:'10.04.2026', personel:'Elif Yılmaz',   satici:'Kafe Set Bistro',        kat:'Yiyecek', tutar:450,  durum:'acc-bekleyen',  donem:2, dept:'kamera', uyari:null, thumb:null },
-  { id:41, tarih:'27.03.2026', personel:'Elif Yılmaz',   satici:'Taksi / Minibüs',        kat:'Ulasim',  tutar:310,  durum:'onaylandi', donem:1, dept:'kamera', uyari:null, thumb:null },
+  { id:38, tarih:'07.04.2026', personel:'Fatih Bayrak',  satici:'Lens Kiralık İstanbul',  kat:'Ekipman', tutar:4200, durum:'approved', donem:2, dept:'kamera', uyari:null, thumb:null },
+  { id:39, tarih:'24.03.2026', personel:'Fatih Bayrak',  satici:'Petrol Ofisi Bakırköy',  kat:'Yakit',   tutar:980,  durum:'approved', donem:1, dept:'kamera', uyari:null, thumb:null },
+  { id:40, tarih:'10.04.2026', personel:'Elif Yılmaz',   satici:'Kafe Set Bistro',        kat:'Yiyecek', tutar:450,  durum:'acc-pending',  donem:2, dept:'kamera', uyari:null, thumb:null },
+  { id:41, tarih:'27.03.2026', personel:'Elif Yılmaz',   satici:'Taksi / Minibüs',        kat:'Ulasim',  tutar:310,  durum:'approved', donem:1, dept:'kamera', uyari:null, thumb:null },
   /* ── Sanat dept — Selin Yıldız, Can Kılıç, Nisan Aydın ── */
-  { id:42, tarih:'06.04.2026', personel:'Selin Yıldız',  satici:'Dekor & Aksesuar TR',    kat:'Sanat',   tutar:3100, durum:'onaylandi', donem:2, dept:'sanat', uyari:null, thumb:null },
-  { id:43, tarih:'23.03.2026', personel:'Can Kılıç',     satici:'Boya & Malzeme Mrk.',    kat:'Sanat',   tutar:1750, durum:'onaylandi', donem:1, dept:'sanat', uyari:null, thumb:null },
-  { id:44, tarih:'12.04.2026', personel:'Can Kılıç',     satici:'Nakliye Ekspres',        kat:'Ulasim',  tutar:680,  durum:'reddedildi',donem:2, dept:'sanat', uyari:'Fiş okunamıyor — yeniden yükle', thumb:null },
-  { id:45, tarih:'26.03.2026', personel:'Nisan Aydın',   satici:'Kumaş Pazarı İstanbul',  kat:'Sanat',   tutar:2400, durum:'onaylandi', donem:1, dept:'sanat', uyari:null, thumb:null, belgesiz:true },
+  { id:42, tarih:'06.04.2026', personel:'Selin Yıldız',  satici:'Dekor & Aksesuar TR',    kat:'Sanat',   tutar:3100, durum:'approved', donem:2, dept:'sanat', uyari:null, thumb:null },
+  { id:43, tarih:'23.03.2026', personel:'Can Kılıç',     satici:'Boya & Malzeme Mrk.',    kat:'Sanat',   tutar:1750, durum:'approved', donem:1, dept:'sanat', uyari:null, thumb:null },
+  { id:44, tarih:'12.04.2026', personel:'Can Kılıç',     satici:'Nakliye Ekspres',        kat:'Ulasim',  tutar:680,  durum:'rejected',donem:2, dept:'sanat', uyari:'Fiş okunamıyor — yeniden yükle', thumb:null },
+  { id:45, tarih:'26.03.2026', personel:'Nisan Aydın',   satici:'Kumaş Pazarı İstanbul',  kat:'Sanat',   tutar:2400, durum:'approved', donem:1, dept:'sanat', uyari:null, thumb:null, belgesiz:true },
   /* ── Ses dept — Kaan Taş, Mert Öztürk ── */
-  { id:46, tarih:'04.04.2026', personel:'Kaan Taş',      satici:'Ses Kablosu Merkez',     kat:'Ekipman', tutar:1100, durum:'onaylandi', donem:2, dept:'ses', uyari:null, thumb:null },
-  { id:47, tarih:'19.03.2026', personel:'Kaan Taş',      satici:'Şehir Lokantası',        kat:'Yiyecek', tutar:420,  durum:'onaylandi', donem:1, dept:'ses', uyari:null, thumb:null },
-  { id:48, tarih:'13.04.2026', personel:'Mert Öztürk',   satici:'Müzik Aletleri A.Ş.',   kat:'Ekipman', tutar:2900, durum:'acc-bekleyen',  donem:2, dept:'ses', uyari:null, thumb:null },
+  { id:46, tarih:'04.04.2026', personel:'Kaan Taş',      satici:'Ses Kablosu Merkez',     kat:'Ekipman', tutar:1100, durum:'approved', donem:2, dept:'ses', uyari:null, thumb:null },
+  { id:47, tarih:'19.03.2026', personel:'Kaan Taş',      satici:'Şehir Lokantası',        kat:'Yiyecek', tutar:420,  durum:'approved', donem:1, dept:'ses', uyari:null, thumb:null },
+  { id:48, tarih:'13.04.2026', personel:'Mert Öztürk',   satici:'Müzik Aletleri A.Ş.',   kat:'Ekipman', tutar:2900, durum:'acc-pending',  donem:2, dept:'ses', uyari:null, thumb:null },
   /* ── Kostüm dept — Arda Şen, Lale Çetin ── */
-  { id:49, tarih:'03.04.2026', personel:'Arda Şen',       satici:'Makyaj Profesyonel TR', kat:'Sanat',   tutar:1850, durum:'onaylandi', donem:2, dept:'kostum', uyari:null, thumb:null },
-  { id:50, tarih:'20.03.2026', personel:'Arda Şen',       satici:'Kozmetik Depo',         kat:'Diger',   tutar:730,  durum:'onaylandi', donem:1, dept:'kostum', uyari:null, thumb:null },
-  { id:51, tarih:'14.04.2026', personel:'Lale Çetin',     satici:'Kostüm & Aksesuar TR',  kat:'Sanat',   tutar:3400, durum:'onaylandi', donem:2, dept:'kostum', uyari:null, thumb:null },
-  { id:52, tarih:'22.03.2026', personel:'Lale Çetin',     satici:'Tekstil Merkez',        kat:'Sanat',   tutar:1600, durum:'onaylandi', donem:1, dept:'kostum', uyari:null, thumb:null }
+  { id:49, tarih:'03.04.2026', personel:'Arda Şen',       satici:'Makyaj Profesyonel TR', kat:'Sanat',   tutar:1850, durum:'approved', donem:2, dept:'kostum', uyari:null, thumb:null },
+  { id:50, tarih:'20.03.2026', personel:'Arda Şen',       satici:'Kozmetik Depo',         kat:'Diger',   tutar:730,  durum:'approved', donem:1, dept:'kostum', uyari:null, thumb:null },
+  { id:51, tarih:'14.04.2026', personel:'Lale Çetin',     satici:'Kostüm & Aksesuar TR',  kat:'Sanat',   tutar:3400, durum:'approved', donem:2, dept:'kostum', uyari:null, thumb:null },
+  { id:52, tarih:'22.03.2026', personel:'Lale Çetin',     satici:'Tekstil Merkez',        kat:'Sanat',   tutar:1600, durum:'approved', donem:1, dept:'kostum', uyari:null, thumb:null }
 ];
 var FIS_DEMO = [
   {
@@ -4077,7 +4077,7 @@ APP.data.accAdvanceHistory = [
   { id:202, dept:'Yapım',  uye:'Okan Demir',    ini:'OD', tutar:3500, tarih:'03.03', durum:'ödendi',      gerekce:'Ekipman kiralama peşinatı',           donem:1 },
   { id:203, dept:'Kamera', uye:'Fatih Bayrak',  ini:'FB', tutar:4200, tarih:'05.03', durum:'ödendi',      gerekce:'Lens seti depozitosu',                donem:1 },
   { id:204, dept:'Sanat',  uye:'Selin Yıldız',  ini:'SY', tutar:2800, tarih:'02.03', durum:'ödendi',      gerekce:'Dekor malzeme alımı',                 donem:1 },
-  { id:205, dept:'Ses',    uye:'Aylin Korkmaz', ini:'AK', tutar:1500, tarih:'08.03', durum:'reddedildi',  gerekce:'Kişisel harcama — kapsam dışı',       donem:1 },
+  { id:205, dept:'Ses',    uye:'Aylin Korkmaz', ini:'AK', tutar:1500, tarih:'08.03', durum:'rejected',  gerekce:'Kişisel harcama — kapsam dışı',       donem:1 },
   { id:101, dept:'Yapım',  uye:'Mehmet Kaya',   ini:'MK', tutar:6000, tarih:'05.02', durum:'ödendi',      gerekce:'Ön prodüksiyon araç giderleri',       donem:0 },
   { id:102, dept:'Kamera', uye:'Okan Demir',    ini:'OD', tutar:3000, tarih:'03.02', durum:'ödendi',      gerekce:'Kamera malzeme deposito',             donem:0 }
 ];
@@ -4087,9 +4087,9 @@ APP.data.accHistory = [];
 
 /* Dönem bütçe tanımları — her dönem için ayrılmış bütçe ve onaylanan harcama */
 APP.data.periodBudget = [
-  { donem:2, lbl:'Dönem #2', butce:40000, harcanan:26500, reddedildi:3890, _lastPct:0 },
-  { donem:1, lbl:'Dönem #1', butce:60000, harcanan:58400, reddedildi:5660, _lastPct:0 },
-  { donem:0, lbl:'Dönem #0', butce:35000, harcanan:33780, reddedildi:1800, _lastPct:0 }
+  { donem:2, lbl:'Dönem #2', butce:40000, harcanan:26500, rejected:3890, _lastPct:0 },
+  { donem:1, lbl:'Dönem #1', butce:60000, harcanan:58400, rejected:5660, _lastPct:0 },
+  { donem:0, lbl:'Dönem #0', butce:35000, harcanan:33780, rejected:1800, _lastPct:0 }
 ];
 
 /* ── Muhasebe Rapor — Departman Kategori Dağılımı ── */
@@ -4164,20 +4164,20 @@ APP.seed.deptPeriods = [
 /* Dept onaylı / reddedilmiş harcama geçmişi — döneme göre */
 APP.data.deptHistory = {
   2: {
-    onaylandi: [
+    approved: [
       { id:201, uye:'Mehmet Kaya',   ini:'MK', satici:'Araç Kiralık',      kat:'Ulasim',   tutar:4800, tarih:'08.04' },
       { id:202, uye:'Mehmet Kaya',   ini:'MK', satici:'Akaryakıt',          kat:'Yakit',    tutar:620,  tarih:'07.04' },
       { id:203, uye:'Okan Demir',    ini:'OD', satici:'Set Ekipman',        kat:'Ekipman',  tutar:3200, tarih:'06.04' },
       { id:204, uye:'Burhan Çelik',  ini:'BÇ', satici:'Kablo & Adaptör',   kat:'Ekipman',  tutar:1450, tarih:'05.04' },
       { id:205, uye:'Aylin Korkmaz', ini:'AK', satici:'Kayıt Stüdyo',      kat:'Ekipman',  tutar:980,  tarih:'04.04' }
     ],
-    reddedildi: [
+    rejected: [
       { id:301, uye:'Okan Demir',    ini:'OD', satici:'Otel Rezervasyon',   kat:'Konaklama',tutar:3200, tarih:'07.04', sebep:'Limit aşımı — onaysız konaklama' },
       { id:302, uye:'Mehmet Kaya',   ini:'MK', satici:'Otopark Çekim',      kat:'Ulasim',   tutar:450,  tarih:'03.04', sebep:'Mükerrer kayıt' }
     ]
   },
   1: {
-    onaylandi: [
+    approved: [
       { id:401, uye:'Mehmet Kaya',   ini:'MK', satici:'Benzin İstasyon',    kat:'Yakit',    tutar:1200, tarih:'28.03' },
       { id:402, uye:'Mehmet Kaya',   ini:'MK', satici:'Ekip Yemeği',        kat:'Yiyecek',  tutar:2400, tarih:'26.03' },
       { id:403, uye:'Okan Demir',    ini:'OD', satici:'Kamera Malzeme',     kat:'Ekipman',  tutar:5600, tarih:'22.03' },
@@ -4187,20 +4187,20 @@ APP.data.deptHistory = {
       { id:407, uye:'Burhan Çelik',  ini:'BÇ', satici:'Jeneratör Kiralık', kat:'Ekipman',  tutar:4200, tarih:'08.03' },
       { id:408, uye:'Mehmet Kaya',   ini:'MK', satici:'Transfer Araç',      kat:'Ulasim',   tutar:2800, tarih:'05.03' }
     ],
-    reddedildi: [
+    rejected: [
       { id:501, uye:'Okan Demir',    ini:'OD', satici:'Otel Bodrum',        kat:'Konaklama',tutar:4800, tarih:'20.03', sebep:'Onaysız konaklama' },
       { id:502, uye:'Selin Yıldız',  ini:'SY', satici:'—',                  kat:'Malzeme',  tutar:860,  tarih:'14.03', sebep:'Belgesiz harcama' }
     ]
   },
   0: {
-    onaylandi: [
+    approved: [
       { id:601, uye:'Mehmet Kaya',   ini:'MK', satici:'Akaryakıt Şub',      kat:'Yakit',    tutar:980,  tarih:'24.02' },
       { id:602, uye:'Mehmet Kaya',   ini:'MK', satici:'Ekip Kahvaltısı',    kat:'Yiyecek',  tutar:1400, tarih:'20.02' },
       { id:603, uye:'Burhan Çelik',  ini:'BÇ', satici:'Kablo Seti',         kat:'Ekipman',  tutar:2200, tarih:'15.02' },
       { id:604, uye:'Aylin Korkmaz', ini:'AK', satici:'Mikrofon Kira',      kat:'Ekipman',  tutar:1600, tarih:'10.02' },
       { id:605, uye:'Okan Demir',    ini:'OD', satici:'Lens Filtre x2',     kat:'Ekipman',  tutar:3400, tarih:'05.02' }
     ],
-    reddedildi: [
+    rejected: [
       { id:701, uye:'Mehmet Kaya',   ini:'MK', satici:'Restoran Lüks',      kat:'Yiyecek',  tutar:1800, tarih:'22.02', sebep:'Kişi başı limit aşımı' }
     ]
   }

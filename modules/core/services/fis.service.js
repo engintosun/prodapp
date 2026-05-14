@@ -32,14 +32,14 @@ export function deptApprove(id) {
         _checkBudgetWarning(ob, obt);
       }
       f.log = f.log || [];
-      f.log.push(_mkLog('onaylandi', ''));
-      if (!APP.data.deptHistory[2]) APP.data.deptHistory[2] = { onaylandi:[], reddedildi:[] };
+      f.log.push(_mkLog('approved', ''));
+      if (!APP.data.deptHistory[2]) APP.data.deptHistory[2] = { approved:[], rejected:[] };
       APP.data.deptHistory[2].onaylandi.push({ id:f.id, uye:f.uye||'', ini:f.ini||'', satici:f.satici||'', kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptDate(), log:f.log });
       var _fi = -1;
       for (var _fli = 0; _fli < APP.data.receipts.length; _fli++) {
         if (APP.data.receipts[_fli].id === f.fisId) { _fi = _fli; break; }
       }
-      if (_fi !== -1) APP.data.receipts[_fi].durum = 'acc-bekleyen';
+      if (_fi !== -1) APP.data.receipts[_fi].durum = 'acc-pending';
       f.log.push(_mkLog('dept-onayladi', ''));
       APP.data.accPending.unshift({
         id: Date.now() + Math.floor(Math.random()*1000),
@@ -83,11 +83,11 @@ export function deptReject(id) {
       var redNedeni = (prompt('Red nedeni girin:') || '').trim();
       if (!redNedeni) { notif('Red nedeni zorunludur — iptal edildi', 'amber'); return; }
       f.log = f.log || [];
-      f.log.push(_mkLog('reddedildi', redNedeni));
+      f.log.push(_mkLog('rejected', redNedeni));
       APP.data.deptPending.splice(i, 1);
       var rb = APP.data.periodBudget.find(function(x){ return x.donem === APP.ui.activePeriod; });
       if (rb) rb.reddedildi += f.tutar;
-      if (!APP.data.deptHistory[APP.ui.activePeriod]) APP.data.deptHistory[APP.ui.activePeriod] = { onaylandi:[], reddedildi:[] };
+      if (!APP.data.deptHistory[APP.ui.activePeriod]) APP.data.deptHistory[APP.ui.activePeriod] = { approved:[], rejected:[] };
       APP.data.deptHistory[APP.ui.activePeriod].reddedildi.push({
         id: f.id, uye: f.uye || '', ini: f.ini || '',
         satici: f.satici || '', kat: f.kat || 'Diger',
@@ -99,7 +99,7 @@ export function deptReject(id) {
         if (APP.data.receipts[_rfli].id === f.fisId) { _rfi = _rfli; break; }
       }
       if (_rfi !== -1) {
-        APP.data.receipts[_rfi].durum = 'reddedildi';
+        APP.data.receipts[_rfi].durum = 'rejected';
         APP.data.receipts[_rfi].uyari = redNedeni;
       }
       _pushNotif(f.fromKey || 's', 'rd', 'Harcama Reddedildi',
@@ -134,7 +134,7 @@ export function deptPartial(id, onayTutar, redNedeni) {
 
   if (f.fisId) {
     for (var _pfi = 0; _pfi < APP.data.receipts.length; _pfi++) {
-      if (APP.data.receipts[_pfi].id === f.fisId) { APP.data.receipts[_pfi].durum = 'bolundu'; break; }
+      if (APP.data.receipts[_pfi].id === f.fisId) { APP.data.receipts[_pfi].durum = 'split'; break; }
     }
   }
   var _maxId = 0;
@@ -152,11 +152,11 @@ export function deptPartial(id, onayTutar, redNedeni) {
   var _basePersonel = _parent ? _parent.personel : f.uye;
   var _baseDept     = _parent ? _parent.dept     : null;
 
-  APP.data.receipts.unshift({ id: _onayId, tarih: _baseTarih, personel: _basePersonel, satici: f.satici, kat: f.kat, tutar: onayTutar, durum: 'acc-bekleyen', donem: _baseDonem, uyari: null, thumb: null, dept: _baseDept, parentFisId: f.fisId || null, kismiTip: 'onay' });
-  APP.data.receipts.unshift({ id: _redId,  tarih: _baseTarih, personel: _basePersonel, satici: f.satici, kat: f.kat, tutar: redTutar,  durum: 'reddedildi',  donem: _baseDonem, uyari: redNedeni, thumb: null, dept: _baseDept, parentFisId: f.fisId || null, kismiTip: 'red' });
+  APP.data.receipts.unshift({ id: _onayId, tarih: _baseTarih, personel: _basePersonel, satici: f.satici, kat: f.kat, tutar: onayTutar, durum: 'acc-pending', donem: _baseDonem, uyari: null, thumb: null, dept: _baseDept, parentFisId: f.fisId || null, kismiTip: 'onay' });
+  APP.data.receipts.unshift({ id: _redId,  tarih: _baseTarih, personel: _basePersonel, satici: f.satici, kat: f.kat, tutar: redTutar,  durum: 'rejected',  donem: _baseDonem, uyari: redNedeni, thumb: null, dept: _baseDept, parentFisId: f.fisId || null, kismiTip: 'red' });
 
   APP.data.deptPending.splice(_i, 1);
-  if (!APP.data.deptHistory[APP.ui.activePeriod]) APP.data.deptHistory[APP.ui.activePeriod] = { onaylandi:[], reddedildi:[] };
+  if (!APP.data.deptHistory[APP.ui.activePeriod]) APP.data.deptHistory[APP.ui.activePeriod] = { approved:[], rejected:[] };
   APP.data.deptHistory[APP.ui.activePeriod].onaylandi.push({ id: _onayId, uye: f.uye, ini: f.ini, satici: f.satici, kat: f.kat, tutar: onayTutar, tarih: f.tarih });
   APP.data.deptHistory[APP.ui.activePeriod].reddedildi.push({ id: _redId, uye: f.uye, ini: f.ini, satici: f.satici, kat: f.kat, tutar: redTutar, tarih: f.tarih, sebep: redNedeni });
 
@@ -217,13 +217,13 @@ export function accOnayla(id, _gecSebep) {
       var _found = false;
       if (item.fisId) {
         for (var j = 0; j < APP.data.receipts.length; j++) {
-          if (APP.data.receipts[j].id === item.fisId) { APP.data.receipts[j].durum = 'onaylandi'; _found = true; break; }
+          if (APP.data.receipts[j].id === item.fisId) { APP.data.receipts[j].durum = 'approved'; _found = true; break; }
         }
       }
       if (!_found) {
         for (var j2 = 0; j2 < APP.data.receipts.length; j2++) {
           var fj = APP.data.receipts[j2];
-          if (fj.personel === item.uye && fj.satici === item.satici && fj.tutar === item.tutar && fj.tarih === item.tarih) { fj.durum = 'onaylandi'; break; }
+          if (fj.personel === item.uye && fj.satici === item.satici && fj.tutar === item.tutar && fj.tarih === item.tarih) { fj.durum = 'approved'; break; }
         }
       }
       var _aGecEntry = { id: Date.now(), fisId: item.fisId || null, islem: 'onay', onaylayan: APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe', tarih: Date.now(), tutar: item.tutar, kat: item.kat || '', satici: item.satici || '', uye: item.uye, dept: item.dept || '', donem: _aDon };
@@ -265,19 +265,19 @@ export function accReddet(id, _gecSebep) {
     var redNedeniAcc = (prompt('Red nedeni girin:') || '').trim();
     if (!redNedeniAcc) { notif('Red nedeni zorunludur — iptal edildi', 'amber'); return; }
     item.log = item.log || [];
-    item.log.push(_mkLog('reddedildi', redNedeniAcc));
+    item.log.push(_mkLog('rejected', redNedeniAcc));
     APP.data.accPending = APP.data.accPending.filter(function(f){ return f.id !== id; });
     renderAccBek();
     var _rfound = false;
     if (item.fisId) {
       for (var ri = 0; ri < APP.data.receipts.length; ri++) {
-        if (APP.data.receipts[ri].id === item.fisId) { APP.data.receipts[ri].durum = 'reddedildi'; APP.data.receipts[ri].uyari = redNedeniAcc; _rfound = true; break; }
+        if (APP.data.receipts[ri].id === item.fisId) { APP.data.receipts[ri].durum = 'rejected'; APP.data.receipts[ri].uyari = redNedeniAcc; _rfound = true; break; }
       }
     }
     if (!_rfound) {
       for (var ri2 = 0; ri2 < APP.data.receipts.length; ri2++) {
         var rf = APP.data.receipts[ri2];
-        if (rf.personel === item.uye && rf.satici === item.satici && rf.tutar === item.tutar && rf.tarih === item.tarih) { rf.durum = 'reddedildi'; rf.uyari = redNedeniAcc; break; }
+        if (rf.personel === item.uye && rf.satici === item.satici && rf.tutar === item.tutar && rf.tarih === item.tarih) { rf.durum = 'rejected'; rf.uyari = redNedeniAcc; break; }
       }
     }
     var _rGecEntry = { id: Date.now(), fisId: item.fisId || null, islem: 'red', onaylayan: APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe', tarih: Date.now(), tutar: item.tutar, kat: item.kat || '', satici: item.satici || '', uye: item.uye, dept: item.dept || '', donem: _rDon, redNedeni: redNedeniAcc };
@@ -314,7 +314,7 @@ export function accKismi(id, onayTutar, redNedeni, _gecSebep) {
 
   if (item.fisId) {
     for (var _pfi = 0; _pfi < APP.data.receipts.length; _pfi++) {
-      if (APP.data.receipts[_pfi].id === item.fisId) { APP.data.receipts[_pfi].durum = 'bolundu'; break; }
+      if (APP.data.receipts[_pfi].id === item.fisId) { APP.data.receipts[_pfi].durum = 'split'; break; }
     }
   }
   var _maxId = 0;
@@ -332,8 +332,8 @@ export function accKismi(id, onayTutar, redNedeni, _gecSebep) {
   var _basePersonel = _parent ? _parent.personel : item.uye;
   var _baseDept     = _parent ? _parent.dept     : null;
 
-  APP.data.receipts.unshift({ id: _onayId, tarih: _baseTarih, personel: _basePersonel, satici: item.satici, kat: item.kat, tutar: onayTutar, durum: 'onaylandi',  donem: _baseDonem, uyari: null,      thumb: null, dept: _baseDept, parentFisId: item.fisId || null, kismiTip: 'onay' });
-  APP.data.receipts.unshift({ id: _redId,  tarih: _baseTarih, personel: _basePersonel, satici: item.satici, kat: item.kat, tutar: redTutar,  durum: 'reddedildi', donem: _baseDonem, uyari: redNedeni, thumb: null, dept: _baseDept, parentFisId: item.fisId || null, kismiTip: 'red'  });
+  APP.data.receipts.unshift({ id: _onayId, tarih: _baseTarih, personel: _basePersonel, satici: item.satici, kat: item.kat, tutar: onayTutar, durum: 'approved',  donem: _baseDonem, uyari: null,      thumb: null, dept: _baseDept, parentFisId: item.fisId || null, kismiTip: 'onay' });
+  APP.data.receipts.unshift({ id: _redId,  tarih: _baseTarih, personel: _basePersonel, satici: item.satici, kat: item.kat, tutar: redTutar,  durum: 'rejected', donem: _baseDonem, uyari: redNedeni, thumb: null, dept: _baseDept, parentFisId: item.fisId || null, kismiTip: 'red'  });
 
   APP.data.accPending.splice(_i, 1);
 
