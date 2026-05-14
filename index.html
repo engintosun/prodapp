@@ -4830,7 +4830,7 @@ function checkKiralamaBit(p) {
   var gunluk  = parseFloat((gunEl && gunEl.value) || '0') || 0;
   if (isNaN(diffGun)) { uyEl.style.display = 'none'; return; }
   var _tempK = { bit: bitEl.value, gunluk: gunluk, iade: false };
-  var c = _kiraCeza(_tempK);
+  var c = _rentalPenalty(_tempK);
   var gecGun = c.gecGun;
   var ceza   = c.ceza;
   if (c.gecGun > 0) {

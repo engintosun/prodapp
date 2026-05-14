@@ -3,7 +3,7 @@
 // deptBekleyen ve accBekleyen koleksiyonlarına ekleme/çıkarma primitifleri.
 //
 // Bağımlılıklar (hâlâ window globals — index.html'den):
-//   _isPeriodClosed, notif, _checkBudgetWarning, _mkLog, _deptTarih,
+//   _isPeriodClosed, notif, _checkBudgetWarning, _mkLog, _deptDate,
 //   _pushNotif, updateNotifBadge, _activeException, _isExceptionValid,
 //   saveAppData, renderDeptPending, renderDeptCrew, renderDeptSummary
 
@@ -11,7 +11,7 @@ import { APP } from '../state.js';
 
 /* ── deptBekleyen ─────────────────────────────────────────────────────────── */
 
-export function deptBekleyenEkle(satici, kat, tutar, belgesiz, aciklama, fotos, fisId) {
+export function deptPendingAdd(satici, kat, tutar, belgesiz, aciklama, fotos, fisId) {
   var uye = APP.ui.curUser ? APP.ui.curUser.name : 'Dept Sorumlusu';
   var ini = APP.ui.curUser ? APP.ui.curUser.ini  : 'DS';
 
@@ -46,12 +46,12 @@ export function deptBekleyenEkle(satici, kat, tutar, belgesiz, aciklama, fotos, 
         }
       }
     }
-    accBekleyenEkle({
+    accPendingAdd({
       id: Date.now() + 1, fisId: _effFisId,
       dept: (APP.ui.curUser && APP.ui.curUser.dept) || '',
       uye: uye, ini: ini,
       satici: satici || 'Yeni Harcama', kat: kat || 'Diger',
-      tutar: tutar || 0, tarih: _deptTarih(), belgesiz: !!belgesiz, uyari: '',
+      tutar: tutar || 0, tarih: _deptDate(), belgesiz: !!belgesiz, uyari: '',
       fromKey: APP.ui.curUserKey || 's', donem: APP.ui.aktifDon,
       olusturmaZamani: Date.now(), gecIslem: true, istisnaIzniId: _izin.id
     });
@@ -73,7 +73,7 @@ export function deptBekleyenEkle(satici, kat, tutar, belgesiz, aciklama, fotos, 
     satici: satici || 'Yeni Harcama',
     kat: kat || 'Diger',
     tutar: tutar || 0,
-    tarih: _deptTarih(),
+    tarih: _deptDate(),
     uyari: null,
     belgesiz: !!belgesiz,
     aciklama: aciklama || '',
@@ -94,7 +94,7 @@ export function deptBekleyenEkle(satici, kat, tutar, belgesiz, aciklama, fotos, 
   deptTab('bek', document.getElementById('sdtb-bek'));
 }
 
-export function deptBekleyenSil(id) {
+export function deptPendingRemove(id) {
   var idx = -1;
   for (var i = 0; i < APP.data.deptBekleyen.length; i++) {
     if (APP.data.deptBekleyen[i].id === id) { idx = i; break; }
@@ -104,10 +104,10 @@ export function deptBekleyenSil(id) {
 
 /* ── accBekleyen ──────────────────────────────────────────────────────────── */
 
-export function accBekleyenEkle(item) {
+export function accPendingAdd(item) {
   APP.data.accBekleyen.unshift(item);
 }
 
-export function accBekleyenSil(id) {
+export function accPendingRemove(id) {
   APP.data.accBekleyen = APP.data.accBekleyen.filter(function(f) { return f.id !== id; });
 }

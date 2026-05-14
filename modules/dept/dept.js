@@ -21,7 +21,7 @@
 
 import { APP }                              from '../core/state.js';
 import { _mkLog, _todayISO, _dayDiff,
-         _kiraDurum as _rentalStatus, _kiraCeza as _rentalPenalty } from '../core/utils.js';
+         _rentalStatus, _rentalPenalty } from '../core/utils.js';
 import { saveAppData }                      from '../core/services/storage.service.js';
 import { SD_KAT_CLR, SD_KAT_LBL }          from '../core/constants.js';
 

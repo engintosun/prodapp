@@ -43,13 +43,13 @@ export function _dayDiff(a, b) {
 }
 
 // Dept kısa tarih formatı: "DD.MM"
-export function _deptTarih() {
+export function _deptDate() {
   var d = new Date();
   return ('0' + d.getDate()).slice(-2) + '.' + ('0' + (d.getMonth()+1)).slice(-2);
 }
 
 // Kira ISO tarihini okunabilir formata çevir: "2026-04-15" → "15 Nis 2026"
-export function _formatKiraTarih(dateStr) {
+export function _formatRentalDate(dateStr) {
   var aylar = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
   var p = (dateStr || '').split('-');
   if (p.length < 3) return dateStr;
@@ -100,7 +100,7 @@ export function _setAvEl(el, user, userKey) {
 // ─── Kiralama ────────────────────────────────────────────────────────────────
 
 // Kiralama durumu: 'iade' | 'gec' | 'yak' | 'ak'
-export function _kiraDurum(k) {
+export function _rentalStatus(k) {
   if (k.iade) return 'iade';
   var today = _todayISO();
   var fark  = _dayDiff(today, k.bit);
@@ -111,9 +111,9 @@ export function _kiraDurum(k) {
 
 // Kiralama gecikme cezası: { gecGun, ceza }
 // İade sonrası kaydedilmiş değeri döndürür; aktif gecikme için anlık hesaplar.
-export function _kiraCeza(k) {
+export function _rentalPenalty(k) {
   if (k.iade) return { gecGun: k.cezaGun || 0, ceza: k.cezaTutar || 0 };
-  if (_kiraDurum(k) !== 'gec') return { gecGun: 0, ceza: 0 };
+  if (_rentalStatus(k) !== 'gec') return { gecGun: 0, ceza: 0 };
   var gecGun = Math.abs(_dayDiff(_todayISO(), k.bit));
   return { gecGun: gecGun, ceza: gecGun * k.gunluk };
 }

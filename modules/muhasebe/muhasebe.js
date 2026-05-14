@@ -4,9 +4,9 @@
    ═══════════════════════════════════════════════════════════════ */
 
 import { APP }                                from '../core/state.js';
-import { _todayISO, _dayDiff, _deptTarih,
+import { _todayISO, _dayDiff, _deptDate,
          _projName, _setAvEl,
-         _kiraDurum, _kiraCeza,
+         _rentalStatus, _rentalPenalty,
          _svgDonut, _mkLog }                  from '../core/utils.js';
 import { saveAppData }                         from '../core/services/storage.service.js';
 import { accOnayla, accReddet, accKismi }      from '../core/services/fis.service.js';
@@ -48,9 +48,9 @@ export function renderAccRental() {
   var topAktif = 0, topGec = 0, gecSay = 0, iadeSay = 0;
   for (var i = 0; i < APP.data.accKiralamalar.length; i++) {
     var k = APP.data.accKiralamalar[i];
-    var dur = _kiraDurum(k);
+    var dur = _rentalStatus(k);
     if (dur !== 'iade') topAktif += k.tutar;
-    if (dur === 'gec') { var _oc = _kiraCeza(k); topGec += _oc.ceza; gecSay++; }
+    if (dur === 'gec') { var _oc = _rentalPenalty(k); topGec += _oc.ceza; gecSay++; }
     if (dur === 'iade') iadeSay++;
   }
   var aktifSay = APP.data.accKiralamalar.length - iadeSay;
@@ -75,9 +75,9 @@ export function renderAccRental() {
     var dAktif = 0, dTop = 0, dCeza = 0, dGec = 0;
     for (var dki2 = 0; dki2 < dKiralar.length; dki2++) {
       var dk2 = dKiralar[dki2];
-      var dkDur = _kiraDurum(dk2);
+      var dkDur = _rentalStatus(dk2);
       if (dkDur !== 'iade') { dAktif++; dTop += dk2.tutar; }
-      if (dkDur === 'gec') { dGec++; var _dc = _kiraCeza(dk2); dCeza += _dc.ceza; }
+      if (dkDur === 'gec') { dGec++; var _dc = _rentalPenalty(dk2); dCeza += _dc.ceza; }
     }
     html += '<tr>' +
       '<td class="nm"><div class="sa-kira-dept-dot" style="background:' + deptClr[dId] + '"></div>' + deptNm[dId] + '</td>' +
@@ -88,12 +88,12 @@ export function renderAccRental() {
   }
   html += '</tbody></table></div>';
 
-  var gecmisler = APP.data.accKiralamalar.filter(function(k){ return _kiraDurum(k) === 'gec'; });
+  var gecmisler = APP.data.accKiralamalar.filter(function(k){ return _rentalStatus(k) === 'gec'; });
   if (gecmisler.length) {
     html += '<div class="sa-kira-sec-hd" style="color:var(--rd2)">🔴 Gecikmiş Kiralamalar (' + gecmisler.length + ')</div>';
     html += gecmisler.map(function(k) {
       var kalan = _dayDiff(today, k.bit);
-      var c = _kiraCeza(k);
+      var c = _rentalPenalty(k);
       var gecGun = c.gecGun;
       var topCeza = c.ceza;
       return '<div class="sa-kira-card gec">' +
@@ -124,7 +124,7 @@ export function renderAccRental() {
     if (!dKiralar.length) return;
 
     dKiralar.sort(function(a, b) {
-      var da = _kiraDurum(a), db = _kiraDurum(b);
+      var da = _rentalStatus(a), db = _rentalStatus(b);
       var ord = { gec:0, yak:1, ak:2, iade:3 };
       return (ord[da] || 0) - (ord[db] || 0);
     });
@@ -136,9 +136,9 @@ export function renderAccRental() {
     '</div>';
 
     html += dKiralar.map(function(k) {
-      var dur   = _kiraDurum(k);
+      var dur   = _rentalStatus(k);
       var kalan = _dayDiff(today, k.bit);
-      var c     = _kiraCeza(k);
+      var c     = _rentalPenalty(k);
       var tagCls, tagTxt;
       if (dur === 'gec') { tagCls = 'sd-kira-tag sd-kira-tag-gec'; tagTxt = c.gecGun + ' gün geç'; }
       else if (dur === 'yak') { tagCls = 'sd-kira-tag sd-kira-tag-yak'; tagTxt = kalan === 0 ? 'Bugün' : kalan + ' gün'; }
@@ -179,7 +179,7 @@ export function accRentalReturn(id) {
   for (var i = 0; i < APP.data.accKiralamalar.length; i++) {
     if (APP.data.accKiralamalar[i].id === id) {
       var _ki = APP.data.accKiralamalar[i];
-      var _ci = _kiraCeza(_ki);
+      var _ci = _rentalPenalty(_ki);
       _ki.cezaGun = _ci.gecGun; _ki.cezaTutar = _ci.ceza;
       _ki.iade = true; break;
     }
@@ -187,7 +187,7 @@ export function accRentalReturn(id) {
   for (var j = 0; j < APP.data.deptKira.length; j++) {
     if (APP.data.deptKira[j].id === id) {
       var _kj = APP.data.deptKira[j];
-      var _cj = _kiraCeza(_kj);
+      var _cj = _rentalPenalty(_kj);
       _kj.cezaGun = _cj.gecGun; _kj.cezaTutar = _cj.ceza;
       _kj.iade = true; break;
     }

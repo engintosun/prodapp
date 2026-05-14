@@ -7,7 +7,7 @@
 //   renderDeptPending, renderDeptCrew, renderDeptSummary, renderDept,
 //   renderAccBek, renderRecent, closeM,
 //   saveAppData, _isPeriodClosed, _lateEntryModal, _recomputeAccDepts,
-//   _mkLog, _deptTarih, _checkBudgetWarning, _categorySpent, _checkCategoryLimit,
+//   _mkLog, _deptDate, _checkBudgetWarning, _categorySpent, _checkCategoryLimit,
 //   _curDeptName, _avRedPending, openM, _advanceHistoryAdd
 
 import { APP } from '../state.js';
@@ -34,7 +34,7 @@ export function deptApprove(id) {
       f.log = f.log || [];
       f.log.push(_mkLog('onaylandi', ''));
       if (!APP.data.deptGecmis[2]) APP.data.deptGecmis[2] = { onaylandi:[], reddedildi:[] };
-      APP.data.deptGecmis[2].onaylandi.push({ id:f.id, uye:f.uye||'', ini:f.ini||'', satici:f.satici||'', kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptTarih(), log:f.log });
+      APP.data.deptGecmis[2].onaylandi.push({ id:f.id, uye:f.uye||'', ini:f.ini||'', satici:f.satici||'', kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptDate(), log:f.log });
       var _fi = -1;
       for (var _fli = 0; _fli < APP.data.fisler.length; _fli++) {
         if (APP.data.fisler[_fli].id === f.fisId) { _fi = _fli; break; }
@@ -91,7 +91,7 @@ export function deptReject(id) {
       APP.data.deptGecmis[APP.ui.aktifDon].reddedildi.push({
         id: f.id, uye: f.uye || '', ini: f.ini || '',
         satici: f.satici || '', kat: f.kat || 'Diger',
-        tutar: f.tutar, tarih: f.tarih || _deptTarih(),
+        tutar: f.tutar, tarih: f.tarih || _deptDate(),
         redNedeni: redNedeni, log: f.log
       });
       var _rfi = -1;
@@ -204,7 +204,7 @@ export function accOnayla(id, _gecSebep) {
   renderAccBek();
 
   if (item && item.tip === 'avans') {
-    _advanceHistoryAdd({ id: Date.now(), dept: item.dept || _curDeptName(), uye: item.uye, ini: item.ini, tutar: item.tutar, tarih: _deptTarih(), durum: 'ödendi', gerekce: item.gerekce || '', donem: APP.ui.aktifDon });
+    _advanceHistoryAdd({ id: Date.now(), dept: item.dept || _curDeptName(), uye: item.uye, ini: item.ini, tutar: item.tutar, tarih: _deptDate(), durum: 'ödendi', gerekce: item.gerekce || '', donem: APP.ui.aktifDon });
     var fk = item.fromKey || 's';
     _pushNotif(fk, 'gr', 'Avans Talebiniz Onaylandı ✅', '₺' + item.tutar.toLocaleString('tr-TR') + ' avans talebiniz muhasebe tarafından onaylandı.', 'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe') + ' (Muhasebe)');
     if (fk !== 'd') {
