@@ -31,7 +31,7 @@ var accReportSelectedPeriods = [2, 1, 0];
    openFisDetay, _checkPassiveApproval, _isPeriodClosed,
    _lateEntryModal, newPeriod, _periodCloseModal,
    showExportModal, SA_DONEM_DEPTS, _avRedPending,
-   renderSohbetListesi, openYeniSohbetModal              ────── */
+   renderChatList, openYeniSohbetModal              ────── */
 
 
 /* ═══ KİRA ═══════════════════════════════════════════════════ */
@@ -1497,7 +1497,7 @@ export function renderAccMessages() {
       '<button class="btn btn-sm" onclick="openYeniSohbetModal()" style="padding:4px 10px;font-size:12px">+ Yeni</button>' +
     '</div>' +
     '<div id="sa-sohbet-liste"></div>';
-  window.renderSohbetListesi(document.getElementById('sa-sohbet-liste'), 'm');
+  window.renderChatList(document.getElementById('sa-sohbet-liste'), 'm');
 }
 
 /* ═══ WINDOW EXPORTS (inline onclick uyumluluğu) ═════════════ */
