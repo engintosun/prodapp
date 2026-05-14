@@ -234,8 +234,8 @@ export function newPeriod() {
     if (APP.seed.periods[_ai].durum === 'aktif') { aktif = APP.seed.periods[_ai]; break; }
   }
   if (aktif) {
-    var deptBek = APP.data.deptPending.filter(function(f) { return f.donem === aktif.id && f.kat !== 'Kiralama'; });
-    var accBek  = APP.data.accPending.filter(function(f)  { return f.donem === aktif.id && f.tip !== 'avans' && f.kat !== 'Kiralama'; });
+    var deptBek = APP.data.deptPending.filter(function(f) { return f.donem === aktif.id && f.kat !== 'rental'; });
+    var accBek  = APP.data.accPending.filter(function(f)  { return f.donem === aktif.id && f.tip !== 'avans' && f.kat !== 'rental'; });
     var bekTop  = deptBek.length + accBek.length;
     if (bekTop > 0) {
       if (confirm(aktif.lbl + ' açık ve ' + bekTop + ' bekleyen var. Önce kapatılmalı. Devam edip kapatma modalını açayım mı?')) {
@@ -279,12 +279,12 @@ export function closePeriod(donemId, sebep) {
   if (d.durum === 'kapali') { notif('Bu dönem zaten kapalı.', 'red'); return; }
 
   var deptBek = APP.data.deptPending.filter(function(f) {
-    if (String(f.donem) !== String(donemId) || f.kat === 'Kiralama') return false;
+    if (String(f.donem) !== String(donemId) || f.kat === 'rental') return false;
     var _fis = APP.data.receipts.find(function(x) { return x.id === f.fisId; });
     return _fis && _fis.durum === 'dept-pending';
   });
   var accBek = APP.data.accPending.filter(function(f) {
-    if (String(f.donem) !== String(donemId) || f.tip === 'avans' || f.kat === 'Kiralama') return false;
+    if (String(f.donem) !== String(donemId) || f.tip === 'avans' || f.kat === 'rental') return false;
     var _fis = APP.data.receipts.find(function(x) { return x.id === f.fisId; });
     return _fis && _fis.durum === 'acc-pending';
   });
@@ -293,8 +293,8 @@ export function closePeriod(donemId, sebep) {
     notif('Bu dönemde ' + bekTop + ' bekleyen fiş var. Önce işlem yapılmalı.', 'red'); return;
   }
 
-  var kiralamaBek = APP.data.deptPending.filter(function(f) { return f.donem === donemId && f.kat === 'Kiralama'; }).length +
-                    APP.data.accPending.filter(function(f)  { return f.donem === donemId && f.tip !== 'avans' && f.kat === 'Kiralama'; }).length;
+  var kiralamaBek = APP.data.deptPending.filter(function(f) { return f.donem === donemId && f.kat === 'rental'; }).length +
+                    APP.data.accPending.filter(function(f)  { return f.donem === donemId && f.tip !== 'avans' && f.kat === 'rental'; }).length;
   if (kiralamaBek > 0) {
     if (!confirm('Bu dönemde ' + kiralamaBek + ' açık kiralama var. Kiralamalar sonradan bağlanabilir. Yine de kapatılsın mı?')) return;
   }
@@ -477,12 +477,12 @@ export function _periodCloseModal(donemId) {
   var d = APP.seed.periods.find(function(x) { return x.id === donemId; });
   var dLbl = d ? d.lbl : ('Dönem #' + donemId);
   var deptBek = APP.data.deptPending.filter(function(f) {
-    if (String(f.donem) !== String(donemId) || f.kat === 'Kiralama') return false;
+    if (String(f.donem) !== String(donemId) || f.kat === 'rental') return false;
     var _fis = APP.data.receipts.find(function(x) { return x.id === f.fisId; });
     return _fis && _fis.durum === 'dept-pending';
   });
   var accBek = APP.data.accPending.filter(function(f) {
-    if (String(f.donem) !== String(donemId) || f.tip === 'avans' || f.kat === 'Kiralama') return false;
+    if (String(f.donem) !== String(donemId) || f.tip === 'avans' || f.kat === 'rental') return false;
     var _fis = APP.data.receipts.find(function(x) { return x.id === f.fisId; });
     return _fis && _fis.durum === 'acc-pending';
   });
@@ -533,7 +533,7 @@ export function _checkPassiveApproval() {
   for (var i = APP.data.accPending.length - 1; i >= 0; i--) {
     var item = APP.data.accPending[i];
     if (item.tip === 'avans') continue;
-    if (item.kat === 'Kiralama') continue;
+    if (item.kat === 'rental') continue;
     if (!item.olusturmaZamani) continue;
     var gecen = simdi - item.olusturmaZamani;
     if (gecen >= yedi_gun)              { pasifOnaylar.push({ item: item, idx: i }); }

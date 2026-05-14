@@ -28,7 +28,7 @@ export function deptPendingAdd(satici, kat, tutar, belgesiz, aciklama, fotos, fi
       var _td = ('0'+_d.getDate()).slice(-2)+'.'+('0'+(_d.getMonth()+1)).slice(-2)+'.'+_d.getFullYear();
       var _nf = {
         id: Date.now(), tarih: _td, personel: uye,
-        satici: satici || 'Yeni Harcama', kat: kat || 'Diger', tutar: tutar || 0,
+        satici: satici || 'Yeni Harcama', kat: kat || 'other', tutar: tutar || 0,
         durum: 'acc-pending', donem: APP.ui.activePeriod,
         uyari: null, thumb: null, belgesiz: !!belgesiz, aciklama: aciklama || '',
         gecIslem: true, istisnaIzniId: _izin.id,
@@ -50,7 +50,7 @@ export function deptPendingAdd(satici, kat, tutar, belgesiz, aciklama, fotos, fi
       id: Date.now() + 1, fisId: _effFisId,
       dept: (APP.ui.curUser && APP.ui.curUser.dept) || '',
       uye: uye, ini: ini,
-      satici: satici || 'Yeni Harcama', kat: kat || 'Diger',
+      satici: satici || 'Yeni Harcama', kat: kat || 'other',
       tutar: tutar || 0, tarih: _deptDate(), belgesiz: !!belgesiz, uyari: '',
       fromKey: APP.ui.curUserKey || 's', donem: APP.ui.activePeriod,
       olusturmaZamani: Date.now(), gecIslem: true, istisnaIzniId: _izin.id
@@ -71,7 +71,7 @@ export function deptPendingAdd(satici, kat, tutar, belgesiz, aciklama, fotos, fi
   APP.data.deptPending.unshift({
     id: Date.now(), uye: uye, ini: ini, fisId: fisId || null,
     satici: satici || 'Yeni Harcama',
-    kat: kat || 'Diger',
+    kat: kat || 'other',
     tutar: tutar || 0,
     tarih: _deptDate(),
     uyari: null,

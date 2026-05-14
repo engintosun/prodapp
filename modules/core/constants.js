@@ -4,38 +4,38 @@
 // ─── Kategoriler ───────────────────────────────────────────────────────────
 
 export var KATEGORILER = [
-  'Yakit', 'Yiyecek', 'Ekipman', 'Sanat', 'Ulasim',
-  'Konaklama', 'Kiralama', 'Diger'
+  'fuel', 'food', 'equipment', 'art', 'transport',
+  'accommodation', 'rental', 'other'
 ];
 
 export var KAT_IC = {
-  Yakit:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M3 22V6l9-4 9 4v16"/><path d="M10 22V12h4v10"/><path d="M3 9h18"/></svg>',
-  Yiyecek: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>',
+  fuel:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M3 22V6l9-4 9 4v16"/><path d="M10 22V12h4v10"/><path d="M3 9h18"/></svg>',
+  food:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>',
   def:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>'
 };
 
 export var SD_KAT_CLR = {
-  Yakit:'var(--am)',  Yiyecek:'var(--gr)',  Ekipman:'var(--bl)',
-  Sanat:'var(--ac)',  Ulasim:'var(--bl2)',  Diger:'var(--tx3)',
-  Konaklama:'var(--bl)', Kiralama:'var(--am2)'
+  fuel:'var(--am)',          food:'var(--gr)',          equipment:'var(--bl)',
+  art:'var(--ac)',           transport:'var(--bl2)',    other:'var(--tx3)',
+  accommodation:'var(--bl)', rental:'var(--am2)'
 };
 
 export var SD_KAT_LBL = {
-  Yakit:'Yakıt', Yiyecek:'Yiyecek', Ekipman:'Ekipman',
-  Sanat:'Sanat',  Ulasim:'Ulaşım',  Diger:'Diğer',
-  Konaklama:'Konaklama', Kiralama:'Kiralama'
+  fuel:'Yakıt',        food:'Yiyecek',      equipment:'Ekipman',
+  art:'Sanat',         transport:'Ulaşım',  other:'Diğer',
+  accommodation:'Konaklama', rental:'Kiralama'
 };
 
 // Kategori varsayılan harcama limitleri (TL) — kullanıcı düzenleyebilir
 export var KAT_LIMIT_DEFAULT = [
-  { kat:'Yakit',     lbl:'Yakıt',     limit:5000,  clr:'var(--am)'  },
-  { kat:'Yiyecek',   lbl:'Yiyecek',   limit:4000,  clr:'var(--gr)'  },
-  { kat:'Ekipman',   lbl:'Ekipman',   limit:14000, clr:'var(--bl)'  },
-  { kat:'Sanat',     lbl:'Sanat',     limit:4000,  clr:'var(--ac)'  },
-  { kat:'Ulasim',    lbl:'Ulaşım',    limit:5000,  clr:'var(--bl2)' },
-  { kat:'Konaklama', lbl:'Konaklama', limit:7000,  clr:'var(--bl)'  },
-  { kat:'Kiralama',  lbl:'Kiralama',  limit:10000, clr:'var(--am2)' },
-  { kat:'Diger',     lbl:'Diğer',     limit:2000,  clr:'var(--tx3)' }
+  { kat:'fuel',          lbl:'Yakıt',     limit:5000,  clr:'var(--am)'  },
+  { kat:'food',          lbl:'Yiyecek',   limit:4000,  clr:'var(--gr)'  },
+  { kat:'equipment',     lbl:'Ekipman',   limit:14000, clr:'var(--bl)'  },
+  { kat:'art',           lbl:'Sanat',     limit:4000,  clr:'var(--ac)'  },
+  { kat:'transport',     lbl:'Ulaşım',    limit:5000,  clr:'var(--bl2)' },
+  { kat:'accommodation', lbl:'Konaklama', limit:7000,  clr:'var(--bl)'  },
+  { kat:'rental',        lbl:'Kiralama',  limit:10000, clr:'var(--am2)' },
+  { kat:'other',         lbl:'Diğer',     limit:2000,  clr:'var(--tx3)' }
 ];
 
 // ─── Durum sabitleri ────────────────────────────────────────────────────────

@@ -290,13 +290,13 @@ export function _hideAllDynPanels(p) {
 
 export function _showDynPanel(p, kat) {
   _hideAllDynPanels(p);
-  var map = { 'Ulasim':'ul-panel', 'Yiyecek':'ym-panel', 'Konaklama':'ko-panel', 'Kiralama':'ki-panel' };
+  var map = { 'transport':'ul-panel', 'food':'ym-panel', 'accommodation':'ko-panel', 'rental':'ki-panel' };
   var pid = map[kat];
   if (pid) {
     var el = document.getElementById(p + pid);
     if (el) el.style.display = 'block';
   }
-  if (kat === 'Ulasim') {
+  if (kat === 'transport') {
     if (p === 'b-') checkDoclessTransportLimit(); else checkTransportLimit();
   }
 }
@@ -321,12 +321,12 @@ export function _resetDynFields(p) {
 
 export function _detectKatFromFis(f) {
   var kat = f.kat || '';
-  if (kat === 'Konaklama' || kat === 'Kiralama' || kat === 'Ulasim' || kat === 'Yiyecek') return kat;
+  if (kat === 'accommodation' || kat === 'rental' || kat === 'transport' || kat === 'food') return kat;
   var txt = ((f.satici || '') + ' ' + (f.aciklama || '') + ' ' + (f.prev || '')).toLowerCase();
-  if (/otel|hotel|konaklama|pansiyon|motel/.test(txt))                         return 'Konaklama';
-  if (/kiralık|kiralama|araç kira|rent/.test(txt))                             return 'Kiralama';
-  if (/taksi|otobüs|metro|transfer|ulaşım|bilet/.test(txt))                    return 'Ulasim';
-  if (/yemek|restoran|lokanta|kahvaltı|pizza|döner|tavuk|cafe|kafe/.test(txt)) return 'Yiyecek';
+  if (/otel|hotel|konaklama|pansiyon|motel/.test(txt))                         return 'accommodation';
+  if (/kiralık|kiralama|araç kira|rent/.test(txt))                             return 'rental';
+  if (/taksi|otobüs|metro|transfer|ulaşım|bilet/.test(txt))                    return 'transport';
+  if (/yemek|restoran|lokanta|kahvaltı|pizza|döner|tavuk|cafe|kafe/.test(txt)) return 'food';
   return kat;
 }
 
@@ -376,13 +376,13 @@ export function _applyUlasimLimit(kmId, tipId, tutId, uyId) {
 
 export function checkTransportLimit() {
   var kat = document.getElementById('f-kat');
-  if (!kat || kat.value !== 'Ulasim') return;
+  if (!kat || kat.value !== 'transport') return;
   _applyUlasimLimit('ul-km', 'ul-tip', 'f-tutar', 'ul-uyari');
 }
 
 export function checkDoclessTransportLimit() {
   var kat = document.getElementById('b-kat');
-  if (!kat || kat.value !== 'Ulasim') return;
+  if (!kat || kat.value !== 'transport') return;
   _applyUlasimLimit('b-ul-km', 'b-ul-tip', 'b-tutar', 'b-ul-uyari');
 }
 
@@ -421,13 +421,13 @@ export function submitDocless() {
   closeM('mb');
   if (APP.ui.deptMode) {
     APP.ui.deptMode = false;
-    var kat      = document.getElementById('b-kat').value || 'Diger';
+    var kat      = document.getElementById('b-kat').value || 'other';
     var tutar    = parseFloat(t) || 0;
     var aciklama = (document.getElementById('b-aciklama') || {}).value || '';
     _addToDeptPending('Belgesiz Harcama', kat, tutar, true, aciklama, fotos);
     notif('Belgesiz harcama bekleyene eklendi', 'amber');
   } else {
-    var bKat      = document.getElementById('b-kat').value || 'Diger';
+    var bKat      = document.getElementById('b-kat').value || 'other';
     var bTut      = parseFloat(document.getElementById('b-tutar').value || '0') || 0;
     var bAciklama = (document.getElementById('b-aciklama') || {}).value || '';
     var bDept     = (document.getElementById('b-dept')     || {}).value || '';
@@ -442,11 +442,11 @@ export function submitDocless() {
       var bd = new Date();
       bTarih = _pad(bd.getDate()) + '.' + _pad(bd.getMonth()+1) + '.' + bd.getFullYear();
     }
-    if (bKat === 'Kiralama') {
+    if (bKat === 'rental') {
       var bFisIdK = Date.now();
       APP.data.receipts.unshift({
         id: bFisIdK, tarih: bTarih, personel: bPersonel, satici: 'Belgesiz Kiralama',
-        kat: 'Kiralama', tutar: bTut, durum: 'dept-pending', donem: APP.ui.activePeriod,
+        kat: 'rental', tutar: bTut, durum: 'dept-pending', donem: APP.ui.activePeriod,
         uyari: null, thumb: null, belgesiz: true, aciklama: bAciklama, fotos: fotos,
         dept: bDept, neden: bNeden,
         log: [_mkLog('olusturuldu', 'Belgesiz harcama bildirildi')],
@@ -479,7 +479,7 @@ export function submitDocless() {
   _clr('b-ym-kisi'); _clr('b-ko-gece'); _clr('b-ko-kisi');
   _clr('b-ki-bas'); _clr('b-ki-bit'); _clr('b-ki-gun');
   var bKatEl2 = document.getElementById('b-kat');
-  if (bKatEl2) bKatEl2.value = 'Diger';
+  if (bKatEl2) bKatEl2.value = 'other';
   var bTarihEl = document.getElementById('b-tarih');
   if (bTarihEl) bTarihEl.value = new Date().toISOString().slice(0, 10);
   bFotolar = [];

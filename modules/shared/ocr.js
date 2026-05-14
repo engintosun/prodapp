@@ -155,12 +155,12 @@ export function submitOCR() {
   if (APP.ui.deptMode) {
     APP.ui.deptMode = false;
     var satici = (document.getElementById('f-satici').value || '').trim() || 'Bilinmiyor';
-    var kat    = document.getElementById('f-kat').value || 'Diger';
+    var kat    = document.getElementById('f-kat').value || 'other';
     var tutar  = parseFloat((document.getElementById('f-tutar').value || '0').replace(',', '.')) || 0;
     _addToDeptPending(satici, kat, tutar, false, '');
     notif(satici + ' bekleyene eklendi', 'green');
   } else {
-    var kat2   = document.getElementById('f-kat').value || 'Diger';
+    var kat2   = document.getElementById('f-kat').value || 'other';
     var sat2   = (document.getElementById('f-satici').value || '').trim() || 'Bilinmiyor';
     var tut2   = parseFloat((document.getElementById('f-tutar').value || '0').replace(',', '.')) || 0;
     var today2 = new Date();
@@ -172,7 +172,7 @@ export function submitOCR() {
       durum: 'dept-pending', donem: APP.ui.activePeriod, uyari: null, thumb: null,
       log: [_mkLog('olusturuldu', 'Harcama sisteme girildi')]
     };
-    if (kat2 === 'Kiralama') {
+    if (kat2 === 'rental') {
       entry.kiraMeta = {
         bas:    (document.getElementById('ki-bas').value || ''),
         bit:    (document.getElementById('ki-bit').value || ''),

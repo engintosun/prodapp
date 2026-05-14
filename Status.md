@@ -156,7 +156,8 @@
   - B3 (APP.cache 8 key): commit c042148
 
 **Sıradaki adımlar:**
-1. 🎯 Naming Batch C — enum value rename + migration script
+1. ~~Naming Batch C2 — kategori enum rename (8 değer Türkçe→İngilizce + HTML option + C2 migration + Teknik option silindi)~~ ✅ (14 Mayıs 2026)
+2. 🎯 Naming Batch C3 — rol enum rename ('user'→'field'/'crew' kararı sonrası)
 3. Tasarım revizyonu (OCR sadeleştirme + Dept/Muhasebe kart yapısı)
 4. Supabase mimari + entegrasyon (Faz 2)
 
@@ -246,7 +247,8 @@ Fonksiyon rename batch'leri tamamlandı (~150 fonksiyon, 9 commit). Kalan:
 | Batch | Kapsam | Durum |
 |---|---|---|
 | **Batch B** | APP.data/APP.ui/APP.seed/APP.cache key rename + localStorage migration | ✅ tamamlandı (B1: 721b9cb, B2: 52170c2, B3: c042148) |
-| **Batch C** | Enum value rename (durum, kat, rol string'leri) + migration script | 🎯 sıradaki |
+| **Batch C2** | Kategori enum (kat field) — 8 değer Türkçe→İngilizce + HTML option + C2 migration | ✅ tamamlandı (14 Mayıs 2026) |
+| **Batch C3** | Rol + durum enum rename — sektörel terim kararı sonrası başlar | 🎯 sıradaki |
 
 Batch B/C için sektörel terim kararları (Batch B'ye girilince alınacak):
 

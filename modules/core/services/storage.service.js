@@ -51,6 +51,28 @@ export function loadAppData() {
     }
     // deptPending ve accPending'de durum field'ı yok — migration gerekmez
     // --- /C1 Migration ---
+    // --- C2 Migration: kat enum değerleri Türkçe→İngilizce ---
+    var _c2KatMap = {
+      'Yakit':'fuel', 'Yiyecek':'food', 'Ekipman':'equipment',
+      'Ulasim':'transport', 'Konaklama':'accommodation', 'Kiralama':'rental',
+      'Sanat':'art', 'Diger':'other'
+    };
+    function _c2MigrateKat(arr) {
+      if (!Array.isArray(arr)) return;
+      arr.forEach(function(item) {
+        if (item.kat && _c2KatMap[item.kat]) item.kat = _c2KatMap[item.kat];
+      });
+    }
+    _c2MigrateKat(parsed.receipts);
+    _c2MigrateKat(parsed.deptPending);
+    _c2MigrateKat(parsed.accPending);
+    _c2MigrateKat(parsed.accHistory);
+    _c2MigrateKat(parsed.deptRentals);
+    _c2MigrateKat(parsed.accRentals);
+    _c2MigrateKat(parsed.accSuspicion);
+    if (parsed.periodBudget) _c2MigrateKat(parsed.periodBudget);
+    if (parsed.categoryLimits) _c2MigrateKat(parsed.categoryLimits);
+    // --- /C2 Migration ---
     Object.keys(parsed).forEach(function(k) {
       if (APP.data[k] !== undefined) APP.data[k] = parsed[k];
     });

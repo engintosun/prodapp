@@ -216,7 +216,7 @@ export function _addToDeptPending(satici, kat, tutar, belgesiz, aciklama, fotos,
       var _td = ('0'+_d.getDate()).slice(-2)+'.'+('0'+(_d.getMonth()+1)).slice(-2)+'.'+_d.getFullYear();
       var _nf = {
         id: Date.now(), tarih: _td, personel: uye,
-        satici: satici || 'Yeni Harcama', kat: kat || 'Diger', tutar: tutar || 0,
+        satici: satici || 'Yeni Harcama', kat: kat || 'other', tutar: tutar || 0,
         durum: 'acc-pending', donem: APP.ui.activePeriod,
         uyari: null, thumb: null, belgesiz: !!belgesiz, aciklama: aciklama || '',
         gecIslem: true, istisnaIzniId: _izin.id,
@@ -238,7 +238,7 @@ export function _addToDeptPending(satici, kat, tutar, belgesiz, aciklama, fotos,
       id: Date.now() + 1, fisId: _effFisId,
       dept: (APP.ui.curUser && APP.ui.curUser.dept) || '',
       uye: uye, ini: ini,
-      satici: satici || 'Yeni Harcama', kat: kat || 'Diger',
+      satici: satici || 'Yeni Harcama', kat: kat || 'other',
       tutar: tutar || 0, tarih: _deptDate(), belgesiz: !!belgesiz, uyari: '',
       fromKey: APP.ui.curUserKey || 's', donem: APP.ui.activePeriod,
       olusturmaZamani: Date.now(), gecIslem: true, istisnaIzniId: _izin.id
@@ -258,7 +258,7 @@ export function _addToDeptPending(satici, kat, tutar, belgesiz, aciklama, fotos,
 
   APP.data.deptPending.unshift({
     id: Date.now(), uye: uye, ini: ini, fisId: fisId || null,
-    satici: satici || 'Yeni Harcama', kat: kat || 'Diger',
+    satici: satici || 'Yeni Harcama', kat: kat || 'other',
     tutar: tutar || 0, tarih: _deptDate(), uyari: null,
     belgesiz: !!belgesiz, aciklama: aciklama || '', fotos: fotos || [],
     donem: APP.ui.activePeriod, olusturmaZamani: Date.now(),
@@ -560,7 +560,7 @@ export function deptApproveSelected() {
     f.log.push(_mkLog('approved', ''));
     APP.data.deptHistory[2].onaylandi.push({
       id:f.id, uye:f.uye||'', ini:f.ini||'', satici:f.satici||'',
-      kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptDate(), log:f.log
+      kat:f.kat||'other', tutar:f.tutar, tarih:f.tarih||_deptDate(), log:f.log
     });
     f.log.push(_mkLog('dept-onayladi', ''));
     APP.data.accPending.unshift({
@@ -615,7 +615,7 @@ export function deptRejectSelected() {
     f.log.push(_mkLog('rejected', redNedeni));
     APP.data.deptHistory[APP.ui.activePeriod].reddedildi.push({
       id: f.id, uye: f.uye||'', ini: f.ini||'',
-      satici: f.satici||'', kat: f.kat||'Diger',
+      satici: f.satici||'', kat: f.kat||'other',
       tutar: f.tutar, tarih: f.tarih||_deptDate(), redNedeni: redNedeni, log: f.log
     });
     for (var _srfli = 0; _srfli < APP.data.receipts.length; _srfli++) {
@@ -1060,7 +1060,7 @@ export function deptApprove(id) {
     if (!APP.data.deptHistory[2]) APP.data.deptHistory[2] = { approved:[], rejected:[] };
     APP.data.deptHistory[2].onaylandi.push({
       id:f.id, uye:f.uye||'', ini:f.ini||'', satici:f.satici||'',
-      kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptDate(), log:f.log
+      kat:f.kat||'other', tutar:f.tutar, tarih:f.tarih||_deptDate(), log:f.log
     });
     for (var _fli = 0; _fli < APP.data.receipts.length; _fli++) {
       if (APP.data.receipts[_fli].id === f.fisId) { APP.data.receipts[_fli].durum = 'acc-pending'; break; }
@@ -1107,7 +1107,7 @@ export function deptReject(id) {
     if (!APP.data.deptHistory[APP.ui.activePeriod]) APP.data.deptHistory[APP.ui.activePeriod] = { approved:[], rejected:[] };
     APP.data.deptHistory[APP.ui.activePeriod].reddedildi.push({
       id: f.id, uye: f.uye||'', ini: f.ini||'',
-      satici: f.satici||'', kat: f.kat||'Diger',
+      satici: f.satici||'', kat: f.kat||'other',
       tutar: f.tutar, tarih: f.tarih||_deptDate(), redNedeni: redNedeni, log: f.log
     });
     for (var _rfli = 0; _rfli < APP.data.receipts.length; _rfli++) {

@@ -34,7 +34,7 @@ export function deptApprove(id) {
       f.log = f.log || [];
       f.log.push(_mkLog('approved', ''));
       if (!APP.data.deptHistory[2]) APP.data.deptHistory[2] = { approved:[], rejected:[] };
-      APP.data.deptHistory[2].onaylandi.push({ id:f.id, uye:f.uye||'', ini:f.ini||'', satici:f.satici||'', kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptDate(), log:f.log });
+      APP.data.deptHistory[2].onaylandi.push({ id:f.id, uye:f.uye||'', ini:f.ini||'', satici:f.satici||'', kat:f.kat||'other', tutar:f.tutar, tarih:f.tarih||_deptDate(), log:f.log });
       var _fi = -1;
       for (var _fli = 0; _fli < APP.data.receipts.length; _fli++) {
         if (APP.data.receipts[_fli].id === f.fisId) { _fi = _fli; break; }
@@ -90,7 +90,7 @@ export function deptReject(id) {
       if (!APP.data.deptHistory[APP.ui.activePeriod]) APP.data.deptHistory[APP.ui.activePeriod] = { approved:[], rejected:[] };
       APP.data.deptHistory[APP.ui.activePeriod].reddedildi.push({
         id: f.id, uye: f.uye || '', ini: f.ini || '',
-        satici: f.satici || '', kat: f.kat || 'Diger',
+        satici: f.satici || '', kat: f.kat || 'other',
         tutar: f.tutar, tarih: f.tarih || _deptDate(),
         redNedeni: redNedeni, log: f.log
       });

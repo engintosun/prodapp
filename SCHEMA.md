@@ -44,7 +44,7 @@ Güncelleme sorumluluğu:
 | tarih      | string  | `"03.04.2026"`                                                | DD.MM.YYYY format                                  |
 | personel   | string  | `"Mehmet Kaya"`                                               | Kullanıcı TAM ADI (ad + soyad) — string, obje değil|
 | satici     | string  | `"Petrol Ofisi"`, `"Tavuk Dünyası"`                           | Satıcı/tedarikçi adı                               |
-| kat        | string  | `"Yakit"`, `"Yiyecek"`, `"Ekipman"`, `"Ulasim"`, `"Sanat"`, `"Diger"`, `"Kiralama"` | Kategori — enum (Türkçe karaktersiz) |
+| kat        | string  | `"fuel"`, `"food"`, `"equipment"`, `"transport"`, `"art"`, `"other"`, `"accommodation"`, `"rental"` | Kategori — enum (İngilizce, C2 rename) |
 | tutar      | number  | `1000`, `780.5`                                               | TL cinsinden                                       |
 | donem      | number  | `1`, `2`                                                      | Dönem numarası                                     |
 | durum      | string  | `"dept-bekleyen"`, `"acc-bekleyen"`, `"onaylandi"`, `"reddedildi"`, `"bolundu"` | Onay durumu — enum. `'bolundu'` = kısmi onay sonrası parent fiş işareti; çocuk fişler `parentFisId` ile bağlanır, parent kayıt değişmez (ARCHITECTURE 1.4). Eski `"bekleyen"` fallback olarak korunur. |
@@ -53,7 +53,7 @@ Güncelleme sorumluluğu:
 | dept       | string  | `"yapim"`, `"kamera"`, `"sanat"`, `"ses"`, `"kostum"`        | Opsiyonel — saha personelinin fişlerinde yok       |
 | belgesiz   | boolean | `true`, `false`                                               | Opsiyonel — belge yüklenmeden girilmiş fiş         |
 | aciklama   | string  | `"Nakit ödeme, fiş verilmedi"`                                | Opsiyonel — belgesiz fişlerde gerekçe              |
-| kiraMeta   | object  | `{ bas:'2026-04-01', bit:'2026-04-05', gunluk:450 }`          | Opsiyonel — sadece kat:'Kiralama' fişlerinde       |
+| kiraMeta   | object  | `{ bas:'2026-04-01', bit:'2026-04-05', gunluk:450 }`          | Opsiyonel — sadece kat:'rental' fişlerinde         |
 | duplikat   | boolean | `true`                                                        | Opsiyonel — mükerrer fiş işareti                   |
 | parentFisId | number\|null | `1`                                                      | Opsiyonel — kısmi onay çocuğu ise parent fişin id'si. ARCHITECTURE 2.3 referansı. |
 | kismiTip   | string\|null | `'onay'` / `'red'`                                        | Opsiyonel — kısmi onay çocuk fişlerinde çocuğun rolünü belirtir.  |
@@ -88,7 +88,7 @@ Güncelleme sorumluluğu:
 | uye      | string       | `"Mehmet Kaya"`                   | Personel tam adı                      |
 | ini      | string       | `"MK"`, `"OD"`, `"BÇ"`           | İnisiyaller (avatar gösterimi için)   |
 | satici   | string       | `"Petrol Ofisi"`                  | Satıcı adı                            |
-| kat      | string       | `"Yakit"`, `"Yiyecek"`, `"Ekipman"`, `"Ulasim"`, `"Sanat"` | Kategori — fisler.kat ile aynı enum |
+| kat      | string       | `"fuel"`, `"food"`, `"equipment"`, `"transport"`, `"art"`, `"other"`, `"accommodation"`, `"rental"` | Kategori — fisler.kat ile aynı enum (C2) |
 | tutar    | number       | `1000`, `780`                     | TL cinsinden                          |
 | tarih    | string       | `"03.04"` (DD.MM — yıl yok)      | Kısa format, sadece gün.ay            |
 | uyari    | string\|null | `"Ekip 15 kişi, 10 porsiyon"`    | Uyarı metni; yoksa null               |
@@ -208,7 +208,7 @@ Avans işlemleri bu koleksiyona **yazılmaz** — onlar `accAdvanceHistory`'e gi
 | onaylayan  | string | `'Selin Yıldız'`       | Muhasebeci tam adı (`curUser.name`)             |
 | tarih      | number | `Date.now()` (ms)      | İşlem timestamp                                 |
 | tutar      | number | `1500`                 | Fiş tutarı (snapshot — sonraki değişimden bağımsız) |
-| kat        | string | `'Yakit'`              | Kategori (snapshot)                             |
+| kat        | string | `'fuel'`               | Kategori (snapshot — C2 enum)                   |
 | satici     | string | `'Petrol Ofisi'`       | Satıcı (snapshot)                               |
 | uye        | string | `'Mehmet Kaya'`        | Personel (snapshot)                             |
 | dept       | string | `'Yapım'`              | Departman görünen ad (snapshot)                 |
@@ -257,7 +257,7 @@ Her item (onaylandi):
 | uye   | string | `"Mehmet Kaya"`    | Personel adı     |
 | ini   | string | `"MK"`             | İnisiyaller      |
 | satici| string | `"Araç Kiralık"`   | Satıcı           |
-| kat   | string | `"Ulasim"`, `"Yakit"` | Kategori      |
+| kat   | string | `"transport"`, `"fuel"` | Kategori (C2 enum) |
 | tutar | number | `4800`             | TL               |
 | tarih | string | `"08.04"` (DD.MM)  | Kısa format      |
 
@@ -442,7 +442,7 @@ Cache'e doğrudan yazılmaz; ilgili `_compute*` / `_recompute*` fonksiyonu çağ
 {
   "ini": "MK",
   "satici": "Petrol Ofisi",
-  "kat": "Yakit",
+  "kat": "fuel",
   "tutar": 1000,
   "tarih": "03.04.2026",
   "durum": "bek",
@@ -494,7 +494,7 @@ Kodda gözlemlenen isimlendirme kuralları:
 | Tarih (ISO)       | `"YYYY-MM-DD"` string                             | kiraMeta.bas, kiraMeta.bit, deptKira.bas/bit |
 | Tutar             | number (TL, virgülsüz)                            | `1000` — string değil                        |
 | Dönem             | number (`0`, `1`, `2`)                            | Karşılaştırma için String() ile çevir        |
-| Kategori key      | **`kat`** — `"Yakit"`, `"Yiyecek"`, `"Ekipman"`, `"Ulasim"`, `"Sanat"`, `"Diger"`, `"Kiralama"` | `kategori` değil; Türkçe karaktersiz |
+| Kategori key      | **`kat`** — `"fuel"`, `"food"`, `"equipment"`, `"transport"`, `"art"`, `"other"`, `"accommodation"`, `"rental"` | `kategori` değil; İngilizce (C2 rename — 14 May 2026) |
 | Durum (fisler)    | `"dept-bekleyen"`, `"acc-bekleyen"`, `"onaylandi"`, `"reddedildi"`, `"bolundu"` | 5 değer. Eski `"bekleyen"` localStorage fallback olarak korunur. Hesaplarda `"onay"/"red"/"bek"`'e dönüştürülür |
 | Kullanıcı adı     | `personel` (fisler'de), `name` (curUser'da), `uye` (dept*'de) | Hepsi tam ad string               |
 | Dept anahtarı     | `"yapim"`, `"kamera"`, `"sanat"`, `"ses"`, `"kostum"` | Küçük harf, Türkçe karaktersiz           |

@@ -53,7 +53,7 @@ export function _computeDeptReceiptReport(deptId) {
     result.push({
       ini:     nameToIni[_f.personel],
       satici:  _f.satici || '',
-      kat:     _f.kat    || 'Diger',
+      kat:     _f.kat    || 'other',
       tutar:   _f.tutar  || 0,
       tarih:   _f.tarih  || '',
       durum:   _dur,
@@ -78,14 +78,14 @@ export function _computeDeptReceiptReport(deptId) {
 
 export function _computePersonnelReport() {
   var _katRenkHex = {
-    Yakit:'#F59E0B', Yiyecek:'#22C55E', Ekipman:'#3B82F6',
-    Sanat:'#E8962E', Ulasim:'#60A5FA', Diger:'#64748B',
-    Konaklama:'#8B5CF6', Kiralama:'#F97316', Avans:'#A855F7'
+    fuel:'#F59E0B',          food:'#22C55E',          equipment:'#3B82F6',
+    art:'#E8962E',           transport:'#60A5FA',     other:'#64748B',
+    accommodation:'#8B5CF6', rental:'#F97316',        Avans:'#A855F7'
   };
   var _katLblMap = {
-    Yakit:'Yakıt', Yiyecek:'Yiyecek', Ekipman:'Ekipman',
-    Sanat:'Sanat', Ulasim:'Ulaşım', Diger:'Diğer',
-    Konaklama:'Konaklama', Kiralama:'Kiralama', Avans:'Avans'
+    fuel:'Yakıt',        food:'Yiyecek',      equipment:'Ekipman',
+    art:'Sanat',         transport:'Ulaşım',  other:'Diğer',
+    accommodation:'Konaklama', rental:'Kiralama', Avans:'Avans'
   };
   var donLbl = {};
   for (var _di = 0; _di < APP.seed.periods.length; _di++) {
@@ -128,7 +128,7 @@ export function _computePersonnelReport() {
       _donMap[_did].total += _tut;
       if      (_f.durum === 'approved')  _donMap[_did].onay += _tut;
       else if (_f.durum === 'dept-pending' || _f.durum === 'acc-pending' || _f.durum === 'bekleyen') _donMap[_did].bek += _tut;
-      var _kn = _f.kat || 'Diger';
+      var _kn = _f.kat || 'other';
       _katMap[_kn] = (_katMap[_kn] || 0) + _tut;
     }
     var _donemler = [];
