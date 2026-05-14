@@ -1,4 +1,4 @@
-// /modules/shared/ocr.js
+﻿// /modules/shared/ocr.js
 // PRODAPP — OCR & Kamera/Galeri Modülü (Adım 4 — kopyalama, index.html orijinaller yerinde)
 //
 // Bağımlılıklar (window globals — henüz index.html'den):
@@ -179,7 +179,7 @@ export function submitOCR() {
         gunluk: parseFloat(document.getElementById('ki-gun').value || '0') || 0
       };
     }
-    APP.data.fisler.unshift(entry);
+    APP.data.receipts.unshift(entry);
     _addToDeptPending(sat2, kat2, tut2, false, '', [], entry.id);
     renderRecent();
     notif('Harcama onaya gönderildi', 'green');

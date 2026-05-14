@@ -1,4 +1,4 @@
-/* ═══════════════════════════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════════════════════════
    MUHASEBE MODÜLÜ — modules/muhasebe/muhasebe.js
    Adım 7A: index.html'den kopyalandı (silme yok)
    ═══════════════════════════════════════════════════════════════ */
@@ -46,14 +46,14 @@ export function renderAccRental() {
   var deptClr = { yapim:'#E8962E', kamera:'#3B82F6', sanat:'#22C55E', ses:'#A855F7', kostum:'#EC4899' };
 
   var topAktif = 0, topGec = 0, gecSay = 0, iadeSay = 0;
-  for (var i = 0; i < APP.data.accKiralamalar.length; i++) {
-    var k = APP.data.accKiralamalar[i];
+  for (var i = 0; i < APP.data.accRentals.length; i++) {
+    var k = APP.data.accRentals[i];
     var dur = _rentalStatus(k);
     if (dur !== 'iade') topAktif += k.tutar;
     if (dur === 'gec') { var _oc = _rentalPenalty(k); topGec += _oc.ceza; gecSay++; }
     if (dur === 'iade') iadeSay++;
   }
-  var aktifSay = APP.data.accKiralamalar.length - iadeSay;
+  var aktifSay = APP.data.accRentals.length - iadeSay;
   var cnt = document.getElementById('satb-kira-cnt');
   if (cnt) cnt.textContent = aktifSay;
 
@@ -70,7 +70,7 @@ export function renderAccRental() {
   html += '<thead><tr><th>Departman</th><th>Aktif</th><th>Toplam ₺</th><th>Gecikme Cezası</th></tr></thead><tbody>';
   for (var dti = 0; dti < deptler.length; dti++) {
     var dId = deptler[dti];
-    var dKiralar = APP.data.accKiralamalar.filter(function(k){ return k.deptId === dId; });
+    var dKiralar = APP.data.accRentals.filter(function(k){ return k.deptId === dId; });
     if (!dKiralar.length) continue;
     var dAktif = 0, dTop = 0, dCeza = 0, dGec = 0;
     for (var dki2 = 0; dki2 < dKiralar.length; dki2++) {
@@ -88,7 +88,7 @@ export function renderAccRental() {
   }
   html += '</tbody></table></div>';
 
-  var gecmisler = APP.data.accKiralamalar.filter(function(k){ return _rentalStatus(k) === 'gec'; });
+  var gecmisler = APP.data.accRentals.filter(function(k){ return _rentalStatus(k) === 'gec'; });
   if (gecmisler.length) {
     html += '<div class="sa-kira-sec-hd" style="color:var(--rd2)">🔴 Gecikmiş Kiralamalar (' + gecmisler.length + ')</div>';
     html += gecmisler.map(function(k) {
@@ -120,7 +120,7 @@ export function renderAccRental() {
 
   html += '<div class="sa-kira-sec-hd">Tüm Kiralamalar — Departman Bazlı</div>';
   deptler.forEach(function(dId) {
-    var dKiralar = APP.data.accKiralamalar.filter(function(k){ return k.deptId === dId; });
+    var dKiralar = APP.data.accRentals.filter(function(k){ return k.deptId === dId; });
     if (!dKiralar.length) return;
 
     dKiralar.sort(function(a, b) {
@@ -176,17 +176,17 @@ export function renderAccRental() {
 }
 
 export function accRentalReturn(id) {
-  for (var i = 0; i < APP.data.accKiralamalar.length; i++) {
-    if (APP.data.accKiralamalar[i].id === id) {
-      var _ki = APP.data.accKiralamalar[i];
+  for (var i = 0; i < APP.data.accRentals.length; i++) {
+    if (APP.data.accRentals[i].id === id) {
+      var _ki = APP.data.accRentals[i];
       var _ci = _rentalPenalty(_ki);
       _ki.cezaGun = _ci.gecGun; _ki.cezaTutar = _ci.ceza;
       _ki.iade = true; break;
     }
   }
-  for (var j = 0; j < APP.data.deptKira.length; j++) {
-    if (APP.data.deptKira[j].id === id) {
-      var _kj = APP.data.deptKira[j];
+  for (var j = 0; j < APP.data.deptRentals.length; j++) {
+    if (APP.data.deptRentals[j].id === id) {
+      var _kj = APP.data.deptRentals[j];
       var _cj = _rentalPenalty(_kj);
       _kj.cezaGun = _cj.gecGun; _kj.cezaTutar = _cj.ceza;
       _kj.iade = true; break;
@@ -203,7 +203,7 @@ export function renderAccAdvance() {
   var el = document.getElementById('sa-pnl-avans');
   if (!el) return;
 
-  var aktifAv = _advanceSortDesc(APP.data.accBekleyen.filter(function(a){ return a.tip === 'avans'; }));
+  var aktifAv = _advanceSortDesc(APP.data.accPending.filter(function(a){ return a.tip === 'avans'; }));
 
   var donBar = '<div class="sa-donem-bar" style="margin-bottom:14px">';
   for (var di = 0; di < APP.seed.saDonemler.length; di++) {
@@ -240,7 +240,7 @@ export function renderAccAdvance() {
     html += '<div style="text-align:right;font-size:11px;color:var(--tx3);padding:2px 2px 12px">Bekleyen toplam: <strong style="color:var(--am2)">₺' + bekTop.toLocaleString('tr-TR') + '</strong></div>';
   }
 
-  var gecmisDonem = _advanceSortDesc(APP.data.accAvansGecmis.filter(function(av){ return av.donem === APP.ui.saAvansDonem; }));
+  var gecmisDonem = _advanceSortDesc(APP.data.accAdvanceHistory.filter(function(av){ return av.donem === APP.ui.saAvansDonem; }));
 
   if (!gecmisDonem.length && !aktifAv.length) {
     el.innerHTML = html + '<div style="text-align:center;padding:30px 0;color:var(--tx3);font-size:13px">Bu dönem için avans kaydı yok</div>';
@@ -396,7 +396,7 @@ function _renderAccDeptPending(deptId) {
   if (!el) return;
   var deptName = '';
   for (var i = 0; i < APP.data.accDepts.length; i++) if (APP.data.accDepts[i].id === deptId) { deptName = APP.data.accDepts[i].name; break; }
-  var items = APP.data.accBekleyen.filter(function(f) { return f.dept === deptName; });
+  var items = APP.data.accPending.filter(function(f) { return f.dept === deptName; });
   if (!items.length) { el.innerHTML = '<div style="padding:20px 16px;color:var(--tx3);font-size:13px">Bekleyen harcama yok</div>'; return; }
   el.innerHTML = items.map(function(f) {
     var uyHtml = f.uyari ? '<div style="font-size:11px;color:var(--am2);margin-top:3px">⚠ ' + f.uyari + '</div>' : '';
@@ -529,7 +529,7 @@ export function accMemberTab(t, el) {
 function _renderAccMemberPending() {
   var el = document.getElementById('acuye-pnl-bek');
   if (!el) return;
-  var items = APP.data.accBekleyen.filter(function(f) { return f.uye === _accMemberName; });
+  var items = APP.data.accPending.filter(function(f) { return f.uye === _accMemberName; });
   if (!items.length) {
     el.innerHTML = '<div style="padding:20px 16px;color:var(--tx3);font-size:13px">Bekleyen harcama yok</div>';
     return;
@@ -595,9 +595,9 @@ export function renderAcc() {
   _setAvEl(document.getElementById('sa-hd-av'), APP.ui.curUser, APP.ui.curUserKey);
   document.getElementById('sa-hd-prj').textContent = _projName(APP.ui.curProj.id);
   var bCnt = document.getElementById('satb-bek-cnt');
-  if (bCnt) bCnt.textContent = APP.data.accBekleyen.length;
+  if (bCnt) bCnt.textContent = APP.data.accPending.length;
   var sCnt = document.getElementById('satb-suphe-cnt');
-  if (sCnt) sCnt.textContent = APP.data.accSuphe.filter(function(s){ return s.durum === 'bek' || s.durum === 'inc'; }).length;
+  if (sCnt) sCnt.textContent = APP.data.accSuspicion.filter(function(s){ return s.durum === 'bek' || s.durum === 'inc'; }).length;
   renderAccDash();
   renderAccPending();
   renderAccSuspicion();
@@ -650,8 +650,8 @@ export function accBudgetSave() {
   }
   var toplamButce = 0;
   for (var t = 0; t < APP.data.accDepts.length; t++) toplamButce += APP.data.accDepts[t].butce || 0;
-  for (var b = 0; b < APP.data.donemButce.length; b++) {
-    if (APP.data.donemButce[b].donem === APP.ui.aktifDon) { APP.data.donemButce[b].butce = toplamButce; break; }
+  for (var b = 0; b < APP.data.periodBudget.length; b++) {
+    if (APP.data.periodBudget[b].donem === APP.ui.aktifDon) { APP.data.periodBudget[b].butce = toplamButce; break; }
   }
   for (var j = 0; j < APP.seed.katLimit.length; j++) {
     var ki = document.getElementById('kat-inp-' + APP.seed.katLimit[j].kat);
@@ -719,7 +719,7 @@ export function renderAccDash() {
   html += '<div class="sa-genel-stat"><div class="sa-genel-stat-val" style="color:var(--gr2)">₺' + totalOnay.toLocaleString('tr-TR') + '</div><div class="sa-genel-stat-lbl">Onaylı</div></div>';
   if (isAktif) {
     html += '<div class="sa-genel-stat"><div class="sa-genel-stat-val" style="color:var(--am2)">₺' + totalBek.toLocaleString('tr-TR') + '</div><div class="sa-genel-stat-lbl">Bekleyen</div></div>';
-    html += '<div class="sa-genel-stat"><div class="sa-genel-stat-val" style="color:var(--rd2)">' + APP.data.accSuphe.length + '</div><div class="sa-genel-stat-lbl">Şüpheli</div></div>';
+    html += '<div class="sa-genel-stat"><div class="sa-genel-stat-val" style="color:var(--rd2)">' + APP.data.accSuspicion.length + '</div><div class="sa-genel-stat-lbl">Şüpheli</div></div>';
   } else {
     html += '<div class="sa-genel-stat"><div class="sa-genel-stat-val" style="color:var(--rd2)">₺' + totalRed.toLocaleString('tr-TR') + '</div><div class="sa-genel-stat-lbl">Reddedildi</div></div>';
     var pctKul = totalTop > 0 ? Math.round(totalOnay / totalTop * 100) : 0;
@@ -800,12 +800,12 @@ export function renderAccPending() {
   var el = document.getElementById('sa-pnl-bek');
   if (!el) return;
   var bCnt = document.getElementById('satb-bek-cnt');
-  if (bCnt) bCnt.textContent = APP.data.accBekleyen.length;
-  if (!APP.data.accBekleyen.length) {
+  if (bCnt) bCnt.textContent = APP.data.accPending.length;
+  if (!APP.data.accPending.length) {
     el.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--tx3);font-size:13px">Bekleyen harcama yok</div>';
     return;
   }
-  el.innerHTML = APP.data.accBekleyen.map(function(f) {
+  el.innerHTML = APP.data.accPending.map(function(f) {
     var isAvans = f.tip === 'avans';
     var avTag   = isAvans ? '<span style="margin-left:5px;font-size:10px;font-weight:700;background:rgba(232,150,46,.15);color:var(--ac2);border:1px solid rgba(232,150,46,.3);border-radius:5px;padding:1px 6px">💰 AVANS</span>' : '';
     var bgsz    = (!isAvans && f.belgesiz) ? '<span class="tag-am" style="margin-left:4px;font-size:10px">Belgesiz</span>' : '';
@@ -836,14 +836,14 @@ export function renderAccSuspicion() {
   var el = document.getElementById('sa-pnl-suphe');
   if (!el) return;
   var sCnt = document.getElementById('satb-suphe-cnt');
-  var aktif = APP.data.accSuphe.filter(function(s){ return s.durum !== 'red' && s.durum !== 'ok'; });
+  var aktif = APP.data.accSuspicion.filter(function(s){ return s.durum !== 'red' && s.durum !== 'ok'; });
   if (sCnt) sCnt.textContent = aktif.length;
-  if (!APP.data.accSuphe.length) {
+  if (!APP.data.accSuspicion.length) {
     el.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--tx3);font-size:13px">Şüpheli kayıt yok</div>';
     return;
   }
   var html = '<div style="font-size:12px;color:var(--tx3);margin-bottom:12px">Otomatik olarak tespit edilen anormal harcamalar. İnceleyip onaylayabilir veya reddedebilirsiniz.</div>';
-  html += APP.data.accSuphe.map(function(f) {
+  html += APP.data.accSuspicion.map(function(f) {
     var tagCls = f.durum === 'bek' ? 'sa-suphe-tag-bek' : (f.durum === 'inc' ? 'sa-suphe-tag-inc' : 'sa-suphe-tag-red');
     var tagTxt = f.durum === 'bek' ? 'Beklemede' : (f.durum === 'inc' ? 'İnceleniyor' : (f.durum === 'ok' ? 'Temiz' : 'Reddedildi'));
     return '<div class="sa-suphe-card">' +
@@ -866,8 +866,8 @@ export function renderAccSuspicion() {
 }
 
 export function accSuspicionHandle(id, action) {
-  for (var i = 0; i < APP.data.accSuphe.length; i++) {
-    if (APP.data.accSuphe[i].id === id) { APP.data.accSuphe[i].durum = action; break; }
+  for (var i = 0; i < APP.data.accSuspicion.length; i++) {
+    if (APP.data.accSuspicion[i].id === id) { APP.data.accSuspicion[i].durum = action; break; }
   }
   renderAccSuspicion();
   notif(action === 'ok' ? 'Kayıt temiz olarak işaretlendi' : 'Harcama reddedildi', action === 'ok' ? 'green' : 'red');
@@ -1227,7 +1227,7 @@ function _reportPersonDetail() {
   var totalRed = p.total - p.onay - p.bek;
   if (totalRed < 0) totalRed = 0;
 
-  var kisiAvanslar = APP.data.accAvansGecmis.filter(function(av) { return av.uye === p.name; });
+  var kisiAvanslar = APP.data.accAdvanceHistory.filter(function(av) { return av.uye === p.name; });
   var avansTop = 0;
   for (var ai = 0; ai < kisiAvanslar.length; ai++) avansTop += kisiAvanslar[ai].tutar;
 
@@ -1401,7 +1401,7 @@ function _reportPeriod() {
       bek += (depts[i].bekleyen || 0);
     }
     var brec = null;
-    for (var bi = 0; bi < APP.data.donemButce.length; bi++) if (APP.data.donemButce[bi].donem === did) { brec = APP.data.donemButce[bi]; break; }
+    for (var bi = 0; bi < APP.data.periodBudget.length; bi++) if (APP.data.periodBudget[bi].donem === did) { brec = APP.data.periodBudget[bi]; break; }
     if (did === 2 && brec && !r) r = brec.reddedildi || 0;
     return { total:t, onay:o, red:r, bek:bek, butce:brec ? brec.butce : 0, lbl:'Dönem #' + did };
   }

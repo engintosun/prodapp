@@ -1,4 +1,4 @@
-// /modules/saha/saha.js
+﻿// /modules/saha/saha.js
 // PRODAPP — Saha Ekranı (Adım 5 — kopyalama, index.html orijinaller yerinde)
 //
 // Kapsam: nav, arama, renderRecent, bütçe/limit barları, dinamik kategori panelleri,
@@ -65,7 +65,7 @@ export function searchList(q) {
   var lq   = (q || '').trim().toLowerCase();
   if (!lq) { drop.classList.remove('on'); drop.innerHTML = ''; return; }
 
-  var results = APP.data.fisler.filter(function(d) {
+  var results = APP.data.receipts.filter(function(d) {
     return d.satici.toLowerCase().indexOf(lq) > -1
         || d.kat.toLowerCase().indexOf(lq) > -1
         || d.tarih.indexOf(lq) > -1
@@ -107,14 +107,14 @@ export function searchList(q) {
 }
 
 export function searchGoTo(id) {
-  var f = APP.data.fisler.find(function(x) { return x.id === id; });
+  var f = APP.data.receipts.find(function(x) { return x.id === id; });
   if (!f) return;
   closeNavSrch();
   suNav('donem', document.getElementById('ni-donem'));
   renderPeriod(f.donem);
   setTimeout(function() {
     var _curName = APP.ui.curUser ? APP.ui.curUser.name : 'Mehmet Kaya';
-    var myFis = APP.data.fisler.filter(function(x) { return x.donem === f.donem && x.personel === _curName; });
+    var myFis = APP.data.receipts.filter(function(x) { return x.donem === f.donem && x.personel === _curName; });
     var rowIdx = -1;
     for (var i = 0; i < myFis.length; i++) {
       if (myFis[i].id === id) { rowIdx = i; break; }
@@ -160,12 +160,12 @@ export function renderFieldBudget() {
   var el = document.getElementById('su-butce-bar');
   if (!el) return;
   var b = null;
-  for (var bi = 0; bi < APP.data.donemButce.length; bi++) {
-    if (APP.data.donemButce[bi].donem === APP.ui.aktifDon) { b = APP.data.donemButce[bi]; break; }
+  for (var bi = 0; bi < APP.data.periodBudget.length; bi++) {
+    if (APP.data.periodBudget[bi].donem === APP.ui.aktifDon) { b = APP.data.periodBudget[bi]; break; }
   }
   if (!b || !b.butce) { el.innerHTML = ''; return; }
   var bekTop = 0;
-  for (var i = 0; i < APP.data.deptBekleyen.length; i++) bekTop += APP.data.deptBekleyen[i].tutar;
+  for (var i = 0; i < APP.data.deptPending.length; i++) bekTop += APP.data.deptPending[i].tutar;
   var committed = b.harcanan + bekTop;
   var kalan     = Math.max(0, b.butce - committed);
   var pct       = Math.min(100, Math.round(committed / b.butce * 100));
@@ -188,16 +188,16 @@ export function renderFieldBudget() {
 
 export function _categorySpent() {
   var h = {};
-  var on = (APP.data.deptGecmis[2] && APP.data.deptGecmis[2].onaylandi) ? APP.data.deptGecmis[2].onaylandi : [];
+  var on = (APP.data.deptHistory[2] && APP.data.deptHistory[2].onaylandi) ? APP.data.deptHistory[2].onaylandi : [];
   for (var i = 0; i < on.length; i++) h[on[i].kat] = (h[on[i].kat] || 0) + on[i].tutar;
   return h;
 }
 
 export function _categoryPending() {
   var b = {};
-  for (var i = 0; i < APP.data.deptBekleyen.length; i++) {
-    var k = APP.data.deptBekleyen[i].kat;
-    b[k] = (b[k] || 0) + APP.data.deptBekleyen[i].tutar;
+  for (var i = 0; i < APP.data.deptPending.length; i++) {
+    var k = APP.data.deptPending[i].kat;
+    b[k] = (b[k] || 0) + APP.data.deptPending[i].tutar;
   }
   return b;
 }
@@ -254,7 +254,7 @@ export function renderRecent() {
   renderFieldBudget();
   renderFieldCategoryLimits();
   var _curName = APP.ui.curUser ? APP.ui.curUser.name : 'Mehmet Kaya';
-  var mine = APP.data.fisler.filter(function(d) { return d.personel === _curName && d.donem === APP.ui.aktifDon; });
+  var mine = APP.data.receipts.filter(function(d) { return d.personel === _curName && d.donem === APP.ui.aktifDon; });
   var el = document.getElementById('recent-list');
   if (!el) return;
   el.innerHTML = mine.map(function(d) {
@@ -444,7 +444,7 @@ export function submitDocless() {
     }
     if (bKat === 'Kiralama') {
       var bFisIdK = Date.now();
-      APP.data.fisler.unshift({
+      APP.data.receipts.unshift({
         id: bFisIdK, tarih: bTarih, personel: bPersonel, satici: 'Belgesiz Kiralama',
         kat: 'Kiralama', tutar: bTut, durum: 'dept-bekleyen', donem: APP.ui.aktifDon,
         uyari: null, thumb: null, belgesiz: true, aciklama: bAciklama, fotos: fotos,
@@ -460,7 +460,7 @@ export function submitDocless() {
       renderRecent();
     } else {
       var bFisId = Date.now();
-      APP.data.fisler.unshift({
+      APP.data.receipts.unshift({
         id: bFisId, tarih: bTarih, personel: bPersonel, satici: 'Belgesiz Harcama',
         kat: bKat, tutar: bTut, durum: 'dept-bekleyen', donem: APP.ui.aktifDon,
         uyari: null, thumb: null, belgesiz: true, aciklama: bAciklama, fotos: fotos,
@@ -502,7 +502,7 @@ export function submitAvans() {
   var tarih = (_pad(d.getDate())) + '.' + (_pad(d.getMonth()+1));
   closeM('mavans');
 
-  APP.data.deptAvans.unshift({ id: Date.now(), uye: uye, ini: ini,
+  APP.data.deptAdvances.unshift({ id: Date.now(), uye: uye, ini: ini,
     tutar: tutar, tarih: tarih, gerekce: g, fromKey: fKey });
   renderDeptAdvance();
 
@@ -638,7 +638,7 @@ export function stopVoice() {
 /* ═══ LİGHTBOX ═══ */
 
 export function openLBFis(fid) {
-  var f = APP.data.fisler.find(function(x) { return x.id === fid; });
+  var f = APP.data.receipts.find(function(x) { return x.id === fid; });
   if (!f) return;
   var src = f.thumb || fisThumbnail(f);
   document.getElementById('lb-img').src = src;
@@ -691,7 +691,7 @@ export function closeM(id) { document.getElementById(id).classList.remove('on');
 var _kismiPending = null;
 
 export function openPartial(kaynak, id) {
-  var src = kaynak === 'dept' ? APP.data.deptBekleyen : APP.data.accBekleyen;
+  var src = kaynak === 'dept' ? APP.data.deptPending : APP.data.accPending;
   var item = null;
   for (var _ki = 0; _ki < src.length; _ki++) {
     if (src[_ki].id === id) { item = src[_ki]; break; }
@@ -753,12 +753,12 @@ export function openFisDetay(id, ctx) {
 
   var f = null;
   if (ctx === 'dept') {
-    for (var i = 0; i < APP.data.deptBekleyen.length; i++) {
-      if (APP.data.deptBekleyen[i].id === id) { f = APP.data.deptBekleyen[i]; break; }
+    for (var i = 0; i < APP.data.deptPending.length; i++) {
+      if (APP.data.deptPending[i].id === id) { f = APP.data.deptPending[i]; break; }
     }
   } else {
-    for (var j = 0; j < APP.data.accBekleyen.length; j++) {
-      if (APP.data.accBekleyen[j].id === id) { f = APP.data.accBekleyen[j]; break; }
+    for (var j = 0; j < APP.data.accPending.length; j++) {
+      if (APP.data.accPending[j].id === id) { f = APP.data.accPending[j]; break; }
     }
   }
   if (!f) return;
@@ -897,10 +897,10 @@ export function openFisDetay(id, ctx) {
 export function _fdetFotoBuyut(fotoIdx, fid) {
   var f = null;
   if (_fisDetCtx === 'dept') {
-    for (var i = 0; i < APP.data.deptBekleyen.length; i++) if (APP.data.deptBekleyen[i].id === fid) { f = APP.data.deptBekleyen[i]; break; }
+    for (var i = 0; i < APP.data.deptPending.length; i++) if (APP.data.deptPending[i].id === fid) { f = APP.data.deptPending[i]; break; }
   } else {
-    for (var j = 0; j < APP.data.accBekleyen.length; j++) if (APP.data.accBekleyen[j].id === fid) { f = APP.data.accBekleyen[j]; break; }
-    if (!f) for (var k = 0; k < APP.data.fisler.length; k++) if (APP.data.fisler[k].id === fid) { f = APP.data.fisler[k]; break; }
+    for (var j = 0; j < APP.data.accPending.length; j++) if (APP.data.accPending[j].id === fid) { f = APP.data.accPending[j]; break; }
+    if (!f) for (var k = 0; k < APP.data.receipts.length; k++) if (APP.data.receipts[k].id === fid) { f = APP.data.receipts[k]; break; }
   }
   if (f && f.fotos && f.fotos[fotoIdx]) openLB(f.fotos[fotoIdx].dataUrl);
 }

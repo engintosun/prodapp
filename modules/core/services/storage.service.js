@@ -1,4 +1,4 @@
-// /modules/core/services/storage.service.js
+﻿// /modules/core/services/storage.service.js
 // PRODAPP — Local Storage Servisi (Adım 3 — kopyalama, silme yok)
 // index.html'deki orijinal fonksiyonlar yerinde kalır.
 
@@ -17,19 +17,34 @@ export function loadAppData() {
     var raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return false;
     var parsed = JSON.parse(raw);
+    // --- B1 Migration: eski APP.data key'lerini yenilerine taşı ---
+    var _b1Map = {
+      fisler:'receipts', deptBekleyen:'deptPending', accBekleyen:'accPending',
+      deptGecmis:'deptHistory', accGecmis:'accHistory', accAvansGecmis:'accAdvanceHistory',
+      deptAvans:'deptAdvances', deptKira:'deptRentals', accKiralamalar:'accRentals',
+      accSuphe:'accSuspicion', donemButce:'periodBudget',
+      istisnaIzinleri:'exceptionPermits', sohbetler:'chats'
+    };
+    for (var _old in _b1Map) {
+      if (parsed[_old] !== undefined && parsed[_b1Map[_old]] === undefined) {
+        parsed[_b1Map[_old]] = parsed[_old];
+        delete parsed[_old];
+      }
+    }
+    // --- /B1 Migration ---
     Object.keys(parsed).forEach(function(k) {
       if (APP.data[k] !== undefined) APP.data[k] = parsed[k];
     });
     /* BUG-2 migration: donem field'ı eksik eski kayıtlara aktifDon ata */
-    for (var _mi = 0; _mi < APP.data.deptBekleyen.length; _mi++) {
-      if (APP.data.deptBekleyen[_mi].donem === undefined)
-        APP.data.deptBekleyen[_mi].donem = APP.ui.aktifDon;
+    for (var _mi = 0; _mi < APP.data.deptPending.length; _mi++) {
+      if (APP.data.deptPending[_mi].donem === undefined)
+        APP.data.deptPending[_mi].donem = APP.ui.aktifDon;
     }
-    for (var _mj = 0; _mj < APP.data.accBekleyen.length; _mj++) {
-      if (APP.data.accBekleyen[_mj].donem === undefined)
-        APP.data.accBekleyen[_mj].donem = APP.ui.aktifDon;
+    for (var _mj = 0; _mj < APP.data.accPending.length; _mj++) {
+      if (APP.data.accPending[_mj].donem === undefined)
+        APP.data.accPending[_mj].donem = APP.ui.aktifDon;
     }
-    if (!APP.data.istisnaIzinleri) APP.data.istisnaIzinleri = [];
+    if (!APP.data.exceptionPermits) APP.data.exceptionPermits = [];
     return true;
   } catch(e) { console.warn('Yükleme başarısız:', e); return false; }
 }

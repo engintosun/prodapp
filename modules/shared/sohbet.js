@@ -1,4 +1,4 @@
-/* ═══════════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════════
    SOHBET SİSTEMİ (Mesajlaşma 2.0)
    7B.1b — index.html'den taşındı
    ═══════════════════════════════════════════════ */
@@ -47,7 +47,7 @@ function _getLastMessage(sohbet) {
 }
 
 function _chatFilter(userKey) {
-  var list = APP.data.sohbetler || [];
+  var list = APP.data.chats || [];
   if (userKey === 'm') return list;
   /* dept: kendi dept sohbetleri + muhasebeyle olanlar */
   if (userKey === 'd') {
@@ -119,8 +119,8 @@ function _escHtml(s) {
 
 function openChat(id) {
   var sohbet = null;
-  for (var i = 0; i < APP.data.sohbetler.length; i++) {
-    if (APP.data.sohbetler[i].id === id) { sohbet = APP.data.sohbetler[i]; break; }
+  for (var i = 0; i < APP.data.chats.length; i++) {
+    if (APP.data.chats[i].id === id) { sohbet = APP.data.chats[i]; break; }
   }
   if (!sohbet) return;
   _activeChatId = id;
@@ -232,8 +232,8 @@ function chatSend() {
 
   var userKey = APP.ui.curUserKey || 's';
   var sohbet = null;
-  for (var i = 0; i < APP.data.sohbetler.length; i++) {
-    if (APP.data.sohbetler[i].id === _activeChatId) { sohbet = APP.data.sohbetler[i]; break; }
+  for (var i = 0; i < APP.data.chats.length; i++) {
+    if (APP.data.chats[i].id === _activeChatId) { sohbet = APP.data.chats[i]; break; }
   }
   if (!sohbet) return;
 
@@ -456,7 +456,7 @@ function createNewGroup() {
   var katilimcilar = [userKey];
   for (var i = 0; i < checkboxes.length; i++) katilimcilar.push(checkboxes[i].value);
   var yeni = { id: 'c' + Date.now(), tip: 'grup', grupAdi: grupAdi, katilimcilar: katilimcilar, mesajlar: [] };
-  APP.data.sohbetler.push(yeni);
+  APP.data.chats.push(yeni);
   saveAppData();
   closeM('myeni');
   openChat(yeni.id);
@@ -464,7 +464,7 @@ function createNewGroup() {
 
 function startNewChat(hedefKey) {
   var userKey = APP.ui.curUserKey || 'm';
-  var list    = APP.data.sohbetler || [];
+  var list    = APP.data.chats || [];
   for (var i = 0; i < list.length; i++) {
     var s = list[i];
     if (s.tip === 'bireysel' &&
@@ -477,7 +477,7 @@ function startNewChat(hedefKey) {
     }
   }
   var yeni = { id: 'c' + Date.now(), tip: 'bireysel', katilimcilar: [userKey, hedefKey], mesajlar: [] };
-  APP.data.sohbetler.push(yeni);
+  APP.data.chats.push(yeni);
   saveAppData();
   closeM('myeni');
   openChat(yeni.id);

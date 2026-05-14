@@ -1,4 +1,4 @@
-// /modules/saha/donem.js
+﻿// /modules/saha/donem.js
 // PRODAPP — Dönem Yönetimi (Adım 5 — kopyalama, index.html orijinaller yerinde)
 //
 // Kapsam: renderPeriod (saha+dept+acc ortak), newPeriod, closePeriod,
@@ -72,7 +72,7 @@ export function renderPeriod(did) {
   var ozelEl = document.getElementById('don-ozel-belgeler');
   if (ozelEl) {
     var _tevSay = 0, _stopSay = 0, _selfSay = 0;
-    var _donemFisler = APP.data.fisler.filter(function(x) { return x.donem === did; });
+    var _donemFisler = APP.data.receipts.filter(function(x) { return x.donem === did; });
     for (var _obi = 0; _obi < _donemFisler.length; _obi++) {
       var _ob = _donemFisler[_obi];
       if (_ob.ozelTip === 'tevkifat')     _tevSay++;
@@ -100,7 +100,7 @@ export function renderPeriod(did) {
 
   /* Fiş listesi */
   var _curName = APP.ui.curUser ? APP.ui.curUser.name : 'Mehmet Kaya';
-  var myFis = APP.data.fisler.filter(function(x) { return x.donem === did && x.personel === _curName; });
+  var myFis = APP.data.receipts.filter(function(x) { return x.donem === did && x.personel === _curName; });
   var hdLbl = document.getElementById('fis-hd-lbl');
   var hdCnt = document.getElementById('fis-hd-cnt');
   if (hdLbl) hdLbl.textContent = 'Fişler · ' + d.n;
@@ -165,7 +165,7 @@ export function renderPeriod(did) {
 
   if (_isAcc) {
     var _simdi = Date.now();
-    var _donIzinler = APP.data.istisnaIzinleri.filter(function(iz) { return iz.donemId === did; });
+    var _donIzinler = APP.data.exceptionPermits.filter(function(iz) { return iz.donemId === did; });
     if (_donIzinler.length) {
       var _durumLbl = { aktif:'Aktif', sureDoldu:'Süre Doldu', adetDoldu:'Adet Doldu', tutarDoldu:'Tutar Doldu', iptal:'İptal' };
       _istisnaBtn += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--bo)">' +
@@ -234,8 +234,8 @@ export function newPeriod() {
     if (APP.seed.donemler[_ai].durum === 'aktif') { aktif = APP.seed.donemler[_ai]; break; }
   }
   if (aktif) {
-    var deptBek = APP.data.deptBekleyen.filter(function(f) { return f.donem === aktif.id && f.kat !== 'Kiralama'; });
-    var accBek  = APP.data.accBekleyen.filter(function(f)  { return f.donem === aktif.id && f.tip !== 'avans' && f.kat !== 'Kiralama'; });
+    var deptBek = APP.data.deptPending.filter(function(f) { return f.donem === aktif.id && f.kat !== 'Kiralama'; });
+    var accBek  = APP.data.accPending.filter(function(f)  { return f.donem === aktif.id && f.tip !== 'avans' && f.kat !== 'Kiralama'; });
     var bekTop  = deptBek.length + accBek.length;
     if (bekTop > 0) {
       if (confirm(aktif.lbl + ' açık ve ' + bekTop + ' bekleyen var. Önce kapatılmalı. Devam edip kapatma modalını açayım mı?')) {
@@ -260,7 +260,7 @@ export function newPeriod() {
   for (var _si = 1; _si < APP.seed.sdDonemler.length; _si++) APP.seed.sdDonemler[_si].aktif = false;
   APP.seed.saDonemler.unshift({ id: yeniId, lbl: 'Dönem #' + yeniN, tarih: bugun, aktif: true });
   for (var _sai = 1; _sai < APP.seed.saDonemler.length; _sai++) APP.seed.saDonemler[_sai].aktif = false;
-  APP.data.donemButce.unshift({ donem: yeniId, lbl: 'Dönem #' + yeniN, butce: 40000, harcanan: 0, reddedildi: 0, _lastPct: 0 });
+  APP.data.periodBudget.unshift({ donem: yeniId, lbl: 'Dönem #' + yeniN, butce: 40000, harcanan: 0, reddedildi: 0, _lastPct: 0 });
   APP.ui.aktifDon = yeniId;
   saveAppData();
   renderPeriod(yeniId);
@@ -278,14 +278,14 @@ export function closePeriod(donemId, sebep) {
   if (!d) return;
   if (d.durum === 'kapali') { notif('Bu dönem zaten kapalı.', 'red'); return; }
 
-  var deptBek = APP.data.deptBekleyen.filter(function(f) {
+  var deptBek = APP.data.deptPending.filter(function(f) {
     if (String(f.donem) !== String(donemId) || f.kat === 'Kiralama') return false;
-    var _fis = APP.data.fisler.find(function(x) { return x.id === f.fisId; });
+    var _fis = APP.data.receipts.find(function(x) { return x.id === f.fisId; });
     return _fis && _fis.durum === 'dept-bekleyen';
   });
-  var accBek = APP.data.accBekleyen.filter(function(f) {
+  var accBek = APP.data.accPending.filter(function(f) {
     if (String(f.donem) !== String(donemId) || f.tip === 'avans' || f.kat === 'Kiralama') return false;
-    var _fis = APP.data.fisler.find(function(x) { return x.id === f.fisId; });
+    var _fis = APP.data.receipts.find(function(x) { return x.id === f.fisId; });
     return _fis && _fis.durum === 'acc-bekleyen';
   });
   var bekTop = deptBek.length + accBek.length;
@@ -293,13 +293,13 @@ export function closePeriod(donemId, sebep) {
     notif('Bu dönemde ' + bekTop + ' bekleyen fiş var. Önce işlem yapılmalı.', 'red'); return;
   }
 
-  var kiralamaBek = APP.data.deptBekleyen.filter(function(f) { return f.donem === donemId && f.kat === 'Kiralama'; }).length +
-                    APP.data.accBekleyen.filter(function(f)  { return f.donem === donemId && f.tip !== 'avans' && f.kat === 'Kiralama'; }).length;
+  var kiralamaBek = APP.data.deptPending.filter(function(f) { return f.donem === donemId && f.kat === 'Kiralama'; }).length +
+                    APP.data.accPending.filter(function(f)  { return f.donem === donemId && f.tip !== 'avans' && f.kat === 'Kiralama'; }).length;
   if (kiralamaBek > 0) {
     if (!confirm('Bu dönemde ' + kiralamaBek + ' açık kiralama var. Kiralamalar sonradan bağlanabilir. Yine de kapatılsın mı?')) return;
   }
 
-  var acikAvans = (APP.data.accAvansGecmis || []).filter(function(av) { return av.donem === donemId && av.durum !== 'ödendi'; }).length;
+  var acikAvans = (APP.data.accAdvanceHistory || []).filter(function(av) { return av.donem === donemId && av.durum !== 'ödendi'; }).length;
   if (acikAvans > 0) {
     _pushNotif('m', 'am', 'Açık Avans Uyarısı', d.lbl + ' kapatıldı — ' + acikAvans + ' avans takipte.', 'Az önce · Sistem');
   }
@@ -385,8 +385,8 @@ export function grantPeriodException() {
   }
   if (!uyeObj) { notif('Geçersiz kişi', 'red'); return; }
 
-  for (var _ii = 0; _ii < APP.data.istisnaIzinleri.length; _ii++) {
-    var _iz = APP.data.istisnaIzinleri[_ii];
+  for (var _ii = 0; _ii < APP.data.exceptionPermits.length; _ii++) {
+    var _iz = APP.data.exceptionPermits[_ii];
     if (_iz.donemId === donemId && _iz.kisiKey === kisiKey && _iz.durum === 'aktif') {
       notif(uyeObj.name + ' için bu dönemde zaten aktif izin var', 'red'); return;
     }
@@ -397,7 +397,7 @@ export function grantPeriodException() {
   var verilisTarihi = _p(now.getDate()) + '.' + _p(now.getMonth() + 1) + '.' + now.getFullYear() +
     ' ' + _p(now.getHours()) + ':' + _p(now.getMinutes());
 
-  APP.data.istisnaIzinleri.push({
+  APP.data.exceptionPermits.push({
     id: Date.now(), donemId: donemId, kisiKey: kisiKey, kisiAd: uyeObj.name,
     sebep: sebep, sure: sure, maxAdet: maxAdet, maxTutar: maxTutar,
     verenKisi: APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe',
@@ -422,8 +422,8 @@ export function grantPeriodException() {
 }
 
 export function _activeException(donemId, kisiAd) {
-  for (var _ai = 0; _ai < APP.data.istisnaIzinleri.length; _ai++) {
-    var _iz = APP.data.istisnaIzinleri[_ai];
+  for (var _ai = 0; _ai < APP.data.exceptionPermits.length; _ai++) {
+    var _iz = APP.data.exceptionPermits[_ai];
     if (_iz.donemId === donemId && _iz.kisiAd === kisiAd && _iz.durum === 'aktif') return _iz;
   }
   return null;
@@ -438,9 +438,9 @@ export function _isExceptionValid(izin) {
 }
 
 export function cancelException(izinId) {
-  for (var _ii = 0; _ii < APP.data.istisnaIzinleri.length; _ii++) {
-    if (APP.data.istisnaIzinleri[_ii].id === izinId) {
-      APP.data.istisnaIzinleri[_ii].durum = 'iptal'; break;
+  for (var _ii = 0; _ii < APP.data.exceptionPermits.length; _ii++) {
+    if (APP.data.exceptionPermits[_ii].id === izinId) {
+      APP.data.exceptionPermits[_ii].durum = 'iptal'; break;
     }
   }
   saveAppData();
@@ -476,14 +476,14 @@ export function _periodCloseModal(donemId) {
   _dnKapamaDonemId = donemId;
   var d = APP.seed.donemler.find(function(x) { return x.id === donemId; });
   var dLbl = d ? d.lbl : ('Dönem #' + donemId);
-  var deptBek = APP.data.deptBekleyen.filter(function(f) {
+  var deptBek = APP.data.deptPending.filter(function(f) {
     if (String(f.donem) !== String(donemId) || f.kat === 'Kiralama') return false;
-    var _fis = APP.data.fisler.find(function(x) { return x.id === f.fisId; });
+    var _fis = APP.data.receipts.find(function(x) { return x.id === f.fisId; });
     return _fis && _fis.durum === 'dept-bekleyen';
   });
-  var accBek = APP.data.accBekleyen.filter(function(f) {
+  var accBek = APP.data.accPending.filter(function(f) {
     if (String(f.donem) !== String(donemId) || f.tip === 'avans' || f.kat === 'Kiralama') return false;
-    var _fis = APP.data.fisler.find(function(x) { return x.id === f.fisId; });
+    var _fis = APP.data.receipts.find(function(x) { return x.id === f.fisId; });
     return _fis && _fis.durum === 'acc-bekleyen';
   });
   var bekTop = deptBek.length + accBek.length;
@@ -530,8 +530,8 @@ export function _checkPassiveApproval() {
   var pasifOnaylar = [];
   var uyarilar = [];
 
-  for (var i = APP.data.accBekleyen.length - 1; i >= 0; i--) {
-    var item = APP.data.accBekleyen[i];
+  for (var i = APP.data.accPending.length - 1; i >= 0; i--) {
+    var item = APP.data.accPending[i];
     if (item.tip === 'avans') continue;
     if (item.kat === 'Kiralama') continue;
     if (!item.olusturmaZamani) continue;
@@ -544,11 +544,11 @@ export function _checkPassiveApproval() {
     var po    = pasifOnaylar[pi];
     var pItem = po.item;
     if (pItem.fisId) {
-      for (var fi = 0; fi < APP.data.fisler.length; fi++) {
-        if (APP.data.fisler[fi].id === pItem.fisId) { APP.data.fisler[fi].durum = 'onaylandi'; break; }
+      for (var fi = 0; fi < APP.data.receipts.length; fi++) {
+        if (APP.data.receipts[fi].id === pItem.fisId) { APP.data.receipts[fi].durum = 'onaylandi'; break; }
       }
     }
-    APP.data.accGecmis.push({
+    APP.data.accHistory.push({
       id: Date.now() + Math.floor(Math.random() * 1000),
       fisId: pItem.fisId || null, islem: 'onay',
       onaylayan: 'SİSTEM (7-gün pasif onay)', tarih: Date.now(),
@@ -557,7 +557,7 @@ export function _checkPassiveApproval() {
       donem: pItem.donem !== undefined ? pItem.donem : APP.ui.aktifDon,
       pasifOnay: true
     });
-    APP.data.accBekleyen.splice(po.idx, 1);
+    APP.data.accPending.splice(po.idx, 1);
     _pushNotif('s', 'gr', 'Pasif Onay',
       (pItem.satici || '') + ' — 7 gün doldu, otomatik onaylandı.', 'Az önce · Sistem');
     _pushNotif('m', 'am', 'Pasif Onay Tetiklendi',

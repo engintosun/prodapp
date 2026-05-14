@@ -1,4 +1,4 @@
-// /modules/shared/export.js
+﻿// /modules/shared/export.js
 // PRODAPP — PDF / Excel / CSV Export Modülü (Adım 4 — kopyalama, index.html orijinaller yerinde)
 //
 // Bağımlılıklar (CDN / window globals):
@@ -49,7 +49,7 @@ export const exportManager = {
     if (tip === 'saha') {
       const user   = (APP.ui.curUser && APP.ui.curUser.name) || APP.ui.curUser;
       const don    = APP.ui.aktifDon || 1;
-      const fisler = (APP.data.fisler || []).filter(f =>
+      const fisler = (APP.data.receipts || []).filter(f =>
         f.personel === user && String(f.donem) === String(don)
       );
       rows.push(['Tarih','Kategori','Tutar (TL)','Durum','Açıklama']);
@@ -79,7 +79,7 @@ export const exportManager = {
       ]));
 
     } else if (tip === 'acc-donem') {
-      const fisler = APP.data.fisler || [];
+      const fisler = APP.data.receipts || [];
       rows.push(['Dönem','Personel','Kategori','Tutar (TL)','Durum']);
       fisler.forEach(f => rows.push([
         f.donem || '', f.personel || '', f.kategori || '',
@@ -88,7 +88,7 @@ export const exportManager = {
 
     } else if (tip === 'dept-gecmis') {
       const donId = APP.ui.sdGecmisPnlDonem || APP.ui.sdSeciliDonem || 1;
-      const gec   = (APP.data.deptGecmis && APP.data.deptGecmis[donId]) || { onaylandi: [], reddedildi: [] };
+      const gec   = (APP.data.deptHistory && APP.data.deptHistory[donId]) || { onaylandi: [], reddedildi: [] };
       const tumFisler = [
         ...gec.onaylandi.map(f => ({ ...f, durum: 'Onaylı' })),
         ...gec.reddedildi.map(f => ({ ...f, durum: 'Reddedildi' }))
@@ -101,8 +101,8 @@ export const exportManager = {
 
     } else if (tip === 'dept-avans') {
       const tumAvans = [
-        ...(APP.data.deptAvans || []),
-        ...(APP.data.accAvansGecmis || []).filter(a => a.dept === APP.ui.curDept || true)
+        ...(APP.data.deptAdvances || []),
+        ...(APP.data.accAdvanceHistory || []).filter(a => a.dept === APP.ui.curDept || true)
       ];
       rows.push(['Tarih','Üye','Tutar (TL)','Durum','Gerekçe']);
       tumAvans.forEach(a => rows.push([
@@ -112,7 +112,7 @@ export const exportManager = {
 
     } else {
       rows.push(['Tarih','Personel','Kategori','Tutar (TL)','Durum']);
-      (APP.data.fisler || []).forEach(f => rows.push([
+      (APP.data.receipts || []).forEach(f => rows.push([
         f.tarih || '', f.personel || '', f.kategori || '',
         Number(f.tutar || 0).toFixed(2), f.durum || ''
       ]));
@@ -151,7 +151,7 @@ export const exportManager = {
       baslik = 'Saha Harcamaları';
       const user   = (APP.ui.curUser && APP.ui.curUser.name) || APP.ui.curUser;
       const don    = APP.ui.aktifDon || 1;
-      const fisler = (APP.data.fisler || []).filter(f =>
+      const fisler = (APP.data.receipts || []).filter(f =>
         f.personel === user && String(f.donem) === String(don)
       );
       rows.push(['Tarih','Kategori','Tutar (TL)','Durum','Açıklama']);
@@ -181,7 +181,7 @@ export const exportManager = {
     } else if (tip === 'acc-donem') {
       baslik = 'Dönem Raporu';
       rows.push(['Dönem','Personel','Kategori','Tutar (TL)','Durum']);
-      (APP.data.fisler || []).forEach(f => rows.push([
+      (APP.data.receipts || []).forEach(f => rows.push([
         f.donem || '', f.personel || '', f.kategori || '',
         Number(f.tutar || 0), f.durum || ''
       ]));
@@ -189,7 +189,7 @@ export const exportManager = {
     } else if (tip === 'dept-gecmis') {
       baslik = 'Dept Gecmis';
       const donId = APP.ui.sdGecmisPnlDonem || APP.ui.sdSeciliDonem || 1;
-      const gec   = (APP.data.deptGecmis && APP.data.deptGecmis[donId]) || { onaylandi: [], reddedildi: [] };
+      const gec   = (APP.data.deptHistory && APP.data.deptHistory[donId]) || { onaylandi: [], reddedildi: [] };
       const tumFisler = [
         ...gec.onaylandi.map(f => ({ ...f, durum: 'Onaylı' })),
         ...gec.reddedildi.map(f => ({ ...f, durum: 'Reddedildi' }))
@@ -203,8 +203,8 @@ export const exportManager = {
     } else if (tip === 'dept-avans') {
       baslik = 'Dept Avans';
       const tumAvans = [
-        ...(APP.data.deptAvans || []),
-        ...(APP.data.accAvansGecmis || []).filter(a => a.dept === APP.ui.curDept || true)
+        ...(APP.data.deptAdvances || []),
+        ...(APP.data.accAdvanceHistory || []).filter(a => a.dept === APP.ui.curDept || true)
       ];
       rows.push(['Tarih','Üye','Tutar (TL)','Durum','Gerekçe']);
       tumAvans.forEach(a => rows.push([
@@ -215,7 +215,7 @@ export const exportManager = {
     } else {
       baslik = 'Tüm Harcamalar';
       rows.push(['Tarih','Personel','Kategori','Tutar (TL)','Durum']);
-      (APP.data.fisler || []).forEach(f => rows.push([
+      (APP.data.receipts || []).forEach(f => rows.push([
         f.tarih || '', f.personel || '', f.kategori || '',
         Number(f.tutar || 0), f.durum || ''
       ]));
@@ -293,7 +293,7 @@ export const exportManager = {
     if (tip === 'saha') {
       const user   = (APP.ui.curUser && APP.ui.curUser.name) || APP.ui.curUser;
       const don    = APP.ui.aktifDon || 1;
-      const fisler = (APP.data.fisler || []).filter(f =>
+      const fisler = (APP.data.receipts || []).filter(f =>
         f.personel === user && String(f.donem) === String(don)
       );
       headers  = [this._tr('Tarih'), this._tr('Kategori'), this._tr('Tutar (TL)'), this._tr('Durum')];
@@ -321,14 +321,14 @@ export const exportManager = {
 
     } else if (tip === 'acc-donem') {
       headers  = [this._tr('Dönem'), this._tr('Personel'), this._tr('Kategori'), this._tr('Tutar (TL)'), this._tr('Durum')];
-      dataRows = (APP.data.fisler || []).map(f => [
+      dataRows = (APP.data.receipts || []).map(f => [
         this._tr(String(f.donem || '')), this._tr(f.personel || ''), this._tr(f.kategori || ''),
         Number(f.tutar || 0).toFixed(2), this._tr(f.durum || '')
       ]);
 
     } else if (tip === 'dept-gecmis') {
       const donId = APP.ui.sdGecmisPnlDonem || APP.ui.sdSeciliDonem || 1;
-      const gec   = (APP.data.deptGecmis && APP.data.deptGecmis[donId]) || { onaylandi: [], reddedildi: [] };
+      const gec   = (APP.data.deptHistory && APP.data.deptHistory[donId]) || { onaylandi: [], reddedildi: [] };
       const tumFisler = [
         ...gec.onaylandi.map(f => ({ ...f, durum: 'Onayli' })),
         ...gec.reddedildi.map(f => ({ ...f, durum: 'Reddedildi' }))
@@ -342,8 +342,8 @@ export const exportManager = {
 
     } else if (tip === 'dept-avans') {
       const tumAvans = [
-        ...(APP.data.deptAvans || []),
-        ...(APP.data.accAvansGecmis || []).filter(a => a.dept === APP.ui.curDept || true)
+        ...(APP.data.deptAdvances || []),
+        ...(APP.data.accAdvanceHistory || []).filter(a => a.dept === APP.ui.curDept || true)
       ];
       headers  = [this._tr('Tarih'), this._tr('Üye'), this._tr('Tutar (TL)'), this._tr('Durum'), this._tr('Gerekçe')];
       dataRows = tumAvans.map(a => [

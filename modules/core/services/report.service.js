@@ -1,4 +1,4 @@
-// /modules/core/services/report.service.js
+﻿// /modules/core/services/report.service.js
 // PRODAPP — Rapor ve Cache Hesaplama Servisi (Adım 3 — kopyalama, silme yok)
 
 import { APP } from '../state.js';
@@ -12,8 +12,8 @@ export function _recomputeAccDepts() {
     var _ns = {};
     for (var _mmi = 0; _mmi < _mems.length; _mmi++) _ns[_mems[_mmi].name] = true;
     var _tot = 0, _onay = 0, _bek = 0;
-    for (var _ffi = 0; _ffi < APP.data.fisler.length; _ffi++) {
-      var _ff = APP.data.fisler[_ffi];
+    for (var _ffi = 0; _ffi < APP.data.receipts.length; _ffi++) {
+      var _ff = APP.data.receipts[_ffi];
       if (!_ns[_ff.personel]) continue;
       if (_ff.durum === 'bolundu') continue;
       var _tt = _ff.tutar || 0;
@@ -41,8 +41,8 @@ export function _computeDeptReceiptReport(deptId) {
     }
   }
   var result = [];
-  for (var _fi = 0; _fi < APP.data.fisler.length; _fi++) {
-    var _f = APP.data.fisler[_fi];
+  for (var _fi = 0; _fi < APP.data.receipts.length; _fi++) {
+    var _f = APP.data.receipts[_fi];
     if (!nameToIni.hasOwnProperty(_f.personel)) continue;
     if (_f.durum === 'bolundu') continue;
     var _dur;
@@ -97,8 +97,8 @@ export function _computePersonnelReport() {
     seedMap[_sp.name] = { ini: _sp.ini, dept: _sp.dept, deptId: _sp.deptId, rol: _sp.rol };
   }
   var nameSet = {};
-  for (var _fxi = 0; _fxi < APP.data.fisler.length; _fxi++) {
-    var _fpn = APP.data.fisler[_fxi].personel;
+  for (var _fxi = 0; _fxi < APP.data.receipts.length; _fxi++) {
+    var _fpn = APP.data.receipts[_fxi].personel;
     if (_fpn) nameSet[_fpn] = true;
   }
   for (var _exi = 0; _exi < APP.seed.deptEkip.length; _exi++) {
@@ -115,8 +115,8 @@ export function _computePersonnelReport() {
     var _onay = 0, _bek = 0, _red = 0;
     var _donMap = {};
     var _katMap = {};
-    for (var _fi = 0; _fi < APP.data.fisler.length; _fi++) {
-      var _f = APP.data.fisler[_fi];
+    for (var _fi = 0; _fi < APP.data.receipts.length; _fi++) {
+      var _f = APP.data.receipts[_fi];
       if (_f.personel !== _name) continue;
       if (_f.durum === 'bolundu') continue;
       var _tut = _f.tutar || 0;
@@ -143,8 +143,8 @@ export function _computePersonnelReport() {
     }
     _katlar.sort(function(a, b) { return b.tutar - a.tutar; });
     var _avans = 0;
-    for (var _avi = 0; _avi < APP.data.accAvansGecmis.length; _avi++) {
-      var _av = APP.data.accAvansGecmis[_avi];
+    for (var _avi = 0; _avi < APP.data.accAdvanceHistory.length; _avi++) {
+      var _av = APP.data.accAdvanceHistory[_avi];
       if (_av.uye === _name && _av.durum === 'ödendi') _avans += _av.tutar;
     }
     result.push({

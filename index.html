@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
@@ -3479,7 +3479,7 @@ const exportManager = {
     if (tip === 'saha') {
       const user = (APP.ui.curUser && APP.ui.curUser.name) || APP.ui.curUser;
       const don  = APP.ui.aktifDon || 1;
-      const fisler = (APP.data.fisler || []).filter(f =>
+      const fisler = (APP.data.receipts || []).filter(f =>
         f.personel === user && String(f.donem) === String(don)
       );
       rows.push(['Tarih','Kategori','Tutar (TL)','Durum','Açıklama']);
@@ -3512,7 +3512,7 @@ const exportManager = {
       ]));
 
     } else if (tip === 'acc-donem') {
-      const fisler = APP.data.fisler || [];
+      const fisler = APP.data.receipts || [];
       rows.push(['Dönem','Personel','Kategori','Tutar (TL)','Durum']);
       fisler.forEach(f => rows.push([
         f.donem || '',
@@ -3524,7 +3524,7 @@ const exportManager = {
 
     } else if (tip === 'dept-gecmis') {
       const donId = APP.ui.sdGecmisPnlDonem || APP.ui.sdSeciliDonem || 1;
-      const gec   = (APP.data.deptGecmis && APP.data.deptGecmis[donId]) || { onaylandi: [], reddedildi: [] };
+      const gec   = (APP.data.deptHistory && APP.data.deptHistory[donId]) || { onaylandi: [], reddedildi: [] };
       const tumFisler = [
         ...gec.onaylandi.map(f => ({ ...f, durum: 'Onaylı' })),
         ...gec.reddedildi.map(f => ({ ...f, durum: 'Reddedildi' }))
@@ -3537,8 +3537,8 @@ const exportManager = {
 
     } else if (tip === 'dept-avans') {
       const tumAvans = [
-        ...(APP.data.deptAvans || []),
-        ...(APP.data.accAvansGecmis || []).filter(a => a.dept === APP.ui.curDept || true)
+        ...(APP.data.deptAdvances || []),
+        ...(APP.data.accAdvanceHistory || []).filter(a => a.dept === APP.ui.curDept || true)
       ];
       rows.push(['Tarih','Üye','Tutar (TL)','Durum','Gerekçe']);
       tumAvans.forEach(a => rows.push([
@@ -3549,7 +3549,7 @@ const exportManager = {
     } else {
       // fallback — tüm fişler
       rows.push(['Tarih','Personel','Kategori','Tutar (TL)','Durum']);
-      (APP.data.fisler || []).forEach(f => rows.push([
+      (APP.data.receipts || []).forEach(f => rows.push([
         f.tarih || '',
         f.personel || '',
         f.kategori || '',
@@ -3595,7 +3595,7 @@ const exportManager = {
       baslik = 'Saha Harcamaları';
       const user   = (APP.ui.curUser && APP.ui.curUser.name) || APP.ui.curUser;
       const don    = APP.ui.aktifDon || 1;
-      const fisler = (APP.data.fisler || []).filter(f =>
+      const fisler = (APP.data.receipts || []).filter(f =>
         f.personel === user && String(f.donem) === String(don)
       );
       rows.push(['Tarih','Kategori','Tutar (TL)','Durum','Açıklama']);
@@ -3625,7 +3625,7 @@ const exportManager = {
     } else if (tip === 'acc-donem') {
       baslik = 'Dönem Raporu';
       rows.push(['Dönem','Personel','Kategori','Tutar (TL)','Durum']);
-      (APP.data.fisler || []).forEach(f => rows.push([
+      (APP.data.receipts || []).forEach(f => rows.push([
         f.donem || '', f.personel || '', f.kategori || '',
         Number(f.tutar || 0), f.durum || ''
       ]));
@@ -3633,7 +3633,7 @@ const exportManager = {
     } else if (tip === 'dept-gecmis') {
       baslik = 'Dept Gecmis';
       const donId = APP.ui.sdGecmisPnlDonem || APP.ui.sdSeciliDonem || 1;
-      const gec   = (APP.data.deptGecmis && APP.data.deptGecmis[donId]) || { onaylandi: [], reddedildi: [] };
+      const gec   = (APP.data.deptHistory && APP.data.deptHistory[donId]) || { onaylandi: [], reddedildi: [] };
       const tumFisler = [
         ...gec.onaylandi.map(f => ({ ...f, durum: 'Onaylı' })),
         ...gec.reddedildi.map(f => ({ ...f, durum: 'Reddedildi' }))
@@ -3647,8 +3647,8 @@ const exportManager = {
     } else if (tip === 'dept-avans') {
       baslik = 'Dept Avans';
       const tumAvans = [
-        ...(APP.data.deptAvans || []),
-        ...(APP.data.accAvansGecmis || []).filter(a => a.dept === APP.ui.curDept || true)
+        ...(APP.data.deptAdvances || []),
+        ...(APP.data.accAdvanceHistory || []).filter(a => a.dept === APP.ui.curDept || true)
       ];
       rows.push(['Tarih','Üye','Tutar (TL)','Durum','Gerekçe']);
       tumAvans.forEach(a => rows.push([
@@ -3659,7 +3659,7 @@ const exportManager = {
     } else {
       baslik = 'Tüm Harcamalar';
       rows.push(['Tarih','Personel','Kategori','Tutar (TL)','Durum']);
-      (APP.data.fisler || []).forEach(f => rows.push([
+      (APP.data.receipts || []).forEach(f => rows.push([
         f.tarih || '', f.personel || '', f.kategori || '',
         Number(f.tutar || 0), f.durum || ''
       ]));
@@ -3744,7 +3744,7 @@ const exportManager = {
     if (tip === 'saha') {
       const user   = (APP.ui.curUser && APP.ui.curUser.name) || APP.ui.curUser;
       const don    = APP.ui.aktifDon || 1;
-      const fisler = (APP.data.fisler || []).filter(f =>
+      const fisler = (APP.data.receipts || []).filter(f =>
         f.personel === user && String(f.donem) === String(don)
       );
       headers  = [this._tr('Tarih'),this._tr('Kategori'),this._tr('Tutar (TL)'),this._tr('Durum')];
@@ -3772,14 +3772,14 @@ const exportManager = {
 
     } else if (tip === 'acc-donem') {
       headers  = [this._tr('Dönem'),this._tr('Personel'),this._tr('Kategori'),this._tr('Tutar (TL)'),this._tr('Durum')];
-      dataRows = (APP.data.fisler || []).map(f => [
+      dataRows = (APP.data.receipts || []).map(f => [
         this._tr(String(f.donem || '')), this._tr(f.personel || ''), this._tr(f.kategori || ''),
         Number(f.tutar || 0).toFixed(2), this._tr(f.durum || '')
       ]);
 
     } else if (tip === 'dept-gecmis') {
       const donId = APP.ui.sdGecmisPnlDonem || APP.ui.sdSeciliDonem || 1;
-      const gec   = (APP.data.deptGecmis && APP.data.deptGecmis[donId]) || { onaylandi: [], reddedildi: [] };
+      const gec   = (APP.data.deptHistory && APP.data.deptHistory[donId]) || { onaylandi: [], reddedildi: [] };
       const tumFisler = [
         ...gec.onaylandi.map(f => ({ ...f, durum: 'Onayli' })),
         ...gec.reddedildi.map(f => ({ ...f, durum: 'Reddedildi' }))
@@ -3793,8 +3793,8 @@ const exportManager = {
 
     } else if (tip === 'dept-avans') {
       const tumAvans = [
-        ...(APP.data.deptAvans || []),
-        ...(APP.data.accAvansGecmis || []).filter(a => a.dept === APP.ui.curDept || true)
+        ...(APP.data.deptAdvances || []),
+        ...(APP.data.accAdvanceHistory || []).filter(a => a.dept === APP.ui.curDept || true)
       ];
       headers  = [this._tr('Tarih'), this._tr('Üye'), this._tr('Tutar (TL)'), this._tr('Durum'), this._tr('Gerekçe')];
       dataRows = tumAvans.map(a => [
@@ -3907,7 +3907,7 @@ APP.seed.donemler = [
   { id:0, n:'D0', lbl:'Dönem #0', tarih:'01.02–28.02', durum:'kapali', avans:9000,  harcama:8200,  islem:6,
     baslangic:'01.02.2026', bitis:'28.02.2026', kapanmaTarihi:'01.03.2026', kapayanKisi:'Ayşe Tekin',   gecIslemSayisi:0 }
 ];
-APP.data.fisler = [
+APP.data.receipts = [
   { id:1, tarih:'03.04.2026', personel:'Mehmet Kaya', satici:'Petrol Ofisi',   kat:'Yakit',   tutar:1000, durum:'dept-bekleyen',   donem:2, uyari:null,                    thumb:null },
   { id:2, tarih:'24.03.2026', personel:'Mehmet Kaya', satici:'Tavuk Dünyası',  kat:'Yiyecek', tutar:780,  durum:'dept-bekleyen',   donem:2, uyari:'Ekip 15, 10 porsiyon', thumb:null },
   { id:7, tarih:'03.04.2026', personel:'Mehmet Kaya', satici:'Petrol Ofisi',   kat:'Yakit',   tutar:1000, durum:'reddedildi', donem:2, uyari:'Mükerrer fiş',          thumb:null, duplikat:true },
@@ -4035,19 +4035,19 @@ APP.seed.deptEkip = [
   { id:'bc', ini:'BÇ', name:'Burhan Çelik',   rol:'Işık Ekibi',            tutar:8150  },
   { id:'ak', ini:'AK', name:'Aylin Korkmaz',  rol:'Ses Kaydı',             tutar:2670  }
 ];
-APP.data.deptBekleyen = [
+APP.data.deptPending = [
   { id:101, fisId:1,  uye:'Mehmet Kaya', ini:'MK', satici:'Petrol Ofisi',             kat:'Yakit',    tutar:1000, tarih:'03.04', uyari:null,                    belgesiz:false, donem:2, olusturmaZamani: Date.now() - Math.floor(6.5 * 24 * 60 * 60 * 1000) },
   { id:102, fisId:2,  uye:'Mehmet Kaya', ini:'MK', satici:'Tavuk Dünyası',            kat:'Yiyecek',  tutar:780,  tarih:'24.03', uyari:'Ekip 15, 10 porsiyon', belgesiz:false, donem:2, olusturmaZamani: Date.now() - Math.floor(6.5 * 24 * 60 * 60 * 1000) },
   { id:103, fisId:8,  uye:'Mehmet Kaya', ini:'MK', satici:'Kostüm Deposu',            kat:'Sanat',    tutar:320,  tarih:'10.04', uyari:null,                    belgesiz:true, aciklama:'Ekstra kostüm aksesuarı — nakit ödeme, fiş verilmedi', donem:2, olusturmaZamani: Date.now() - Math.floor(2 * 24 * 60 * 60 * 1000) },
   { id:104, fisId:21, uye:'Mehmet Kaya', ini:'MK', satici:'Sigma Kamera Ekipmanları', kat:'Kiralama', tutar:4800, tarih:'10.04', uyari:null,                    belgesiz:false, donem:2, olusturmaZamani: Date.now() - Math.floor(1 * 24 * 60 * 60 * 1000) }
 ];
-APP.data.deptAvans = [
+APP.data.deptAdvances = [
   { id:201, uye:'Okan Demir',   ini:'OD', tutar:5000, tarih:'11.04', gerekce:'Dış çekim ekipman kira ön ödemesi — 2 günlük set kurulumu', fromKey:'s' },
   { id:202, uye:'Burhan Çelik', ini:'BÇ', tutar:2500, tarih:'10.04', gerekce:'Set kurulum malzemesi — çarşı çekimi lojistik harcaması',   fromKey:'s' }
 ];
 
 /* ── Dept Kiralama Listesi (bugün: 2026-04-15) ── */
-APP.data.deptKira = [
+APP.data.deptRentals = [
   { id:1, uye:'Mehmet Kaya',   ini:'MK', kat:'Araç Kiralama',    satici:'Avis Türkiye',   tutar:4800, gunluk:960,  bas:'2026-04-08', bit:'2026-04-13', iade:true  },
   { id:2, uye:'Okan Demir',    ini:'OD', kat:'Ekipman Kiralama', satici:'Kamera Merkezi', tutar:6500, gunluk:1300, bas:'2026-04-10', bit:'2026-04-17', iade:false },
   { id:3, uye:'Mehmet Kaya',   ini:'MK', kat:'Araç Kiralama',    satici:'Hertz TR',       tutar:3200, gunluk:800,  bas:'2026-04-14', bit:'2026-04-18', iade:false },
@@ -4056,7 +4056,7 @@ APP.data.deptKira = [
 ];
 
 /* ── Muhasebe — Tüm Aktif Kiralamalar ── */
-APP.data.accKiralamalar = [
+APP.data.accRentals = [
   { id:1,  dept:'Yapım',  deptId:'yapim',  uye:'Mehmet Kaya',   ini:'MK', kat:'Araç Kiralama',    satici:'Avis Türkiye',    tutar:4800, gunluk:960,  bas:'2026-04-08', bit:'2026-04-13', iade:true  },
   { id:2,  dept:'Kamera', deptId:'kamera', uye:'Okan Demir',    ini:'OD', kat:'Ekipman Kiralama', satici:'Kamera Merkezi',  tutar:6500, gunluk:1300, bas:'2026-04-10', bit:'2026-04-17', iade:false },
   { id:3,  dept:'Yapım',  deptId:'yapim',  uye:'Mehmet Kaya',   ini:'MK', kat:'Araç Kiralama',    satici:'Hertz TR',        tutar:3200, gunluk:800,  bas:'2026-04-14', bit:'2026-04-18', iade:false },
@@ -4068,7 +4068,7 @@ APP.data.accKiralamalar = [
 ];
 
 /* ── Muhasebe — Avans Geçmişi (dönem bazlı) ── */
-APP.data.accAvansGecmis = [
+APP.data.accAdvanceHistory = [
   { id:303, dept:'Yapım',  uye:'Mehmet Kaya',   ini:'MK', tutar:8000, tarih:'01.04', durum:'ödendi',      gerekce:'Set kurulum harcamaları',             donem:2 },
   { id:305, dept:'Kostüm', uye:'Arda Şen',      ini:'AS', tutar:2000, tarih:'02.04', durum:'ödendi',      gerekce:'Makyaj malzeme seti',                 donem:2 },
   { id:306, dept:'Kamera', uye:'Okan Demir',    ini:'OD', tutar:4000, tarih:'08.04', durum:'ödendi',      gerekce:'Kamera ekipman depozitosu',           donem:2 },
@@ -4083,10 +4083,10 @@ APP.data.accAvansGecmis = [
 ];
 
 /* ── Muhasebe — Onay/Red Geçmişi (arşiv, sadece append) ── */
-APP.data.accGecmis = [];
+APP.data.accHistory = [];
 
 /* Dönem bütçe tanımları — her dönem için ayrılmış bütçe ve onaylanan harcama */
-APP.data.donemButce = [
+APP.data.periodBudget = [
   { donem:2, lbl:'Dönem #2', butce:40000, harcanan:26500, reddedildi:3890, _lastPct:0 },
   { donem:1, lbl:'Dönem #1', butce:60000, harcanan:58400, reddedildi:5660, _lastPct:0 },
   { donem:0, lbl:'Dönem #0', butce:35000, harcanan:33780, reddedildi:1800, _lastPct:0 }
@@ -4162,7 +4162,7 @@ APP.seed.sdDonemler = [
 ];
 
 /* Dept onaylı / reddedilmiş harcama geçmişi — döneme göre */
-APP.data.deptGecmis = {
+APP.data.deptHistory = {
   2: {
     onaylandi: [
       { id:201, uye:'Mehmet Kaya',   ini:'MK', satici:'Araç Kiralık',      kat:'Ulasim',   tutar:4800, tarih:'08.04' },
@@ -4657,7 +4657,7 @@ function openDeptProfile() {
   /* İstatistik kutuları */
   var toplamTutar = 0;
   for (var i = 0; i < APP.seed.deptEkip.length; i++) { toplamTutar += APP.seed.deptEkip[i].tutar || 0; }
-  var bekSay = APP.data.deptBekleyen ? APP.data.deptBekleyen.length : 0;
+  var bekSay = APP.data.deptPending ? APP.data.deptPending.length : 0;
   document.getElementById('p-dept-stats').innerHTML =
     '<div class="profil-stat-c"><div class="profil-stat-v">' + APP.seed.deptEkip.length + '</div><div class="profil-stat-l">Ekip Üyesi</div></div>' +
     '<div class="profil-stat-c"><div class="profil-stat-v">' + bekSay + '</div><div class="profil-stat-l">Bekleyen Fiş</div></div>' +
@@ -4857,7 +4857,7 @@ function checkKiralamaBit(p) {
 
 /* Avans zinciri ortak yardımcı — tarih sırası (en yeni üstte) */
 
-/* APP.data.accAvansGecmis'e yeni kayıt ekle ve listeler güncelle */
+/* APP.data.accAdvanceHistory'e yeni kayıt ekle ve listeler güncelle */
 
 /* Red nedeni modalı — onayla */
 
@@ -4878,7 +4878,7 @@ APP.seed.katLimit = [
   { kat:'Diger',     lbl:'Diğer',     limit:2000,  clr:'var(--tx3)' }
 ];
 
-/* Onaylanmış harcamaları kategori bazlı topla (APP.data.deptGecmis[2]) */
+/* Onaylanmış harcamaları kategori bazlı topla (APP.data.deptHistory[2]) */
 
 /* Bekleyen harcamaları kategori bazlı topla */
 
@@ -4936,7 +4936,7 @@ function openMemberProfile(uyeId) {
   if (rolEl)  rolEl.textContent  = u.rol;
 
   /* İstatistikler */
-  var bekList = APP.data.deptBekleyen.filter(function(f){ return f.uye === u.name; });
+  var bekList = APP.data.deptPending.filter(function(f){ return f.uye === u.name; });
   var bekTop  = 0;
   for (var b = 0; b < bekList.length; b++) bekTop += bekList[b].tutar;
   var statsEl = document.getElementById('uye-stats');
@@ -5138,7 +5138,7 @@ APP.data.accDepts = [
   { id:'kostum', name:'Kostüm & Makyaj',renk:'#EC4899', uye:4,  total:19600, onay:16200, bekleyen:3400,  suphe:0,    butce:22000 }
 ];
 
-APP.data.accBekleyen = [
+APP.data.accPending = [
   { id:301, tip:'avans', dept:'Yapım',  uye:'Okan Demir',   ini:'OD', tutar:5000, tarih:'11.04', gerekce:'Dış çekim ekipman kira ön ödemesi', fromKey:'d', donem:2 },
   { id:302, tip:'avans', dept:'Yapım',  uye:'Burhan Çelik', ini:'BÇ', tutar:2500, tarih:'10.04', gerekce:'Set kurulum lojistik harcaması',    fromKey:'d', donem:2 },
   { id:304, tip:'avans', dept:'Kostüm', uye:'Burhan Çelik', ini:'BÇ', tutar:2500, tarih:'10.04', gerekce:'Kostüm alım & kiralama',            fromKey:'d', donem:2 },
@@ -5148,7 +5148,7 @@ APP.data.accBekleyen = [
   { id:404, fisId:48, dept:'Ses',    uye:'Mert Öztürk',  ini:'MÖ', satici:'Müzik Aletleri A.Ş.',    kat:'Ekipman',  tutar:2900, tarih:'13.04', belgesiz:false, uyari:'', fromKey:'d', donem:2, olusturmaZamani: Date.now() - Math.floor(2 * 24 * 60 * 60 * 1000) }
 ];
 
-APP.data.accSuphe = [
+APP.data.accSuspicion = [
   { id:1, dept:'Yapım',  uye:'Mehmet Kaya',  ini:'MK', satici:'Petrol Ofisi',  kat:'Ulaşım',    tutar:4200, tarih:'12.04', sebep:'Km başına 38 TL — şehiriçi limitin 2.5 katı', durum:'bek' },
   { id:2, dept:'Sanat',  uye:'Selin Yıldız', ini:'SY', satici:'—',             kat:'Malzeme',   tutar:2100, tarih:'10.04', sebep:'Belgesiz harcama — kategori açıklaması yok',  durum:'inc' },
   { id:3, dept:'Yapım',  uye:'Aylin Korkmaz',ini:'AK', satici:'—',             kat:'Ulaşım',    tutar:1200, tarih:'08.04', sebep:'Belgesiz ulaşım harcaması',                   durum:'bek' },
@@ -5156,7 +5156,7 @@ APP.data.accSuphe = [
 ];
 
 /* ── Demo sohbetler ── */
-APP.data.sohbetler = [
+APP.data.chats = [
   {
     id: 'c1', tip: 'bireysel', katilimcilar: ['s', 'd'],
     mesajlar: [
@@ -5189,7 +5189,7 @@ APP.data.avatars         = { s: null, d: null, m: null };
 APP.data.companyInfo     = { name: '', logo: null };
 APP.data.projLogos       = { ig: null, mr: null, sr: null };
 APP.data.projNames       = {};
-APP.data.istisnaIzinleri = [];
+APP.data.exceptionPermits = [];
 
 /* Tüm demo verileri yüklendi — localStorage'daki kayıtlı veriyi uygula */
 loadAppData();
@@ -5198,7 +5198,7 @@ if (!APP.data.avatars)         APP.data.avatars         = { s: null, d: null, m:
 if (!APP.data.companyInfo)     APP.data.companyInfo     = { name: '', logo: null };
 if (!APP.data.projLogos)       APP.data.projLogos       = { ig: null, mr: null, sr: null };
 if (!APP.data.projNames)       APP.data.projNames       = {};
-if (!APP.data.istisnaIzinleri) APP.data.istisnaIzinleri = [];
+if (!APP.data.exceptionPermits) APP.data.exceptionPermits = [];
 
 
 /* ═══ MUHASEBE RAPORLAR ═══ */

@@ -1,4 +1,4 @@
-// /modules/dept/dept.js
+﻿// /modules/dept/dept.js
 // PRODAPP — Dept Ekranı (Adım 6 — kopyalama, index.html orijinaller yerinde)
 //
 // Kapsam: renderDept, fiş listesi (bekleyen/geçmiş), toplu onay/red,
@@ -48,7 +48,7 @@ export function _advanceSortDesc(arr) {
 }
 
 export function _advanceHistoryAdd(kayit) {
-  APP.data.accAvansGecmis.unshift(kayit);
+  APP.data.accAdvanceHistory.unshift(kayit);
   renderDeptAdvance();
   renderAccAvans();
 }
@@ -63,10 +63,10 @@ export function advanceRejectConfirm() {
 
   if (window._avRedPending.kaynak === 'dept') {
     var id = window._avRedPending.id;
-    for (var i = 0; i < APP.data.deptAvans.length; i++) {
-      if (APP.data.deptAvans[i].id === id) {
-        var a = APP.data.deptAvans[i];
-        APP.data.deptAvans.splice(i, 1);
+    for (var i = 0; i < APP.data.deptAdvances.length; i++) {
+      if (APP.data.deptAdvances[i].id === id) {
+        var a = APP.data.deptAdvances[i];
+        APP.data.deptAdvances.splice(i, 1);
         _advanceHistoryAdd({
           id: Date.now(), dept: _curDeptName(),
           uye: a.uye, ini: a.ini,
@@ -84,7 +84,7 @@ export function advanceRejectConfirm() {
     }
   } else if (window._avRedPending.kaynak === 'acc') {
     var item = window._avRedPending._item;
-    APP.data.accBekleyen = APP.data.accBekleyen.filter(function(f) { return f.id !== item.id; });
+    APP.data.accPending = APP.data.accPending.filter(function(f) { return f.id !== item.id; });
     renderAccBek();
     _advanceHistoryAdd({
       id: Date.now(), dept: item.dept || _curDeptName(),
@@ -222,19 +222,19 @@ export function _addToDeptPending(satici, kat, tutar, belgesiz, aciklama, fotos,
         gecIslem: true, istisnaIzniId: _izin.id,
         log: [_mkLog('olusturuldu', 'İstisna izniyle kapalı döneme eklendi')]
       };
-      APP.data.fisler.unshift(_nf);
+      APP.data.receipts.unshift(_nf);
       _effFisId = _nf.id;
     } else {
-      for (var _fi = 0; _fi < APP.data.fisler.length; _fi++) {
-        if (APP.data.fisler[_fi].id === _effFisId) {
-          APP.data.fisler[_fi].durum = 'acc-bekleyen';
-          APP.data.fisler[_fi].gecIslem = true;
-          APP.data.fisler[_fi].istisnaIzniId = _izin.id;
+      for (var _fi = 0; _fi < APP.data.receipts.length; _fi++) {
+        if (APP.data.receipts[_fi].id === _effFisId) {
+          APP.data.receipts[_fi].durum = 'acc-bekleyen';
+          APP.data.receipts[_fi].gecIslem = true;
+          APP.data.receipts[_fi].istisnaIzniId = _izin.id;
           break;
         }
       }
     }
-    APP.data.accBekleyen.unshift({
+    APP.data.accPending.unshift({
       id: Date.now() + 1, fisId: _effFisId,
       dept: (APP.ui.curUser && APP.ui.curUser.dept) || '',
       uye: uye, ini: ini,
@@ -256,7 +256,7 @@ export function _addToDeptPending(satici, kat, tutar, belgesiz, aciklama, fotos,
     return;
   }
 
-  APP.data.deptBekleyen.unshift({
+  APP.data.deptPending.unshift({
     id: Date.now(), uye: uye, ini: ini, fisId: fisId || null,
     satici: satici || 'Yeni Harcama', kat: kat || 'Diger',
     tutar: tutar || 0, tarih: _deptDate(), uyari: null,
@@ -266,10 +266,10 @@ export function _addToDeptPending(satici, kat, tutar, belgesiz, aciklama, fotos,
   });
 
   /* Bütçe eşik kontrolü */
-  var _cb = APP.data.donemButce.find(function(x) { return x.donem === APP.ui.aktifDon; });
+  var _cb = APP.data.periodBudget.find(function(x) { return x.donem === APP.ui.aktifDon; });
   if (_cb) {
     var _cbt = 0;
-    for (var _ci = 0; _ci < APP.data.deptBekleyen.length; _ci++) _cbt += APP.data.deptBekleyen[_ci].tutar;
+    for (var _ci = 0; _ci < APP.data.deptPending.length; _ci++) _cbt += APP.data.deptPending[_ci].tutar;
     _checkBudgetWarning(_cb, _cbt);
   }
   renderDeptPending();
@@ -286,10 +286,10 @@ export function renderDeptSummary() {
 
   /* Aktif dönem — canlı progress + kategori limitleri */
   if (APP.ui.sdSeciliDonem === 2) {
-    var b = APP.data.donemButce.find(function(x) { return x.donem === APP.ui.aktifDon; });
+    var b = APP.data.periodBudget.find(function(x) { return x.donem === APP.ui.aktifDon; });
     if (!b) { el.innerHTML = ''; return; }
     var bekTop = 0;
-    for (var i = 0; i < APP.data.deptBekleyen.length; i++) bekTop += APP.data.deptBekleyen[i].tutar;
+    for (var i = 0; i < APP.data.deptPending.length; i++) bekTop += APP.data.deptPending[i].tutar;
     var committed = b.harcanan + bekTop;
     var kalan     = Math.max(0, b.butce - committed);
     var pct       = b.butce > 0 ? Math.min(100, Math.round(committed / b.butce * 100)) : 0;
@@ -345,8 +345,8 @@ export function renderDeptSummary() {
   }
 
   /* Geçmiş dönem — statik özet */
-  var bp = APP.data.donemButce.find(function(x) { return x.donem === APP.ui.sdSeciliDonem; });
-  var gec = APP.data.deptGecmis[APP.ui.sdSeciliDonem] || { onaylandi:[], reddedildi:[] };
+  var bp = APP.data.periodBudget.find(function(x) { return x.donem === APP.ui.sdSeciliDonem; });
+  var gec = APP.data.deptHistory[APP.ui.sdSeciliDonem] || { onaylandi:[], reddedildi:[] };
   var topOnay = 0, topRed = 0;
   for (var j = 0; j < gec.onaylandi.length;  j++) topOnay += gec.onaylandi[j].tutar;
   for (var k = 0; k < gec.reddedildi.length; k++) topRed  += gec.reddedildi[k].tutar;
@@ -373,7 +373,7 @@ export function renderDeptSummary() {
 /* ═══ DEPT BEKLEYENLERİ LİSTESİ ═══ */
 
 export function _renderDeptPendingHistory(el, donemId) {
-  var gec = APP.data.deptGecmis[donemId] || { onaylandi:[], reddedildi:[] };
+  var gec = APP.data.deptHistory[donemId] || { onaylandi:[], reddedildi:[] };
   var on  = gec.onaylandi  || [];
   var red = gec.reddedildi || [];
   var html = '';
@@ -427,23 +427,23 @@ export function renderDeptPending() {
     return;
   }
 
-  if (cnt) cnt.textContent = APP.data.deptBekleyen.length;
+  if (cnt) cnt.textContent = APP.data.deptPending.length;
 
-  if (!APP.data.deptBekleyen.length) {
+  if (!APP.data.deptPending.length) {
     APP.ui.sdSec = {};
     el.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--tx3);font-size:13px">✅ Bekleyen harcama yok</div>';
     return;
   }
 
   var validIds = {};
-  for (var vi = 0; vi < APP.data.deptBekleyen.length; vi++) validIds[APP.data.deptBekleyen[vi].id] = true;
+  for (var vi = 0; vi < APP.data.deptPending.length; vi++) validIds[APP.data.deptPending[vi].id] = true;
   for (var kk in APP.ui.sdSec) { if (!validIds[kk]) delete APP.ui.sdSec[kk]; }
 
   var selCnt = 0, selTop = 0;
-  for (var si = 0; si < APP.data.deptBekleyen.length; si++) {
-    if (APP.ui.sdSec[APP.data.deptBekleyen[si].id]) { selCnt++; selTop += APP.data.deptBekleyen[si].tutar; }
+  for (var si = 0; si < APP.data.deptPending.length; si++) {
+    if (APP.ui.sdSec[APP.data.deptPending[si].id]) { selCnt++; selTop += APP.data.deptPending[si].tutar; }
   }
-  var allSel  = selCnt === APP.data.deptBekleyen.length;
+  var allSel  = selCnt === APP.data.deptPending.length;
   var partSel = selCnt > 0 && !allSel;
   var infoTxt = selCnt > 0 ? selCnt + ' seçili · ₺' + selTop.toLocaleString('tr-TR') : 'Seçim yok';
   var infoCls = selCnt > 0 ? 'sd-bek-sel-info has-sel' : 'sd-bek-sel-info';
@@ -465,7 +465,7 @@ export function renderDeptPending() {
       '</div>' +
     '</div>';
 
-  var cards = APP.data.deptBekleyen.map(function(f) {
+  var cards = APP.data.deptPending.map(function(f) {
     var clr    = SD_KAT_CLR[f.kat] || 'var(--tx3)';
     var lbl    = SD_KAT_LBL[f.kat] || f.kat;
     var sel    = !!APP.ui.sdSec[f.id];
@@ -510,23 +510,23 @@ export function _deptToggle(id) {
 
 export function _deptToggleAll() {
   var selCnt = 0;
-  for (var i = 0; i < APP.data.deptBekleyen.length; i++) {
-    if (APP.ui.sdSec[APP.data.deptBekleyen[i].id]) selCnt++;
+  for (var i = 0; i < APP.data.deptPending.length; i++) {
+    if (APP.ui.sdSec[APP.data.deptPending[i].id]) selCnt++;
   }
-  var selectAll = selCnt < APP.data.deptBekleyen.length;
+  var selectAll = selCnt < APP.data.deptPending.length;
   APP.ui.sdSec = {};
   if (selectAll) {
-    for (var j = 0; j < APP.data.deptBekleyen.length; j++) APP.ui.sdSec[APP.data.deptBekleyen[j].id] = true;
+    for (var j = 0; j < APP.data.deptPending.length; j++) APP.ui.sdSec[APP.data.deptPending[j].id] = true;
   }
   renderDeptPending();
 }
 
 export function _deptUpdateToolbar() {
   var selCnt = 0, selTop = 0;
-  for (var i = 0; i < APP.data.deptBekleyen.length; i++) {
-    if (APP.ui.sdSec[APP.data.deptBekleyen[i].id]) { selCnt++; selTop += APP.data.deptBekleyen[i].tutar; }
+  for (var i = 0; i < APP.data.deptPending.length; i++) {
+    if (APP.ui.sdSec[APP.data.deptPending[i].id]) { selCnt++; selTop += APP.data.deptPending[i].tutar; }
   }
-  var allSel  = APP.data.deptBekleyen.length > 0 && selCnt === APP.data.deptBekleyen.length;
+  var allSel  = APP.data.deptPending.length > 0 && selCnt === APP.data.deptPending.length;
   var partSel = selCnt > 0 && !allSel;
   var info    = document.getElementById('sd-bek-sel-info');
   if (info) {
@@ -550,20 +550,20 @@ export function deptApproveSelected() {
   var keys = Object.keys(ids);
   if (!keys.length) { notif('Seçili kayıt yok', 'amber'); return; }
   var cnt = 0, top = 0;
-  var ob = APP.data.donemButce.find(function(x) { return x.donem === APP.ui.aktifDon; });
-  if (!APP.data.deptGecmis[2]) APP.data.deptGecmis[2] = { onaylandi:[], reddedildi:[] };
-  APP.data.deptBekleyen = APP.data.deptBekleyen.filter(function(f) {
+  var ob = APP.data.periodBudget.find(function(x) { return x.donem === APP.ui.aktifDon; });
+  if (!APP.data.deptHistory[2]) APP.data.deptHistory[2] = { onaylandi:[], reddedildi:[] };
+  APP.data.deptPending = APP.data.deptPending.filter(function(f) {
     if (!ids[f.id]) return true;
     cnt++; top += f.tutar;
     if (ob) ob.harcanan += f.tutar;
     f.log = f.log || [];
     f.log.push(_mkLog('onaylandi', ''));
-    APP.data.deptGecmis[2].onaylandi.push({
+    APP.data.deptHistory[2].onaylandi.push({
       id:f.id, uye:f.uye||'', ini:f.ini||'', satici:f.satici||'',
       kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptDate(), log:f.log
     });
     f.log.push(_mkLog('dept-onayladi', ''));
-    APP.data.accBekleyen.unshift({
+    APP.data.accPending.unshift({
       id: Date.now() + Math.floor(Math.random()*1000),
       fisId: f.fisId || null, dept: _curDeptName(),
       uye: f.uye, ini: f.ini, satici: f.satici, kat: f.kat,
@@ -574,14 +574,14 @@ export function deptApproveSelected() {
       donem: f.donem !== undefined ? f.donem : APP.ui.aktifDon,
       olusturmaZamani: Date.now()
     });
-    for (var _fsli = 0; _fsli < APP.data.fisler.length; _fsli++) {
-      if (APP.data.fisler[_fsli].id === f.fisId) { APP.data.fisler[_fsli].durum = 'acc-bekleyen'; break; }
+    for (var _fsli = 0; _fsli < APP.data.receipts.length; _fsli++) {
+      if (APP.data.receipts[_fsli].id === f.fisId) { APP.data.receipts[_fsli].durum = 'acc-bekleyen'; break; }
     }
     return false;
   });
   if (ob) {
     var bt = 0;
-    for (var i = 0; i < APP.data.deptBekleyen.length; i++) bt += APP.data.deptBekleyen[i].tutar;
+    for (var i = 0; i < APP.data.deptPending.length; i++) bt += APP.data.deptPending[i].tutar;
     _checkBudgetWarning(ob, bt);
   }
   var newH2 = _categorySpent();
@@ -604,24 +604,24 @@ export function deptRejectSelected() {
   var redNedeni = (prompt(keys.length + ' harcama için ret nedeni girin:') || '').trim();
   if (!redNedeni) { notif('Red nedeni zorunludur — iptal edildi', 'amber'); return; }
   var cnt = 0, top = 0;
-  var rb = APP.data.donemButce.find(function(x) { return x.donem === APP.ui.aktifDon; });
-  if (!APP.data.deptGecmis[APP.ui.aktifDon]) APP.data.deptGecmis[APP.ui.aktifDon] = { onaylandi:[], reddedildi:[] };
+  var rb = APP.data.periodBudget.find(function(x) { return x.donem === APP.ui.aktifDon; });
+  if (!APP.data.deptHistory[APP.ui.aktifDon]) APP.data.deptHistory[APP.ui.aktifDon] = { onaylandi:[], reddedildi:[] };
   var deptAdSoyad = APP.ui.curUser ? APP.ui.curUser.name : 'Dept';
-  APP.data.deptBekleyen = APP.data.deptBekleyen.filter(function(f) {
+  APP.data.deptPending = APP.data.deptPending.filter(function(f) {
     if (!ids[f.id]) return true;
     cnt++; top += f.tutar;
     if (rb) rb.reddedildi += f.tutar;
     f.log = f.log || [];
     f.log.push(_mkLog('reddedildi', redNedeni));
-    APP.data.deptGecmis[APP.ui.aktifDon].reddedildi.push({
+    APP.data.deptHistory[APP.ui.aktifDon].reddedildi.push({
       id: f.id, uye: f.uye||'', ini: f.ini||'',
       satici: f.satici||'', kat: f.kat||'Diger',
       tutar: f.tutar, tarih: f.tarih||_deptDate(), redNedeni: redNedeni, log: f.log
     });
-    for (var _srfli = 0; _srfli < APP.data.fisler.length; _srfli++) {
-      if (APP.data.fisler[_srfli].id === f.fisId) {
-        APP.data.fisler[_srfli].durum = 'reddedildi';
-        APP.data.fisler[_srfli].uyari = redNedeni;
+    for (var _srfli = 0; _srfli < APP.data.receipts.length; _srfli++) {
+      if (APP.data.receipts[_srfli].id === f.fisId) {
+        APP.data.receipts[_srfli].durum = 'reddedildi';
+        APP.data.receipts[_srfli].uyari = redNedeni;
         break;
       }
     }
@@ -642,8 +642,8 @@ export function renderDeptCrew() {
   var el = document.getElementById('sd-pnl-ekip');
   if (!el) return;
   var bekMap = {};
-  for (var i = 0; i < APP.data.deptBekleyen.length; i++) {
-    var n = APP.data.deptBekleyen[i].uye;
+  for (var i = 0; i < APP.data.deptPending.length; i++) {
+    var n = APP.data.deptPending[i].uye;
     bekMap[n] = (bekMap[n] || 0) + 1;
   }
   var rows = APP.seed.deptEkip.map(function(u) {
@@ -673,9 +673,9 @@ export function renderDeptAdvance() {
   var el = document.getElementById('sd-pnl-avans');
   if (!el) return;
   var cnt = document.getElementById('sdtb-av-cnt');
-  if (cnt) cnt.textContent = APP.data.deptAvans.length;
+  if (cnt) cnt.textContent = APP.data.deptAdvances.length;
 
-  var gecmisAvans = APP.data.accAvansGecmis.filter(function(av) { return av.dept === 'Yapım'; });
+  var gecmisAvans = APP.data.accAdvanceHistory.filter(function(av) { return av.dept === 'Yapım'; });
   var gecmisOdendi = 0, gecmisBek = 0, gecmisRed = 0;
   for (var gi = 0; gi < gecmisAvans.length; gi++) {
     var ga = gecmisAvans[gi];
@@ -684,14 +684,14 @@ export function renderDeptAdvance() {
     else gecmisBek += ga.tutar;
   }
   var aktifBek = 0;
-  for (var ai = 0; ai < APP.data.deptAvans.length; ai++) aktifBek += APP.data.deptAvans[ai].tutar;
+  for (var ai = 0; ai < APP.data.deptAdvances.length; ai++) aktifBek += APP.data.deptAdvances[ai].tutar;
   var toplamBek = aktifBek + gecmisBek;
 
   var html =
     '<div class="sd-av-ozet">' +
       '<div class="sd-av-ozet-c"><div class="sd-av-ozet-v" style="color:var(--am2)">₺' + toplamBek.toLocaleString('tr-TR') + '</div><div class="sd-av-ozet-l">Bekleyen</div></div>' +
       '<div class="sd-av-ozet-c"><div class="sd-av-ozet-v" style="color:var(--gr2)">₺' + gecmisOdendi.toLocaleString('tr-TR') + '</div><div class="sd-av-ozet-l">Ödendi</div></div>' +
-      '<div class="sd-av-ozet-c"><div class="sd-av-ozet-v">' + (APP.data.deptAvans.length + gecmisAvans.length) + '</div><div class="sd-av-ozet-l">Toplam</div></div>' +
+      '<div class="sd-av-ozet-c"><div class="sd-av-ozet-v">' + (APP.data.deptAdvances.length + gecmisAvans.length) + '</div><div class="sd-av-ozet-l">Toplam</div></div>' +
     '</div>';
 
   var formHtml;
@@ -715,7 +715,7 @@ export function renderDeptAdvance() {
   }
   html += formHtml;
 
-  var sortedDeptAv = _advanceSortDesc(APP.data.deptAvans);
+  var sortedDeptAv = _advanceSortDesc(APP.data.deptAdvances);
   if (sortedDeptAv.length) {
     var deptAvTop = 0;
     for (var daii = 0; daii < sortedDeptAv.length; daii++) deptAvTop += sortedDeptAv[daii].tutar;
@@ -802,7 +802,7 @@ export function deptAdvanceAdd() {
   }
   if (!uyeObj) return;
 
-  APP.data.accBekleyen.unshift({
+  APP.data.accPending.unshift({
     id: Date.now(), tip: 'avans', dept: _curDeptName(),
     uye: uyeObj.name, ini: uyeObj.ini, satici: 'Avans Talebi (Dept)',
     kat: 'Avans', tutar: tutar, tarih: _deptDate(),
@@ -827,20 +827,20 @@ export function renderDeptRental() {
   var today = _todayISO();
 
   var aktifSay = 0;
-  for (var ci = 0; ci < APP.data.deptKira.length; ci++) {
-    if (_rentalStatus(APP.data.deptKira[ci]) !== 'iade') aktifSay++;
+  for (var ci = 0; ci < APP.data.deptRentals.length; ci++) {
+    if (_rentalStatus(APP.data.deptRentals[ci]) !== 'iade') aktifSay++;
   }
   var cnt = document.getElementById('sdtb-kira-cnt');
   if (cnt) cnt.textContent = aktifSay;
 
-  if (!APP.data.deptKira.length) {
+  if (!APP.data.deptRentals.length) {
     el.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--tx3);font-size:13px">Kiralama kaydı yok</div>';
     return;
   }
 
   var gecmis = [], yaklasan = [], aktif = [], iade = [];
-  for (var i = 0; i < APP.data.deptKira.length; i++) {
-    var k   = APP.data.deptKira[i];
+  for (var i = 0; i < APP.data.deptRentals.length; i++) {
+    var k   = APP.data.deptRentals[i];
     var dur = _rentalStatus(k);
     if      (dur === 'gec') gecmis.push(k);
     else if (dur === 'yak') yaklasan.push(k);
@@ -888,17 +888,17 @@ export function renderDeptRental() {
 }
 
 export function deptRentalReturn(id) {
-  for (var i = 0; i < APP.data.deptKira.length; i++) {
-    if (APP.data.deptKira[i].id === id) {
-      var _kd = APP.data.deptKira[i];
+  for (var i = 0; i < APP.data.deptRentals.length; i++) {
+    if (APP.data.deptRentals[i].id === id) {
+      var _kd = APP.data.deptRentals[i];
       var _cd = _rentalPenalty(_kd);
       _kd.cezaGun = _cd.gecGun; _kd.cezaTutar = _cd.ceza; _kd.iade = true;
       break;
     }
   }
-  for (var j = 0; j < APP.data.accKiralamalar.length; j++) {
-    if (APP.data.accKiralamalar[j].id === id) {
-      var _ka = APP.data.accKiralamalar[j];
+  for (var j = 0; j < APP.data.accRentals.length; j++) {
+    if (APP.data.accRentals[j].id === id) {
+      var _ka = APP.data.accRentals[j];
       var _ca = _rentalPenalty(_ka);
       _ka.cezaGun = _ca.gecGun; _ka.cezaTutar = _ca.ceza; _ka.iade = true;
       break;
@@ -961,7 +961,7 @@ export function renderDeptHistory() {
   }
   html += '</div>';
 
-  var gec      = APP.data.deptGecmis[donId] || { onaylandi:[], reddedildi:[] };
+  var gec      = APP.data.deptHistory[donId] || { onaylandi:[], reddedildi:[] };
   var onayTop  = 0, redTop = 0;
   for (var oi = 0; oi < gec.onaylandi.length;  oi++) onayTop += gec.onaylandi[oi].tutar;
   for (var ri = 0; ri < gec.reddedildi.length; ri++) redTop  += gec.reddedildi[ri].tutar;
@@ -1014,7 +1014,7 @@ export function renderDeptHistory() {
     html += '</div>';
   }
 
-  var donAvans = APP.data.accAvansGecmis.filter(function(av) { return av.dept === 'Yapım' && av.donem === donId; });
+  var donAvans = APP.data.accAdvanceHistory.filter(function(av) { return av.dept === 'Yapım' && av.donem === donId; });
   if (donAvans.length) {
     var avTop = 0;
     for (var avi = 0; avi < donAvans.length; avi++) avTop += donAvans[avi].tutar;
@@ -1040,33 +1040,33 @@ export function renderDeptHistory() {
 /* ═══ TEKLİ ONAY / RED / KISMİ ═══ */
 
 export function deptApprove(id) {
-  for (var i = 0; i < APP.data.deptBekleyen.length; i++) {
-    if (APP.data.deptBekleyen[i].id !== id) continue;
-    var f     = APP.data.deptBekleyen[i];
+  for (var i = 0; i < APP.data.deptPending.length; i++) {
+    if (APP.data.deptPending[i].id !== id) continue;
+    var f     = APP.data.deptPending[i];
     var _fDon = f.donem !== undefined ? f.donem : APP.ui.aktifDon;
     if (_isPeriodClosed(_fDon)) {
       notif('Bu dönem kapanmış. Dept rolünde işlem yapılamaz. Muhasebeye yönlendirin.', 'red'); return;
     }
-    APP.data.deptBekleyen.splice(i, 1);
-    var ob = APP.data.donemButce.find(function(x) { return x.donem === APP.ui.aktifDon; });
+    APP.data.deptPending.splice(i, 1);
+    var ob = APP.data.periodBudget.find(function(x) { return x.donem === APP.ui.aktifDon; });
     if (ob) {
       ob.harcanan += f.tutar;
       var obt = 0;
-      for (var oi = 0; oi < APP.data.deptBekleyen.length; oi++) obt += APP.data.deptBekleyen[oi].tutar;
+      for (var oi = 0; oi < APP.data.deptPending.length; oi++) obt += APP.data.deptPending[oi].tutar;
       _checkBudgetWarning(ob, obt);
     }
     f.log = f.log || [];
     f.log.push(_mkLog('onaylandi', ''));
-    if (!APP.data.deptGecmis[2]) APP.data.deptGecmis[2] = { onaylandi:[], reddedildi:[] };
-    APP.data.deptGecmis[2].onaylandi.push({
+    if (!APP.data.deptHistory[2]) APP.data.deptHistory[2] = { onaylandi:[], reddedildi:[] };
+    APP.data.deptHistory[2].onaylandi.push({
       id:f.id, uye:f.uye||'', ini:f.ini||'', satici:f.satici||'',
       kat:f.kat||'Diger', tutar:f.tutar, tarih:f.tarih||_deptDate(), log:f.log
     });
-    for (var _fli = 0; _fli < APP.data.fisler.length; _fli++) {
-      if (APP.data.fisler[_fli].id === f.fisId) { APP.data.fisler[_fli].durum = 'acc-bekleyen'; break; }
+    for (var _fli = 0; _fli < APP.data.receipts.length; _fli++) {
+      if (APP.data.receipts[_fli].id === f.fisId) { APP.data.receipts[_fli].durum = 'acc-bekleyen'; break; }
     }
     f.log.push(_mkLog('dept-onayladi', ''));
-    APP.data.accBekleyen.unshift({
+    APP.data.accPending.unshift({
       id: Date.now() + Math.floor(Math.random()*1000),
       fisId: f.fisId || null, dept: _curDeptName(),
       uye: f.uye, ini: f.ini, satici: f.satici, kat: f.kat,
@@ -1090,9 +1090,9 @@ export function deptApprove(id) {
 }
 
 export function deptReject(id) {
-  for (var i = 0; i < APP.data.deptBekleyen.length; i++) {
-    if (APP.data.deptBekleyen[i].id !== id) continue;
-    var f      = APP.data.deptBekleyen[i];
+  for (var i = 0; i < APP.data.deptPending.length; i++) {
+    if (APP.data.deptPending[i].id !== id) continue;
+    var f      = APP.data.deptPending[i];
     var _fDon2 = f.donem !== undefined ? f.donem : APP.ui.aktifDon;
     if (_isPeriodClosed(_fDon2)) {
       notif('Bu dönem kapanmış. Dept rolünde işlem yapılamaz. Muhasebeye yönlendirin.', 'red'); return;
@@ -1101,19 +1101,19 @@ export function deptReject(id) {
     if (!redNedeni) { notif('Red nedeni zorunludur — iptal edildi', 'amber'); return; }
     f.log = f.log || [];
     f.log.push(_mkLog('reddedildi', redNedeni));
-    APP.data.deptBekleyen.splice(i, 1);
-    var rb = APP.data.donemButce.find(function(x) { return x.donem === APP.ui.aktifDon; });
+    APP.data.deptPending.splice(i, 1);
+    var rb = APP.data.periodBudget.find(function(x) { return x.donem === APP.ui.aktifDon; });
     if (rb) rb.reddedildi += f.tutar;
-    if (!APP.data.deptGecmis[APP.ui.aktifDon]) APP.data.deptGecmis[APP.ui.aktifDon] = { onaylandi:[], reddedildi:[] };
-    APP.data.deptGecmis[APP.ui.aktifDon].reddedildi.push({
+    if (!APP.data.deptHistory[APP.ui.aktifDon]) APP.data.deptHistory[APP.ui.aktifDon] = { onaylandi:[], reddedildi:[] };
+    APP.data.deptHistory[APP.ui.aktifDon].reddedildi.push({
       id: f.id, uye: f.uye||'', ini: f.ini||'',
       satici: f.satici||'', kat: f.kat||'Diger',
       tutar: f.tutar, tarih: f.tarih||_deptDate(), redNedeni: redNedeni, log: f.log
     });
-    for (var _rfli = 0; _rfli < APP.data.fisler.length; _rfli++) {
-      if (APP.data.fisler[_rfli].id === f.fisId) {
-        APP.data.fisler[_rfli].durum = 'reddedildi';
-        APP.data.fisler[_rfli].uyari = redNedeni;
+    for (var _rfli = 0; _rfli < APP.data.receipts.length; _rfli++) {
+      if (APP.data.receipts[_rfli].id === f.fisId) {
+        APP.data.receipts[_rfli].durum = 'reddedildi';
+        APP.data.receipts[_rfli].uyari = redNedeni;
         break;
       }
     }
@@ -1131,11 +1131,11 @@ export function deptReject(id) {
 
 export function deptPartial(id, onayTutar, redNedeni) {
   var _i = -1;
-  for (var _di = 0; _di < APP.data.deptBekleyen.length; _di++) {
-    if (APP.data.deptBekleyen[_di].id === id) { _i = _di; break; }
+  for (var _di = 0; _di < APP.data.deptPending.length; _di++) {
+    if (APP.data.deptPending[_di].id === id) { _i = _di; break; }
   }
   if (_i < 0) return;
-  var f     = APP.data.deptBekleyen[_i];
+  var f     = APP.data.deptPending[_i];
   var _fDon3 = f.donem !== undefined ? f.donem : APP.ui.aktifDon;
   if (_isPeriodClosed(_fDon3)) {
     notif('Bu dönem kapanmış. Dept rolünde işlem yapılamaz. Muhasebeye yönlendirin.', 'red'); return;
@@ -1145,40 +1145,40 @@ export function deptPartial(id, onayTutar, redNedeni) {
   var redTutar = f.tutar - onayTutar;
 
   if (f.fisId) {
-    for (var _pfi = 0; _pfi < APP.data.fisler.length; _pfi++) {
-      if (APP.data.fisler[_pfi].id === f.fisId) { APP.data.fisler[_pfi].durum = 'bolundu'; break; }
+    for (var _pfi = 0; _pfi < APP.data.receipts.length; _pfi++) {
+      if (APP.data.receipts[_pfi].id === f.fisId) { APP.data.receipts[_pfi].durum = 'bolundu'; break; }
     }
   }
   var _maxId = 0;
-  for (var _mi = 0; _mi < APP.data.fisler.length; _mi++) {
-    if (APP.data.fisler[_mi].id > _maxId) _maxId = APP.data.fisler[_mi].id;
+  for (var _mi = 0; _mi < APP.data.receipts.length; _mi++) {
+    if (APP.data.receipts[_mi].id > _maxId) _maxId = APP.data.receipts[_mi].id;
   }
   var _onayId = _maxId + 1;
   var _redId  = _maxId + 2;
   var _parent = null;
-  for (var _pfi2 = 0; _pfi2 < APP.data.fisler.length; _pfi2++) {
-    if (APP.data.fisler[_pfi2].id === f.fisId) { _parent = APP.data.fisler[_pfi2]; break; }
+  for (var _pfi2 = 0; _pfi2 < APP.data.receipts.length; _pfi2++) {
+    if (APP.data.receipts[_pfi2].id === f.fisId) { _parent = APP.data.receipts[_pfi2]; break; }
   }
   var _baseDonem    = _parent ? _parent.donem    : APP.ui.aktifDon;
   var _baseTarih    = _parent ? _parent.tarih    : '';
   var _basePersonel = _parent ? _parent.personel : f.uye;
   var _baseDept     = _parent ? _parent.dept     : null;
 
-  APP.data.fisler.unshift({ id: _onayId, tarih: _baseTarih, personel: _basePersonel,
+  APP.data.receipts.unshift({ id: _onayId, tarih: _baseTarih, personel: _basePersonel,
     satici: f.satici, kat: f.kat, tutar: onayTutar,
     durum: 'acc-bekleyen', donem: _baseDonem, uyari: null, thumb: null,
     dept: _baseDept, parentFisId: f.fisId || null, kismiTip: 'onay' });
-  APP.data.fisler.unshift({ id: _redId, tarih: _baseTarih, personel: _basePersonel,
+  APP.data.receipts.unshift({ id: _redId, tarih: _baseTarih, personel: _basePersonel,
     satici: f.satici, kat: f.kat, tutar: redTutar,
     durum: 'reddedildi', donem: _baseDonem, uyari: redNedeni, thumb: null,
     dept: _baseDept, parentFisId: f.fisId || null, kismiTip: 'red' });
-  APP.data.deptBekleyen.splice(_i, 1);
+  APP.data.deptPending.splice(_i, 1);
 
-  if (!APP.data.deptGecmis[APP.ui.aktifDon]) APP.data.deptGecmis[APP.ui.aktifDon] = { onaylandi:[], reddedildi:[] };
-  APP.data.deptGecmis[APP.ui.aktifDon].onaylandi.push({ id:_onayId, uye:f.uye, ini:f.ini, satici:f.satici, kat:f.kat, tutar:onayTutar, tarih:f.tarih });
-  APP.data.deptGecmis[APP.ui.aktifDon].reddedildi.push({ id:_redId, uye:f.uye, ini:f.ini, satici:f.satici, kat:f.kat, tutar:redTutar, tarih:f.tarih, sebep:redNedeni });
+  if (!APP.data.deptHistory[APP.ui.aktifDon]) APP.data.deptHistory[APP.ui.aktifDon] = { onaylandi:[], reddedildi:[] };
+  APP.data.deptHistory[APP.ui.aktifDon].onaylandi.push({ id:_onayId, uye:f.uye, ini:f.ini, satici:f.satici, kat:f.kat, tutar:onayTutar, tarih:f.tarih });
+  APP.data.deptHistory[APP.ui.aktifDon].reddedildi.push({ id:_redId, uye:f.uye, ini:f.ini, satici:f.satici, kat:f.kat, tutar:redTutar, tarih:f.tarih, sebep:redNedeni });
 
-  APP.data.accBekleyen.unshift({
+  APP.data.accPending.unshift({
     id: _onayId + 1000, fisId: _onayId,
     dept: _parent && _parent.dept ? _parent.dept : (f.uye || ''),
     uye: f.uye, ini: f.ini, satici: f.satici, kat: f.kat,
@@ -1187,12 +1187,12 @@ export function deptPartial(id, onayTutar, redNedeni) {
     donem: _fDon3, olusturmaZamani: Date.now()
   });
 
-  var _db = APP.data.donemButce.find(function(x) { return x.donem === APP.ui.aktifDon; });
+  var _db = APP.data.periodBudget.find(function(x) { return x.donem === APP.ui.aktifDon; });
   if (_db) {
     _db.harcanan   += onayTutar;
     _db.reddedildi += redTutar;
     var _bekTop = 0;
-    for (var _bti = 0; _bti < APP.data.deptBekleyen.length; _bti++) _bekTop += APP.data.deptBekleyen[_bti].tutar;
+    for (var _bti = 0; _bti < APP.data.deptPending.length; _bti++) _bekTop += APP.data.deptPending[_bti].tutar;
     _checkBudgetWarning(_db, _bekTop);
   }
   _pushNotif('m', 'bl', 'Yeni Bekleyen — Kısmi Onay',
@@ -1210,11 +1210,11 @@ export function deptPartial(id, onayTutar, redNedeni) {
 /* ═══ AVANS ONAY / RED ═══ */
 
 export function deptAdvanceApprove(id) {
-  for (var i = 0; i < APP.data.deptAvans.length; i++) {
-    if (APP.data.deptAvans[i].id !== id) continue;
-    var a = APP.data.deptAvans[i];
-    APP.data.deptAvans.splice(i, 1);
-    APP.data.accBekleyen.unshift({
+  for (var i = 0; i < APP.data.deptAdvances.length; i++) {
+    if (APP.data.deptAdvances[i].id !== id) continue;
+    var a = APP.data.deptAdvances[i];
+    APP.data.deptAdvances.splice(i, 1);
+    APP.data.accPending.unshift({
       id: Date.now(), tip: 'avans', dept: _curDeptName(),
       uye: a.uye, ini: a.ini, satici: 'Avans Talebi', kat: 'Avans',
       tutar: a.tutar, tarih: _deptDate(),
@@ -1232,9 +1232,9 @@ export function deptAdvanceApprove(id) {
 }
 
 export function deptAdvanceReject(id) {
-  for (var i = 0; i < APP.data.deptAvans.length; i++) {
-    if (APP.data.deptAvans[i].id !== id) continue;
-    var a = APP.data.deptAvans[i];
+  for (var i = 0; i < APP.data.deptAdvances.length; i++) {
+    if (APP.data.deptAdvances[i].id !== id) continue;
+    var a = APP.data.deptAdvances[i];
     window._avRedPending = { id: id, kaynak: 'dept' };
     var infoEl = document.getElementById('md-av-red-info');
     if (infoEl) infoEl.textContent = a.uye + ' · ₺' + a.tutar.toLocaleString('tr-TR') + ' · Talep: ' + a.gerekce;

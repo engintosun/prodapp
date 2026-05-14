@@ -1,4 +1,4 @@
-// /modules/core/services/dept.service.js
+﻿// /modules/core/services/dept.service.js
 // PRODAPP — Dept/Acc Kuyruk Servisi (Adım 3 — kopyalama, silme yok)
 // deptBekleyen ve accBekleyen koleksiyonlarına ekleme/çıkarma primitifleri.
 //
@@ -34,14 +34,14 @@ export function deptPendingAdd(satici, kat, tutar, belgesiz, aciklama, fotos, fi
         gecIslem: true, istisnaIzniId: _izin.id,
         log: [_mkLog('olusturuldu', 'İstisna izniyle kapalı döneme eklendi')]
       };
-      APP.data.fisler.unshift(_nf);
+      APP.data.receipts.unshift(_nf);
       _effFisId = _nf.id;
     } else {
-      for (var _fi = 0; _fi < APP.data.fisler.length; _fi++) {
-        if (APP.data.fisler[_fi].id === _effFisId) {
-          APP.data.fisler[_fi].durum = 'acc-bekleyen';
-          APP.data.fisler[_fi].gecIslem = true;
-          APP.data.fisler[_fi].istisnaIzniId = _izin.id;
+      for (var _fi = 0; _fi < APP.data.receipts.length; _fi++) {
+        if (APP.data.receipts[_fi].id === _effFisId) {
+          APP.data.receipts[_fi].durum = 'acc-bekleyen';
+          APP.data.receipts[_fi].gecIslem = true;
+          APP.data.receipts[_fi].istisnaIzniId = _izin.id;
           break;
         }
       }
@@ -68,7 +68,7 @@ export function deptPendingAdd(satici, kat, tutar, belgesiz, aciklama, fotos, fi
     return;
   }
 
-  APP.data.deptBekleyen.unshift({
+  APP.data.deptPending.unshift({
     id: Date.now(), uye: uye, ini: ini, fisId: fisId || null,
     satici: satici || 'Yeni Harcama',
     kat: kat || 'Diger',
@@ -82,10 +82,10 @@ export function deptPendingAdd(satici, kat, tutar, belgesiz, aciklama, fotos, fi
     olusturmaZamani: Date.now(),
     log: [_mkLog('olusturuldu', 'Harcama bildirildi')]
   });
-  var _cb = APP.data.donemButce.find(function(x){ return x.donem === APP.ui.aktifDon; });
+  var _cb = APP.data.periodBudget.find(function(x){ return x.donem === APP.ui.aktifDon; });
   if (_cb) {
     var _cbt = 0;
-    for (var _ci = 0; _ci < APP.data.deptBekleyen.length; _ci++) _cbt += APP.data.deptBekleyen[_ci].tutar;
+    for (var _ci = 0; _ci < APP.data.deptPending.length; _ci++) _cbt += APP.data.deptPending[_ci].tutar;
     _checkBudgetWarning(_cb, _cbt);
   }
   renderDeptPending();
@@ -96,18 +96,18 @@ export function deptPendingAdd(satici, kat, tutar, belgesiz, aciklama, fotos, fi
 
 export function deptPendingRemove(id) {
   var idx = -1;
-  for (var i = 0; i < APP.data.deptBekleyen.length; i++) {
-    if (APP.data.deptBekleyen[i].id === id) { idx = i; break; }
+  for (var i = 0; i < APP.data.deptPending.length; i++) {
+    if (APP.data.deptPending[i].id === id) { idx = i; break; }
   }
-  if (idx !== -1) APP.data.deptBekleyen.splice(idx, 1);
+  if (idx !== -1) APP.data.deptPending.splice(idx, 1);
 }
 
 /* ── accBekleyen ──────────────────────────────────────────────────────────── */
 
 export function accPendingAdd(item) {
-  APP.data.accBekleyen.unshift(item);
+  APP.data.accPending.unshift(item);
 }
 
 export function accPendingRemove(id) {
-  APP.data.accBekleyen = APP.data.accBekleyen.filter(function(f) { return f.id !== id; });
+  APP.data.accPending = APP.data.accPending.filter(function(f) { return f.id !== id; });
 }
