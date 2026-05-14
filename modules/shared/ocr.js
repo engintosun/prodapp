@@ -76,6 +76,7 @@ document.getElementById('galeri-input').addEventListener('change', function(e) {
 /* ═══ OCR MODAL ═══ */
 
 export function openOCR(idx, imgSrc) {
+  closeSub();
   var f = window.FIS_DEMO[idx] || window.FIS_DEMO[0];
   openM('mo');
   document.getElementById('ocr-s1').style.display = 'block';
