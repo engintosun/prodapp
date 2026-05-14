@@ -4771,33 +4771,6 @@ function closeAvMenu() {
 /* Arama */
 
 
-/* ═══ OCR UZUN BAS ═══ */
-(function() {
-  var btn = document.getElementById('ocr-btn');
-  if (!btn) return;
-  function onStart(e) {
-    APP.ui.longFired = false;
-    APP.ui.longTimer = setTimeout(function() {
-      APP.ui.longFired = true;
-      openSub();
-    }, 500);
-  }
-  function onEnd(e) {
-    clearTimeout(APP.ui.longTimer);
-    if (!APP.ui.longFired) openOCR(0);
-  }
-  function onCancel() {
-    clearTimeout(APP.ui.longTimer);
-    APP.ui.longFired = false;
-  }
-  btn.addEventListener('mousedown',   onStart);
-  btn.addEventListener('touchstart',  onStart, { passive: true });
-  btn.addEventListener('mouseup',     onEnd);
-  btn.addEventListener('touchend',    onEnd,   { passive: true });
-  btn.addEventListener('mouseleave',  onCancel);
-  btn.addEventListener('touchcancel', onCancel);
-  btn.addEventListener('contextmenu', function(e) { e.preventDefault(); });
-}());
 
 
 document.getElementById('galeri-input').addEventListener('change', function(e) {
