@@ -73,6 +73,17 @@ export function loadAppData() {
     if (parsed.periodBudget) _c2MigrateKat(parsed.periodBudget);
     if (parsed.categoryLimits) _c2MigrateKat(parsed.categoryLimits);
     // --- /C2 Migration ---
+    // --- C3 Migration: avans durum değerleri ---
+    var _c3AvansMap = { 'ödendi':'paid', 'bekleyen':'pending' };
+    function _c3MigrateAvans(arr) {
+      if (!Array.isArray(arr)) return;
+      arr.forEach(function(item) {
+        if (item.durum && _c3AvansMap[item.durum]) item.durum = _c3AvansMap[item.durum];
+      });
+    }
+    _c3MigrateAvans(parsed.accAdvanceHistory);
+    _c3MigrateAvans(parsed.deptAdvances);
+    // --- /C3 Migration ---
     Object.keys(parsed).forEach(function(k) {
       if (APP.data[k] !== undefined) APP.data[k] = parsed[k];
     });

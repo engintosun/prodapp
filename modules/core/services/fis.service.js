@@ -204,7 +204,7 @@ export function accOnayla(id, _gecSebep) {
   renderAccBek();
 
   if (item && item.tip === 'avans') {
-    _advanceHistoryAdd({ id: Date.now(), dept: item.dept || _curDeptName(), uye: item.uye, ini: item.ini, tutar: item.tutar, tarih: _deptDate(), durum: 'ödendi', gerekce: item.gerekce || '', donem: APP.ui.activePeriod });
+    _advanceHistoryAdd({ id: Date.now(), dept: item.dept || _curDeptName(), uye: item.uye, ini: item.ini, tutar: item.tutar, tarih: _deptDate(), durum: 'paid', gerekce: item.gerekce || '', donem: APP.ui.activePeriod });
     var fk = item.fromKey || 's';
     _pushNotif(fk, 'gr', 'Avans Talebiniz Onaylandı ✅', '₺' + item.tutar.toLocaleString('tr-TR') + ' avans talebiniz muhasebe tarafından onaylandı.', 'Az önce · ' + (APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe') + ' (Muhasebe)');
     if (fk !== 'd') {

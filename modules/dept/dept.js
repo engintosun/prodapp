@@ -679,7 +679,7 @@ export function renderDeptAdvance() {
   var gecmisOdendi = 0, gecmisBek = 0, gecmisRed = 0;
   for (var gi = 0; gi < gecmisAvans.length; gi++) {
     var ga = gecmisAvans[gi];
-    if (ga.durum === 'ödendi') gecmisOdendi += ga.tutar;
+    if (ga.durum === 'paid') gecmisOdendi += ga.tutar;
     else if (ga.durum === 'rejected') gecmisRed += ga.tutar;
     else gecmisBek += ga.tutar;
   }
@@ -758,8 +758,8 @@ export function renderDeptAdvance() {
       var isAktif = avDon === 2;
       html += '<div class="sd-sec" style="margin-top:10px">Dönem #' + avDon + (isAktif ? ' <span style="color:var(--gr)">● Aktif</span>' : '') + ' · ₺' + dkTop.toLocaleString('tr-TR') + ' · ' + avRows.length + ' avans</div>';
       html += avRows.map(function(av) {
-        var clr = av.durum === 'ödendi' ? 'var(--gr2)' : (av.durum === 'rejected' ? 'var(--rd2)' : 'var(--am2)');
-        var ico = av.durum === 'ödendi' ? '✅' : (av.durum === 'rejected' ? '❌' : '⏳');
+        var clr = av.durum === 'paid' ? 'var(--gr2)' : (av.durum === 'rejected' ? 'var(--rd2)' : 'var(--am2)');
+        var ico = av.durum === 'paid' ? '✅' : (av.durum === 'rejected' ? '❌' : '⏳');
         var redSatir = (av.durum === 'rejected' && av.redNedeni)
           ? '<div style="font-size:11px;color:var(--rd2);margin-top:2px">Red nedeni: ' + av.redNedeni + '</div>'
           : '';
@@ -1020,8 +1020,8 @@ export function renderDeptHistory() {
     for (var avi = 0; avi < donAvans.length; avi++) avTop += donAvans[avi].tutar;
     html += '<div class="sd-gec-sec-hd">Avans Geçmişi — ' + donRec.lbl + ' · ₺' + avTop.toLocaleString('tr-TR') + '</div>';
     html += donAvans.map(function(av) {
-      var clr = av.durum === 'ödendi' ? 'var(--gr2)' : (av.durum === 'rejected' ? 'var(--rd2)' : 'var(--am2)');
-      var ico = av.durum === 'ödendi' ? '✅' : (av.durum === 'rejected' ? '❌' : '⏳');
+      var clr = av.durum === 'paid' ? 'var(--gr2)' : (av.durum === 'rejected' ? 'var(--rd2)' : 'var(--am2)');
+      var ico = av.durum === 'paid' ? '✅' : (av.durum === 'rejected' ? '❌' : '⏳');
       return '<div class="sd-av-gec-row">' +
         '<div class="sd-av-gec-av">' + av.ini + '</div>' +
         '<div class="sd-av-gec-info"><div class="sd-av-gec-name">' + av.uye + '</div><div class="sd-av-gec-sub">' + av.tarih + ' · ' + av.gerekce + '</div></div>' +

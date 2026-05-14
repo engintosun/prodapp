@@ -157,7 +157,8 @@
 
 **Sıradaki adımlar:**
 1. ~~Naming Batch C2 — kategori enum rename (8 değer Türkçe→İngilizce + HTML option + C2 migration + Teknik option silindi)~~ ✅ (14 Mayıs 2026)
-2. 🎯 Naming Batch C3 — rol enum rename ('user'→'field'/'crew' kararı sonrası)
+2. ~~Naming Batch C3 — avans durum enum rename (ödendi>paid, bekleyen>pending + migration)~~ ✅ (14 Mayıs 2026)
+3. 🎯 Naming Batch C4 — sohbet tip enum rename (bireysel>direct, grup>group)
 3. Tasarım revizyonu (OCR sadeleştirme + Dept/Muhasebe kart yapısı)
 4. Supabase mimari + entegrasyon (Faz 2)
 
@@ -248,7 +249,8 @@ Fonksiyon rename batch'leri tamamlandı (~150 fonksiyon, 9 commit). Kalan:
 |---|---|---|
 | **Batch B** | APP.data/APP.ui/APP.seed/APP.cache key rename + localStorage migration | ✅ tamamlandı (B1: 721b9cb, B2: 52170c2, B3: c042148) |
 | **Batch C2** | Kategori enum (kat field) — 8 değer Türkçe→İngilizce + HTML option + C2 migration | ✅ tamamlandı (14 Mayıs 2026) |
-| **Batch C3** | Rol + durum enum rename — sektörel terim kararı sonrası başlar | 🎯 sıradaki |
+| **Batch C3** | Avans durum enum — ödendi>paid, bekleyen>pending + C3 migration | ✅ tamamlandı (14 Mayıs 2026) |
+| **Batch C4** | Sohbet tip enum rename (bireysel>direct, grup>group) | 🎯 sıradaki |
 
 Batch B/C için sektörel terim kararları (Batch B'ye girilince alınacak):
 

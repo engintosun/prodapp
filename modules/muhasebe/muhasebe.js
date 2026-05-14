@@ -247,13 +247,13 @@ export function renderAccAdvance() {
     return;
   }
 
-  var bek  = gecmisDonem.filter(function(a){ return a.durum === 'bekleyen'; });
-  var ode  = gecmisDonem.filter(function(a){ return a.durum === 'ödendi'; });
+  var bek  = gecmisDonem.filter(function(a){ return a.durum === 'pending'; });
+  var ode  = gecmisDonem.filter(function(a){ return a.durum === 'paid'; });
   var red  = gecmisDonem.filter(function(a){ return a.durum === 'rejected'; });
 
   function avRow(av) {
-    var clr = av.durum === 'ödendi' ? 'sa-av-durum-ok' : (av.durum === 'rejected' ? 'sa-av-durum-red' : 'sa-av-durum-bek');
-    var ico = av.durum === 'ödendi' ? '✅' : (av.durum === 'rejected' ? '❌' : '⏳');
+    var clr = av.durum === 'paid' ? 'sa-av-durum-ok' : (av.durum === 'rejected' ? 'sa-av-durum-red' : 'sa-av-durum-bek');
+    var ico = av.durum === 'paid' ? '✅' : (av.durum === 'rejected' ? '❌' : '⏳');
     var redSatirAcc = (av.durum === 'rejected' && av.redNedeni)
       ? '<div style="font-size:11px;color:var(--rd2);margin-top:2px">Red nedeni: ' + av.redNedeni + '</div>'
       : '';
@@ -437,7 +437,7 @@ function _renderAccDeptAdvance(deptId) {
   if (!el) return;
   if (!list.length) { el.innerHTML = '<div style="padding:20px 16px;color:var(--tx3);font-size:13px">Avans kaydı yok</div>'; return; }
   el.innerHTML = list.map(function(a) {
-    var tagCls = a.durum === 'ödendi' ? 'uye-av-tag uye-av-tag-ok' : 'uye-av-tag uye-av-tag-bek';
+    var tagCls = a.durum === 'paid' ? 'uye-av-tag uye-av-tag-ok' : 'uye-av-tag uye-av-tag-bek';
     return '<div class="adept-av-row">' +
       '<div class="adept-av-av">' + a.ini + '</div>' +
       '<div class="adept-av-info">' +
@@ -576,7 +576,7 @@ function _renderAccMemberAdvance() {
   var items = deptAvans.filter(function(a) { return a.name === _accMemberName; });
   if (!items.length) { el.innerHTML = '<div style="padding:20px 16px;color:var(--tx3);font-size:13px">Avans kaydı yok</div>'; return; }
   el.innerHTML = items.map(function(a) {
-    var tagCls = a.durum === 'ödendi' ? 'uye-av-tag uye-av-tag-ok' : 'uye-av-tag uye-av-tag-bek';
+    var tagCls = a.durum === 'paid' ? 'uye-av-tag uye-av-tag-ok' : 'uye-av-tag uye-av-tag-bek';
     return '<div class="uye-av-row">' +
       '<div class="uye-av-info">' +
         '<div class="uye-av-tutar">₺' + a.tutar.toLocaleString('tr-TR') + '</div>' +
@@ -1141,7 +1141,7 @@ function _reportDeptDetail() {
     for (var avi = 0; avi < avanslar.length; avi++) topAv += avanslar[avi].tutar;
     html += '<div class="sa-rep-sec-hd">Avans Özeti · ₺' + topAv.toLocaleString('tr-TR') + ' toplam</div>';
     html += avanslar.map(function(av) {
-      var clr = av.durum === 'ödendi' ? 'var(--gr2)' : (av.durum === 'bekleyen' ? 'var(--am2)' : 'var(--rd2)');
+      var clr = av.durum === 'paid' ? 'var(--gr2)' : (av.durum === 'pending' ? 'var(--am2)' : 'var(--rd2)');
       return '<div class="sa-rep-row">' +
         '<div class="sa-rep-left"><div>' + av.name + '</div><div class="sa-rep-sub">' + av.gerekce + ' · ' + av.tarih + '</div></div>' +
         '<div style="text-align:right"><div class="sa-rep-val">₺' + av.tutar.toLocaleString('tr-TR') + '</div><div style="font-size:10px;color:' + clr + '">' + av.durum + '</div></div>' +
@@ -1312,7 +1312,7 @@ function _reportPersonDetail() {
   var avansOdendi = 0, avansBek = 0, avansRed = 0;
   for (var avo = 0; avo < kisiAvanslar.length; avo++) {
     var avx = kisiAvanslar[avo];
-    if (avx.durum === 'ödendi') avansOdendi += avx.tutar;
+    if (avx.durum === 'paid') avansOdendi += avx.tutar;
     else if (avx.durum === 'rejected') avansRed += avx.tutar;
     else avansBek += avx.tutar;
   }
@@ -1343,8 +1343,8 @@ function _reportPersonDetail() {
         ' · ₺' + avDkTop.toLocaleString('tr-TR') + ' · ' + avRows.length + ' avans' +
       '</div>';
       html += avRows.map(function(av) {
-        var clr = av.durum === 'ödendi' ? 'var(--gr2)' : (av.durum === 'rejected' ? 'var(--rd2)' : 'var(--am2)');
-        var ico = av.durum === 'ödendi' ? '✅' : (av.durum === 'rejected' ? '❌' : '⏳');
+        var clr = av.durum === 'paid' ? 'var(--gr2)' : (av.durum === 'rejected' ? 'var(--rd2)' : 'var(--am2)');
+        var ico = av.durum === 'paid' ? '✅' : (av.durum === 'rejected' ? '❌' : '⏳');
         return '<div class="sa-rep-row">' +
           '<div class="sa-rep-left">' +
             '<div style="font-size:13px;font-weight:700;color:var(--tx)">₺' + av.tutar.toLocaleString('tr-TR') + '</div>' +

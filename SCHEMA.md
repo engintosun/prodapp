@@ -188,7 +188,7 @@ Güncelleme sorumluluğu:
 | ini     | string | `"MK"`, `"OD"`                         | İnisiyaller                                     |
 | tutar   | number | `8000`, `4000`                         | TL cinsinden                                    |
 | tarih   | string | `"01.04"` (DD.MM)                      | Ödeme tarihi — kısa format                      |
-| durum   | string | `"ödendi"`, `"reddedildi"`             | Avans durumu — `"bekleyen"` yok (geçmiş kayıt) |
+| durum   | string | `"paid"`, `"pending"`, `"rejected"`    | Avans durumu — C3 rename (14 May 2026)          |
 | gerekce | string | `"Set kurulum harcamaları"`            | Avans gerekçesi                                 |
 | donem   | number | `0`, `1`, `2`                          | Dönem numarası                                  |
 

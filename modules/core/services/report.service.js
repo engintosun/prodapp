@@ -145,7 +145,7 @@ export function _computePersonnelReport() {
     var _avans = 0;
     for (var _avi = 0; _avi < APP.data.accAdvanceHistory.length; _avi++) {
       var _av = APP.data.accAdvanceHistory[_avi];
-      if (_av.uye === _name && _av.durum === 'ödendi') _avans += _av.tutar;
+      if (_av.uye === _name && _av.durum === 'paid') _avans += _av.tutar;
     }
     result.push({
       name: _name, ini: _ini, dept: _dept, deptId: _deptId, rol: _rol,

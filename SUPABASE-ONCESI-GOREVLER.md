@@ -16,8 +16,8 @@
 | B3 | APP.cache key rename (8 key) | ✅ Tamamlandı | commit c042148 |
 | C1 | Fiş durum enum rename (5 değer) + migration | ✅ Tamamlandı | commit ec46dfc |
 | C2 | Kategori enum rename (8 değer) + HTML option + migration | ✅ Tamamlandı | commit 5cdc398 |
-| C3 | Avans durum enum rename | 🎯 Sırada | ödendi>paid, bekleyen>pending |
-| C4 | Sohbet tip enum rename | ❓ C3'ten sonra | bireysel>direct, grup>group |
+| C3 | Avans durum enum rename | ✅ Tamamlandı | commit — ödendi>paid, bekleyen>pending |
+| C4 | Sohbet tip enum rename | 🎯 Sırada | bireysel>direct, grup>group |
 | C5 | Kira durum enum rename + CSS class | ❓ | aktif/gec/yak/iade — CSS coupling var |
 | C6 | Log aksiyon enum rename | ❓ | olusturuldu>created, dept-onayladi>dept-approved |
 | D | CSS class rename (.fis-, .sohbet-, .avans-, .donem-, .kat-) | ❓ Batch C sonrası | Bileşen sınıfları, veri enum'undan bağımsız |

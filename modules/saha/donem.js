@@ -299,7 +299,7 @@ export function closePeriod(donemId, sebep) {
     if (!confirm('Bu dönemde ' + kiralamaBek + ' açık kiralama var. Kiralamalar sonradan bağlanabilir. Yine de kapatılsın mı?')) return;
   }
 
-  var acikAvans = (APP.data.accAdvanceHistory || []).filter(function(av) { return av.donem === donemId && av.durum !== 'ödendi'; }).length;
+  var acikAvans = (APP.data.accAdvanceHistory || []).filter(function(av) { return av.donem === donemId && av.durum !== 'paid'; }).length;
   if (acikAvans > 0) {
     _pushNotif('m', 'am', 'Açık Avans Uyarısı', d.lbl + ' kapatıldı — ' + acikAvans + ' avans takipte.', 'Az önce · Sistem');
   }

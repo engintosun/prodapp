@@ -4068,17 +4068,17 @@ APP.data.accRentals = [
 
 /* ── Muhasebe — Avans Geçmişi (dönem bazlı) ── */
 APP.data.accAdvanceHistory = [
-  { id:303, dept:'Yapım',  uye:'Mehmet Kaya',   ini:'MK', tutar:8000, tarih:'01.04', durum:'ödendi',      gerekce:'Set kurulum harcamaları',             donem:2 },
-  { id:305, dept:'Kostüm', uye:'Arda Şen',      ini:'AS', tutar:2000, tarih:'02.04', durum:'ödendi',      gerekce:'Makyaj malzeme seti',                 donem:2 },
-  { id:306, dept:'Kamera', uye:'Okan Demir',    ini:'OD', tutar:4000, tarih:'08.04', durum:'ödendi',      gerekce:'Kamera ekipman depozitosu',           donem:2 },
-  { id:307, dept:'Sanat',  uye:'Selin Yıldız',  ini:'SY', tutar:3000, tarih:'05.04', durum:'ödendi',      gerekce:'Sanat malzemesi alımları',            donem:2 },
-  { id:201, dept:'Yapım',  uye:'Mehmet Kaya',   ini:'MK', tutar:5000, tarih:'01.03', durum:'ödendi',      gerekce:'Yakıt ve ulaşım avansı',              donem:1 },
-  { id:202, dept:'Yapım',  uye:'Okan Demir',    ini:'OD', tutar:3500, tarih:'03.03', durum:'ödendi',      gerekce:'Ekipman kiralama peşinatı',           donem:1 },
-  { id:203, dept:'Kamera', uye:'Fatih Bayrak',  ini:'FB', tutar:4200, tarih:'05.03', durum:'ödendi',      gerekce:'Lens seti depozitosu',                donem:1 },
-  { id:204, dept:'Sanat',  uye:'Selin Yıldız',  ini:'SY', tutar:2800, tarih:'02.03', durum:'ödendi',      gerekce:'Dekor malzeme alımı',                 donem:1 },
-  { id:205, dept:'Ses',    uye:'Aylin Korkmaz', ini:'AK', tutar:1500, tarih:'08.03', durum:'rejected',  gerekce:'Kişisel harcama — kapsam dışı',       donem:1 },
-  { id:101, dept:'Yapım',  uye:'Mehmet Kaya',   ini:'MK', tutar:6000, tarih:'05.02', durum:'ödendi',      gerekce:'Ön prodüksiyon araç giderleri',       donem:0 },
-  { id:102, dept:'Kamera', uye:'Okan Demir',    ini:'OD', tutar:3000, tarih:'03.02', durum:'ödendi',      gerekce:'Kamera malzeme deposito',             donem:0 }
+  { id:303, dept:'Yapım',  uye:'Mehmet Kaya',   ini:'MK', tutar:8000, tarih:'01.04', durum:'paid',     gerekce:'Set kurulum harcamaları',             donem:2 },
+  { id:305, dept:'Kostüm', uye:'Arda Şen',      ini:'AS', tutar:2000, tarih:'02.04', durum:'paid',     gerekce:'Makyaj malzeme seti',                 donem:2 },
+  { id:306, dept:'Kamera', uye:'Okan Demir',    ini:'OD', tutar:4000, tarih:'08.04', durum:'paid',     gerekce:'Kamera ekipman depozitosu',           donem:2 },
+  { id:307, dept:'Sanat',  uye:'Selin Yıldız',  ini:'SY', tutar:3000, tarih:'05.04', durum:'paid',     gerekce:'Sanat malzemesi alımları',            donem:2 },
+  { id:201, dept:'Yapım',  uye:'Mehmet Kaya',   ini:'MK', tutar:5000, tarih:'01.03', durum:'paid',     gerekce:'Yakıt ve ulaşım avansı',              donem:1 },
+  { id:202, dept:'Yapım',  uye:'Okan Demir',    ini:'OD', tutar:3500, tarih:'03.03', durum:'paid',     gerekce:'Ekipman kiralama peşinatı',           donem:1 },
+  { id:203, dept:'Kamera', uye:'Fatih Bayrak',  ini:'FB', tutar:4200, tarih:'05.03', durum:'paid',     gerekce:'Lens seti depozitosu',                donem:1 },
+  { id:204, dept:'Sanat',  uye:'Selin Yıldız',  ini:'SY', tutar:2800, tarih:'02.03', durum:'paid',     gerekce:'Dekor malzeme alımı',                 donem:1 },
+  { id:205, dept:'Ses',    uye:'Aylin Korkmaz', ini:'AK', tutar:1500, tarih:'08.03', durum:'rejected', gerekce:'Kişisel harcama — kapsam dışı',       donem:1 },
+  { id:101, dept:'Yapım',  uye:'Mehmet Kaya',   ini:'MK', tutar:6000, tarih:'05.02', durum:'paid',     gerekce:'Ön prodüksiyon araç giderleri',       donem:0 },
+  { id:102, dept:'Kamera', uye:'Okan Demir',    ini:'OD', tutar:3000, tarih:'03.02', durum:'paid',     gerekce:'Kamera malzeme deposito',             donem:0 }
 ];
 
 /* ── Muhasebe — Onay/Red Geçmişi (arşiv, sadece append) ── */
@@ -4237,8 +4237,8 @@ APP.cache.memberHistory = {
       { lbl:'Dönem #1 (Mart)',  total:14600, onay:14600, bek:0,    tarih:'01.03–31.03' }
     ],
     avanslar: [
-      { tutar:8000, tarih:'01.04', durum:'ödendi',   gerekce:'Set kurulum harcamaları' },
-      { tutar:5000, tarih:'01.03', durum:'ödendi',   gerekce:'Yakıt avansı — Dönem #1' }
+      { tutar:8000, tarih:'01.04', durum:'paid',    gerekce:'Set kurulum harcamaları' },
+      { tutar:5000, tarih:'01.03', durum:'paid',    gerekce:'Yakıt avansı — Dönem #1' }
     ]
   },
   od: {
@@ -4247,8 +4247,8 @@ APP.cache.memberHistory = {
       { lbl:'Dönem #1 (Mart)',  total:9200, onay:8800, bek:0,    tarih:'01.03–31.03' }
     ],
     avanslar: [
-      { tutar:5000, tarih:'11.04', durum:'bekleyen', gerekce:'Dış çekim ekipman kira ön ödemesi' },
-      { tutar:4000, tarih:'08.04', durum:'ödendi',   gerekce:'Kamera ekipman depozitosu' }
+      { tutar:5000, tarih:'11.04', durum:'pending', gerekce:'Dış çekim ekipman kira ön ödemesi' },
+      { tutar:4000, tarih:'08.04', durum:'paid',    gerekce:'Kamera ekipman depozitosu' }
     ]
   },
   sy: {
@@ -4257,7 +4257,7 @@ APP.cache.memberHistory = {
       { lbl:'Dönem #1 (Mart)',  total:5800, onay:5500, bek:0,   tarih:'01.03–31.03' }
     ],
     avanslar: [
-      { tutar:3000, tarih:'05.04', durum:'ödendi', gerekce:'Sanat malzemesi alımları' }
+      { tutar:3000, tarih:'05.04', durum:'paid',    gerekce:'Sanat malzemesi alımları' }
     ]
   },
   bc: {
@@ -4266,7 +4266,7 @@ APP.cache.memberHistory = {
       { lbl:'Dönem #1 (Mart)',  total:9400, onay:9400, bek:0, tarih:'01.03–31.03' }
     ],
     avanslar: [
-      { tutar:2500, tarih:'10.04', durum:'bekleyen', gerekce:'Set kurulum lojistik harcaması' }
+      { tutar:2500, tarih:'10.04', durum:'pending', gerekce:'Set kurulum lojistik harcaması' }
     ]
   },
   ak: {
@@ -4323,14 +4323,14 @@ APP.cache.accDeptPeriods = {
 };
 
 APP.cache.accDeptAvans = {
-  yapim:  [ { ini:'OD', name:'Okan Demir',   tutar:5000, tarih:'11.04', durum:'bekleyen', gerekce:'Dış çekim ekipman kira' },
-             { ini:'MK', name:'Mehmet Kaya',  tutar:8000, tarih:'01.04', durum:'ödendi',   gerekce:'Set kurulum harcamaları' },
-             { ini:'BÇ', name:'Burhan Çelik', tutar:2500, tarih:'10.04', durum:'bekleyen', gerekce:'Lojistik & set kurulum' } ],
-  kamera: [ { ini:'OD', name:'Okan Demir',   tutar:4000, tarih:'08.04', durum:'ödendi',   gerekce:'Kamera ekipman depozitosu' } ],
-  sanat:  [ { ini:'SY', name:'Selin Yıldız', tutar:3000, tarih:'05.04', durum:'ödendi',   gerekce:'Sanat malzemesi alımları' } ],
+  yapim:  [ { ini:'OD', name:'Okan Demir',   tutar:5000, tarih:'11.04', durum:'pending', gerekce:'Dış çekim ekipman kira' },
+             { ini:'MK', name:'Mehmet Kaya',  tutar:8000, tarih:'01.04', durum:'paid',    gerekce:'Set kurulum harcamaları' },
+             { ini:'BÇ', name:'Burhan Çelik', tutar:2500, tarih:'10.04', durum:'pending', gerekce:'Lojistik & set kurulum' } ],
+  kamera: [ { ini:'OD', name:'Okan Demir',   tutar:4000, tarih:'08.04', durum:'paid',    gerekce:'Kamera ekipman depozitosu' } ],
+  sanat:  [ { ini:'SY', name:'Selin Yıldız', tutar:3000, tarih:'05.04', durum:'paid',    gerekce:'Sanat malzemesi alımları' } ],
   ses:    [],
-  kostum: [ { ini:'BÇ', name:'Burhan Çelik', tutar:2500, tarih:'10.04', durum:'bekleyen', gerekce:'Kostüm alım & kiralama' },
-             { ini:'AS', name:'Arda Şen',      tutar:2000, tarih:'02.04', durum:'ödendi',   gerekce:'Makyaj malzeme seti' } ]
+  kostum: [ { ini:'BÇ', name:'Burhan Çelik', tutar:2500, tarih:'10.04', durum:'pending', gerekce:'Kostüm alım & kiralama' },
+             { ini:'AS', name:'Arda Şen',      tutar:2000, tarih:'02.04', durum:'paid',    gerekce:'Makyaj malzeme seti' } ]
 };
 
 APP.cache.accDeptHistory = {
@@ -5005,7 +5005,7 @@ function openMemberProfile(uyeId) {
     var gec2 = APP.cache.memberHistory[u.id];
     if (gec2 && gec2.avanslar && gec2.avanslar.length) {
       avEl2.innerHTML = gec2.avanslar.map(function(a) {
-        var tagCls = a.durum === 'ödendi' ? 'uye-av-tag uye-av-tag-ok' : 'uye-av-tag uye-av-tag-bek';
+        var tagCls = a.durum === 'paid' ? 'uye-av-tag uye-av-tag-ok' : 'uye-av-tag uye-av-tag-bek';
         return '<div class="uye-av-row">' +
           '<div class="uye-av-info">' +
             '<div class="uye-av-tutar">₺' + a.tutar.toLocaleString('tr-TR') + '</div>' +
