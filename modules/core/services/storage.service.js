@@ -84,6 +84,14 @@ export function loadAppData() {
     _c3MigrateAvans(parsed.accAdvanceHistory);
     _c3MigrateAvans(parsed.deptAdvances);
     // --- /C3 Migration ---
+    // --- C4 Migration: sohbet tip değerleri ---
+    if (parsed.chats && Array.isArray(parsed.chats)) {
+      parsed.chats.forEach(function(s) {
+        if (s.tip === 'bireysel') s.tip = 'direct';
+        else if (s.tip === 'grup') s.tip = 'group';
+      });
+    }
+    // --- /C4 Migration ---
     Object.keys(parsed).forEach(function(k) {
       if (APP.data[k] !== undefined) APP.data[k] = parsed[k];
     });

@@ -21,7 +21,7 @@ function _fmtChatTime(ts) {
 }
 
 function _getChatName(sohbet, userKey) {
-  if (sohbet.tip === 'grup') return sohbet.grupAdi || 'Grup';
+  if (sohbet.tip === 'group') return sohbet.grupAdi || 'Grup';
   var diger = '';
   for (var i = 0; i < sohbet.katilimcilar.length; i++) {
     if (sohbet.katilimcilar[i] !== userKey) { diger = sohbet.katilimcilar[i]; break; }
@@ -57,14 +57,14 @@ function _chatFilter(userKey) {
   }
   /* saha: sadece dept sorumlusuyla bireysel sohbet */
   return list.filter(function(s) {
-    return s.tip === 'bireysel' &&
+    return s.tip === 'direct' &&
            s.katilimcilar.indexOf('s') !== -1 &&
            s.katilimcilar.indexOf('d') !== -1;
   });
 }
 
 function _chatAvatarHtml(sohbet, userKey) {
-  if (sohbet.tip === 'grup') {
+  if (sohbet.tip === 'group') {
     return '<div class="sohbet-av sohbet-av-grup">' +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' +
     '</div>';
@@ -132,7 +132,7 @@ function openChat(id) {
   document.getElementById('sic-adi').textContent = adi;
 
   var avEl = document.getElementById('sic-av');
-  if (sohbet.tip === 'grup') {
+  if (sohbet.tip === 'group') {
     avEl.className = 'sic-av sic-av-grup';
     avEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
   } else {
@@ -210,7 +210,7 @@ function _renderChatBody(sohbet, userKey) {
 
     /* Grup sohbetinde gönderen adı (karşı taraf için) */
     var gonderenSatir = '';
-    if (!benMi && sohbet.tip === 'grup') {
+    if (!benMi && sohbet.tip === 'group') {
       var gu = APP.seed.users[m.gonderen];
       gonderenSatir = '<div class="sb-gonderen">' + _escHtml(gu ? gu.name : m.gonderen) + '</div>';
     }
@@ -372,12 +372,12 @@ function _newChatRecipientList(userKey) {
   return result;
 }
 
-var _newChatTab = 'bireysel';
+var _newChatTab = 'direct';
 
 function openNewChatModal() {
   var userKey = APP.ui.curUserKey || 'm';
   if (userKey === 's') return;
-  _newChatTab = 'bireysel';
+  _newChatTab = 'direct';
   _renderNewChatTabs(userKey);
   openM('myeni');
 }
@@ -390,11 +390,11 @@ function _newChatTabSelect(tab) {
 function _renderNewChatTabs(userKey) {
   var el = document.getElementById('myeni-liste');
   if (!el) return;
-  var isBireysel = _newChatTab === 'bireysel';
+  var isBireysel = _newChatTab === 'direct';
   var html =
     '<div class="yeni-tabs">' +
-      '<button class="yeni-tab' + (isBireysel ? ' on' : '') + '" onclick="_newChatTabSelect(\'bireysel\')">Bireysel</button>' +
-      '<button class="yeni-tab' + (!isBireysel ? ' on' : '') + '" onclick="_newChatTabSelect(\'grup\')">Grup Kur</button>' +
+      '<button class="yeni-tab' + (isBireysel ? ' on' : '') + '" onclick="_newChatTabSelect(\'direct\')">Bireysel</button>' +
+      '<button class="yeni-tab' + (!isBireysel ? ' on' : '') + '" onclick="_newChatTabSelect(\'group\')">Grup Kur</button>' +
     '</div>';
   html += isBireysel ? _renderDirectList(userKey) : _renderGroupForm(userKey);
   el.innerHTML = html;
@@ -455,7 +455,7 @@ function createNewGroup() {
   if (checkboxes.length < 2) { notif('En az 2 üye seçin', 'amber'); return; }
   var katilimcilar = [userKey];
   for (var i = 0; i < checkboxes.length; i++) katilimcilar.push(checkboxes[i].value);
-  var yeni = { id: 'c' + Date.now(), tip: 'grup', grupAdi: grupAdi, katilimcilar: katilimcilar, mesajlar: [] };
+  var yeni = { id: 'c' + Date.now(), tip: 'group', grupAdi: grupAdi, katilimcilar: katilimcilar, mesajlar: [] };
   APP.data.chats.push(yeni);
   saveAppData();
   closeM('myeni');
@@ -467,7 +467,7 @@ function startNewChat(hedefKey) {
   var list    = APP.data.chats || [];
   for (var i = 0; i < list.length; i++) {
     var s = list[i];
-    if (s.tip === 'bireysel' &&
+    if (s.tip === 'direct' &&
         s.katilimcilar.length === 2 &&
         s.katilimcilar.indexOf(userKey)  !== -1 &&
         s.katilimcilar.indexOf(hedefKey) !== -1) {
@@ -476,7 +476,7 @@ function startNewChat(hedefKey) {
       return;
     }
   }
-  var yeni = { id: 'c' + Date.now(), tip: 'bireysel', katilimcilar: [userKey, hedefKey], mesajlar: [] };
+  var yeni = { id: 'c' + Date.now(), tip: 'direct', katilimcilar: [userKey, hedefKey], mesajlar: [] };
   APP.data.chats.push(yeni);
   saveAppData();
   closeM('myeni');

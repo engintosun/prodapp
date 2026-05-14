@@ -301,7 +301,7 @@ Boş başlar (`{}`), kullanıcı marka ayarlarından doldurur.
 
 **APP.data.accSuspicion** — Muhasebe şüpheli harcama listesi. Her öğe: `{ id, dept, uye, ini, satici, kat, tutar, tarih, sebep, durum }`. `durum`: `'bek'`/`'inc'`.
 
-**APP.data.chats** — Mesajlaşma sohbetleri. Her öğe: `{ id, tip:'bireysel'|'grup', katilimcilar:[], mesajlar:[], grupAdi?, grupDept? }`. Her mesaj: `{ id, gonderen, icerik, tarih:number(ms), okunanlar:[] }`.
+**APP.data.chats** — Mesajlaşma sohbetleri. Her öğe: `{ id, tip:'direct'|'group', katilimcilar:[], mesajlar:[], grupAdi?, grupDept? }`. Her mesaj: `{ id, gonderen, icerik, tarih:number(ms), okunanlar:[] }`. (C4 rename: bireysel→direct, grup→group)
 
 **APP.data.avatars** — Kullanıcı avatar fotoğrafları. `{ s: null|base64, d: null|base64, m: null|base64 }`. Canvas 256×256 ile sıkıştırılmış.
 
