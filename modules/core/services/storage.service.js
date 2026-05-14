@@ -92,6 +92,27 @@ export function loadAppData() {
       });
     }
     // --- /C4 Migration ---
+    // --- C5 Migration: kira ve dönem durum değerleri ---
+    if (parsed.periods && Array.isArray(parsed.periods)) {
+      parsed.periods.forEach(function(p) {
+        if (p.durum === 'aktif') p.durum = 'active';
+      });
+    }
+    if (parsed.exceptionPermits && Array.isArray(parsed.exceptionPermits)) {
+      parsed.exceptionPermits.forEach(function(ex) {
+        if (ex.durum === 'aktif') ex.durum = 'active';
+      });
+    }
+    var _c5KiraMap = { 'aktif':'active', 'gec':'overdue', 'yak':'upcoming', 'iade':'returned' };
+    function _c5MigrateKira(arr) {
+      if (!Array.isArray(arr)) return;
+      arr.forEach(function(item) {
+        if (item.durum && _c5KiraMap[item.durum]) item.durum = _c5KiraMap[item.durum];
+      });
+    }
+    _c5MigrateKira(parsed.deptRentals);
+    _c5MigrateKira(parsed.accRentals);
+    // --- /C5 Migration ---
     Object.keys(parsed).forEach(function(k) {
       if (APP.data[k] !== undefined) APP.data[k] = parsed[k];
     });

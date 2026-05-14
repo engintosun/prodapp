@@ -828,7 +828,7 @@ export function renderDeptRental() {
 
   var aktifSay = 0;
   for (var ci = 0; ci < APP.data.deptRentals.length; ci++) {
-    if (_rentalStatus(APP.data.deptRentals[ci]) !== 'iade') aktifSay++;
+    if (_rentalStatus(APP.data.deptRentals[ci]) !== 'returned') aktifSay++;
   }
   var cnt = document.getElementById('sdtb-kira-cnt');
   if (cnt) cnt.textContent = aktifSay;
@@ -842,8 +842,8 @@ export function renderDeptRental() {
   for (var i = 0; i < APP.data.deptRentals.length; i++) {
     var k   = APP.data.deptRentals[i];
     var dur = _rentalStatus(k);
-    if      (dur === 'gec') gecmis.push(k);
-    else if (dur === 'yak') yaklasan.push(k);
+    if      (dur === 'overdue') gecmis.push(k);
+    else if (dur === 'upcoming') yaklasan.push(k);
     else if (dur === 'ak')  aktif.push(k);
     else                    iade.push(k);
   }
@@ -853,15 +853,15 @@ export function renderDeptRental() {
     var kalan = _dayDiff(today, k.bit);
     var c     = _rentalPenalty(k);
     var tagCls, tagTxt;
-    if      (dur === 'gec') { tagCls = 'sd-kira-tag sd-kira-tag-gec'; tagTxt = c.gecGun + ' gün gecikmiş'; }
-    else if (dur === 'yak') { tagCls = 'sd-kira-tag sd-kira-tag-yak'; tagTxt = kalan === 0 ? 'Bugün bitiyor' : kalan + ' gün kaldı'; }
-    else if (dur === 'ak')  { tagCls = 'sd-kira-tag sd-kira-tag-ak';  tagTxt = kalan + ' gün kaldı'; }
-    else                    { tagCls = 'sd-kira-tag sd-kira-tag-iad'; tagTxt = 'İade Edildi'; }
-    var cardCls = 'sd-kira-card' + (dur === 'gec' ? ' gec' : dur === 'yak' ? ' yak' : dur === 'iade' ? ' iade' : '');
-    var ceza    = dur === 'gec'
+    if      (dur === 'overdue')  { tagCls = 'sd-kira-tag sd-kira-tag-overdue';  tagTxt = c.gecGun + ' gün gecikmiş'; }
+    else if (dur === 'upcoming') { tagCls = 'sd-kira-tag sd-kira-tag-upcoming'; tagTxt = kalan === 0 ? 'Bugün bitiyor' : kalan + ' gün kaldı'; }
+    else if (dur === 'ak')       { tagCls = 'sd-kira-tag sd-kira-tag-ak';       tagTxt = kalan + ' gün kaldı'; }
+    else                         { tagCls = 'sd-kira-tag sd-kira-tag-iad';      tagTxt = 'İade Edildi'; }
+    var cardCls = 'sd-kira-card' + (dur === 'overdue' ? ' overdue' : dur === 'upcoming' ? ' upcoming' : dur === 'returned' ? ' returned' : '');
+    var ceza    = dur === 'overdue'
       ? '<div class="sd-kira-ceza">⚠ Gecikme: ' + c.gecGun + ' gün × ₺' + k.gunluk.toLocaleString('tr-TR') + ' = ₺' + c.ceza.toLocaleString('tr-TR') + ' olası ceza</div>'
       : '';
-    var iadeBtn = dur !== 'iade'
+    var iadeBtn = dur !== 'returned'
       ? '<button class="sd-ok btn-sm" style="font-size:12px" onclick="deptRentalReturn(' + k.id + ')">✓ İade Edildi</button>'
       : '<span style="font-size:12px;color:var(--tx3)">✓ Teslim Edildi</span>';
     return '<div class="' + cardCls + '">' +

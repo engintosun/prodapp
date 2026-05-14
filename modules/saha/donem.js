@@ -50,7 +50,7 @@ export function renderPeriod(did) {
   if (pillsEl) {
     pillsEl.innerHTML = APP.seed.periods.map(function(x) {
       return '<div class="dp' + (x.id === did ? ' on' : '') + '" onclick="renderPeriod(' + x.id + ')">' +
-        x.n + (x.durum === 'aktif' ? ' Aktif' : ' Kapandı') +
+        x.n + (x.durum === 'active' ? ' Aktif' : ' Kapandı') +
       '</div>';
     }).join('');
   }
@@ -167,21 +167,21 @@ export function renderPeriod(did) {
     var _simdi = Date.now();
     var _donIzinler = APP.data.exceptionPermits.filter(function(iz) { return iz.donemId === did; });
     if (_donIzinler.length) {
-      var _durumLbl = { aktif:'Aktif', sureDoldu:'Süre Doldu', adetDoldu:'Adet Doldu', tutarDoldu:'Tutar Doldu', iptal:'İptal' };
+      var _durumLbl = { active:'Aktif', sureDoldu:'Süre Doldu', adetDoldu:'Adet Doldu', tutarDoldu:'Tutar Doldu', iptal:'İptal' };
       _istisnaBtn += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--bo)">' +
         '<div style="font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">İstisna İzinleri</div>' +
         _donIzinler.map(function(iz) {
           var gecenSaat = ((_simdi - iz.baslangicTs) / (1000*60*60)).toFixed(1);
           var kalanSaat = Math.max(0, iz.sure - parseFloat(gecenSaat)).toFixed(1);
-          var durumClr  = iz.durum === 'aktif' ? 'var(--gr2)' : 'var(--rd2)';
+          var durumClr  = iz.durum === 'active' ? 'var(--gr2)' : 'var(--rd2)';
           var durumTxt  = _durumLbl[iz.durum] || iz.durum;
-          var iptalBtn  = iz.durum === 'aktif'
+          var iptalBtn  = iz.durum === 'active'
             ? '<button class="btn btn-sm btn-r" style="font-size:10px;padding:3px 8px" onclick="cancelException(' + iz.id + ')">İptal</button>'
             : '';
           var limitBilgi = [];
           if (iz.maxAdet  !== null) limitBilgi.push(iz.girilenAdet  + '/' + iz.maxAdet  + ' belge');
           if (iz.maxTutar !== null) limitBilgi.push('₺' + iz.girilenTutar.toLocaleString('tr-TR') + '/₺' + iz.maxTutar.toLocaleString('tr-TR'));
-          if (iz.durum === 'aktif') limitBilgi.push(kalanSaat + ' saat kalan');
+          if (iz.durum === 'active') limitBilgi.push(kalanSaat + ' saat kalan');
           return '<div style="background:var(--bg2);border:1px solid var(--bo);border-radius:8px;padding:8px 10px;margin-bottom:6px">' +
             '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">' +
               '<span style="font-size:13px;font-weight:700;color:var(--tx)">' + iz.kisiAd + '</span>' +
@@ -231,7 +231,7 @@ export function newPeriod() {
   }
   var aktif = null;
   for (var _ai = 0; _ai < APP.seed.periods.length; _ai++) {
-    if (APP.seed.periods[_ai].durum === 'aktif') { aktif = APP.seed.periods[_ai]; break; }
+    if (APP.seed.periods[_ai].durum === 'active') { aktif = APP.seed.periods[_ai]; break; }
   }
   if (aktif) {
     var deptBek = APP.data.deptPending.filter(function(f) { return f.donem === aktif.id && f.kat !== 'rental'; });
@@ -252,7 +252,7 @@ export function newPeriod() {
   var bugun  = new Date().toLocaleDateString('tr-TR');
   APP.seed.periods.unshift({
     id: yeniId, n: 'D' + yeniN, lbl: 'Dönem #' + yeniN,
-    tarih: bugun + ' →', durum: 'aktif',
+    tarih: bugun + ' →', durum: 'active',
     avans: 0, harcama: 0, islem: 0,
     baslangic: bugun, bitis: null, kapanmaTarihi: null, kapayanKisi: null, gecIslemSayisi: 0
   });
@@ -387,7 +387,7 @@ export function grantPeriodException() {
 
   for (var _ii = 0; _ii < APP.data.exceptionPermits.length; _ii++) {
     var _iz = APP.data.exceptionPermits[_ii];
-    if (_iz.donemId === donemId && _iz.kisiKey === kisiKey && _iz.durum === 'aktif') {
+    if (_iz.donemId === donemId && _iz.kisiKey === kisiKey && _iz.durum === 'active') {
       notif(uyeObj.name + ' için bu dönemde zaten aktif izin var', 'red'); return;
     }
   }
@@ -401,7 +401,7 @@ export function grantPeriodException() {
     id: Date.now(), donemId: donemId, kisiKey: kisiKey, kisiAd: uyeObj.name,
     sebep: sebep, sure: sure, maxAdet: maxAdet, maxTutar: maxTutar,
     verenKisi: APP.ui.curUser ? APP.ui.curUser.name : 'Muhasebe',
-    verilisTarihi: verilisTarihi, baslangicTs: Date.now(), durum: 'aktif',
+    verilisTarihi: verilisTarihi, baslangicTs: Date.now(), durum: 'active',
     girilenAdet: 0, girilenTutar: 0
   });
 
@@ -424,7 +424,7 @@ export function grantPeriodException() {
 export function _activeException(donemId, kisiAd) {
   for (var _ai = 0; _ai < APP.data.exceptionPermits.length; _ai++) {
     var _iz = APP.data.exceptionPermits[_ai];
-    if (_iz.donemId === donemId && _iz.kisiAd === kisiAd && _iz.durum === 'aktif') return _iz;
+    if (_iz.donemId === donemId && _iz.kisiAd === kisiAd && _iz.durum === 'active') return _iz;
   }
   return null;
 }

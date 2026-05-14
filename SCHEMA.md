@@ -322,7 +322,7 @@ Boş başlar (`{}`), kullanıcı marka ayarlarından doldurur.
 | verenKisi | string | İzni veren muhasebeci adı |
 | verilisTarihi | string | `'DD.MM.YYYY HH:MM'` |
 | baslangicTs | number | `Date.now()` — süre hesabı için |
-| durum | string | `'aktif'`\|`'sureDoldu'`\|`'adetDoldu'`\|`'tutarDoldu'`\|`'iptal'` |
+| durum | string | `'active'`\|`'sureDoldu'`\|`'adetDoldu'`\|`'tutarDoldu'`\|`'iptal'` | C5 rename |
 | girilenAdet | number | 0'dan başlar, her fiş girişinde artar |
 | girilenTutar | number | 0'dan başlar, her fiş girişinde artar |
 

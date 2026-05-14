@@ -49,9 +49,9 @@ export function renderAccRental() {
   for (var i = 0; i < APP.data.accRentals.length; i++) {
     var k = APP.data.accRentals[i];
     var dur = _rentalStatus(k);
-    if (dur !== 'iade') topAktif += k.tutar;
-    if (dur === 'gec') { var _oc = _rentalPenalty(k); topGec += _oc.ceza; gecSay++; }
-    if (dur === 'iade') iadeSay++;
+    if (dur !== 'returned') topAktif += k.tutar;
+    if (dur === 'overdue') { var _oc = _rentalPenalty(k); topGec += _oc.ceza; gecSay++; }
+    if (dur === 'returned') iadeSay++;
   }
   var aktifSay = APP.data.accRentals.length - iadeSay;
   var cnt = document.getElementById('satb-kira-cnt');
@@ -76,8 +76,8 @@ export function renderAccRental() {
     for (var dki2 = 0; dki2 < dKiralar.length; dki2++) {
       var dk2 = dKiralar[dki2];
       var dkDur = _rentalStatus(dk2);
-      if (dkDur !== 'iade') { dAktif++; dTop += dk2.tutar; }
-      if (dkDur === 'gec') { dGec++; var _dc = _rentalPenalty(dk2); dCeza += _dc.ceza; }
+      if (dkDur !== 'returned') { dAktif++; dTop += dk2.tutar; }
+      if (dkDur === 'overdue') { dGec++; var _dc = _rentalPenalty(dk2); dCeza += _dc.ceza; }
     }
     html += '<tr>' +
       '<td class="nm"><div class="sa-kira-dept-dot" style="background:' + deptClr[dId] + '"></div>' + deptNm[dId] + '</td>' +
@@ -88,7 +88,7 @@ export function renderAccRental() {
   }
   html += '</tbody></table></div>';
 
-  var gecmisler = APP.data.accRentals.filter(function(k){ return _rentalStatus(k) === 'gec'; });
+  var gecmisler = APP.data.accRentals.filter(function(k){ return _rentalStatus(k) === 'overdue'; });
   if (gecmisler.length) {
     html += '<div class="sa-kira-sec-hd" style="color:var(--rd2)">🔴 Gecikmiş Kiralamalar (' + gecmisler.length + ')</div>';
     html += gecmisler.map(function(k) {
@@ -96,7 +96,7 @@ export function renderAccRental() {
       var c = _rentalPenalty(k);
       var gecGun = c.gecGun;
       var topCeza = c.ceza;
-      return '<div class="sa-kira-card gec">' +
+      return '<div class="sa-kira-card overdue">' +
         '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">' +
           '<div>' +
             '<div style="font-size:13px;font-weight:700;color:var(--tx)">' + k.satici + '</div>' +
@@ -104,7 +104,7 @@ export function renderAccRental() {
           '</div>' +
           '<div style="text-align:right">' +
             '<div style="font-size:14px;font-weight:800;font-family:var(--mo)">₺' + k.tutar.toLocaleString('tr-TR') + '</div>' +
-            '<span class="sd-kira-tag sd-kira-tag-gec" style="margin-top:3px;display:inline-block">' + gecGun + ' gün geç</span>' +
+            '<span class="sd-kira-tag sd-kira-tag-overdue" style="margin-top:3px;display:inline-block">' + gecGun + ' gün geç</span>' +
           '</div>' +
         '</div>' +
         '<div style="font-size:11px;color:var(--tx3);margin-top:5px">' + k.bas.split('-').reverse().join('.') + ' → ' + k.bit.split('-').reverse().join('.') + ' · ₺' + k.gunluk.toLocaleString('tr-TR') + '/gün</div>' +
@@ -125,7 +125,7 @@ export function renderAccRental() {
 
     dKiralar.sort(function(a, b) {
       var da = _rentalStatus(a), db = _rentalStatus(b);
-      var ord = { gec:0, yak:1, ak:2, iade:3 };
+      var ord = { overdue:0, upcoming:1, ak:2, returned:3 };
       return (ord[da] || 0) - (ord[db] || 0);
     });
 
@@ -140,18 +140,18 @@ export function renderAccRental() {
       var kalan = _dayDiff(today, k.bit);
       var c     = _rentalPenalty(k);
       var tagCls, tagTxt;
-      if (dur === 'gec') { tagCls = 'sd-kira-tag sd-kira-tag-gec'; tagTxt = c.gecGun + ' gün geç'; }
-      else if (dur === 'yak') { tagCls = 'sd-kira-tag sd-kira-tag-yak'; tagTxt = kalan === 0 ? 'Bugün' : kalan + ' gün'; }
-      else if (dur === 'ak') { tagCls = 'sd-kira-tag sd-kira-tag-ak'; tagTxt = kalan + ' gün kaldı'; }
+      if (dur === 'overdue')       { tagCls = 'sd-kira-tag sd-kira-tag-overdue';  tagTxt = c.gecGun + ' gün geç'; }
+      else if (dur === 'upcoming') { tagCls = 'sd-kira-tag sd-kira-tag-upcoming'; tagTxt = kalan === 0 ? 'Bugün' : kalan + ' gün'; }
+      else if (dur === 'ak')       { tagCls = 'sd-kira-tag sd-kira-tag-ak';       tagTxt = kalan + ' gün kaldı'; }
       else { tagCls = 'sd-kira-tag sd-kira-tag-iad'; tagTxt = 'İade'; }
 
-      var cezaTxt = dur === 'gec'
+      var cezaTxt = dur === 'overdue'
         ? '<div style="font-size:11px;color:var(--rd2);font-weight:600;margin-top:5px">Gecikme cezası: ₺' + c.ceza.toLocaleString('tr-TR') + ' (' + c.gecGun + ' gün × ₺' + k.gunluk.toLocaleString('tr-TR') + ')</div>'
         : '';
-      var iadeBtn = dur !== 'iade'
+      var iadeBtn = dur !== 'returned'
         ? '<button class="btn btn-g btn-sm" style="margin-top:8px" onclick="accRentalReturn(' + k.id + ')">✓ İade Alındı</button>'
         : '<span style="font-size:11px;color:var(--tx3);display:block;margin-top:6px">✓ İade edildi</span>';
-      return '<div class="sa-kira-card' + (dur === 'gec' ? ' gec' : dur === 'yak' ? ' yak' : '') + '">' +
+      return '<div class="sa-kira-card' + (dur === 'overdue' ? ' overdue' : dur === 'upcoming' ? ' upcoming' : '') + '">' +
         '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">' +
           '<div>' +
             '<div style="font-size:13px;font-weight:700;color:var(--tx)">' + k.satici + '</div>' +
@@ -165,7 +165,7 @@ export function renderAccRental() {
         '<div style="font-size:11px;color:var(--tx3);margin-top:5px">' +
           k.bas.split('-').reverse().join('.') + ' → ' + k.bit.split('-').reverse().join('.') +
           ' · ₺' + k.gunluk.toLocaleString('tr-TR') + '/gün' +
-          (k.gunluk && kalan !== 0 && dur !== 'iade' ? ' · <strong>' + Math.abs(kalan) + (kalan < 0 ? ' gün geç' : ' gün kaldı') + '</strong>' : '') +
+          (k.gunluk && kalan !== 0 && dur !== 'returned' ? ' · <strong>' + Math.abs(kalan) + (kalan < 0 ? ' gün geç' : ' gün kaldı') + '</strong>' : '') +
         '</div>' +
         cezaTxt + iadeBtn +
       '</div>';

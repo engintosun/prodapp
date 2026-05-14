@@ -99,13 +99,13 @@ export function _setAvEl(el, user, userKey) {
 
 // ─── Kiralama ────────────────────────────────────────────────────────────────
 
-// Kiralama durumu: 'iade' | 'gec' | 'yak' | 'ak'
+// Kiralama durumu: 'returned' | 'overdue' | 'upcoming' | 'ak'
 export function _rentalStatus(k) {
-  if (k.iade) return 'iade';
+  if (k.iade) return 'returned';
   var today = _todayISO();
   var fark  = _dayDiff(today, k.bit);
-  if (fark < 0)  return 'gec';
-  if (fark <= 2) return 'yak';
+  if (fark < 0)  return 'overdue';
+  if (fark <= 2) return 'upcoming';
   return 'ak';
 }
 
@@ -113,7 +113,7 @@ export function _rentalStatus(k) {
 // İade sonrası kaydedilmiş değeri döndürür; aktif gecikme için anlık hesaplar.
 export function _rentalPenalty(k) {
   if (k.iade) return { gecGun: k.cezaGun || 0, ceza: k.cezaTutar || 0 };
-  if (_rentalStatus(k) !== 'gec') return { gecGun: 0, ceza: 0 };
+  if (_rentalStatus(k) !== 'overdue') return { gecGun: 0, ceza: 0 };
   var gecGun = Math.abs(_dayDiff(_todayISO(), k.bit));
   return { gecGun: gecGun, ceza: gecGun * k.gunluk };
 }
