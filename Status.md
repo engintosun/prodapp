@@ -1,10 +1,10 @@
 # PRODAPP — Durum Raporu
 
-**Son güncelleme:** 8 Mayıs 2026
+**Son güncelleme:** 14 Mayıs 2026
 **Aktif sürüm:** v8.x (canlı)
 **Repo:** https://github.com/engintosun/prodapp
 **Deploy:** https://engintosun.github.io/prodapp/
-**Son commit:** 91111e9 — fix+docs: 7B bare name alias fix, doküman güncellemesi
+**Son commit:** 2777a01 — refactor(naming): Batch A5 — utils.js + dept.service.js function rename (8 renames)
 
 ---
 
@@ -74,7 +74,7 @@
 ### Bütçe & Limit
 - [x] Bütçe limiti takibi (kategori alt limit)
 - [x] Bütçe barında harcama/limit tutarı gösterimi
-- [x] accButceKaydet entegrasyonu
+- [x] accBudgetSave entegrasyonu
 
 ### UI & UX
 - [x] Açık/koyu tema geçişi (localStorage kalıcı)
@@ -147,12 +147,15 @@
   - Bare name fix: SA_DONEM_DEPTS, FIS_DEMO (alias), _avRedPending (window. prefix)
   - Marka + sohbet kodu index.html'de kaldı (modüle taşınmamış)
 
+**Tamamlanan:**
+- ~~7B.1 — Marka ayarları + sohbet sistemi modüle taşıma~~ ✅
+- ~~Naming A1–A5 — Fonksiyon adları İngilizceye çevrildi~~ ✅ (9 commit, ~150 fonksiyon, 14 Mayıs 2026)
+
 **Sıradaki adımlar:**
-1. ~~7B.1 — Marka ayarları + sohbet sistemi modüle taşıma~~ ✅
-   - [x] 7B.1a — Marka ayarları → modules/shared/marka.js (~112 satır) ✅
-   - [x] 7B.1b — Sohbet sistemi → modules/shared/sohbet.js (~489 satır) ✅
-2. Naming + İngilizceleştirme refactor (Türkçe → İngilizce, 6 sektörel terim kararı bekliyor)
-3. Supabase mimari + entegrasyon (Faz 2)
+1. 🎯 Naming Batch B — APP.data/APP.ui key rename + localStorage migration
+2. 🎯 Naming Batch C — enum value rename + migration script
+3. Tasarım revizyonu (OCR sadeleştirme + Dept/Muhasebe kart yapısı)
+4. Supabase mimari + entegrasyon (Faz 2)
 
 Faz 1'in 6 P0/P1 maddesi (4 P0 + 2 P1) bitince hemen bu iş başlar. Faz 2 (backend) öncesi şart.
 
@@ -233,9 +236,16 @@ Modülerleşme aktivasyonu için iki strateji değerlendirildi:
 
 Strategy A'ya kademeli geçiş engelli değil — 7B sonrası isteğe bağlı cleanup.
 
-### Naming refactor — sektörel terim kararları bekliyor
+### Naming refactor — A1–A5 tamamlandı (14 Mayıs 2026) ✅
 
-Aşağıdaki 6 karar alınmadan naming refactor başlatılmayacak:
+Fonksiyon rename batch'leri tamamlandı (~150 fonksiyon, 9 commit). Kalan:
+
+| Batch | Kapsam | Durum |
+|---|---|---|
+| **Batch B** | APP.data/APP.ui/APP.seed key rename + localStorage migration | 🎯 sıradaki |
+| **Batch C** | Enum value rename (durum, kat, rol string'leri) + migration script | bekliyor |
+
+Batch B/C için sektörel terim kararları (Batch B'ye girilince alınacak):
 
 | # | Terim | Seçenek A | Seçenek B | Karar |
 |---|---|---|---|---|
@@ -296,9 +306,9 @@ Proje dokümanları (hepsi /prodapp kök dizininde):
 - **CLAUDE.md** — Sonnet çalışma kuralları
 - **ARCHITECTURE.md** — veri modeli, modülerleşme stratejisi, naming convention, constants.js durumu
 - **DEPLOYMENT.md** — (pilot öncesi) deploy, rollback, migration
-- **NAMING-INVENTORY.md** — 340+ Türkçe tanımlayıcı envanteri (fonksiyon, enum, APP key, field, ID, CSS)
-- **CALLMAP-P0.md** — P0/★ fonksiyon çağrı haritası (24 fonksiyon, satır bazında)
-- **7B1-CONSTANTS-DISCOVERY.md** — constants.js 17 export analizi
+- **NAMING-INVENTORY.md** — Türkçe→İngilizce rename envanteri; A1–A5 tamamlandı, Batch B/C kalan (repo'da ✅)
+- **CALLMAP-P0.md** — P0/★ fonksiyon çağrı haritası (eski isimlerle, referans amaçlı) (repo'da ✅)
+- **7B1-CONSTANTS-DISCOVERY.md** — constants.js 17 export analizi (repo'da ✅)
 - **docs/7B-SCOPE-DISCOVERY.md** — modülerleşme aktivasyon kapsam keşfi
 - **7B-VARS-DIAGNOSIS.md** — 35 top-level var modül karşılaştırması
 - **7B-FEATURES-DIAGNOSIS.md** — Marka + sohbet modülerleşme tanısı
