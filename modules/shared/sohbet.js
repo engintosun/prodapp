@@ -359,7 +359,7 @@ function _newChatRecipientList(userKey) {
     }
   } else if (users[userKey] && users[userKey].role === 'dept') {
     var deptK   = (users[userKey].dept || '').toLowerCase();
-    var members = APP.cache.accDeptUyeler[deptK] || [];
+    var members = APP.cache.accDeptMembers[deptK] || [];
     for (var i = 0; i < members.length; i++) {
       var mk = iniMap[members[i].ini];
       if (mk) addKey(mk);

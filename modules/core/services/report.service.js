@@ -8,7 +8,7 @@ import { APP } from '../state.js';
 export function _recomputeAccDepts() {
   for (var _ddi = 0; _ddi < APP.data.accDepts.length; _ddi++) {
     var _dept = APP.data.accDepts[_ddi];
-    var _mems = APP.cache.accDeptUyeler[_dept.id] || [];
+    var _mems = APP.cache.accDeptMembers[_dept.id] || [];
     var _ns = {};
     for (var _mmi = 0; _mmi < _mems.length; _mmi++) _ns[_mems[_mmi].name] = true;
     var _tot = 0, _onay = 0, _bek = 0;
@@ -30,7 +30,7 @@ export function _recomputeAccDepts() {
 /* ── Departman Fiş Listesi (Rapor) ──────────────────────────────────────── */
 
 export function _computeDeptReceiptReport(deptId) {
-  var members = APP.cache.accDeptUyeler[deptId] || [];
+  var members = APP.cache.accDeptMembers[deptId] || [];
   var nameToIni = {};
   for (var _mi = 0; _mi < members.length; _mi++) {
     nameToIni[members[_mi].name] = members[_mi].ini;
@@ -92,8 +92,8 @@ export function _computePersonnelReport() {
     donLbl[APP.seed.periods[_di].id] = APP.seed.periods[_di].lbl;
   }
   var seedMap = {};
-  for (var _si = 0; _si < APP.cache.accRaporPersonel.length; _si++) {
-    var _sp = APP.cache.accRaporPersonel[_si];
+  for (var _si = 0; _si < APP.cache.accReportPersonnel.length; _si++) {
+    var _sp = APP.cache.accReportPersonnel[_si];
     seedMap[_sp.name] = { ini: _sp.ini, dept: _sp.dept, deptId: _sp.deptId, rol: _sp.rol };
   }
   var nameSet = {};

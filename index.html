@@ -4093,7 +4093,7 @@ APP.data.periodBudget = [
 ];
 
 /* ── Muhasebe Rapor — Departman Kategori Dağılımı ── */
-APP.cache.accDeptKatlar = {
+APP.cache.accDeptCategories = {
   yapim:  [ {name:'Ulaşım',tutar:18400,renk:'#3B82F6'}, {name:'Konaklama',tutar:14200,renk:'#A855F7'}, {name:'Ekipman',tutar:9800,renk:'#E8962E'}, {name:'Yiyecek',tutar:4200,renk:'#22C55E'}, {name:'Diğer',tutar:1600,renk:'#64748B'} ],
   kamera: [ {name:'Ekipman',tutar:18500,renk:'#E8962E'}, {name:'Ulaşım',tutar:8200,renk:'#3B82F6'}, {name:'Yiyecek',tutar:3200,renk:'#22C55E'}, {name:'Diğer',tutar:2800,renk:'#64748B'} ],
   sanat:  [ {name:'Malzeme',tutar:12400,renk:'#EC4899'}, {name:'Ekipman',tutar:8600,renk:'#E8962E'}, {name:'Ulaşım',tutar:4200,renk:'#3B82F6'}, {name:'Yiyecek',tutar:1950,renk:'#22C55E'} ],
@@ -4102,7 +4102,7 @@ APP.cache.accDeptKatlar = {
 };
 
 /* ── Muhasebe Rapor — Personel Listesi ── */
-APP.cache.accRaporPersonel = [
+APP.cache.accReportPersonnel = [
   { name:'Mehmet Kaya',   ini:'MK', dept:'Yapım',   deptId:'yapim',  rol:'Araç Sorumlusu',     total:14200, onay:10000, bek:4200, avans:13000,
     donemler:[{lbl:'Dönem #2',total:11240,onay:9240,bek:2000},{lbl:'Dönem #1',total:14600,onay:14600,bek:0}],
     katlar:[{name:'Ulaşım',tutar:8200,renk:'#3B82F6'},{name:'Konaklama',tutar:3600,renk:'#A855F7'},{name:'Yiyecek',tutar:1400,renk:'#22C55E'},{name:'Diğer',tutar:1000,renk:'#64748B'}] },
@@ -4148,7 +4148,7 @@ APP.cache.accRaporPersonel = [
 ];
 
 /* ── Muhasebe Rapor — Dönem Kategori Karşılaştırması ── */
-APP.cache.accDonemKatlar = {
+APP.cache.accPeriodCategories = {
   2: [ {name:'Ulaşım',tutar:22400,renk:'#3B82F6'}, {name:'Ekipman',tutar:28600,renk:'#E8962E'}, {name:'Malzeme',tutar:18400,renk:'#EC4899'}, {name:'Konaklama',tutar:15800,renk:'#A855F7'}, {name:'Yiyecek',tutar:10350,renk:'#22C55E'}, {name:'Diğer',tutar:6900,renk:'#64748B'} ],
   1: [ {name:'Ulaşım',tutar:28200,renk:'#3B82F6'}, {name:'Ekipman',tutar:32600,renk:'#E8962E'}, {name:'Malzeme',tutar:22800,renk:'#EC4899'}, {name:'Konaklama',tutar:18400,renk:'#A855F7'}, {name:'Yiyecek',tutar:12400,renk:'#22C55E'}, {name:'Diğer',tutar:8200,renk:'#64748B'} ],
   0: [ {name:'Ulaşım',tutar:19200,renk:'#3B82F6'}, {name:'Ekipman',tutar:22400,renk:'#E8962E'}, {name:'Malzeme',tutar:15200,renk:'#EC4899'}, {name:'Konaklama',tutar:12600,renk:'#A855F7'}, {name:'Yiyecek',tutar:9800,renk:'#22C55E'}, {name:'Diğer',tutar:5800,renk:'#64748B'} ]
@@ -4231,7 +4231,7 @@ var SA_DONEM_DEPTS = {
 };
 
 /* ── Üye dönem & avans geçmişi (Dept ekranı profil modalı) ── */
-APP.cache.uyeGecmis = {
+APP.cache.memberHistory = {
   mk: {
     donemler: [
       { lbl:'Dönem #2 (Nisan)', total:11240, onay:9240,  bek:2000, tarih:'01.04–15.04' },
@@ -4280,7 +4280,7 @@ APP.cache.uyeGecmis = {
 };
 
 /* ── Muhasebe Dept Detay verileri ── */
-APP.cache.accDeptUyeler = {
+APP.cache.accDeptMembers = {
   yapim: [
     { ini:'MK', name:'Mehmet Kaya',   rol:'Saha / Araç Sorumlusu', total:14200, onay:10000, bek:4200 },
     { ini:'OD', name:'Okan Demir',    rol:'Kamera Asistanı',       total:12600, onay:8800,  bek:3800 },
@@ -4310,7 +4310,7 @@ APP.cache.accDeptUyeler = {
   ]
 };
 
-APP.cache.accDeptDonemler = {
+APP.cache.accDeptPeriods = {
   yapim:  [ { lbl:'Dönem #2 (Nisan)', total:48200, onay:31400, bek:12600, red:4200 },
              { lbl:'Dönem #1 (Mart)',  total:61000, onay:57200, bek:0,     red:3800 } ],
   kamera: [ { lbl:'Dönem #2 (Nisan)', total:32700, onay:28900, bek:3800,  red:0    },
@@ -4334,7 +4334,7 @@ APP.cache.accDeptAvans = {
              { ini:'AS', name:'Arda Şen',      tutar:2000, tarih:'02.04', durum:'ödendi',   gerekce:'Makyaj malzeme seti' } ]
 };
 
-APP.cache.accDeptGecmis = {
+APP.cache.accDeptHistory = {
   yapim:  [ { ini:'MK', satici:'Petrol Ofisi',   tutar:3500, tarih:'10.04', durum:'red',  sebep:'Mükerrer fiş tespit edildi' },
              { ini:'OD', satici:'Airport Hotel',  tutar:4200, tarih:'05.04', durum:'onay', sebep:'' },
              { ini:'BÇ', satici:'Elektrik Malz.', tutar:2800, tarih:'02.04', durum:'onay', sebep:'' },
@@ -4350,7 +4350,7 @@ APP.cache.accDeptGecmis = {
 };
 
 /* ── Muhasebe Rapor — Dept bazlı fiş detayları ── */
-APP.cache.accDeptFis = {
+APP.cache.accDeptReceipts = {
   yapim: [
     { ini:'MK', satici:'Petrol Ofisi',     kat:'Ulaşım',    tutar:4200, tarih:'12.04', durum:'bek',  donem:2, uyari:'Km limit aşımı' },
     { ini:'MK', satici:'Araç Kiralık',     kat:'Ulaşım',    tutar:4800, tarih:'08.04', durum:'onay', donem:2, uyari:'' },
@@ -4983,7 +4983,7 @@ function openMemberProfile(uyeId) {
   /* Dönem özeti */
   var donEl = document.getElementById('uye-don-list');
   if (donEl) {
-    var gec = APP.cache.uyeGecmis[u.id];
+    var gec = APP.cache.memberHistory[u.id];
     if (gec && gec.donemler && gec.donemler.length) {
       donEl.innerHTML = gec.donemler.map(function(d) {
         return '<div class="uye-don-card">' +
@@ -5003,7 +5003,7 @@ function openMemberProfile(uyeId) {
   /* Avans geçmişi */
   var avEl2 = document.getElementById('uye-av-list');
   if (avEl2) {
-    var gec2 = APP.cache.uyeGecmis[u.id];
+    var gec2 = APP.cache.memberHistory[u.id];
     if (gec2 && gec2.avanslar && gec2.avanslar.length) {
       avEl2.innerHTML = gec2.avanslar.map(function(a) {
         var tagCls = a.durum === 'ödendi' ? 'uye-av-tag uye-av-tag-ok' : 'uye-av-tag uye-av-tag-bek';
@@ -5207,7 +5207,7 @@ if (!APP.data.exceptionPermits) APP.data.exceptionPermits = [];
 
 /* Onay/Bekleyen/Red oran çubuğu */
 
-/* Fiş satırı listesi — items: APP.cache.accDeptFis entries */
+/* Fiş satırı listesi — items: APP.cache.accDeptReceipts entries */
 
 /* Fiş listesini dönem gruplarına ayır ve render et */
 

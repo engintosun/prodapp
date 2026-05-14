@@ -309,8 +309,8 @@ export function accAdvanceSetPeriod(id) {
 
 export function accAdvanceOpenPerson(name) {
   var idx = -1;
-  for (var i = 0; i < APP.cache.accRaporPersonel.length; i++) {
-    if (APP.cache.accRaporPersonel[i].name === name) { idx = i; break; }
+  for (var i = 0; i < APP.cache.accReportPersonnel.length; i++) {
+    if (APP.cache.accReportPersonnel[i].name === name) { idx = i; break; }
   }
   if (idx < 0) { notif('Personel raporu bulunamadı', 'amber'); return; }
   APP.ui.accReportType = 'personel';
@@ -371,7 +371,7 @@ export function accDeptTab(t, el) {
 
 function _renderAccDeptCrew(deptId) {
   var el   = document.getElementById('adept-pnl-ekip');
-  var list = APP.cache.accDeptUyeler[deptId] || [];
+  var list = APP.cache.accDeptMembers[deptId] || [];
   if (!el) return;
   if (!list.length) { el.innerHTML = '<div style="padding:20px 16px;color:var(--tx3);font-size:13px">Ekip verisi yok</div>'; return; }
   el.innerHTML = list.map(function(u) {
@@ -414,7 +414,7 @@ function _renderAccDeptPending(deptId) {
 
 function _renderAccDeptPeriod(deptId) {
   var el   = document.getElementById('adept-pnl-don');
-  var list = APP.cache.accDeptDonemler[deptId] || [];
+  var list = APP.cache.accDeptPeriods[deptId] || [];
   if (!el) return;
   if (!list.length) { el.innerHTML = '<div style="padding:20px 16px;color:var(--tx3);font-size:13px">Dönem verisi yok</div>'; return; }
   el.innerHTML = list.map(function(d) {
@@ -454,7 +454,7 @@ function _renderAccDeptAdvance(deptId) {
 
 function _renderAccDeptHistory(deptId) {
   var el   = document.getElementById('adept-pnl-gecmis');
-  var list = APP.cache.accDeptGecmis[deptId] || [];
+  var list = APP.cache.accDeptHistory[deptId] || [];
   if (!el) return;
   if (!list.length) { el.innerHTML = '<div style="padding:20px 16px;color:var(--tx3);font-size:13px">Geçmiş işlem yok</div>'; return; }
   el.innerHTML = list.map(function(g) {
@@ -483,7 +483,7 @@ export function openAccMemberDetail(uyeName, deptId) {
   _accMemberName = uyeName;
   _accMemberDept = deptId;
 
-  var list = APP.cache.accDeptUyeler[deptId] || [];
+  var list = APP.cache.accDeptMembers[deptId] || [];
   var u = null;
   for (var i = 0; i < list.length; i++) {
     if (list[i].name === uyeName) { u = list[i]; break; }
@@ -554,7 +554,7 @@ function _renderAccMemberPending() {
 function _renderAccMemberPeriod() {
   var el = document.getElementById('acuye-pnl-don');
   if (!el) return;
-  var donList = APP.cache.accDeptDonemler[_accMemberDept] || [];
+  var donList = APP.cache.accDeptPeriods[_accMemberDept] || [];
   if (!donList.length) { el.innerHTML = '<div style="padding:20px 16px;color:var(--tx3);font-size:13px">Dönem verisi yok</div>'; return; }
   el.innerHTML = donList.map(function(d) {
     return '<div class="adept-don-card">' +
@@ -980,11 +980,11 @@ export function renderAccReport(tip) {
 /* ═══ RAPOR — DEPT ═══════════════════════════════════════════ */
 
 function _renderAccReportBody() {
-  APP.cache.accRaporPersonel = _computePersonnelReport();
-  APP.cache.accDeptFis = {};
+  APP.cache.accReportPersonnel = _computePersonnelReport();
+  APP.cache.accDeptReceipts = {};
   var _rDepts = ['yapim','kamera','sanat','ses','kostum'];
   for (var _rdi = 0; _rdi < _rDepts.length; _rdi++) {
-    APP.cache.accDeptFis[_rDepts[_rdi]] = _computeDeptReceiptReport(_rDepts[_rdi]);
+    APP.cache.accDeptReceipts[_rDepts[_rdi]] = _computeDeptReceiptReport(_rDepts[_rdi]);
   }
   var el = document.getElementById('sa-pnl-rapor');
   if (!el) return;
@@ -1044,11 +1044,11 @@ function _reportDeptDetail() {
   for (var i = 0; i < APP.data.accDepts.length; i++) if (APP.data.accDepts[i].id === accReportDeptId) { dept = APP.data.accDepts[i]; break; }
   if (!dept) return '';
 
-  var uyeler   = APP.cache.accDeptUyeler[accReportDeptId]   || [];
-  var katlar   = APP.cache.accDeptKatlar[accReportDeptId]   || [];
-  var donemler = APP.cache.accDeptDonemler[accReportDeptId] || [];
+  var uyeler   = APP.cache.accDeptMembers[accReportDeptId]   || [];
+  var katlar   = APP.cache.accDeptCategories[accReportDeptId]   || [];
+  var donemler = APP.cache.accDeptPeriods[accReportDeptId] || [];
   var avanslar = APP.cache.accDeptAvans[accReportDeptId]    || [];
-  var fisler   = APP.cache.accDeptFis[accReportDeptId]      || [];
+  var fisler   = APP.cache.accDeptReceipts[accReportDeptId]      || [];
 
   var totalRed = 0;
   for (var ri = 0; ri < donemler.length; ri++) totalRed += (donemler[ri].red || 0);
@@ -1077,8 +1077,8 @@ function _reportDeptDetail() {
   html += uyeler.map(function(u) {
     var upct = maxU > 0 ? Math.round(u.total / maxU * 100) : 0;
     var kisiIdx = -1;
-    for (var ki = 0; ki < APP.cache.accRaporPersonel.length; ki++) {
-      if (APP.cache.accRaporPersonel[ki].name === u.name) { kisiIdx = ki; break; }
+    for (var ki = 0; ki < APP.cache.accReportPersonnel.length; ki++) {
+      if (APP.cache.accReportPersonnel[ki].name === u.name) { kisiIdx = ki; break; }
     }
     return '<div class="sa-rep-kisi-row" onclick="' + (kisiIdx >= 0 ? '_accReportPersonFromDept(' + kisiIdx + ')' : '') + '">' +
       '<div class="sa-rep-kisi-av">' + u.ini + '</div>' +
@@ -1161,7 +1161,7 @@ function _accReportDeptBack() {
 /* ═══ RAPOR — KATEGORİ ═══════════════════════════════════════ */
 
 function _reportCategory() {
-  var katlar = APP.cache.accDonemKatlar[2] || [];
+  var katlar = APP.cache.accPeriodCategories[2] || [];
   var total = 0;
   for (var i = 0; i < katlar.length; i++) total += katlar[i].tutar;
   var maxK = 0;
@@ -1185,12 +1185,12 @@ function _reportCategory() {
 /* ═══ RAPOR — PERSONEL ═══════════════════════════════════════ */
 
 function _reportPersonnelList() {
-  var sorted = APP.cache.accRaporPersonel.slice().sort(function(a,b){ return b.total - a.total; });
+  var sorted = APP.cache.accReportPersonnel.slice().sort(function(a,b){ return b.total - a.total; });
   var maxP = sorted[0] ? sorted[0].total : 0;
   var html = '<div class="sa-rep-hd"><span>Personele göre</span><span style="font-weight:400;font-size:11px">Detay için tıkla</span></div>';
   html += sorted.map(function(p) {
     var origIdx = -1;
-    for (var i = 0; i < APP.cache.accRaporPersonel.length; i++) if (APP.cache.accRaporPersonel[i].name === p.name) { origIdx = i; break; }
+    for (var i = 0; i < APP.cache.accReportPersonnel.length; i++) if (APP.cache.accReportPersonnel[i].name === p.name) { origIdx = i; break; }
     var pct = maxP > 0 ? Math.round(p.total / maxP * 100) : 0;
     return '<div class="sa-rep-kisi-row" onclick="_accReportPerson(' + origIdx + ')">' +
       '<div class="sa-rep-kisi-av">' + p.ini + '</div>' +
@@ -1221,7 +1221,7 @@ function _accReportPersonFromDept(idx) {
 }
 
 function _reportPersonDetail() {
-  var p = APP.cache.accRaporPersonel[accReportPersonIdx];
+  var p = APP.cache.accReportPersonnel[accReportPersonIdx];
   if (!p) return '';
 
   var totalRed = p.total - p.onay - p.bek;
@@ -1232,7 +1232,7 @@ function _reportPersonDetail() {
   for (var ai = 0; ai < kisiAvanslar.length; ai++) avansTop += kisiAvanslar[ai].tutar;
 
   var kisiIni  = p.ini;
-  var kisFisler = (APP.cache.accDeptFis[p.deptId] || []).filter(function(f) { return f.ini === kisiIni; });
+  var kisFisler = (APP.cache.accDeptReceipts[p.deptId] || []).filter(function(f) { return f.ini === kisiIni; });
 
   var onayFis = 0, bekFis = 0, redFis = 0, totalFis = 0;
   for (var fi = 0; fi < kisFisler.length; fi++) {
@@ -1462,13 +1462,13 @@ function _reportPeriod() {
     html += '</tbody></table>';
 
     html += '<div class="sa-rep-sec-hd">Kategori Karşılaştırması</div>';
-    var baseKatlar = APP.cache.accDonemKatlar[colDids[0]] || [];
+    var baseKatlar = APP.cache.accPeriodCategories[colDids[0]] || [];
     var katThs     = colDids.map(function(d){ return '<th>#' + d + '</th>'; }).join('');
     html += '<table class="sa-don-tbl"><thead><tr><th>Kategori</th>' + katThs + '<th>Δ ' + colDids[0] + '–' + colDids[1] + '</th></tr></thead><tbody>';
     for (var ki = 0; ki < baseKatlar.length; ki++) {
       var bk    = baseKatlar[ki];
       var kVals = colDids.map(function(ddid) {
-        var klist = APP.cache.accDonemKatlar[ddid] || [];
+        var klist = APP.cache.accPeriodCategories[ddid] || [];
         for (var kj = 0; kj < klist.length; kj++) if (klist[kj].name === bk.name) return klist[kj].tutar;
         return 0;
       });
