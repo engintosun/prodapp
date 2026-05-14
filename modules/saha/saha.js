@@ -449,7 +449,7 @@ export function submitDocless() {
         kat: 'rental', tutar: bTut, durum: 'dept-pending', donem: APP.ui.activePeriod,
         uyari: null, thumb: null, belgesiz: true, aciklama: bAciklama, fotos: fotos,
         dept: bDept, neden: bNeden,
-        log: [_mkLog('olusturuldu', 'Belgesiz harcama bildirildi')],
+        log: [_mkLog('created', 'Belgesiz harcama bildirildi')],
         kiraMeta: {
           bas:    (document.getElementById('b-ki-bas').value || ''),
           bit:    (document.getElementById('b-ki-bit').value || ''),
@@ -465,7 +465,7 @@ export function submitDocless() {
         kat: bKat, tutar: bTut, durum: 'dept-pending', donem: APP.ui.activePeriod,
         uyari: null, thumb: null, belgesiz: true, aciklama: bAciklama, fotos: fotos,
         dept: bDept, neden: bNeden,
-        log: [_mkLog('olusturuldu', 'Belgesiz harcama bildirildi')]
+        log: [_mkLog('created', 'Belgesiz harcama bildirildi')]
       });
       _addToDeptPending('Belgesiz Harcama', bKat, bTut, true, bAciklama, fotos, bFisId);
       renderRecent();
@@ -850,13 +850,13 @@ export function openFisDetay(id, ctx) {
       logHtml += '<div class="fdet-log-bos">Geçmiş kaydı yok</div>';
     } else {
       var icoMap = {
-        olusturuldu: '<svg viewBox="0 0 24 24" fill="none" stroke="var(--bl)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>',
+        created: '<svg viewBox="0 0 24 24" fill="none" stroke="var(--bl)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>',
         approved:   '<svg viewBox="0 0 24 24" fill="none" stroke="var(--gr)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
         rejected:  '<svg viewBox="0 0 24 24" fill="none" stroke="var(--rd)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
       };
       for (var li = 0; li < logList.length; li++) {
         var le  = logList[li];
-        var ico = icoMap[le.aksiyon] || icoMap['olusturuldu'];
+        var ico = icoMap[le.aksiyon] || icoMap['created'];
         logHtml += '<div class="fdet-log-item">' +
           '<div class="fdet-log-ico">' + ico + '</div>' +
           '<div class="fdet-log-txt">' +

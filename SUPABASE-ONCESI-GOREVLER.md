@@ -19,7 +19,7 @@
 | C3 | Avans durum enum rename | ✅ Tamamlandı | commit — ödendi>paid, bekleyen>pending |
 | C4 | Sohbet tip enum rename | ✅ Tamamlandı | bireysel>direct, grup>group |
 | C5 | Kira/dönem durum enum rename + CSS senkron | ✅ Tamamlandı | aktif>active, gec>overdue, yak>upcoming, iade>returned |
-| C6 | Log aksiyon enum rename | 🎯 Sırada | olusturuldu>created, dept-onayladi>dept-approved |
+| C6 | Log aksiyon enum rename | ✅ Tamamlandı | olusturuldu>created, dept-onayladi>dept-approved |
 | D | CSS class rename (.fis-, .sohbet-, .avans-, .donem-, .kat-) | ❓ Batch C sonrası | Bileşen sınıfları, veri enum'undan bağımsız |
 
 ---

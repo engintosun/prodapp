@@ -40,7 +40,7 @@ export function deptApprove(id) {
         if (APP.data.receipts[_fli].id === f.fisId) { _fi = _fli; break; }
       }
       if (_fi !== -1) APP.data.receipts[_fi].durum = 'acc-pending';
-      f.log.push(_mkLog('dept-onayladi', ''));
+      f.log.push(_mkLog('dept-approved', ''));
       APP.data.accPending.unshift({
         id: Date.now() + Math.floor(Math.random()*1000),
         fisId: f.fisId || null,

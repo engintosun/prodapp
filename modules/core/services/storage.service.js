@@ -113,6 +113,22 @@ export function loadAppData() {
     _c5MigrateKira(parsed.deptRentals);
     _c5MigrateKira(parsed.accRentals);
     // --- /C5 Migration ---
+    // --- C6 Migration: log aksiyon değerleri ---
+    var _c6LogMap = {
+      'olusturuldu':'created', 'dept-onayladi':'dept-approved',
+      'dept-reddetti':'dept-rejected', 'acc-onayladi':'acc-approved',
+      'acc-reddetti':'acc-rejected'
+    };
+    if (parsed.receipts && Array.isArray(parsed.receipts)) {
+      parsed.receipts.forEach(function(f) {
+        if (f.log && Array.isArray(f.log)) {
+          f.log.forEach(function(l) {
+            if (l.aksiyon && _c6LogMap[l.aksiyon]) l.aksiyon = _c6LogMap[l.aksiyon];
+          });
+        }
+      });
+    }
+    // --- /C6 Migration ---
     Object.keys(parsed).forEach(function(k) {
       if (APP.data[k] !== undefined) APP.data[k] = parsed[k];
     });

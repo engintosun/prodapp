@@ -160,7 +160,7 @@
 2. ~~Naming Batch C3 — avans durum enum rename (ödendi>paid, bekleyen>pending + migration)~~ ✅ (14 Mayıs 2026)
 3. ~~Naming Batch C4 — sohbet tip enum rename (bireysel>direct, grup>group + migration)~~ ✅ (14 Mayıs 2026)
 4. ~~Naming Batch C5 — kira/dönem enum rename (aktif>active, gec>overdue, yak>upcoming, iade>returned + CSS sync + migration)~~ ✅ (14 Mayıs 2026)
-5. 🎯 Naming Batch C6 — log aksiyon enum rename (olusturuldu>created, dept-onayladi>dept-approved)
+5. ~~Naming Batch C6 — log aksiyon enum rename (olusturuldu>created, dept-onayladi>dept-approved + migration)~~ ✅ (15 Mayıs 2026)
 3. Tasarım revizyonu (OCR sadeleştirme + Dept/Muhasebe kart yapısı)
 4. Supabase mimari + entegrasyon (Faz 2)
 
@@ -254,7 +254,7 @@ Fonksiyon rename batch'leri tamamlandı (~150 fonksiyon, 9 commit). Kalan:
 | **Batch C3** | Avans durum enum — ödendi>paid, bekleyen>pending + C3 migration | ✅ tamamlandı (14 Mayıs 2026) |
 | **Batch C4** | Sohbet tip enum — bireysel>direct, grup>group + C4 migration | ✅ tamamlandı (14 Mayıs 2026) |
 | **Batch C5** | Kira/dönem enum — aktif>active, gec>overdue, yak>upcoming, iade>returned + CSS sync + migration | ✅ tamamlandı (14 Mayıs 2026) |
-| **Batch C6** | Log aksiyon enum rename (olusturuldu>created, dept-onayladi>dept-approved) | 🎯 sıradaki |
+| **Batch C6** | Log aksiyon enum — olusturuldu>created, dept-onayladi>dept-approved + C6 migration | ✅ tamamlandı (15 Mayıs 2026) |
 
 Batch B/C için sektörel terim kararları (Batch B'ye girilince alınacak):
 

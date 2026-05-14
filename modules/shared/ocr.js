@@ -170,7 +170,7 @@ export function submitOCR() {
       personel: APP.ui.curUser ? APP.ui.curUser.name : 'Bilinmeyen',
       satici: sat2, kat: kat2, tutar: tut2,
       durum: 'dept-pending', donem: APP.ui.activePeriod, uyari: null, thumb: null,
-      log: [_mkLog('olusturuldu', 'Harcama sisteme girildi')]
+      log: [_mkLog('created', 'Harcama sisteme girildi')]
     };
     if (kat2 === 'rental') {
       entry.kiraMeta = {

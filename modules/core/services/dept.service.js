@@ -32,7 +32,7 @@ export function deptPendingAdd(satici, kat, tutar, belgesiz, aciklama, fotos, fi
         durum: 'acc-pending', donem: APP.ui.activePeriod,
         uyari: null, thumb: null, belgesiz: !!belgesiz, aciklama: aciklama || '',
         gecIslem: true, istisnaIzniId: _izin.id,
-        log: [_mkLog('olusturuldu', 'İstisna izniyle kapalı döneme eklendi')]
+        log: [_mkLog('created', 'İstisna izniyle kapalı döneme eklendi')]
       };
       APP.data.receipts.unshift(_nf);
       _effFisId = _nf.id;
@@ -80,7 +80,7 @@ export function deptPendingAdd(satici, kat, tutar, belgesiz, aciklama, fotos, fi
     fotos: fotos || [],
     donem: APP.ui.activePeriod,
     olusturmaZamani: Date.now(),
-    log: [_mkLog('olusturuldu', 'Harcama bildirildi')]
+    log: [_mkLog('created', 'Harcama bildirildi')]
   });
   var _cb = APP.data.periodBudget.find(function(x){ return x.donem === APP.ui.activePeriod; });
   if (_cb) {
