@@ -8,7 +8,7 @@ Kapsam: index.html (CSS tanımları + HTML) + modules/ altındaki tüm .js dosya
 
 ---
 
-## BATCH D1 — `sd-*` → `dtl-*` (144 class, ~400 ref)
+## ✅ BATCH D1 — `sd-*` → `dtl-*` (144 class, ~400 ref)
 
 En büyük batch. Alt-prefix'ler dahil.
 

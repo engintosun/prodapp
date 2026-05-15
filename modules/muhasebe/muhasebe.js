@@ -104,7 +104,7 @@ export function renderAccRental() {
           '</div>' +
           '<div style="text-align:right">' +
             '<div style="font-size:14px;font-weight:800;font-family:var(--mo)">₺' + k.tutar.toLocaleString('tr-TR') + '</div>' +
-            '<span class="sd-kira-tag sd-kira-tag-overdue" style="margin-top:3px;display:inline-block">' + gecGun + ' gün geç</span>' +
+            '<span class="dtl-rental-tag dtl-rental-tag-overdue" style="margin-top:3px;display:inline-block">' + gecGun + ' gün geç</span>' +
           '</div>' +
         '</div>' +
         '<div style="font-size:11px;color:var(--tx3);margin-top:5px">' + k.bas.split('-').reverse().join('.') + ' → ' + k.bit.split('-').reverse().join('.') + ' · ₺' + k.gunluk.toLocaleString('tr-TR') + '/gün</div>' +
@@ -140,10 +140,10 @@ export function renderAccRental() {
       var kalan = _dayDiff(today, k.bit);
       var c     = _rentalPenalty(k);
       var tagCls, tagTxt;
-      if (dur === 'overdue')       { tagCls = 'sd-kira-tag sd-kira-tag-overdue';  tagTxt = c.gecGun + ' gün geç'; }
-      else if (dur === 'upcoming') { tagCls = 'sd-kira-tag sd-kira-tag-upcoming'; tagTxt = kalan === 0 ? 'Bugün' : kalan + ' gün'; }
-      else if (dur === 'ak')       { tagCls = 'sd-kira-tag sd-kira-tag-ak';       tagTxt = kalan + ' gün kaldı'; }
-      else { tagCls = 'sd-kira-tag sd-kira-tag-iad'; tagTxt = 'İade'; }
+      if (dur === 'overdue')       { tagCls = 'dtl-rental-tag dtl-rental-tag-overdue';  tagTxt = c.gecGun + ' gün geç'; }
+      else if (dur === 'upcoming') { tagCls = 'dtl-rental-tag dtl-rental-tag-upcoming'; tagTxt = kalan === 0 ? 'Bugün' : kalan + ' gün'; }
+      else if (dur === 'ak')       { tagCls = 'dtl-rental-tag dtl-rental-tag-ak';       tagTxt = kalan + ' gün kaldı'; }
+      else { tagCls = 'dtl-rental-tag dtl-rental-tag-iad'; tagTxt = 'İade'; }
 
       var cezaTxt = dur === 'overdue'
         ? '<div style="font-size:11px;color:var(--rd2);font-weight:600;margin-top:5px">Gecikme cezası: ₺' + c.ceza.toLocaleString('tr-TR') + ' (' + c.gecGun + ' gün × ₺' + k.gunluk.toLocaleString('tr-TR') + ')</div>'

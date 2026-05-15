@@ -172,10 +172,10 @@ export function renderDeptPeriodSelector() {
   el.innerHTML = APP.seed.deptPeriods.map(function(d) {
     var on  = APP.ui.deptSelectedPeriod === d.id ? ' on' : '';
     var sub = d.aktif
-      ? '<div class="sd-donem-aktif">● Aktif</div>'
-      : '<div class="sd-donem-pill-sub">' + d.tarih + '</div>';
-    return '<button class="sd-donem-pill' + on + '" onclick="deptSetPeriod(' + d.id + ')">' +
-      '<div class="sd-donem-pill-lbl">' + d.lbl + '</div>' + sub +
+      ? '<div class="dtl-period-nav-aktif">● Aktif</div>'
+      : '<div class="dtl-period-nav-pill-sub">' + d.tarih + '</div>';
+    return '<button class="dtl-period-nav-pill' + on + '" onclick="deptSetPeriod(' + d.id + ')">' +
+      '<div class="dtl-period-nav-pill-lbl">' + d.lbl + '</div>' + sub +
     '</button>';
   }).join('');
 }
@@ -300,9 +300,9 @@ export function renderDeptSummary() {
     else                 { durum = '%' + pct + ' Kullanıldı'; barClr = 'var(--gr)'; kartCls = ''; badgeCls = 'bk-ok'; }
     var uyariBan = '';
     if (pct >= 100) {
-      uyariBan = '<div class="sd-butce-uyari-ban bk-rd">🔴 Dönem bütçesi tamamen tükendi — muhasebe ile iletişime geçin</div>';
+      uyariBan = '<div class="dtl-budget-uyari-ban bk-rd">🔴 Dönem bütçesi tamamen tükendi — muhasebe ile iletişime geçin</div>';
     } else if (pct >= 80) {
-      uyariBan = '<div class="sd-butce-uyari-ban bk-am">⚠ Bütçenin %' + pctExact + '\'i kullanıldı — harcamaları yavaşlatın</div>';
+      uyariBan = '<div class="dtl-budget-uyari-ban bk-am">⚠ Bütçenin %' + pctExact + '\'i kullanıldı — harcamaları yavaşlatın</div>';
     }
     var katH   = _categorySpent();
     var katBek = _categoryPending();
@@ -318,29 +318,29 @@ export function renderDeptSummary() {
       var kBarClr = kPct >= 100 ? 'var(--rd)' : kPct >= 80 ? 'var(--am)' : km.clr;
       var kPctClr = kPct >= 100 ? 'var(--rd2)' : kPct >= 80 ? 'var(--am2)' : 'var(--tx3)';
       katRows +=
-        '<div class="sd-kat-row">' +
-          '<div class="sd-kat-dot" style="background:' + km.clr + '"></div>' +
-          '<div class="sd-kat-lbl">' + km.lbl + '</div>' +
-          '<div class="sd-kat-bar-wrap"><div class="sd-kat-bar-f" style="width:' + kPct + '%;background:' + kBarClr + '"></div></div>' +
-          '<div class="sd-kat-pct" style="color:' + kPctClr + '">%' + kPct + '</div>' +
-          '<div class="sd-kat-tutar">₺' + kTot.toLocaleString('tr-TR') + '&nbsp;/&nbsp;₺' + km.limit.toLocaleString('tr-TR') + '</div>' +
+        '<div class="dtl-cat-row">' +
+          '<div class="dtl-cat-dot" style="background:' + km.clr + '"></div>' +
+          '<div class="dtl-cat-lbl">' + km.lbl + '</div>' +
+          '<div class="dtl-cat-bar-wrap"><div class="dtl-cat-bar-f" style="width:' + kPct + '%;background:' + kBarClr + '"></div></div>' +
+          '<div class="dtl-cat-pct" style="color:' + kPctClr + '">%' + kPct + '</div>' +
+          '<div class="dtl-cat-tutar">₺' + kTot.toLocaleString('tr-TR') + '&nbsp;/&nbsp;₺' + km.limit.toLocaleString('tr-TR') + '</div>' +
         '</div>';
     }
     el.innerHTML =
-      '<div class="sd-butce-kart ' + kartCls + '">' +
-        '<div class="sd-butce-top">' +
-          '<div><div class="sd-butce-lbl">' + b.lbl + ' Bütçesi</div><div class="sd-butce-total">₺' + b.butce.toLocaleString('tr-TR') + '</div></div>' +
-          '<span class="sd-butce-badge ' + badgeCls + '">' + durum + '</span>' +
+      '<div class="dtl-budget-kart ' + kartCls + '">' +
+        '<div class="dtl-budget-top">' +
+          '<div><div class="dtl-budget-lbl">' + b.lbl + ' Bütçesi</div><div class="dtl-budget-total">₺' + b.butce.toLocaleString('tr-TR') + '</div></div>' +
+          '<span class="dtl-budget-badge ' + badgeCls + '">' + durum + '</span>' +
         '</div>' +
         uyariBan +
-        '<div class="sd-butce-bar-wrap"><div class="sd-butce-bar-f" style="width:' + pct + '%;background:' + barClr + '"></div></div>' +
-        '<div class="sd-butce-stats">' +
-          '<div class="sd-butce-stat"><div class="sd-butce-sv" style="color:var(--gr2)">₺' + b.harcanan.toLocaleString('tr-TR') + '</div><div class="sd-butce-sl">Onaylanan</div></div>' +
-          '<div class="sd-butce-stat"><div class="sd-butce-sv" style="color:var(--am2)">₺' + bekTop.toLocaleString('tr-TR') + '</div><div class="sd-butce-sl">Bekleyen</div></div>' +
-          '<div class="sd-butce-stat"><div class="sd-butce-sv" style="color:' + (kalan === 0 ? 'var(--rd2)' : 'var(--gr2)') + '">₺' + kalan.toLocaleString('tr-TR') + '</div><div class="sd-butce-sl">Kalan</div></div>' +
+        '<div class="dtl-budget-bar-wrap"><div class="dtl-budget-bar-f" style="width:' + pct + '%;background:' + barClr + '"></div></div>' +
+        '<div class="dtl-budget-stats">' +
+          '<div class="dtl-budget-stat"><div class="dtl-budget-sv" style="color:var(--gr2)">₺' + b.harcanan.toLocaleString('tr-TR') + '</div><div class="dtl-budget-sl">Onaylanan</div></div>' +
+          '<div class="dtl-budget-stat"><div class="dtl-budget-sv" style="color:var(--am2)">₺' + bekTop.toLocaleString('tr-TR') + '</div><div class="dtl-budget-sl">Bekleyen</div></div>' +
+          '<div class="dtl-budget-stat"><div class="dtl-budget-sv" style="color:' + (kalan === 0 ? 'var(--rd2)' : 'var(--gr2)') + '">₺' + kalan.toLocaleString('tr-TR') + '</div><div class="dtl-budget-sl">Kalan</div></div>' +
         '</div>' +
       '</div>' +
-      (katRows ? '<div class="sd-kat-kart"><div class="sd-kat-kart-hd">Kategori Limitleri</div>' + katRows + '</div>' : '');
+      (katRows ? '<div class="dtl-cat-kart"><div class="dtl-cat-kart-hd">Kategori Limitleri</div>' + katRows + '</div>' : '');
     return;
   }
 
@@ -359,13 +359,13 @@ export function renderDeptSummary() {
   var pctH    = butce > 0 ? Math.round(harcanan / butce * 100) : 0;
 
   el.innerHTML =
-    '<div class="sd-don-ozet-past">' +
-      '<div class="sd-don-ozet-past-lbl">' + (donRec ? donRec.lbl + ' · ' + donRec.tarih : '') + ' — Kapalı Dönem</div>' +
-      '<div class="sd-don-stat-grid">' +
-        '<div class="sd-don-stat-c"><div class="sd-don-stat-v">₺' + (butce > 0 ? butce.toLocaleString('tr-TR') : '—') + '</div><div class="sd-don-stat-l">Bütçe</div></div>' +
-        '<div class="sd-don-stat-c"><div class="sd-don-stat-v" style="color:var(--gr2)">₺' + harcanan.toLocaleString('tr-TR') + '</div><div class="sd-don-stat-l">Onaylanan</div></div>' +
-        '<div class="sd-don-stat-c"><div class="sd-don-stat-v" style="color:var(--rd2)">₺' + topRed.toLocaleString('tr-TR') + '</div><div class="sd-don-stat-l">Reddedildi</div></div>' +
-        '<div class="sd-don-stat-c"><div class="sd-don-stat-v" style="color:' + (pctH >= 100 ? 'var(--rd2)' : 'var(--tx2)') + '">%' + pctH + '</div><div class="sd-don-stat-l">Kullanım</div></div>' +
+    '<div class="dtl-period-summary-past">' +
+      '<div class="dtl-period-summary-past-lbl">' + (donRec ? donRec.lbl + ' · ' + donRec.tarih : '') + ' — Kapalı Dönem</div>' +
+      '<div class="dtl-period-summary-stat-grid">' +
+        '<div class="dtl-period-summary-stat-c"><div class="dtl-period-summary-stat-v">₺' + (butce > 0 ? butce.toLocaleString('tr-TR') : '—') + '</div><div class="dtl-period-summary-stat-l">Bütçe</div></div>' +
+        '<div class="dtl-period-summary-stat-c"><div class="dtl-period-summary-stat-v" style="color:var(--gr2)">₺' + harcanan.toLocaleString('tr-TR') + '</div><div class="dtl-period-summary-stat-l">Onaylanan</div></div>' +
+        '<div class="dtl-period-summary-stat-c"><div class="dtl-period-summary-stat-v" style="color:var(--rd2)">₺' + topRed.toLocaleString('tr-TR') + '</div><div class="dtl-period-summary-stat-l">Reddedildi</div></div>' +
+        '<div class="dtl-period-summary-stat-c"><div class="dtl-period-summary-stat-v" style="color:' + (pctH >= 100 ? 'var(--rd2)' : 'var(--tx2)') + '">%' + pctH + '</div><div class="dtl-period-summary-stat-l">Kullanım</div></div>' +
       '</div>' +
     '</div>';
 }
@@ -378,37 +378,37 @@ export function _renderDeptPendingHistory(el, donemId) {
   var red = gec.reddedildi || [];
   var html = '';
 
-  html += '<div class="sd-ges-sec-hd">Onaylananlar (' + on.length + ')</div>';
+  html += '<div class="dtl-phist-sec-hd">Onaylananlar (' + on.length + ')</div>';
   if (!on.length) {
     html += '<div style="text-align:center;padding:20px 0;color:var(--tx3);font-size:12px">Onaylanan kayıt yok</div>';
   } else {
     html += on.map(function(f) {
       var lbl = SD_KAT_LBL[f.kat] || f.kat || '';
-      return '<div class="sd-ges-row">' +
-        '<div class="sd-ges-dot" style="background:var(--gr)"></div>' +
-        '<div class="sd-ges-info" style="flex:1">' +
-          '<div class="sd-ges-satici">' + f.satici + '</div>' +
-          '<div class="sd-ges-meta" style="font-size:11px;color:var(--tx3)">' + f.uye + (lbl ? ' · ' + lbl : '') + ' · ' + f.tarih + '</div>' +
+      return '<div class="dtl-phist-row">' +
+        '<div class="dtl-phist-dot" style="background:var(--gr)"></div>' +
+        '<div class="dtl-phist-info" style="flex:1">' +
+          '<div class="dtl-phist-satici">' + f.satici + '</div>' +
+          '<div class="dtl-phist-meta" style="font-size:11px;color:var(--tx3)">' + f.uye + (lbl ? ' · ' + lbl : '') + ' · ' + f.tarih + '</div>' +
         '</div>' +
-        '<div class="sd-ges-right"><div class="sd-ges-tutar" style="font-size:13px;font-weight:700;font-family:var(--mo);color:var(--gr2)">₺' + f.tutar.toLocaleString('tr-TR') + '</div></div>' +
+        '<div class="dtl-phist-right"><div class="dtl-phist-tutar" style="font-size:13px;font-weight:700;font-family:var(--mo);color:var(--gr2)">₺' + f.tutar.toLocaleString('tr-TR') + '</div></div>' +
       '</div>';
     }).join('');
   }
 
-  html += '<div class="sd-ges-sec-hd">Reddedilenler (' + red.length + ')</div>';
+  html += '<div class="dtl-phist-sec-hd">Reddedilenler (' + red.length + ')</div>';
   if (!red.length) {
     html += '<div style="text-align:center;padding:20px 0;color:var(--tx3);font-size:12px">Reddedilen kayıt yok</div>';
   } else {
     html += red.map(function(f) {
       var lbl = SD_KAT_LBL[f.kat] || f.kat || '';
-      return '<div class="sd-ges-row">' +
-        '<div class="sd-ges-dot" style="background:var(--rd)"></div>' +
-        '<div class="sd-ges-info" style="flex:1">' +
-          '<div class="sd-ges-satici">' + f.satici + '</div>' +
-          '<div class="sd-ges-meta" style="font-size:11px;color:var(--tx3)">' + f.uye + (lbl ? ' · ' + lbl : '') + ' · ' + f.tarih + '</div>' +
-          (f.sebep ? '<div class="sd-ges-sebep">↳ ' + f.sebep + '</div>' : '') +
+      return '<div class="dtl-phist-row">' +
+        '<div class="dtl-phist-dot" style="background:var(--rd)"></div>' +
+        '<div class="dtl-phist-info" style="flex:1">' +
+          '<div class="dtl-phist-satici">' + f.satici + '</div>' +
+          '<div class="dtl-phist-meta" style="font-size:11px;color:var(--tx3)">' + f.uye + (lbl ? ' · ' + lbl : '') + ' · ' + f.tarih + '</div>' +
+          (f.sebep ? '<div class="dtl-phist-sebep">↳ ' + f.sebep + '</div>' : '') +
         '</div>' +
-        '<div class="sd-ges-right"><div class="sd-ges-tutar" style="font-size:13px;font-weight:700;font-family:var(--mo);color:var(--rd2)">₺' + f.tutar.toLocaleString('tr-TR') + '</div></div>' +
+        '<div class="dtl-phist-right"><div class="dtl-phist-tutar" style="font-size:13px;font-weight:700;font-family:var(--mo);color:var(--rd2)">₺' + f.tutar.toLocaleString('tr-TR') + '</div></div>' +
       '</div>';
     }).join('');
   }
@@ -446,22 +446,22 @@ export function renderDeptPending() {
   var allSel  = selCnt === APP.data.deptPending.length;
   var partSel = selCnt > 0 && !allSel;
   var infoTxt = selCnt > 0 ? selCnt + ' seçili · ₺' + selTop.toLocaleString('tr-TR') : 'Seçim yok';
-  var infoCls = selCnt > 0 ? 'sd-bek-sel-info has-sel' : 'sd-bek-sel-info';
+  var infoCls = selCnt > 0 ? 'dtl-pending-sel-info has-sel' : 'dtl-pending-sel-info';
   var btnDis  = selCnt === 0 ? ' disabled style="opacity:.38;pointer-events:none"' : '';
-  var cbAllCls = allSel ? 'sd-cb on' : (partSel ? 'sd-cb part' : 'sd-cb');
+  var cbAllCls = allSel ? 'dtl-cb on' : (partSel ? 'dtl-cb part' : 'dtl-cb');
 
   var toolbar =
-    '<div class="sd-bek-tb" id="sd-bek-tb">' +
-      '<div class="sd-bek-tb-r1">' +
-        '<div class="sd-bek-cb-row" onclick="_deptToggleAll()">' +
+    '<div class="dtl-pending-tb" id="sd-bek-tb">' +
+      '<div class="dtl-pending-tb-r1">' +
+        '<div class="dtl-pending-cb-row" onclick="_deptToggleAll()">' +
           '<div class="' + cbAllCls + '" id="sd-cb-all"></div>' +
-          '<span class="sd-bek-cb-lbl">Tümünü Seç</span>' +
+          '<span class="dtl-pending-cb-lbl">Tümünü Seç</span>' +
         '</div>' +
         '<span class="' + infoCls + '" id="sd-bek-sel-info">' + infoTxt + '</span>' +
       '</div>' +
-      '<div class="sd-bek-tb-r2">' +
-        '<button class="sd-ok"' + btnDis + ' onclick="deptApproveSelected()" id="sd-bek-ok">✓ Seçilenleri Onayla</button>' +
-        '<button class="sd-rd"' + btnDis + ' onclick="deptRejectSelected()" id="sd-bek-rd">✕ Seçilenleri Reddet</button>' +
+      '<div class="dtl-pending-tb-r2">' +
+        '<button class="dtl-ok"' + btnDis + ' onclick="deptApproveSelected()" id="sd-bek-ok">✓ Seçilenleri Onayla</button>' +
+        '<button class="dtl-rd"' + btnDis + ' onclick="deptRejectSelected()" id="sd-bek-rd">✕ Seçilenleri Reddet</button>' +
       '</div>' +
     '</div>';
 
@@ -469,27 +469,27 @@ export function renderDeptPending() {
     var clr    = SD_KAT_CLR[f.kat] || 'var(--tx3)';
     var lbl    = SD_KAT_LBL[f.kat] || f.kat;
     var sel    = !!APP.ui.deptSelected[f.id];
-    var cbCls  = 'sd-cb' + (sel ? ' on' : '');
-    var fisCls = 'sd-fis' + (sel ? ' secili' : '');
+    var cbCls  = 'dtl-cb' + (sel ? ' on' : '');
+    var fisCls = 'dtl-rcpt' + (sel ? ' secili' : '');
     var extras = '';
-    if (f.uyari)    extras += '<div class="sd-fis-uyari">⚠️ ' + f.uyari + '</div>';
-    if (f.belgesiz) extras += '<div class="sd-fis-belgesiz">📋 Belgesiz · ' + (f.aciklama || '') + '</div>';
+    if (f.uyari)    extras += '<div class="dtl-rcpt-uyari">⚠️ ' + f.uyari + '</div>';
+    if (f.belgesiz) extras += '<div class="dtl-rcpt-belgesiz">📋 Belgesiz · ' + (f.aciklama || '') + '</div>';
     return '<div class="' + fisCls + '" id="sd-fis-' + f.id + '" onclick="openFisDetay(' + f.id + ',\'dept\')">' +
-      '<div class="sd-fis-top">' +
+      '<div class="dtl-rcpt-top">' +
         '<div class="' + cbCls + '" id="sd-cb-' + f.id + '" onclick="event.stopPropagation();_deptToggle(' + f.id + ')"></div>' +
-        '<div class="sd-fis-dot" style="background:' + clr + ';margin-top:6px"></div>' +
-        '<div class="sd-fis-main">' +
-          '<div class="sd-fis-row">' +
-            '<div class="sd-fis-satici">' + f.satici + '</div>' +
-            '<div class="sd-fis-tutar">₺' + f.tutar.toLocaleString('tr-TR') + '</div>' +
+        '<div class="dtl-rcpt-dot" style="background:' + clr + ';margin-top:6px"></div>' +
+        '<div class="dtl-rcpt-main">' +
+          '<div class="dtl-rcpt-row">' +
+            '<div class="dtl-rcpt-satici">' + f.satici + '</div>' +
+            '<div class="dtl-rcpt-tutar">₺' + f.tutar.toLocaleString('tr-TR') + '</div>' +
           '</div>' +
-          '<div class="sd-fis-meta">' + f.uye + ' · ' + lbl + ' · ' + f.tarih + '</div>' +
+          '<div class="dtl-rcpt-meta">' + f.uye + ' · ' + lbl + ' · ' + f.tarih + '</div>' +
           extras +
         '</div>' +
       '</div>' +
-      '<div class="sd-fis-acts">' +
-        '<button class="sd-ok" onclick="event.stopPropagation();deptApprove(' + f.id + ')">✓ Onayla</button>' +
-        '<button class="sd-rd" onclick="event.stopPropagation();deptReject(' + f.id + ')">✕ Reddet</button>' +
+      '<div class="dtl-rcpt-acts">' +
+        '<button class="dtl-ok" onclick="event.stopPropagation();deptApprove(' + f.id + ')">✓ Onayla</button>' +
+        '<button class="dtl-rd" onclick="event.stopPropagation();deptReject(' + f.id + ')">✕ Reddet</button>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -501,10 +501,10 @@ export function renderDeptPending() {
 
 export function _deptToggle(id) {
   if (APP.ui.deptSelected[id]) { delete APP.ui.deptSelected[id]; } else { APP.ui.deptSelected[id] = true; }
-  var card = document.getElementById('sd-fis-' + id);
+  var card = document.getElementById('dtl-rcpt-' + id);
   if (card) card.classList.toggle('secili', !!APP.ui.deptSelected[id]);
   var cb = document.getElementById('sd-cb-' + id);
-  if (cb) cb.className = 'sd-cb' + (APP.ui.deptSelected[id] ? ' on' : '');
+  if (cb) cb.className = 'dtl-cb' + (APP.ui.deptSelected[id] ? ' on' : '');
   _deptUpdateToolbar();
 }
 
@@ -531,7 +531,7 @@ export function _deptUpdateToolbar() {
   var info    = document.getElementById('sd-bek-sel-info');
   if (info) {
     info.textContent = selCnt > 0 ? selCnt + ' seçili · ₺' + selTop.toLocaleString('tr-TR') : 'Seçim yok';
-    info.className   = selCnt > 0 ? 'sd-bek-sel-info has-sel' : 'sd-bek-sel-info';
+    info.className   = selCnt > 0 ? 'dtl-pending-sel-info has-sel' : 'dtl-pending-sel-info';
   }
   var dis = selCnt === 0;
   var ok  = document.getElementById('sd-bek-ok');
@@ -539,7 +539,7 @@ export function _deptUpdateToolbar() {
   if (ok) { ok.disabled = dis; ok.style.opacity = dis ? '.38' : '1'; ok.style.pointerEvents = dis ? 'none' : ''; }
   if (rd) { rd.disabled = dis; rd.style.opacity = dis ? '.38' : '1'; rd.style.pointerEvents = dis ? 'none' : ''; }
   var cbAll = document.getElementById('sd-cb-all');
-  if (cbAll) cbAll.className = allSel ? 'sd-cb on' : (partSel ? 'sd-cb part' : 'sd-cb');
+  if (cbAll) cbAll.className = allSel ? 'dtl-cb on' : (partSel ? 'dtl-cb part' : 'dtl-cb');
 }
 
 /* ═══ TOPLU ONAY / RED ═══ */
@@ -648,23 +648,23 @@ export function renderDeptCrew() {
   }
   var rows = APP.seed.deptCrew.map(function(u) {
     var bek = bekMap[u.name] || 0;
-    return '<div class="sd-uye" onclick="openMemberProfile(\'' + u.id + '\')">' +
-      '<div class="sd-uye-av">' + u.ini + '</div>' +
+    return '<div class="dtl-member" onclick="openMemberProfile(\'' + u.id + '\')">' +
+      '<div class="dtl-member-av">' + u.ini + '</div>' +
       '<div>' +
-        '<div class="sd-uye-name">' + u.name + '</div>' +
-        '<div class="sd-uye-rol">' + u.rol + '</div>' +
+        '<div class="dtl-member-name">' + u.name + '</div>' +
+        '<div class="dtl-member-rol">' + u.rol + '</div>' +
       '</div>' +
-      '<div class="sd-uye-right">' +
-        '<div class="sd-uye-tutar">₺' + u.tutar.toLocaleString('tr-TR') + '</div>' +
+      '<div class="dtl-member-right">' +
+        '<div class="dtl-member-tutar">₺' + u.tutar.toLocaleString('tr-TR') + '</div>' +
         (bek > 0
-          ? '<div class="sd-uye-bek">' + bek + ' bekleyen</div>'
-          : '<div class="sd-uye-bek0">Bekleyen yok</div>') +
+          ? '<div class="dtl-member-bek">' + bek + ' bekleyen</div>'
+          : '<div class="dtl-member-bek0">Bekleyen yok</div>') +
       '</div>' +
     '</div>';
   }).join('');
-  el.innerHTML = '<div class="sd-sec">Aktif Dönem · Ekip Harcamaları</div>' +
-    '<div class="sd-ekip-card">' + rows + '</div>' +
-    '<div class="sd-sec">Toplam Ekip · ' + APP.seed.deptCrew.length + ' kişi</div>';
+  el.innerHTML = '<div class="dtl-sec">Aktif Dönem · Ekip Harcamaları</div>' +
+    '<div class="dtl-team-card">' + rows + '</div>' +
+    '<div class="dtl-sec">Toplam Ekip · ' + APP.seed.deptCrew.length + ' kişi</div>';
 }
 
 /* ═══ AVANS YÖNETİMİ ═══ */
@@ -688,10 +688,10 @@ export function renderDeptAdvance() {
   var toplamBek = aktifBek + gecmisBek;
 
   var html =
-    '<div class="sd-av-ozet">' +
-      '<div class="sd-av-ozet-c"><div class="sd-av-ozet-v" style="color:var(--am2)">₺' + toplamBek.toLocaleString('tr-TR') + '</div><div class="sd-av-ozet-l">Bekleyen</div></div>' +
-      '<div class="sd-av-ozet-c"><div class="sd-av-ozet-v" style="color:var(--gr2)">₺' + gecmisOdendi.toLocaleString('tr-TR') + '</div><div class="sd-av-ozet-l">Ödendi</div></div>' +
-      '<div class="sd-av-ozet-c"><div class="sd-av-ozet-v">' + (APP.data.deptAdvances.length + gecmisAvans.length) + '</div><div class="sd-av-ozet-l">Toplam</div></div>' +
+    '<div class="dtl-advance-ozet">' +
+      '<div class="dtl-advance-summary-c"><div class="dtl-advance-summary-v" style="color:var(--am2)">₺' + toplamBek.toLocaleString('tr-TR') + '</div><div class="dtl-advance-summary-l">Bekleyen</div></div>' +
+      '<div class="dtl-advance-summary-c"><div class="dtl-advance-summary-v" style="color:var(--gr2)">₺' + gecmisOdendi.toLocaleString('tr-TR') + '</div><div class="dtl-advance-summary-l">Ödendi</div></div>' +
+      '<div class="dtl-advance-summary-c"><div class="dtl-advance-summary-v">' + (APP.data.deptAdvances.length + gecmisAvans.length) + '</div><div class="dtl-advance-summary-l">Toplam</div></div>' +
     '</div>';
 
   var formHtml;
@@ -700,8 +700,8 @@ export function renderDeptAdvance() {
       return '<option value="' + u.id + '">' + u.name + '</option>';
     }).join('');
     formHtml =
-      '<div class="sd-av-form">' +
-        '<div class="sd-av-form-hd"><span class="sd-av-form-title">Yeni Avans Talebi</span><button class="btn btn-sm" onclick="deptAdvanceFormClose()" style="padding:4px 10px">✕</button></div>' +
+      '<div class="dtl-advance-form">' +
+        '<div class="dtl-advance-form-hd"><span class="dtl-advance-form-title">Yeni Avans Talebi</span><button class="btn btn-sm" onclick="deptAdvanceFormClose()" style="padding:4px 10px">✕</button></div>' +
         '<div class="fg"><label class="fg-lbl">Ekip Üyesi</label><select class="fgi" id="sdav-uye" style="width:100%">' + uyeOpts + '</select></div>' +
         '<div class="fg"><label class="fg-lbl">Tutar (₺)</label><input class="fgi" id="sdav-tutar" type="number" placeholder="0" min="0"></div>' +
         '<div class="fg"><label class="fg-lbl">Gerekçe</label><input class="fgi" id="sdav-gerekce" type="text" placeholder="Avans gerekçesi..."></div>' +
@@ -719,18 +719,18 @@ export function renderDeptAdvance() {
   if (sortedDeptAv.length) {
     var deptAvTop = 0;
     for (var daii = 0; daii < sortedDeptAv.length; daii++) deptAvTop += sortedDeptAv[daii].tutar;
-    html += '<div class="sd-sec" style="display:flex;align-items:center;justify-content:space-between;">Saha Onay Bekleyen (' + sortedDeptAv.length + ') · <span style="font-family:var(--mo);color:var(--am2)">₺' + deptAvTop.toLocaleString('tr-TR') + '</span><button style="background:transparent;border:1px solid var(--accent,#E8962E);color:var(--accent,#E8962E);border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer;" onclick="showExportModal(\'dept-avans\')">⬇ Dışa Aktar</button></div>';
+    html += '<div class="dtl-sec" style="display:flex;align-items:center;justify-content:space-between;">Saha Onay Bekleyen (' + sortedDeptAv.length + ') · <span style="font-family:var(--mo);color:var(--am2)">₺' + deptAvTop.toLocaleString('tr-TR') + '</span><button style="background:transparent;border:1px solid var(--accent,#E8962E);color:var(--accent,#E8962E);border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer;" onclick="showExportModal(\'dept-avans\')">⬇ Dışa Aktar</button></div>';
     html += sortedDeptAv.map(function(a) {
-      return '<div class="sd-avans-card" id="sd-av-' + a.id + '">' +
-        '<div class="sd-av-top">' +
-          '<div class="sd-av-kisi"><div class="sd-av-av">' + a.ini + '</div><div class="sd-av-name">' + a.uye + '</div></div>' +
-          '<div class="sd-av-tutar">₺' + a.tutar.toLocaleString('tr-TR') + '</div>' +
+      return '<div class="dtl-advance-card" id="sd-av-' + a.id + '">' +
+        '<div class="dtl-advance-top">' +
+          '<div class="dtl-advance-kisi"><div class="dtl-advance-av">' + a.ini + '</div><div class="dtl-advance-name">' + a.uye + '</div></div>' +
+          '<div class="dtl-advance-tutar">₺' + a.tutar.toLocaleString('tr-TR') + '</div>' +
         '</div>' +
-        '<div class="sd-av-meta">' + a.tarih + ' tarihli talep</div>' +
-        '<div class="sd-av-gerekce">' + a.gerekce + '</div>' +
-        '<div class="sd-fis-acts">' +
-          '<button class="sd-ok" onclick="deptAdvanceApprove(' + a.id + ')">✓ Onayla → Muhasebe</button>' +
-          '<button class="sd-rd" onclick="deptAdvanceReject(' + a.id + ')">✕ Reddet</button>' +
+        '<div class="dtl-advance-meta">' + a.tarih + ' tarihli talep</div>' +
+        '<div class="dtl-advance-gerekce">' + a.gerekce + '</div>' +
+        '<div class="dtl-rcpt-acts">' +
+          '<button class="dtl-ok" onclick="deptAdvanceApprove(' + a.id + ')">✓ Onayla → Muhasebe</button>' +
+          '<button class="dtl-rd" onclick="deptAdvanceReject(' + a.id + ')">✕ Reddet</button>' +
         '</div>' +
       '</div>';
     }).join('');
@@ -749,30 +749,30 @@ export function renderDeptAdvance() {
     }
     var donKeys = Object.keys(donGrp).map(Number).sort(function(a,b) { return b-a; });
     var gecmisTopAll = gecmisOdendi + gecmisBek + gecmisRed;
-    html += '<div class="sd-av-gec-hd"><span>Avans Geçmişi (' + gecmisAvans.length + ' kayıt)</span><span style="color:var(--tx2)">₺' + gecmisTopAll.toLocaleString('tr-TR') + '</span></div>';
+    html += '<div class="dtl-advance-history-hd"><span>Avans Geçmişi (' + gecmisAvans.length + ' kayıt)</span><span style="color:var(--tx2)">₺' + gecmisTopAll.toLocaleString('tr-TR') + '</span></div>';
     for (var dki = 0; dki < donKeys.length; dki++) {
       var avDon = donKeys[dki];
       var avRows = _advanceSortDesc(donGrp[avDon]);
       var dkTop = 0;
       for (var ri = 0; ri < avRows.length; ri++) dkTop += avRows[ri].tutar;
       var isAktif = avDon === 2;
-      html += '<div class="sd-sec" style="margin-top:10px">Dönem #' + avDon + (isAktif ? ' <span style="color:var(--gr)">● Aktif</span>' : '') + ' · ₺' + dkTop.toLocaleString('tr-TR') + ' · ' + avRows.length + ' avans</div>';
+      html += '<div class="dtl-sec" style="margin-top:10px">Dönem #' + avDon + (isAktif ? ' <span style="color:var(--gr)">● Aktif</span>' : '') + ' · ₺' + dkTop.toLocaleString('tr-TR') + ' · ' + avRows.length + ' avans</div>';
       html += avRows.map(function(av) {
         var clr = av.durum === 'paid' ? 'var(--gr2)' : (av.durum === 'rejected' ? 'var(--rd2)' : 'var(--am2)');
         var ico = av.durum === 'paid' ? '✅' : (av.durum === 'rejected' ? '❌' : '⏳');
         var redSatir = (av.durum === 'rejected' && av.redNedeni)
           ? '<div style="font-size:11px;color:var(--rd2);margin-top:2px">Red nedeni: ' + av.redNedeni + '</div>'
           : '';
-        return '<div class="sd-av-gec-row">' +
-          '<div class="sd-av-gec-av">' + av.ini + '</div>' +
-          '<div class="sd-av-gec-info">' +
-            '<div class="sd-av-gec-name">' + av.uye + '</div>' +
-            '<div class="sd-av-gec-sub">' + av.tarih + ' · ' + av.gerekce + '</div>' +
+        return '<div class="dtl-advance-history-row">' +
+          '<div class="dtl-advance-history-av">' + av.ini + '</div>' +
+          '<div class="dtl-advance-history-info">' +
+            '<div class="dtl-advance-history-name">' + av.uye + '</div>' +
+            '<div class="dtl-advance-history-sub">' + av.tarih + ' · ' + av.gerekce + '</div>' +
             redSatir +
           '</div>' +
-          '<div class="sd-av-gec-right">' +
-            '<div class="sd-av-gec-tutar">₺' + av.tutar.toLocaleString('tr-TR') + '</div>' +
-            '<div class="sd-av-gec-durum" style="color:' + clr + '">' + ico + ' ' + av.durum + '</div>' +
+          '<div class="dtl-advance-history-right">' +
+            '<div class="dtl-advance-history-tutar">₺' + av.tutar.toLocaleString('tr-TR') + '</div>' +
+            '<div class="dtl-advance-history-durum" style="color:' + clr + '">' + ico + ' ' + av.durum + '</div>' +
           '</div>' +
         '</div>';
       }).join('');
@@ -853,37 +853,37 @@ export function renderDeptRental() {
     var kalan = _dayDiff(today, k.bit);
     var c     = _rentalPenalty(k);
     var tagCls, tagTxt;
-    if      (dur === 'overdue')  { tagCls = 'sd-kira-tag sd-kira-tag-overdue';  tagTxt = c.gecGun + ' gün gecikmiş'; }
-    else if (dur === 'upcoming') { tagCls = 'sd-kira-tag sd-kira-tag-upcoming'; tagTxt = kalan === 0 ? 'Bugün bitiyor' : kalan + ' gün kaldı'; }
-    else if (dur === 'ak')       { tagCls = 'sd-kira-tag sd-kira-tag-ak';       tagTxt = kalan + ' gün kaldı'; }
-    else                         { tagCls = 'sd-kira-tag sd-kira-tag-iad';      tagTxt = 'İade Edildi'; }
-    var cardCls = 'sd-kira-card' + (dur === 'overdue' ? ' overdue' : dur === 'upcoming' ? ' upcoming' : dur === 'returned' ? ' returned' : '');
+    if      (dur === 'overdue')  { tagCls = 'dtl-rental-tag dtl-rental-tag-overdue';  tagTxt = c.gecGun + ' gün gecikmiş'; }
+    else if (dur === 'upcoming') { tagCls = 'dtl-rental-tag dtl-rental-tag-upcoming'; tagTxt = kalan === 0 ? 'Bugün bitiyor' : kalan + ' gün kaldı'; }
+    else if (dur === 'ak')       { tagCls = 'dtl-rental-tag dtl-rental-tag-ak';       tagTxt = kalan + ' gün kaldı'; }
+    else                         { tagCls = 'dtl-rental-tag dtl-rental-tag-iad';      tagTxt = 'İade Edildi'; }
+    var cardCls = 'dtl-rental-card' + (dur === 'overdue' ? ' overdue' : dur === 'upcoming' ? ' upcoming' : dur === 'returned' ? ' returned' : '');
     var ceza    = dur === 'overdue'
-      ? '<div class="sd-kira-ceza">⚠ Gecikme: ' + c.gecGun + ' gün × ₺' + k.gunluk.toLocaleString('tr-TR') + ' = ₺' + c.ceza.toLocaleString('tr-TR') + ' olası ceza</div>'
+      ? '<div class="dtl-rental-ceza">⚠ Gecikme: ' + c.gecGun + ' gün × ₺' + k.gunluk.toLocaleString('tr-TR') + ' = ₺' + c.ceza.toLocaleString('tr-TR') + ' olası ceza</div>'
       : '';
     var iadeBtn = dur !== 'returned'
-      ? '<button class="sd-ok btn-sm" style="font-size:12px" onclick="deptRentalReturn(' + k.id + ')">✓ İade Edildi</button>'
+      ? '<button class="dtl-ok btn-sm" style="font-size:12px" onclick="deptRentalReturn(' + k.id + ')">✓ İade Edildi</button>'
       : '<span style="font-size:12px;color:var(--tx3)">✓ Teslim Edildi</span>';
     return '<div class="' + cardCls + '">' +
-      '<div class="sd-kira-hd">' +
-        '<div><div class="sd-kira-sat">' + k.satici + '</div><div class="sd-kira-kat">' + k.kat + ' · ' + k.uye + '</div></div>' +
-        '<div class="sd-kira-tutar">₺' + k.tutar.toLocaleString('tr-TR') + '</div>' +
+      '<div class="dtl-rental-hd">' +
+        '<div><div class="dtl-rental-sat">' + k.satici + '</div><div class="dtl-rental-kat">' + k.kat + ' · ' + k.uye + '</div></div>' +
+        '<div class="dtl-rental-tutar">₺' + k.tutar.toLocaleString('tr-TR') + '</div>' +
       '</div>' +
-      '<div class="sd-kira-meta">' +
+      '<div class="dtl-rental-meta">' +
         '<span>' + k.bas.split('-').reverse().join('.') + ' → ' + k.bit.split('-').reverse().join('.') + '</span>' +
         '<span>₺' + k.gunluk.toLocaleString('tr-TR') + '/gün</span>' +
         '<span class="' + tagCls + '">' + tagTxt + '</span>' +
       '</div>' +
       ceza +
-      '<div class="sd-kira-acts">' + iadeBtn + '</div>' +
+      '<div class="dtl-rental-acts">' + iadeBtn + '</div>' +
     '</div>';
   }
 
   var html = '';
-  if (gecmis.length)   { html += '<div class="sd-kira-sec-hd" style="color:var(--rd2)">🔴 Gecikmiş (' + gecmis.length + ')</div>';   html += gecmis.map(kiraCard).join(''); }
-  if (yaklasan.length) { html += '<div class="sd-kira-sec-hd" style="color:var(--am2)">⚠ Bitiş Yaklaşıyor (' + yaklasan.length + ')</div>'; html += yaklasan.map(kiraCard).join(''); }
-  if (aktif.length)    { html += '<div class="sd-kira-sec-hd">Aktif (' + aktif.length + ')</div>';                                    html += aktif.map(kiraCard).join(''); }
-  if (iade.length)     { html += '<div class="sd-kira-sec-hd">İade Edilmiş (' + iade.length + ')</div>';                              html += iade.map(kiraCard).join(''); }
+  if (gecmis.length)   { html += '<div class="dtl-rental-sec-hd" style="color:var(--rd2)">🔴 Gecikmiş (' + gecmis.length + ')</div>';   html += gecmis.map(kiraCard).join(''); }
+  if (yaklasan.length) { html += '<div class="dtl-rental-sec-hd" style="color:var(--am2)">⚠ Bitiş Yaklaşıyor (' + yaklasan.length + ')</div>'; html += yaklasan.map(kiraCard).join(''); }
+  if (aktif.length)    { html += '<div class="dtl-rental-sec-hd">Aktif (' + aktif.length + ')</div>';                                    html += aktif.map(kiraCard).join(''); }
+  if (iade.length)     { html += '<div class="dtl-rental-sec-hd">İade Edilmiş (' + iade.length + ')</div>';                              html += iade.map(kiraCard).join(''); }
   el.innerHTML = html;
 }
 
@@ -951,12 +951,12 @@ export function renderDeptHistory() {
   }
   if (!donRec) { donId = gecmisDon[0].id; donRec = gecmisDon[0]; APP.ui.deptHistoryPanelPeriod = donId; }
 
-  var html = '<div class="sd-gec-donem-row">';
+  var html = '<div class="dtl-hist-period-row">';
   for (var pi = 0; pi < gecmisDon.length; pi++) {
     var dp = gecmisDon[pi];
-    html += '<button class="sd-gec-don-pill' + (dp.id === donId ? ' on' : '') + '" onclick="deptHistorySetPeriod(' + dp.id + ')">' +
-      '<div class="sd-gec-don-pill-lbl">' + dp.lbl + '</div>' +
-      '<div class="sd-gec-don-pill-sub">' + dp.tarih + '</div>' +
+    html += '<button class="dtl-hist-period-pill' + (dp.id === donId ? ' on' : '') + '" onclick="deptHistorySetPeriod(' + dp.id + ')">' +
+      '<div class="dtl-hist-period-pill-lbl">' + dp.lbl + '</div>' +
+      '<div class="dtl-hist-period-pill-sub">' + dp.tarih + '</div>' +
     '</button>';
   }
   html += '</div>';
@@ -967,27 +967,27 @@ export function renderDeptHistory() {
   for (var ri = 0; ri < gec.reddedildi.length; ri++) redTop  += gec.reddedildi[ri].tutar;
   var topTutar = onayTop + redTop;
 
-  html += '<div class="sd-gec-stat-row">' +
-    '<div class="sd-gec-stat-c"><div class="sd-gec-stat-v">₺' + topTutar.toLocaleString('tr-TR') + '</div><div class="sd-gec-stat-l">Toplam</div></div>' +
-    '<div class="sd-gec-stat-c"><div class="sd-gec-stat-v" style="color:var(--gr2)">₺' + onayTop.toLocaleString('tr-TR') + '</div><div class="sd-gec-stat-l">Onaylı</div></div>' +
-    '<div class="sd-gec-stat-c"><div class="sd-gec-stat-v" style="color:var(--rd2)">₺' + redTop.toLocaleString('tr-TR') + '</div><div class="sd-gec-stat-l">Reddedildi</div></div>' +
+  html += '<div class="dtl-hist-stat-row">' +
+    '<div class="dtl-hist-stat-c"><div class="dtl-hist-stat-v">₺' + topTutar.toLocaleString('tr-TR') + '</div><div class="dtl-hist-stat-l">Toplam</div></div>' +
+    '<div class="dtl-hist-stat-c"><div class="dtl-hist-stat-v" style="color:var(--gr2)">₺' + onayTop.toLocaleString('tr-TR') + '</div><div class="dtl-hist-stat-l">Onaylı</div></div>' +
+    '<div class="dtl-hist-stat-c"><div class="dtl-hist-stat-v" style="color:var(--rd2)">₺' + redTop.toLocaleString('tr-TR') + '</div><div class="dtl-hist-stat-l">Reddedildi</div></div>' +
   '</div>';
 
   if (gec.onaylandi.length) {
-    html += '<div class="sd-gec-sec-hd" style="display:flex;align-items:center;justify-content:space-between;">Onaylanan Harcamalar (' + gec.onaylandi.length + ')<button style="background:transparent;border:1px solid var(--accent,#E8962E);color:var(--accent,#E8962E);border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer;" onclick="showExportModal(\'dept-gecmis\')">⬇ Dışa Aktar</button></div>';
-    html += '<div class="sd-gec-fis-card">';
+    html += '<div class="dtl-hist-sec-hd" style="display:flex;align-items:center;justify-content:space-between;">Onaylanan Harcamalar (' + gec.onaylandi.length + ')<button style="background:transparent;border:1px solid var(--accent,#E8962E);color:var(--accent,#E8962E);border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer;" onclick="showExportModal(\'dept-gecmis\')">⬇ Dışa Aktar</button></div>';
+    html += '<div class="dtl-hist-rcpt-card">';
     html += gec.onaylandi.map(function(f) {
       var kat    = SD_KAT_LBL[f.kat] || f.kat;
       var clrDot = SD_KAT_CLR[f.kat] || 'var(--tx3)';
-      return '<div class="sd-gec-fis-row">' +
-        '<div class="sd-gec-dot" style="background:' + clrDot + '"></div>' +
-        '<div class="sd-gec-fis-info">' +
-          '<div class="sd-gec-satici">' + f.satici + '</div>' +
-          '<div class="sd-gec-meta">' + f.ini + ' · ' + kat + ' · ' + f.tarih + '</div>' +
+      return '<div class="dtl-hist-rcpt-row">' +
+        '<div class="dtl-hist-dot" style="background:' + clrDot + '"></div>' +
+        '<div class="dtl-hist-rcpt-info">' +
+          '<div class="dtl-hist-satici">' + f.satici + '</div>' +
+          '<div class="dtl-hist-meta">' + f.ini + ' · ' + kat + ' · ' + f.tarih + '</div>' +
         '</div>' +
-        '<div class="sd-gec-fis-right">' +
-          '<div class="sd-gec-fis-tutar">₺' + f.tutar.toLocaleString('tr-TR') + '</div>' +
-          '<div class="sd-gec-fis-tag on">Onaylı</div>' +
+        '<div class="dtl-hist-rcpt-right">' +
+          '<div class="dtl-hist-rcpt-tutar">₺' + f.tutar.toLocaleString('tr-TR') + '</div>' +
+          '<div class="dtl-hist-rcpt-tag on">Onaylı</div>' +
         '</div>' +
       '</div>';
     }).join('');
@@ -995,19 +995,19 @@ export function renderDeptHistory() {
   }
 
   if (gec.reddedildi.length) {
-    html += '<div class="sd-gec-sec-hd">Reddedilen Harcamalar (' + gec.reddedildi.length + ')</div><div class="sd-gec-fis-card">';
+    html += '<div class="dtl-hist-sec-hd">Reddedilen Harcamalar (' + gec.reddedildi.length + ')</div><div class="dtl-hist-rcpt-card">';
     html += gec.reddedildi.map(function(f) {
       var kat = SD_KAT_LBL[f.kat] || f.kat;
-      return '<div class="sd-gec-fis-row">' +
-        '<div class="sd-gec-dot" style="background:var(--rd2)"></div>' +
-        '<div class="sd-gec-fis-info">' +
-          '<div class="sd-gec-satici">' + f.satici + '</div>' +
-          '<div class="sd-gec-meta">' + f.ini + ' · ' + kat + ' · ' + f.tarih + '</div>' +
-          (f.sebep ? '<div class="sd-gec-sebep">Red gerekçesi: ' + f.sebep + '</div>' : '') +
+      return '<div class="dtl-hist-rcpt-row">' +
+        '<div class="dtl-hist-dot" style="background:var(--rd2)"></div>' +
+        '<div class="dtl-hist-rcpt-info">' +
+          '<div class="dtl-hist-satici">' + f.satici + '</div>' +
+          '<div class="dtl-hist-meta">' + f.ini + ' · ' + kat + ' · ' + f.tarih + '</div>' +
+          (f.sebep ? '<div class="dtl-hist-sebep">Red gerekçesi: ' + f.sebep + '</div>' : '') +
         '</div>' +
-        '<div class="sd-gec-fis-right">' +
-          '<div class="sd-gec-fis-tutar">₺' + f.tutar.toLocaleString('tr-TR') + '</div>' +
-          '<div class="sd-gec-fis-tag red">Reddedildi</div>' +
+        '<div class="dtl-hist-rcpt-right">' +
+          '<div class="dtl-hist-rcpt-tutar">₺' + f.tutar.toLocaleString('tr-TR') + '</div>' +
+          '<div class="dtl-hist-rcpt-tag red">Reddedildi</div>' +
         '</div>' +
       '</div>';
     }).join('');
@@ -1018,14 +1018,14 @@ export function renderDeptHistory() {
   if (donAvans.length) {
     var avTop = 0;
     for (var avi = 0; avi < donAvans.length; avi++) avTop += donAvans[avi].tutar;
-    html += '<div class="sd-gec-sec-hd">Avans Geçmişi — ' + donRec.lbl + ' · ₺' + avTop.toLocaleString('tr-TR') + '</div>';
+    html += '<div class="dtl-hist-sec-hd">Avans Geçmişi — ' + donRec.lbl + ' · ₺' + avTop.toLocaleString('tr-TR') + '</div>';
     html += donAvans.map(function(av) {
       var clr = av.durum === 'paid' ? 'var(--gr2)' : (av.durum === 'rejected' ? 'var(--rd2)' : 'var(--am2)');
       var ico = av.durum === 'paid' ? '✅' : (av.durum === 'rejected' ? '❌' : '⏳');
-      return '<div class="sd-av-gec-row">' +
-        '<div class="sd-av-gec-av">' + av.ini + '</div>' +
-        '<div class="sd-av-gec-info"><div class="sd-av-gec-name">' + av.uye + '</div><div class="sd-av-gec-sub">' + av.tarih + ' · ' + av.gerekce + '</div></div>' +
-        '<div class="sd-av-gec-right"><div class="sd-av-gec-tutar">₺' + av.tutar.toLocaleString('tr-TR') + '</div><div class="sd-av-gec-durum" style="color:' + clr + '">' + ico + ' ' + av.durum + '</div></div>' +
+      return '<div class="dtl-advance-history-row">' +
+        '<div class="dtl-advance-history-av">' + av.ini + '</div>' +
+        '<div class="dtl-advance-history-info"><div class="dtl-advance-history-name">' + av.uye + '</div><div class="dtl-advance-history-sub">' + av.tarih + ' · ' + av.gerekce + '</div></div>' +
+        '<div class="dtl-advance-history-right"><div class="dtl-advance-history-tutar">₺' + av.tutar.toLocaleString('tr-TR') + '</div><div class="dtl-advance-history-durum" style="color:' + clr + '">' + ico + ' ' + av.durum + '</div></div>' +
       '</div>';
     }).join('');
   }
