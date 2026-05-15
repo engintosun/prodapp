@@ -57,6 +57,7 @@
 | C9 | Supabase Service Layer | ❓ Bilinçli erteleme | Supabase şema tasarımıyla birlikte tek seferde yazılacak. Kapsamı: (a) Error handling — try-catch + toast, (b) Connection state — offline queue + retry, (c) Storage service — foto/dosya Supabase Storage'a, DB'de URL only, (d) UUID — crypto.randomUUID() + migration, (e) Soft delete — deleted_at + RLS (karar alınmış), (f) Optimistic UI + debounce — buton disable/loading/re-enable, mükerrer kayıt önleme, (g) Rehydration + caching — başlangıç veri çekme stratejisi, lazy load, cache invalidation |
 | C10 | Kategori listesi gözden geçirme | ❓ | Teknik silindi, mevcut 8 kategori yeterli mi, sektörel ihtiyaç analizi |
 | C11 | Galeriden çoklu fotoğraf seçimi + OCR kuyruğu | ❓ | Şu an tek fotoğraf işleniyor, çoklu seçimde sıralı OCR gerekli |
+| C12 | JS object property (field) rename — Türkçe→İngilizce | ❓ Supabase ile birlikte | `f.kat`→`f.category`, `f.durum`→`f.status`, `f.tutar`→`f.amount`, `f.satici`→`f.vendor`, `f.tarih`→`f.date`, `f.aciklama`→`f.description`, `f.gerekce`→`f.justification`, `f.donem`→`f.period`, `f.personel`→`f.crew` vb. **Neden şimdi değil:** Şu an veri localStorage'da bu isimlerle tutuluyor — rename yapmak migration gerektirir. Supabase geçişinde localStorage zaten kalkacak, Supabase şeması sıfırdan İngilizce yazılacak, JS tarafı mapping katmanıyla tek seferde dönecek. Şimdi yapmak = boşa migration + sonra silinen kod. CSS class rename'den farklı: class adları veri katmanından bağımsız, field adları değil. |
 
 ---
 
