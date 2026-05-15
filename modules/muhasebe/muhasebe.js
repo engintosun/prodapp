@@ -375,17 +375,17 @@ function _renderAccDeptCrew(deptId) {
   if (!el) return;
   if (!list.length) { el.innerHTML = '<div style="padding:20px 16px;color:var(--tx3);font-size:13px">Ekip verisi yok</div>'; return; }
   el.innerHTML = list.map(function(u) {
-    return '<div class="adept-uye-row" onclick="openAccMemberDetail(\'' + u.name.replace(/'/g, "\\'") + '\',\'' + deptId + '\')">' +
-      '<div class="adept-uye-av">' + u.ini + '</div>' +
+    return '<div class="adept-member-row" onclick="openAccMemberDetail(\'' + u.name.replace(/'/g, "\\'") + '\',\'' + deptId + '\')">' +
+      '<div class="adept-member-av">' + u.ini + '</div>' +
       '<div>' +
-        '<div class="adept-uye-name">' + u.name + '</div>' +
-        '<div class="adept-uye-rol">' + u.rol + '</div>' +
+        '<div class="adept-member-name">' + u.name + '</div>' +
+        '<div class="adept-member-rol">' + u.rol + '</div>' +
       '</div>' +
-      '<div class="adept-uye-right">' +
-        '<div class="adept-uye-total">₺' + u.total.toLocaleString('tr-TR') + '</div>' +
+      '<div class="adept-member-right">' +
+        '<div class="adept-member-total">₺' + u.total.toLocaleString('tr-TR') + '</div>' +
         (u.bek > 0
-          ? '<div class="adept-uye-bek">₺' + u.bek.toLocaleString('tr-TR') + ' bekleyen</div>'
-          : '<div class="adept-uye-ok">Bekleyen yok</div>') +
+          ? '<div class="adept-member-bek">₺' + u.bek.toLocaleString('tr-TR') + ' bekleyen</div>'
+          : '<div class="adept-member-ok">Bekleyen yok</div>') +
       '</div>' +
     '</div>';
   }).join('');
@@ -400,14 +400,14 @@ function _renderAccDeptPending(deptId) {
   if (!items.length) { el.innerHTML = '<div style="padding:20px 16px;color:var(--tx3);font-size:13px">Bekleyen harcama yok</div>'; return; }
   el.innerHTML = items.map(function(f) {
     var uyHtml = f.uyari ? '<div style="font-size:11px;color:var(--am2);margin-top:3px">⚠ ' + f.uyari + '</div>' : '';
-    return '<div class="uye-hist-row" style="cursor:pointer" onclick="closeM(\'md-acc-dept\');openFisDetay(' + f.id + ',\'acc\')">' +
-      '<div class="uye-hist-dot" style="background:var(--am)"></div>' +
-      '<div class="uye-hist-info">' +
-        '<div class="uye-hist-satici">' + (f.belgesiz ? '📋 ' : '') + (f.satici || '—') + '</div>' +
-        '<div class="uye-hist-meta">' + f.uye + ' · ' + f.kat + ' · ' + f.tarih + '</div>' +
+    return '<div class="member-history-row" style="cursor:pointer" onclick="closeM(\'md-acc-dept\');openFisDetay(' + f.id + ',\'acc\')">' +
+      '<div class="member-history-dot" style="background:var(--am)"></div>' +
+      '<div class="member-history-info">' +
+        '<div class="member-history-satici">' + (f.belgesiz ? '📋 ' : '') + (f.satici || '—') + '</div>' +
+        '<div class="member-history-meta">' + f.uye + ' · ' + f.kat + ' · ' + f.tarih + '</div>' +
         uyHtml +
       '</div>' +
-      '<div class="uye-hist-tutar">₺' + f.tutar.toLocaleString('tr-TR') + '</div>' +
+      '<div class="member-history-tutar">₺' + f.tutar.toLocaleString('tr-TR') + '</div>' +
     '</div>';
   }).join('');
 }
@@ -437,7 +437,7 @@ function _renderAccDeptAdvance(deptId) {
   if (!el) return;
   if (!list.length) { el.innerHTML = '<div style="padding:20px 16px;color:var(--tx3);font-size:13px">Avans kaydı yok</div>'; return; }
   el.innerHTML = list.map(function(a) {
-    var tagCls = a.durum === 'paid' ? 'uye-av-tag uye-av-tag-ok' : 'uye-av-tag uye-av-tag-bek';
+    var tagCls = a.durum === 'paid' ? 'member-advance-tag member-advance-tag-ok' : 'member-advance-tag member-advance-tag-bek';
     return '<div class="adept-av-row">' +
       '<div class="adept-av-av">' + a.ini + '</div>' +
       '<div class="adept-av-info">' +
@@ -503,9 +503,9 @@ export function openAccMemberDetail(uyeName, deptId) {
   var statsEl = document.getElementById('acuye-stats');
   if (statsEl) {
     statsEl.innerHTML =
-      '<div class="uye-stat-c"><div class="uye-stat-val">₺' + u.total.toLocaleString('tr-TR') + '</div><div class="uye-stat-lbl">Toplam</div></div>' +
-      '<div class="uye-stat-c"><div class="uye-stat-val" style="color:var(--gr)">₺' + u.onay.toLocaleString('tr-TR') + '</div><div class="uye-stat-lbl">Onaylanan</div></div>' +
-      '<div class="uye-stat-c"><div class="uye-stat-val" style="color:' + (u.bek > 0 ? 'var(--am2)' : 'var(--tx3)') + '">₺' + u.bek.toLocaleString('tr-TR') + '</div><div class="uye-stat-lbl">Bekleyen</div></div>';
+      '<div class="member-stat-c"><div class="member-stat-val">₺' + u.total.toLocaleString('tr-TR') + '</div><div class="member-stat-lbl">Toplam</div></div>' +
+      '<div class="member-stat-c"><div class="member-stat-val" style="color:var(--gr)">₺' + u.onay.toLocaleString('tr-TR') + '</div><div class="member-stat-lbl">Onaylanan</div></div>' +
+      '<div class="member-stat-c"><div class="member-stat-val" style="color:' + (u.bek > 0 ? 'var(--am2)' : 'var(--tx3)') + '">₺' + u.bek.toLocaleString('tr-TR') + '</div><div class="member-stat-lbl">Bekleyen</div></div>';
   }
 
   accMemberTab('bek', document.getElementById('acuyetb-bek'));
@@ -515,7 +515,7 @@ export function openAccMemberDetail(uyeName, deptId) {
 export function accMemberTab(t, el) {
   var tabs = ['bek','don','avans'];
   for (var i = 0; i < tabs.length; i++) {
-    var p = document.getElementById('acuye-pnl-' + tabs[i]);
+    var p = document.getElementById('acmember-pnl-' + tabs[i]);
     if (p) p.style.display = (tabs[i] === t) ? 'block' : 'none';
     var b = document.getElementById('acuyetb-' + tabs[i]);
     if (b) b.classList.remove('on');
@@ -536,16 +536,16 @@ function _renderAccMemberPending() {
   }
   el.innerHTML = items.map(function(f) {
     var uyHtml = f.uyari ? '<div style="font-size:11px;color:var(--am2);margin-top:2px">⚠ ' + f.uyari + '</div>' : '';
-    return '<div class="uye-hist-row" style="cursor:pointer" onclick="closeM(\'md-acc-uye\');openFisDetay(' + f.id + ',\'acc\')">' +
-      '<div class="uye-hist-dot" style="background:var(--am)"></div>' +
-      '<div class="uye-hist-info">' +
-        '<div class="uye-hist-satici">' + (f.belgesiz ? '📋 ' : '') + (f.satici || '—') + '</div>' +
-        '<div class="uye-hist-meta">' + f.kat + ' · ' + f.tarih + '</div>' +
+    return '<div class="member-history-row" style="cursor:pointer" onclick="closeM(\'md-acc-uye\');openFisDetay(' + f.id + ',\'acc\')">' +
+      '<div class="member-history-dot" style="background:var(--am)"></div>' +
+      '<div class="member-history-info">' +
+        '<div class="member-history-satici">' + (f.belgesiz ? '📋 ' : '') + (f.satici || '—') + '</div>' +
+        '<div class="member-history-meta">' + f.kat + ' · ' + f.tarih + '</div>' +
         uyHtml +
       '</div>' +
       '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">' +
-        '<div class="uye-hist-tutar">₺' + f.tutar.toLocaleString('tr-TR') + '</div>' +
-        '<div class="uye-hist-tag uye-hist-tag-bek">Bekleyen</div>' +
+        '<div class="member-history-tutar">₺' + f.tutar.toLocaleString('tr-TR') + '</div>' +
+        '<div class="member-history-tag member-history-tag-bek">Bekleyen</div>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -576,12 +576,12 @@ function _renderAccMemberAdvance() {
   var items = deptAvans.filter(function(a) { return a.name === _accMemberName; });
   if (!items.length) { el.innerHTML = '<div style="padding:20px 16px;color:var(--tx3);font-size:13px">Avans kaydı yok</div>'; return; }
   el.innerHTML = items.map(function(a) {
-    var tagCls = a.durum === 'paid' ? 'uye-av-tag uye-av-tag-ok' : 'uye-av-tag uye-av-tag-bek';
-    return '<div class="uye-av-row">' +
-      '<div class="uye-av-info">' +
-        '<div class="uye-av-tutar">₺' + a.tutar.toLocaleString('tr-TR') + '</div>' +
-        '<div class="uye-av-gerekce">' + a.gerekce + '</div>' +
-        '<div class="uye-av-meta">' + a.tarih + '</div>' +
+    var tagCls = a.durum === 'paid' ? 'member-advance-tag member-advance-tag-ok' : 'member-advance-tag member-advance-tag-bek';
+    return '<div class="member-advance-row">' +
+      '<div class="member-advance-info">' +
+        '<div class="member-advance-tutar">₺' + a.tutar.toLocaleString('tr-TR') + '</div>' +
+        '<div class="member-advance-gerekce">' + a.gerekce + '</div>' +
+        '<div class="member-advance-meta">' + a.tarih + '</div>' +
       '</div>' +
       '<div class="' + tagCls + '">' + a.durum + '</div>' +
     '</div>';

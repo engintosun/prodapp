@@ -70,7 +70,7 @@ En büyük batch. Alt-prefix'ler dahil.
 
 ---
 
-## BATCH D2 — `uye-*` → `member-*` + `profil-*` → `profile-*` (49 class, ~205 ref)
+## ✅ BATCH D2 — `uye-*` → `member-*` + `profil-*` → `profile-*` (49 class, ~205 ref)
 
 ### uye- → member- (34 class, ~156 ref)
 

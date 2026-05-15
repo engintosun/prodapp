@@ -1329,78 +1329,78 @@ body {
 }
 
 /* ── Ekip Üyesi Profil Modalı ── */
-.uye-prof-hd {
+.member-prof-hd {
   display: flex; align-items: center; gap: 14px;
   padding: 16px 16px 14px; border-bottom: 1px solid var(--bo);
 }
-.uye-prof-av {
+.member-prof-av {
   width: 52px; height: 52px; border-radius: 15px;
   background: var(--bg3); border: 1px solid var(--bo2);
   font-size: 15px; font-weight: 800; color: var(--tx2);
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.uye-prof-name { font-size: 16px; font-weight: 700; color: var(--tx); }
-.uye-prof-rol  { font-size: 12px; color: var(--tx3); margin-top: 2px; }
-.uye-stats {
+.member-prof-name { font-size: 16px; font-weight: 700; color: var(--tx); }
+.member-prof-rol  { font-size: 12px; color: var(--tx3); margin-top: 2px; }
+.member-stats {
   display: grid; grid-template-columns: 1fr 1fr 1fr;
   gap: 8px; padding: 14px 16px; border-bottom: 1px solid var(--bo);
 }
-.uye-stat-c {
+.member-stat-c {
   background: var(--bg3); border: 1px solid var(--bo);
   border-radius: var(--rs); padding: 10px 8px; text-align: center;
 }
-.uye-stat-val { font-size: 15px; font-weight: 800; font-family: var(--mo); color: var(--tx); }
-.uye-stat-lbl { font-size: 10px; color: var(--tx3); margin-top: 3px; }
-.uye-hist-hd {
+.member-stat-val { font-size: 15px; font-weight: 800; font-family: var(--mo); color: var(--tx); }
+.member-stat-lbl { font-size: 10px; color: var(--tx3); margin-top: 3px; }
+.member-history-hd {
   font-size: 11px; font-weight: 700; color: var(--tx3);
   text-transform: uppercase; letter-spacing: .6px;
   padding: 12px 16px 6px;
 }
-.uye-hist-row {
+.member-history-row {
   display: flex; align-items: center; justify-content: space-between;
   padding: 10px 16px; border-bottom: 1px solid var(--bo); gap: 8px;
 }
-.uye-hist-row:last-child { border-bottom: none; }
-.uye-hist-dot {
+.member-history-row:last-child { border-bottom: none; }
+.member-history-dot {
   width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 2px;
 }
-.uye-hist-info { flex: 1; }
-.uye-hist-satici { font-size: 13px; font-weight: 600; color: var(--tx); }
-.uye-hist-meta   { font-size: 11px; color: var(--tx3); margin-top: 1px; }
-.uye-hist-tutar  { font-size: 13px; font-weight: 700; font-family: var(--mo); color: var(--tx); flex-shrink: 0; }
-.uye-hist-tag    { font-size: 10px; font-weight: 700; border-radius: 5px; padding: 1px 6px; flex-shrink: 0; }
-.uye-hist-tag-bek { background: rgba(245,158,11,.15); color: var(--am2); }
-.uye-hist-tag-ok  { background: rgba(34,197,94,.12);  color: var(--gr); }
-.uye-msg-btn { padding: 14px 16px; }
+.member-history-info { flex: 1; }
+.member-history-satici { font-size: 13px; font-weight: 600; color: var(--tx); }
+.member-history-meta   { font-size: 11px; color: var(--tx3); margin-top: 1px; }
+.member-history-tutar  { font-size: 13px; font-weight: 700; font-family: var(--mo); color: var(--tx); flex-shrink: 0; }
+.member-history-tag    { font-size: 10px; font-weight: 700; border-radius: 5px; padding: 1px 6px; flex-shrink: 0; }
+.member-history-tag-bek { background: rgba(245,158,11,.15); color: var(--am2); }
+.member-history-tag-ok  { background: rgba(34,197,94,.12);  color: var(--gr); }
+.member-msg-btn { padding: 14px 16px; }
 
 /* ── Üye Profil — Dönem & Avans bölümleri ── */
-.uye-sec-hd {
+.member-sec-hd {
   font-size: 11px; font-weight: 700; color: var(--tx3);
   text-transform: uppercase; letter-spacing: .6px;
   padding: 12px 16px 6px; border-top: 1px solid var(--bo);
 }
-.uye-don-card {
+.member-period-card {
   margin: 6px 16px 4px; padding: 10px 13px;
   background: var(--bg3); border: 1px solid var(--bo);
   border-radius: var(--rs);
 }
-.uye-don-lbl  { font-size: 12px; font-weight: 700; color: var(--tx); margin-bottom: 7px; }
-.uye-don-row  { display: flex; gap: 4px; }
-.uye-don-stat { flex: 1; text-align: center; }
-.uye-don-sv   { font-size: 11px; font-weight: 800; font-family: var(--mo); }
-.uye-don-sl   { font-size: 10px; color: var(--tx3); margin-top: 2px; }
-.uye-av-row {
+.member-period-lbl  { font-size: 12px; font-weight: 700; color: var(--tx); margin-bottom: 7px; }
+.member-period-row  { display: flex; gap: 4px; }
+.member-period-stat { flex: 1; text-align: center; }
+.member-period-sv   { font-size: 11px; font-weight: 800; font-family: var(--mo); }
+.member-period-sl   { font-size: 10px; color: var(--tx3); margin-top: 2px; }
+.member-advance-row {
   display: flex; align-items: center; gap: 10px;
   padding: 10px 16px; border-bottom: 1px solid var(--bo);
 }
-.uye-av-row:last-child { border-bottom: none; }
-.uye-av-info   { flex: 1; }
-.uye-av-tutar  { font-size: 14px; font-weight: 800; font-family: var(--mo); color: var(--ac2); }
-.uye-av-meta   { font-size: 11px; color: var(--tx3); margin-top: 1px; }
-.uye-av-gerekce{ font-size: 12px; color: var(--tx2); margin-top: 2px; }
-.uye-av-tag    { flex-shrink: 0; font-size: 10px; font-weight: 700; border-radius: 5px; padding: 2px 7px; }
-.uye-av-tag-ok  { background: rgba(34,197,94,.12);  color: var(--gr);  }
-.uye-av-tag-bek { background: rgba(245,158,11,.15); color: var(--am2); }
+.member-advance-row:last-child { border-bottom: none; }
+.member-advance-info   { flex: 1; }
+.member-advance-tutar  { font-size: 14px; font-weight: 800; font-family: var(--mo); color: var(--ac2); }
+.member-advance-meta   { font-size: 11px; color: var(--tx3); margin-top: 1px; }
+.member-advance-gerekce{ font-size: 12px; color: var(--tx2); margin-top: 2px; }
+.member-advance-tag    { flex-shrink: 0; font-size: 10px; font-weight: 700; border-radius: 5px; padding: 2px 7px; }
+.member-advance-tag-ok  { background: rgba(34,197,94,.12);  color: var(--gr);  }
+.member-advance-tag-bek { background: rgba(245,158,11,.15); color: var(--am2); }
 
 /* ── Muhasebe — Departman Detay Modal ── */
 .adept-stats {
@@ -1430,26 +1430,26 @@ body {
 }
 .adept-tb.on { color: var(--ac2); border-bottom-color: var(--ac); }
 .adept-pnl { padding: 0; }
-.adept-uye-row {
+.adept-member-row {
   display: flex; align-items: center; gap: 11px;
   padding: 12px 16px; border-bottom: 1px solid var(--bo);
   cursor: pointer; -webkit-tap-highlight-color: transparent;
   transition: background .12s;
 }
-.adept-uye-row:last-child { border-bottom: none; }
-.adept-uye-row:active { background: var(--bg3); }
-.adept-uye-av {
+.adept-member-row:last-child { border-bottom: none; }
+.adept-member-row:active { background: var(--bg3); }
+.adept-member-av {
   width: 34px; height: 34px; border-radius: 10px;
   background: var(--bg3); border: 1px solid var(--bo2);
   font-size: 10px; font-weight: 800; color: var(--tx2);
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.adept-uye-name  { font-size: 13px; font-weight: 600; color: var(--tx); }
-.adept-uye-rol   { font-size: 11px; color: var(--tx3); }
-.adept-uye-right { margin-left: auto; text-align: right; flex-shrink: 0; }
-.adept-uye-total { font-size: 13px; font-weight: 700; font-family: var(--mo); }
-.adept-uye-bek   { font-size: 11px; color: var(--am2); }
-.adept-uye-ok    { font-size: 11px; color: var(--tx3); }
+.adept-member-name  { font-size: 13px; font-weight: 600; color: var(--tx); }
+.adept-member-rol   { font-size: 11px; color: var(--tx3); }
+.adept-member-right { margin-left: auto; text-align: right; flex-shrink: 0; }
+.adept-member-total { font-size: 13px; font-weight: 700; font-family: var(--mo); }
+.adept-member-bek   { font-size: 11px; color: var(--am2); }
+.adept-member-ok    { font-size: 11px; color: var(--tx3); }
 .adept-don-card {
   margin: 8px 16px; padding: 12px 14px;
   background: var(--bg3); border: 1px solid var(--bo); border-radius: var(--rs);
@@ -1810,13 +1810,13 @@ body {
 /* ══════════════════════════════
    PROFİL MODAL
 ══════════════════════════════ */
-.profil-av-wrap {
+.profile-av-wrap {
   display: flex; align-items: center; gap: 14px;
   background: var(--bg3); border: 1px solid var(--bo);
   border-radius: var(--r); padding: 14px 16px;
   margin-bottom: 16px;
 }
-.profil-av {
+.profile-av {
   width: 52px; height: 52px; border-radius: 14px;
   background: var(--ac); color: #0C0A08;
   font-size: 19px; font-weight: 800;
@@ -1824,26 +1824,26 @@ body {
   flex-shrink: 0; letter-spacing: -.5px; overflow: hidden;
 }
 .dtl-hd-av, .sa-hd-av { overflow: hidden; }
-.dtl-hd-av img, .sa-hd-av img, .profil-av img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block; }
-.profil-av-name { font-size: 15px; font-weight: 700; color: var(--tx); }
-.profil-av-role { font-size: 11px; color: var(--tx2); margin-top: 2px; font-family: var(--mo); }
-.profil-av-dept { font-size: 11px; color: var(--tx3); margin-top: 3px; }
-.profil-sec-lbl {
+.dtl-hd-av img, .sa-hd-av img, .profile-av img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block; }
+.profile-av-name { font-size: 15px; font-weight: 700; color: var(--tx); }
+.profile-av-role { font-size: 11px; color: var(--tx2); margin-top: 2px; font-family: var(--mo); }
+.profile-av-dept { font-size: 11px; color: var(--tx3); margin-top: 3px; }
+.profile-sec-lbl {
   font-size: 10px; font-weight: 700; color: var(--tx3);
   text-transform: uppercase; letter-spacing: .6px;
   margin: 16px 0 10px;
 }
 /* Profil — rol özel bölümler */
-.profil-rol-sec { background: var(--bg3); border: 1px solid var(--bo); border-radius: var(--r); padding: 14px; margin-top: 4px; }
-.profil-rol-sec-hd { font-size: 10px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 10px; }
-.profil-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-.profil-stat-c { background: var(--bg2); border: 1px solid var(--bo); border-radius: var(--rs); padding: 10px 10px; }
-.profil-stat-v { font-size: 14px; font-weight: 800; font-family: var(--mo); color: var(--tx); margin-bottom: 2px; }
-.profil-stat-l { font-size: 10px; color: var(--tx3); text-transform: uppercase; letter-spacing: .3px; }
-.profil-prj-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--bo); }
-.profil-prj-row:last-child { border-bottom: none; }
-.profil-prj-name { font-size: 13px; font-weight: 600; color: var(--tx); }
-.profil-prj-sub  { font-size: 11px; color: var(--tx3); margin-top: 1px; }
+.profile-rol-sec { background: var(--bg3); border: 1px solid var(--bo); border-radius: var(--r); padding: 14px; margin-top: 4px; }
+.profile-rol-sec-hd { font-size: 10px; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 10px; }
+.profile-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.profile-stat-c { background: var(--bg2); border: 1px solid var(--bo); border-radius: var(--rs); padding: 10px 10px; }
+.profile-stat-v { font-size: 14px; font-weight: 800; font-family: var(--mo); color: var(--tx); margin-bottom: 2px; }
+.profile-stat-l { font-size: 10px; color: var(--tx3); text-transform: uppercase; letter-spacing: .3px; }
+.profile-prj-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--bo); }
+.profile-prj-row:last-child { border-bottom: none; }
+.profile-prj-name { font-size: 13px; font-weight: 600; color: var(--tx); }
+.profile-prj-sub  { font-size: 11px; color: var(--tx3); margin-top: 1px; }
 /* Avatar tıklanabilir */
 .dtl-hd-av, .sa-hd-av { cursor: pointer; transition: opacity .12s; }
 .dtl-hd-av:active, .sa-hd-av:active { opacity: .7; }
@@ -2946,11 +2946,11 @@ body {
     <div class="mbody">
 
       <!-- Avatar özet -->
-      <div class="profil-av-wrap">
-        <div class="profil-av" id="p-av">MK</div>
+      <div class="profile-av-wrap">
+        <div class="profile-av" id="p-av">MK</div>
         <div>
-          <div class="profil-av-name" id="p-av-name">Mehmet Kaya</div>
-          <div class="profil-av-role" id="p-av-role">👷 Saha Personeli</div>
+          <div class="profile-av-name" id="p-av-name">Mehmet Kaya</div>
+          <div class="profile-av-role" id="p-av-role">👷 Saha Personeli</div>
           <div style="margin-top:7px;display:flex;gap:8px;align-items:center">
             <button class="btn btn-sm" onclick="_avatarPickFile()" style="font-size:11px;padding:4px 10px">📷 Fotoğraf</button>
             <button class="btn btn-sm btn-r" id="p-av-rm" onclick="_avatarRemove()" style="font-size:11px;padding:4px 10px;display:none">Kaldır</button>
@@ -2960,7 +2960,7 @@ body {
       <input type="file" id="av-file-inp" accept="image/*" style="display:none" onchange="_avatarFileChange(this)">
 
       <!-- Kişisel bilgiler -->
-      <div class="profil-sec-lbl">Kişisel Bilgiler</div>
+      <div class="profile-sec-lbl">Kişisel Bilgiler</div>
       <div class="fr2">
         <div class="fg"><label>Ad</label><input class="fgi" id="p-ad" type="text" autocomplete="given-name"></div>
         <div class="fg"><label>Soyad</label><input class="fgi" id="p-soyad" type="text" autocomplete="family-name"></div>
@@ -2969,7 +2969,7 @@ body {
       <div class="fg"><label>E-posta</label><input class="fgi" id="p-email" type="email" autocomplete="email" placeholder="ad@example.com"></div>
 
       <!-- Departman -->
-      <div class="profil-sec-lbl">Departman</div>
+      <div class="profile-sec-lbl">Departman</div>
       <div class="fg">
         <select class="fgi" id="p-dept">
           <option value="Saha">🚗 Saha Ekibi</option>
@@ -2981,24 +2981,24 @@ body {
 
       <!-- Dept özel bölüm -->
       <div id="p-dept-section" style="display:none">
-        <div class="profil-sec-lbl">Departman Özeti</div>
-        <div class="profil-rol-sec">
-          <div class="profil-rol-sec-hd" id="p-dept-sec-hd">Yönetilen Departman</div>
-          <div class="profil-stat-grid" id="p-dept-stats"></div>
+        <div class="profile-sec-lbl">Departman Özeti</div>
+        <div class="profile-rol-sec">
+          <div class="profile-rol-sec-hd" id="p-dept-sec-hd">Yönetilen Departman</div>
+          <div class="profile-stat-grid" id="p-dept-stats"></div>
           <div id="p-dept-ekip-list"></div>
         </div>
       </div>
 
       <!-- Muhasebe özel bölüm -->
       <div id="p-acc-section" style="display:none">
-        <div class="profil-sec-lbl">Proje & Dönem Özeti</div>
-        <div class="profil-rol-sec">
-          <div class="profil-rol-sec-hd">Aktif Proje</div>
+        <div class="profile-sec-lbl">Proje & Dönem Özeti</div>
+        <div class="profile-rol-sec">
+          <div class="profile-rol-sec-hd">Aktif Proje</div>
           <div id="p-acc-prj"></div>
-          <div class="profil-rol-sec-hd" style="margin-top:12px">Dönem Durumu</div>
-          <div class="profil-stat-grid" id="p-acc-don-stats"></div>
+          <div class="profile-rol-sec-hd" style="margin-top:12px">Dönem Durumu</div>
+          <div class="profile-stat-grid" id="p-acc-don-stats"></div>
         </div>
-        <div class="profil-sec-lbl" style="margin-top:12px">Veri Yönetimi</div>
+        <div class="profile-sec-lbl" style="margin-top:12px">Veri Yönetimi</div>
         <button class="btn btn-r btn-full" onclick="closeM('mprofil');openM('md-demo-reset')" style="justify-content:center">
           Demo Verisine Döndür
         </button>
@@ -3100,22 +3100,22 @@ body {
 <div class="mo" id="md-uye">
   <div class="ms">
     <div class="mh"></div>
-    <div class="uye-prof-hd">
-      <div class="uye-prof-av" id="uye-prof-av">MK</div>
+    <div class="member-prof-hd">
+      <div class="member-prof-av" id="uye-prof-av">MK</div>
       <div>
-        <div class="uye-prof-name" id="uye-prof-name">—</div>
-        <div class="uye-prof-rol"  id="uye-prof-rol">—</div>
+        <div class="member-prof-name" id="uye-prof-name">—</div>
+        <div class="member-prof-rol"  id="uye-prof-rol">—</div>
       </div>
       <button class="mclose" onclick="closeM('md-uye')" style="margin-left:auto">✕</button>
     </div>
-    <div class="uye-stats" id="uye-stats"></div>
-    <div class="uye-hist-hd">Bekleyen Harcamalar</div>
+    <div class="member-stats" id="uye-stats"></div>
+    <div class="member-history-hd">Bekleyen Harcamalar</div>
     <div id="uye-hist-list"></div>
-    <div class="uye-sec-hd">Dönem Özeti</div>
+    <div class="member-sec-hd">Dönem Özeti</div>
     <div id="uye-don-list"></div>
-    <div class="uye-sec-hd">Avans Geçmişi</div>
+    <div class="member-sec-hd">Avans Geçmişi</div>
     <div id="uye-av-list"></div>
-    <div class="uye-msg-btn">
+    <div class="member-msg-btn">
       <button class="btn btn-full" id="uye-msg-btn" onclick="">✉ Mesaj Gönder</button>
     </div>
   </div>
@@ -3156,15 +3156,15 @@ body {
 <div class="mo" id="md-acc-uye">
   <div class="ms">
     <div class="mh"></div>
-    <div class="uye-prof-hd">
-      <div class="uye-prof-av" id="acuye-av">MK</div>
+    <div class="member-prof-hd">
+      <div class="member-prof-av" id="acuye-av">MK</div>
       <div>
-        <div class="uye-prof-name" id="acuye-name">—</div>
-        <div class="uye-prof-rol"  id="acuye-rol">—</div>
+        <div class="member-prof-name" id="acuye-name">—</div>
+        <div class="member-prof-rol"  id="acuye-rol">—</div>
       </div>
       <button class="mclose" onclick="closeM('md-acc-uye')" style="margin-left:auto">✕</button>
     </div>
-    <div class="uye-stats" id="acuye-stats"></div>
+    <div class="member-stats" id="acuye-stats"></div>
     <div class="adept-tabs">
       <button class="adept-tb on" id="acuyetb-bek"   onclick="accMemberTab('bek',this)">Harcamalar</button>
       <button class="adept-tb"    id="acuyetb-don"   onclick="accMemberTab('don',this)">Dönemler</button>
@@ -3270,14 +3270,14 @@ body {
       <button class="mclose" onclick="closeM('m-marka')">✕</button>
     </div>
     <div class="mbody">
-      <div class="profil-sec-lbl">Şirket</div>
+      <div class="profile-sec-lbl">Şirket</div>
       <div class="fg"><label>Şirket Adı</label><input class="fgi" id="marka-co-name" type="text" placeholder="Şirket / Prodüksiyon Adı"></div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
         <div id="marka-co-prev" style="height:36px;display:flex;align-items:center;flex:1;min-width:0"></div>
         <button class="btn btn-sm" onclick="_markaPickLogo('co','')">📷 Logo</button>
         <button class="btn btn-sm btn-r" id="marka-co-rm" onclick="_markaLogoRemove('co','')" style="display:none">Kaldır</button>
       </div>
-      <div class="profil-sec-lbl">Projeler</div>
+      <div class="profile-sec-lbl">Projeler</div>
       <div id="marka-proj-list"></div>
       <input type="file" id="marka-file-inp" accept="image/*" style="display:none" onchange="_markaFileChange(this)">
       <button class="btn btn-p btn-full" onclick="_markaKaydet()" style="margin-top:12px;justify-content:center">Kaydet</button>
@@ -4658,19 +4658,19 @@ function openDeptProfile() {
   for (var i = 0; i < APP.seed.deptCrew.length; i++) { toplamTutar += APP.seed.deptCrew[i].tutar || 0; }
   var bekSay = APP.data.deptPending ? APP.data.deptPending.length : 0;
   document.getElementById('p-dept-stats').innerHTML =
-    '<div class="profil-stat-c"><div class="profil-stat-v">' + APP.seed.deptCrew.length + '</div><div class="profil-stat-l">Ekip Üyesi</div></div>' +
-    '<div class="profil-stat-c"><div class="profil-stat-v">' + bekSay + '</div><div class="profil-stat-l">Bekleyen Fiş</div></div>' +
-    '<div class="profil-stat-c"><div class="profil-stat-v">₺' + toplamTutar.toLocaleString('tr-TR') + '</div><div class="profil-stat-l">Toplam Harcama</div></div>' +
-    '<div class="profil-stat-c"><div class="profil-stat-v">' + APP.seed.deptPeriods.length + '</div><div class="profil-stat-l">Dönem</div></div>';
+    '<div class="profile-stat-c"><div class="profile-stat-v">' + APP.seed.deptCrew.length + '</div><div class="profile-stat-l">Ekip Üyesi</div></div>' +
+    '<div class="profile-stat-c"><div class="profile-stat-v">' + bekSay + '</div><div class="profile-stat-l">Bekleyen Fiş</div></div>' +
+    '<div class="profile-stat-c"><div class="profile-stat-v">₺' + toplamTutar.toLocaleString('tr-TR') + '</div><div class="profile-stat-l">Toplam Harcama</div></div>' +
+    '<div class="profile-stat-c"><div class="profile-stat-v">' + APP.seed.deptPeriods.length + '</div><div class="profile-stat-l">Dönem</div></div>';
 
   /* Ekip listesi */
   var rows = '';
   for (var j = 0; j < APP.seed.deptCrew.length; j++) {
     var u = APP.seed.deptCrew[j];
-    rows += '<div class="profil-prj-row">' +
+    rows += '<div class="profile-prj-row">' +
       '<div>' +
-        '<div class="profil-prj-name">' + u.name + '</div>' +
-        '<div class="profil-prj-sub">' + u.rol + '</div>' +
+        '<div class="profile-prj-name">' + u.name + '</div>' +
+        '<div class="profile-prj-sub">' + u.rol + '</div>' +
       '</div>' +
       '<div style="font-size:13px;font-weight:700;font-family:var(--mo);color:var(--tx2)">₺' + (u.tutar || 0).toLocaleString('tr-TR') + '</div>' +
     '</div>';
@@ -4691,10 +4691,10 @@ function openAccProfile() {
   /* Aktif proje */
   var prjHtml = '';
   if (APP.ui.curProj) {
-    prjHtml = '<div class="profil-prj-row">' +
+    prjHtml = '<div class="profile-prj-row">' +
       '<div>' +
-        '<div class="profil-prj-name">' + APP.ui.curProj.name + '</div>' +
-        '<div class="profil-prj-sub">' + APP.ui.curProj.type + ' · ' + APP.ui.curProj.status + '</div>' +
+        '<div class="profile-prj-name">' + APP.ui.curProj.name + '</div>' +
+        '<div class="profile-prj-sub">' + APP.ui.curProj.type + ' · ' + APP.ui.curProj.status + '</div>' +
       '</div>' +
       '<span class="tag-gr" style="font-size:10px">Aktif</span>' +
     '</div>';
@@ -4713,10 +4713,10 @@ function openAccProfile() {
     topSuphe += APP.data.accDepts[j].suphe    || 0;
   }
   document.getElementById('p-acc-don-stats').innerHTML =
-    '<div class="profil-stat-c"><div class="profil-stat-v">' + (aktifDon2 ? aktifDon2.lbl : '—') + '</div><div class="profil-stat-l">Aktif Dönem</div></div>' +
-    '<div class="profil-stat-c"><div class="profil-stat-v">' + deptSay + '</div><div class="profil-stat-l">Departman</div></div>' +
-    '<div class="profil-stat-c"><div class="profil-stat-v">₺' + topOnay.toLocaleString('tr-TR') + '</div><div class="profil-stat-l">Onaylı</div></div>' +
-    '<div class="profil-stat-c"><div class="profil-stat-v" style="color:var(--am)">₺' + topBek.toLocaleString('tr-TR') + '</div><div class="profil-stat-l">Bekleyen</div></div>';
+    '<div class="profile-stat-c"><div class="profile-stat-v">' + (aktifDon2 ? aktifDon2.lbl : '—') + '</div><div class="profile-stat-l">Aktif Dönem</div></div>' +
+    '<div class="profile-stat-c"><div class="profile-stat-v">' + deptSay + '</div><div class="profile-stat-l">Departman</div></div>' +
+    '<div class="profile-stat-c"><div class="profile-stat-v">₺' + topOnay.toLocaleString('tr-TR') + '</div><div class="profile-stat-l">Onaylı</div></div>' +
+    '<div class="profile-stat-c"><div class="profile-stat-v" style="color:var(--am)">₺' + topBek.toLocaleString('tr-TR') + '</div><div class="profile-stat-l">Bekleyen</div></div>';
 
   openM('mprofil');
 }
@@ -4914,17 +4914,17 @@ function openMemberProfile(uyeId) {
   var statsEl = document.getElementById('uye-stats');
   if (statsEl) {
     statsEl.innerHTML =
-      '<div class="uye-stat-c">' +
-        '<div class="uye-stat-val">₺' + u.tutar.toLocaleString('tr-TR') + '</div>' +
-        '<div class="uye-stat-lbl">Toplam</div>' +
+      '<div class="member-stat-c">' +
+        '<div class="member-stat-val">₺' + u.tutar.toLocaleString('tr-TR') + '</div>' +
+        '<div class="member-stat-lbl">Toplam</div>' +
       '</div>' +
-      '<div class="uye-stat-c">' +
-        '<div class="uye-stat-val" style="color:var(--gr)">₺' + (u.tutar - bekTop).toLocaleString('tr-TR') + '</div>' +
-        '<div class="uye-stat-lbl">Onaylanan</div>' +
+      '<div class="member-stat-c">' +
+        '<div class="member-stat-val" style="color:var(--gr)">₺' + (u.tutar - bekTop).toLocaleString('tr-TR') + '</div>' +
+        '<div class="member-stat-lbl">Onaylanan</div>' +
       '</div>' +
-      '<div class="uye-stat-c">' +
-        '<div class="uye-stat-val" style="color:var(--am2)">₺' + bekTop.toLocaleString('tr-TR') + '</div>' +
-        '<div class="uye-stat-lbl">Bekleyen</div>' +
+      '<div class="member-stat-c">' +
+        '<div class="member-stat-val" style="color:var(--am2)">₺' + bekTop.toLocaleString('tr-TR') + '</div>' +
+        '<div class="member-stat-lbl">Bekleyen</div>' +
       '</div>';
   }
 
@@ -4937,15 +4937,15 @@ function openMemberProfile(uyeId) {
       histEl.innerHTML = bekList.map(function(f) {
         var clr = SD_KAT_CLR[f.kat] || 'var(--tx3)';
         var lbl = SD_KAT_LBL[f.kat] || f.kat;
-        return '<div class="uye-hist-row" onclick="closeM(\'md-uye\');openFisDetay(' + f.id + ',\'dept\')">' +
-          '<div class="uye-hist-dot" style="background:' + clr + '"></div>' +
-          '<div class="uye-hist-info">' +
-            '<div class="uye-hist-satici">' + f.satici + '</div>' +
-            '<div class="uye-hist-meta">' + lbl + ' · ' + f.tarih + '</div>' +
+        return '<div class="member-history-row" onclick="closeM(\'md-uye\');openFisDetay(' + f.id + ',\'dept\')">' +
+          '<div class="member-history-dot" style="background:' + clr + '"></div>' +
+          '<div class="member-history-info">' +
+            '<div class="member-history-satici">' + f.satici + '</div>' +
+            '<div class="member-history-meta">' + lbl + ' · ' + f.tarih + '</div>' +
           '</div>' +
           '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">' +
-            '<div class="uye-hist-tutar">₺' + f.tutar.toLocaleString('tr-TR') + '</div>' +
-            '<div class="uye-hist-tag uye-hist-tag-bek">Bekleyen</div>' +
+            '<div class="member-history-tutar">₺' + f.tutar.toLocaleString('tr-TR') + '</div>' +
+            '<div class="member-history-tag member-history-tag-bek">Bekleyen</div>' +
           '</div>' +
         '</div>';
       }).join('');
@@ -4958,12 +4958,12 @@ function openMemberProfile(uyeId) {
     var gec = APP.cache.memberHistory[u.id];
     if (gec && gec.donemler && gec.donemler.length) {
       donEl.innerHTML = gec.donemler.map(function(d) {
-        return '<div class="uye-don-card">' +
-          '<div class="uye-don-lbl">' + d.lbl + ' <span style="font-size:10px;color:var(--tx3);font-weight:400">· ' + d.tarih + '</span></div>' +
-          '<div class="uye-don-row">' +
-            '<div class="uye-don-stat"><div class="uye-don-sv">₺' + d.total.toLocaleString('tr-TR') + '</div><div class="uye-don-sl">Toplam</div></div>' +
-            '<div class="uye-don-stat"><div class="uye-don-sv" style="color:var(--gr)">₺' + d.onay.toLocaleString('tr-TR') + '</div><div class="uye-don-sl">Onaylı</div></div>' +
-            '<div class="uye-don-stat"><div class="uye-don-sv" style="color:' + (d.bek > 0 ? 'var(--am2)' : 'var(--tx3)') + '">₺' + d.bek.toLocaleString('tr-TR') + '</div><div class="uye-don-sl">Bekleyen</div></div>' +
+        return '<div class="member-period-card">' +
+          '<div class="member-period-lbl">' + d.lbl + ' <span style="font-size:10px;color:var(--tx3);font-weight:400">· ' + d.tarih + '</span></div>' +
+          '<div class="member-period-row">' +
+            '<div class="member-period-stat"><div class="member-period-sv">₺' + d.total.toLocaleString('tr-TR') + '</div><div class="member-period-sl">Toplam</div></div>' +
+            '<div class="member-period-stat"><div class="member-period-sv" style="color:var(--gr)">₺' + d.onay.toLocaleString('tr-TR') + '</div><div class="member-period-sl">Onaylı</div></div>' +
+            '<div class="member-period-stat"><div class="member-period-sv" style="color:' + (d.bek > 0 ? 'var(--am2)' : 'var(--tx3)') + '">₺' + d.bek.toLocaleString('tr-TR') + '</div><div class="member-period-sl">Bekleyen</div></div>' +
           '</div>' +
         '</div>';
       }).join('');
@@ -4978,12 +4978,12 @@ function openMemberProfile(uyeId) {
     var gec2 = APP.cache.memberHistory[u.id];
     if (gec2 && gec2.avanslar && gec2.avanslar.length) {
       avEl2.innerHTML = gec2.avanslar.map(function(a) {
-        var tagCls = a.durum === 'paid' ? 'uye-av-tag uye-av-tag-ok' : 'uye-av-tag uye-av-tag-bek';
-        return '<div class="uye-av-row">' +
-          '<div class="uye-av-info">' +
-            '<div class="uye-av-tutar">₺' + a.tutar.toLocaleString('tr-TR') + '</div>' +
-            '<div class="uye-av-gerekce">' + a.gerekce + '</div>' +
-            '<div class="uye-av-meta">' + a.tarih + '</div>' +
+        var tagCls = a.durum === 'paid' ? 'member-advance-tag member-advance-tag-ok' : 'member-advance-tag member-advance-tag-bek';
+        return '<div class="member-advance-row">' +
+          '<div class="member-advance-info">' +
+            '<div class="member-advance-tutar">₺' + a.tutar.toLocaleString('tr-TR') + '</div>' +
+            '<div class="member-advance-gerekce">' + a.gerekce + '</div>' +
+            '<div class="member-advance-meta">' + a.tarih + '</div>' +
           '</div>' +
           '<div class="' + tagCls + '">' + a.durum + '</div>' +
         '</div>';
