@@ -114,7 +114,7 @@ Yeni sohbet/grup oluşturma ekranı.
 
 ---
 
-## BATCH D4 — `fis-*` → `rcpt-*` + `avans-*` → `adv-*` (16 class, ~120 ref)
+## ✅ BATCH D4 — `fis-*` → `rcpt-*` + `avans-*` → `adv-*` (16 class, ~120 ref)
 
 ### fis- → rcpt- (12 class, ~108 ref)
 

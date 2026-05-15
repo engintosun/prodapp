@@ -119,11 +119,11 @@ export function searchGoTo(id) {
     for (var i = 0; i < myFis.length; i++) {
       if (myFis[i].id === id) { rowIdx = i; break; }
     }
-    var rows = document.querySelectorAll('#fis-list .fis-row');
+    var rows = document.querySelectorAll('#fis-list .rcpt-row');
     if (rowIdx >= 0 && rows[rowIdx]) {
       rows[rowIdx].scrollIntoView({ behavior: 'smooth', block: 'center' });
-      rows[rowIdx].classList.add('fis-hl');
-      setTimeout(function() { rows[rowIdx].classList.remove('fis-hl'); }, 2000);
+      rows[rowIdx].classList.add('rcpt-hl');
+      setTimeout(function() { rows[rowIdx].classList.remove('rcpt-hl'); }, 2000);
     }
   }, 280);
 }
@@ -263,7 +263,7 @@ export function renderRecent() {
     var icClr = d.duplikat ? 'var(--rd)' : d.belgesiz ? 'var(--bl)' : d.uyari ? 'var(--am)' : 'var(--ac)';
     var icBg  = d.duplikat ? 'rgba(239,68,68,.1)' : d.belgesiz ? 'rgba(59,130,246,.1)' : d.uyari ? 'rgba(245,158,11,.1)' : 'var(--bg3)';
     var media = d.thumb
-      ? '<img src="' + d.thumb + '" class="fis-thumb" style="width:100%;height:52px;margin-bottom:6px" onclick="event.stopPropagation();openLBFis(' + d.id + ')" alt="">'
+      ? '<img src="' + d.thumb + '" class="rcpt-thumb" style="width:100%;height:52px;margin-bottom:6px" onclick="event.stopPropagation();openLBFis(' + d.id + ')" alt="">'
       : '<div class="rc-ic" style="background:' + icBg + ';color:' + icClr + '">' + icStr + '</div>';
     var belgesizTag = d.belgesiz  ? '<div class="rc-blgsz-tag">BELGESİZ</div>' : '';
     var gecIslemTag = d.gecIslem  ? '<div style="font-size:9px;color:var(--am2);font-weight:700;margin-top:1px;line-height:1">⚠ İSTİSNA</div>' : '';

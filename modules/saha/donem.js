@@ -125,9 +125,9 @@ export function renderPeriod(did) {
     var blHtml = f.belgesiz ? ' <span style="font-size:10px;background:rgba(59,130,246,.15);color:var(--bl2);border-radius:3px;padding:1px 4px;font-weight:700">BSZ</span>' : '';
     var media;
     if (f.thumb) {
-      media = '<img src="' + f.thumb + '" class="fis-thumb" onclick="event.stopPropagation();openLBFis(' + f.id + ')" alt="">';
+      media = '<img src="' + f.thumb + '" class="rcpt-thumb" onclick="event.stopPropagation();openLBFis(' + f.id + ')" alt="">';
     } else if (f.belgesiz) {
-      media = '<div class="fis-thumb fis-thumb-bsz">' +
+      media = '<div class="rcpt-thumb rcpt-thumb-bsz">' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
           '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>' +
           '<polyline points="14 2 14 8 20 8"/>' +
@@ -135,17 +135,17 @@ export function renderPeriod(did) {
         '</svg>' +
       '</div>';
     } else {
-      media = '<img src="' + fisThumbnail(f) + '" class="fis-thumb" onclick="event.stopPropagation();openLBFis(' + f.id + ')" alt="">';
+      media = '<img src="' + fisThumbnail(f) + '" class="rcpt-thumb" onclick="event.stopPropagation();openLBFis(' + f.id + ')" alt="">';
     }
-    return '<div class="fis-row" style="' + sep + '" onclick="openLBFis(' + f.id + ')">' +
+    return '<div class="rcpt-row" style="' + sep + '" onclick="openLBFis(' + f.id + ')">' +
       media +
       '<div style="flex:1;min-width:0">' +
-        '<div class="fis-name">' + f.satici + uyHtml + dpHtml + blHtml + '</div>' +
-        '<div class="fis-meta">' + f.tarih + ' · ' + f.kat + '</div>' +
+        '<div class="rcpt-name">' + f.satici + uyHtml + dpHtml + blHtml + '</div>' +
+        '<div class="rcpt-meta">' + f.tarih + ' · ' + f.kat + '</div>' +
       '</div>' +
       '<div style="text-align:right;flex-shrink:0">' +
-        '<div class="fis-amt" style="' + amtClr + '">₺' + f.tutar.toLocaleString('tr-TR') + '</div>' +
-        '<div class="fis-dot" style="background:' + (DOT[f.durum] || 'var(--tx3)') + '"></div>' +
+        '<div class="rcpt-amt" style="' + amtClr + '">₺' + f.tutar.toLocaleString('tr-TR') + '</div>' +
+        '<div class="rcpt-dot" style="background:' + (DOT[f.durum] || 'var(--tx3)') + '"></div>' +
       '</div>' +
     '</div>';
   }).join('');

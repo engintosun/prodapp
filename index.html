@@ -582,48 +582,48 @@ body {
 }
 .don-prog-f { height: 100%; border-radius: 3px; transition: width .5s; }
 
-.fis-hd {
+.rcpt-hd {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 8px; flex-shrink: 0;
 }
-.fis-pdf-btn {
+.rcpt-pdf-btn {
   width: 34px; height: 34px; border-radius: 50%;
   border: 1px solid var(--bo); background: var(--bg2);
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
-.fis-pdf-btn svg { width: 15px; height: 15px; stroke: var(--tx2); }
-.fis-pdf-btn:active { border-color: var(--ac); }
+.rcpt-pdf-btn svg { width: 15px; height: 15px; stroke: var(--tx2); }
+.rcpt-pdf-btn:active { border-color: var(--ac); }
 
-.fis-list {
+.rcpt-list {
   background: var(--bg2); border: 1px solid var(--bo);
   border-radius: var(--r); overflow: hidden;
   margin-bottom: 10px; flex-shrink: 0;
 }
-.fis-row {
+.rcpt-row {
   display: flex; align-items: center; gap: 11px;
   padding: 12px 13px;
   border-bottom: 1px solid var(--bo);
   cursor: pointer; transition: background .15s;
   -webkit-tap-highlight-color: transparent;
 }
-.fis-row:last-child { border-bottom: none; }
-.fis-row:active { background: var(--bg3); }
-.fis-ic {
+.rcpt-row:last-child { border-bottom: none; }
+.rcpt-row:active { background: var(--bg3); }
+.rcpt-ic {
   width: 38px; height: 38px; border-radius: 8px;
   background: var(--bg3);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
-.fis-ic svg { width: 16px; height: 16px; }
-.fis-thumb {
+.rcpt-ic svg { width: 16px; height: 16px; }
+.rcpt-thumb {
   width: 38px; height: 48px; border-radius: 7px;
   object-fit: cover; border: 1.5px solid var(--bo);
   flex-shrink: 0; cursor: pointer;
 }
-.fis-thumb:active { border-color: var(--ac); }
-.fis-thumb-bsz {
+.rcpt-thumb:active { border-color: var(--ac); }
+.rcpt-thumb-bsz {
   width: 38px; height: 48px;
   background: rgba(59,130,246,.08);
   border: 1.5px dashed rgba(59,130,246,.35);
@@ -631,11 +631,11 @@ body {
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0; color: var(--bl2); cursor: default;
 }
-.fis-thumb-bsz svg { width: 18px; height: 18px; }
-.fis-name { font-size: 14px; font-weight: 600; color: var(--tx); }
-.fis-meta { font-size: 12px; color: var(--tx3); margin-top: 2px; }
-.fis-amt  { font-size: 14px; font-weight: 700; font-family: var(--mo); color: var(--ac2); white-space: nowrap; }
-.fis-dot  { width: 7px; height: 7px; border-radius: 50%; margin-top: 5px; margin-left: auto; }
+.rcpt-thumb-bsz svg { width: 18px; height: 18px; }
+.rcpt-name { font-size: 14px; font-weight: 600; color: var(--tx); }
+.rcpt-meta { font-size: 12px; color: var(--tx3); margin-top: 2px; }
+.rcpt-amt  { font-size: 14px; font-weight: 700; font-family: var(--mo); color: var(--ac2); white-space: nowrap; }
+.rcpt-dot  { width: 7px; height: 7px; border-radius: 50%; margin-top: 5px; margin-left: auto; }
 
 /* ── DÖNEM KAPAMA ÖZETİ ── */
 .kapama-box {
@@ -678,7 +678,7 @@ body {
   flex-shrink: 0; font-size: 14px;
 }
 
-.avans-btn {
+.adv-btn {
   display: flex; align-items: center; gap: 11px;
   background: rgba(232,150,46,.06); border: 1px solid rgba(232,150,46,.25);
   border-radius: var(--r); padding: 13px 15px;
@@ -686,11 +686,11 @@ body {
   -webkit-tap-highlight-color: transparent;
   flex-shrink: 0;
 }
-.avans-btn:active { background: rgba(232,150,46,.12); }
-.avans-btn svg { width: 18px; height: 18px; stroke: var(--ac); flex-shrink: 0; }
-.avans-btn-title { font-size: 14px; font-weight: 600; color: var(--ac); }
-.avans-btn-sub   { font-size: 12px; color: var(--tx3); margin-top: 1px; }
-.avans-btn-arr svg { width: 14px; height: 14px; stroke: var(--tx3); }
+.adv-btn:active { background: rgba(232,150,46,.12); }
+.adv-btn svg { width: 18px; height: 18px; stroke: var(--ac); flex-shrink: 0; }
+.adv-btn-title { font-size: 14px; font-weight: 600; color: var(--ac); }
+.adv-btn-sub   { font-size: 12px; color: var(--tx3); margin-top: 1px; }
+.adv-btn-arr svg { width: 14px; height: 14px; stroke: var(--tx3); }
 
 .new-donem-btn {
   display: flex; align-items: center; justify-content: center;
@@ -758,7 +758,7 @@ body {
   70%  { background: rgba(232,150,46,.10); }
   100% { background: transparent; }
 }
-.fis-hl { animation: fisHl 2s ease forwards; }
+.rcpt-hl { animation: fisHl 2s ease forwards; }
 
 /* Arama barı */
 .nav-srch {
@@ -2446,27 +2446,27 @@ body {
       <div class="don-prog"><div class="don-prog-f" id="don-prog-f" style="width:0%"></div></div>
       <div id="don-ozel-belgeler" style="padding:8px 0 4px;border-bottom:1px solid var(--bo);margin-bottom:8px"></div>
 
-      <div class="fis-hd">
+      <div class="rcpt-hd">
         <div class="sec-lbl" id="fis-hd-lbl">Fişler</div>
         <div style="display:flex;align-items:center;gap:8px">
           <div style="font-size:12px;color:var(--tx3)" id="fis-hd-cnt"></div>
-          <div class="fis-pdf-btn" onclick="showExportModal('saha')" title="PDF olarak indir">
+          <div class="rcpt-pdf-btn" onclick="showExportModal('saha')" title="PDF olarak indir">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
           </div>
         </div>
       </div>
 
-      <div class="fis-list" id="fis-list"></div>
+      <div class="rcpt-list" id="fis-list"></div>
 
       <div class="kapama-box" id="kapama-box" style="display:none"></div>
 
-      <div class="avans-btn" onclick="openM('mavans')">
+      <div class="adv-btn" onclick="openM('mavans')">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <div style="flex:1">
-          <div class="avans-btn-title">Avans Talep Et</div>
-          <div class="avans-btn-sub">Muhasebe onayına gider</div>
+          <div class="adv-btn-title">Avans Talep Et</div>
+          <div class="adv-btn-sub">Muhasebe onayına gider</div>
         </div>
-        <div class="avans-btn-arr">
+        <div class="adv-btn-arr">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
       </div>
