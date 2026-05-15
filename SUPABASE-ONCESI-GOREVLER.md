@@ -1,6 +1,6 @@
 # SUPABASE ÖNCESİ GÖREV LİSTESİ
 
-**Son güncelleme:** 14 Mayıs 2026
+**Son güncelleme:** 15 Mayıs 2026
 **Kaynak:** Memory (30 kayıt) + geçmiş chat arşivi + bu seans kararları
 
 ---
@@ -36,7 +36,7 @@
 | B6 | Saha submenu bug — fiş tara sonrası kapanmıyor | ✅ Düzeltildi | commit 488a98a |
 | B7 | Emoji → Lucide SVG geçişi (kalan yerler) | ❓ | 💰, ✓, ✕, ●, ⚠️ hâlâ var |
 | B8 | Tab CSS prefix birleştirme | ❓ | su-tab, sd-tb, sa-tb, adept-tb, acuye-tb — 4 ayrı stil seti |
-| B9 | Inline style temizliği → utility class | ❓ | Çok sayıda inline padding/margin |
+| B9 | Inline style temizliği → utility class | ❓ Görsel revizyon + migration ile birlikte | 561 ref (220'si muhasebe.js). Tek başına yapılmaz — çift iş riski. Zamanlama: görsel tasarım revizyonu + Supabase migration ile eş zamanlı. |
 | B10 | CSS ayrıştırma — design-tokens.css | ❓ | Level 3 tema için ön koşul |
 | B11 | Kısmi onay UX revizyonu — ½ butonu fiş detay modal'ına taşınacak, listeden kaldırılacak, renk paleti düzeltme (mor→orange) | ❓ | Eski sohbette tartışıldı, kısmi onay mantığı çalışıyor ama UX sorunlu |
 
