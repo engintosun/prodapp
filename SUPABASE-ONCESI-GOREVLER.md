@@ -34,7 +34,7 @@
 | B4 | Muhasebe ekranı kart yapısı revizyonu | ❓ Engin çizim yükleyecek | |
 | B5 | Muhasebe dashboard görünümü | ❓ Tartışılacak | Mevcut donut chart + departman kartları |
 | B6 | Saha submenu bug — fiş tara sonrası kapanmıyor | ✅ Düzeltildi | commit 488a98a |
-| B7 | Emoji → Lucide SVG geçişi (kalan yerler) | ❓ | 💰, ✓, ✕, ●, ⚠️ hâlâ var |
+| B7 | Emoji → Lucide SVG geçişi (kalan yerler) | ⏸ Görsel tasarım revizyonu ile birlikte | Ayrı iş olarak yapılmayacak. Görsel tasarım revizyonunun parçası olarak ele alınacak. 💰, ✓, ✕, ●, ⚠️ hâlâ var. |
 | B8 | Tab CSS prefix birleştirme | ❓ | su-tab, sd-tb, sa-tb, adept-tb, acuye-tb — 4 ayrı stil seti |
 | B9 | Inline style temizliği → utility class | ❓ Görsel revizyon + migration ile birlikte | 561 ref (220'si muhasebe.js). Tek başına yapılmaz — çift iş riski. Zamanlama: görsel tasarım revizyonu + Supabase migration ile eş zamanlı. |
 | B10 | CSS ayrıştırma — design-tokens.css | ❓ | Level 3 tema için ön koşul |
