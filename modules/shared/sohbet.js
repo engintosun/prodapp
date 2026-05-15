@@ -65,20 +65,20 @@ function _chatFilter(userKey) {
 
 function _chatAvatarHtml(sohbet, userKey) {
   if (sohbet.tip === 'group') {
-    return '<div class="sohbet-av sohbet-av-grup">' +
+    return '<div class="chat-list-av chat-list-av-grup">' +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' +
     '</div>';
   }
   var adi = _getChatName(sohbet, userKey);
   var ini = adi.split(' ').map(function(w) { return w[0]; }).join('').toUpperCase().slice(0, 2);
-  return '<div class="sohbet-av">' + ini + '</div>';
+  return '<div class="chat-list-av">' + ini + '</div>';
 }
 
 function renderChatList(containerEl, userKey) {
   if (!containerEl) return;
   var list = _chatFilter(userKey);
   if (!list.length) {
-    containerEl.innerHTML = '<div class="sohbet-bos">Henüz sohbet yok</div>';
+    containerEl.innerHTML = '<div class="chat-list-bos">Henüz sohbet yok</div>';
     return;
   }
   var html = '';
@@ -89,15 +89,15 @@ function renderChatList(containerEl, userKey) {
     var okunmamis = _getChatUnread(s, userKey);
     var onizleme  = son ? son.icerik : 'Mesaj yok';
     var zaman     = son ? _fmtChatTime(son.tarih) : '';
-    html += '<div class="sohbet-item" onclick="openChat(\'' + s.id + '\')">' +
+    html += '<div class="chat-list-item" onclick="openChat(\'' + s.id + '\')">' +
       _chatAvatarHtml(s, userKey) +
-      '<div class="sohbet-body">' +
-        '<div class="sohbet-adi">' + adi + '</div>' +
-        '<div class="sohbet-onizleme">' + onizleme + '</div>' +
+      '<div class="chat-list-body">' +
+        '<div class="chat-list-adi">' + adi + '</div>' +
+        '<div class="chat-list-onizleme">' + onizleme + '</div>' +
       '</div>' +
-      '<div class="sohbet-meta">' +
-        '<div class="sohbet-zaman">' + zaman + '</div>' +
-        (okunmamis ? '<div class="sohbet-badge">' + okunmamis + '</div>' : '') +
+      '<div class="chat-list-meta">' +
+        '<div class="chat-list-zaman">' + zaman + '</div>' +
+        (okunmamis ? '<div class="chat-list-badge">' + okunmamis + '</div>' : '') +
       '</div>' +
     '</div>';
   }
@@ -133,10 +133,10 @@ function openChat(id) {
 
   var avEl = document.getElementById('sic-av');
   if (sohbet.tip === 'group') {
-    avEl.className = 'sic-av sic-av-grup';
+    avEl.className = 'chat-view-av chat-view-av-grup';
     avEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
   } else {
-    avEl.className = 'sic-av';
+    avEl.className = 'chat-view-av';
     var ini = adi.split(' ').map(function(w) { return w[0] || ''; }).join('').toUpperCase().slice(0, 2);
     avEl.textContent = ini;
   }
@@ -182,7 +182,7 @@ function _renderChatBody(sohbet, userKey) {
   if (!el) return;
   var msgs = sohbet.mesajlar || [];
   if (!msgs.length) {
-    el.innerHTML = '<div class="sic-bos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;display:block;margin:0 auto 10px;opacity:.4"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Henüz mesaj yok<br>İlk mesajını yaz!</div>';
+    el.innerHTML = '<div class="chat-view-bos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;display:block;margin:0 auto 10px;opacity:.4"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Henüz mesaj yok<br>İlk mesajını yaz!</div>';
     return;
   }
   var html = '';
@@ -307,8 +307,8 @@ function renderDeptMessages() {
   if (!el) return;
   var userKey = APP.ui.curUserKey || 'd';
   el.innerHTML =
-    '<div class="sohbet-sec-hd-row">' +
-      '<span class="sohbet-sec-hd">Sohbetler</span>' +
+    '<div class="chat-list-sec-hd-row">' +
+      '<span class="chat-list-sec-hd">Sohbetler</span>' +
       '<button class="btn btn-sm" onclick="openNewChatModal()" style="padding:4px 10px;font-size:12px">+ Yeni</button>' +
     '</div>' +
     '<div id="sd-sohbet-liste"></div>';
@@ -320,7 +320,7 @@ function renderFieldMessages() {
   if (!el) return;
   var userKey = APP.ui.curUserKey || 's';
   var list = _chatFilter(userKey);
-  el.innerHTML = '<div class="sohbet-sec-hd">Mesajlar</div>';
+  el.innerHTML = '<div class="chat-list-sec-hd">Mesajlar</div>';
   var inner = document.createElement('div');
   el.appendChild(inner);
   renderChatList(inner, userKey);
@@ -392,9 +392,9 @@ function _renderNewChatTabs(userKey) {
   if (!el) return;
   var isBireysel = _newChatTab === 'direct';
   var html =
-    '<div class="yeni-tabs">' +
-      '<button class="yeni-tab' + (isBireysel ? ' on' : '') + '" onclick="_newChatTabSelect(\'direct\')">Bireysel</button>' +
-      '<button class="yeni-tab' + (!isBireysel ? ' on' : '') + '" onclick="_newChatTabSelect(\'group\')">Grup Kur</button>' +
+    '<div class="new-tabs">' +
+      '<button class="new-tab' + (isBireysel ? ' on' : '') + '" onclick="_newChatTabSelect(\'direct\')">Bireysel</button>' +
+      '<button class="new-tab' + (!isBireysel ? ' on' : '') + '" onclick="_newChatTabSelect(\'group\')">Grup Kur</button>' +
     '</div>';
   html += isBireysel ? _renderDirectList(userKey) : _renderGroupForm(userKey);
   el.innerHTML = html;
@@ -408,11 +408,11 @@ function _renderDirectList(userKey) {
   var html = '';
   for (var i = 0; i < alicilar.length; i++) {
     var a = alicilar[i];
-    html += '<div class="yeni-s-row" onclick="startNewChat(\'' + a.key + '\')">' +
-      '<div class="sohbet-av">' + a.ini + '</div>' +
-      '<div class="yeni-s-info">' +
-        '<div class="yeni-s-name">' + a.name + '</div>' +
-        '<div class="yeni-s-rol">' + a.rol + '</div>' +
+    html += '<div class="new-s-row" onclick="startNewChat(\'' + a.key + '\')">' +
+      '<div class="chat-list-av">' + a.ini + '</div>' +
+      '<div class="new-s-info">' +
+        '<div class="new-s-name">' + a.name + '</div>' +
+        '<div class="new-s-rol">' + a.rol + '</div>' +
       '</div>' +
     '</div>';
   }
@@ -422,20 +422,20 @@ function _renderDirectList(userKey) {
 function _renderGroupForm(userKey) {
   var alicilar = _newChatRecipientList(userKey);
   var html =
-    '<div class="yeni-grup-form">' +
+    '<div class="new-grup-form">' +
       '<input id="yeni-grup-adi" class="fgi" type="text" placeholder="Grup adı..." style="margin-bottom:12px">' +
-      '<div class="yeni-grup-lbl">Üyeler</div>';
+      '<div class="new-grup-lbl">Üyeler</div>';
   if (!alicilar.length) {
     html += '<div style="padding:8px 0;color:var(--tx3);font-size:13px">Eklenecek üye bulunamadı</div>';
   } else {
     for (var i = 0; i < alicilar.length; i++) {
       var a = alicilar[i];
-      html += '<label class="yeni-chk-row">' +
-        '<input type="checkbox" class="yeni-chk" value="' + a.key + '">' +
-        '<div class="sohbet-av" style="width:32px;height:32px;font-size:12px">' + a.ini + '</div>' +
-        '<div class="yeni-s-info">' +
-          '<div class="yeni-s-name">' + a.name + '</div>' +
-          '<div class="yeni-s-rol">' + a.rol + '</div>' +
+      html += '<label class="new-chk-row">' +
+        '<input type="checkbox" class="new-chk" value="' + a.key + '">' +
+        '<div class="chat-list-av" style="width:32px;height:32px;font-size:12px">' + a.ini + '</div>' +
+        '<div class="new-s-info">' +
+          '<div class="new-s-name">' + a.name + '</div>' +
+          '<div class="new-s-rol">' + a.rol + '</div>' +
         '</div>' +
       '</label>';
     }
@@ -451,7 +451,7 @@ function createNewGroup() {
   var adiEl    = document.getElementById('yeni-grup-adi');
   var grupAdi  = adiEl ? adiEl.value.trim() : '';
   if (!grupAdi) { notif('Grup adı boş olamaz', 'amber'); return; }
-  var checkboxes = document.querySelectorAll('#myeni-liste .yeni-chk:checked');
+  var checkboxes = document.querySelectorAll('#mnew-liste .new-chk:checked');
   if (checkboxes.length < 2) { notif('En az 2 üye seçin', 'amber'); return; }
   var katilimcilar = [userKey];
   for (var i = 0; i < checkboxes.length; i++) katilimcilar.push(checkboxes[i].value);

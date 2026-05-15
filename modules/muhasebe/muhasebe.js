@@ -1492,8 +1492,8 @@ export function renderAccMessages() {
   var el = document.getElementById('sa-pnl-mesaj');
   if (!el) return;
   el.innerHTML =
-    '<div class="sohbet-sec-hd-row">' +
-      '<span class="sohbet-sec-hd">Sohbetler</span>' +
+    '<div class="chat-list-sec-hd-row">' +
+      '<span class="chat-list-sec-hd">Sohbetler</span>' +
       '<button class="btn btn-sm" onclick="openYeniSohbetModal()" style="padding:4px 10px;font-size:12px">+ Yeni</button>' +
     '</div>' +
     '<div id="sa-sohbet-liste"></div>';

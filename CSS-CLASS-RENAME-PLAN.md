@@ -94,7 +94,7 @@ Direkt prefix değişimi, alt yapı aynı.
 
 ---
 
-## BATCH D3 — `sohbet-*` → `chat-list-*` + `sic-*` → `chat-view-*` + `yeni-*` → `new-*` (32 class, ~104 ref)
+## ✅ BATCH D3 — `sohbet-*` → `chat-list-*` + `sic-*` → `chat-view-*` + `yeni-*` → `new-*` (32 class, ~104 ref)
 
 ### sohbet- → chat-list- (12 class, ~39 ref)
 
