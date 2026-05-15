@@ -1,6 +1,6 @@
 # SUPABASE ÖNCESİ GÖREV LİSTESİ
 
-**Son güncelleme:** 15 Mayıs 2026
+**Son güncelleme:** 15 Mayıs 2026 (Seans 3)
 **Kaynak:** Memory (30 kayıt) + geçmiş chat arşivi + bu seans kararları
 
 ---
@@ -52,13 +52,14 @@
 | C4 | Visual consistency pass | ❓ | Rapor ekranı estetik iyileştirme |
 | C5 | _formatRentalDate dead code analizi | ❓ | Tüketicisi yok — sil veya kullan |
 | C6 | index.html-only fonksiyonlar — modüle taşınmamış olanlar | ❓ | Tarama gerekli |
-| C7 | Core Finance Engine | ❓ | Para birimi çevirimi, bütçe hesaplamaları, KDV limitleri |
+| C7 | Core Finance Engine | ❓ | Para birimi çevirimi, bütçe hesaplamaları, KDV limitleri. **Pure function kuralı:** Tüm hesaplama fonksiyonları `APP.data`/global state'e doğrudan erişmeyecek; tüm girdi parametre, sonuç return, side-effect yok (DOM/localStorage/state mutasyonu yok). Bütçe, KDV, kur dönüşümü, limit kontrolü dahil. Amaç: CFE sonrası test harness eklemeyi trivial yapmak. |
 | C8 | Data Validation katmanı | ❓ Bilinçli erteleme | Zorunlu alan, format, tip kontrolü. Supabase şemasıyla birlikte yazılacak — Batch B sonrası |
 | C9 | Supabase Service Layer | ❓ Bilinçli erteleme | Supabase şema tasarımıyla birlikte tek seferde yazılacak. Kapsamı: (a) Error handling — try-catch + toast, (b) Connection state — offline queue + retry, (c) Storage service — foto/dosya Supabase Storage'a, DB'de URL only, (d) UUID — crypto.randomUUID() + migration, (e) Soft delete — deleted_at + RLS (karar alınmış), (f) Optimistic UI + debounce — buton disable/loading/re-enable, mükerrer kayıt önleme, (g) Rehydration + caching — başlangıç veri çekme stratejisi, lazy load, cache invalidation |
 | C10 | Kategori listesi gözden geçirme | ❓ | Teknik silindi, mevcut 8 kategori yeterli mi, sektörel ihtiyaç analizi |
 | C11 | Galeriden çoklu fotoğraf seçimi + OCR kuyruğu | ❓ | Şu an tek fotoğraf işleniyor, çoklu seçimde sıralı OCR gerekli |
 | C12 | JS object property (field) rename — Türkçe→İngilizce | ❓ Supabase ile birlikte | `f.kat`→`f.category`, `f.durum`→`f.status`, `f.tutar`→`f.amount`, `f.satici`→`f.vendor`, `f.tarih`→`f.date`, `f.aciklama`→`f.description`, `f.gerekce`→`f.justification`, `f.donem`→`f.period`, `f.personel`→`f.crew` vb. **Neden şimdi değil:** Şu an veri localStorage'da bu isimlerle tutuluyor — rename yapmak migration gerektirir. Supabase geçişinde localStorage zaten kalkacak, Supabase şeması sıfırdan İngilizce yazılacak, JS tarafı mapping katmanıyla tek seferde dönecek. Şimdi yapmak = boşa migration + sonra silinen kod. CSS class rename'den farklı: class adları veri katmanından bağımsız, field adları değil. |
-| C13 | Element ID rename (~140 Türkçe ID) | ❓ C12 ile eş zamanlı — Supabase öncesi son adım | Öncelik sırası: 🔴 `sdtb-*`/`sd-*` (D1 class↔ID tutarsızlığı, 12+9 adet), `uye-*`/`acuye-*` (D2, 17 adet), `sic-*` (D3, 4 adet) → 🟡 `don-*`, `fis-*`, `tab-*` → 🟢 `b-*`/`f-*` form ID'leri (düşük öncelik). Her ID hem `index.html` hem JS `getElementById` olarak çift yerde değişecek. C12 ile eş zamanlı yapılacak. |
+| C13-pre | CSS Dynamic String Audit (read-only diagnostic) | ❓ C13 öncesi yapılacak | `docs/CSS-CLASS-AUDIT.md` raporu üretilecek — `classList`, `querySelector`, `className`, `setAttribute('class',...)`, template literal/concatenation class string'leri taranacak. Tek grep oturumu, değişiklik yok, sadece rapor. Prompt hazır. |
+| C13 | Element ID & CSS Class String Rename | ❓ C12 ile eş zamanlı — Supabase öncesi son adım | Kapsam: (a) Element ID'leri (`getElementById`, `querySelector('#...')`), (b) CSS class literal'leri (`classList.add/remove/toggle/contains`, `querySelector('.')`, `closest('.')`), (c) Dinamik class string'leri (template literal, concatenation, `setAttribute('class',...)`). Girdi: `docs/CSS-CLASS-AUDIT.md`. Tek Sonnet prompt'u, tek grep oturumu, aynı commit. Öncelik: 🔴 `sdtb-*`/`sd-*`, `uye-*`/`acuye-*`, `sic-*` → 🟡 `don-*`, `fis-*`, `tab-*` → 🟢 `b-*`/`f-*`. |
 
 ---
 
