@@ -1930,6 +1930,48 @@ body {
 .conf-bar { height: 3px; background: var(--bg4); border-radius: 2px; margin-top: 3px; overflow: hidden; }
 .conf-bar-f { height: 100%; border-radius: 2px; }
 
+/* OCR iki-state UI */
+.ocr-state-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 12px; border-radius: 12px; margin-bottom: 12px;
+  font-size: 13px; font-weight: 600;
+}
+.ocr-state-ok   { background: rgba(74,222,128,.12); color: #166534; border: 1px solid rgba(74,222,128,.25); }
+.ocr-state-warn  { background: rgba(245,158,11,.1);  color: #92400e; border: 1px solid rgba(245,158,11,.3); }
+.ocr-state-badge {
+  font-size: 10px; font-weight: 700; letter-spacing: .4px;
+  padding: 2px 8px; border-radius: 20px;
+  background: #F59E0B; color: #fff; margin-left: auto;
+}
+.ocr-cf-wrap {
+  display: flex; align-items: center; gap: 5px; margin-bottom: 3px;
+}
+.ocr-cf-track {
+  flex: 1; height: 3px; border-radius: 2px;
+  background: rgba(12,10,8,.08);
+}
+.ocr-cf-fill { height: 3px; border-radius: 2px; transition: width .3s, background .3s; }
+.ocr-cf-pct {
+  font-size: 10px; color: rgba(12,10,8,.32);
+  font-family: var(--mo); white-space: nowrap; min-width: 26px; text-align: right;
+}
+.ocr-lbl-warn { color: #B45309 !important; }
+.ocr-warn-txt {
+  font-size: 10px; color: #B45309; margin-top: 3px; font-weight: 500;
+  display: flex; align-items: center; gap: 4px;
+}
+.fgi-warn { border-color: #F59E0B !important; }
+.fgi-err  { border-color: #EF4444 !important; }
+.ocr-extra-toggle {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 14px; border-radius: 12px;
+  border: 1px solid var(--bo); background: var(--bg3);
+  cursor: pointer; margin-bottom: 10px;
+  font-size: 12px; font-weight: 600; color: var(--tx2);
+  -webkit-tap-highlight-color: transparent;
+}
+.ocr-extra-toggle:active { background: var(--bg4); }
+
 /* İmza */
 .sigc {
   width: 100%; height: 90px;
@@ -2662,22 +2704,81 @@ body {
       </div>
       <!-- S2: Sonuç -->
       <div id="ocr-s2" style="display:none">
-        <div style="background:var(--bg3);border:1px solid var(--bo);border-radius:var(--rs);padding:12px;margin-bottom:12px;font-size:12px;font-family:var(--mo);color:var(--tx2);line-height:1.8" id="ocr-prev"></div>
-        <div class="conf-grid">
-          <div class="conf-card"><div class="conf-lbl">Metin</div><div class="conf-val" id="c1v">%94</div><div class="conf-bar"><div class="conf-bar-f" id="c1b" style="width:94%"></div></div></div>
-          <div class="conf-card"><div class="conf-lbl">Tutar</div><div class="conf-val" id="c2v">%98</div><div class="conf-bar"><div class="conf-bar-f" id="c2b" style="width:98%"></div></div></div>
-          <div class="conf-card"><div class="conf-lbl">GİB</div><div class="conf-val" id="c3v">%91</div><div class="conf-bar"><div class="conf-bar-f" id="c3b" style="width:91%"></div></div></div>
+        <!-- State bar -->
+        <div class="ocr-state-bar ocr-state-ok" id="ocr-state-bar">
+          <span id="ocr-state-icon">✓</span>
+          <span>OCR Sonucu</span>
+          <span class="ocr-state-badge" id="ocr-state-badge" style="display:none">Kontrol gerekli</span>
         </div>
-        <div class="fr2">
-          <div class="fg"><label>Satıcı</label><input class="fgi" id="f-satici" type="text"></div>
-          <div class="fg"><label>Tutar (₺)</label><input class="fgi" id="f-tutar" type="text" oninput="checkTransportLimit()"></div>
+        <!-- Fiş önizleme (tıklayınca genişler) -->
+        <div style="background:var(--bg3);border:1px solid var(--bo);border-radius:12px;padding:10px;margin-bottom:12px;font-size:11px;font-family:var(--mo);color:var(--tx2);line-height:1.7;max-height:64px;overflow:hidden;cursor:pointer;transition:max-height .25s" id="ocr-prev" onclick="var h=this;h.style.maxHeight=h.style.maxHeight==='none'?'64px':'none'"></div>
+        <!-- Satıcı + confidence bar -->
+        <div class="fg">
+          <div class="ocr-cf-wrap">
+            <div class="ocr-cf-track"><div class="ocr-cf-fill" id="ocr-cf-satici" style="width:90%;background:#4ADE80"></div></div>
+            <span class="ocr-cf-pct" id="ocr-cf-satici-pct">%90</span>
+          </div>
+          <label id="ocr-lbl-satici">Satıcı</label>
+          <input class="fgi" id="f-satici" type="text">
+          <div class="ocr-warn-txt" id="ocr-warn-satici" style="display:none">⚠ Satıcı okunurluğu düşük — kontrol edin</div>
         </div>
+        <!-- Tutar + KDV row -->
         <div class="fr2">
-          <div class="fg"><label>KDV</label><input class="fgi" id="f-kdv" type="text"></div>
-          <div class="fg"><label>Tarih</label><input class="fgi" id="f-tarih" type="date"></div>
+          <div class="fg">
+            <div class="ocr-cf-wrap">
+              <div class="ocr-cf-track"><div class="ocr-cf-fill" id="ocr-cf-tutar" style="width:90%;background:#4ADE80"></div></div>
+              <span class="ocr-cf-pct" id="ocr-cf-tutar-pct">%90</span>
+            </div>
+            <label id="ocr-lbl-tutar">Tutar (₺)</label>
+            <input class="fgi" id="f-tutar" type="text" oninput="checkTransportLimit()">
+            <div class="ocr-warn-txt" id="ocr-warn-tutar" style="display:none">⚠ Tutar okunurluğu düşük — kontrol edin</div>
+          </div>
+          <div class="fg">
+            <div class="ocr-cf-wrap">
+              <div class="ocr-cf-track"><div class="ocr-cf-fill" id="ocr-cf-kdv" style="width:90%;background:#4ADE80"></div></div>
+              <span class="ocr-cf-pct" id="ocr-cf-kdv-pct">%90</span>
+            </div>
+            <label id="ocr-lbl-kdv">KDV</label>
+            <input class="fgi" id="f-kdv" type="text">
+            <div class="ocr-warn-txt" id="ocr-warn-kdv" style="display:none">⚠ KDV okunurluğu düşük — kontrol edin</div>
+          </div>
         </div>
-        <div class="fr2">
-          <div class="fg"><label>Fiş No</label><input class="fgi" id="f-fisno" type="text"></div>
+        <!-- Açıklama -->
+        <div class="fg"><label>Açıklama</label><textarea class="fgi" rows="2" id="f-aciklama" placeholder="Harcama notu..."></textarea></div>
+        <!-- Sesli not -->
+        <button class="vbtn" id="vbtn" onclick="toggleVoice()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px" id="v-ic"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          <span id="v-lbl">Sesli Açıklama</span>
+        </button>
+        <!-- Diğer alanlar toggle -->
+        <button class="ocr-extra-toggle" id="ocr-extra-toggle" onclick="toggleOcrExtra()">
+          <span>Diğer alanlar</span>
+          <span id="ocr-extra-arrow">▼</span>
+        </button>
+        <!-- Ek alanlar (varsayılan kapalı; düşük confidence'ta otomatik açılır) -->
+        <div id="ocr-extra" style="display:none">
+          <!-- Tarih + Fiş No -->
+          <div class="fr2">
+            <div class="fg">
+              <div class="ocr-cf-wrap">
+                <div class="ocr-cf-track"><div class="ocr-cf-fill" id="ocr-cf-tarih" style="width:90%;background:#4ADE80"></div></div>
+                <span class="ocr-cf-pct" id="ocr-cf-tarih-pct">%90</span>
+              </div>
+              <label id="ocr-lbl-tarih">Tarih</label>
+              <input class="fgi" id="f-tarih" type="date">
+              <div class="ocr-warn-txt" id="ocr-warn-tarih" style="display:none">⚠ Tarih okunurluğu düşük — kontrol edin</div>
+            </div>
+            <div class="fg">
+              <div class="ocr-cf-wrap">
+                <div class="ocr-cf-track"><div class="ocr-cf-fill" id="ocr-cf-fisno" style="width:90%;background:#4ADE80"></div></div>
+                <span class="ocr-cf-pct" id="ocr-cf-fisno-pct">%90</span>
+              </div>
+              <label id="ocr-lbl-fisno">Fiş No</label>
+              <input class="fgi" id="f-fisno" type="text">
+              <div class="ocr-warn-txt" id="ocr-warn-fisno" style="display:none">⚠ Fiş no okunurluğu düşük — kontrol edin</div>
+            </div>
+          </div>
+          <!-- Kategori -->
           <div class="fg">
             <label>Kategori</label>
             <select class="fgi" id="f-kat" onchange="onCategoryChange()">
@@ -2691,79 +2792,77 @@ body {
               <option value="other">📦 Diğer</option>
             </select>
           </div>
-        </div>
-        <!-- ULAŞIM PANELİ -->
-        <div id="ul-panel" style="display:none">
-          <div class="fr2">
-            <div class="fg"><label>Biniş Noktası</label><input class="fgi" id="ul-binis" type="text" placeholder="Kalkış yeri"></div>
-            <div class="fg"><label>Varış Noktası</label><input class="fgi" id="ul-varis" type="text" placeholder="Varış yeri"></div>
+          <!-- ULAŞIM PANELİ -->
+          <div id="ul-panel" style="display:none">
+            <div class="fr2">
+              <div class="fg"><label>Biniş Noktası</label><input class="fgi" id="ul-binis" type="text" placeholder="Kalkış yeri"></div>
+              <div class="fg"><label>Varış Noktası</label><input class="fgi" id="ul-varis" type="text" placeholder="Varış yeri"></div>
+            </div>
+            <div class="fr2">
+              <div class="fg"><label>Mesafe (km)</label><input class="fgi" id="ul-km" type="number" min="0" step="1" placeholder="0" oninput="checkTransportLimit()"></div>
+              <div class="fg">
+                <label>Güzergâh</label>
+                <select class="fgi" id="ul-tip" onchange="checkTransportLimit()">
+                  <option value="ic">🏙 Şehiriçi (max 15₺/km)</option>
+                  <option value="dis">🛣 Şehirdışı (max 25₺/km)</option>
+                </select>
+              </div>
+            </div>
+            <div id="ul-uyari" style="display:none"></div>
           </div>
-          <div class="fr2">
-            <div class="fg"><label>Mesafe (km)</label><input class="fgi" id="ul-km" type="number" min="0" step="1" placeholder="0" oninput="checkTransportLimit()"></div>
-            <div class="fg">
-              <label>Güzergâh</label>
-              <select class="fgi" id="ul-tip" onchange="checkTransportLimit()">
-                <option value="ic">🏙 Şehiriçi (max 15₺/km)</option>
-                <option value="dis">🛣 Şehirdışı (max 25₺/km)</option>
-              </select>
+          <!-- YEMEK PANELİ -->
+          <div id="ym-panel" style="display:none">
+            <div class="fr2">
+              <div class="fg"><label>Kişi Sayısı</label><input class="fgi" id="ym-kisi" type="number" min="1" step="1" placeholder="0"></div>
+              <div class="fg">
+                <label>Öğün</label>
+                <select class="fgi" id="ym-ogun">
+                  <option value="kahvalti">🌅 Kahvaltı</option>
+                  <option value="ogle">🌞 Öğle</option>
+                  <option value="aksam">🌙 Akşam</option>
+                </select>
+              </div>
             </div>
           </div>
-          <div id="ul-uyari" style="display:none"></div>
-        </div>
-        <!-- YEMEK PANELİ (OCR) -->
-        <div id="ym-panel" style="display:none">
-          <div class="fr2">
-            <div class="fg"><label>Kişi Sayısı</label><input class="fgi" id="ym-kisi" type="number" min="1" step="1" placeholder="0"></div>
-            <div class="fg">
-              <label>Öğün</label>
-              <select class="fgi" id="ym-ogun">
-                <option value="kahvalti">🌅 Kahvaltı</option>
-                <option value="ogle">🌞 Öğle</option>
-                <option value="aksam">🌙 Akşam</option>
-              </select>
+          <!-- KONAKLAMA PANELİ -->
+          <div id="ko-panel" style="display:none">
+            <div class="fr2">
+              <div class="fg"><label>Gece Sayısı</label><input class="fgi" id="ko-gece" type="number" min="1" step="1" placeholder="0"></div>
+              <div class="fg"><label>Kişi Sayısı</label><input class="fgi" id="ko-kisi" type="number" min="1" step="1" placeholder="0"></div>
             </div>
           </div>
-        </div>
-        <!-- KONAKLAMA PANELİ (OCR) -->
-        <div id="ko-panel" style="display:none">
-          <div class="fr2">
-            <div class="fg"><label>Gece Sayısı</label><input class="fgi" id="ko-gece" type="number" min="1" step="1" placeholder="0"></div>
-            <div class="fg"><label>Kişi Sayısı</label><input class="fgi" id="ko-kisi" type="number" min="1" step="1" placeholder="0"></div>
+          <!-- KİRALAMA PANELİ -->
+          <div id="ki-panel" style="display:none">
+            <div class="fr2">
+              <div class="fg"><label>Başlangıç Tarihi</label><input class="fgi" id="ki-bas" type="date" oninput="checkKiralamaBit('')"></div>
+              <div class="fg"><label>Bitiş Tarihi</label><input class="fgi" id="ki-bit" type="date" oninput="checkKiralamaBit('')"></div>
+            </div>
+            <div class="fg"><label>Günlük Ücret (₺)</label><input class="fgi" id="ki-gun" type="number" min="0" step="0.01" placeholder="0.00" oninput="checkKiralamaBit('')"></div>
+            <div id="ki-uyari" style="display:none;margin-bottom:8px"></div>
           </div>
-        </div>
-        <!-- KİRALAMA PANELİ (OCR) -->
-        <div id="ki-panel" style="display:none">
-          <div class="fr2">
-            <div class="fg"><label>Başlangıç Tarihi</label><input class="fgi" id="ki-bas" type="date" oninput="checkKiralamaBit('')"></div>
-            <div class="fg"><label>Bitiş Tarihi</label><input class="fgi" id="ki-bit" type="date" oninput="checkKiralamaBit('')"></div>
+          <!-- GİB -->
+          <div style="display:flex;align-items:center;padding:10px 12px;border-radius:var(--rs);border:1px solid var(--bo);background:var(--bg3);cursor:pointer;margin-bottom:12px" onclick="simGIB()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--tx2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;margin-right:9px;flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span style="color:var(--tx2);font-size:13px">GİB e-Fatura Doğrula</span>
+            <span style="margin-left:auto;font-size:13px;color:var(--bl2)" id="gib-res">Doğrula →</span>
           </div>
-          <div class="fg"><label>Günlük Ücret (₺)</label><input class="fgi" id="ki-gun" type="number" min="0" step="0.01" placeholder="0.00" oninput="checkKiralamaBit('')"></div>
-          <div id="ki-uyari" style="display:none;margin-bottom:8px"></div>
-        </div>
-        <div class="fg"><label>Açıklama</label><textarea class="fgi" rows="2" id="f-aciklama" placeholder="Harcama notu..."></textarea></div>
-        <button class="vbtn" id="vbtn" onclick="toggleVoice()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px" id="v-ic"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-          <span id="v-lbl">Sesli Açıklama</span>
-        </button>
-        <div style="display:flex;align-items:center;padding:10px 12px;border-radius:var(--rs);border:1px solid var(--bo);background:var(--bg3);cursor:pointer;margin-bottom:12px" onclick="simGIB()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--tx2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;margin-right:9px;flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          <span style="color:var(--tx2);font-size:13px">GİB e-Fatura Doğrula</span>
-          <span style="margin-left:auto;font-size:13px;color:var(--bl2)" id="gib-res">Doğrula →</span>
-        </div>
-        <div class="fg">
-          <label style="display:flex;align-items:center;justify-content:space-between">
-            Dijital İmza
-            <span style="font-size:10px;color:var(--tx3);font-weight:400;text-transform:none" id="sig-time"></span>
-          </label>
-          <canvas class="sigc" id="sigc" width="460" height="90"></canvas>
-          <div style="display:flex;gap:6px;margin-top:6px">
-            <button class="btn btn-sm" onclick="clearSig()" style="flex:1;justify-content:center">Temizle</button>
-            <div style="flex:2;background:var(--bg3);border:1px solid var(--bo);border-radius:var(--rs);padding:6px 10px;font-size:12px;color:var(--tx3);display:flex;align-items:center" id="sig-st">✍️ İmzalanmadı</div>
+          <!-- Dijital İmza -->
+          <div class="fg">
+            <label style="display:flex;align-items:center;justify-content:space-between">
+              Dijital İmza
+              <span style="font-size:10px;color:var(--tx3);font-weight:400;text-transform:none" id="sig-time"></span>
+            </label>
+            <canvas class="sigc" id="sigc" width="460" height="90"></canvas>
+            <div style="display:flex;gap:6px;margin-top:6px">
+              <button class="btn btn-sm" onclick="clearSig()" style="flex:1;justify-content:center">Temizle</button>
+              <div style="flex:2;background:var(--bg3);border:1px solid var(--bo);border-radius:var(--rs);padding:6px 10px;font-size:12px;color:var(--tx3);display:flex;align-items:center" id="sig-st">✍️ İmzalanmadı</div>
+            </div>
           </div>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:4px;padding-bottom:4px">
+        </div><!-- /ocr-extra -->
+        <!-- Butonlar -->
+        <div style="display:flex;gap:8px;margin-top:8px;padding-bottom:4px">
           <button class="btn" onclick="closeM('mo')" style="flex:1;justify-content:center">İptal</button>
-          <button class="btn btn-p" onclick="submitOCR()" style="flex:2;justify-content:center">✅ Onaya Gönder</button>
+          <button class="btn btn-p" onclick="submitOCR()" style="flex:2;justify-content:center;background:#B07830;border-color:#B07830">✅ Onaya Gönder</button>
         </div>
       </div>
     </div>
@@ -3960,6 +4059,7 @@ var FIS_DEMO = [
     satici:'Kırtaş İns.Tur.Akaryakıt A.Ş.', tutar:'1.000,00', kdv:'166,67',
     tarih:'2026-04-03', fisno:'34KN355-F:8014', kat:'fuel', aciklama:'Araç yakıtı — Benzin 10.016 Lt',
     c:[ {v:'%94',w:94,c:'var(--gr)'}, {v:'%98',w:98,c:'var(--gr)'}, {v:'%91',w:91,c:'var(--gr)'} ],
+    ocrConfidence: { seller:92, amount:87, tax:84, date:76, receiptNo:78 },
     prev:'<strong>PETROL OFİSİ</strong><br>Benzin 10.016 Lt ......... 1.000,00<br>KDV ......................... 166,67<br><strong>TOPLAM: 1.000,00 ₺</strong>',
     uyari: null
   },
@@ -3967,8 +4067,17 @@ var FIS_DEMO = [
     satici:'Tavuk Dünyası — Bağlarbaşı', tutar:'780,00', kdv:'70,91',
     tarih:'2026-04-02', fisno:'Fiş:0220', kat:'food', aciklama:'Ekip yemeği — 10 porsiyon',
     c:[ {v:'%88',w:88,c:'var(--gr)'}, {v:'%96',w:96,c:'var(--gr)'}, {v:'%71',w:71,c:'var(--am)'} ],
+    ocrConfidence: { seller:88, amount:96, tax:81, date:78, receiptNo:73 },
     prev:'<strong>TAVUK DÜNYASI</strong><br>Fitelic x10 ................. 780,00<br>KDV ........................... 70,91<br><strong>TOPLAM: 780,00 ₺</strong>',
     uyari: '⚠️ Ekip 15 kişi ama 10 porsiyon — eksik?'
+  },
+  {
+    satici:'Sigma Kamera Ekipmanları', tutar:'3.200,00', kdv:'581,82',
+    tarih:'2026-04-05', fisno:'SIG-0041', kat:'rental', aciklama:'Kamera ekipman kiralama',
+    c:[ {v:'%73',w:73,c:'var(--am)'}, {v:'%61',w:61,c:'var(--am)'}, {v:'%42',w:42,c:'var(--rd)'} ],
+    ocrConfidence: { seller:73, amount:61, tax:42, date:38, receiptNo:55 },
+    prev:'<strong>SİGMA KAMERA</strong><br>Kamera Ekipman Kiralama ... 3.200,00<br>KDV ............................. 581,82<br><strong>TOPLAM: 3.200,00 ₺</strong>',
+    uyari: null
   }
 ];
 

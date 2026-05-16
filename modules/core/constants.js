@@ -90,6 +90,16 @@ export var UL_SEHIRDISI_RATE = 25;
 export var PASIF_ONAY_GUN = 7;                            // gün
 export var PASIF_ONAY_MS  = 7 * 24 * 60 * 60 * 1000;    // milisaniye
 
+// ─── OCR Confidence ─────────────────────────────────────────────────────────
+
+export var OCR_CONFIDENCE_THRESHOLD = 70;   // % altı → State 2 tetikler
+
+export var OCR_CONFIDENCE_COLORS = {
+  high:   '#4ADE80',   // %80+
+  medium: '#F59E0B',   // %60-79
+  low:    '#EF4444'    // %60 altı
+};
+
 // ─── Onboarding ─────────────────────────────────────────────────────────────
 
 export var ONB_SVG = {
