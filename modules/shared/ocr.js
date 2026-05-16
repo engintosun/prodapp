@@ -83,15 +83,20 @@ export function openOCR(idx, imgSrc) {
   document.getElementById('ocr-s2').style.display = 'none';
   var prev = document.getElementById('scan-preview');
   var icon = document.getElementById('scan-icon');
+  // Başlık → tarama modu (önceki sonuç stilini sıfırla)
+  var titleEl = document.getElementById('ocr-mtitle');
+  if (titleEl) { titleEl.style.fontSize = ''; titleEl.style.fontWeight = ''; titleEl.style.color = ''; }
+  var badge = document.getElementById('ocr-state-badge');
+  if (badge) badge.style.display = 'none';
   if (imgSrc) {
     prev.src = imgSrc;
     prev.style.display = 'block';
     icon.style.display = 'none';
-    document.getElementById('ocr-mtitle').textContent = '🖼 Fotoğraf İşleniyor';
+    if (titleEl) titleEl.textContent = '🖼 Fotoğraf İşleniyor';
   } else {
     prev.style.display = 'none';
     icon.style.display = 'block';
-    document.getElementById('ocr-mtitle').textContent = '📷 Fiş Taranıyor';
+    if (titleEl) titleEl.textContent = '📷 Fiş Taranıyor';
   }
   var wrap = document.getElementById('scan-wrap');
   wrap.classList.add('scanning');
@@ -107,7 +112,6 @@ export function openOCR(idx, imgSrc) {
       setTimeout(function() {
         document.getElementById('ocr-s1').style.display = 'none';
         document.getElementById('ocr-s2').style.display = 'block';
-        document.getElementById('ocr-mtitle').textContent = '✅ OCR Sonucu';
         var pr = document.getElementById('scan-preview');
         pr.src = ''; pr.style.display = 'none';
         document.getElementById('scan-icon').style.display = 'block';
@@ -156,14 +160,26 @@ function _confColor(pct) {
 function _applyConfidence(conf) {
   var threshold = (window.APP && APP.constants && APP.constants.OCR_CONFIDENCE_THRESHOLD) || 70;
 
-  // Ortalama confidence hesapla → tek bar
-  var vals = Object.values(conf);
-  var avg  = vals.length ? Math.round(vals.reduce(function(a, b) { return a + b; }, 0) / vals.length) : 90;
-  var avgClr = _confColor(avg);
-  var avgFill = document.getElementById('ocr-cf-avg');
-  var avgPct  = document.getElementById('ocr-cf-avg-pct');
-  if (avgFill) { avgFill.style.width = avg + '%'; avgFill.style.background = avgClr; }
-  if (avgPct)  avgPct.textContent = '%' + avg;
+  // 3 alan confidence yüzdesi
+  var confDisplay = [
+    { key:'seller', elId:'ocr-conf-satici' },
+    { key:'amount', elId:'ocr-conf-amount' },
+    { key:'tax',    elId:'ocr-conf-tax'    }
+  ];
+  confDisplay.forEach(function(cd) {
+    var pct = conf[cd.key] != null ? conf[cd.key] : 90;
+    var el  = document.getElementById(cd.elId);
+    if (el) { el.textContent = '%' + pct; el.style.color = _confColor(pct); }
+  });
+
+  // Başlık → "Belge ile karşılaştırın" (dim stil)
+  var titleEl = document.getElementById('ocr-mtitle');
+  if (titleEl) {
+    titleEl.textContent  = 'Belge ile karşılaştırın';
+    titleEl.style.fontSize   = '13px';
+    titleEl.style.fontWeight = '400';
+    titleEl.style.color      = 'rgba(255,255,255,0.45)';
+  }
 
   // Per-field uyarılar (ocr-extra içindeki alanlar için)
   var fields = [
@@ -197,10 +213,8 @@ function _applyConfidence(conf) {
   var stateBadge = document.getElementById('ocr-state-badge');
   var extraEl    = document.getElementById('ocr-extra');
   var arrowEl    = document.getElementById('ocr-extra-arrow');
-  var titleEl    = document.getElementById('ocr-mtitle');
 
   if (stateBadge) stateBadge.style.display = hasLow ? 'inline' : 'none';
-  if (titleEl)    titleEl.textContent = '';
   if (hasLow) {
     if (extraEl) extraEl.style.display = 'block';
     if (arrowEl) arrowEl.textContent = '▲';

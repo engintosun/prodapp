@@ -1931,27 +1931,16 @@ body {
 .conf-bar-f { height: 100%; border-radius: 2px; }
 
 /* OCR sonuç ekranı */
-.ocr-header {
-  display: flex; align-items: center; gap: 8px;
-  padding: 4px 2px 10px;
-  font-size: 13px; color: rgba(255,255,255,.45);
-}
 .ocr-state-badge {
   font-size: 10px; font-weight: 700; letter-spacing: .4px;
   padding: 2px 8px; border-radius: 20px;
   background: #F59E0B; color: #fff;
 }
-.ocr-cf-wrap {
-  display: flex; align-items: center; gap: 5px; margin-bottom: 8px;
-}
-.ocr-cf-track {
-  flex: 1; height: 3px; border-radius: 2px;
-  background: rgba(255,255,255,.1);
-}
-.ocr-cf-fill { height: 3px; border-radius: 2px; transition: width .35s, background .35s; }
-.ocr-cf-pct {
-  font-size: 10px; color: rgba(255,255,255,.32);
-  font-family: var(--mo); white-space: nowrap; min-width: 26px; text-align: right;
+.ocr-conf-row {
+  font-size: 11px; font-family: var(--mo);
+  color: rgba(255,255,255,.38);
+  display: flex; align-items: center; gap: 5px;
+  margin-bottom: 8px;
 }
 .ocr-raw {
   background: var(--bg3); border: 1px solid var(--bo);
@@ -2674,7 +2663,10 @@ body {
   <div class="ms">
     <div class="mh"></div>
     <div class="mhd">
-      <div class="mtitle" id="ocr-mtitle">📷 Fiş Taranıyor</div>
+      <div style="display:flex;align-items:center;gap:8px;min-width:0">
+        <div class="mtitle" id="ocr-mtitle">📷 Fiş Taranıyor</div>
+        <span class="ocr-state-badge" id="ocr-state-badge" style="display:none;flex-shrink:0">Kontrol gerekli</span>
+      </div>
       <button class="mclose" onclick="closeM('mo')">✕</button>
     </div>
     <div class="mbody">
@@ -2694,15 +2686,13 @@ body {
       </div>
       <!-- S2: Sonuç -->
       <div id="ocr-s2" style="display:none">
-        <!-- Minimal header -->
-        <div class="ocr-header">
-          <span>Belge ile karşılaştırın</span>
-          <span class="ocr-state-badge" id="ocr-state-badge" style="display:none">Kontrol gerekli</span>
-        </div>
-        <!-- Tek ortalama confidence bar -->
-        <div class="ocr-cf-wrap">
-          <div class="ocr-cf-track"><div class="ocr-cf-fill" id="ocr-cf-avg" style="width:90%;background:#4ADE80"></div></div>
-          <span class="ocr-cf-pct" id="ocr-cf-avg-pct">%90</span>
+        <!-- 3 alan confidence yüzdesi -->
+        <div class="ocr-conf-row">
+          <span>Satıcı <span id="ocr-conf-satici" style="color:#4ADE80">%90</span></span>
+          <span>·</span>
+          <span>Tutar <span id="ocr-conf-amount" style="color:#4ADE80">%90</span></span>
+          <span>·</span>
+          <span>KDV <span id="ocr-conf-tax" style="color:#4ADE80">%90</span></span>
         </div>
         <!-- OCR raw metin bloğu -->
         <div class="ocr-raw" id="ocr-prev"></div>
@@ -2817,10 +2807,14 @@ body {
             <div id="ki-uyari" style="display:none;margin-bottom:8px"></div>
           </div>
           <!-- GİB -->
-          <div style="display:flex;align-items:center;padding:10px 12px;border-radius:var(--rs);border:1px solid var(--bo);background:var(--bg3);cursor:pointer;margin-bottom:12px" onclick="simGIB()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--tx2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;margin-right:9px;flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            <span style="color:var(--tx2);font-size:13px">GİB e-Fatura Doğrula</span>
-            <span style="margin-left:auto;font-size:13px;color:var(--bl2)" id="gib-res">Doğrula →</span>
+          <div class="fg" style="margin-bottom:10px">
+            <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:0" onclick="simGIB()">
+              <span style="display:flex;align-items:center;gap:7px;color:var(--tx2);font-size:13px;font-weight:600">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--tx2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                GİB e-Fatura Doğrula
+              </span>
+              <span id="gib-res" style="font-size:12px;color:var(--bl2);font-family:var(--mo);font-weight:600;flex-shrink:0">Doğrula →</span>
+            </label>
           </div>
           <!-- Dijital İmza -->
           <div class="fg">
