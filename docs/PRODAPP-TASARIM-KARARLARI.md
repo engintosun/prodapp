@@ -1,5 +1,5 @@
 # PRODAPP — Tasarım Kararları (Tüm Seanslar)
-**Son güncelleme:** 16 Mayıs 2026 (Seans 4)
+**Son güncelleme:** 17 Mayıs 2026 (Seans 6)
 **Amaç:** Tüm tasarım kararlarını tek dosyada toplamak. Sonnet prompt'ları ve Claude Design brief'leri bu dosyayı referans alacak.
 
 ---
@@ -92,24 +92,39 @@ Oturum açık: Proje seçimi → Ana ekran (veya tek projeliyse direkt ana ekran
 - Faz farkı sadece kullanıcıya ne gösterildiği
 
 ### 3.2 Saha Ekranı — OCR Sonuç Formu
-Basit form (varsayılan görünüm):
-- Fiş thumbnail (küçük — tıklayınca büyür)
-- Satıcı alanı
-- Tutar + KDV yan yana — üstlerinde ince confidence bar (yeşil→sarı→kırmızı, yüzde yazılı)
-- Açıklama alanı
-- Sesli not butonu
-- "Diğer alanlar" dropdown (kapalı)
-- Alt: İptal + Onaya Gönder
 
-Confidence tetikli (düşük confidence):
-- Düşük confidence'lı alanların dropdown'u otomatik açılır
-- Açılan alanlar: tarih, fiş no, kategori, GİB doğrula, dijital imza
-- Kullanıcı isterse yüksek confidence'ta da dropdown'u manuel açabilir
-- Header'da "Kontrol gerekli" uyarısı
+**State 1 — Yüksek Confidence (varsayılan görünüm, üstten alta):**
+1. "Belge ile karşılaştırın" — ince metin, minimal, ikon yok (13px, soluk renk)
+2. Tek confidence bar — OCR metin bloğunun üstünde (3px, border-radius 2px, doluluk = genel confidence ortalaması, sağ ucunda yüzde yazısı 10px)
+   - Renk: %80+ yeşil (#4ADE80), %60-79 sarı (#F59E0B), %60 altı kırmızı (#EF4444)
+3. OCR raw metin bloğu — fişten okunan ham metin (font-size 16px, başlık bold 17px)
+   - Fiş thumbnail/önizleme YOK — fiş zaten kullanıcının elinde, OCR metni yeterli
+4. Açıklama alanı — label satırında sağ köşede inline mikrofon ikonu (Lucide mic, 18px)
+   - Ayrı sesli not butonu YOK
+   - "Sesli Açıklama" yazısı YOK — sadece ikon
+5. "Diğer alanlar ▼" — kapalı, tıklayınca açılır
+6. İptal + Onaya Gönder butonları
 
-Fiş önizleme:
-- Ekranda büyük gösterilmez — fiş zaten kullanıcının elinde
-- Thumbnail'e tıklayınca büyür (karşılaştırma için)
+**"Diğer alanlar" içeriği (açılınca, sırasıyla):**
+- Satıcı (düzenlenebilir text input)
+- Tutar (₺) + KDV (₺) yan yana
+- Tarih + Fiş No yan yana
+- Kategori (dropdown)
+- GİB e-Fatura Doğrula
+- Dijital İmza
+
+**State 2 — Düşük Confidence (herhangi bir alan < 70):**
+- Aynı yapı + "Kontrol gerekli" badge ("Belge ile karşılaştırın" yanında, sarı pill)
+- Confidence bar sarı veya kırmızı
+- "Diğer alanlar" otomatik açık
+- Düşük confidence'lı alanların label'ı sarı (#F59E0B) + ⚠ ikonu
+- Düşük confidence'lı alanların border'ı sarı (1.5px solid rgba(245,158,11,0.4))
+- Alan altında uyarı metni: "Tutar okunurluğu düşük — kontrol edin" gibi
+
+**Confidence hesaplama:**
+- Genel confidence = tüm alan confidence değerlerinin ortalaması
+- constants.js'teki OCR_CONFIDENCE_THRESHOLD (70) ve OCR_CONFIDENCE_COLORS değişmez
+- State tetikleme: herhangi bir alan < 70 → State 2
 
 ### 3.3 Muhasebe Ekranı — OCR Verileri
 - Tüm confidence verileri her zaman görünür (Faz 2'de renk kodlu bantlar + yüzdeler)
@@ -196,6 +211,7 @@ Fiş önizleme:
 - [x] Dil seçimi ekranı tasarımı
 - [x] Saha ana ekran layout (light tema, v6d)
 - [x] OCR sonuç ekranı yapısal kararlar
+- [x] OCR sonuç ekranı implementasyonu (State 1 + State 2, confidence bar, inline mic)
 
 ### Sıradaki
 1. OCR sonuç ekranı görsel tasarım
