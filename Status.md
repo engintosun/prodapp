@@ -161,8 +161,10 @@
 3. ~~Naming Batch C4 — sohbet tip enum rename (bireysel>direct, grup>group + migration)~~ ✅ (14 Mayıs 2026)
 4. ~~Naming Batch C5 — kira/dönem enum rename (aktif>active, gec>overdue, yak>upcoming, iade>returned + CSS sync + migration)~~ ✅ (14 Mayıs 2026)
 5. ~~Naming Batch C6 — log aksiyon enum rename (olusturuldu>created, dept-onayladi>dept-approved + migration)~~ ✅ (15 Mayıs 2026)
-3. Tasarım revizyonu (OCR sadeleştirme + Dept/Muhasebe kart yapısı)
-4. Supabase mimari + entegrasyon (Faz 2)
+6. CSS Dynamic String Audit — JS içindeki tüm CSS class referanslarını tarama (C13 hazırlık, read-only diagnostic)
+7. Naming Batch C13 — Element ID & CSS Class String Rename (kapsamı genişletildi: classList, querySelector, closest, dinamik class string'leri dahil. Girdi: docs/CSS-CLASS-AUDIT.md)
+8. Tasarım revizyonu (OCR sadeleştirme + Dept/Muhasebe kart yapısı)
+9. Supabase mimari + entegrasyon (Faz 2)
 
 Faz 1'in 6 P0/P1 maddesi (4 P0 + 2 P1) bitince hemen bu iş başlar. Faz 2 (backend) öncesi şart.
 
@@ -255,6 +257,8 @@ Fonksiyon rename batch'leri tamamlandı (~150 fonksiyon, 9 commit). Kalan:
 | **Batch C4** | Sohbet tip enum — bireysel>direct, grup>group + C4 migration | ✅ tamamlandı (14 Mayıs 2026) |
 | **Batch C5** | Kira/dönem enum — aktif>active, gec>overdue, yak>upcoming, iade>returned + CSS sync + migration | ✅ tamamlandı (14 Mayıs 2026) |
 | **Batch C6** | Log aksiyon enum — olusturuldu>created, dept-onayladi>dept-approved + C6 migration | ✅ tamamlandı (15 Mayıs 2026) |
+| **CSS Audit** | JS içindeki CSS class referanslarını tarama (classList/querySelector/closest/dinamik string) | ⏳ diagnostic prompt hazır |
+| **Batch C13** | Element ID & CSS Class String Rename (HTML ID + CSS class literal + dinamik class string) | ⏳ CSS Audit sonrası |
 
 Batch B/C için sektörel terim kararları (Batch B'ye girilince alınacak):
 

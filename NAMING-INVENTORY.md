@@ -630,7 +630,7 @@ Bu stringler i18n sistemine alınmak üzere ayrı bir pas gerektirir.
 | P1 | APP.data.* anahtarları | 🟠 Orta | localStorage key rename → clear veya migration |
 | P1 | Function names (★ işaretli) | 🟠 Orta | onclick HTML + JS body birlikte |
 | P2 | APP.ui.* / APP.seed.* | 🟡 Düşük | Ephemeral state, localStorage'a yazılmıyor |
-| P2 | HTML ID'ler + CSS class'lar | 🟡 Düşük | JS query ve CSS aynı anda |
+| P2 | HTML ID'ler + CSS class'lar (C13) | 🟡 Düşük | JS query + CSS + classList/querySelector/closest/dinamik class string — CSS-CLASS-AUDIT.md çıktısı girdi olacak |
 | P3 | Global constants | 🟢 Minimal | Tek dosya grep-replace |
 | P3 | Function names (★ yok) | 🟢 Minimal | — |
 

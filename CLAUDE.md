@@ -144,6 +144,21 @@ All app state lives under the `APP` namespace object:
 
 ---
 
+## Core Finance Engine (CFE) — Tasarım Kuralı
+
+CFE modülü yazılırken tüm hesaplama fonksiyonları **pure function** olacak:
+
+- `APP.data`'ya veya herhangi bir global state'e doğrudan erişmeyecek
+- Tüm girdiyi parametre olarak alacak
+- Sonucu return edecek
+- Side-effect yok (DOM manipülasyonu yok, localStorage yazma yok, state mutasyonu yok)
+
+Bu kural bütçe hesaplamaları, KDV hesaplamaları, kur dönüşümleri ve limit kontrolleri dahil tüm hesaplama fonksiyonlarını kapsar.
+
+Amaç: CFE tamamlandıktan sonra test harness eklemeyi trivial hale getirmek.
+
+---
+
 ## Naming Refactor Kuralları (henüz uygulanmadı)
 
 Naming envanteri 3 raporda: `NAMING-INVENTORY.md`, `CALLMAP-P0.md`, `7B1-CONSTANTS-DISCOVERY.md`.
