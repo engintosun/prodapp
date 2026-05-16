@@ -1930,38 +1930,41 @@ body {
 .conf-bar { height: 3px; background: var(--bg4); border-radius: 2px; margin-top: 3px; overflow: hidden; }
 .conf-bar-f { height: 100%; border-radius: 2px; }
 
-/* OCR iki-state UI */
-.ocr-state-bar {
+/* OCR sonuç ekranı */
+.ocr-header {
   display: flex; align-items: center; gap: 8px;
-  padding: 9px 12px; border-radius: 12px; margin-bottom: 12px;
-  font-size: 13px; font-weight: 600;
+  padding: 4px 2px 10px;
+  font-size: 13px; color: rgba(255,255,255,.45);
 }
-.ocr-state-ok   { background: rgba(74,222,128,.12); color: #166534; border: 1px solid rgba(74,222,128,.25); }
-.ocr-state-warn  { background: rgba(245,158,11,.1);  color: #92400e; border: 1px solid rgba(245,158,11,.3); }
 .ocr-state-badge {
   font-size: 10px; font-weight: 700; letter-spacing: .4px;
   padding: 2px 8px; border-radius: 20px;
-  background: #F59E0B; color: #fff; margin-left: auto;
+  background: #F59E0B; color: #fff;
 }
 .ocr-cf-wrap {
-  display: flex; align-items: center; gap: 5px; margin-bottom: 3px;
+  display: flex; align-items: center; gap: 5px; margin-bottom: 8px;
 }
 .ocr-cf-track {
   flex: 1; height: 3px; border-radius: 2px;
-  background: rgba(12,10,8,.08);
+  background: rgba(255,255,255,.1);
 }
-.ocr-cf-fill { height: 3px; border-radius: 2px; transition: width .3s, background .3s; }
+.ocr-cf-fill { height: 3px; border-radius: 2px; transition: width .35s, background .35s; }
 .ocr-cf-pct {
-  font-size: 10px; color: rgba(12,10,8,.32);
+  font-size: 10px; color: rgba(255,255,255,.32);
   font-family: var(--mo); white-space: nowrap; min-width: 26px; text-align: right;
 }
-.ocr-lbl-warn { color: #B45309 !important; }
-.ocr-warn-txt {
-  font-size: 10px; color: #B45309; margin-top: 3px; font-weight: 500;
-  display: flex; align-items: center; gap: 4px;
+.ocr-raw {
+  background: var(--bg3); border: 1px solid var(--bo);
+  border-radius: 12px; padding: 12px 14px; margin-bottom: 14px;
+  font-size: 12px; font-family: var(--mo); color: var(--tx2);
+  line-height: 1.8;
 }
-.fgi-warn { border-color: #F59E0B !important; }
-.fgi-err  { border-color: #EF4444 !important; }
+.ocr-lbl-warn { color: #F59E0B !important; }
+.ocr-warn-txt {
+  font-size: 10px; color: #F59E0B; margin-top: 3px; font-weight: 500;
+}
+.fgi-warn { border: 1.5px solid rgba(245,158,11,.5) !important; }
+.fgi-err  { border: 1.5px solid rgba(239,68,68,.55) !important; }
 .ocr-extra-toggle {
   width: 100%; display: flex; justify-content: space-between; align-items: center;
   padding: 10px 14px; border-radius: 12px;
@@ -1981,24 +1984,11 @@ body {
 }
 .sigc.signed { border-color: var(--gr); border-style: solid; }
 
-/* Sesli buton */
+/* Sesli not — inline mic butonu (textarea içinde) */
 .vbtn {
-  width: 100%; padding: 11px;
-  border: 2px dashed var(--bo); border-radius: var(--rs);
-  background: transparent; color: var(--tx2);
-  font-size: 13px; font-family: var(--fn);
-  cursor: pointer; display: flex; align-items: center;
-  justify-content: center; gap: 8px; transition: all .2s;
-  margin-bottom: 10px;
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; padding: 4px; line-height: 0;
   -webkit-tap-highlight-color: transparent;
-}
-.vbtn.rec {
-  border-color: var(--rd); color: var(--rd2);
-  animation: vrec 1s infinite;
-}
-@keyframes vrec {
-  0%,100% { background: transparent; }
-  50% { background: rgba(239,68,68,.06); }
 }
 
 /* ══════════════════════════════
@@ -2704,75 +2694,61 @@ body {
       </div>
       <!-- S2: Sonuç -->
       <div id="ocr-s2" style="display:none">
-        <!-- State bar -->
-        <div class="ocr-state-bar ocr-state-ok" id="ocr-state-bar">
-          <span id="ocr-state-icon">✓</span>
-          <span>OCR Sonucu</span>
+        <!-- Minimal header -->
+        <div class="ocr-header">
+          <span>Belge ile karşılaştırın</span>
           <span class="ocr-state-badge" id="ocr-state-badge" style="display:none">Kontrol gerekli</span>
         </div>
-        <!-- Fiş önizleme (tıklayınca genişler) -->
-        <div style="background:var(--bg3);border:1px solid var(--bo);border-radius:12px;padding:10px;margin-bottom:12px;font-size:11px;font-family:var(--mo);color:var(--tx2);line-height:1.7;max-height:64px;overflow:hidden;cursor:pointer;transition:max-height .25s" id="ocr-prev" onclick="var h=this;h.style.maxHeight=h.style.maxHeight==='none'?'64px':'none'"></div>
-        <!-- Satıcı + confidence bar -->
-        <div class="fg">
-          <div class="ocr-cf-wrap">
-            <div class="ocr-cf-track"><div class="ocr-cf-fill" id="ocr-cf-satici" style="width:90%;background:#4ADE80"></div></div>
-            <span class="ocr-cf-pct" id="ocr-cf-satici-pct">%90</span>
-          </div>
-          <label id="ocr-lbl-satici">Satıcı</label>
-          <input class="fgi" id="f-satici" type="text">
-          <div class="ocr-warn-txt" id="ocr-warn-satici" style="display:none">⚠ Satıcı okunurluğu düşük — kontrol edin</div>
+        <!-- Tek ortalama confidence bar -->
+        <div class="ocr-cf-wrap">
+          <div class="ocr-cf-track"><div class="ocr-cf-fill" id="ocr-cf-avg" style="width:90%;background:#4ADE80"></div></div>
+          <span class="ocr-cf-pct" id="ocr-cf-avg-pct">%90</span>
         </div>
-        <!-- Tutar + KDV row -->
-        <div class="fr2">
-          <div class="fg">
-            <div class="ocr-cf-wrap">
-              <div class="ocr-cf-track"><div class="ocr-cf-fill" id="ocr-cf-tutar" style="width:90%;background:#4ADE80"></div></div>
-              <span class="ocr-cf-pct" id="ocr-cf-tutar-pct">%90</span>
-            </div>
-            <label id="ocr-lbl-tutar">Tutar (₺)</label>
-            <input class="fgi" id="f-tutar" type="text" oninput="checkTransportLimit()">
-            <div class="ocr-warn-txt" id="ocr-warn-tutar" style="display:none">⚠ Tutar okunurluğu düşük — kontrol edin</div>
-          </div>
-          <div class="fg">
-            <div class="ocr-cf-wrap">
-              <div class="ocr-cf-track"><div class="ocr-cf-fill" id="ocr-cf-kdv" style="width:90%;background:#4ADE80"></div></div>
-              <span class="ocr-cf-pct" id="ocr-cf-kdv-pct">%90</span>
-            </div>
-            <label id="ocr-lbl-kdv">KDV</label>
-            <input class="fgi" id="f-kdv" type="text">
-            <div class="ocr-warn-txt" id="ocr-warn-kdv" style="display:none">⚠ KDV okunurluğu düşük — kontrol edin</div>
-          </div>
+        <!-- OCR raw metin bloğu -->
+        <div class="ocr-raw" id="ocr-prev"></div>
+        <!-- Açıklama + inline mikrofon -->
+        <div class="fg" style="position:relative">
+          <label>Açıklama</label>
+          <textarea class="fgi" rows="2" id="f-aciklama" placeholder="Harcama notu..." style="padding-right:38px"></textarea>
+          <button class="vbtn" id="vbtn" onclick="toggleVoice()">
+            <svg id="v-ic" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.38)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          </button>
+          <span id="v-lbl" style="display:none"></span>
         </div>
-        <!-- Açıklama -->
-        <div class="fg"><label>Açıklama</label><textarea class="fgi" rows="2" id="f-aciklama" placeholder="Harcama notu..."></textarea></div>
-        <!-- Sesli not -->
-        <button class="vbtn" id="vbtn" onclick="toggleVoice()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px" id="v-ic"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-          <span id="v-lbl">Sesli Açıklama</span>
-        </button>
         <!-- Diğer alanlar toggle -->
         <button class="ocr-extra-toggle" id="ocr-extra-toggle" onclick="toggleOcrExtra()">
           <span>Diğer alanlar</span>
           <span id="ocr-extra-arrow">▼</span>
         </button>
-        <!-- Ek alanlar (varsayılan kapalı; düşük confidence'ta otomatik açılır) -->
+        <!-- Ek alanlar -->
         <div id="ocr-extra" style="display:none">
+          <!-- Satıcı -->
+          <div class="fg">
+            <label id="ocr-lbl-satici">Satıcı</label>
+            <input class="fgi" id="f-satici" type="text">
+            <div class="ocr-warn-txt" id="ocr-warn-satici" style="display:none">⚠ Satıcı okunurluğu düşük — kontrol edin</div>
+          </div>
+          <!-- Tutar + KDV -->
+          <div class="fr2">
+            <div class="fg">
+              <label id="ocr-lbl-tutar">Tutar (₺)</label>
+              <input class="fgi" id="f-tutar" type="text" oninput="checkTransportLimit()">
+              <div class="ocr-warn-txt" id="ocr-warn-tutar" style="display:none">⚠ Tutar okunurluğu düşük — kontrol edin</div>
+            </div>
+            <div class="fg">
+              <label id="ocr-lbl-kdv">KDV (₺)</label>
+              <input class="fgi" id="f-kdv" type="text">
+              <div class="ocr-warn-txt" id="ocr-warn-kdv" style="display:none">⚠ KDV okunurluğu düşük — kontrol edin</div>
+            </div>
+          </div>
           <!-- Tarih + Fiş No -->
           <div class="fr2">
             <div class="fg">
-              <div class="ocr-cf-wrap">
-                <div class="ocr-cf-track"><div class="ocr-cf-fill" id="ocr-cf-tarih" style="width:90%;background:#4ADE80"></div></div>
-                <span class="ocr-cf-pct" id="ocr-cf-tarih-pct">%90</span>
-              </div>
               <label id="ocr-lbl-tarih">Tarih</label>
               <input class="fgi" id="f-tarih" type="date">
               <div class="ocr-warn-txt" id="ocr-warn-tarih" style="display:none">⚠ Tarih okunurluğu düşük — kontrol edin</div>
             </div>
             <div class="fg">
-              <div class="ocr-cf-wrap">
-                <div class="ocr-cf-track"><div class="ocr-cf-fill" id="ocr-cf-fisno" style="width:90%;background:#4ADE80"></div></div>
-                <span class="ocr-cf-pct" id="ocr-cf-fisno-pct">%90</span>
-              </div>
               <label id="ocr-lbl-fisno">Fiş No</label>
               <input class="fgi" id="f-fisno" type="text">
               <div class="ocr-warn-txt" id="ocr-warn-fisno" style="display:none">⚠ Fiş no okunurluğu düşük — kontrol edin</div>

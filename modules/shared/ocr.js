@@ -155,30 +155,36 @@ function _confColor(pct) {
 
 function _applyConfidence(conf) {
   var threshold = (window.APP && APP.constants && APP.constants.OCR_CONFIDENCE_THRESHOLD) || 70;
+
+  // Ortalama confidence hesapla → tek bar
+  var vals = Object.values(conf);
+  var avg  = vals.length ? Math.round(vals.reduce(function(a, b) { return a + b; }, 0) / vals.length) : 90;
+  var avgClr = _confColor(avg);
+  var avgFill = document.getElementById('ocr-cf-avg');
+  var avgPct  = document.getElementById('ocr-cf-avg-pct');
+  if (avgFill) { avgFill.style.width = avg + '%'; avgFill.style.background = avgClr; }
+  if (avgPct)  avgPct.textContent = '%' + avg;
+
+  // Per-field uyarılar (ocr-extra içindeki alanlar için)
   var fields = [
-    { key:'seller',    fill:'ocr-cf-satici', pct:'ocr-cf-satici-pct', lbl:'ocr-lbl-satici', inp:'f-satici', warn:'ocr-warn-satici',  lblText:'Satıcı',    lblWarn:'⚠ Satıcı'    },
-    { key:'amount',    fill:'ocr-cf-tutar',  pct:'ocr-cf-tutar-pct',  lbl:'ocr-lbl-tutar',  inp:'f-tutar',  warn:'ocr-warn-tutar',   lblText:'Tutar (₺)', lblWarn:'⚠ Tutar (₺)' },
-    { key:'tax',       fill:'ocr-cf-kdv',    pct:'ocr-cf-kdv-pct',    lbl:'ocr-lbl-kdv',    inp:'f-kdv',    warn:'ocr-warn-kdv',     lblText:'KDV',       lblWarn:'⚠ KDV'       },
-    { key:'date',      fill:'ocr-cf-tarih',  pct:'ocr-cf-tarih-pct',  lbl:'ocr-lbl-tarih',  inp:'f-tarih',  warn:'ocr-warn-tarih',   lblText:'Tarih',     lblWarn:'⚠ Tarih'     },
-    { key:'receiptNo', fill:'ocr-cf-fisno',  pct:'ocr-cf-fisno-pct',  lbl:'ocr-lbl-fisno',  inp:'f-fisno',  warn:'ocr-warn-fisno',   lblText:'Fiş No',    lblWarn:'⚠ Fiş No'    }
+    { key:'seller',    lbl:'ocr-lbl-satici', inp:'f-satici', warn:'ocr-warn-satici',  lblText:'Satıcı',    lblWarn:'⚠ Satıcı'    },
+    { key:'amount',    lbl:'ocr-lbl-tutar',  inp:'f-tutar',  warn:'ocr-warn-tutar',   lblText:'Tutar (₺)', lblWarn:'⚠ Tutar (₺)' },
+    { key:'tax',       lbl:'ocr-lbl-kdv',    inp:'f-kdv',    warn:'ocr-warn-kdv',     lblText:'KDV (₺)',   lblWarn:'⚠ KDV (₺)'   },
+    { key:'date',      lbl:'ocr-lbl-tarih',  inp:'f-tarih',  warn:'ocr-warn-tarih',   lblText:'Tarih',     lblWarn:'⚠ Tarih'     },
+    { key:'receiptNo', lbl:'ocr-lbl-fisno',  inp:'f-fisno',  warn:'ocr-warn-fisno',   lblText:'Fiş No',    lblWarn:'⚠ Fiş No'    }
   ];
 
   var hasLow = false;
 
   fields.forEach(function(fd) {
-    var pct    = conf[fd.key] != null ? conf[fd.key] : 90;
-    var clr    = _confColor(pct);
-    var isLow  = pct < threshold;
+    var pct   = conf[fd.key] != null ? conf[fd.key] : 90;
+    var isLow = pct < threshold;
     if (isLow) hasLow = true;
 
-    var fillEl = document.getElementById(fd.fill);
-    var pctEl  = document.getElementById(fd.pct);
     var lblEl  = document.getElementById(fd.lbl);
     var inpEl  = document.getElementById(fd.inp);
     var warnEl = document.getElementById(fd.warn);
 
-    if (fillEl) { fillEl.style.width = pct + '%'; fillEl.style.background = clr; }
-    if (pctEl)  pctEl.textContent = '%' + pct;
     if (lblEl)  { lblEl.textContent = isLow ? fd.lblWarn : fd.lblText; lblEl.className = isLow ? 'ocr-lbl-warn' : ''; }
     if (inpEl)  {
       inpEl.className = inpEl.className.replace(/\s*fgi-warn|\s*fgi-err/g, '').trim();
@@ -188,27 +194,19 @@ function _applyConfidence(conf) {
     if (warnEl) warnEl.style.display = isLow ? 'block' : 'none';
   });
 
-  var stateBar   = document.getElementById('ocr-state-bar');
-  var stateIcon  = document.getElementById('ocr-state-icon');
   var stateBadge = document.getElementById('ocr-state-badge');
   var extraEl    = document.getElementById('ocr-extra');
   var arrowEl    = document.getElementById('ocr-extra-arrow');
   var titleEl    = document.getElementById('ocr-mtitle');
 
+  if (stateBadge) stateBadge.style.display = hasLow ? 'inline' : 'none';
+  if (titleEl)    titleEl.textContent = '';
   if (hasLow) {
-    if (stateBar)   { stateBar.className = 'ocr-state-bar ocr-state-warn'; }
-    if (stateIcon)  stateIcon.textContent = '⚠';
-    if (stateBadge) stateBadge.style.display = 'inline';
-    if (titleEl)    titleEl.textContent = '⚠ OCR Sonucu';
-    if (extraEl)    extraEl.style.display = 'block';
-    if (arrowEl)    arrowEl.textContent = '▲';
+    if (extraEl) extraEl.style.display = 'block';
+    if (arrowEl) arrowEl.textContent = '▲';
   } else {
-    if (stateBar)   { stateBar.className = 'ocr-state-bar ocr-state-ok'; }
-    if (stateIcon)  stateIcon.textContent = '✓';
-    if (stateBadge) stateBadge.style.display = 'none';
-    if (titleEl)    titleEl.textContent = '✅ OCR Sonucu';
-    if (extraEl)    extraEl.style.display = 'none';
-    if (arrowEl)    arrowEl.textContent = '▼';
+    if (extraEl) extraEl.style.display = 'none';
+    if (arrowEl) arrowEl.textContent = '▼';
   }
 }
 
