@@ -80,6 +80,7 @@
 | E1 | Yapımcı rolü eklenmesi | ❓ Karar bekliyor | Bütçe oluşturma yetkisi, Muhasebe üstü denetim. Supabase auth ile birlikte netleşir |
 | E2 | Bütçe oluşturma modülü | ❓ Karar alındı, uygulama Supabase sonrası | Yapımcı/uyg.yapımcı oluşturur, muhasebeye havale |
 | E3 | PDF/dosya fatura yükleme | ❓ Faz 1 ek özellik | "Galeri" → "Galeri/Dosya", e-arşiv/banka dekontu/voucher |
+| E4 | "Beni hatırla" / session persistence | ❓ Supabase Auth ile birlikte | JWT session — token geçerliyse login atlanır, doğrudan proje seçimine düşer. Demo'da yok, Supabase'de implemente edilecek. |
 
 ---
 
