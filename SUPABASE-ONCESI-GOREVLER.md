@@ -111,6 +111,7 @@
 | G11 | ARCHITECTURE.md eski key kontrolü + güncelleme | ❓ Batch C sonrası toplu | |
 | G12 | WORKFLOWS.md eski key kontrolü + güncelleme | ❓ Batch C sonrası toplu | |
 | G13 | BATCH-C-SCAN-REPORT.md güncelleme (tamamlanan adımlar) | ❓ Batch C sonrası | |
+| G14 | docs/PRODAPP-TASARIM-KARARLARI.md oluşturuldu | ✅ Tamamlandı | Tüm tasarım kararları tek dosyada — giriş akışı, saha ekranı, OCR, iade, i18n |
 
 ---
 
