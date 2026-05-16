@@ -1937,10 +1937,22 @@ body {
   background: #F59E0B; color: #fff;
 }
 .ocr-conf-row {
-  font-size: 11px; font-family: var(--mo);
-  color: rgba(255,255,255,.38);
-  display: flex; align-items: center; gap: 5px;
-  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 0;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  margin-bottom: 10px;
+  font-size: 10px; font-weight: 500; font-family: var(--fn);
+  color: rgba(255,255,255,.3);
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.ocr-conf-row > span > span {
+  font-size: 13px; font-weight: 600; font-family: var(--mo);
+  text-transform: none; letter-spacing: 0;
+}
+.ocr-conf-row > span:nth-child(2n) {
+  color: rgba(255,255,255,.15);
+  font-size: 10px; margin: 0 10px;
+  text-transform: none; letter-spacing: 0;
 }
 .ocr-raw {
   background: var(--bg3); border: 1px solid var(--bo);
