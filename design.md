@@ -1,5 +1,7 @@
 # PRODAPP — Design System
 
+**Son güncelleme:** 17 Mayıs 2026
+
 **Amaç:** Bu dosya PRODAPP'in görsel kimliğinin tek kaynağıdır. Tüm CSS
 değişiklikleri, yeni bileşenler ve UI kararları bu dosyayı referans alır.
 
@@ -43,14 +45,14 @@ değişiklikleri, yeni bileşenler ve UI kararları bu dosyayı referans alır.
 `SD_KAT_CLR` objesi (CSS token) ve `_katRenkHex` (PDF için hex):
 
 ```
-Yakıt     : var(--am)   / #F59E0B   (sarı)
-Yiyecek   : var(--gr)   / #22C55E   (yeşil)
-Ekipman   : var(--bl)   / #3B82F6   (mavi)
-Sanat     : var(--ac)   / #E8962E   (turuncu)
-Ulaşım    : var(--bl2)  / #60A5FA   (açık mavi)
-Konaklama : var(--bl)   / #8B5CF6   (mor — PDF'te farklı)
-Kiralama  : var(--am2)  / #F97316   (turuncu-sarı)
-Diğer     : var(--tx3)  / #64748B   (gri)
+fuel          : var(--am)   / #F59E0B   (sarı)
+food          : var(--gr)   / #22C55E   (yeşil)
+equipment     : var(--bl)   / #3B82F6   (mavi)
+art           : var(--ac)   / #E8962E   (turuncu)
+transport     : var(--bl2)  / #60A5FA   (açık mavi)
+accommodation : var(--bl)   / #8B5CF6   (mor — PDF'te farklı)
+rental        : var(--am2)  / #F97316   (turuncu-sarı)
+misc          : var(--tx3)  / #64748B   (gri)
 ```
 
 ---
@@ -65,9 +67,9 @@ Sayı/mono : 'DM Mono', monospace               → var(--mo)
 
 ### Boyut ölçeği
 ```
-Başlık 1  : 24px   — büyük bütçe rakamı (sd-butce-total, font-weight 800)
+Başlık 1  : 24px   — büyük bütçe rakamı (dtl-butce-total, font-weight 800)
 Başlık 2  : 22px   — login başlığı (ltitle, font-weight 800)
-Gövde     : 14px   — body default, fgi input, btn, fis-name
+Gövde     : 14px   — body default, fgi input, btn, rcpt-name
 Küçük     : 13px   — meta bilgiler, arama satırı, btn-sm, toast
 Mini      : 11px   — uppercase etiketler, fg label, tag, durum rozeti
 Micro     : 10px   — en küçük yüzde/sayaç etiketi, bütçe stat alt yazısı
@@ -147,13 +149,13 @@ Active        : transform: scale(.97)
 Varyantlar    : .rc.warn (border var(--am)), .rc.err (border var(--rd)), .rc.blgsz (border var(--bl))
 ```
 
-### Fiş liste satırı (`.fis-row`)
+### Fiş liste satırı (`.rcpt-row`)
 ```
 Padding       : 12px 13px
 Gap           : 11px
 Border-bottom : 1px solid var(--bo)
 Active        : background: var(--bg3)
-İkon (.fis-ic): 38×38px, border-radius 8px, bg var(--bg3)
+İkon (.rcpt-ic): 38×38px, border-radius 8px, bg var(--bg3)
 Küçük resim   : 38×48px, border-radius 7px, border 1.5px solid var(--bo)
 ```
 
@@ -184,7 +186,7 @@ Küçük resim   : 38×48px, border-radius 7px, border 1.5px solid var(--bo)
   font-size: 12px, font-weight: 700
   Fotoğraflı: <img> object-fit: cover, border-radius: 50%
 
-.sd-hd-av / .sa-hd-av (dept/muhasebe, köşeli):
+.dtl-hd-av / .sa-hd-av (dept/muhasebe, köşeli):
   38×38px, border-radius: 11px
   background: var(--ac), color: #0C0A08
   font-size: 12px, font-weight: 800
@@ -200,13 +202,13 @@ font-size    : 10px; font-weight: 700; color: #fff
 display      : none (varsayılan) — JS ile gösterilir
 ```
 
-### Durum noktaları (`.rc-dot`, `.fis-dot`, `.sd-fis-dot`)
+### Durum noktaları (`.rc-dot`, `.rcpt-dot`, `.dtl-rcpt-dot`)
 ```
 7×7px (veya 8×8px dept), border-radius: 50%
 Renk JS tarafından inline style ile atanır:
-  onaylandi   → var(--gr)
-  bekleyen    → var(--am)
-  reddedildi  → var(--rd)
+  approved    → var(--gr)
+  pending     → var(--am)
+  rejected    → var(--rd)
 ```
 
 ### Progress bar
@@ -215,11 +217,11 @@ Saha bütçe (.su-bw-track):
   height: 5px; background: var(--bg3); border-radius: 3px
   Dolgu: transition: width .3s
 
-Dept bütçe (.sd-butce-bar-wrap):
+Dept bütçe (.dtl-butce-bar-wrap):
   height: 8px; background: var(--bg3); border-radius: 4px
   Dolgu: transition: width .4s ease
 
-Kategori barı (.sd-kat-bar-wrap / .su-kat-bar):
+Kategori barı (.dtl-kat-bar-wrap / .su-kat-bar):
   height: 5px; background: var(--bg3); border-radius: 3px
   Dolgu: transition: width .3s
 ```

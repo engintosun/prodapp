@@ -1,6 +1,6 @@
 # PRODAPP — Mali İş Akışları
 
-**Son güncelleme:** 14 Mayıs 2026  
+**Son güncelleme:** 17 Mayıs 2026  
 **Kaynak:** index.html + SCHEMA.md
 
 Bu doküman mali işlem akışlarını tanımlar. Her akış: kim tetikler, hangi
@@ -40,7 +40,7 @@ Her akış şu formatta yazılır:
 
 **📞 FONKSİYON ZİNCİRİ:**
 - `submitOCR()` — satır 5160
-- → `_addToDeptBekleyen(satici, kat, tutar, false, '', [], entry.id)` — satır 5609
+- → `_addToDeptPending(satici, kat, tutar, false, '', [], entry.id)` — satır 5609
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
 - `APP.data.receipts`: unshift (yeni fiş, `durum='dept-pending'`)
@@ -60,7 +60,7 @@ Her akış şu formatta yazılır:
 
 **📞 FONKSİYON ZİNCİRİ:**
 - `submitBelgesiz()` — satır 7097
-- → `_addToDeptBekleyen('Belgesiz Harcama', kat, tutar, true, aciklama, fotos, fisId)` — satır 5609
+- → `_addToDeptPending('Belgesiz Harcama', kat, tutar, true, aciklama, fotos, fisId)` — satır 5609
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
 - `APP.data.receipts`: unshift (`durum='dept-pending'`, `belgesiz:true`)
@@ -78,7 +78,7 @@ Her akış şu formatta yazılır:
 **🟢 TETİKLEYİCİ:** Dept kullanıcısı bekleyen fişin üzerindeki onay butonuna tıklar
 
 **📞 FONKSİYON ZİNCİRİ:**
-- `deptOnayla(id)` — satır 6779
+- `deptApprove(id)` — satır 6779
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
 - `APP.data.deptPending`: splice (fişi çıkar)
@@ -100,7 +100,7 @@ Her akış şu formatta yazılır:
 **🟢 TETİKLEYİCİ:** Dept kullanıcısı çoklu checkbox seçer → "Seçilenleri Onayla"
 
 **📞 FONKSİYON ZİNCİRİ:**
-- `deptOnaylaSecili()` — satır 5931
+- `deptApproveSelected()` — satır 5931
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:** 2A ile aynı, `APP.ui.deptSelected`'teki her seçili fiş için döngü (her fiş için `receipts[i].durum: 'dept-pending' → 'acc-pending'` dahil)
 
@@ -116,7 +116,7 @@ Her akış şu formatta yazılır:
 **🟢 TETİKLEYİCİ:** Dept kullanıcısı red butonuna tıklar
 
 **📞 FONKSİYON ZİNCİRİ:**
-- `deptReddet(id)` — satır 6827
+- `deptReject(id)` — satır 6827
 - `prompt()` ile red nedeni alınır (zorunlu — boşsa iptal)
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
@@ -139,7 +139,7 @@ Her akış şu formatta yazılır:
 **🟢 TETİKLEYİCİ:** Dept kullanıcısı çoklu checkbox → "Seçilenleri Reddet"
 
 **📞 FONKSİYON ZİNCİRİ:**
-- `deptReddetSecili()` — satır 5981
+- `deptRejectSelected()` — satır 5981
 - `prompt()` tek seferde (aynı red nedeni tüm seçimlere uygulanır)
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:** 3A ile aynı, her seçili fiş için döngü (`receipts[i].durum = 'rejected'` ve `receipts[i].uyari = redNedeni` dahil)
@@ -180,7 +180,7 @@ Her akış şu formatta yazılır:
 **📞 FONKSİYON ZİNCİRİ:**
 - `openKismi('dept', id)` — modal açar, canlı red tutar hesabı
 - `kismiOnayla()` — modal'dan parametre alır
-- `deptKismi(id, onayTutar, redNedeni)` — gerçek iş
+- `deptPartial(id, onayTutar, redNedeni)` — gerçek iş
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
 - `APP.data.receipts[parent].durum`: `'split'`
@@ -286,7 +286,7 @@ Her akış şu formatta yazılır:
 **🟢 TETİKLEYİCİ:** Dept kullanıcısı avans talebini onaylar
 
 **📞 FONKSİYON ZİNCİRİ:**
-- `deptAvansOnayla(id)` — satır 6860
+- `deptAdvanceApprove(id)` — satır 6860
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
 - `APP.data.deptAdvances`: splice (talebi çıkar)
@@ -302,7 +302,7 @@ Her akış şu formatta yazılır:
 **🟢 TETİKLEYİCİ:** Dept kullanıcısı avans talebini reddeder
 
 **📞 FONKSİYON ZİNCİRİ:**
-- `deptAvansReddet(id)` — satır 6892
+- `deptAdvanceReject(id)` — satır 6892
 - → `_avRedPending = { id, kaynak:'dept' }` yazar
 - → `openM('md-av-red')` modal açılır
 - → `avansRedOnay()` — satır 5423 (`kaynak:'dept'` dalı)
@@ -431,10 +431,10 @@ Asimetrik kapanış modeli: saha/dept için tam kapanış, muhasebe için soft k
 **🟢 TETİKLEYİCİ:** Muhasebe kullanıcısı Dönem Yönetimi şeridinde "+ Yeni Dönem" butonuna tıklar
 
 **📞 FONKSİYON ZİNCİRİ:**
-- `yeniDonem()` — satır 7648
+- `newPeriod()` — satır 7648
 - → Aktif dönem varsa: sıkı kapanış kontrolü (kiralama hariç bekleyen sayısı)
   - Bekleyen > 0: `confirm()` → `_periodCloseModal(aktif.id)` açılır
-  - Bekleyen = 0: `confirm()` → `donemKapa(aktif.id, sebep)` çalışır, yeni dönem açılır
+  - Bekleyen = 0: `confirm()` → `closePeriod(aktif.id, sebep)` çalışır, yeni dönem açılır
 - → Aktif dönem yoksa: doğrudan yeni dönem oluşturulur
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
@@ -456,8 +456,8 @@ Asimetrik kapanış modeli: saha/dept için tam kapanış, muhasebe için soft k
 
 **📞 FONKSİYON ZİNCİRİ:**
 - `_periodCloseModal(donemId)` → modal açar (bekleyen sayısı gösterir)
-- `_dnKapamaUygula()` → `donemKapa(donemId, sebep)` çağırır
-- `donemKapa(donemId, sebep)`:
+- `_dnKapamaUygula()` → `closePeriod(donemId, sebep)` çağırır
+- `closePeriod(donemId, sebep)`:
   1. Rol kontrolü (sadece muhasebe)
   2. Kiralama hariç bekleyen varsa `notif` ile engel + return
   3. Kiralama bekleyen varsa `confirm()` — kullanıcı kararı
@@ -530,7 +530,7 @@ Asimetrik kapanış modeli: saha/dept için tam kapanış, muhasebe için soft k
 **📞 FONKSİYON ZİNCİRİ:**
 - `openIstisnaIzniModal(donemId)` — modal açar, deptCrew dropdown doldurur
 - Muhasebe formu doldurur (kişi, sebep, süre, max adet/tutar) → "İzin Ver"
-- `donemIstisnaIzniVer()` — validasyon, push, bildirim, saveAppData
+- `grantPeriodException()` — validasyon, push, bildirim, saveAppData
 - **Saha kullanıcısı fişi eklerken:** `_addToDeptPending()` → `_activeException()` + `_isExceptionValid()` → doğrudan accPending'e yönlendir
 
 **💾 KOLEKSIYON GÜNCELLEMELERİ:**
@@ -548,7 +548,7 @@ Asimetrik kapanış modeli: saha/dept için tam kapanış, muhasebe için soft k
 - Dept ATLANIR — fiş doğrudan accPending'e gider
 - gecIslem:true ve istisnaIzniId receipts + accPending kayıtlarına eklenir (silinemez)
 - Süre/adet/tutar dolunca izin otomatik kapanır, sonraki fiş girişi engellenir
-- İptal: muhasebe `istisnaIzniIptal(id)` ile iptal edebilir → renderDonem yenilenir
+- İptal: muhasebe `cancelException(id)` ile iptal edebilir → renderDonem yenilenir
 
 **Durum:** Tamamlandı (30.04.2026)
 
