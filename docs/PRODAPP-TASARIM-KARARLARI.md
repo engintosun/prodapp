@@ -93,38 +93,36 @@ Oturum açık: Proje seçimi → Ana ekran (veya tek projeliyse direkt ana ekran
 
 ### 3.2 Saha Ekranı — OCR Sonuç Formu
 
-**State 1 — Yüksek Confidence (varsayılan görünüm, üstten alta):**
-1. "Belge ile karşılaştırın" — ince metin, minimal, ikon yok (13px, soluk renk)
-2. Tek confidence bar — OCR metin bloğunun üstünde (3px, border-radius 2px, doluluk = genel confidence ortalaması, sağ ucunda yüzde yazısı 10px)
-   - Renk: %80+ yeşil (#4ADE80), %60-79 sarı (#F59E0B), %60 altı kırmızı (#EF4444)
-3. OCR raw metin bloğu — fişten okunan ham metin (font-size 16px, başlık bold 17px)
-   - Fiş thumbnail/önizleme YOK — fiş zaten kullanıcının elinde, OCR metni yeterli
-4. Açıklama alanı — label satırında sağ köşede inline mikrofon ikonu (Lucide mic, 18px)
-   - Ayrı sesli not butonu YOK
-   - "Sesli Açıklama" yazısı YOK — sadece ikon
-5. "Diğer alanlar ▼" — kapalı, tıklayınca açılır
-6. İptal + Onaya Gönder butonları
+**Header:** "Belge ile karşılaştırın" (× butonunun solunda, ince metin)
+- State 2'de yanında "Kontrol gerekli" badge
 
-**"Diğer alanlar" içeriği (açılınca, sırasıyla):**
-- Satıcı (düzenlenebilir text input)
+**Confidence göstergesi (OCR metin bloğunun üstünde):**
+- 3 alan yüzdesi yan yana: `Satıcı %92 · Tutar %87 · KDV %84`
+- Label: 10px, weight 500, rgba(255,255,255,0.3), uppercase, letter-spacing 1px
+- Yüzde: 13px, weight 600, DM Mono, confidence renginde
+- Ayraç (·): rgba(255,255,255,0.15)
+- Renk: %80+ yeşil (#4ADE80), %60-79 sarı (#F59E0B), %60↓ kırmızı (#EF4444)
+- Alt çizgi: 1px solid rgba(255,255,255,0.06)
+
+**OCR raw metin bloğu:** Fişten okunan ham metin (16px, başlık bold 17px). Fiş thumbnail YOK.
+
+**Açıklama alanı:** Label satırında sağ köşede inline mikrofon ikonu (Lucide mic, 18px). Ayrı sesli not butonu YOK.
+
+**"Diğer alanlar" dropdown (kapalı varsayılan):**
+- Satıcı
 - Tutar (₺) + KDV (₺) yan yana
 - Tarih + Fiş No yan yana
-- Kategori (dropdown)
-- GİB e-Fatura Doğrula
+- Kategori
+- GİB e-Fatura Doğrula (kompakt buton-satır: label solda, "Doğrula →" sağda; doğrulandıysa "✓ Doğrulandı" yeşil badge)
 - Dijital İmza
 
-**State 2 — Düşük Confidence (herhangi bir alan < 70):**
-- Aynı yapı + "Kontrol gerekli" badge ("Belge ile karşılaştırın" yanında, sarı pill)
-- Confidence bar sarı veya kırmızı
-- "Diğer alanlar" otomatik açık
-- Düşük confidence'lı alanların label'ı sarı (#F59E0B) + ⚠ ikonu
-- Düşük confidence'lı alanların border'ı sarı (1.5px solid rgba(245,158,11,0.4))
-- Alan altında uyarı metni: "Tutar okunurluğu düşük — kontrol edin" gibi
+**Alt:** İptal + Onaya Gönder
 
-**Confidence hesaplama:**
-- Genel confidence = tüm alan confidence değerlerinin ortalaması
-- constants.js'teki OCR_CONFIDENCE_THRESHOLD (70) ve OCR_CONFIDENCE_COLORS değişmez
-- State tetikleme: herhangi bir alan < 70 → State 2
+**State 2 (herhangi alan < 70):**
+- "Kontrol gerekli" badge
+- Confidence yüzdeleri sarı/kırmızı
+- "Diğer alanlar" otomatik açık
+- Düşük alanlarda: sarı label + ⚠ ikon + sarı border + uyarı metni
 
 ### 3.3 Muhasebe Ekranı — OCR Verileri
 - Tüm confidence verileri her zaman görünür (Faz 2'de renk kodlu bantlar + yüzdeler)
@@ -211,7 +209,7 @@ Oturum açık: Proje seçimi → Ana ekran (veya tek projeliyse direkt ana ekran
 - [x] Dil seçimi ekranı tasarımı
 - [x] Saha ana ekran layout (light tema, v6d)
 - [x] OCR sonuç ekranı yapısal kararlar
-- [x] OCR sonuç ekranı implementasyonu (State 1 + State 2, confidence bar, inline mic)
+- [x] OCR sonuç ekranı implementasyonu (commit 226d4ae, feacdd2)
 
 ### Sıradaki
 1. OCR sonuç ekranı görsel tasarım
