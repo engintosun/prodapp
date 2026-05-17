@@ -461,7 +461,7 @@ function _renderAccDeptHistory(deptId) {
     var isOnay = g.durum === 'onay';
     var isInc  = g.durum === 'inc';
     var dotClr = isOnay ? 'var(--gr)' : (isInc ? 'var(--am)' : 'var(--rd)');
-    var tag    = isOnay ? 'Onaylandı' : (isInc ? 'İnceleniyor' : 'rejected');
+    var tag    = isOnay ? 'Onaylandı' : (isInc ? 'İnceleniyor' : 'Reddedildi');
     var tagClr = isOnay ? 'var(--gr2)' : (isInc ? 'var(--am2)' : 'var(--rd2)');
     return '<div class="adept-gc-row">' +
       '<div class="adept-gc-dot" style="background:' + dotClr + '"></div>' +
@@ -845,7 +845,7 @@ export function renderAccSuspicion() {
   var html = '<div style="font-size:12px;color:var(--tx3);margin-bottom:12px">Otomatik olarak tespit edilen anormal harcamalar. İnceleyip onaylayabilir veya reddedebilirsiniz.</div>';
   html += APP.data.accSuspicion.map(function(f) {
     var tagCls = f.durum === 'bek' ? 'sa-suphe-tag-bek' : (f.durum === 'inc' ? 'sa-suphe-tag-inc' : 'sa-suphe-tag-red');
-    var tagTxt = f.durum === 'bek' ? 'Beklemede' : (f.durum === 'inc' ? 'İnceleniyor' : (f.durum === 'ok' ? 'Temiz' : 'rejected'));
+    var tagTxt = f.durum === 'bek' ? 'Beklemede' : (f.durum === 'inc' ? 'İnceleniyor' : (f.durum === 'ok' ? 'Temiz' : 'Reddedildi'));
     return '<div class="sa-suphe-card">' +
       '<div class="sa-suphe-hd">' +
         '<div><div class="sa-suphe-kisi">' + f.uye + ' <span style="font-size:11px;color:var(--tx3)">· ' + f.dept + '</span></div></div>' +
@@ -899,7 +899,7 @@ function _reportReceiptRows(liste) {
   if (!liste.length) return '<div style="text-align:center;padding:14px 0;color:var(--tx3);font-size:12px">Kayıt bulunamadı</div>';
   return liste.map(function(f) {
     var durCls = f.durum === 'onay' ? 'sa-fis-dur-on' : (f.durum === 'red' ? 'sa-fis-dur-red' : (f.durum === 'inc' ? 'sa-fis-dur-inc' : 'sa-fis-dur-bek'));
-    var durTxt = { onay:'Onaylandı', red:'rejected', inc:'İnceleniyor', bek:'Bekleyen' }[f.durum] || f.durum;
+    var durTxt = { onay:'Onaylandı', red:'Reddedildi', inc:'İnceleniyor', bek:'Bekleyen' }[f.durum] || f.durum;
     var uyWarn = f.uyari ? ' · <span style="color:var(--am2)">' + f.uyari + '</span>' : '';
     return '<div class="sa-fis-item">' +
       '<div class="sa-fis-ini">' + f.ini + '</div>' +
