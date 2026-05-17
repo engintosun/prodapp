@@ -53,14 +53,13 @@ Mevcut tüm demo verisi (`USERS`, `PROJS`, `DONEMLER`, `DATA`, `FIS_DEMO`) ileri
 
 Uygulama iki katmanlı:
 
-**Aktif katman — `index.html` (~11077 satır):**
-1. **CSS** (`<style>` block, lines ~11–3346) — all styles inline, organized by screen with `/* ══ SECTION ══ */` banner comments.
-2. **HTML** (lines ~3346–3415) — thin shell; most UI is rendered via JS `innerHTML`.
-3. **JavaScript** (`<script>` block, lines ~3415–11060) — organized by feature with `/* ═══ SECTION ═══ */` banners. **Bu blok tüm çalışan kodu içeriyor.**
-4. **Module entry** (`<script type="module">`, satır ~11062) — sadece import + console.log; şu an pasif.
+**Aktif katman — `index.html` (~5300 satır):**
+1. **CSS** (`<style>` block) — all styles inline, organized by screen with `/* ══ SECTION ══ */` banner comments.
+2. **HTML** — thin shell; most UI is rendered via JS `innerHTML`.
+3. **Expose bloğu** (`<script type="module">`) — import satırları + ~187 `window.X = X` expose satırı.
 
-**Modül katmanı — `modules/` (14 dosya, 6167 satır — şu an dead code):**
-Adım 1–7A kopyalama aşaması tamamlandı. 7B Strategy B uygulanana kadar bu dosyalar çalışmıyor — sadece `state.js` aktif (`window.APP` yazıyor). Detay: docs/7B-SCOPE-DISCOVERY.md.
+**Modül katmanı — `modules/` (14 dosya, ~6200+ satır — canonical kaynak):**
+7B Strategy B tamamlandı. Modüller aktif ve çalışıyor. index.html sadece CSS + HTML shell + expose bloğu içeriyor. Marka + sohbet kodu da modüle taşındı (7B.1).
 
 ### Screen System
 
@@ -124,7 +123,7 @@ All app state lives under the `APP` namespace object:
 
 ---
 
-## Modülerleşme Durumu (12 Mayıs 2026)
+## Modülerleşme Durumu (17 Mayıs 2026)
 
 **Şu anki durum:** 7B Strategy B tamamlandı. Modüller aktif kaynak. index.html ~5600 satır (CSS + HTML + expose bloğu + marka/sohbet kodu). 14 modül dosyası çalışıyor.
 
@@ -172,7 +171,7 @@ Naming envanteri 3 raporda: `NAMING-INVENTORY.md`, `CALLMAP-P0.md`, `7B1-CONSTAN
 | `durum` | 5 obje tipinde farklı value setleri (fis/donem/istisna/avans/accSuphe) |
 | `kat` | 12 yapıda eş zamanlı değişmeli (KAT_IC, SD_KAT_CLR, katLimit, dropdown option value'ları...) |
 
-**Sektörel terim kararları alınmadan refactor başlatılmaz** — 6 karar STATUS.md'de bekliyor.
+**Sektörel terim kararları alındı** (13 Mayıs 2026): user→crew, yapim→production, Yiyecek→food, simGIB kalacak, Konaklama→accommodation, Diger→misc.
 
 ---
 

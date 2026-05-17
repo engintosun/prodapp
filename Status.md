@@ -1,10 +1,10 @@
 # PRODAPP — Durum Raporu
 
-**Son güncelleme:** 14 Mayıs 2026
+**Son güncelleme:** 17 Mayıs 2026
 **Aktif sürüm:** v8.x (canlı)
 **Repo:** https://github.com/engintosun/prodapp
 **Deploy:** https://engintosun.github.io/prodapp/
-**Son commit:** c042148 — refactor: APP.cache key rename (B3) — 8 key Türkçe>İngilizce
+**Son commit:** 925389f — fix(ocr,muhasebe): match OCR title color to labels + rejected→Reddedildi display text
 
 ---
 
@@ -62,6 +62,9 @@
 - [x] Ulaşım km bazlı tutar denetimi
 - [x] OCR animasyonu (2.6sn, 4 adım) + güven skoru
 - [x] GİB karekod mock animasyonu (simGIB, 1.1sn)
+- [x] OCR sonuç ekranı implementasyonu (confidence bars, two-state UI, per-field confidence, GİB button)
+- [x] OCR confidence tipografi (label/yüzde/ayraç boyut+renk)
+- [x] OCR kart formatı (3 kart, vurgulu metin bloğu, eşit butonlar)
 
 ### Raporlar & Dashboard
 - [x] Muhasebe raporlar canlı (personel + dept)
@@ -85,6 +88,12 @@
 - [x] Mobile viewport 100dvh
 - [x] Kullanıcı avatar fotoğraf upload (Canvas 256x256 + localStorage)
 - [x] Marka ayarları — şirket + proje ad/logo (PDF başlığına yansır)
+- [x] Saha rejected → "Reddedildi" çevirisi (saha.js + muhasebe.js)
+- [x] OCR helper text temizliği ("tara veya uzun bas", "seç veya vazgeç", "Galeri veya belgesiz için basılı tut")
+- [x] Özel Belgeler bloğu — fiş listesi altına, Avans üstüne taşındı
+- [x] Light tema düzeltmeleri (alt nav, export dropdown, "Belge ile karşılaştırın" okunurluk)
+- [x] Export menü — ikon + metin (PDF/Excel/CSV/Görsel), toggle bug fix
+- [x] OCR title rengi — diğer label'larla eşitlendi (--tx3 → --tx2)
 
 ### Altyapı
 - [x] APP namespace refactor
@@ -161,7 +170,7 @@
 3. ~~Naming Batch C4 — sohbet tip enum rename (bireysel>direct, grup>group + migration)~~ ✅ (14 Mayıs 2026)
 4. ~~Naming Batch C5 — kira/dönem enum rename (aktif>active, gec>overdue, yak>upcoming, iade>returned + CSS sync + migration)~~ ✅ (14 Mayıs 2026)
 5. ~~Naming Batch C6 — log aksiyon enum rename (olusturuldu>created, dept-onayladi>dept-approved + migration)~~ ✅ (15 Mayıs 2026)
-6. CSS Dynamic String Audit — JS içindeki tüm CSS class referanslarını tarama (C13 hazırlık, read-only diagnostic)
+6. ~~CSS Dynamic String Audit~~ ✅ — `docs/CSS-CLASS-AUDIT.md` üretildi
 7. Naming Batch C13 — Element ID & CSS Class String Rename (kapsamı genişletildi: classList, querySelector, closest, dinamik class string'leri dahil. Girdi: docs/CSS-CLASS-AUDIT.md)
 8. Tasarım revizyonu (OCR sadeleştirme + Dept/Muhasebe kart yapısı)
 9. Supabase mimari + entegrasyon (Faz 2)
@@ -257,6 +266,10 @@ Fonksiyon rename batch'leri tamamlandı (~150 fonksiyon, 9 commit). Kalan:
 | **Batch C4** | Sohbet tip enum — bireysel>direct, grup>group + C4 migration | ✅ tamamlandı (14 Mayıs 2026) |
 | **Batch C5** | Kira/dönem enum — aktif>active, gec>overdue, yak>upcoming, iade>returned + CSS sync + migration | ✅ tamamlandı (14 Mayıs 2026) |
 | **Batch C6** | Log aksiyon enum — olusturuldu>created, dept-onayladi>dept-approved + C6 migration | ✅ tamamlandı (15 Mayıs 2026) |
+| **CSS D1** | CSS class rename — sd-* → dtl-* (144 class) | ✅ tamamlandı (15 Mayıs 2026) |
+| **CSS D2** | CSS class rename — uye-*/profil-* → member-*/profile-* (49 class) | ✅ tamamlandı (15 Mayıs 2026) |
+| **CSS D3** | CSS class rename — sohbet-*/sic-*/yeni-* → chat-list-*/chat-view-*/new-* (32 class) | ✅ tamamlandı (15 Mayıs 2026) |
+| **CSS D4** | CSS class rename — fis-*/avans-* → rcpt-*/adv-* (16 class) | ✅ tamamlandı (15 Mayıs 2026) |
 | **CSS Audit** | JS içindeki CSS class referanslarını tarama (classList/querySelector/closest/dinamik string) | ⏳ diagnostic prompt hazır |
 | **Batch C13** | Element ID & CSS Class String Rename (HTML ID + CSS class literal + dinamik class string) | ⏳ CSS Audit sonrası |
 
@@ -264,12 +277,12 @@ Batch B/C için sektörel terim kararları (Batch B'ye girilince alınacak):
 
 | # | Terim | Seçenek A | Seçenek B | Karar |
 |---|---|---|---|---|
-| 1 | `'user'` role key | `'field'` | `'crew'` | ❓ |
-| 2 | `'yapim'` dept key | `'production'` | `'prod'` | ❓ |
-| 3 | `'Yiyecek'` kategori | `'food'` | `'catering'` | ❓ |
-| 4 | `simGIB` fonksiyonu | `'simulateTaxVerification'` | `'simGIB'` (bırak) | ❓ |
-| 5 | `'Konaklama'` kategori | `'accommodation'` | `'lodging'` | ❓ |
-| 6 | `'Diger'` kategori | `'other'` | `'misc'` | ❓ |
+| 1 | `'user'` role key | `'field'` | `'crew'` | `'crew'` ✅ |
+| 2 | `'yapim'` dept key | `'production'` | `'prod'` | `'production'` ✅ |
+| 3 | `'Yiyecek'` kategori | `'food'` | `'catering'` | `'food'` ✅ |
+| 4 | `simGIB` fonksiyonu | `'simulateTaxVerification'` | `'simGIB'` (bırak) | `'simGIB'` kalacak ✅ |
+| 5 | `'Konaklama'` kategori | `'accommodation'` | `'lodging'` | `'accommodation'` ✅ |
+| 6 | `'Diger'` kategori | `'other'` | `'misc'` | `'misc'` ✅ |
 
 ### Erteleme kararları (7B.1 keşfinden, 8 Mayıs 2026)
 
@@ -297,10 +310,10 @@ Batch B/C için sektörel terim kararları (Batch B'ye girilince alınacak):
 
 ## 🔧 TEKNİK NOTLAR
 
-- Tek HTML ~5600 satır (7B sonrası), modülerleşme devam ediyor
+- Tek HTML ~5300 satır (7B sonrası), modülerleşme devam ediyor
 - Source of truth: `APP.data.receipts` + `deptPending` + `accPending` + `accHistory` (arşiv)
 - localStorage kalıcılığı var — seed değişince `localStorage.clear()` gerek
-- **7B tamamlandı (8 Mayıs 2026):** index.html ~11077 → ~5600 satır. 14 modül aktif. Marka (~112 satır) ve sohbet (~489 satır) henüz modüle taşınmadı — index.html'de kaldı, window'a expose edildi.
+- **7B tamamlandı (8 Mayıs 2026):** index.html ~11077 → ~5300 satır. 14 modül aktif. Marka + sohbet da modüle taşındı (7B.1).
 - Modülerleşmeden önce: "sadece şu fonksiyonları oku" prompt disiplini
 - PDF export Türkçe karakter sorunu: jsPDF built-in font Türkçe desteklemiyor,
   şu an _tr() ile ASCII transliterasyon uygulanıyor (ş→s, ı→i vb.).

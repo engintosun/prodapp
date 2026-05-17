@@ -1,6 +1,6 @@
 # SUPABASE ÖNCESİ GÖREV LİSTESİ
 
-**Son güncelleme:** 15 Mayıs 2026 (Seans 3)
+**Son güncelleme:** 17 Mayıs 2026 (Seans 7)
 **Kaynak:** Memory (30 kayıt) + geçmiş chat arşivi + bu seans kararları
 
 ---
@@ -20,7 +20,7 @@
 | C4 | Sohbet tip enum rename | ✅ Tamamlandı | bireysel>direct, grup>group |
 | C5 | Kira/dönem durum enum rename + CSS senkron | ✅ Tamamlandı | aktif>active, gec>overdue, yak>upcoming, iade>returned |
 | C6 | Log aksiyon enum rename | ✅ Tamamlandı | olusturuldu>created, dept-onayladi>dept-approved |
-| D | CSS class rename (.fis-, .sohbet-, .avans-, .donem-, .kat-) | ❓ Batch C sonrası | Bileşen sınıfları, veri enum'undan bağımsız |
+| D (D1-D4) | CSS class rename — 241 class, ~829 referans (4 batch) | ✅ Tamamlandı | 15 Mayıs 2026. D1: sd-*→dtl-*, D2: uye-*/profil-*→member-*/profile-*, D3: sohbet-*/sic-*→chat-list-*/chat-view-*, D4: fis-*/avans-*→rcpt-*/adv-* |
 
 ---
 
@@ -29,7 +29,7 @@
 | # | Görev | Durum | Not |
 |---|---|---|---|
 | B1 | Level 3 tasarım yönü kararı | ❓ Tartışılacak | design.md'de taslak var, kesinleşmedi. Neumorphic/premium his. "Karanlık odada altın yüzük parıltısı" metaforu |
-| B2 | OCR sonuç ekranı sadeleştirme | ❓ Engin çizim yükleyecek | İmza+sesli+GİB aynı anda = kalabalık |
+| B2 | OCR sonuç ekranı | ✅ Tamamlandı | Seans 5-7: confidence bars, two-state UI, per-field confidence, tipografi, kart formatı, title rengi. 7 commit (6cd05ad → 925389f) |
 | B3 | Dept ekranı kart yapısı revizyonu | ❓ Engin çizim yükleyecek | |
 | B4 | Muhasebe ekranı kart yapısı revizyonu | ❓ Engin çizim yükleyecek | |
 | B5 | Muhasebe dashboard görünümü | ❓ Tartışılacak | Mevcut donut chart + departman kartları |
@@ -125,24 +125,25 @@
 
 ---
 
-## ÖNCELİK ÖNERİSİ (güncel sıralama — 14 Mayıs 2026)
+## ÖNCELİK ÖNERİSİ (güncel sıralama — 17 Mayıs 2026)
 
 1. ~~G1–G6~~ ✅ — Dokümantasyon borcu
 2. ~~B6~~ ✅ — Saha submenu bug
 3. ~~A-B (B1–B3)~~ ✅ — Naming Batch B
-4. ~~A-C (C1–C2)~~ ✅ — Naming Batch C (kısmi)
-5. **A-C (C3–C6)** — Naming Batch C (devam) ← ŞU AN BURADAYIZ
-6. **G11–G12** — ARCHITECTURE.md + WORKFLOWS.md senkron (Batch C sonrası toplu)
-7. **B1–B5** — Tasarım revizyonu tartışması (Engin çizim yükler, birlikte karar)
-8. **B7–B9** — Görsel tutarlılık (emoji, tab prefix, inline style)
-9. **C1–C2** — Messaging Step C
-10. **D1–D2** — i18n hazırlığı
-11. **B10** — CSS tokens (Level 3 tema ön koşulu)
-12. **A-D** — CSS class rename batch
-13. **C7** — Core Finance Engine
-14. **E1–E3** — Rol/modül kararları (Supabase ile birlikte)
-15. **F1–F3** — Yasal uyum (pilot öncesi)
-16. → **Supabase**
+4. ~~A-C (C1–C6)~~ ✅ — Naming Batch C
+5. ~~A-D (D1–D4)~~ ✅ — CSS class rename
+6. ~~B2~~ ✅ — OCR sonuç ekranı
+7. **G7–G12** — Md dosyaları senkron (devam ediyor) ← ŞU AN BURADAYIZ
+8. **B1, B3–B5** — Tasarım revizyonu tartışması
+9. **B7–B9** — Görsel tutarlılık
+10. **C1–C2** — Messaging Step C
+11. **D1–D2** — i18n hazırlığı
+12. **B10** — CSS tokens
+13. **C13** — Element ID & CSS Class String Rename
+14. **C7** — Core Finance Engine
+15. **E1–E3** — Rol/modül kararları (Supabase ile birlikte)
+16. **F1–F3** — Yasal uyum (pilot öncesi)
+17. → **Supabase**
 
 ---
 
