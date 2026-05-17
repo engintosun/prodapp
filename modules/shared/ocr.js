@@ -160,16 +160,19 @@ function _confColor(pct) {
 function _applyConfidence(conf) {
   var threshold = (window.APP && APP.constants && APP.constants.OCR_CONFIDENCE_THRESHOLD) || 70;
 
-  // 3 alan confidence yüzdesi
+  // 3 confidence kartı — yüzde + mini bar
   var confDisplay = [
-    { key:'seller', elId:'ocr-conf-satici' },
-    { key:'amount', elId:'ocr-conf-amount' },
-    { key:'tax',    elId:'ocr-conf-tax'    }
+    { key:'seller', elId:'ocr-conf-satici', barId:'ocr-bar-satici' },
+    { key:'amount', elId:'ocr-conf-amount', barId:'ocr-bar-amount' },
+    { key:'tax',    elId:'ocr-conf-tax',    barId:'ocr-bar-tax'    }
   ];
   confDisplay.forEach(function(cd) {
     var pct = conf[cd.key] != null ? conf[cd.key] : 90;
+    var clr = _confColor(pct);
     var el  = document.getElementById(cd.elId);
-    if (el) { el.textContent = '%' + pct; el.style.color = _confColor(pct); }
+    var bar = document.getElementById(cd.barId);
+    if (el)  { el.textContent = '%' + pct; el.style.color = clr; }
+    if (bar) { bar.style.width = pct + '%'; bar.style.background = clr; }
   });
 
   // Başlık → "Belge ile karşılaştırın" (dim stil)

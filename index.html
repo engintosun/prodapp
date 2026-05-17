@@ -1936,30 +1936,44 @@ body {
   padding: 2px 8px; border-radius: 20px;
   background: #F59E0B; color: #fff;
 }
-.ocr-conf-row {
-  display: flex; align-items: center; gap: 0;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(255,255,255,.06);
-  margin-bottom: 10px;
+.ocr-conf-cards {
+  display: flex; gap: 8px; margin-bottom: 12px;
+}
+.ocr-conf-card {
+  flex: 1;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 10px; padding: 10px 12px;
+}
+.ocr-conf-card-lbl {
   font-size: 10px; font-weight: 500; font-family: var(--fn);
-  color: rgba(255,255,255,.3);
-  text-transform: uppercase; letter-spacing: 1px;
+  color: rgba(255,255,255,.4);
+  text-transform: uppercase; letter-spacing: .5px;
+  margin-bottom: 4px;
 }
-.ocr-conf-row > span > span {
-  font-size: 13px; font-weight: 600; font-family: var(--mo);
-  text-transform: none; letter-spacing: 0;
+.ocr-conf-card-pct {
+  font-size: 16px; font-weight: 600; font-family: var(--mo);
+  margin-bottom: 6px;
 }
-.ocr-conf-row > span:nth-child(2n) {
-  color: rgba(255,255,255,.15);
-  font-size: 10px; margin: 0 10px;
-  text-transform: none; letter-spacing: 0;
+.ocr-conf-card-bar-track {
+  height: 2px; border-radius: 1px;
+  background: rgba(255,255,255,.08);
+}
+.ocr-conf-card-bar-fill {
+  height: 2px; border-radius: 1px;
+  transition: width .35s, background .35s;
 }
 .ocr-raw {
-  background: var(--bg3); border: 1px solid var(--bo);
-  border-radius: 12px; padding: 12px 14px; margin-bottom: 14px;
-  font-size: 12px; font-family: var(--mo); color: var(--tx2);
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 12px; padding: 16px 18px; margin-bottom: 14px;
+  font-size: 16px; font-weight: 500;
+  font-family: var(--mo); color: var(--tx2);
   line-height: 1.8;
+  box-shadow: 0 2px 12px rgba(0,0,0,.2);
 }
+.ocr-raw strong { font-size: 17px; font-weight: 700; }
+.ocr-raw strong:first-of-type { font-size: 18px; }
 .ocr-lbl-warn { color: #F59E0B !important; }
 .ocr-warn-txt {
   font-size: 10px; color: #F59E0B; margin-top: 3px; font-weight: 500;
@@ -2698,13 +2712,23 @@ body {
       </div>
       <!-- S2: Sonuç -->
       <div id="ocr-s2" style="display:none">
-        <!-- 3 alan confidence yüzdesi -->
-        <div class="ocr-conf-row">
-          <span>Satıcı <span id="ocr-conf-satici" style="color:#4ADE80">%90</span></span>
-          <span>·</span>
-          <span>Tutar <span id="ocr-conf-amount" style="color:#4ADE80">%90</span></span>
-          <span>·</span>
-          <span>KDV <span id="ocr-conf-tax" style="color:#4ADE80">%90</span></span>
+        <!-- 3 confidence kartı -->
+        <div class="ocr-conf-cards">
+          <div class="ocr-conf-card">
+            <div class="ocr-conf-card-lbl">Satıcı</div>
+            <div class="ocr-conf-card-pct" id="ocr-conf-satici" style="color:#4ADE80">%90</div>
+            <div class="ocr-conf-card-bar-track"><div class="ocr-conf-card-bar-fill" id="ocr-bar-satici" style="width:90%;background:#4ADE80"></div></div>
+          </div>
+          <div class="ocr-conf-card">
+            <div class="ocr-conf-card-lbl">Tutar</div>
+            <div class="ocr-conf-card-pct" id="ocr-conf-amount" style="color:#4ADE80">%90</div>
+            <div class="ocr-conf-card-bar-track"><div class="ocr-conf-card-bar-fill" id="ocr-bar-amount" style="width:90%;background:#4ADE80"></div></div>
+          </div>
+          <div class="ocr-conf-card">
+            <div class="ocr-conf-card-lbl">KDV</div>
+            <div class="ocr-conf-card-pct" id="ocr-conf-tax" style="color:#4ADE80">%90</div>
+            <div class="ocr-conf-card-bar-track"><div class="ocr-conf-card-bar-fill" id="ocr-bar-tax" style="width:90%;background:#4ADE80"></div></div>
+          </div>
         </div>
         <!-- OCR raw metin bloğu -->
         <div class="ocr-raw" id="ocr-prev"></div>
@@ -2843,8 +2867,8 @@ body {
         </div><!-- /ocr-extra -->
         <!-- Butonlar -->
         <div style="display:flex;gap:8px;margin-top:8px;padding-bottom:4px">
-          <button class="btn" onclick="closeM('mo')" style="flex:1;justify-content:center">İptal</button>
-          <button class="btn btn-p" onclick="submitOCR()" style="flex:2;justify-content:center;background:#B07830;border-color:#B07830">✅ Onaya Gönder</button>
+          <button class="btn" onclick="closeM('mo')" style="flex:1 1 0;justify-content:center">İptal</button>
+          <button class="btn btn-p" onclick="submitOCR()" style="flex:1 1 0;justify-content:center;background:#B07830;border-color:#B07830">✅ Onaya Gönder</button>
         </div>
       </div>
     </div>
