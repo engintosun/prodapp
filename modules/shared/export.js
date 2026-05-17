@@ -406,9 +406,10 @@ export const exportModal = {
 
 export function showExportModal(tip, elId) {
   if (elId === undefined) elId = null;
+  var dd  = document.getElementById('export-dropdown');
+  if (dd.classList.contains('on')) { closeExportModal(); return; }
   exportModal._tip  = tip;
   exportModal._elId = elId;
-  var dd  = document.getElementById('export-dropdown');
   var btn = window.event ? window.event.currentTarget : null;
 
   if (!btn) {

@@ -179,7 +179,7 @@ function _applyConfidence(conf) {
     titleEl.textContent  = 'Belge ile karşılaştırın';
     titleEl.style.fontSize   = '13px';
     titleEl.style.fontWeight = '400';
-    titleEl.style.color      = 'rgba(255,255,255,0.45)';
+    titleEl.style.color      = 'var(--tx3)';
   }
 
   // Per-field uyarılar (ocr-extra içindeki alanlar için)

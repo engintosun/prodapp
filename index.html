@@ -822,6 +822,14 @@ body {
 .ni svg { width: 20px; height: 20px; stroke: currentColor; }
 .ni-dot { width: 3px; height: 3px; border-radius: 50%; background: transparent; }
 .ni.on .ni-dot { background: var(--ac); }
+[data-theme="light"] .su-nav {
+  background: rgba(245,243,240,.92);
+  border-color: var(--bo);
+}
+[data-theme="light"] .nav-srch {
+  background: rgba(237,234,228,.92);
+  border-color: var(--bo);
+}
 
 /* ══════════════════════════════
    DEPT EKRANI
@@ -2276,8 +2284,8 @@ body {
 #export-dropdown {
   display: none;
   position: fixed;
-  background: var(--bg-card, #1a1814);
-  border: 1px solid var(--border, #333);
+  background: var(--bg2);
+  border: 1px solid var(--bo);
   border-radius: 12px;
   padding: 6px;
   min-width: 160px;
@@ -2292,13 +2300,12 @@ body {
   padding: 10px 14px;
   background: transparent;
   border: none; border-radius: 8px;
-  color: var(--text-primary, #f0ece6);
+  color: var(--tx);
   font-size: 13px; text-align: left;
   cursor: pointer; width: 100%;
   transition: background .12s;
 }
-.exp-dd-item:hover { background: var(--bg-hover, #242018); }
-.exp-dd-icon { font-size: 18px; width: 22px; text-align: center; }
+.exp-dd-item:hover { background: var(--bg3); }
 /* ══ ONBOARDING ══ */
 #md-onboard { align-items: center; background: rgba(12,10,8,.92); }
 .onb-card {
@@ -5419,18 +5426,10 @@ window._gecIslemCb = null;
 }());
 </script>
 <div id="export-dropdown">
-  <button class="exp-dd-item" onclick="exportManager.pdf(exportModal._tip)">
-    <span class="exp-dd-icon">📄</span><span>PDF</span>
-  </button>
-  <button class="exp-dd-item" onclick="exportManager.excel(exportModal._tip)">
-    <span class="exp-dd-icon">📊</span><span>Excel</span>
-  </button>
-  <button class="exp-dd-item" onclick="exportManager.csv(exportModal._tip)">
-    <span class="exp-dd-icon">📋</span><span>CSV</span>
-  </button>
-  <button class="exp-dd-item" onclick="exportManager.png(exportModal._elId)">
-    <span class="exp-dd-icon">🖼</span><span>PNG</span>
-  </button>
+  <button class="exp-dd-item" onclick="exportManager.pdf(exportModal._tip)">PDF</button>
+  <button class="exp-dd-item" onclick="exportManager.excel(exportModal._tip)">Excel</button>
+  <button class="exp-dd-item" onclick="exportManager.csv(exportModal._tip)">CSV</button>
+  <button class="exp-dd-item" onclick="exportManager.png(exportModal._elId)">Görsel</button>
 </div>
 </body>
 </html>
