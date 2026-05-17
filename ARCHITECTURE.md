@@ -609,9 +609,25 @@ Strategy A'ya kademeli geçiş engelli değil — 7B sonrası isteğe bağlı cl
 | Yeni dosya adları | kebab-case |
 | Mevcut dosya adları | değiştirilmez |
 
-**Türkçe → İngilizce geçişi:** Namespace key rename ve enum value rename tamamlandı (Batch A-B-C, Mayıs 2026). Field adları (tarih, satici, tutar, kat, durum vb.) Supabase mapping katmanında çözülecek. `toDb()` / `fromDb()` dönüştürücüler service.js katmanında yer alacak — UI kodu veri adlarından bağımsız kalır.
+**Türkçe → İngilizce geçişi (durum: Mayıs 2026):**
 
-**Mapping katmanı örneği:**
+Tamamlananlar:
+- **Batch A (A1–A5):** ~150 fonksiyon adı rename edildi
+- **Batch B (B1–B3):** APP namespace key'leri (data/ui/seed/cache) rename edildi
+- **Batch C (C1–C6):** Enum value'ları rename edildi (durum/kategori/avans/sohbet/kira/log)
+- **Batch D (D1–D4):** 241 CSS class, ~829 referans rename edildi (sd-→dtl-, uye-→member-, sohbet-→chat-list-, fis-→rcpt-, vb.)
+
+Bekleyenler — Supabase migration ile birlikte:
+- **C12:** JS object property rename (field adları: `f.kat`→`f.category`, `f.tutar`→`f.amount`, vb.)
+- **C13:** Element ID & CSS class string literal rename (`getElementById`, `classList`, `querySelector` argümanları)
+
+**Sektörel terim kararları (13 Mayıs 2026):**
+user→crew, yapim→production, Yiyecek→food, Konaklama→accommodation, Diger→misc, simGIB sabit kaldı.
+
+**Mapping katmanı stratejisi:**
+
+Field adları (`tarih`, `satici`, `tutar`, `kat`, `durum` vb.) Supabase mapping katmanında çözülecek. `toDb()` / `fromDb()` dönüştürücüler service.js katmanında yer alacak — UI kodu veri adlarından bağımsız kalır.
+
 ```javascript
 function toDb(fis) {
   return { receipt_date: fis.tarih, vendor: fis.satici, amount: fis.tutar, ... };
@@ -621,7 +637,9 @@ function fromDb(row) {
 }
 ```
 
-### 10.4. constants.js Durumu (8 Mayıs 2026)
+Bu strateji "şimdi rename + sonra Supabase" iki adımı tek adıma indirir.
+
+### 10.4. constants.js Durumu (Mayıs 2026)
 
 17 export var, 4 kategori. Referans: `7B1-CONSTANTS-DISCOVERY.md`.
 
@@ -640,4 +658,34 @@ function fromDb(row) {
 
 **Kategori D — Etkinleştirilmemiş (7 adet, import yok):**
 `FIS_DURUM`, `ROL`, `KATEGORILER`, `UL_SEHIRICI_RATE`, `UL_SEHIRDISI_RATE`, `PASIF_ONAY_GUN`, `PASIF_ONAY_MS`
-→ Naming refactor tamamlandı (Batch A-B-C, Mayıs 2026). `FIS_DURUM` ve `ROL` key'leri zaten İngilizce, value'lar da artık İngilizce (C1 rename: dept-pending, acc-pending, approved, rejected, split). `KATEGORILER` value'ları da İngilizce (C2 rename: fuel, food, equipment, vb.). Etkinleştirme Faz 1.5 modülerleşmede yapılacak.
+→ Naming refactor tamamlandı (Batch A-B-C-D, Mayıs 2026). `FIS_DURUM` ve `ROL` key'leri zaten İngilizce, value'lar da artık İngilizce (C1 rename: dept-pending, acc-pending, approved, rejected, split). `KATEGORILER` value'ları da İngilizce (C2 rename: fuel, food, equipment, vb.). Etkinleştirme Faz 1.5 modülerleşmede yapılacak.
+
+### 10.5. CSS Class Rename (Batch D, 15 Mayıs 2026)
+
+CSS class isimleri sektör terimi + kısaltma standardına geçirildi. Toplam **241 class**, **~829 referans** 4 alt batch'te değiştirildi:
+
+| Batch | Eski prefix | Yeni prefix | Anlam |
+|---|---|---|---|
+| D1 | `sd-*` | `dtl-*` | Dept (departman) ekran class'ları |
+| D2 | `uye-*`, `profil-*` | `member-*`, `profile-*` | Üye/profil bileşenleri |
+| D3 | `sohbet-*`, `sic-*` | `chat-list-*`, `chat-view-*` | Mesajlaşma sistemi |
+| D4 | `fis-*`, `avans-*` | `rcpt-*`, `adv-*` | Fiş/avans kartları |
+
+Detay envanter: `docs/CSS-CLASS-AUDIT.md`.
+
+**Bekleyen iş — C13:** CSS class adları statik tanımlarda rename edildi, ancak JS içinde **string literal olarak geçen class adları** (`classList.add('fis-card')`, `querySelector('.fis-row')`, template literal'ler) henüz değişmedi. Bu rename C12 (field rename) ile aynı commit'te, Supabase migration öncesi son adım olarak yapılacak.
+
+### 10.6. Sektörel Terim Kararları (13 Mayıs 2026)
+
+Türkçe → İngilizce geçişte UI ve veri katmanında kullanılacak sektör-spesifik terimler:
+
+| Türkçe | İngilizce | Kapsam |
+|---|---|---|
+| `user` | `crew` | Saha personeli rolü (film sektörü terimi) |
+| `yapim` | `production` | Yapım departmanı / proje |
+| `Yiyecek` | `food` | Kategori |
+| `Konaklama` | `accommodation` | Kategori |
+| `Diger` | `misc` | Kategori |
+| `simGIB` | `simGIB` | Değişmedi (GİB Türkiye'ye özgü, sabit kaldı) |
+
+Bu kararlar Batch C (enum value) rename'inde uygulandı. UI metinleri için i18n çözümü ayrı (`tr.json`/`en.json`).

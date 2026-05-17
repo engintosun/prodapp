@@ -120,6 +120,8 @@ All app state lives under the `APP` namespace object:
 - UI is rendered by setting `innerHTML` strings directly — no templating engine.
 - Adding a new screen: add a `<div id="sX" class="scr">` in HTML, add CSS under a new banner section, call `showScr('sX')` to navigate to it.
 - Adding a new feature section in JS: place it after the nearest related section, delimited with `/* ═══ FEATURE NAME ═══ */`.
+- **Modül vs index.html önceliği:** Yeni fonksiyon her zaman `modules/` altına yazılır, index.html'e yazılmaz. Sadece CSS + HTML shell + expose bloğu index.html'de kalır.
+- **Türkçe field/key'lere DOKUNMA:** Naming refactor kapsamında olmayan Türkçe field adları (`fis.kat`, `fis.tutar`, vb.) ve fonksiyon adları (`accOnayla`, vb.) **Supabase migration ile birlikte** dönüşecek. Şimdi rename önerme, rename yapma. Detay: yukarıdaki "Naming Refactor Durumu" bölümü.
 
 ---
 
@@ -132,8 +134,6 @@ All app state lives under the `APP` namespace object:
 - Modüller (`modules/`) canonical kaynak — yeni kod buraya yazılır
 - index.html'de kalan kod: CSS (~3346 satır), HTML shell (~70 satır), expose bloğu (~200 satır)
 - HTML attribute'lar (`onclick`, `onchange`) `window.X` üzerinden çalışıyor — dokunma
-
-**7B.1 tamamlandı:** Marka + sohbet modüle taşındı. index.html artık CSS + HTML shell + expose bloğundan ibaret.
 
 **Modül dosyasına kod yazarken:**
 - `var` ve `function` stili korunur (ES5 gövde), sadece `import`/`export`/`window.X = X` ES6
@@ -158,20 +158,42 @@ Amaç: CFE tamamlandıktan sonra test harness eklemeyi trivial hale getirmek.
 
 ---
 
-## Naming Refactor Kuralları (henüz uygulanmadı)
+## Naming Refactor Durumu
 
-Naming envanteri 3 raporda: `NAMING-INVENTORY.md`, `CALLMAP-P0.md`, `7B1-CONSTANTS-DISCOVERY.md`.
+**Tamamlananlar (Mayıs 2026):**
+- Batch A (A1–A5): ~150 fonksiyon rename ✅
+- Batch B (B1–B3): APP.data/ui/seed/cache key rename ✅
+- Batch C (C1–C6): Enum value rename (durum/kategori/avans/sohbet/kira/log) ✅
+- Batch D (D1–D4): CSS class rename — 241 class, ~829 referans ✅
 
-**Bulk replace YASAK — özellikle şu kökler için:**
+**Bekleyenler — Supabase ile birlikte yapılacak:**
+- C12: JS object property rename (`f.kat`→`f.category`, `f.tutar`→`f.amount`, `f.durum`→`f.status`, `f.tarih`→`f.date`, `f.satici`→`f.vendor`, `f.aciklama`→`f.description`, `f.donem`→`f.period`, vb.)
+- C13: Element ID & CSS class string literal rename (`getElementById`, `classList`, `querySelector` içindeki string'ler)
+
+**KRİTİK KURAL — DOKUNMA:**
+
+Aşağıdaki Türkçe field/key'ler kodda görünce **rename ETME**. Bunlar Supabase migration ile birlikte mapping katmanında (`toDb()`/`fromDb()`) dönüşecek:
+
+- `fis.kat`, `fis.durum`, `fis.tutar`, `fis.tarih`, `fis.satici`, `fis.aciklama`, `fis.gerekce`, `fis.donem`, `fis.personel`
+- `accOnayla`, `accReddet`, `accKismi` (fis.service.js fonksiyon adları — Supabase'de değişecek)
+- `.onaylandi`, `.reddedildi` sub-key'ler (deptHistory/periodBudget)
+- `getElementById('sd-...')`, `querySelector('.fis-...')` gibi string literal'ler (C13 kapsamı)
+
+Şimdi rename yapmak = boşa migration + sonra silinen kod.
+
+**Bulk replace yasak kökler (sektörel anlam çakışması):**
 
 | Kök | Neden tehlikeli |
 |---|---|
 | `gec` | 3 anlam: kira overdue (`'gec'`), geçmiş kayıtlar (`gecmis`), geç işlem (`gecIslem`) |
 | `tip` | 4 alan: sohbet type, item type (avans), export type, rapor type — value'lar karışır |
-| `durum` | 5 obje tipinde farklı value setleri (fis/donem/istisna/avans/accSuphe) |
+| `durum` | 5 obje tipinde farklı value setleri (fis/donem/istisna/avans/accSuspicion) |
 | `kat` | 12 yapıda eş zamanlı değişmeli (KAT_IC, SD_KAT_CLR, katLimit, dropdown option value'ları...) |
 
-**Sektörel terim kararları alındı** (13 Mayıs 2026): user→crew, yapim→production, Yiyecek→food, simGIB kalacak, Konaklama→accommodation, Diger→misc.
+**Sektörel terim kararları (13 Mayıs 2026 — uygulandı):**
+user→crew, yapim→production, Yiyecek→food, Konaklama→accommodation, Diger→misc, simGIB değişmedi.
+
+**Naming envanteri detayı:** `NAMING-INVENTORY.md`, `CALLMAP-P0.md`, `7B1-CONSTANTS-DISCOVERY.md`, `docs/CSS-CLASS-AUDIT.md`.
 
 ---
 
