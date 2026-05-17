@@ -43,13 +43,11 @@ import { saveAppData }  from '../core/services/storage.service.js';
 export function openSub() {
   document.getElementById('ocr-sub').style.display = 'block';
   document.getElementById('qbtns').style.display   = 'none';
-  document.getElementById('ocr-hint').textContent  = 'seç veya vazgeç';
 }
 
 export function closeSub() {
   document.getElementById('ocr-sub').style.display = 'none';
   document.getElementById('qbtns').style.display   = 'flex';
-  document.getElementById('ocr-hint').textContent  = 'tara veya uzun bas';
 }
 
 export function doOCR() { closeSub(); openOCR(0, null); }

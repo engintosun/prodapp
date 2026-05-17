@@ -80,7 +80,7 @@ export function searchList(q) {
   }
 
   var durumClr = { bekleyen:'var(--am)', 'dept-pending':'var(--am)', 'acc-pending':'var(--am)', approved:'var(--gr)', rejected:'var(--rd)' };
-  var durumTxt = { bekleyen:'Bekleyen', 'dept-pending':'Bekleyen', 'acc-pending':'Bekleyen', approved:'Onaylandı', rejected:'rejected' };
+  var durumTxt = { bekleyen:'Bekleyen', 'dept-pending':'Bekleyen', 'acc-pending':'Bekleyen', approved:'Onaylandı', rejected:'Reddedildi' };
 
   drop.innerHTML =
     '<div class="srch-hd"><span>' + results.length + ' sonuç</span><span>Tıkla → kayda git</span></div>' +
@@ -644,7 +644,7 @@ export function openLBFis(fid) {
   document.getElementById('lb-img').src = src;
   var durumClr = { approved:'#4ADE80', rejected:'#F87171', bekleyen:'#FCD34D', 'dept-pending':'#FCD34D', 'acc-pending':'#FCD34D' };
   var durumIco = { approved:'✅', rejected:'❌', bekleyen:'⏳', 'dept-pending':'⏳', 'acc-pending':'⏳' };
-  var durumTxt = { approved:'Onaylandı', rejected:'rejected', bekleyen:'Bekleyen', 'dept-pending':'Bekleyen', 'acc-pending':'Bekleyen' };
+  var durumTxt = { approved:'Onaylandı', rejected:'Reddedildi', bekleyen:'Bekleyen', 'dept-pending':'Bekleyen', 'acc-pending':'Bekleyen' };
   var clr = durumClr[f.durum] || '#8A9090';
   var det = document.getElementById('lb-detail');
   det.innerHTML =
