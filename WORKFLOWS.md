@@ -519,7 +519,7 @@ Asimetrik kapanış modeli: saha/dept için tam kapanış, muhasebe için soft k
 
 **⚠️ KRİTİK KURAL:**
 - `gecIslem`, `gecIslemSebep`, `gecIslemDonem` field'ları accHistory'e yazıldıktan sonra silinemez, override edilemez
-- Saha ve dept kapanmış dönemde işlem yapamaz — deptOnayla/deptReddet/deptKismi ve _addToDeptBekleyen'in başında engel var
+- Saha ve dept kapanmış dönemde işlem yapamaz — deptApprove/deptReject/deptPartial ve _addToDeptPending'in başında engel var
 
 ---
 
@@ -541,8 +541,8 @@ Asimetrik kapanış modeli: saha/dept için tam kapanış, muhasebe için soft k
 - `izin.durum`: `'active'` → `'sureDoldu'`|`'adetDoldu'`|`'tutarDoldu'`|`'iptal'`
 
 **📬 BİLDİRİMLER:**
-- `_pushNotif(toKey, 'am', 'İstisna İzni', ...)` — kişiye izin verildi (donemIstisnaIzniVer)
-- `_pushNotif('m', 'am', 'İstisna İzni — Yeni Fiş', ...)` — muhasebe'ye fiş eklendi (_addToDeptBekleyen)
+- `_pushNotif(toKey, 'am', 'İstisna İzni', ...)` — kişiye izin verildi (grantPeriodException)
+- `_pushNotif('m', 'am', 'İstisna İzni — Yeni Fiş', ...)` — muhasebe'ye fiş eklendi (_addToDeptPending)
 
 **⚠️ KRİTİK KURALLAR:**
 - Dept ATLANIR — fiş doğrudan accPending'e gider

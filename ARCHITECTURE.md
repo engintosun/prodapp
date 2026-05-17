@@ -561,7 +561,7 @@ Ana `<script>` tag'i `<script type="module">` yapıldı. 14 modül import edildi
 ```html
 <script>                      ← tüm uygulama kodu, global scope
   var KAT_IC = {...}
-  function deptOnayla() {...}
+  function deptApprove() {...}
   ...
 </script>
 <script type="module">        ← sadece import + console.log, pasif
@@ -573,10 +573,10 @@ Ana `<script>` tag'i `<script type="module">` yapıldı. 14 modül import edildi
 **Hedef durum (Strategy B sonrası):**
 ```html
 <script type="module">        ← tek script bloğu
-  import { deptOnayla, accOnayla, ... } from './modules/...';
+  import { deptApprove, accOnayla, ... } from './modules/...';
   import { exportManager } from './modules/shared/export.js';
   // 126 expose satırı:
-  window.deptOnayla = deptOnayla;
+  window.deptApprove = deptApprove;
   window.accOnayla  = accOnayla;
   // ...
 </script>

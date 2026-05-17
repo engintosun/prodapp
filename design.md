@@ -344,7 +344,7 @@ fill            : none
 | `<path d="M17 21v-2a4 4 0 0 0-4-4H5..."/><path d="M23 21v-2..."/>` | Users | Ekip listesi |
 | OCR scan frame (4 köşe path) | — | OCR tarama çerçevesi |
 | `<path d="M3 22V6l9-4 9 4v16"/>...` | Building / Yakıt simgesi | Yakıt kategorisi |
-| `<path d="M3 11l19-9-9 19-2-8-8-2z"/>` | Send | Yiyecek kategorisi |
+| `<path d="M3 11l19-9-9 19-2-8-8-2z"/>` | Send | food kategorisi |
 | `<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4..."/>` | Package | Varsayılan kategori |
 
 ---
