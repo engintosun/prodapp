@@ -7,7 +7,10 @@
 ## Proje Kimliği
 
 PRODAPP — Sinema/TV sektörü için prodüksiyon harcama yönetimi SaaS platformu.
-Tech stack: React + TypeScript + Vite + Supabase + Vercel
+
+**Tech stack:** React 19 + TypeScript + Vite + Supabase + Vercel
+**Dil:** Chat Türkçe, kod İngilizce (değişken, fonksiyon, dosya, commit, yorum), dokümanlar Türkçe
+**Domain terimleri kodda:** İngilizce karşılıkları → docs/GLOSSARY.md
 
 -----
 
@@ -25,19 +28,118 @@ Tech stack: React + TypeScript + Vite + Supabase + Vercel
 |Yeni özellik                |docs/ARCHITECTURE.md (Bölüm 2 — kapsam kontrolü) → ilgili feature dizini|
 |Bug fix                     |İlgili feature dizini → docs/TECH-DEBT.md                               |
 |Deploy                      |docs/ARCHITECTURE.md (Bölüm 5.6)                                        |
+|Test                        |İlgili feature dizini → docs/ARCHITECTURE.md (Bölüm 3.5)                |
+
+**Fallback:** Tabloda eşleşme yoksa → önce docs/ARCHITECTURE.md oku, sonra sor.
 
 -----
 
-## Çalışma Kuralları Özeti
+## Dosya Yapısı
 
-- **Opus:** Mimari, planlama, prompt yazma. Kod yazmaz.
-- **Sonnet:** Kod, commit, push. Mimari karar almaz.
-- **Commit:** `tip(kapsam): açıklama` — bir commit = bir iş
-- **Dur sinyalleri:** 5+ dosya, 300+ satır, mantık tekrarı, scope creep, belirsiz karar
-- **Dil:** Chat Türkçe, kod İngilizce, dokümanlar Türkçe
-- **SSOT:** Supabase tek gerçek kaynak
-- **Sessiz hata yasak**
-- **Doküman kazanır:** Kod-doküman çelişkisinde önce doküman güncellenir
+```
+prodapp/
+  CLAUDE.md              ← bu dosya
+  docs/
+    ARCHITECTURE.md      ← 31 karar, mimari anayasa
+    AUTH-KARARLARI.md    ← 6 auth kararı
+    GLOSSARY.md          ← domain terimleri + tehlikeli kökler
+    TASARIM-KARARLARI.md ← UI/UX kararları
+    TECH-DEBT.md         ← teknik borç takibi
+    RAKIP-ANALIZI-OCR.md ← rakip analizi (referans)
+  supabase/
+    SUPABASE-SCHEMA.sql  ← 17 tablo, v1.1
+    SUPABASE-RLS.sql     ← RLS policy'ler, v1.2
+    BOOTSTRAP-MUSTERI.sql← müşteri onboarding template
+  src/
+    App.tsx              ← root component
+    main.tsx             ← Vite entry
+    app/
+      auth/              ← auth guard, login
+      layout/            ← sayfa düzeni
+    features/
+      receipts/          ← fiş/fatura
+      approvals/         ← onay zinciri
+      advances/          ← avans
+      notifications/     ← bildirimler
+      detection/         ← şüpheli işlem tespiti
+      export/            ← PDF/Excel çıktı
+    shared/
+      supabase/client.ts ← Supabase client singleton
+      types/             ← TypeScript domain tipleri
+      utils/             ← ortak yardımcı fonksiyonlar
+```
+
+-----
+
+## Çalışma Kuralları
+
+### Opus / Sonnet İş Bölümü
+
+- **Opus (Claude.ai):** Mimari, planlama, karar alma, prompt hazırlama. Kod yazmaz.
+- **Sonnet (Claude Code):** Kod yazar, commit atar, push eder. Mimari karar almaz.
+- **Handoff:** Opus prompt hazırlar → Sonnet tek commit hedefler → commit sonrası session kapatılır.
+- **Geri dönüş:** Sonnet beklenmedik durumla karşılaşırsa commit atmaz, bulgusunu raporlar, Opus'a dönülür.
+
+### Commit Disiplini
+
+- Format: `tip(kapsam): açıklama`
+- Tip seti: feat, fix, refactor, docs, chore, test
+- Bir commit = bir tamamlanmış iş. Yarım iş commit edilmez.
+- Kod değiştiyse ilgili md dosyası AYNI commit'te güncellenir.
+
+### Dur Kuralları
+
+Aşağıdaki durumlarda çalışma durur, değerlendirme yapılır:
+
+- Tek commit'te 5'ten fazla dosya değişecekse
+- Tek dosya 300 satırı geçecekse
+- Aynı iş mantığı ikinci yerde yazılmak üzereyse (mantık tekrarı)
+- Başlanan iş tanımının dışına çıkılıyorsa (scope creep)
+- Kalıcı karar dosyasında karşılığı olmayan seçim yapılması gerekiyorsa
+
+### Teknik Kurallar
+
+- **SSOT:** Supabase tek gerçek kaynak. Client önbellek/kopya. Çakışmada Supabase kazanır.
+- **Sessiz hata yasak:** throw veya kullanıcıya bildirim zorunlu. Boş catch, sessiz return yok.
+- **Doküman kazanır:** Kod-doküman çelişkisinde önce doküman güncellenir, sonra kod düzeltilir.
+- **Katman ayrımı:** Veri erişim (Supabase) → İş mantığı (saf fonksiyonlar) → UI (React) → Orkestrasyon. Katman atlama yasak.
+- **Saf fonksiyonlar:** Hesaplama, validasyon, dönüşüm = parametre alır, return eder, side-effect yok.
+
+### İsimlendirme
+
+- DB (Supabase): `snake_case` → `receipt_status`
+- JS değişken/fonksiyon: `camelCase` → `receiptStatus`
+- Dosya adları: `kebab-case` → `receipt-service.ts`
+- Domain terimleri: docs/GLOSSARY.md'deki İngilizce karşılık
+- **Tehlikeli kökler** (gec, tip, durum, kat): docs/GLOSSARY.md'de ayrı bölüm — bu kökleri kodda Türkçe kullanma
+
+### Satır Numarası Uyuşmazlığı
+
+Prompt'taki satır numarası dosyada başka bir şey gösteriyorsa:
+
+- DUR
+- "Satır X'te beklenen Y bulamadım, gerçek içerik Z" diye raporla
+- Tahmin ederek değişiklik yapma
+- Kullanıcı onay bekle
+
+-----
+
+## Faz 1 Kapsamı (özet)
+
+Listede yoksa Faz 1'de yoktur. Tam liste: docs/ARCHITECTURE.md Bölüm 2.1
+
+- Davetiye ile kullanıcı kaydı + rol bazlı erişim
+- Fiş/fatura fotoğrafı yükleme + OCR
+- Harcama kaydı oluşturma/düzenleme
+- Onay zinciri (Saha → Dept → Muhasebe)
+- Avans talebi, kapama, bakiye takibi
+- Şüpheli işlem tespiti (kural bazlı)
+- Listeleme, filtreleme, arama
+- PDF/Excel export
+- Mesajlaşma (onay sürecine bağlı bildirimler)
+- Çoklu proje desteği
+
+**Faz 1'de YOK:** CFE (kur/KDV motoru), e-fatura/GİB entegrasyonu, bütçe oluşturma modülü, envanter, çoklu dil altyapısı, super-admin rolü, cross-company veri paylaşımı.
 
 -----
 
