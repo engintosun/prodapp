@@ -116,7 +116,7 @@ Listede yoksa Faz 1'de yoktur:
 
 - CFE (Core Finance Engine — kur dönüşümü, KDV hesaplama motoru)
 - XML e-fatura / GİB entegrasyonu
-- Bütçe oluşturma modülü
+- Bütçe oluşturma modülü (dönem/departman harcama limitleri Faz 1'de mevcut — period_budgets, dept_budgets tabloları. Tam bütçe yönetimi Faz 2.)
 - Envanter yönetimi
 - Departman iş akışı modülleri (sanat, kostüm, prodüksiyon)
 - Çoklu dil desteği / lokalizasyon altyapısı

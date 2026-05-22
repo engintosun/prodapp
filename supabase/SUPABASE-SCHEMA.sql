@@ -38,7 +38,7 @@ CREATE TABLE invitations (
   first_name TEXT NOT NULL,
   last_name TEXT NOT NULL,
   role TEXT NOT NULL CHECK (role IN ('saha','dept','muhasebe')),
-  dept_id UUID REFERENCES departments(id),
+  dept_id UUID,
   token TEXT NOT NULL UNIQUE,
   invited_by UUID NOT NULL REFERENCES profiles(id),
   status TEXT DEFAULT 'pending'
@@ -198,7 +198,7 @@ CREATE TABLE exception_permits (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 12. PERIOD_BUDGETS
+-- 12. PERIOD_BUDGETS (Faz 1: dönem harcama limiti. Tam bütçe modülü Faz 2.)
 CREATE TABLE period_budgets (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   period_id UUID NOT NULL REFERENCES periods(id),
@@ -209,7 +209,7 @@ CREATE TABLE period_budgets (
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 13. DEPT_BUDGETS
+-- 13. DEPT_BUDGETS (Faz 1: departman harcama limiti. Tam bütçe modülü Faz 2.)
 CREATE TABLE dept_budgets (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   period_id UUID NOT NULL REFERENCES periods(id),
@@ -285,3 +285,7 @@ CREATE TABLE project_rules (
   set_by UUID NOT NULL,
   created_at TIMESTAMPTZ DEFAULT now()
 );
+
+-- FK: invitations.dept_id → departments (sıralama nedeniyle ayrı)
+ALTER TABLE invitations ADD CONSTRAINT fk_invitations_dept
+  FOREIGN KEY (dept_id) REFERENCES departments(id);
