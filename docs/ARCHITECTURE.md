@@ -7,31 +7,12 @@
 
 ## BÖLÜM 1 — ÇALIŞMA SÖZLEŞMESİ
 
-### 1.1 Session Açılış Ritüeli
+### 1.1 Session Protokolü
 
-Her session şu sırayla başlar:
-
-1. CLAUDE.md okunur (repo kökünde, Context Routing tablosu içerir)
-1. Routing tablosuna göre gündemdeki task tipinin gerektirdiği dosyalar okunur
-1. Açık görev listesi kontrol edilir
-1. Engin gündem belirtir → iş başlar
-
-Tetikleyici: "Routing protokolü başlat" veya doğrudan gündem konusu.
+Session açılış ve kapanış ritüeli CLAUDE.md'de tanımlanır. Proje hafızası STATUS.md'de yaşar.
 
 **Karar tarihi:** 22.05.2026 | **Gerekçe:** Bağlam kaybını önlemek, her session'ın aynı zeminden başlamasını garantilemek.
-
-### 1.2 Session Kapanış Ritüeli
-
-Her session şu çıktıyla kapanır:
-
-1. Alınan kararlar — numaralı, tek cümlelik
-1. Açık sorular — çözülmemiş, sonraki session'a taşınan
-1. Sonraki session gündemi — önerilen başlangıç noktası
-1. Değişen dosyalar — hangi dokümanlar güncellendi / güncellenmeli
-
-Tetikleyici: Engin "kapatalım" / "session bitti" veya doğal sonlanmada Claude hatırlatır.
-
-**Karar tarihi:** 22.05.2026 | **Gerekçe:** Bilgi kaybını önlemek, session'lar arası süreklilik sağlamak.
+**Güncelleme:** 22.05.2026 | Ritüel CLAUDE.md'ye taşındı — çünkü CLAUDE.md her session'da okunan ilk dosya. STATUS.md eklendi — projenin dinamik durumunu taşır.
 
 ### 1.3 Karar Alma ve Kayıt Mekanizması
 

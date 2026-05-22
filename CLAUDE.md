@@ -1,6 +1,34 @@
 # PRODAPP — CLAUDE.md
 
-**Amaç:** Her session bu dosyayla başlar. Context routing tablosu hangi görev tipinde hangi dosyaların okunacağını belirler.
+**Amaç:** Her session bu dosyayla başlar. Session protokolü ve context routing burada yaşar.
+
+-----
+
+## Session Protokolü
+
+### Açılış
+
+1. STATUS.md oku (proje hafızası — neredeyiz, ne kaldı, okunacak dosyalar)
+2. STATUS.md'deki dosya listesini tam oku
+3. **Durum raporu çıkar** — Engin onaylamadan iş başlamaz
+
+Durum raporu formatı:
+```
+DURUM RAPORU
+Milestone: [aktif milestone]
+Son session: [ne yapıldı]
+Bugün gündem: [ne yapılacak]
+Bayraklar: [tutarsızlık, eksik karar, v8 kalıntısı — yoksa "temiz"]
+```
+
+### Kapanış
+
+STATUS.md güncellenir:
+- Ne yapıldı, ne kaldı
+- Açık sorular, alınan kararlar
+- Sonraki session gündemi
+- **Sonraki session'da okunması gereken dosyalar listesi**
+- Doküman sağlık tablosu (değişen/sorunlu dokümanlar)
 
 -----
 

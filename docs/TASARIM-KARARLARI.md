@@ -37,6 +37,11 @@ Oturum açık: Proje seçimi → Ana ekran (veya tek projeliyse direkt ana ekran
 
 ## 2. SAHA ANA EKRAN
 
+> **⚠ GÖRSEL KARARLAR SIFIRLANDI (22 Mayıs 2026)**
+> Bu bölümdeki renk, font, neumorphic stil, piksel ölçüler v8 demo dönemine aittir.
+> Yeni tasarım session'ında kararlar alınacak. Aşağıdaki görsel detaylar referans olarak durur, geçerli değildir.
+> İş akışı kararları (bölüm 1, 3, 4, 5, 6) geçerliliğini korur.
+
 ### 2.1 Genel İlkeler
 - Aksiyon öncelikli — ilk bakışta sadece FİŞ TARA, geri kalan ikincil
 - Set gerçekliği: Ayakta, tek elle, zaman baskısı, bazen karanlık ortam
@@ -85,6 +90,8 @@ Oturum açık: Proje seçimi → Ana ekran (veya tek projeliyse direkt ana ekran
 ---
 
 ## 3. OCR SONUÇ EKRANI
+
+> **⚠ GÖRSEL DETAYLAR SIFIRLANDI** — Confidence renk kodları, font ölçüleri, piksel değerleri v8 demo'sundandır. İş akışı mantığı (confidence mimarisi, state 2 davranışı, 3 katmanlı kontrol) geçerlidir.
 
 ### 3.1 Confidence Mimarisi (tüm fazlar)
 - Confidence arka planda HER ZAMAN çalışır
@@ -202,7 +209,9 @@ Oturum açık: Proje seçimi → Ana ekran (veya tek projeliyse direkt ana ekran
 
 ---
 
-## 8. YAPILACAK TASARIM İŞLERİ (öncelik sırasıyla)
+## 8. YAPILACAK TASARIM İŞLERİ
+
+> **⚠ SIFIRLANDI** — Aşağıdaki liste v8 demo dönemine aittir. Yeni tasarım session'ında sıfırdan planlanacak.
 
 ### Tamamlanan
 - [x] Giriş akışı kararları
