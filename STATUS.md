@@ -16,7 +16,7 @@ Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 **Alınan kararlar:**
 - Login akışı iki commit: (1) login formu + auth, (2) proje seçimi + claims
 - STATUS.md oluşturuldu, session protokolü CLAUDE.md'ye taşındı
-- TASARIM-KARARLARI.md görsel kararlar sıfırlandı, iş akışı kararları korunuyor
+- TASARIM-KARARLARI.md olduğu gibi korunuyor, görsel kararlar yeni epoch'ta yeniden değerlendirilecek
 
 ## Açık Sorular
 - [ ] Login sayfası görsel tasarımı — yeni tasarım session'ı gerekiyor
