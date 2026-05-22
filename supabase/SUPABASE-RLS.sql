@@ -1,26 +1,26 @@
 -- ============================================================
--- PRODAPP RLS Policies v1.1
--- Güncelleme: 21 Mayıs 2026
--- Değişiklik: profiles_own_list + invitations RLS + 2 index eklendi
+-- PRODAPP RLS Policies v1.2
+-- Güncelleme: 22 Mayıs 2026
+-- Değişiklik: Helper fonksiyonlar auth → public schema'ya taşındı
 -- Bağımlılık: SUPABASE-SCHEMA.sql v1.1 (17 tablo + projects + invitations)
 -- Yöntem: JWT custom claims (raw_app_meta_data)
 -- Claims: project_id, role (saha/dept/muhasebe), dept_id
 -- ============================================================
 
 -- ============================================================
--- HELPER: JWT claim shortcuts (immutable fonksiyonlar, RLS-safe)
+-- HELPER: JWT claim shortcuts (public schema, RLS-safe)
 -- ============================================================
-CREATE OR REPLACE FUNCTION auth.project_id()
+CREATE OR REPLACE FUNCTION public.project_id()
 RETURNS UUID AS $$
   SELECT ((auth.jwt() -> 'app_metadata') ->> 'project_id')::uuid
 $$ LANGUAGE sql STABLE;
 
-CREATE OR REPLACE FUNCTION auth.user_role()
+CREATE OR REPLACE FUNCTION public.user_role()
 RETURNS TEXT AS $$
   SELECT (auth.jwt() -> 'app_metadata') ->> 'role'
 $$ LANGUAGE sql STABLE;
 
-CREATE OR REPLACE FUNCTION auth.user_dept_id()
+CREATE OR REPLACE FUNCTION public.user_dept_id()
 RETURNS UUID AS $$
   SELECT ((auth.jwt() -> 'app_metadata') ->> 'dept_id')::uuid
 $$ LANGUAGE sql STABLE;
@@ -58,26 +58,26 @@ ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 
 -- SELECT: Muhasebe tümünü, Dept kendi dept, Saha sadece kendini görür
 CREATE POLICY profiles_select ON profiles FOR SELECT USING (
-  project_id = auth.project_id()
+  project_id = public.project_id()
   AND (
-    auth.user_role() = 'muhasebe'
-    OR (auth.user_role() = 'dept' AND dept_id = auth.user_dept_id())
+    public.user_role() = 'muhasebe'
+    OR (public.user_role() = 'dept' AND dept_id = public.user_dept_id())
     OR id = auth.uid()
   )
 );
 
 -- INSERT: Sadece Muhasebe (davet)
 CREATE POLICY profiles_insert ON profiles FOR INSERT WITH CHECK (
-  project_id = auth.project_id()
-  AND auth.user_role() = 'muhasebe'
+  project_id = public.project_id()
+  AND public.user_role() = 'muhasebe'
 );
 
 -- UPDATE: Herkes kendi profilini (ad, tel, avatar). Muhasebe başkasının role/dept'ini.
 CREATE POLICY profiles_update ON profiles FOR UPDATE USING (
-  project_id = auth.project_id()
+  project_id = public.project_id()
   AND (
     id = auth.uid()
-    OR auth.user_role() = 'muhasebe'
+    OR public.user_role() = 'muhasebe'
   )
 );
 
@@ -95,18 +95,18 @@ ALTER TABLE departments ENABLE ROW LEVEL SECURITY;
 
 -- SELECT: Proje içi herkes
 CREATE POLICY departments_select ON departments FOR SELECT USING (
-  project_id = auth.project_id()
+  project_id = public.project_id()
 );
 
 -- INSERT/UPDATE: Sadece Muhasebe
 CREATE POLICY departments_insert ON departments FOR INSERT WITH CHECK (
-  project_id = auth.project_id()
-  AND auth.user_role() = 'muhasebe'
+  project_id = public.project_id()
+  AND public.user_role() = 'muhasebe'
 );
 
 CREATE POLICY departments_update ON departments FOR UPDATE USING (
-  project_id = auth.project_id()
-  AND auth.user_role() = 'muhasebe'
+  project_id = public.project_id()
+  AND public.user_role() = 'muhasebe'
 );
 
 
@@ -117,27 +117,27 @@ ALTER TABLE invitations ENABLE ROW LEVEL SECURITY;
 
 -- SELECT: Muhasebe tümü, Dept kendi dept davetleri
 CREATE POLICY invitations_select ON invitations FOR SELECT USING (
-  project_id = auth.project_id()
+  project_id = public.project_id()
   AND (
-    auth.user_role() = 'muhasebe'
-    OR (auth.user_role() = 'dept' AND dept_id = auth.user_dept_id())
+    public.user_role() = 'muhasebe'
+    OR (public.user_role() = 'dept' AND dept_id = public.user_dept_id())
   )
 );
 
 -- INSERT: Muhasebe herkes, Dept kendi dept'ine saha
 CREATE POLICY invitations_insert ON invitations FOR INSERT WITH CHECK (
-  project_id = auth.project_id()
+  project_id = public.project_id()
   AND invited_by = auth.uid()
   AND (
-    auth.user_role() = 'muhasebe'
-    OR (auth.user_role() = 'dept' AND dept_id = auth.user_dept_id() AND role = 'saha')
+    public.user_role() = 'muhasebe'
+    OR (public.user_role() = 'dept' AND dept_id = public.user_dept_id() AND role = 'saha')
   )
 );
 
 -- UPDATE: Muhasebe (revoke). Accept işlemi Edge Function (service_role) ile.
 CREATE POLICY invitations_update ON invitations FOR UPDATE USING (
-  project_id = auth.project_id()
-  AND auth.user_role() = 'muhasebe'
+  project_id = public.project_id()
+  AND public.user_role() = 'muhasebe'
 );
 
 
@@ -147,17 +147,17 @@ CREATE POLICY invitations_update ON invitations FOR UPDATE USING (
 ALTER TABLE periods ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY periods_select ON periods FOR SELECT USING (
-  project_id = auth.project_id()
+  project_id = public.project_id()
 );
 
 CREATE POLICY periods_insert ON periods FOR INSERT WITH CHECK (
-  project_id = auth.project_id()
-  AND auth.user_role() = 'muhasebe'
+  project_id = public.project_id()
+  AND public.user_role() = 'muhasebe'
 );
 
 CREATE POLICY periods_update ON periods FOR UPDATE USING (
-  project_id = auth.project_id()
-  AND auth.user_role() = 'muhasebe'
+  project_id = public.project_id()
+  AND public.user_role() = 'muhasebe'
 );
 
 
@@ -171,11 +171,11 @@ CREATE POLICY period_closings_select ON period_closings FOR SELECT USING (
   EXISTS (
     SELECT 1 FROM periods p
     WHERE p.id = period_closings.period_id
-      AND p.project_id = auth.project_id()
+      AND p.project_id = public.project_id()
   )
   AND (
-    auth.user_role() = 'muhasebe'
-    OR (auth.user_role() = 'dept' AND dept_id = auth.user_dept_id())
+    public.user_role() = 'muhasebe'
+    OR (public.user_role() = 'dept' AND dept_id = public.user_dept_id())
     OR user_id = auth.uid()
   )
 );
@@ -186,11 +186,11 @@ CREATE POLICY period_closings_update ON period_closings FOR UPDATE USING (
   EXISTS (
     SELECT 1 FROM periods p
     WHERE p.id = period_closings.period_id
-      AND p.project_id = auth.project_id()
+      AND p.project_id = public.project_id()
   )
   AND (
-    (user_id = auth.uid() AND level = auth.user_role())
-    OR auth.user_role() = 'muhasebe'
+    (user_id = auth.uid() AND level = public.user_role())
+    OR public.user_role() = 'muhasebe'
   )
 );
 
@@ -201,17 +201,17 @@ CREATE POLICY period_closings_update ON period_closings FOR UPDATE USING (
 ALTER TABLE expense_categories ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY expense_categories_select ON expense_categories FOR SELECT USING (
-  project_id = auth.project_id()
+  project_id = public.project_id()
 );
 
 CREATE POLICY expense_categories_insert ON expense_categories FOR INSERT WITH CHECK (
-  project_id = auth.project_id()
-  AND auth.user_role() = 'muhasebe'
+  project_id = public.project_id()
+  AND public.user_role() = 'muhasebe'
 );
 
 CREATE POLICY expense_categories_update ON expense_categories FOR UPDATE USING (
-  project_id = auth.project_id()
-  AND auth.user_role() = 'muhasebe'
+  project_id = public.project_id()
+  AND public.user_role() = 'muhasebe'
 );
 
 
@@ -225,11 +225,11 @@ CREATE POLICY dept_subcategories_select ON dept_subcategories FOR SELECT USING (
   EXISTS (
     SELECT 1 FROM departments d
     WHERE d.id = dept_subcategories.dept_id
-      AND d.project_id = auth.project_id()
+      AND d.project_id = public.project_id()
   )
   AND (
-    dept_id = auth.user_dept_id()
-    OR auth.user_role() = 'muhasebe'
+    dept_id = public.user_dept_id()
+    OR public.user_role() = 'muhasebe'
   )
 );
 
@@ -238,11 +238,11 @@ CREATE POLICY dept_subcategories_insert ON dept_subcategories FOR INSERT WITH CH
   EXISTS (
     SELECT 1 FROM departments d
     WHERE d.id = dept_subcategories.dept_id
-      AND d.project_id = auth.project_id()
+      AND d.project_id = public.project_id()
   )
   AND (
-    dept_id = auth.user_dept_id()
-    OR auth.user_role() = 'muhasebe'
+    dept_id = public.user_dept_id()
+    OR public.user_role() = 'muhasebe'
   )
 );
 
@@ -250,11 +250,11 @@ CREATE POLICY dept_subcategories_update ON dept_subcategories FOR UPDATE USING (
   EXISTS (
     SELECT 1 FROM departments d
     WHERE d.id = dept_subcategories.dept_id
-      AND d.project_id = auth.project_id()
+      AND d.project_id = public.project_id()
   )
   AND (
-    dept_id = auth.user_dept_id()
-    OR auth.user_role() = 'muhasebe'
+    dept_id = public.user_dept_id()
+    OR public.user_role() = 'muhasebe'
   )
 );
 
@@ -266,25 +266,25 @@ ALTER TABLE receipts ENABLE ROW LEVEL SECURITY;
 
 -- SELECT: Saha kendi, Dept kendi dept, Muhasebe tümü
 CREATE POLICY receipts_select ON receipts FOR SELECT USING (
-  project_id = auth.project_id()
+  project_id = public.project_id()
   AND (
-    auth.user_role() = 'muhasebe'
-    OR (auth.user_role() = 'dept' AND dept_id = auth.user_dept_id())
+    public.user_role() = 'muhasebe'
+    OR (public.user_role() = 'dept' AND dept_id = public.user_dept_id())
     OR user_id = auth.uid()
   )
 );
 
 -- INSERT: Saha, kendi adına, açık dönem VEYA exception izni ile
 CREATE POLICY receipts_insert ON receipts FOR INSERT WITH CHECK (
-  project_id = auth.project_id()
-  AND auth.user_role() = 'saha'
+  project_id = public.project_id()
+  AND public.user_role() = 'saha'
   AND user_id = auth.uid()
   AND (
     -- Açık dönem
     EXISTS (
       SELECT 1 FROM periods p
       WHERE p.id = receipts.period_id
-        AND p.project_id = auth.project_id()
+        AND p.project_id = public.project_id()
         AND p.status = 'open'
     )
     OR
@@ -293,7 +293,7 @@ CREATE POLICY receipts_insert ON receipts FOR INSERT WITH CHECK (
       SELECT 1 FROM exception_permits ep
       WHERE ep.period_id = receipts.period_id
         AND ep.user_id = auth.uid()
-        AND ep.project_id = auth.project_id()
+        AND ep.project_id = public.project_id()
         AND ep.permit_type = 'late_entry'
         AND ep.is_used = false
         AND (ep.expires_at IS NULL OR ep.expires_at > now())
@@ -303,28 +303,28 @@ CREATE POLICY receipts_insert ON receipts FOR INSERT WITH CHECK (
 
 -- UPDATE: Saha draft iken, Dept dept_pending iken, Muhasebe acc_pending iken
 CREATE POLICY receipts_update ON receipts FOR UPDATE USING (
-  project_id = auth.project_id()
+  project_id = public.project_id()
   AND (
     -- Saha: kendi draft fişleri
-    (auth.user_role() = 'saha' AND user_id = auth.uid() AND status = 'draft')
+    (public.user_role() = 'saha' AND user_id = auth.uid() AND status = 'draft')
     -- Dept: kendi dept'indeki dept_pending fişler
-    OR (auth.user_role() = 'dept' AND dept_id = auth.user_dept_id() AND status = 'dept_pending')
+    OR (public.user_role() = 'dept' AND dept_id = public.user_dept_id() AND status = 'dept_pending')
     -- Muhasebe: tüm statüler (her müdahale approval_log'a düşer)
-    OR auth.user_role() = 'muhasebe'
+    OR public.user_role() = 'muhasebe'
   )
 );
 
 -- DELETE: Saha, kendi draft fişi, açık dönem VEYA exception izni ile
 CREATE POLICY receipts_delete ON receipts FOR DELETE USING (
-  project_id = auth.project_id()
-  AND auth.user_role() = 'saha'
+  project_id = public.project_id()
+  AND public.user_role() = 'saha'
   AND user_id = auth.uid()
   AND status = 'draft'
   AND (
     EXISTS (
       SELECT 1 FROM periods p
       WHERE p.id = receipts.period_id
-        AND p.project_id = auth.project_id()
+        AND p.project_id = public.project_id()
         AND p.status = 'open'
     )
     OR
@@ -332,7 +332,7 @@ CREATE POLICY receipts_delete ON receipts FOR DELETE USING (
       SELECT 1 FROM exception_permits ep
       WHERE ep.period_id = receipts.period_id
         AND ep.user_id = auth.uid()
-        AND ep.project_id = auth.project_id()
+        AND ep.project_id = public.project_id()
         AND ep.permit_type IN ('late_entry', 'reopen')
         AND ep.is_used = false
         AND (ep.expires_at IS NULL OR ep.expires_at > now())
@@ -348,14 +348,14 @@ ALTER TABLE approval_log ENABLE ROW LEVEL SECURITY;
 
 -- SELECT: Saha kendi fişlerine ait, Dept kendi dept, Muhasebe tümü
 CREATE POLICY approval_log_select ON approval_log FOR SELECT USING (
-  auth.user_role() = 'muhasebe'
+  public.user_role() = 'muhasebe'
   OR EXISTS (
     SELECT 1 FROM receipts r
     WHERE r.id = approval_log.receipt_id
-      AND r.project_id = auth.project_id()
+      AND r.project_id = public.project_id()
       AND (
         r.user_id = auth.uid()
-        OR (auth.user_role() = 'dept' AND r.dept_id = auth.user_dept_id())
+        OR (public.user_role() = 'dept' AND r.dept_id = public.user_dept_id())
       )
   )
 );
@@ -372,13 +372,13 @@ ALTER TABLE advances ENABLE ROW LEVEL SECURITY;
 
 -- SELECT: Saha kendi, Dept kendi dept, Muhasebe tümü
 CREATE POLICY advances_select ON advances FOR SELECT USING (
-  project_id = auth.project_id()
+  project_id = public.project_id()
   AND (
-    auth.user_role() = 'muhasebe'
-    OR (auth.user_role() = 'dept' AND EXISTS (
+    public.user_role() = 'muhasebe'
+    OR (public.user_role() = 'dept' AND EXISTS (
       SELECT 1 FROM profiles p
       WHERE p.id = advances.user_id
-        AND p.dept_id = auth.user_dept_id()
+        AND p.dept_id = public.user_dept_id()
     ))
     OR user_id = auth.uid()
   )
@@ -386,15 +386,15 @@ CREATE POLICY advances_select ON advances FOR SELECT USING (
 
 -- INSERT: Saha kendi adına
 CREATE POLICY advances_insert ON advances FOR INSERT WITH CHECK (
-  project_id = auth.project_id()
-  AND auth.user_role() = 'saha'
+  project_id = public.project_id()
+  AND public.user_role() = 'saha'
   AND user_id = auth.uid()
 );
 
 -- UPDATE: Muhasebe (onay, settlement)
 CREATE POLICY advances_update ON advances FOR UPDATE USING (
-  project_id = auth.project_id()
-  AND auth.user_role() = 'muhasebe'
+  project_id = public.project_id()
+  AND public.user_role() = 'muhasebe'
 );
 
 
@@ -408,14 +408,14 @@ CREATE POLICY advance_log_select ON advance_log FOR SELECT USING (
   EXISTS (
     SELECT 1 FROM advances a
     WHERE a.id = advance_log.advance_id
-      AND a.project_id = auth.project_id()
+      AND a.project_id = public.project_id()
       AND (
-        auth.user_role() = 'muhasebe'
+        public.user_role() = 'muhasebe'
         OR a.user_id = auth.uid()
-        OR (auth.user_role() = 'dept' AND EXISTS (
+        OR (public.user_role() = 'dept' AND EXISTS (
           SELECT 1 FROM profiles p
           WHERE p.id = a.user_id
-            AND p.dept_id = auth.user_dept_id()
+            AND p.dept_id = public.user_dept_id()
         ))
       )
   )
@@ -431,23 +431,23 @@ ALTER TABLE exception_permits ENABLE ROW LEVEL SECURITY;
 
 -- SELECT: Saha kendi, Muhasebe tümü
 CREATE POLICY exception_permits_select ON exception_permits FOR SELECT USING (
-  project_id = auth.project_id()
+  project_id = public.project_id()
   AND (
-    auth.user_role() = 'muhasebe'
+    public.user_role() = 'muhasebe'
     OR user_id = auth.uid()
   )
 );
 
 -- INSERT: Muhasebe + Dept
 CREATE POLICY exception_permits_insert ON exception_permits FOR INSERT WITH CHECK (
-  project_id = auth.project_id()
-  AND auth.user_role() IN ('muhasebe', 'dept')
+  project_id = public.project_id()
+  AND public.user_role() IN ('muhasebe', 'dept')
 );
 
 -- UPDATE: Muhasebe (is_used flag)
 CREATE POLICY exception_permits_update ON exception_permits FOR UPDATE USING (
-  project_id = auth.project_id()
-  AND auth.user_role() = 'muhasebe'
+  project_id = public.project_id()
+  AND public.user_role() = 'muhasebe'
 );
 
 
@@ -460,7 +460,7 @@ CREATE POLICY period_budgets_select ON period_budgets FOR SELECT USING (
   EXISTS (
     SELECT 1 FROM periods p
     WHERE p.id = period_budgets.period_id
-      AND p.project_id = auth.project_id()
+      AND p.project_id = public.project_id()
   )
 );
 
@@ -468,18 +468,18 @@ CREATE POLICY period_budgets_insert ON period_budgets FOR INSERT WITH CHECK (
   EXISTS (
     SELECT 1 FROM periods p
     WHERE p.id = period_budgets.period_id
-      AND p.project_id = auth.project_id()
+      AND p.project_id = public.project_id()
   )
-  AND auth.user_role() = 'muhasebe'
+  AND public.user_role() = 'muhasebe'
 );
 
 CREATE POLICY period_budgets_update ON period_budgets FOR UPDATE USING (
   EXISTS (
     SELECT 1 FROM periods p
     WHERE p.id = period_budgets.period_id
-      AND p.project_id = auth.project_id()
+      AND p.project_id = public.project_id()
   )
-  AND auth.user_role() = 'muhasebe'
+  AND public.user_role() = 'muhasebe'
 );
 
 
@@ -493,11 +493,11 @@ CREATE POLICY dept_budgets_select ON dept_budgets FOR SELECT USING (
   EXISTS (
     SELECT 1 FROM periods p
     WHERE p.id = dept_budgets.period_id
-      AND p.project_id = auth.project_id()
+      AND p.project_id = public.project_id()
   )
   AND (
-    auth.user_role() = 'muhasebe'
-    OR dept_id = auth.user_dept_id()
+    public.user_role() = 'muhasebe'
+    OR dept_id = public.user_dept_id()
   )
 );
 
@@ -505,18 +505,18 @@ CREATE POLICY dept_budgets_insert ON dept_budgets FOR INSERT WITH CHECK (
   EXISTS (
     SELECT 1 FROM periods p
     WHERE p.id = dept_budgets.period_id
-      AND p.project_id = auth.project_id()
+      AND p.project_id = public.project_id()
   )
-  AND auth.user_role() = 'muhasebe'
+  AND public.user_role() = 'muhasebe'
 );
 
 CREATE POLICY dept_budgets_update ON dept_budgets FOR UPDATE USING (
   EXISTS (
     SELECT 1 FROM periods p
     WHERE p.id = dept_budgets.period_id
-      AND p.project_id = auth.project_id()
+      AND p.project_id = public.project_id()
   )
-  AND auth.user_role() = 'muhasebe'
+  AND public.user_role() = 'muhasebe'
 );
 
 
@@ -527,7 +527,7 @@ ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 
 -- SELECT: Herkes kendi
 CREATE POLICY notifications_select ON notifications FOR SELECT USING (
-  project_id = auth.project_id()
+  project_id = public.project_id()
   AND recipient_id = auth.uid()
 );
 
@@ -535,7 +535,7 @@ CREATE POLICY notifications_select ON notifications FOR SELECT USING (
 
 -- UPDATE: Kendi bildirimi (is_read)
 CREATE POLICY notifications_update ON notifications FOR UPDATE USING (
-  project_id = auth.project_id()
+  project_id = public.project_id()
   AND recipient_id = auth.uid()
 );
 
@@ -549,7 +549,7 @@ ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 
 -- CHATS SELECT: Katılımcılar
 CREATE POLICY chats_select ON chats FOR SELECT USING (
-  project_id = auth.project_id()
+  project_id = public.project_id()
   AND EXISTS (
     SELECT 1 FROM chat_participants cp
     WHERE cp.chat_id = chats.id
@@ -559,7 +559,7 @@ CREATE POLICY chats_select ON chats FOR SELECT USING (
 
 -- CHATS INSERT: Proje içi herkes chat oluşturabilir
 CREATE POLICY chats_insert ON chats FOR INSERT WITH CHECK (
-  project_id = auth.project_id()
+  project_id = public.project_id()
   AND created_by = auth.uid()
 );
 
@@ -577,8 +577,8 @@ CREATE POLICY chat_participants_insert ON chat_participants FOR INSERT WITH CHEC
   EXISTS (
     SELECT 1 FROM chats c
     WHERE c.id = chat_participants.chat_id
-      AND c.project_id = auth.project_id()
-      AND (c.created_by = auth.uid() OR auth.user_role() = 'muhasebe')
+      AND c.project_id = public.project_id()
+      AND (c.created_by = auth.uid() OR public.user_role() = 'muhasebe')
   )
 );
 
@@ -608,17 +608,17 @@ CREATE POLICY messages_insert ON messages FOR INSERT WITH CHECK (
 ALTER TABLE company_settings ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY company_settings_select ON company_settings FOR SELECT USING (
-  project_id = auth.project_id()
+  project_id = public.project_id()
 );
 
 CREATE POLICY company_settings_insert ON company_settings FOR INSERT WITH CHECK (
-  project_id = auth.project_id()
-  AND auth.user_role() = 'muhasebe'
+  project_id = public.project_id()
+  AND public.user_role() = 'muhasebe'
 );
 
 CREATE POLICY company_settings_update ON company_settings FOR UPDATE USING (
-  project_id = auth.project_id()
-  AND auth.user_role() = 'muhasebe'
+  project_id = public.project_id()
+  AND public.user_role() = 'muhasebe'
 );
 
 
@@ -628,17 +628,17 @@ CREATE POLICY company_settings_update ON company_settings FOR UPDATE USING (
 ALTER TABLE project_rules ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY project_rules_select ON project_rules FOR SELECT USING (
-  project_id = auth.project_id()
+  project_id = public.project_id()
 );
 
 CREATE POLICY project_rules_insert ON project_rules FOR INSERT WITH CHECK (
-  project_id = auth.project_id()
-  AND auth.user_role() = 'muhasebe'
+  project_id = public.project_id()
+  AND public.user_role() = 'muhasebe'
 );
 
 CREATE POLICY project_rules_update ON project_rules FOR UPDATE USING (
-  project_id = auth.project_id()
-  AND auth.user_role() = 'muhasebe'
+  project_id = public.project_id()
+  AND public.user_role() = 'muhasebe'
 );
 
 
@@ -715,8 +715,8 @@ CREATE TRIGGER trg_advance_log
 -- VARSAYIMLAR & NOTLAR
 -- ============================================================
 -- 1. JWT claims auth.users.raw_app_meta_data'da: { project_id, role, dept_id }
--- 2. Helper fonksiyonlar (auth.project_id vb.) SECURITY INVOKER değil,
---    sadece JWT parse — güvenlik riski yok.
+-- 2. Helper fonksiyonlar public schema'da tanımlı (public.project_id vb.)
+--    auth.jwt() ve auth.uid() Supabase built-in — onlar auth'da kalır.
 -- 3. Log tabloları (approval_log, advance_log) client INSERT policy yok —
 --    trigger SECURITY DEFINER ile yazıyor, bu sadece log INSERT için.
 -- 4. period_closings INSERT service_role ile (Edge Function veya trigger).
