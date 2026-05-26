@@ -314,3 +314,43 @@ Proje bazlı kural matrisi — takvim kuralları, harcama limitleri, yaptırım 
 
 ### Dil Seçimi + Onboarding Tutorial
 **Karar:** Giriş akışından çıkarıldı. Faz 2'ye taşındı. Faz 1 login ekranı dil seçimi içermez.
+
+---
+
+## 12. BÖLÜM — 26 MAYIS SESSION KARARLARI (2)
+
+### Marka Adı
+**Karar:** Uygulama adı KAAPA olarak kesinleşti. Tüm dokümanlarda ve kod tabanında "PRODAPP" ifadesi "KAAPA" olarak kullanılacak.
+
+### Avans Kilitleme ve Kilit Açma
+**Karar:** Dekont yüklenip Muhasebe onayladıktan sonra avans kaydı kilitlenir. Hatalı dekont durumunda yalnızca Muhasebe rolü kilidi açabilir. Kilit açma işlemi audit log'a sebep ile birlikte yazılır.
+
+### Saha İtiraz Bildirimi
+**Karar:** Saha, kendi avans ekranında "Dekonta İtiraz Et" butonuyla kısa açıklama girer. Muhasebe'ye bildirim gider, Muhasebe inceleyip düzeltir. Sistem dışı iletişim gerekmez.
+
+### Dekont Doğrulama
+**Karar:** OCR ile dekont içeriği okunur. IBAN veya tutar uyuşmazsa sistem uyarı gösterir ancak engellemez. Nihai karar Muhasebe'dedir.
+
+### Dept Dekont Yükleme Yetkisi
+**Karar:** Dekont yükleme yetkisi Dept'e de verilir. Muhasebe'ye bildirim gider, Muhasebe onaylar veya reddeder. Onayda kayıt kilitlenir.
+
+### Nakit Avans Akışı
+**Karar:** Dept nakit avans açar → otomatik aktif olur → Muhasebe bildirim alır, itiraz edebilir (itiraz halinde avans dondurulur) → fiziksel nakit teslimi sistem dışında gerçekleşir → Dept "nakit verildi" işaretler → Saha "nakit alındı" onaylar → çift taraflı teyit tamamlanır.
+
+### Avans Dekont Storage
+**Karar:** Supabase Storage, `advances` bucket. RLS ile yalnızca ilgili proje üyeleri erişir. Saha yalnızca kendi avansının dekontunu görür.
+
+### Nakit Avans Muhasebe Onayı
+**Karar:** Nakit avansta Muhasebe ön onayı yoktur. Dept açar, otomatik aktif olur. Muhasebe itiraz hakkına sahiptir; itiraz halinde avans dondurulur.
+
+### Hot Cost Zamanlaması
+**Karar:** Set wrap saatine bağlıdır, takvim günü değil. Wrap + 2 saat içinde otomatik tetiklenir. Dept kapatmazsa sistem zorla kapatır. Dept "set bitti" diyerek manuel override yapabilir (gece çekimi senaryosu için).
+
+### Hot Cost İçeriği
+**Karar:** Tek ekranda rapor formatında: toplam harcanan / bütçeden kalan / departman bazlı dağılım / bütçe sapma yüzdesi. Export edilebilir.
+
+### Hot Cost Görüntüleme Yetkisi
+**Karar:** Muhasebe tüm projeyi görür. Dept yalnızca kendi departmanını görür. Saha göremez. Yapımcı rolü Faz 2'de tam yetkiyle eklenecek.
+
+### Mesai Hesaplama
+**Karar:** Faz 2'ye taşındı. Expense management kapsamı dışında, HR/payroll alanına giriyor. Tüm ekip listesi (app dışı üyeler dahil) ayrı veri modeli gerektiriyor.

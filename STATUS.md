@@ -18,11 +18,17 @@ Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 - G10 kesinleşti: Split ödenmeyen kısım → child receipt oluşturulur
 - G11 kesinleşti: Denetçi modu Faz 2'ye taşındı
 - Dil seçimi ve onboarding tutorial Faz 2'ye taşındı
+- Marka adı: KAAPA (kesinleşti)
+- Avans akışı: kilitleme, itiraz, dekont doğrulama, nakit çift teyit (kesinleşti)
+- Hot Cost: wrap+2h tetik, manuel override, içerik, yetki dağılımı (kesinleşti)
+- Mesai hesaplama Faz 2'ye taşındı
 
 ## Faz 2'ye Taşınanlar
 - Denetçi modu (G11)
 - Dil seçimi ekranı
 - Onboarding tutorial
+- Mesai hesaplama (tüm ekip listesi, app dışı üyeler dahil)
+- Yapımcı rolü hot cost tam görünümü
 
 ## Açık Sorular
 - [ ] Login sayfası görsel tasarımı — yeni tasarım session'ı gerekiyor
