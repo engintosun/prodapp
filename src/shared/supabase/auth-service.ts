@@ -15,7 +15,7 @@ export async function getOwnProfiles(): Promise<ProfileWithProject[]> {
     .is('soft_deleted_at', null)
 
   if (error) throw new Error(error.message)
-  return data as ProfileWithProject[]
+  return data as unknown as ProfileWithProject[]
 }
 
 export async function setClaims(projectId: string): Promise<void> {
