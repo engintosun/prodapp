@@ -4,29 +4,26 @@
 Temel altyapı (ARCHITECTURE.md 2.5 — Milestone 1)
 Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 
-## Son Session (26 Mayıs 2026 — Commit 2 backend: RLS + set-claims)
+## Son Session (27 Mayıs 2026 — Commit 2b frontend: proje seçimi + üç-hâl App.tsx)
 
 **Yapılan:**
-- projects tablosu RLS açığı kapatıldı:
-  - Mikro-commit fix(rls): projects RLS + projects_own_list main'e gitti
-  - projects'e RLS açıldı + projects_own_list policy (claim'siz; kullanıcının aktif profili olan aktif projeleri döndürür)
-  - Supabase SQL Editor'de canlı uygulandı, relrowsecurity = true ile doğrulandı
-  - AUTH-KARARLARI.md SK-AUTH-7 eklendi
-  - Önceki durum: RLS kapalıydı, tüm şirketlerin proje adları sızıyordu (KVKK ihlali)
-- set-claims Edge Function:
-  - Commit feat(auth): set-claims edge function main'e gitti (supabase/functions/set-claims/index.ts, tek dosya, CORS inline)
-  - Supabase Dashboard Via Editor ile canlı deploy edildi, verify_jwt açık
-  - Güvenlik: uid JWT'den (getUser), role/dept_id profiles'tan service_role ile okunur, body'ye güvenilmez; sahiplik doğrulaması (id+project_id+is_active+soft_deleted_at IS NULL), eşleşme yoksa 403
-  - AUTH-KARARLARI.md SK-AUTH-4 güvenlik modeli (6 madde) eklendi
-  - Endpoint: https://owadnnmtnfuzobyxtcxf.supabase.co/functions/v1/set-claims
+- App.tsx üç-hâl routing eklendi (loading/login/project-select/shell)
+  - session var + app_metadata.project_id yok → ProjectSelectionPage
+  - refreshSession sonrası onAuthStateChange yeni claim'i yakalar → AuthenticatedShell
+- ProjectSelectionPage oluşturuldu (src/app/auth/project-selection-page.tsx)
+  - Tek profil: otomatik setClaims, ekran gösterilmez
+  - Çoklu profil: kart listesi, tıkla → setClaims → otomatik geçiş
+- auth-service.ts oluşturuldu (src/shared/supabase/auth-service.ts)
+  - getOwnProfiles: profiles_own_list RLS ile claim gerektirmeden profil listesi
+  - setClaims: set-claims Edge Function + refreshSession
 
 **Notlar:**
-- Edge Function deploy MANUEL (git proxy'sinin Supabase yetkisi yok) — RLS canlı apply gibi
-- set-claims ilk Edge Function; _shared yok, ikinci fonksiyonda _shared/cors.ts'e refactor
-- IZLE: Fonksiyon "Verify JWT with legacy secret" modunda. 2b uçtan uca testte 401 gelirse ilk bakılacak yer burası.
+- Uçtan uca test Engin tarafından yapılacak
+- IZLE: set-claims legacy JWT 401 ihtimali — 401 gelirse Edge Function verify_jwt moduna bak
 
-**Temizlik (düşük öncelik):**
-- Remote branch claude/projects-rls-security-G44TD silinemedi (proxy'de branch silme izni 403) — GitHub UI'dan elle silinir, kozmetik
+**Önceki session özeti (26 Mayıs 2026 — Commit 2 backend: RLS + set-claims):**
+- projects RLS + projects_own_list policy — canlı uygulandı, SK-AUTH-7 eklendi
+- set-claims Edge Function — canlı deploy, SK-AUTH-4 eklendi
 
 ## Faz 2'ye Taşınanlar
 - Denetçi modu (G11)
@@ -43,18 +40,9 @@ Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 - [ ] Proje adı hem projects.name hem company_settings.project_name'de — SSOT kokusu, TECH-DEBT adayı
 
 ## Sonraki Session Gündemi
-1. Commit 2b (frontend): proje seçimi ekranı + üç-hâl App.tsx
-   - ROUTING KARARI: A — üç hâl App.tsx'te switch edilir, App.tsx ince router kalır (mantık page bileşenlerinde):
-     - loading → null/spinner
-     - session yok → LoginPage
-     - session var + project_id claim yok → ProjectSelectionPage (src/app/auth/ altında)
-     - session var + project_id claim var → AuthenticatedShell
-   - Claim okuma: session.user.app_metadata?.project_id (manuel jwt parse yok; refreshSession sonrası güncellenir)
-   - Akış: login sonrası profiles_own_list ile profiller listelenir, kullanıcı seçer, set-claims çağrılır, refreshSession, onAuthStateChange yeni claim'le App'i render eder, RLS aktif
-   - Tek-profilli kullanıcı: seçim ekranı atlanır, set-claims doğrudan çağrılır
-   - Proje seçim ekranı proje ADINI projects tablosundan okur (projects_own_list sayesinde)
-   - 2b başında ARCHITECTURE.md routing bölümünü teyit et (router dayatıyorsa üç hâl route+guard olur; yerleşim prensibi yine A: gate auth katmanında, shell'de değil)
-   - Uçtan uca test: login, seçim, claims, RLS; legacy-secret 401 ihtimaline dikkat
+1. Uçtan uca test: login → proje seçimi → set-claims → RLS doğrulama
+   - 401 gelirse: set-claims Edge Function "Verify JWT with legacy secret" modunu kontrol et
+   - Test senaryoları: tek profilli kullanıcı (auto-select), çoklu profilli kullanıcı (kart seçimi)
 
 ## Sonraki Session — Okunacak Dosyalar
 - STATUS.md (bu dosya)
@@ -91,3 +79,4 @@ Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 - [x] projects RLS + projects_own_list (commit + canlı apply + doğrulandı)
 - [x] set-claims Edge Function (commit + canlı deploy, verify_jwt açık)
 - [x] 2b routing kararı: A (App.tsx üç-hâl)
+- [x] Proje seçim ekranı + üç-hâl App.tsx routing (commit 2b)
