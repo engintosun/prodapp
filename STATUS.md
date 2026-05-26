@@ -4,34 +4,39 @@
 Temel altyapı (ARCHITECTURE.md 2.5 — Milestone 1)
 Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 
-## Son Session (22 Mayıs 2026)
+## Son Session (26 Mayıs 2026)
 
 **Yapılan:**
-- Repo klonlandı, scaffold doğrulandı
-- Dev server kontrolü: npm install ✓, tsc ✓, vite build ✓, vite dev ✓
-- Login sayfası planı hazırlandı (email+şifre → Supabase auth, iki aşamalı: login + proje seçimi)
-- Session protokolü eksikliği tespit edildi ve düzeltildi (STATUS.md + durum raporu mekanizması)
-- TASARIM-KARARLARI.md'deki görsel kararların v8 kalıntısı olduğu tespit edildi
+- Login sayfası (commit 1) tamamlandı: email+şifre form, Supabase auth, session takibi
+- G8-G11 tasarım kararları kesinleşti (detaylar TASARIM-KARARLARI.md'de)
+- Dil seçimi ve onboarding tutorial giriş akışından çıkarıldı, Faz 2'ye taşındı
 
 **Alınan kararlar:**
-- Login akışı iki commit: (1) login formu + auth, (2) proje seçimi + claims
-- STATUS.md oluşturuldu, session protokolü CLAUDE.md'ye taşındı
-- TASARIM-KARARLARI.md olduğu gibi korunuyor, görsel kararlar yeni epoch'ta yeniden değerlendirilecek
+- Login akışı commit 1 tamamlandı, commit 2 (proje seçimi + claims) sırada
+- G8 kesinleşti: Offline → draft statüsü, bağlantıda otomatik sync
+- G9 kesinleşti: QR tespit → GİB API; QR yok/hata → OCR fallback; 3 sn hard timeout
+- G10 kesinleşti: Split ödenmeyen kısım → child receipt oluşturulur
+- G11 kesinleşti: Denetçi modu Faz 2'ye taşındı
+- Dil seçimi ve onboarding tutorial Faz 2'ye taşındı
+
+## Faz 2'ye Taşınanlar
+- Denetçi modu (G11)
+- Dil seçimi ekranı
+- Onboarding tutorial
 
 ## Açık Sorular
 - [ ] Login sayfası görsel tasarımı — yeni tasarım session'ı gerekiyor
 - [ ] JWT claims yazma Edge Function tasarımı (commit 2'de ele alınacak)
 
 ## Sonraki Session Gündemi
-1. Sonnet handoff prompt'u — login sayfası (commit 1: form + auth, stil belirlenmedi, sade gidilecek)
-2. Login sonrası proje seçimi planı (commit 2 hazırlığı)
+1. Commit 2: proje seçimi ekranı + JWT custom claims yazma
 
 ## Sonraki Session — Okunacak Dosyalar
 - STATUS.md (bu dosya)
 - CLAUDE.md
-- docs/AUTH-KARARLARI.md (login akışı detayları)
-- src/shared/supabase/client.ts (mevcut Supabase client)
-- src/App.tsx (mevcut uygulama kabuğu)
+- docs/AUTH-KARARLARI.md (claims ve proje seçimi detayları)
+- src/App.tsx (mevcut session yönetimi)
+- src/app/auth/authenticated-shell.tsx (commit 2'de genişletilecek)
 
 ## Doküman Sağlık Tablosu
 
@@ -40,7 +45,7 @@ Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 | CLAUDE.md | ✓ güncel | Session protokolü eklendi |
 | ARCHITECTURE.md | ✓ güncel | 1.1 session ritüeli referansa dönüştürüldü |
 | AUTH-KARARLARI.md | ✓ güncel | |
-| TASARIM-KARARLARI.md | ⚠ karma | İş akışı kararları geçerli, görsel kararlar sıfırlandı |
+| TASARIM-KARARLARI.md | ✓ güncel | G8-G11 kararları eklendi, Faz 2 maddeleri işaretlendi |
 | GLOSSARY.md | ✓ güncel | |
 | TECH-DEBT.md | boş | Henüz içerik yok |
 
@@ -51,3 +56,4 @@ Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 - [x] CLAUDE.md + routing tablosu
 - [x] Mimari dokümanlar tamamlandı
 - [x] Dev server çalışıyor (tsc, build, dev ✓)
+- [x] Login sayfası — commit 1 (email+şifre form, session takibi)

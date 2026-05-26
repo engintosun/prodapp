@@ -295,3 +295,22 @@ Proje bazlı kural matrisi — takvim kuralları, harcama limitleri, yaptırım 
 ### 10.6 Hard Delete
 - Sadece Admin. Mali kayıtlar anonimleştirilir, silinmez. Log zorunlu.
 - KVKK md.7: anonimleştirme, TTK 10 yıl saklama.
+
+---
+
+## 11. OTURUM KARARLARI — 26 Mayıs 2026
+
+### G8 — Offline Senaryo
+**Karar:** Offline kuyruk uygulanır. Fiş, bağlantı yokken cihazda `draft` statüsüyle saklanır. Bağlantı sağlandığında otomatik sync tetiklenir. Sunucuya ulaşana kadar kayıt taslak sayılır; SSOT ihlali oluşmaz.
+
+### G9 — QR-OCR Akışı
+**Karar:** Kamera QR tespit ederse GİB API'ye istek atılır, OCR atlanır. QR okunamazsa veya tespit edilemezse OCR tetiklenir. GİB API için 3 saniye hard timeout; aşılırsa sessizce OCR'a fallback yapılır. Kota riski Milestone 2'de izlenir.
+
+### G10 — Split Ödenmeyen Kısım
+**Karar:** Split işleminde ödenmeyen kısım için ayrı bir child receipt oluşturulur. Tek kayıtta alan tutulması yerine parent-child ilişkisi kurulur.
+
+### G11 — Denetçi Modu
+**Karar:** Faz 1'de yer almaz. AUTH-KARARLARI.md'deki "sonraya" kararı korunur.
+
+### Dil Seçimi + Onboarding Tutorial
+**Karar:** Giriş akışından çıkarıldı. Faz 2'ye taşındı. Faz 1 login ekranı dil seçimi içermez.
