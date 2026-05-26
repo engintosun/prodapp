@@ -18,7 +18,7 @@ Deno.serve(async (req) => {
 
   try {
     const authHeader = req.headers.get('Authorization')
-    if (!authHeader) return json({ error: 'Yetkilendirme başlığı yok' }, 401)
+    if (!authHeader) return json({ error: 'Yetkilendirme basligi yok' }, 401)
 
     const body = await req.json().catch(() => ({}))
     const projectId = body?.project_id
@@ -34,7 +34,7 @@ Deno.serve(async (req) => {
       global: { headers: { Authorization: authHeader } },
     })
     const { data: userData, error: userErr } = await userClient.auth.getUser()
-    if (userErr || !userData?.user) return json({ error: 'Geçersiz oturum' }, 401)
+    if (userErr || !userData?.user) return json({ error: 'Gecersiz oturum' }, 401)
     const uid = userData.user.id
 
     const admin = createClient(supabaseUrl, serviceKey)
@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
       .is('soft_deleted_at', null)
       .maybeSingle()
 
-    if (profErr) return json({ error: 'Profil sorgusu başarısız' }, 500)
+    if (profErr) return json({ error: 'Profil sorgusu basarisiz' }, 500)
     if (!profile) return json({ error: 'Bu projede aktif profiliniz yok' }, 403)
 
     const { error: updErr } = await admin.auth.admin.updateUserById(uid, {
@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
         dept_id: profile.dept_id,
       },
     })
-    if (updErr) return json({ error: 'Claims yazılamadı' }, 500)
+    if (updErr) return json({ error: 'Claims yazilamadi' }, 500)
 
     return json({ ok: true, project_id: profile.project_id, role: profile.role }, 200)
   } catch (_e) {

@@ -1,12 +1,28 @@
 -- ============================================================
--- PRODAPP RLS Policies v1.3
--- Güncelleme: 26 Mayıs 2026
+-- PRODAPP RLS Policies v1.4
+-- Güncelleme: 27 Mayıs 2026
+-- Değişiklik: v1.4 — GRANT izinleri eklendi (authenticated SELECT + service_role ALL)
 -- Değişiklik: v1.3 — projects RLS + projects_own_list (claim'siz proje listesi)
 -- Değişiklik: v1.2 — Helper fonksiyonlar auth → public schema'ya taşındı
 -- Bağımlılık: SUPABASE-SCHEMA.sql v1.1 (17 tablo + projects + invitations)
 -- Yöntem: JWT custom claims (raw_app_meta_data)
 -- Claims: project_id, role (saha/dept/muhasebe), dept_id
 -- ============================================================
+
+-- ============================================================
+-- TABLO ERİŞİM İZİNLERİ (GRANT)
+-- RLS satır filtresi uygular, GRANT tablo erişim izni verir. İkisi farklı.
+-- Bu GRANT'lar olmadan RLS policy'ler çalışmaz.
+-- Uygulandı: 27 Mayıs 2026, Supabase SQL Editor
+-- ============================================================
+-- authenticated rolü: tüm tablolarda SELECT
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO authenticated;
+-- service_role: tüm tablolarda tam yetki (Edge Functions için)
+GRANT ALL ON ALL TABLES IN SCHEMA public TO service_role;
+-- NOT: Bu komutlar mevcut tabloları kapsar. Yeni tablo eklenirse
+-- ya bu komutlar tekrar çalıştırılmalı ya da default_privileges ayarlanmalı:
+-- ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO authenticated;
+-- ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO service_role;
 
 -- ============================================================
 -- HELPER: JWT claim shortcuts (public schema, RLS-safe)
