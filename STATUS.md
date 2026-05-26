@@ -7,12 +7,12 @@ Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 ## Son Session (26 Mayıs 2026)
 
 **Yapılan:**
-- Login sayfası scaffold mevcut (KAAPA marka adı güncellendi)
-- G8-G11 tasarım kararları kesinleşti (detaylar TASARIM-KARARLARI.md'de)
-- Dil seçimi ve onboarding tutorial giriş akışından çıkarıldı, Faz 2'ye taşındı
+- Login (Commit 1) tamamlandı ve canlıda uçtan uca test edildi — KAAPA markası, email+şifre, authenticated-shell açılıyor
+- Vercel deploy kuruldu: `prodapp-navy.vercel.app` — main'e her push otomatik deploy
+- Env değişkenleri Vercel'de tanımlı: `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY`
+- Supabase test kullanıcısı `test@kaapa.app` ile login zinciri doğrulandı (Supabase auth → env → Vercel → React → session)
 
 **Alınan kararlar:**
-- Login akışı commit 1 tamamlandı, commit 2 (proje seçimi + claims) sırada
 - G8 kesinleşti: Offline → draft statüsü, bağlantıda otomatik sync
 - G9 kesinleşti: QR tespit → GİB API; QR yok/hata → OCR fallback; 3 sn hard timeout
 - G10 kesinleşti: Split ödenmeyen kısım → child receipt oluşturulur
@@ -35,8 +35,7 @@ Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 - [ ] JWT claims yazma Edge Function tasarımı (commit 2'de ele alınacak)
 
 ## Sonraki Session Gündemi
-1. Commit 1 test: Supabase Dashboard'dan test kullanıcısı oluştur, giriş dene
-2. Commit 2: proje seçimi ekranı + JWT custom claims
+1. Commit 2: proje seçimi ekranı + JWT custom claims (Edge Function: `set-claims`)
 
 ## Sonraki Session — Okunacak Dosyalar
 - STATUS.md (bu dosya)
