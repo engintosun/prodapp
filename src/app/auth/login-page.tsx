@@ -28,7 +28,7 @@ export function LoginPage() {
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '320px' }}>
-        <h1 style={{ margin: 0 }}>PRODAPP</h1>
+        <h1 style={{ margin: 0 }}>KAAPA</h1>
         <input
           type="email"
           placeholder="Email"

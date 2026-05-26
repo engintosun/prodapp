@@ -7,7 +7,7 @@ Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 ## Son Session (26 Mayıs 2026)
 
 **Yapılan:**
-- Login sayfası (commit 1) tamamlandı: email+şifre form, Supabase auth, session takibi
+- Login sayfası scaffold mevcut (KAAPA marka adı güncellendi)
 - G8-G11 tasarım kararları kesinleşti (detaylar TASARIM-KARARLARI.md'de)
 - Dil seçimi ve onboarding tutorial giriş akışından çıkarıldı, Faz 2'ye taşındı
 
@@ -35,7 +35,8 @@ Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 - [ ] JWT claims yazma Edge Function tasarımı (commit 2'de ele alınacak)
 
 ## Sonraki Session Gündemi
-1. Commit 2: proje seçimi ekranı + JWT custom claims yazma
+1. Commit 1 test: Supabase Dashboard'dan test kullanıcısı oluştur, giriş dene
+2. Commit 2: proje seçimi ekranı + JWT custom claims
 
 ## Sonraki Session — Okunacak Dosyalar
 - STATUS.md (bu dosya)
