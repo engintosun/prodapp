@@ -1,27 +1,21 @@
-# PRODAPP — STATUS.md
+# KAAPA — STATUS.md
 
 ## Aktif Milestone
 Temel altyapı (ARCHITECTURE.md 2.5 — Milestone 1)
 Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 
-## Son Session (26 Mayıs 2026)
+## Son Session (26 Mayıs 2026 — marka + altyapı session'ı)
 
 **Yapılan:**
-- Login (Commit 1) tamamlandı ve canlıda uçtan uca test edildi — KAAPA markası, email+şifre, authenticated-shell açılıyor
-- Vercel deploy kuruldu: `prodapp-navy.vercel.app` — main'e her push otomatik deploy
-- Env değişkenleri Vercel'de tanımlı: `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY`
-- Supabase test kullanıcısı `test@kaapa.app` ile login zinciri doğrulandı (Supabase auth → env → Vercel → React → session)
+- Marka adı PRODAPP → KAAPA geçişi tamamlandı
+  - Commit A (docs): CLAUDE.md, ARCHITECTURE.md, AUTH-KARARLARI.md, GLOSSARY.md, TASARIM-KARARLARI.md, TECH-DEBT.md
+  - Commit B (chore): index.html title, package.json name, README.md, favicon (Vite logosu → geçici placeholder), icons.svg silindi
+- SK-AUTH-4'e claims yazma mekanizması eklendi: Edge Function `set-claims` (service_role → raw_app_meta_data → refreshSession)
+- Supabase proje adı KAAPA yapıldı (URL/key değişmedi)
+- v8 arşivinin yeri netleşti: ayrı repo `engintosun/prodapp-archive` (eski "archive/v8-demo branch" referansı düzeltildi)
 
 **Alınan kararlar:**
-- G8 kesinleşti: Offline → draft statüsü, bağlantıda otomatik sync
-- G9 kesinleşti: QR tespit → GİB API; QR yok/hata → OCR fallback; 3 sn hard timeout
-- G10 kesinleşti: Split ödenmeyen kısım → child receipt oluşturulur
-- G11 kesinleşti: Denetçi modu Faz 2'ye taşındı
-- Dil seçimi ve onboarding tutorial Faz 2'ye taşındı
-- Marka adı: KAAPA (kesinleşti)
-- Avans akışı: kilitleme, itiraz, dekont doğrulama, nakit çift teyit (kesinleşti)
-- Hot Cost: wrap+2h tetik, manuel override, içerik, yetki dağılımı (kesinleşti)
-- Mesai hesaplama Faz 2'ye taşındı
+- GitHub repo adı `prodapp` olarak KALIYOR (Sonnet ortamının git proxy yetkisi prodapp'e bağlı; kaapa rename'i 502 veriyor). Repo adı kullanıcıya görünmez; marka KAAPA, repo etiketi prodapp. Bu kasıtlı.
 
 ## Faz 2'ye Taşınanlar
 - Denetçi modu (G11)
@@ -33,9 +27,11 @@ Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 ## Açık Sorular
 - [ ] Login sayfası görsel tasarımı — yeni tasarım session'ı gerekiyor
 - [ ] JWT claims yazma Edge Function tasarımı (commit 2'de ele alınacak)
+- [ ] README.md şu an minimal — ileride genişletilebilir (düşük öncelik)
+- [ ] favicon.svg geçici placeholder — gerçek KAAPA logosu G6 (görsel tasarım) kararında gelecek
 
 ## Sonraki Session Gündemi
-1. Commit 2: proje seçimi ekranı + JWT custom claims (Edge Function: `set-claims`)
+1. Commit 2: proje seçimi ekranı + JWT custom claims (Edge Function `set-claims`) — referans: AUTH-KARARLARI.md SK-AUTH-4 (mekanizma artık dokümante)
 
 ## Sonraki Session — Okunacak Dosyalar
 - STATUS.md (bu dosya)
@@ -48,12 +44,13 @@ Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 
 | Dosya | Durum | Not |
 |-------|-------|-----|
-| CLAUDE.md | ✓ güncel | Session protokolü eklendi |
-| ARCHITECTURE.md | ✓ güncel | 1.1 session ritüeli referansa dönüştürüldü |
-| AUTH-KARARLARI.md | ✓ güncel | |
-| TASARIM-KARARLARI.md | ✓ güncel | G8-G11 kararları eklendi, Faz 2 maddeleri işaretlendi |
-| GLOSSARY.md | ✓ güncel | |
-| TECH-DEBT.md | boş | Henüz içerik yok |
+| CLAUDE.md | ✓ güncel | Marka KAAPA, kök klasör kaapa/ |
+| ARCHITECTURE.md | ✓ güncel | Marka KAAPA, v8 arşiv referansı düzeltildi |
+| AUTH-KARARLARI.md | ✓ güncel | SK-AUTH-4 claims mekanizması eklendi |
+| TASARIM-KARARLARI.md | ✓ güncel | Marka KAAPA, dosya referansı düzeltildi |
+| GLOSSARY.md | ✓ güncel | Marka KAAPA |
+| TECH-DEBT.md | boş | Marka KAAPA, içerik henüz yok |
+| README.md | ✓ minimal | Vite şablonu → KAAPA açıklaması |
 
 ## Tamamlanan İşler
 - [x] Repo oluşturuldu, scaffold hazır
