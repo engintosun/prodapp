@@ -73,6 +73,14 @@ Giriş akışı:
 
 **Claims yazma mekanizması:** JWT custom claims, `set-claims` adlı bir Edge Function ile yazılır. Client proje seçince bu function'ı çağırır; function `service_role` ile seçilen profile'ın `project_id + role + dept_id` değerlerini `raw_app_meta_data`'ya yazar. Ardından client `supabase.auth.refreshSession()` çağırarak yeni claims'i içeren token'ı alır. Tek profilli kullanıcıda proje seçim ekranı atlanır, claims doğrudan yazılır.
 
+**`set-claims` güvenlik modeli:**
+- Çağıranın kimliğini JWT'den alır (`Authorization` header → `auth.getUser()`); body'deki `project_id` dışında hiçbir veriye güvenmez.
+- `role` ve `dept_id` her zaman `profiles` satırından okunur; client bunları gönderemez.
+- Sahiplik doğrulaması: `id = uid AND project_id = istenen AND is_active = true AND soft_deleted_at IS NULL` — eşleşme yoksa 403 döner.
+- Tek profilli kullanıcıda proje seçim ekranını atlama mantığı frontend'dedir; fonksiyon proje-agnostiktir.
+- Deploy: manuel (Supabase Dashboard veya CLI). `verify_jwt` açık olmalıdır (default açık, kapatılmamalı).
+- Kaynak: `supabase/functions/set-claims/index.ts`
+
 ---
 
 ## SK-AUTH-5: Soft Delete
