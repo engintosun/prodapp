@@ -1,4 +1,4 @@
-# PRODAPP — Supabase Auth Kararları
+# KAAPA — Supabase Auth Kararları
 **Tarih:** 21 Mayıs 2026
 **Kapsam:** Onboarding, davet zinciri, multi-project, silme politikaları
 
@@ -70,6 +70,8 @@ Giriş akışı:
 5. RLS aktif hale gelir
 
 `profiles_own_list` policy: `FOR SELECT USING (id = auth.uid())` — project_id filtresi yok, claims olmadan çalışır. Sadece login sonrası proje seçimi için kullanılır.
+
+**Claims yazma mekanizması:** JWT custom claims, `set-claims` adlı bir Edge Function ile yazılır. Client proje seçince bu function'ı çağırır; function `service_role` ile seçilen profile'ın `project_id + role + dept_id` değerlerini `raw_app_meta_data`'ya yazar. Ardından client `supabase.auth.refreshSession()` çağırarak yeni claims'i içeren token'ı alır. Tek profilli kullanıcıda proje seçim ekranı atlanır, claims doğrudan yazılır.
 
 ---
 

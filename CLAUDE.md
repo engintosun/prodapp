@@ -1,4 +1,4 @@
-# PRODAPP — CLAUDE.md
+# KAAPA — CLAUDE.md
 
 **Amaç:** Her session bu dosyayla başlar. Session protokolü ve context routing burada yaşar.
 
@@ -34,7 +34,7 @@ STATUS.md güncellenir:
 
 ## Proje Kimliği
 
-PRODAPP — Sinema/TV sektörü için prodüksiyon harcama yönetimi SaaS platformu.
+KAAPA — Sinema/TV sektörü için prodüksiyon harcama yönetimi SaaS platformu.
 
 **Tech stack:** React 19 + TypeScript + Vite + Supabase + Vercel
 **Dil:** Chat Türkçe, kod İngilizce (değişken, fonksiyon, dosya, commit, yorum), dokümanlar Türkçe
@@ -65,7 +65,7 @@ PRODAPP — Sinema/TV sektörü için prodüksiyon harcama yönetimi SaaS platfo
 ## Dosya Yapısı
 
 ```
-prodapp/
+kaapa/
   CLAUDE.md              ← bu dosya
   docs/
     ARCHITECTURE.md      ← 31 karar, mimari anayasa

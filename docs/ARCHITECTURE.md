@@ -1,4 +1,4 @@
-# PRODAPP — Mimari Kararlar Dokümanı
+# KAAPA — Mimari Kararlar Dokümanı
 
 **Son güncelleme:** 22 Mayıs 2026
 **Durum:** Kurucu zemin — 31 karar alındı, uygulama başlamadı.
@@ -301,7 +301,7 @@ Oklar tek yönlü: Orkestrasyon → herkesi çağırabilir. UI → sadece orkest
 
 - CFE, GİB stratejisi, XML export, cross-company, 6 açık "DÜŞÜNÜLECEK" sorusu
 
-**Sıfırlanan (archive/v8-demo → prodapp-archive reposunda):**
+**Sıfırlanan (engintosun/prodapp-archive reposunda):**
 
 - Tüm JS/CSS/HTML kodu, eski ARCHITECTURE.md, CLAUDE.md, dosya yapısı, naming batch'leri
 

@@ -1,4 +1,4 @@
-# PRODAPP — Teknik Borç Takibi (TECH-DEBT)
+# KAAPA — Teknik Borç Takibi (TECH-DEBT)
 
 **Son güncelleme:** 22 Mayıs 2026
 **Kural:** Her borç bir milestone'a bağlı. "Bir gün düzeltiriz" yok. 5'ten fazla açık borç birikirse yeni özellik durur.

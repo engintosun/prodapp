@@ -1,4 +1,4 @@
-# PRODAPP — Tasarım Kararları (Tüm Seanslar)
+# KAAPA — Tasarım Kararları (Tüm Seanslar)
 **Son güncelleme:** 17 Mayıs 2026 (Seans 6)
 **Amaç:** Tüm tasarım kararlarını tek dosyada toplamak. Sonnet prompt'ları ve Claude Design brief'leri bu dosyayı referans alacak.
 
@@ -233,10 +233,10 @@ Oturum açık: Proje seçimi → Ana ekran (veya tek projeliyse direkt ana ekran
 ---
 
 ## 9. RAKİP ANALİZİ REFERANSLARI
-- 12 firma analizi (7 global + 5 TR): docs/PRODAPP-RAKIP-ANALIZI-OCR.md
+- 12 firma analizi (7 global + 5 TR): docs/RAKIP-ANALIZI-OCR.md
 - Masraff (TR) en gelişmiş confidence modeli
 - Sektör standardı: %80-85 başlangıç eşiği, üretimde ayarlanır
-- PRODAPP farkı: 3 katmanlı insan kontrolü zaten var, ayrı HITL queue gerekmez
+- KAAPA farkı: 3 katmanlı insan kontrolü zaten var, ayrı HITL queue gerekmez
 
 ---
 

@@ -1,4 +1,4 @@
-# PRODAPP — Domain Terimleri Sözlüğü (GLOSSARY)
+# KAAPA — Domain Terimleri Sözlüğü (GLOSSARY)
 
 **Son güncelleme:** 22 Mayıs 2026
 **Kural:** Her domain terimi tek İngilizce karşılık alır. Bir terim iki farklı kelimeyle temsil edilmez. Kodda sadece İngilizce karşılık kullanılır.
