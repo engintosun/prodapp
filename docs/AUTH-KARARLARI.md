@@ -99,3 +99,19 @@ Yasal dayanak:
 - TTK 10 yıl saklama yükümlülüğü: mali kayıtlar korunmalı
 
 Hard delete log'u zorunludur (kim sildi, ne zaman, sebep).
+
+---
+
+## SK-AUTH-7: `projects` Görünürlüğü
+
+`projects` tablosuna RLS açıldı (v1.3).
+
+**Policy:** `projects_own_list` — `FOR SELECT`, claim gerektirmez.
+
+**Kural:** Kullanıcıya yalnızca (a) kendisi için aktif ve soft-delete edilmemiş bir `profiles` kaydı bulunan ve (b) `is_active = true` olan projeler döndürülür.
+
+**Gerekçe — KVKK cross-company izolasyon:** RLS kapalıyken oturum açmış her kullanıcı sistemdeki tüm şirketlerin proje adlarını okuyabiliyordu. `projects_own_list` bu sızıntıyı kapatır; kullanıcı yalnızca kendi üye olduğu projeleri görür.
+
+**Önceki durum:** `projects` tablosunda RLS yoktu; tüm proje kayıtları herkese açıktı.
+
+**INSERT / UPDATE / DELETE:** service_role ile (Admin onboarding ve yönetim); client-side policy tanımlanmadı.

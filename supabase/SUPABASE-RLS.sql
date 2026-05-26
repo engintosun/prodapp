@@ -1,7 +1,8 @@
 -- ============================================================
--- PRODAPP RLS Policies v1.2
--- Güncelleme: 22 Mayıs 2026
--- Değişiklik: Helper fonksiyonlar auth → public schema'ya taşındı
+-- PRODAPP RLS Policies v1.3
+-- Güncelleme: 26 Mayıs 2026
+-- Değişiklik: v1.3 — projects RLS + projects_own_list (claim'siz proje listesi)
+-- Değişiklik: v1.2 — Helper fonksiyonlar auth → public schema'ya taşındı
 -- Bağımlılık: SUPABASE-SCHEMA.sql v1.1 (17 tablo + projects + invitations)
 -- Yöntem: JWT custom claims (raw_app_meta_data)
 -- Claims: project_id, role (saha/dept/muhasebe), dept_id
@@ -49,6 +50,30 @@ CREATE INDEX IF NOT EXISTS idx_dept_subcategories_dept ON dept_subcategories(dep
 CREATE INDEX IF NOT EXISTS idx_chat_participants_user ON chat_participants(user_id);
 CREATE INDEX IF NOT EXISTS idx_invitations_project_email ON invitations(project_id, email);
 CREATE INDEX IF NOT EXISTS idx_invitations_token ON invitations(token);
+
+
+-- ============================================================
+-- 0. PROJECTS
+-- ============================================================
+ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
+
+-- SELECT: Claim'siz proje listesi — kullanıcının aktif profili olan aktif projeler
+-- (Multi-project login akışında proje seçim ekranı için; JWT claims henüz yok)
+CREATE POLICY projects_own_list ON projects
+  FOR SELECT USING (
+    is_active = true
+    AND EXISTS (
+      SELECT 1 FROM profiles p
+      WHERE p.project_id = projects.id
+        AND p.id = auth.uid()
+        AND p.is_active = true
+        AND p.soft_deleted_at IS NULL
+    )
+  );
+
+-- INSERT: service_role ile (Admin onboarding — BOOTSTRAP-MUSTERI.sql)
+-- UPDATE: service_role ile (Admin proje yönetimi)
+-- DELETE: Yok (soft delete — is_active = false ile)
 
 
 -- ============================================================
