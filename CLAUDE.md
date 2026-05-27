@@ -75,8 +75,8 @@ kaapa/
     TECH-DEBT.md         ← teknik borç takibi
     RAKIP-ANALIZI-OCR.md ← rakip analizi (referans)
   supabase/
-    SUPABASE-SCHEMA.sql  ← 17 tablo, v1.1
-    SUPABASE-RLS.sql     ← RLS policy'ler, v1.2
+    SUPABASE-SCHEMA.sql  ← 17 tablo, v2.0
+    SUPABASE-RLS.sql     ← RLS policy'ler, v2.0
     BOOTSTRAP-MUSTERI.sql← müşteri onboarding template
   src/
     App.tsx              ← root component

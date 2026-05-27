@@ -1,10 +1,11 @@
 -- ============================================================
--- PRODAPP RLS Policies v1.4
+-- PRODAPP RLS Policies v2.0
+-- Degisiklik: v2.0 — profiles coklu-uyelik remodel; profiles policy'leri user_id=auth.uid(); advances/advance_log profiles join'i user_id+project_id; is_active/soft_deleted -> membership_status; default_privileges eklendi.
 -- Güncelleme: 27 Mayıs 2026
 -- Değişiklik: v1.4 — GRANT izinleri eklendi (authenticated SELECT + service_role ALL)
 -- Değişiklik: v1.3 — projects RLS + projects_own_list (claim'siz proje listesi)
 -- Değişiklik: v1.2 — Helper fonksiyonlar auth → public schema'ya taşındı
--- Bağımlılık: SUPABASE-SCHEMA.sql v1.1 (17 tablo + projects + invitations)
+-- Bağımlılık: SUPABASE-SCHEMA.sql v2.0 (17 tablo + projects + invitations)
 -- Yöntem: JWT custom claims (raw_app_meta_data)
 -- Claims: project_id, role (saha/dept/muhasebe), dept_id
 -- ============================================================
@@ -19,10 +20,8 @@
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO authenticated;
 -- service_role: tüm tablolarda tam yetki (Edge Functions için)
 GRANT ALL ON ALL TABLES IN SCHEMA public TO service_role;
--- NOT: Bu komutlar mevcut tabloları kapsar. Yeni tablo eklenirse
--- ya bu komutlar tekrar çalıştırılmalı ya da default_privileges ayarlanmalı:
--- ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO authenticated;
--- ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO service_role;
 
 -- ============================================================
 -- HELPER: JWT claim shortcuts (public schema, RLS-safe)
@@ -81,9 +80,8 @@ CREATE POLICY projects_own_list ON projects
     AND EXISTS (
       SELECT 1 FROM profiles p
       WHERE p.project_id = projects.id
-        AND p.id = auth.uid()
-        AND p.is_active = true
-        AND p.soft_deleted_at IS NULL
+        AND p.user_id = auth.uid()
+        AND p.membership_status = 'active'
     )
   );
 
@@ -103,7 +101,7 @@ CREATE POLICY profiles_select ON profiles FOR SELECT USING (
   AND (
     public.user_role() = 'muhasebe'
     OR (public.user_role() = 'dept' AND dept_id = public.user_dept_id())
-    OR id = auth.uid()
+    OR user_id = auth.uid()
   )
 );
 
@@ -117,14 +115,14 @@ CREATE POLICY profiles_insert ON profiles FOR INSERT WITH CHECK (
 CREATE POLICY profiles_update ON profiles FOR UPDATE USING (
   project_id = public.project_id()
   AND (
-    id = auth.uid()
+    user_id = auth.uid()
     OR public.user_role() = 'muhasebe'
   )
 );
 
 -- SELECT: Claims'siz proje listesi (multi-project login akışı)
 CREATE POLICY profiles_own_list ON profiles
-  FOR SELECT USING (id = auth.uid());
+  FOR SELECT USING (user_id = auth.uid());
 
 -- DELETE: Yok (soft delete — UPDATE ile soft_deleted_at set edilir)
 
@@ -418,7 +416,8 @@ CREATE POLICY advances_select ON advances FOR SELECT USING (
     public.user_role() = 'muhasebe'
     OR (public.user_role() = 'dept' AND EXISTS (
       SELECT 1 FROM profiles p
-      WHERE p.id = advances.user_id
+      WHERE p.user_id = advances.user_id
+        AND p.project_id = public.project_id()
         AND p.dept_id = public.user_dept_id()
     ))
     OR user_id = auth.uid()
@@ -455,7 +454,8 @@ CREATE POLICY advance_log_select ON advance_log FOR SELECT USING (
         OR a.user_id = auth.uid()
         OR (public.user_role() = 'dept' AND EXISTS (
           SELECT 1 FROM profiles p
-          WHERE p.id = a.user_id
+          WHERE p.user_id = a.user_id
+            AND p.project_id = public.project_id()
             AND p.dept_id = public.user_dept_id()
         ))
       )

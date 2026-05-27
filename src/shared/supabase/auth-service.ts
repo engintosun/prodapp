@@ -11,8 +11,7 @@ export async function getOwnProfiles(): Promise<ProfileWithProject[]> {
   const { data, error } = await supabase
     .from('profiles')
     .select('project_id, role, dept_id, projects(name)')
-    .eq('is_active', true)
-    .is('soft_deleted_at', null)
+    .eq('membership_status', 'active')
 
   if (error) throw new Error(error.message)
   return data as unknown as ProfileWithProject[]

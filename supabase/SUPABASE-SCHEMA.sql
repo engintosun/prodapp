@@ -1,7 +1,11 @@
 -- ============================================================
--- PRODAPP Supabase Schema v1.1
--- Güncelleme: 21 Mayıs 2026
--- Değişiklik: projects + invitations tablosu eklendi, FK'lar güncellendi
+-- PRODAPP Supabase Schema v2.0
+-- Guncelleme: 27 Mayis 2026
+-- Degisiklik: v2.0 — profiles coklu-uyelik remodel (surrogate id + user_id + UNIQUE(user_id,project_id)),
+--   uyelik yasam dongusu (membership_status / access_until / revoked_at),
+--   projects yasam dongusu alanlari (status / closed_at / closed_by, sekil; logic M2),
+--   person isaret eden 9 FK profiles(id) -> auth.users(id), is_active+soft_deleted_at -> membership_status.
+-- Onceki: v1.1
 -- ============================================================
 
 -- 0. PROJECTS
@@ -10,12 +14,17 @@ CREATE TABLE projects (
   name TEXT NOT NULL,
   created_by UUID,
   created_at TIMESTAMPTZ DEFAULT now(),
-  is_active BOOLEAN DEFAULT true
+  is_active BOOLEAN DEFAULT true,
+  status TEXT NOT NULL DEFAULT 'active'
+    CHECK (status IN ('active','closed','archived')),
+  closed_at TIMESTAMPTZ,
+  closed_by UUID
 );
 
--- 1. PROFILES
+-- 1. PROFILES (uyelik = kisi x proje; bir kisinin birden cok uyeligi olabilir)
 CREATE TABLE profiles (
-  id UUID PRIMARY KEY REFERENCES auth.users(id),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id),
   project_id UUID NOT NULL REFERENCES projects(id),
   dept_id UUID,
   role TEXT NOT NULL CHECK (role IN ('saha','dept','muhasebe')),
@@ -24,10 +33,15 @@ CREATE TABLE profiles (
   display_name TEXT,
   phone TEXT,
   avatar_url TEXT,
-  is_active BOOLEAN DEFAULT true,
+  membership_status TEXT NOT NULL DEFAULT 'active'
+    CHECK (membership_status IN ('active','archived_readonly','revoked')),
+  access_until TIMESTAMPTZ,
+  revoked_at TIMESTAMPTZ,
   invited_by UUID,
   created_at TIMESTAMPTZ DEFAULT now(),
-  soft_deleted_at TIMESTAMPTZ
+  UNIQUE (user_id, project_id),
+  CONSTRAINT chk_readonly_access_until
+    CHECK (membership_status <> 'archived_readonly' OR access_until IS NOT NULL)
 );
 
 -- 1b. INVITATIONS
@@ -40,7 +54,7 @@ CREATE TABLE invitations (
   role TEXT NOT NULL CHECK (role IN ('saha','dept','muhasebe')),
   dept_id UUID,
   token TEXT NOT NULL UNIQUE,
-  invited_by UUID NOT NULL REFERENCES profiles(id),
+  invited_by UUID NOT NULL REFERENCES auth.users(id),
   status TEXT DEFAULT 'pending'
     CHECK (status IN ('pending','accepted','expired','revoked')),
   created_at TIMESTAMPTZ DEFAULT now(),
@@ -53,7 +67,7 @@ CREATE TABLE departments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   project_id UUID NOT NULL REFERENCES projects(id),
   name TEXT NOT NULL,
-  chief_id UUID REFERENCES profiles(id),
+  chief_id UUID REFERENCES auth.users(id),
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
@@ -122,7 +136,7 @@ CREATE TABLE receipts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   project_id UUID NOT NULL REFERENCES projects(id),
   period_id UUID NOT NULL REFERENCES periods(id),
-  user_id UUID NOT NULL REFERENCES profiles(id),
+  user_id UUID NOT NULL REFERENCES auth.users(id),
   dept_id UUID REFERENCES departments(id),
   amount NUMERIC(12,2) NOT NULL,
   currency TEXT DEFAULT 'TRY',
@@ -147,7 +161,7 @@ CREATE TABLE receipts (
 CREATE TABLE approval_log (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   receipt_id UUID NOT NULL REFERENCES receipts(id),
-  approver_id UUID NOT NULL REFERENCES profiles(id),
+  approver_id UUID NOT NULL REFERENCES auth.users(id),
   approver_role TEXT NOT NULL CHECK (approver_role IN ('dept','muhasebe')),
   action TEXT NOT NULL
     CHECK (action IN ('approved','rejected','split','returned','auto_approved')),
@@ -161,7 +175,7 @@ CREATE TABLE advances (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   project_id UUID NOT NULL REFERENCES projects(id),
   period_id UUID NOT NULL REFERENCES periods(id),
-  user_id UUID NOT NULL REFERENCES profiles(id),
+  user_id UUID NOT NULL REFERENCES auth.users(id),
   amount NUMERIC(12,2) NOT NULL,
   currency TEXT DEFAULT 'TRY',
   status TEXT DEFAULT 'pending'
@@ -188,7 +202,7 @@ CREATE TABLE exception_permits (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   project_id UUID NOT NULL REFERENCES projects(id),
   period_id UUID NOT NULL REFERENCES periods(id),
-  user_id UUID NOT NULL REFERENCES profiles(id),
+  user_id UUID NOT NULL REFERENCES auth.users(id),
   granted_by UUID NOT NULL,
   permit_type TEXT DEFAULT 'late_entry'
     CHECK (permit_type IN ('late_entry','reopen','limit_override')),
@@ -198,7 +212,7 @@ CREATE TABLE exception_permits (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 12. PERIOD_BUDGETS (Faz 1: dönem harcama limiti. Tam bütçe modülü Faz 2.)
+-- 12. PERIOD_BUDGETS
 CREATE TABLE period_budgets (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   period_id UUID NOT NULL REFERENCES periods(id),
@@ -209,7 +223,7 @@ CREATE TABLE period_budgets (
   updated_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 13. DEPT_BUDGETS (Faz 1: departman harcama limiti. Tam bütçe modülü Faz 2.)
+-- 13. DEPT_BUDGETS
 CREATE TABLE dept_budgets (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   period_id UUID NOT NULL REFERENCES periods(id),
@@ -223,7 +237,7 @@ CREATE TABLE dept_budgets (
 CREATE TABLE notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   project_id UUID NOT NULL REFERENCES projects(id),
-  recipient_id UUID NOT NULL REFERENCES profiles(id),
+  recipient_id UUID NOT NULL REFERENCES auth.users(id),
   type TEXT NOT NULL,
   title TEXT NOT NULL,
   body TEXT,
@@ -234,7 +248,7 @@ CREATE TABLE notifications (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 15. CHATS
+-- 15. CHATS + CHAT_PARTICIPANTS + MESSAGES
 CREATE TABLE chats (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   project_id UUID NOT NULL REFERENCES projects(id),
@@ -246,7 +260,7 @@ CREATE TABLE chats (
 
 CREATE TABLE chat_participants (
   chat_id UUID REFERENCES chats(id),
-  user_id UUID REFERENCES profiles(id),
+  user_id UUID REFERENCES auth.users(id),
   joined_at TIMESTAMPTZ DEFAULT now(),
   PRIMARY KEY (chat_id, user_id)
 );
@@ -254,7 +268,7 @@ CREATE TABLE chat_participants (
 CREATE TABLE messages (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   chat_id UUID NOT NULL REFERENCES chats(id),
-  sender_id UUID NOT NULL REFERENCES profiles(id),
+  sender_id UUID NOT NULL REFERENCES auth.users(id),
   content TEXT NOT NULL,
   is_read BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT now()
@@ -286,6 +300,6 @@ CREATE TABLE project_rules (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- FK: invitations.dept_id → departments (sıralama nedeniyle ayrı)
+-- FK: invitations.dept_id -> departments (siralama nedeniyle ayri)
 ALTER TABLE invitations ADD CONSTRAINT fk_invitations_dept
   FOREIGN KEY (dept_id) REFERENCES departments(id);

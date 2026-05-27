@@ -4,26 +4,23 @@
 Temel altyapı (ARCHITECTURE.md 2.5 — Milestone 1)
 Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 
-## Son Session (27 Mayıs 2026 — Commit 2b frontend + uçtan uca test)
+## Son Session (27 Mayıs 2026 — profiles çoklu-üyelik remodel v2.0)
 
 **Yapılan:**
-- Commit 6aca75b: feat(auth): project selection + three-state App routing (App.tsx üç-hâl, ProjectSelectionPage, auth-service.ts)
+- profiles çoklu-üyelik remodel tamamlandı; çoklu profil artık temsil edilebilir.
+- SUPABASE-SCHEMA.sql v2.0: profiles surrogate id + user_id + UNIQUE(user_id,project_id), membership_status/access_until/revoked_at, projects.status/closed_at/closed_by, 9 FK profiles(id)→auth.users(id).
+- SUPABASE-RLS.sql v2.0: 8 cerrahi düzenleme (projects_own_list, profiles policy'leri user_id=auth.uid(), advances/advance_log profiles join'i user_id+project_id, default_privileges eklendi).
+- src/shared/supabase/auth-service.ts: is_active+soft_deleted_at → membership_status='active'.
+- supabase/functions/set-claims/index.ts: id=uid → user_id=uid, is_active+soft_deleted_at → membership_status='active'.
+- docs/AUTH-KARARLARI.md: SK-AUTH-4 güncellendi, SK-AUTH-5 membership_status ile yeniden yazıldı, SK-AUTH-8 eklendi.
+- docs/TECH-DEBT.md: TD-1/2/3 eklendi.
+- CLAUDE.md: versiyon etiketleri v2.0 yapıldı.
+
+**Önceki session özeti (27 Mayıs 2026 — Commit 2b frontend + uçtan uca test):**
+- Commit 6aca75b: feat(auth): project selection + three-state App routing
 - Commit 9ba382e: fix(auth): auth-service type assertion for Supabase join
-- Canlı deploy doğrulandı (Vercel + Supabase)
-- Uçtan uca test başarılı: login → tek profil auto-select → set-claims → refreshSession → AuthenticatedShell
-- GRANT eksikleri tespit ve çözüldü (profiles, projects tabloları + toplu GRANT ALL ON ALL TABLES)
-- Edge Function import satırı eksikti, Code editöründen düzeltildi ve deploy edildi
-- Edge Function hata mesajı iyileştirildi (profErr.message eklendi, debug amaçlı, sonra temizlenecek)
-
-**Notlar:**
-- Deploy sonrası keşfedilen sorunlar: tablo GRANT'ları şema oluşturulurken verilmemişti, Edge Function Via Editor deploy'unda import satırı düşmüştü
-- Sonnet checklist'te tsc --noEmit yazmasına rağmen TypeScript hatası yakalanmadı (type assertion fix gerekti)
-- Vercel deployment URL: prodapp-navy.vercel.app
-- Edge Function Code sekmesinde debug amaçlı profErr.message eklendi — üretim öncesi temizlenecek
-
-**Önceki session özeti (26 Mayıs 2026 — Commit 2 backend: RLS + set-claims):**
-- projects RLS + projects_own_list policy — canlı uygulandı, SK-AUTH-7 eklendi
-- set-claims Edge Function — canlı deploy, SK-AUTH-4 eklendi
+- Canlı deploy doğrulandı, uçtan uca test başarılı
+- GRANT eksikleri çözüldü, Edge Function düzeltildi
 
 ## Faz 2'ye Taşınanlar
 - Denetçi modu (G11)
@@ -43,30 +40,35 @@ Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 - [ ] ARCHITECTURE.md 5.3 router.ts satırı geçersiz — güncelleme veya kaldırma adayı
 
 ## Sonraki Session Gündemi
-1. Deploy checklist oluştur (CLAUDE.md veya ayrı doküman)
-2. Çoklu profil testi (ikinci profil + proje oluştur, kart seçim UI test et)
-3. Edge Function debug mesajını temizle
-4. Milestone 1 kalan işleri değerlendir
+1. Canlı temiz kurulum: DB sıfırla, SUPABASE-SCHEMA.sql v2.0 + SUPABASE-RLS.sql v2.0 uygula
+2. Test kullanıcısı bootstrap (BOOTSTRAP-MUSTERI.sql güncelle: profiles v2.0 kolonlarıyla)
+3. Çoklu profil testi: aynı kullanıcı iki projede, kart seçim UI test et
+4. Edge Function debug mesajını temizle (profErr.message kaldır)
+5. Milestone 1 kalan işleri değerlendir
 
 ## Sonraki Session — Okunacak Dosyalar
 - STATUS.md (bu dosya)
 - CLAUDE.md
 - docs/AUTH-KARARLARI.md
-- src/app/auth/project-selection-page.tsx
+- supabase/SUPABASE-SCHEMA.sql (v2.0 — yeni profiles yapısı)
+- supabase/SUPABASE-RLS.sql (v2.0)
+- supabase/BOOTSTRAP-MUSTERI.sql (profiles kolonları güncellenmeli)
 - src/shared/supabase/auth-service.ts
-- supabase/functions/set-claims/index.ts (repo versiyonu vs canlı versiyonu farkı kontrol)
+- supabase/functions/set-claims/index.ts
 
 ## Doküman Sağlık Tablosu
 
 | Dosya | Durum | Not |
 |-------|-------|-----|
-| CLAUDE.md | guncel | Marka KAAPA, kök klasör kaapa/ |
+| CLAUDE.md | guncel | v2.0 versiyon etiketleri güncellendi |
 | ARCHITECTURE.md | guncel | Marka KAAPA |
-| AUTH-KARARLARI.md | guncel | SK-AUTH-4 güvenlik modeli + SK-AUTH-7 projects görünürlüğü |
-| SUPABASE-RLS.sql | v1.3 — GRANT eksik | GRANT bilgisi yok, eklenmeli (TECH-DEBT adayı) |
+| AUTH-KARARLARI.md | guncel | SK-AUTH-4/5/8 v2.0 üyelik remodel |
+| SUPABASE-SCHEMA.sql | v2.0 | profiles çoklu-üyelik remodel |
+| SUPABASE-RLS.sql | v2.0 | GRANT + default_privileges tamam |
 | TASARIM-KARARLARI.md | guncel | Marka KAAPA |
 | GLOSSARY.md | guncel | Marka KAAPA |
-| TECH-DEBT.md | bos | İçerik henüz yok |
+| TECH-DEBT.md | guncel | TD-1/2/3 eklendi |
+| BOOTSTRAP-MUSTERI.sql | GÜNCELLEME GEREKİYOR | profiles v2.0 kolonlarıyla (user_id, membership_status) uyumlu hale getirilmeli |
 | README.md | minimal | KAAPA açıklaması |
 | STATUS.md | güncelleniyor | Bu commit |
 
