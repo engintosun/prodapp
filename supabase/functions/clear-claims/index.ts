@@ -31,14 +31,11 @@ Deno.serve(async (req) => {
     const { data: { user }, error: userErr } = await userClient.auth.getUser()
     if (userErr || !user) return json({ error: 'Kullanici bulunamadi' }, 401)
 
-    const currentMeta = (user.app_metadata ?? {}) as Record<string, unknown>
-    const { project_id: _p, role: _r, dept_id: _d, ...rest } = currentMeta
-
     const adminClient = createClient(supabaseUrl, serviceRoleKey)
-    const { error: updErr } = await adminClient.auth.admin.updateUserById(user.id, {
-      app_metadata: rest,
+    const { error: rpcErr } = await adminClient.rpc('clear_user_claims', {
+      p_user_id: user.id,
     })
-    if (updErr) return json({ error: 'Claims temizlenemedi' }, 500)
+    if (rpcErr) return json({ error: 'Claims temizlenemedi', detail: rpcErr.message }, 500)
 
     return json({ ok: true }, 200)
   } catch (_e) {
