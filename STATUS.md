@@ -16,6 +16,11 @@ Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 - docs/TECH-DEBT.md: TD-1/2/3 eklendi.
 - CLAUDE.md: versiyon etiketleri v2.0 yapıldı.
 
+**Aynı gün ek (27 Mayıs 2026 — clear-claims RPC fix):**
+- fix(auth): clear-claims Edge Function'ın `admin.updateUserById` yöntemi Supabase JS merge quirk'i nedeniyle çalışmıyordu (200 dönüyor, raw_app_meta_data değişmiyordu). SECURITY DEFINER RPC + JSONB `-` operatörü ile değiştirildi (bootstrap'ta zaten kanıtlanmış desen).
+- Yeni kanonik dosya: `supabase/SUPABASE-FUNCTIONS.sql` — gelecek temiz kurulumlarda SCHEMA + RLS'den sonra çalıştırılır.
+- TECH-DEBT: TD-4 (rpcErr.message debug), TD-5 (signOut best-effort sessiz) eklendi. Borç sayısı 5/5 — yeni özellik öncesi en az 1 borç kapatılmalı.
+
 **Önceki session özeti (27 Mayıs 2026 — Commit 2b frontend + uçtan uca test):**
 - Commit 6aca75b: feat(auth): project selection + three-state App routing
 - Commit 9ba382e: fix(auth): auth-service type assertion for Supabase join
