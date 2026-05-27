@@ -1,5 +1,5 @@
 import type { User } from '@supabase/supabase-js'
-import { supabase } from '../../shared/supabase/client'
+import { signOut } from '../../shared/supabase/auth-service'
 
 interface AuthenticatedShellProps {
   user: User
@@ -7,8 +7,9 @@ interface AuthenticatedShellProps {
 
 export function AuthenticatedShell({ user }: AuthenticatedShellProps) {
   async function handleSignOut() {
-    const { error } = await supabase.auth.signOut()
-    if (error) {
+    try {
+      await signOut()
+    } catch (_e) {
       alert('Çıkış hatası, tekrar deneyin')
     }
   }
