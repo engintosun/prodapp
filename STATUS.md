@@ -4,9 +4,13 @@
 Temel altyapı (ARCHITECTURE.md 2.5 — Milestone 1)
 Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 
-## Son Session (27 Mayıs 2026 — profiles çoklu-üyelik remodel v2.0)
+## Son Session (27 Mayıs 2026 — Milestone 1 KAPANDI)
 
-**Yapılan:**
+**Sonuç:** Auth + RLS + DB + multi-membership login akışı uçtan uca çalışıyor. Çıkış-giriş döngüsünde picker kalıcı. Tag: `v0.1-auth`
+
+**[Bu commit] full-rebuild canonical + STATUS/CLAUDE senkron + v0.1-auth tag**
+
+**profiles çoklu-üyelik remodel v2.0:**
 - profiles çoklu-üyelik remodel tamamlandı; çoklu profil artık temsil edilebilir.
 - SUPABASE-SCHEMA.sql v2.0: profiles surrogate id + user_id + UNIQUE(user_id,project_id), membership_status/access_until/revoked_at, projects.status/closed_at/closed_by, 9 FK profiles(id)→auth.users(id).
 - SUPABASE-RLS.sql v2.0: 8 cerrahi düzenleme (projects_own_list, profiles policy'leri user_id=auth.uid(), advances/advance_log profiles join'i user_id+project_id, default_privileges eklendi).
@@ -34,22 +38,18 @@ Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 - Mesai hesaplama (tüm ekip listesi, app dışı üyeler dahil)
 - Yapımcı rolü hot cost tam görünümü
 
-## Açık Sorular
-- [ ] Login sayfası görsel tasarımı — yeni tasarım session'ı gerekiyor (G6)
-- [ ] README.md minimal — ileride genişletilebilir (düşük öncelik)
-- [ ] favicon.svg geçici placeholder — gerçek KAAPA logosu G6'da
-- [ ] Proje adı hem projects.name hem company_settings.project_name'de — SSOT kokusu, TECH-DEBT adayı
-- [ ] Deploy checklist oluşturulacak: GRANT doğrulama, Edge Function kod doğrulama, tsc çalıştırma zorunluluğu
-- [ ] Edge Function debug mesajı temizlenecek (profErr.message kaldırılacak)
-- [ ] Çoklu profil testi yapılacak (ikinci profil oluştur, kart seçim UI'ı test et)
-- [ ] ARCHITECTURE.md 5.3 router.ts satırı geçersiz — güncelleme veya kaldırma adayı
+## Açık Borçlar / Bekleyen İşler
+- TD-1/2/3: remodel şekil borçları (M2)
+- TD-4: clear-claims `rpcErr.detail` debug — M1 sonu üretim öncesi temizlik
+- TD-5: auth-service.signOut sessiz try/catch — M2 toast/log
+- Proje adı SSOT kokusu: `projects.name` vs `company_settings.project_name` (TECH-DEBT adayı)
+- README minimal, favicon placeholder (G6)
+- ARCHITECTURE.md 5.3 router.ts satırı geçersiz (kozmetik)
+- Remote branch `claude/loving-ramanujan-MiRql` temizliği (kozmetik)
 
 ## Sonraki Session Gündemi
-1. Canlı temiz kurulum: DB sıfırla, SUPABASE-SCHEMA.sql v2.0 + SUPABASE-RLS.sql v2.0 uygula
-2. Test kullanıcısı bootstrap (BOOTSTRAP-MUSTERI.sql güncelle: profiles v2.0 kolonlarıyla)
-3. Çoklu profil testi: aynı kullanıcı iki projede, kart seçim UI test et
-4. Edge Function debug mesajını temizle (profErr.message kaldır)
-5. Milestone 1 kalan işleri değerlendir
+1. BOOTSTRAP-MUSTERI.sql v2.0 güncellemesi (v2.0 alanlarıyla: user_id, membership_status)
+2. M2 başlangıç planı: çekirdek döngü (fiş girişi → onay zinciri → dönem kapatma); CFE timing kararı; TECH-DEBT'ten hangi borç M2 öncesi kapatılacak
 
 ## Sonraki Session — Okunacak Dosyalar
 - STATUS.md (bu dosya)
@@ -65,17 +65,22 @@ Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 
 | Dosya | Durum | Not |
 |-------|-------|-----|
-| CLAUDE.md | guncel | v2.0 versiyon etiketleri güncellendi |
+| CLAUDE.md | guncel | FUNCTIONS + full-rebuild eklendi |
 | ARCHITECTURE.md | guncel | Marka KAAPA |
 | AUTH-KARARLARI.md | guncel | SK-AUTH-4/5/8 v2.0 üyelik remodel |
 | SUPABASE-SCHEMA.sql | v2.0 | profiles çoklu-üyelik remodel |
 | SUPABASE-RLS.sql | v2.0 | GRANT + default_privileges tamam |
+| SUPABASE-FUNCTIONS.sql | v1.0 (YENİ) | clear_user_claims SECURITY DEFINER RPC |
+| sql/full-rebuild.sql | YENİ | canonical temiz kurulum scripti |
+| set-claims/index.ts | v2.0 | membership_status — canlı deployed |
+| clear-claims/index.ts | v2.0 | RPC yöntemi — canlı deployed |
+| auth-service.ts | v2.0 | signOut wrapper eklendi |
 | TASARIM-KARARLARI.md | guncel | Marka KAAPA |
 | GLOSSARY.md | guncel | Marka KAAPA |
-| TECH-DEBT.md | guncel | TD-1/2/3 eklendi |
+| TECH-DEBT.md | guncel | TD-1/2/3/4/5 (5/5 borç) |
 | BOOTSTRAP-MUSTERI.sql | GÜNCELLEME GEREKİYOR | profiles v2.0 kolonlarıyla (user_id, membership_status) uyumlu hale getirilmeli |
 | README.md | minimal | KAAPA açıklaması |
-| STATUS.md | güncelleniyor | Bu commit |
+| STATUS.md | güncel | M1 KAPANDI |
 
 ## Tamamlanan İşler
 - [x] Repo oluşturuldu, scaffold hazır

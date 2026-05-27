@@ -77,7 +77,10 @@ kaapa/
   supabase/
     SUPABASE-SCHEMA.sql  ← 17 tablo, v2.0
     SUPABASE-RLS.sql     ← RLS policy'ler, v2.0
+    SUPABASE-FUNCTIONS.sql ← SECURITY DEFINER admin RPC'ler, v1.0
     BOOTSTRAP-MUSTERI.sql← müşteri onboarding template
+    sql/
+      full-rebuild.sql   ← canonical temiz kurulum scripti (SCHEMA+RLS+FUNCTIONS)
   src/
     App.tsx              ← root component
     main.tsx             ← Vite entry
