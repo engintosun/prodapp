@@ -69,28 +69,48 @@ Giriş akışı:
 4. Seçilen profile'ın `project_id + role + dept_id` → JWT custom claims'e yazılır
 5. RLS aktif hale gelir
 
-`profiles_own_list` policy: `FOR SELECT USING (id = auth.uid())` — project_id filtresi yok, claims olmadan çalışır. Sadece login sonrası proje seçimi için kullanılır.
+`profiles_own_list` policy: `FOR SELECT USING (user_id = auth.uid())` — project_id filtresi yok, claims olmadan çalışır. Sadece login sonrası proje seçimi için kullanılır.
+
+profiles artık üyelik tablosudur; `id` surrogate UUID, `user_id` auth.users'a bağlanır, `UNIQUE(user_id, project_id)` ile aynı kişi aynı projede tek üyeliğe sahiptir; bir kişi N projede N üyelik satırına sahip olabilir.
 
 **Claims yazma mekanizması:** JWT custom claims, `set-claims` adlı bir Edge Function ile yazılır. Client proje seçince bu function'ı çağırır; function `service_role` ile seçilen profile'ın `project_id + role + dept_id` değerlerini `raw_app_meta_data`'ya yazar. Ardından client `supabase.auth.refreshSession()` çağırarak yeni claims'i içeren token'ı alır. Tek profilli kullanıcıda proje seçim ekranı atlanır, claims doğrudan yazılır.
 
 **`set-claims` güvenlik modeli:**
 - Çağıranın kimliğini JWT'den alır (`Authorization` header → `auth.getUser()`); body'deki `project_id` dışında hiçbir veriye güvenmez.
 - `role` ve `dept_id` her zaman `profiles` satırından okunur; client bunları gönderemez.
-- Sahiplik doğrulaması: `id = uid AND project_id = istenen AND is_active = true AND soft_deleted_at IS NULL` — eşleşme yoksa 403 döner.
+- Sahiplik doğrulaması: `user_id = uid AND project_id = istenen AND membership_status = 'active'` — eşleşme yoksa 403 döner. `(user_id, project_id)` unique olduğu için tam bir satır döner.
 - Tek profilli kullanıcıda proje seçim ekranını atlama mantığı frontend'dedir; fonksiyon proje-agnostiktir.
 - Deploy: manuel (Supabase Dashboard veya CLI). `verify_jwt` açık olmalıdır (default açık, kapatılmamalı).
 - Kaynak: `supabase/functions/set-claims/index.ts`
 
 ---
 
-## SK-AUTH-5: Soft Delete
+## SK-AUTH-5: Üyelik Devre Dışı Bırakma (eski: Soft Delete)
 
-Muhasebe bir kullanıcıyı devre dışı bırakmak istediğinde:
-- `profiles.is_active = false`
-- `profiles.soft_deleted_at = now()`
-- `auth.users` silinmez (başka projelerde aktif kalabilir)
+Muhasebe bir kullanıcının üyeliğini devre dışı bırakmak istediğinde `membership_status` güncellemesi yapılır:
+- `membership_status = 'revoked'` + `revoked_at = now()` — erişim tamamen kapatılır
+- `auth.users` silinmez (başka projelerde aktif üyelik kalabilir)
 
-Kullanıcı başka bir projede aktif ise erişimi korunur. Silinen projedeki RLS zaten erişimi keser (`project_id = auth.project_id()` filtresi).
+Kullanıcı başka bir projede aktif ise erişimi korunur; her üyelik ayrı satır olduğundan o projedeki üyelik etkilenmez. Devre dışı bırakılan projedeki RLS erişimi keser (`membership_status = 'active'` filtresi).
+
+---
+
+## SK-AUTH-8: Üyelik Yaşam Döngüsü
+
+`membership_status` üç değer alır:
+
+- **`active`** — Üyelik açık, erişim tam, bitiş tarihi yok.
+- **`archived_readonly`** — Giriş kapalı; `access_until` tarihine kadar kullanıcı SADECE kendi kapama raporlarını okuyabilir. `access_until` ZORUNLUDUR (`chk_readonly_access_until` constraint).
+- **`revoked`** — Erişim tamamen kapalı; `revoked_at` damgalanır.
+
+Geçiş kuralları:
+- Muhasebe belirler.
+- `archived_readonly` atlanıp `active → revoked` doğrudan yapılabilir.
+- `revoked`, KVKK/TTK hard-delete (SK-AUTH-6) DEĞİLDİR: kayıt ve mali veri durur.
+
+Export kapsamı: saha kendi kapamaları; dept kendi + departman kapamaları.
+
+Proje sonu: `projects.status = 'archived'` → o projenin tüm üyelikleri `archived_readonly + access_until` (cascade). **NOT:** Bu alanlar v2.0'da ŞEKIL olarak eklendi; cascade/export/otomatik geçiş LOGİK'i M2'ye ertelendi (bkz. TECH-DEBT TD-2).
 
 ---
 
