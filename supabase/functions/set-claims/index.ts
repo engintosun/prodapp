@@ -41,10 +41,9 @@ Deno.serve(async (req) => {
     const { data: profile, error: profErr } = await admin
       .from('profiles')
       .select('project_id, role, dept_id')
-      .eq('id', uid)
+      .eq('user_id', uid)
       .eq('project_id', projectId)
-      .eq('is_active', true)
-      .is('soft_deleted_at', null)
+      .eq('membership_status', 'active')
       .maybeSingle()
 
     if (profErr) return json({ error: 'Profil sorgusu basarisiz' }, 500)
