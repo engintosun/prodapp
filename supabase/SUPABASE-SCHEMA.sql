@@ -1,11 +1,12 @@
 -- ============================================================
--- PRODAPP Supabase Schema v2.1
+-- PRODAPP Supabase Schema v2.2
 -- Guncelleme: 27 Mayis 2026
 -- Degisiklik: v2.0 — profiles coklu-uyelik remodel (surrogate id + user_id + UNIQUE(user_id,project_id)),
 --   uyelik yasam dongusu (membership_status / access_until / revoked_at),
 --   projects yasam dongusu alanlari (status / closed_at / closed_by, sekil; logic M2),
 --   person isaret eden 9 FK profiles(id) -> auth.users(id), is_active+soft_deleted_at -> membership_status.
 --   v2.1 — TD-1: projects.is_active kaldirildi, status enum tek kaynak.
+--   v2.2 — SK-AUTH-9: chk_role_dept_id constraint (role=muhasebe OR dept_id IS NOT NULL).
 -- Onceki: v1.1
 -- ============================================================
 
@@ -42,6 +43,8 @@ CREATE TABLE profiles (
   UNIQUE (user_id, project_id),
   CONSTRAINT chk_readonly_access_until
     CHECK (membership_status <> 'archived_readonly' OR access_until IS NOT NULL)
+  ,CONSTRAINT chk_role_dept_id
+    CHECK (role = 'muhasebe' OR dept_id IS NOT NULL)
 );
 
 -- 1b. INVITATIONS

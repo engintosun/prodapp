@@ -52,7 +52,7 @@ Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 - Remote branch `claude/loving-ramanujan-MiRql` temizliği (kozmetik)
 
 ## Sonraki Session Gündemi
-1. BOOTSTRAP-MUSTERI.sql v2.0 güncellemesi (v2.0 alanlarıyla: user_id, membership_status)
+1. M2 mimari plani: cekirdek dongu (fis girisi -> onay zinciri -> donem kapatma), ekran sirasi, sema ihtiyaci
 2. M2 başlangıç planı: çekirdek döngü (fiş girişi → onay zinciri → dönem kapatma); CFE timing kararı; TECH-DEBT'ten hangi borç M2 öncesi kapatılacak
 
 ## Sonraki Session — Okunacak Dosyalar
@@ -72,7 +72,7 @@ Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 | CLAUDE.md | guncel | FUNCTIONS + full-rebuild eklendi |
 | ARCHITECTURE.md | guncel | Marka KAAPA |
 | AUTH-KARARLARI.md | guncel | SK-AUTH-4/5/8 v2.0 üyelik remodel |
-| SUPABASE-SCHEMA.sql | v2.1 | TD-1: is_active kaldirildi |
+| SUPABASE-SCHEMA.sql | v2.2 | SK-AUTH-9: chk_role_dept_id eklendi |
 | SUPABASE-RLS.sql | v2.1 | TD-1: status = 'active' |
 | SUPABASE-FUNCTIONS.sql | v1.0 (YENİ) | clear_user_claims SECURITY DEFINER RPC |
 | sql/full-rebuild.sql | v2.1 | SCHEMA+RLS senkron |
@@ -82,7 +82,7 @@ Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 | TASARIM-KARARLARI.md | guncel | Marka KAAPA |
 | GLOSSARY.md | guncel | Marka KAAPA |
 | TECH-DEBT.md | guncel | TD-1 kapatildi, 4/5 borc |
-| BOOTSTRAP-MUSTERI.sql | GÜNCELLEME GEREKİYOR | profiles v2.0 kolonlarıyla (user_id, membership_status) uyumlu hale getirilmeli |
+| BOOTSTRAP-MUSTERI.sql | guncel | v2.0 user_id + membership_status uyumlu |
 | README.md | minimal | KAAPA açıklaması |
 | STATUS.md | güncel | M1 KAPANDI |
 

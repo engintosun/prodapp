@@ -143,3 +143,21 @@ Hard delete log'u zorunludur (kim sildi, ne zaman, sebep).
 **Önceki durum:** `projects` tablosunda RLS yoktu; tüm proje kayıtları herkese açıktı.
 
 **INSERT / UPDATE / DELETE:** service_role ile (Admin onboarding ve yönetim); client-side policy tanımlanmadı.
+
+---
+
+## SK-AUTH-9: Departman Zorunlulugu ve Departmansiz Onay Akisi
+
+**Karar tarihi:** 28 Mayis 2026
+
+**Constraint:** `chk_role_dept_id` — `role = 'muhasebe' OR dept_id IS NOT NULL`
+
+Saha ve dept rolleri icin dept_id zorunludur; muhasebe icin null olabilir.
+
+**Departmansiz onay akisi:**
+
+Bir departmanda dept rolu yoksa (yani o departmana atanmis dept kullanicisi bulunmuyorsa), fis onay zincirinde dept adimi atlanir. Fis dogrudan muhasebe onayina duser.
+
+Bu runtime kontroludur, konfigurasyon degildir. Sistem fis submit edildiginde dept_id'ye gore profiles tablosunda aktif dept kullanicisi arar; bulamazsa dept adimini atlar.
+
+**Birden fazla dept kullanicisi:** Ayni departmanda birden fazla dept kullanicisi varsa, herhangi biri onaylayabilir (ilk gelen yapar). Faz 1 icin yeterli.
