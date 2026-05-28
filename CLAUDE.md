@@ -75,9 +75,12 @@ kaapa/
     TECH-DEBT.md         ← teknik borç takibi
     RAKIP-ANALIZI-OCR.md ← rakip analizi (referans)
   supabase/
-    SUPABASE-SCHEMA.sql  ← 17 tablo, v1.1
-    SUPABASE-RLS.sql     ← RLS policy'ler, v1.2
+    SUPABASE-SCHEMA.sql  ← 17 tablo, v2.0
+    SUPABASE-RLS.sql     ← RLS policy'ler, v2.0
+    SUPABASE-FUNCTIONS.sql ← SECURITY DEFINER admin RPC'ler, v1.0
     BOOTSTRAP-MUSTERI.sql← müşteri onboarding template
+    sql/
+      full-rebuild.sql   ← canonical temiz kurulum scripti (SCHEMA+RLS+FUNCTIONS)
   src/
     App.tsx              ← root component
     main.tsx             ← Vite entry
@@ -140,6 +143,16 @@ Aşağıdaki durumlarda çalışma durur, değerlendirme yapılır:
 - Dosya adları: `kebab-case` → `receipt-service.ts`
 - Domain terimleri: docs/GLOSSARY.md'deki İngilizce karşılık
 - **Tehlikeli kökler** (gec, tip, durum, kat): docs/GLOSSARY.md'de ayrı bölüm — bu kökleri kodda Türkçe kullanma
+
+### Deploy Checklist
+
+Sonnet commit sonrası, Engin canlıya almadan önce:
+
+1. **tsc --noEmit** — Sonnet çalıştırır, hata varsa commit atmaz, raporlar
+2. **GRANT kontrolü** — Yeni tablo eklendiyse SQL Editor'de GRANT çalıştırılmalı (veya default_privileges ayarlanmalı)
+3. **Edge Function doğrulama** — Code sekmesinden deploy edilen kodun import satırları ve içeriği doğrulanır
+4. **Canlı test** — Deploy sonrası prodapp-navy.vercel.app'te uçtan uca akış doğrulanır
+5. **Repo-canlı senkron** — Edge Function repo kodu ile canlı kod aynı olmalı; fark varsa repo güncellenir
 
 ### Satır Numarası Uyuşmazlığı
 

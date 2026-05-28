@@ -3,6 +3,7 @@ import type { Session } from '@supabase/supabase-js'
 import { supabase } from './shared/supabase/client'
 import { LoginPage } from './app/auth/login-page'
 import { AuthenticatedShell } from './app/auth/authenticated-shell'
+import { ProjectSelectionPage } from './app/auth/project-selection-page'
 
 function App() {
   const [session, setSession] = useState<Session | null>(null)
@@ -23,11 +24,12 @@ function App() {
 
   if (loading) return null
 
-  if (session) {
-    return <AuthenticatedShell user={session.user} />
-  }
+  if (!session) return <LoginPage />
 
-  return <LoginPage />
+  const hasProject = session.user.app_metadata?.project_id
+  if (!hasProject) return <ProjectSelectionPage />
+
+  return <AuthenticatedShell user={session.user} />
 }
 
 export default App
