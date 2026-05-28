@@ -1,6 +1,7 @@
 -- ============================================================
--- PRODAPP RLS Policies v2.0
+-- PRODAPP RLS Policies v2.1
 -- Degisiklik: v2.0 — profiles coklu-uyelik remodel; profiles policy'leri user_id=auth.uid(); advances/advance_log profiles join'i user_id+project_id; is_active/soft_deleted -> membership_status; default_privileges eklendi.
+--   v2.1 — TD-1: projects_own_list is_active -> status.
 -- Güncelleme: 27 Mayıs 2026
 -- Değişiklik: v1.4 — GRANT izinleri eklendi (authenticated SELECT + service_role ALL)
 -- Değişiklik: v1.3 — projects RLS + projects_own_list (claim'siz proje listesi)
@@ -76,7 +77,7 @@ ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 -- (Multi-project login akışında proje seçim ekranı için; JWT claims henüz yok)
 CREATE POLICY projects_own_list ON projects
   FOR SELECT USING (
-    is_active = true
+    status = 'active'
     AND EXISTS (
       SELECT 1 FROM profiles p
       WHERE p.project_id = projects.id
@@ -87,7 +88,7 @@ CREATE POLICY projects_own_list ON projects
 
 -- INSERT: service_role ile (Admin onboarding — BOOTSTRAP-MUSTERI.sql)
 -- UPDATE: service_role ile (Admin proje yönetimi)
--- DELETE: Yok (soft delete — is_active = false ile)
+-- DELETE: Yok (soft delete — status enum ile yonetilir)
 
 
 -- ============================================================

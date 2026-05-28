@@ -4,7 +4,11 @@
 Temel altyapı (ARCHITECTURE.md 2.5 — Milestone 1)
 Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 
-## Son Session (27 Mayıs 2026 — Milestone 1 KAPANDI)
+## Son Session (28 Mayıs 2026)
+
+- TD-1 kapatildi: projects.is_active kaldirildi, status enum tek kaynak. SCHEMA/RLS/full-rebuild v2.1.
+
+**[27 Mayıs 2026 — Milestone 1 KAPANDI]**
 
 **Sonuç:** Auth + RLS + DB + multi-membership login akışı uçtan uca çalışıyor. Çıkış-giriş döngüsünde picker kalıcı. Tag: `v0.1-auth`
 
@@ -39,7 +43,7 @@ Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 - Yapımcı rolü hot cost tam görünümü
 
 ## Açık Borçlar / Bekleyen İşler
-- TD-1/2/3: remodel şekil borçları (M2)
+- TD-2/3: remodel şekil borçları (M2)
 - TD-4: clear-claims `rpcErr.detail` debug — M1 sonu üretim öncesi temizlik
 - TD-5: auth-service.signOut sessiz try/catch — M2 toast/log
 - Proje adı SSOT kokusu: `projects.name` vs `company_settings.project_name` (TECH-DEBT adayı)
@@ -68,16 +72,16 @@ Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
 | CLAUDE.md | guncel | FUNCTIONS + full-rebuild eklendi |
 | ARCHITECTURE.md | guncel | Marka KAAPA |
 | AUTH-KARARLARI.md | guncel | SK-AUTH-4/5/8 v2.0 üyelik remodel |
-| SUPABASE-SCHEMA.sql | v2.0 | profiles çoklu-üyelik remodel |
-| SUPABASE-RLS.sql | v2.0 | GRANT + default_privileges tamam |
+| SUPABASE-SCHEMA.sql | v2.1 | TD-1: is_active kaldirildi |
+| SUPABASE-RLS.sql | v2.1 | TD-1: status = 'active' |
 | SUPABASE-FUNCTIONS.sql | v1.0 (YENİ) | clear_user_claims SECURITY DEFINER RPC |
-| sql/full-rebuild.sql | YENİ | canonical temiz kurulum scripti |
+| sql/full-rebuild.sql | v2.1 | SCHEMA+RLS senkron |
 | set-claims/index.ts | v2.0 | membership_status — canlı deployed |
 | clear-claims/index.ts | v2.0 | RPC yöntemi — canlı deployed |
 | auth-service.ts | v2.0 | signOut wrapper eklendi |
 | TASARIM-KARARLARI.md | guncel | Marka KAAPA |
 | GLOSSARY.md | guncel | Marka KAAPA |
-| TECH-DEBT.md | guncel | TD-1/2/3/4/5 (5/5 borç) |
+| TECH-DEBT.md | guncel | TD-1 kapatildi, 4/5 borc |
 | BOOTSTRAP-MUSTERI.sql | GÜNCELLEME GEREKİYOR | profiles v2.0 kolonlarıyla (user_id, membership_status) uyumlu hale getirilmeli |
 | README.md | minimal | KAAPA açıklaması |
 | STATUS.md | güncel | M1 KAPANDI |

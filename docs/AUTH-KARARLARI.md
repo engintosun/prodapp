@@ -136,7 +136,7 @@ Hard delete log'u zorunludur (kim sildi, ne zaman, sebep).
 
 **Policy:** `projects_own_list` — `FOR SELECT`, claim gerektirmez.
 
-**Kural:** Kullanıcıya yalnızca (a) kendisi için aktif ve soft-delete edilmemiş bir `profiles` kaydı bulunan ve (b) `is_active = true` olan projeler döndürülür.
+**Kural:** Kullanıcıya yalnızca (a) kendisi için `membership_status = 'active'` olan bir `profiles` kaydı bulunan ve (b) `status = 'active'` olan projeler döndürülür.
 
 **Gerekçe — KVKK cross-company izolasyon:** RLS kapalıyken oturum açmış her kullanıcı sistemdeki tüm şirketlerin proje adlarını okuyabiliyordu. `projects_own_list` bu sızıntıyı kapatır; kullanıcı yalnızca kendi üye olduğu projeleri görür.
 
