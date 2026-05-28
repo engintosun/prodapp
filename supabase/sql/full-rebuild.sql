@@ -1,7 +1,7 @@
 -- ============================================================
 -- KAAPA Full Rebuild — Canonical Script
 -- Tarih: 27 Mayis 2026
--- Versiyon: SCHEMA v2.0 + RLS v2.0 + FUNCTIONS v1.0
+-- Versiyon: SCHEMA v2.1 + RLS v2.1 + FUNCTIONS v1.0
 --
 -- BU SCRIPT public semasindaki TUM tablolari siler ve yeniden kurar.
 -- auth.users tablosuna DOKUNULMAZ.
@@ -27,12 +27,13 @@ DO $drop$ DECLARE r RECORD; BEGIN
 END $drop$;
 
 -- ============================================================
--- PRODAPP Supabase Schema v2.0
+-- PRODAPP Supabase Schema v2.1
 -- Guncelleme: 27 Mayis 2026
 -- Degisiklik: v2.0 — profiles coklu-uyelik remodel (surrogate id + user_id + UNIQUE(user_id,project_id)),
 --   uyelik yasam dongusu (membership_status / access_until / revoked_at),
 --   projects yasam dongusu alanlari (status / closed_at / closed_by, sekil; logic M2),
 --   person isaret eden 9 FK profiles(id) -> auth.users(id), is_active+soft_deleted_at -> membership_status.
+--   v2.1 — TD-1: projects.is_active kaldirildi, status enum tek kaynak.
 -- Onceki: v1.1
 -- ============================================================
 
@@ -42,7 +43,6 @@ CREATE TABLE projects (
   name TEXT NOT NULL,
   created_by UUID,
   created_at TIMESTAMPTZ DEFAULT now(),
-  is_active BOOLEAN DEFAULT true,
   status TEXT NOT NULL DEFAULT 'active'
     CHECK (status IN ('active','closed','archived')),
   closed_at TIMESTAMPTZ,
@@ -333,10 +333,11 @@ ALTER TABLE invitations ADD CONSTRAINT fk_invitations_dept
   FOREIGN KEY (dept_id) REFERENCES departments(id);
 
 -- ============================================================
--- PRODAPP RLS Policies v2.0
+-- PRODAPP RLS Policies v2.1
 -- Degisiklik: v2.0 — profiles coklu-uyelik remodel; profiles policy'leri user_id=auth.uid(); advances/advance_log profiles join'i user_id+project_id; is_active/soft_deleted -> membership_status; default_privileges eklendi.
+--   v2.1 — TD-1: projects_own_list is_active -> status.
 -- Guncelleme: 27 Mayis 2026
--- Bagimlilik: SUPABASE-SCHEMA.sql v2.0 (17 tablo + projects + invitations)
+-- Bagimlilik: SUPABASE-SCHEMA.sql v2.1 (17 tablo + projects + invitations)
 -- Yontem: JWT custom claims (raw_app_meta_data)
 -- Claims: project_id, role (saha/dept/muhasebe), dept_id
 -- ============================================================
@@ -400,7 +401,7 @@ ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY projects_own_list ON projects
   FOR SELECT USING (
-    is_active = true
+    status = 'active'
     AND EXISTS (
       SELECT 1 FROM profiles p
       WHERE p.project_id = projects.id

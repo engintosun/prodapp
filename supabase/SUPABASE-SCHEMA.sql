@@ -1,10 +1,11 @@
 -- ============================================================
--- PRODAPP Supabase Schema v2.0
+-- PRODAPP Supabase Schema v2.1
 -- Guncelleme: 27 Mayis 2026
 -- Degisiklik: v2.0 — profiles coklu-uyelik remodel (surrogate id + user_id + UNIQUE(user_id,project_id)),
 --   uyelik yasam dongusu (membership_status / access_until / revoked_at),
 --   projects yasam dongusu alanlari (status / closed_at / closed_by, sekil; logic M2),
 --   person isaret eden 9 FK profiles(id) -> auth.users(id), is_active+soft_deleted_at -> membership_status.
+--   v2.1 — TD-1: projects.is_active kaldirildi, status enum tek kaynak.
 -- Onceki: v1.1
 -- ============================================================
 
@@ -14,7 +15,6 @@ CREATE TABLE projects (
   name TEXT NOT NULL,
   created_by UUID,
   created_at TIMESTAMPTZ DEFAULT now(),
-  is_active BOOLEAN DEFAULT true,
   status TEXT NOT NULL DEFAULT 'active'
     CHECK (status IN ('active','closed','archived')),
   closed_at TIMESTAMPTZ,
