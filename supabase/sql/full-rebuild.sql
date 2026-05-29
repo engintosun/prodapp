@@ -195,7 +195,7 @@ CREATE TABLE approval_log (
   approver_id UUID NOT NULL REFERENCES auth.users(id),
   approver_role TEXT NOT NULL CHECK (approver_role IN ('dept','muhasebe')),
   action TEXT NOT NULL
-    CHECK (action IN ('approved','rejected','split','returned','auto_approved')),
+    CHECK (action IN ('approved','rejected','split','auto_approved')),
   reason TEXT,
   split_amount NUMERIC(12,2),
   created_at TIMESTAMPTZ DEFAULT now()
