@@ -2,7 +2,7 @@
 
 Ekranlardan ve yetkiden bağımsız iş mantığı. Birden çok ekranı etkileyen kurallar burada tek evde tutulur (etki analizi için). Ekran dosyaları bu kuralları KOPYALAMAZ, sadece referans verir.
 
-> Kapsam: onay zinciri, status geçişleri, reddet/iade, split, dönem ve kapama, kategori sistemi, limitler, kiralama, avans, hot cost, vergi türleri, dijital imza, anomali motoru, şirket kuralları. Anomali motoru (§13) bu dosyanın bir bölümüdür — ayrı dosya değildir.
+> Kapsam: onay zinciri, status geçişleri, reddet, split, dönem ve kapama, kategori sistemi, limitler, kiralama, avans, hot cost, vergi türleri, dijital imza, anomali motoru, şirket kuralları. Anomali motoru (§13) bu dosyanın bir bölümüdür — ayrı dosya değildir.
 
 ---
 
@@ -14,14 +14,18 @@ Saha (draft → submitted) → Dept varsa (dept_pending → dept_approved / dept
 ## 2. Fiş status değerleri (9)
 draft · submitted · dept_pending · dept_approved · dept_rejected · acc_pending · acc_approved · acc_rejected · split
 
-## 3. Reddet vs İade
-- **Reddet:** sürecin sonu. Sebep zorunlu (serbest metin). Fiş reddedilmiş kalır.
-- **İade:** düzeltme için sahaya geri. 10 iade sebebi (dropdown) + opsiyonel hatalı alan işaretleme. Saha düzeltip tekrar gönderir.
-- **10 iade sebebi:** (1) Veri uyuşmazlığı [alan seçimi: tutar/tarih/KDV/işyeri] (2) Tutar hatalı (3) Tarih hatalı (4) KDV hatalı (5) İşyeri hatalı (6) Belge eklenmemiş (7) Mükerrer giriş (8) Kişisel harcama (9) Limit aşımı (10) Diğer [serbest metin].
-- **Kategori hatası iade sebebi DEĞİL:** dept/muhasebe tek tıkla kategoriyi düzeltir, iade etmez.
-- **Hatayı yapan düzeltir** prensibi: dept şefi düzeltme yapmaz, sahaya iade eder.
-- İade hem dept hem muhasebe seviyesinde mümkün.
-- Her iade sebebi anomali motoruna sinyaldir (§13). İade logu: kullanıcı + sebep + alan + tarih + tutar. Muhasebe dashboard'unda "iade pattern analizi".
+## 3. Reddet
+Sahaya geri dönüş tek aksiyondur: **reddet**. Ayrı "iade" mekanizması yoktur.
+- **Reddet:** sebep zorunlu (aşağıdaki sebeplerden + serbest metin). Reddedilen fiş **kanıt olarak donar** — düzenlenemez, silinemez, işaretli kalır, reddedilenler listesinde görünür.
+- **Düzenleme sınırı = submit anı.** Fiş `draft` iken saha serbestçe düzenler/siler. Submit sonrası (dept_pending/acc_pending) saha dokunamaz — inceleme bütünlüğü korunur.
+- **10 red sebebi (dropdown):** (1) Veri uyuşmazlığı [alan seçimi: tutar/tarih/KDV/işyeri] (2) Tutar hatalı (3) Tarih hatalı (4) KDV hatalı (5) İşyeri hatalı (6) Belge eklenmemiş (7) Mükerrer giriş (8) Kişisel harcama (9) Limit aşımı (10) Diğer [serbest metin].
+- **Kategori hatası red sebebi DEĞİL:** dept/muhasebe tek tıkla kategoriyi düzeltir, reddetmez.
+- **Küçük hatada reddetmek zorunlu değil:** muhasebe uyarı mesajı atıp onaylayabilir (iletişim açık). Mesaj statüyü değiştirmez, düzenleme penceresi açmaz.
+- **Finansal gerçeği muhasebe sessizce düzeltmez** (tutar/tarih/KDV/işyeri). Fiş kanıttır; finansal hata varsa reddedilir.
+- **Hatayı yapan düzeltir:** dept/muhasebe fişi düzeltmez, reddeder. Reddet hem dept hem muhasebe seviyesinde mümkün.
+- **Tekrar giriş:** yalnız **muhasebe** izin verir (dept veremez). İzin verilirse orijinal reddedilen fiş donmuş kalır; düzeltme ona **bağlı yeni fiş** olarak doğar (`parent_receipt_id` — §4 split ile aynı yapı). Orijinal kayıt asla düzenlenmez. [UI M3]
+- Muhasebe gerektiğinde düzeltmeye müdahale edebilir; müdahale **silinemez/işaretli** iz bırakır. [M3]
+- Her red sebebi anomali motoruna sinyaldir (§13). Red logu: kullanıcı + sebep + (varsa alan) + tarih + tutar. Muhasebe dashboard'unda "red pattern analizi".
 
 ## 4. Kısmi onay (split)
 Dept (½ Kısmi Onay) ve muhasebe (Split) yapabilir. split_amount belirlenir, fiş → split status. Ödenmeyen kısım için ayrı child receipt oluşturulur (parent-child ilişkisi, tek kayıtta alan tutulmaz). [G10 kararı]
@@ -92,7 +96,7 @@ Tevkifat · stopaj · self-billing. Faz 1: takip/sayaç (dönem ekranında özel
   4. Kişi başı yüksek yemek (eşik üstü)
   5. Mükerrer fiş
 - **Domain pattern adayları (Engin'in saha tecrübesi — kurala dönüştürülecek):** mükerrer fişler · şişirilmiş lokasyon/catering komisyonu · sarf malzeme şişirme · aşırı küçük ulaşım fişi yığını.
-- Her iade sebebi (§3) de anomali sinyalidir.
+- Her red sebebi (§3) de anomali sinyalidir.
 
 ## 14. Şirket kuralları (Project Rules Engine)
 - Faz 1: sabit varsayılanlar. Faz 2: yapılandırılabilir (project_rules tablosu — şemada placeholder).
@@ -108,7 +112,6 @@ Kamera QR tespit ederse GİB API'ye istek (3 sn hard timeout), OCR atlanır. QR 
 ---
 
 ## AÇIK KARARLAR (kod öncesi netleşmeli)
-- **G1:** iade edilen fiş status'ü ('returned' mi, draft'a mı döner) — şema kararı
 - **G2:** dijital imza kesin tanımı (canvas yönünde)
 - **G3:** auto_approved / 7 gün pasif onay Faz 1'de var mı
 - **G10:** split child receipt mekanizması detayı

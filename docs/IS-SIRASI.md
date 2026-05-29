@@ -33,7 +33,7 @@ Tamamlanan zincir: DB şeması (A1) → RLS → client → scaffold (B1) → log
 
 ### M2.0 — Karar kapatma (kod ÖNCESİ) ⬜
 Bu kararlar verilmeden ilgili ekran kodlanamaz:
-- ⬜ **G1** — iade edilen fiş status'ü (şema kararı) → C4.5, D1.6, E2.5'i bloklar
+- ✅ **G1** — KAPANDI: iade kaldırıldı; sahaya geri dönüş tek aksiyon = reddet (kanıt olarak donar). Tekrar giriş yalnız muhasebe → bağlı yeni fiş (parent_receipt_id). 'returned' gereksiz, 9 statü korunur. Detay: IS-KURALLARI §3.
 - ⬜ **G3** — auto_approved / 7 gün pasif onay Faz 1'de var mı → dönem mantığını etkiler
 - ⬜ **Status geçiş yeri** — submitted→dept_pending/acc_pending trigger mı frontend mi
 - ⬜ **G6 başlangıcı** — token yapısı için renk yaklaşımı (değerler sonra, yapı şimdi)
@@ -65,7 +65,7 @@ Bağımlılık: M2.1 + M2.2. Detay: EKRAN-SAHA.md
 
 ### M2.4 — DEPT ekranı (sıralı inşa: ikinci rol) ⬜
 Bağımlılık: M2.3 (fişler dept_pending'e düşmüş olmalı). Detay: EKRAN-DEPT.md
-- ⬜ **[Frontend]** D1.1–D1.6 onay duvarı (bekleyen liste, detay, onayla/reddet/iade)
+- ⬜ **[Frontend]** D1.1–D1.6 onay duvarı (bekleyen liste, detay, onayla/reddet)
 - ⬜ **[Frontend/Supabase]** D1.9 approval_log doğrulama
 - ⬜ **[Frontend]** dept bütçe kartı (M2'de sayılar; bütçe limiti M3)
 - ⬜ **[Frontend]** D3 dönem (dept özet + kapatma)
@@ -77,7 +77,7 @@ Bağımlılık: M2.4 (dept'ten geçen fişler). Detay: EKRAN-MUHASEBE.md
 - ⬜ **[Frontend/Supabase]** E2.7 approval_log doğrulama
 - ⬜ **[Frontend]** E1 dashboard minimal (özet + departman kartları; drill-down M3)
 - ⬜ **[Frontend]** E4.1–E4.4 dönem yönetimi (aç/kapat, kademeli kapanış minimal)
-> M2 dışı (M3): E2.5 iade, E2.6 split, E3 avans, E5 departman, E6 kategori, E7 bütçe, E8 kullanıcı, E9 rapor, E10 marka, E11 kişi detay, E12 onboarding, şüpheli tab, kiralama tab
+> M2 dışı (M3): E2.5 muhasebe tekrar-giriş izni (bağlı yeni fiş), E2.6 split, E3 avans, E5 departman, E6 kategori, E7 bütçe, E8 kullanıcı, E9 rapor, E10 marka, E11 kişi detay, E12 onboarding, şüpheli tab, kiralama tab
 
 ### M2 ÇIKIŞ KRİTERİ
 Tek fiş: saha girer → (dept varsa) dept onaylar → muhasebe onaylar → dönem kapanır. Uçtan uca, canlıda.
