@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
     const { error: rpcErr } = await adminClient.rpc('clear_user_claims', {
       p_user_id: user.id,
     })
-    if (rpcErr) return json({ error: 'Claims temizlenemedi', detail: rpcErr.message }, 500)
+    if (rpcErr) return json({ error: 'Claims temizlenemedi' }, 500)
 
     return json({ ok: true }, 200)
   } catch (_e) {
