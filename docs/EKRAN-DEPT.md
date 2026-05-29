@@ -56,4 +56,3 @@ Kendi departmanı için: geç giriş izni (late_entry) · tekrar açma izni (reo
 - Renk paleti / tema (G6)
 - Kart-merkezli sunum dept'te ne kadar uygulanacak — kısmen, detay belirlenecek
 - Kozmetik biçimlendirme
-- İade status'ü (G1)

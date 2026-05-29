@@ -95,5 +95,4 @@ Avatar (foto veya harf fallback) + ad/soyad/telefon/email + rol + departman. Dü
 - Renk paleti / tema (G6) — saha dahil tüm renkler baştan belirlenecek
 - Kozmetik: buton/disk/kart şekilleri, ikonografi — yerleşim sabit, görünüm geliştirilecek
 - Dijital imza tanımının teyidi (G2) — canvas imza + zaman damgası yönünde
-- İade edilen fişin durumu (G1) — şema kararı, bu ekrandaki filtre/akışı etkiler
 - PDF dosya çekme protokolü
