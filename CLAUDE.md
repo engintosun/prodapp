@@ -127,6 +127,7 @@ kaapa/
 - Tip seti: feat, fix, refactor, docs, chore, test
 - Bir commit = bir tamamlanmış iş. Yarım iş commit edilmez.
 - Kod değiştiyse ilgili md dosyası AYNI commit'te güncellenir.
+- **Push doğrulama (zorunlu):** Her push sonrası `git fetch origin main` + `git rev-parse HEAD` ile `git rev-parse origin/main` karşılaştırılır. Hash'ler eşit değilse push GERÇEKLEŞMEMİŞTİR; hash eşitliği olmadan "push başarılı" geçersizdir. Opus, Sonnet raporuna güvenmeden commit'i origin'den bağımsız doğrular.
 
 ### Dur Kuralları
 

@@ -148,7 +148,7 @@ Kur dönüşümü · KDV · bütçe hesabı. Pure functions, A4.4'e bağlanır. 
 ---
 
 ## TEKNİK BORÇ ⬜ (5/5 dolu — yeni özellik öncesi 1 kapat)
-TD-2 üyelik davranışı (M2) · TD-3 person FK (M2 gözden geçirme) · TD-4 clear-claims debug · TD-5 signOut log · proje adı SSOT · full-rebuild v2.2 başlık · ARCHITECTURE 5.3 router kalıntısı · remote branch temizliği · README+favicon (G6)
+Açık teknik borç tek kaynak: docs/TECH-DEBT.md (TD-2, TD-3, TD-5, TD-6 = 4/5). README + favicon → G6/M2.1 todo'su (borç değil, IS-SIRASI M2.1 altında).
 
 ---
 
