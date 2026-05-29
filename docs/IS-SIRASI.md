@@ -34,7 +34,7 @@ Tamamlanan zincir: DB şeması (A1) → RLS → client → scaffold (B1) → log
 ### M2.0 — Karar kapatma (kod ÖNCESİ) ⬜
 Bu kararlar verilmeden ilgili ekran kodlanamaz:
 - ✅ **G1** — KAPANDI: iade kaldırıldı; sahaya geri dönüş tek aksiyon = reddet (kanıt olarak donar). Tekrar giriş yalnız muhasebe → bağlı yeni fiş (parent_receipt_id). 'returned' gereksiz, 9 statü korunur. Detay: IS-KURALLARI §3.
-- ⬜ **G3** — auto_approved / 7 gün pasif onay Faz 1'de var mı → dönem mantığını etkiler
+- ✅ **G3** — KAPANDI: pasif onay (7 gün) Faz 1'de VAR. Bekleyen fiş 7 günde auto_approved (şüpheli bayrağı kalır, sorumluluk muhasebede, kiralama istisna). Dönem kapama ilanından 7 gün sonra kapanır (grace). Detay: IS-KURALLARI §5.
 - ⬜ **Status geçiş yeri** — submitted→dept_pending/acc_pending trigger mı frontend mi
 - ⬜ **G6 başlangıcı** — token yapısı için renk yaklaşımı (değerler sonra, yapı şimdi)
 > Not: G2 (dijital imza) ve kategori panelleri M2 çekirdek için zorunlu değil; M2'de basit/placeholder geçilebilir.
@@ -127,7 +127,7 @@ Bağımlılık: M3.3 realtime, mesaj yetki matrisi tanımı
 - ⬜ **[Frontend]** F1–F10 (sohbet, 1-1, grup, baloncuk, okundu, XSS, otomatik mesaj, realtime)
 
 ### M3.9 — Kalan kurallar ⬜
-- ⬜ split (E2.6, G10 kararı) · kategori panelleri (C2/C3) · vergi sayaçları · dönem disiplini (7 gün, G3) · kişi detay (E11)
+- ⬜ split (E2.6, G10 kararı) · kategori panelleri (C2/C3) · vergi sayaçları · dönem disiplini (7 gün pasif onay + kapanış grace) · kişi detay (E11)
 
 ---
 

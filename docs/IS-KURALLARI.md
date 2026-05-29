@@ -38,7 +38,8 @@ Dept (½ Kısmi Onay) ve muhasebe (Split) yapabilir. split_amount belirlenir, fi
 - **Zorla kapama:** "closed_by_override" terminolojisi (endüstri standardı). override_reason ZORUNLU.
 - **Tekrar açma:** reopened, reopen_reason ZORUNLU.
 - **Kural dondurma:** dönem kapanınca o anki kurallar periods.rules_snapshot (JSONB) olarak dondurulur. Kural değişikliği kapanmış döneme geriye dönük uygulanmaz.
-- **Pasif onay (7 gün):** bekleyen fiş 7 gün içinde işlem görmezse otomatik onaylanmış sayılır (approval_log action=auto_approved, muhasebe sorumlu). Kiralama bu kuraldan istisna. [G3 kararına bağlı]
+- **Pasif onay (7 gün):** bekleyen fiş 7 gün işlem görmezse otomatik onaylanmış sayılır (approval_log action=auto_approved). Amaç: işini bekleten muhasebenin fişi süresiz kilitlememesi — sorumluluk muhasebededir, fiş sahibi cezalandırılmaz. **Şüpheli/anomali bayrağı auto-approve sonrası fişin üstünde kalır** (sessiz aklama değildir, §13). Kiralama bu kuraldan istisna. 7 gün varsayılandır; gerekirse proje bazında yapılandırılır (Faz 2 project_rules, §14).
+- **Dönem kapanış grace'i (7 gün):** dönem otomatik kapanmaz. Muhasebe kapamayı **ilan eder**; dönem ilandan **7 gün sonra** kapanır. Grace penceresinde bekleyen fişler ya işlem görür ya pasif onay (7 gün) ile auto_approve olur. (Grace'in şemada temsili — kapama-ilan zamanı / period statüsü — dönem-kapama kodundan önce kesinleşecek; açık alt-soru.)
 - **İstisna izleme:** her geç giriş / tekrar açma / zorla kapama sistemde işaretlenir, denetçi görür.
 - **İstisna izin tipleri (Faz 1):** late_entry (geç giriş) · reopen (tekrar açma) · limit_override (limit aşımı). Yetki: saha giremez, dept kendi departmanı için, muhasebe tümü. Kayıt: granted_by, reason, expires_at.
 
@@ -113,7 +114,6 @@ Kamera QR tespit ederse GİB API'ye istek (3 sn hard timeout), OCR atlanır. QR 
 
 ## AÇIK KARARLAR (kod öncesi netleşmeli)
 - **G2:** dijital imza kesin tanımı (canvas yönünde)
-- **G3:** auto_approved / 7 gün pasif onay Faz 1'de var mı
 - **G10:** split child receipt mekanizması detayı
 - Kategori/ulaşım limit değerleri (şirket kuralı yapılandırması, §14)
 - Kiralama dönem-kapanış istisnası teyidi
