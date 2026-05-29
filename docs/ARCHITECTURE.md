@@ -1,7 +1,7 @@
 # KAAPA — Mimari Kararlar Dokümanı
 
-**Son güncelleme:** 22 Mayıs 2026
-**Durum:** Kurucu zemin — 31 karar alındı, uygulama başlamadı.
+**Son güncelleme:** 29 Mayıs 2026
+**Durum:** M1 (temel altyapı + auth) kapandı. M2 (çekirdek döngü) aktif — kod öncesi doküman yeniden yapılandırması sürüyor.
 
 -----
 
@@ -70,6 +70,15 @@ Eşikler (5 dosya, 300 satır) başlangıç — pratikte kalibre edilir.
 - **UI metinleri:** Türkçe, lokalizasyon altyapısı Faz 1'de yok
 
 **Karar tarihi:** 22.05.2026 | **Gerekçe:** Kod tutarlılığı, domain karışıklığını önleme.
+
+### 1.8 Doküman ve Karar Disiplini
+
+- **Versiyon dili yasak:** Kararın kendisi yazılır; kaynağı (eski sürüm, demo, "önceki versiyonda şöyleydi") yazılmaz.
+- **Modüler karar dosyaları:** Her ekran/konu kendi dosyasında yaşar (docs/EKRAN-*, docs/IS-KURALLARI.md). Görev listesi (docs/IS-SIRASI.md) yalnızca durum tutar, karar detayı tutmaz. Bir bilgi tek evde yaşar, tekrarlanmaz; başka dosya yalnızca referans verir.
+- **Sistem-genel etki analizi:** Hiçbir karar tek dosyaya bakılarak verilmez veya yazılmaz. Bir konuya başlamadan o kararın dokunduğu tüm dosyalar taranır; karar, etkilediği tüm dosyalara aynı anda yansıtılır.
+- **Dayanıklı/kararsız katman ayrımı:** Yerleşim, akış ve mantık yazılır (dayanıklı). Renk ve sunum estetiği açık slot bırakılır (kararsız), ayrı oturumda doldurulur.
+
+**Karar tarihi:** 29.05.2026 | **Gerekçe:** Tek dosyanın okunamayacak kadar büyümesi ve versiyon karmaşası, geçmişte entropinin iki ana kaynağıydı; modüler dosya + sistem-genel etki analizi ikisini birden önler.
 
 -----
 
@@ -276,8 +285,8 @@ Oklar tek yönlü: Orkestrasyon → herkesi çağırabilir. UI → sadece orkest
 - Her milestone sonunda git tag: `v0.1-auth`, `v0.2-core-loop` vb.
 - Tag koşulu: testler geçiyor, dokümanlar senkron, açık kritik borç yok
 - Kırılmada en son tag'e dönülür
-- main her zaman çalışır durumda, deneysel iş feature branch'te
-- main'e doğrudan yarım iş girmez
+- main her zaman çalışır durumda kalır
+- İş doğrudan main üzerinde yürür ve main'e push'lanmış olarak biter; branch açılsa bile main'e merge edilmeden bırakılmaz (orphan branch yasak). Yarım iş main'e girmez.
 
 **Karar tarihi:** 22.05.2026 | **Gerekçe:** v8'de geri dönüş noktası yoktu, her bozulma üstüne yama yazıldı.
 
@@ -374,8 +383,8 @@ src/
 - Hosting: Vercel
 - Build: Vite
 - Üç ortam: dev / staging / prod
-- Branch: main = prod, staging branch = staging, feature branch = preview
-- main'e merge = otomatik deploy, ama tag kurallarına bağlı (4.6)
+- Branch: main = prod (tek aktif dal). Faz 1'de feature/staging branch kullanılmıyor; staging ortamı M4'te eklenecek.
+- main'e push = otomatik deploy (Vercel), tag kurallarına bağlı (4.6)
 - Hassas bilgiler: Vercel environment variables, kodda bulunmaz
 
 **Karar tarihi:** 22.05.2026 | **Gerekçe:** Standart, güvenilir, React+Supabase ile uyumlu pipeline.
