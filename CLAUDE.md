@@ -44,19 +44,24 @@ KAAPA — Sinema/TV sektörü için prodüksiyon harcama yönetimi SaaS platform
 
 ## Context Routing Tablosu
 
-|Görev tipi                  |Okunacak dosyalar                                                       |
-|----------------------------|------------------------------------------------------------------------|
-|Mimari karar                |docs/ARCHITECTURE.md                                                    |
-|Kod yazma (herhangi feature)|docs/ARCHITECTURE.md → ilgili feature dizini → docs/GLOSSARY.md         |
-|İsimlendirme                |docs/GLOSSARY.md                                                        |
-|Teknik borç                 |docs/TECH-DEBT.md                                                       |
-|Auth / rol / izin           |docs/AUTH-KARARLARI.md + supabase/SUPABASE-RLS.sql                      |
-|DB şeması                   |supabase/SUPABASE-SCHEMA.sql                                            |
-|Tasarım / UI                |docs/TASARIM-KARARLARI.md                                               |
-|Yeni özellik                |docs/ARCHITECTURE.md (Bölüm 2 — kapsam kontrolü) → ilgili feature dizini|
-|Bug fix                     |İlgili feature dizini → docs/TECH-DEBT.md                               |
-|Deploy                      |docs/ARCHITECTURE.md (Bölüm 5.6)                                        |
-|Test                        |İlgili feature dizini → docs/ARCHITECTURE.md (Bölüm 3.5)                |
+|Görev tipi|Okunacak dosyalar|
+|---|---|
+|Mimari karar|docs/ARCHITECTURE.md|
+|Kod yazma (herhangi feature)|docs/ARCHITECTURE.md → ilgili feature dizini → docs/GLOSSARY.md|
+|İsimlendirme|docs/GLOSSARY.md|
+|Teknik borç|docs/TECH-DEBT.md|
+|Auth / rol / izin|docs/AUTH-KARARLARI.md + supabase/SUPABASE-RLS.sql|
+|DB şeması|supabase/SUPABASE-SCHEMA.sql|
+|Tasarım / UI (ortak ilkeler)|docs/TASARIM-KARARLARI.md + ilgili docs/EKRAN-*.md|
+|Saha ekranı|docs/EKRAN-SAHA.md + docs/TASARIM-KARARLARI.md + docs/IS-KURALLARI.md|
+|Dept ekranı|docs/EKRAN-DEPT.md + docs/TASARIM-KARARLARI.md + docs/IS-KURALLARI.md|
+|Muhasebe ekranı|docs/EKRAN-MUHASEBE.md + docs/TASARIM-KARARLARI.md + docs/IS-KURALLARI.md|
+|İş kuralı / onay / dönem / avans / anomali|docs/IS-KURALLARI.md|
+|Görev sırası / ne yapılacak|docs/IS-SIRASI.md|
+|Yeni özellik|docs/ARCHITECTURE.md (Bölüm 2 — kapsam kontrolü) → ilgili feature dizini|
+|Bug fix|İlgili feature dizini → docs/TECH-DEBT.md|
+|Deploy|docs/ARCHITECTURE.md (Bölüm 5.6)|
+|Test|İlgili feature dizini → docs/ARCHITECTURE.md (Bölüm 3.5)|
 
 **Fallback:** Tabloda eşleşme yoksa → önce docs/ARCHITECTURE.md oku, sonra sor.
 
@@ -68,10 +73,15 @@ KAAPA — Sinema/TV sektörü için prodüksiyon harcama yönetimi SaaS platform
 kaapa/
   CLAUDE.md              ← bu dosya
   docs/
-    ARCHITECTURE.md      ← 31 karar, mimari anayasa
-    AUTH-KARARLARI.md    ← 6 auth kararı
+    ARCHITECTURE.md      ← mimari anayasa + çalışma sözleşmesi
+    AUTH-KARARLARI.md    ← SK-AUTH-1..9 (kimlik/yetki/üyelik)
+    TASARIM-KARARLARI.md ← ekranlar-arası ortak görsel/etkileşim ilkeleri
+    EKRAN-SAHA.md        ← saha ekranları (alan/akış/yerleşim)
+    EKRAN-DEPT.md        ← dept ekranları
+    EKRAN-MUHASEBE.md    ← muhasebe ekranları
+    IS-KURALLARI.md      ← iş mantığı (onay/dönem/avans/anomali §13/kurallar)
+    IS-SIRASI.md         ← görev sırası ve bağımlılıklar
     GLOSSARY.md          ← domain terimleri + tehlikeli kökler
-    TASARIM-KARARLARI.md ← UI/UX kararları
     TECH-DEBT.md         ← teknik borç takibi
     RAKIP-ANALIZI-OCR.md ← rakip analizi (referans)
   supabase/
@@ -127,6 +137,13 @@ Aşağıdaki durumlarda çalışma durur, değerlendirme yapılır:
 - Aynı iş mantığı ikinci yerde yazılmak üzereyse (mantık tekrarı)
 - Başlanan iş tanımının dışına çıkılıyorsa (scope creep)
 - Kalıcı karar dosyasında karşılığı olmayan seçim yapılması gerekiyorsa
+
+### Doküman ve Karar Disiplini
+
+- **Versiyon dili yasak:** Kararın kendisi yazılır, kaynağı (eski sürüm/demo) yazılmaz. "Hangi versiyonda ne" karmaşası önlenir.
+- **Modüler karar dosyaları:** Her ekran/konu kendi dosyasında (docs/EKRAN-*, docs/IS-KURALLARI.md). Görev listesi (docs/IS-SIRASI.md) sadece durum tutar, karar detayı tutmaz. Bilgi tek evde yaşar, tekrarlanmaz — başka dosya yalnızca referans verir.
+- **Sistem-genel etki analizi:** Hiçbir karar tek dosyaya bakılarak verilmez veya yazılmaz. Bir konuya başlamadan ilgili tüm dosyalar taranır; karar, etkilediği tüm dosyalara aynı anda yansıtılır.
+- **Dayanıklı/kararsız katman ayrımı:** Yerleşim + akış + mantık yazılır (dayanıklı). Renk + sunum estetiği açık slot bırakılır (kararsız), ayrı oturumda doldurulur.
 
 ### Teknik Kurallar
 
