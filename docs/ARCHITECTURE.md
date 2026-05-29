@@ -338,7 +338,6 @@ src/
     utils/           — ortak yardımcı fonksiyonlar
     supabase/        — Supabase client, bağlantı
   app/
-    router.ts        — routing
     layout/          — sayfa düzeni
     auth/            — auth guard, login
 ```

@@ -1,7 +1,7 @@
 -- ============================================================
 -- KAAPA Full Rebuild — Canonical Script
 -- Tarih: 27 Mayis 2026
--- Versiyon: SCHEMA v2.1 + RLS v2.1 + FUNCTIONS v1.0
+-- Versiyon: SCHEMA v2.2 + RLS v2.1 + FUNCTIONS v1.0
 --
 -- BU SCRIPT public semasindaki TUM tablolari siler ve yeniden kurar.
 -- auth.users tablosuna DOKUNULMAZ.

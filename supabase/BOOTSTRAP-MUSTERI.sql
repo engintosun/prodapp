@@ -50,7 +50,7 @@ BEGIN
   -- WHERE id = v_user_id;
 
   -- Adım 5: Profile oluştur
-  -- INSERT INTO profiles (id, project_id, role, first_name, last_name, invited_by)
+  -- INSERT INTO profiles (user_id, project_id, role, first_name, last_name, invited_by)
   -- VALUES (v_user_id, v_project_id, 'muhasebe', v_muhasebe_first, v_muhasebe_last, NULL);
 
   RAISE NOTICE '✅ Proje oluşturuldu: % (ID: %)', v_project_name, v_project_id;
