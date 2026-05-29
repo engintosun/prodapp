@@ -1,101 +1,93 @@
 # KAAPA — STATUS.md
 
 ## Aktif Milestone
-Temel altyapı (ARCHITECTURE.md 2.5 — Milestone 1)
-Auth, RLS, DB şeması, boş ama giriş yapılabilen uygulama.
+**M2 — Çekirdek Döngü** (ARCHITECTURE.md 2.5). M1 kapandı (`v0.1-auth`).
+Şu an: M2 kod öncesi **doküman yeniden yapılandırma** fazı tamamlandı; sıradaki M2.0 karar kapatma.
 
-## Son Session (28 Mayıs 2026)
+## Son Session (29 Mayıs 2026 — Doküman yeniden yapılandırma)
+Mayıs reset sonrası dağılan kararlar kurtarıldı, doküman yapısı modülerleştirildi. Kod yazılmadı.
 
-- TD-1 kapatildi: projects.is_active kaldirildi, status enum tek kaynak. SCHEMA/RLS/full-rebuild v2.1.
+**Yapılanlar (5 commit):**
+- `ec0fa4b` — docs: 5 yeni modüler dosya (EKRAN-SAHA/DEPT/MUHASEBE, IS-KURALLARI, IS-SIRASI)
+- `bcc0f08` — docs(claude): routing tablosu + dosya yapısı + çalışma prensipleri özeti
+- `f7b8c38` — docs(arch): çalışma prensipleri (§1.8) + branch/durum düzeltmeleri
+- `ff7705a` — docs(design): TASARIM-KARARLARI sadeleştirildi (356→48, sadece ortak ilkeler)
+- `[bu commit]` — docs: STATUS güncelleme
 
-**[27 Mayıs 2026 — Milestone 1 KAPANDI]**
+**Kurulan çalışma prensipleri (ARCHITECTURE §1.8 + CLAUDE):**
+- Versiyon dili yasak (karar yazılır, kaynağı yazılmaz)
+- Modüler karar dosyaları (her ekran/konu tek evde, IS-SIRASI sadece durum)
+- Sistem-genel etki analizi (karar izole verilmez, tüm ilgili dosyalar taranır)
+- Dayanıklı/kararsız katman ayrımı (yerleşim+akış+mantık yazılır, renk+sunum açık slot)
 
-**Sonuç:** Auth + RLS + DB + multi-membership login akışı uçtan uca çalışıyor. Çıkış-giriş döngüsünde picker kalıcı. Tag: `v0.1-auth`
+**Doküman sınırları netleşti (her bilgi tek evde):** ekran detayı → EKRAN-*; iş mantığı+anomali → IS-KURALLARI; auth → AUTH-KARARLARI; ortak görsel ilke → TASARIM-KARARLARI; görev sırası → IS-SIRASI. AUTH kopyası TASARIM'dan silindi (Ç3/Ç4 çözüldü), dil Faz 2'ye (Ç1).
 
-**[Bu commit] full-rebuild canonical + STATUS/CLAUDE senkron + v0.1-auth tag**
+## M1 Özeti (KAPANDI — 27 Mayıs 2026, tag v0.1-auth)
+Auth + RLS + DB şeması + çoklu-üyelik (multi-project) login akışı uçtan uca çalışıyor. profiles çoklu-üyelik remodel v2.0, set-claims/clear-claims Edge Functions canlı, üç-hâl App.tsx routing, Vercel prod (prodapp-navy.vercel.app). Detay: git history.
 
-**profiles çoklu-üyelik remodel v2.0:**
-- profiles çoklu-üyelik remodel tamamlandı; çoklu profil artık temsil edilebilir.
-- SUPABASE-SCHEMA.sql v2.0: profiles surrogate id + user_id + UNIQUE(user_id,project_id), membership_status/access_until/revoked_at, projects.status/closed_at/closed_by, 9 FK profiles(id)→auth.users(id).
-- SUPABASE-RLS.sql v2.0: 8 cerrahi düzenleme (projects_own_list, profiles policy'leri user_id=auth.uid(), advances/advance_log profiles join'i user_id+project_id, default_privileges eklendi).
-- src/shared/supabase/auth-service.ts: is_active+soft_deleted_at → membership_status='active'.
-- supabase/functions/set-claims/index.ts: id=uid → user_id=uid, is_active+soft_deleted_at → membership_status='active'.
-- docs/AUTH-KARARLARI.md: SK-AUTH-4 güncellendi, SK-AUTH-5 membership_status ile yeniden yazıldı, SK-AUTH-8 eklendi.
-- docs/TECH-DEBT.md: TD-1/2/3 eklendi.
-- CLAUDE.md: versiyon etiketleri v2.0 yapıldı.
-
-**Aynı gün ek (27 Mayıs 2026 — clear-claims RPC fix):**
-- fix(auth): clear-claims Edge Function'ın `admin.updateUserById` yöntemi Supabase JS merge quirk'i nedeniyle çalışmıyordu (200 dönüyor, raw_app_meta_data değişmiyordu). SECURITY DEFINER RPC + JSONB `-` operatörü ile değiştirildi (bootstrap'ta zaten kanıtlanmış desen).
-- Yeni kanonik dosya: `supabase/SUPABASE-FUNCTIONS.sql` — gelecek temiz kurulumlarda SCHEMA + RLS'den sonra çalıştırılır.
-- TECH-DEBT: TD-4 (rpcErr.message debug), TD-5 (signOut best-effort sessiz) eklendi. Borç sayısı 5/5 — yeni özellik öncesi en az 1 borç kapatılmalı.
-
-**Önceki session özeti (27 Mayıs 2026 — Commit 2b frontend + uçtan uca test):**
-- Commit 6aca75b: feat(auth): project selection + three-state App routing
-- Commit 9ba382e: fix(auth): auth-service type assertion for Supabase join
-- Canlı deploy doğrulandı, uçtan uca test başarılı
-- GRANT eksikleri çözüldü, Edge Function düzeltildi
+## Açık Kararlar (M2.0 — kod öncesi netleşmeli)
+- **G1** — iade edilen fiş status'ü ('returned' mi, draft'a mı döner) — şema kararı
+- **G3** — auto_approved / 7 gün pasif onay Faz 1'de var mı
+- **Status geçiş yeri** — submitted→dept_pending/acc_pending trigger mı frontend mi
+- **G6 başlangıcı** — tokens.css için renk yaklaşımı (değerler sonra)
+- (Sonraya: G2 dijital imza tanımı, G10 split child receipt, kategori/ulaşım limit değerleri)
 
 ## Faz 2'ye Taşınanlar
-- Denetçi modu (G11)
-- Dil seçimi ekranı
-- Onboarding tutorial
-- Mesai hesaplama (tüm ekip listesi, app dışı üyeler dahil)
-- Yapımcı rolü hot cost tam görünümü
+- Denetçi modu (G11) · Dil seçimi ekranı · Onboarding tutorial · Mesai hesaplama · Yapımcı rolü hot cost tam görünümü
 
 ## Açık Borçlar / Bekleyen İşler
 - TD-2/3: remodel şekil borçları (M2)
-- TD-4: clear-claims `rpcErr.detail` debug — M1 sonu üretim öncesi temizlik
+- TD-4: clear-claims rpcErr debug — üretim öncesi temizlik
 - TD-5: auth-service.signOut sessiz try/catch — M2 toast/log
-- Proje adı SSOT kokusu: `projects.name` vs `company_settings.project_name` (TECH-DEBT adayı)
+- Proje adı SSOT: projects.name vs company_settings.project_name
+- full-rebuild.sql satır 4 versiyon başlığı stale (v2.1 → v2.2)
 - README minimal, favicon placeholder (G6)
 - ARCHITECTURE.md 5.3 router.ts satırı geçersiz (kozmetik)
-- Remote branch `claude/loving-ramanujan-MiRql` temizliği (kozmetik)
+- Remote branch temizliği (kozmetik)
 
 ## Sonraki Session Gündemi
-1. M2 mimari plani: cekirdek dongu (fis girisi -> onay zinciri -> donem kapatma), ekran sirasi, sema ihtiyaci
-2. M2 başlangıç planı: çekirdek döngü (fiş girişi → onay zinciri → dönem kapatma); CFE timing kararı; TECH-DEBT'ten hangi borç M2 öncesi kapatılacak
+1. **M2.0 — Karar kapatma:** G1, G3, status geçiş yeri, G6 renk yaklaşımı
+2. **M2.1 — Görsel+yapısal temel:** tokens.css iskeleti + shell/nav (B4) + paylaşılan bileşenler (B5)
+3. **M2.2 — Storage+dönem:** receipts bucket + RLS + dönem bootstrap + trigger doğrulama
+4. Sonra **M2.3 Saha ekranı** (sıralı inşa başlar)
+Detaylı sıra ve bağımlılık: docs/IS-SIRASI.md
 
 ## Sonraki Session — Okunacak Dosyalar
-- STATUS.md (bu dosya)
-- CLAUDE.md
-- docs/AUTH-KARARLARI.md
-- supabase/SUPABASE-SCHEMA.sql (v2.0 — yeni profiles yapısı)
-- supabase/SUPABASE-RLS.sql (v2.0)
-- supabase/BOOTSTRAP-MUSTERI.sql (profiles kolonları güncellenmeli)
-- src/shared/supabase/auth-service.ts
-- supabase/functions/set-claims/index.ts
+- STATUS.md (bu dosya) + CLAUDE.md
+- docs/IS-SIRASI.md (görev sırası — neredeyiz)
+- docs/ARCHITECTURE.md (çalışma prensipleri §1.8 + Faz 1 kapsam)
+- docs/IS-KURALLARI.md (onay zinciri, status, dönem — M2.0 kararları için)
+- docs/EKRAN-SAHA.md + docs/TASARIM-KARARLARI.md (M2.1/M2.3 için)
+- supabase/SUPABASE-SCHEMA.sql + SUPABASE-RLS.sql (storage/trigger)
+- supabase/BOOTSTRAP-MUSTERI.sql (dönem bootstrap)
 
 ## Doküman Sağlık Tablosu
 
 | Dosya | Durum | Not |
 |-------|-------|-----|
-| CLAUDE.md | guncel | FUNCTIONS + full-rebuild eklendi |
-| ARCHITECTURE.md | guncel | Marka KAAPA |
-| AUTH-KARARLARI.md | guncel | SK-AUTH-4/5/8 v2.0 üyelik remodel |
-| SUPABASE-SCHEMA.sql | v2.2 | SK-AUTH-9: chk_role_dept_id eklendi |
-| SUPABASE-RLS.sql | v2.1 | TD-1: status = 'active' |
-| SUPABASE-FUNCTIONS.sql | v1.0 (YENİ) | clear_user_claims SECURITY DEFINER RPC |
-| sql/full-rebuild.sql | v2.1 | SCHEMA+RLS senkron |
-| set-claims/index.ts | v2.0 | membership_status — canlı deployed |
-| clear-claims/index.ts | v2.0 | RPC yöntemi — canlı deployed |
-| auth-service.ts | v2.0 | signOut wrapper eklendi |
-| TASARIM-KARARLARI.md | guncel | Marka KAAPA |
-| GLOSSARY.md | guncel | Marka KAAPA |
-| TECH-DEBT.md | guncel | TD-1 kapatildi, 4/5 borc |
-| BOOTSTRAP-MUSTERI.sql | guncel | v2.0 user_id + membership_status uyumlu |
+| CLAUDE.md | güncel | modüler docs routing + çalışma prensipleri (206 satır) |
+| docs/ARCHITECTURE.md | güncel | §1.8 prensipler + branch/durum düzeltme (407 satır) |
+| docs/AUTH-KARARLARI.md | güncel | SK-AUTH-1..9 |
+| docs/TASARIM-KARARLARI.md | güncel | sadece ekranlar-arası ortak ilkeler (48 satır) |
+| docs/EKRAN-SAHA.md | YENİ | saha ekranları (alan/akış/yerleşim) |
+| docs/EKRAN-DEPT.md | YENİ | dept ekranları |
+| docs/EKRAN-MUHASEBE.md | YENİ | muhasebe ekranları (kart-masa açık slot) |
+| docs/IS-KURALLARI.md | YENİ | iş mantığı + anomali §13 + SK-1..8 |
+| docs/IS-SIRASI.md | YENİ | görev sırası ve bağımlılıklar |
+| docs/GLOSSARY.md | güncel | domain terimleri |
+| docs/TECH-DEBT.md | güncel | 4/5 borç |
+| docs/RAKIP-ANALIZI-OCR.md | güncel | referans |
+| SUPABASE-SCHEMA.sql | v2.2 | chk_role_dept_id |
+| SUPABASE-RLS.sql | v2.1 | status='active' |
+| SUPABASE-FUNCTIONS.sql | v1.0 | clear_user_claims RPC |
+| sql/full-rebuild.sql | v2.1 | satır 4 başlık stale (borç) |
+| set-claims/index.ts | v2.0 | canlı deployed |
+| clear-claims/index.ts | v2.0 | canlı deployed |
+| auth-service.ts | v2.0 | signOut wrapper |
+| BOOTSTRAP-MUSTERI.sql | güncel | v2.0 uyumlu; dönem bootstrap M2.2'de eklenecek |
 | README.md | minimal | KAAPA açıklaması |
-| STATUS.md | güncel | M1 KAPANDI |
+| STATUS.md | güncel | M2 doküman yeniden yapılandırma tamam |
 
-## Tamamlanan İşler
-- [x] Repo oluşturuldu, scaffold hazır
-- [x] Supabase client kuruldu
-- [x] DB şeması, RLS, Bootstrap SQL yazıldı
-- [x] CLAUDE.md + routing tablosu
-- [x] Mimari dokümanlar tamamlandı
-- [x] Dev server çalışıyor (tsc, build, dev)
-- [x] Login sayfası — commit 1 (email+şifre form, session takibi)
-- [x] projects RLS + projects_own_list (commit + canlı apply + doğrulandı)
-- [x] set-claims Edge Function (commit + canlı deploy, verify_jwt açık)
-- [x] 2b routing kararı: A (App.tsx üç-hâl)
-- [x] Proje seçim ekranı + üç-hâl App.tsx routing (commit 2b)
-- [x] Uçtan uca test: login → proje seçimi → set-claims → AuthenticatedShell
+## Tamamlanan İşler (M1 + doküman yapısı)
+- [x] M1: scaffold, Supabase client, DB/RLS/Bootstrap, auth akışı, proje seçimi, set/clear-claims, üç-hâl routing, uçtan uca test, v0.1-auth tag
+- [x] Doküman yeniden yapılandırma: 5 modüler dosya, çalışma prensipleri, sınır temizliği (5 commit)
