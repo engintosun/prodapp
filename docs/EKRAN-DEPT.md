@@ -28,8 +28,8 @@ Toplam tutar + durum rozeti (ok/uyarı/aşım) + progress bar + 3 stat (onaylana
 Başlık "Harcama Detayı (Dept.)" + fiş thumbnail (lightbox) + alanlar (satıcı/tutar/tarih/kategori/personel/açıklama) + işlem geçmişi + 3 aksiyon: **Onayla (yeşil) / ½ Kısmi Onay (sarı) / Reddet (kırmızı)**.
 - **Onayla:** dept_pending → dept_approved (→ otomatik acc_pending)
 - **Reddet:** dept_pending → dept_rejected (sebep zorunlu, serbest metin)
-- **İade Et:** 10 iade sebebi dropdown + opsiyonel alan seçimi (bkz. IS-KURALLARI.md)
-- **Kategori düzeltme:** iade etmeden tek tıkla kategori değiştir
+- **Reddet:** 10 red sebebi dropdown + opsiyonel alan seçimi (bkz. IS-KURALLARI.md)
+- **Kategori düzeltme:** reddetmeden tek tıkla kategori değiştir
 - approval_log otomatik (trigger)
 
 ## 6. Ekip tab

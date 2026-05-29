@@ -65,11 +65,11 @@ Kategoriye göre form ek panel açar:
 **3 özet kart:** toplam harcama · avans bakiye · fiş sayısı
 **İlerleme çubuğu:** harcanan / bütçe limiti
 **Fiş listesi:** thumbnail (veya belgesiz ikonu) + satıcı + tutar + durum etiketi; tıklayınca fiş detay
-**Filtre:** durum (tümü/bekleyen/onaylanan/reddedilen/iade edilen) + kategori
+**Filtre:** durum (tümü/bekleyen/onaylanan/reddedilen) + kategori
 **PDF export ikonu**
 **Avans Talep Et butonu** → avans formu
 **Dönem kapatma:** kendi kapama submit (period_closings, level=saha); özet hesaplanır (total_amount, advance_balance, receipt_count)
-**Kapanmış dönemde:** kapama özeti (onaylanan fiş+₺ / reddedilen fiş+₺ / kullanılan avans / iade-fark / kapanış tarihi+onaylayan) + "Yüklenen belgeler" (dönem raporu, taranmış fişler, imzalı mutabakat — her biri ✓) + özel belge sayaçları (tevkifat/stopaj/self-billing/geç işlem)
+**Kapanmış dönemde:** kapama özeti (onaylanan fiş+₺ / reddedilen fiş+₺ / kullanılan avans / hesaplaşma (alacak/borç) / kapanış tarihi+onaylayan) + "Yüklenen belgeler" (dönem raporu, taranmış fişler, imzalı mutabakat — her biri ✓) + özel belge sayaçları (tevkifat/stopaj/self-billing/geç işlem)
 
 ## 8. Arama (tab 3)
 Arama input (vendor_name, description). Sonuç satırı: durum dot + satıcı + tarih·kategori·departman + tutar + durum etiketi. Belgesiz için BSZ rozeti. "TIKLA → KAYDA GİT" → sonuç detayına gider.
@@ -78,13 +78,13 @@ Arama input (vendor_name, description). Sonuç satırı: durum dot + satıcı + 
 Sohbet listesi → sohbet görünümü (mesaj baloncukları: ben sağ/turuncu, diğer sol/gri; zaman; okundu tikleri; compose bar). Detay bkz. MUHASEBE/ortak mesajlaşma kuralları.
 
 ## 10. Fiş detay (saha görünümü)
-Thumbnail (veya belgesiz ikonu, lightbox) + alanlar (satıcı/tutar/KDV/tarih/fiş no/kategori/açıklama) + uyarı banner + belgesiz banner + iş kanıtı foto + işlem geçmişi (approval_log timeline: oluşturma → onay/red/iade). Saha: kendi fişi salt görüntüleme; draft ise düzenle/sil.
+Thumbnail (veya belgesiz ikonu, lightbox) + alanlar (satıcı/tutar/KDV/tarih/fiş no/kategori/açıklama) + uyarı banner + belgesiz banner + iş kanıtı foto + işlem geçmişi (approval_log timeline: oluşturma → onay/red). Saha: kendi fişi salt görüntüleme; draft ise düzenle/sil.
 
 ## 11. Avans (saha tarafı)
 Avans talebi (tutar + gerekçe + dönem) · durum takibi (pending/approved/rejected/settled) · bakiye (avans − harcama).
 
 ## 12. Bildirimler (saha tarafı)
-Liste: onay/red/iade/avans/dönem. Tıklayınca ilgili fişe/avansa git. Okundu işaretleme. Badge sayacı (header). Renk kodu: kırmızı acil/red · sarı uyarı/deadline · gri bilgi/onay. Footer: kaynak (Sistem / kişi+rol).
+Liste: onay/red/avans/dönem. Tıklayınca ilgili fişe/avansa git. Okundu işaretleme. Badge sayacı (header). Renk kodu: kırmızı acil/red · sarı uyarı/deadline · gri bilgi/onay. Footer: kaynak (Sistem / kişi+rol).
 
 ## 13. Profil
 Avatar (foto veya harf fallback) + ad/soyad/telefon/email + rol + departman. Düzenle (ad/soyad/telefon), avatar yükle.

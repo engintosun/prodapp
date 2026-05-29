@@ -58,7 +58,7 @@ Dönem bütçe limiti (period_budgets) · departman bütçe limiti (dept_budgets
 Davet (email + ad soyad + rol + departman) · durum takibi (pending/accepted/expired/revoked) · iptal (revoke) · soft delete (membership_status + revoked_at) · liste (rol bazlı filtre).
 
 ## 16. Kişi detay
-Harcama geçmişi + fiş listesi + avans durumu + iade geçmişi (kaç kez, hangi sebep) + şüpheli işlem geçmişi.
+Harcama geçmişi + fiş listesi + avans durumu + red geçmişi (kaç kez, hangi sebep) + şüpheli işlem geçmişi.
 
 ## 17. Marka ayarları (dişli)
 ŞİRKET (ad + logo) + PROJELER (her proje: ad override + logo).
