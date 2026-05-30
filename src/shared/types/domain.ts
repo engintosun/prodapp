@@ -19,6 +19,8 @@ export type PeriodStatus =
 
 export type ApprovalAction = 'approved' | 'rejected' | 'split' | 'auto_approved'
 
+export type ApproverRole = 'dept' | 'muhasebe'
+
 export interface Receipt {
   id: string
   project_id: string
@@ -50,6 +52,8 @@ export interface ApprovalLog {
   receipt_id: string
   action: ApprovalAction
   approver_id: string
+  approver_role: ApproverRole
   created_at: string
   reason?: string | null
+  split_amount?: number | null
 }
