@@ -154,8 +154,8 @@ CREATE TABLE receipts (
   receipt_image_url TEXT,
   invoice_file_url TEXT,
   gib_qr_verified BOOLEAN DEFAULT false,
-  status TEXT DEFAULT 'draft'
-    CHECK (status IN ('draft','submitted','dept_pending','dept_approved','dept_rejected','acc_pending','acc_approved','acc_rejected','split')),
+  status TEXT DEFAULT 'submitted'
+    CHECK (status IN ('submitted','dept_pending','dept_approved','dept_rejected','acc_pending','acc_approved','acc_rejected','split')),
   is_late_entry BOOLEAN DEFAULT false,
   is_documentless BOOLEAN DEFAULT false,
   parent_receipt_id UUID REFERENCES receipts(id),

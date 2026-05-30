@@ -7,17 +7,17 @@ Ekranlardan ve yetkiden bağımsız iş mantığı. Birden çok ekranı etkileye
 ---
 
 ## 1. Onay zinciri
-Saha (draft → submitted) → Dept varsa (dept_pending → dept_approved / dept_rejected) → Dept yoksa adım atlanır (SK-AUTH-9, runtime kontrolü) → Muhasebe (acc_pending → acc_approved / acc_rejected / split) → dönem kapatma.
+Saha fişi doğrudan submitted olarak girer (taslak yok) → Dept varsa (dept_pending → dept_approved / dept_rejected) → Dept yoksa adım atlanır (SK-AUTH-9, runtime kontrolü) → Muhasebe (acc_pending → acc_approved / acc_rejected / split) → dönem kapatma.
 - submitted → dept_pending/acc_pending geçişinin nerede yapılacağı (trigger mı frontend mi) M2 planında kararlaştırılacak.
 - Birden fazla dept kullanıcısı varsa herhangi biri onaylar (ilk gelen yapar, SK-AUTH-9).
 
-## 2. Fiş status değerleri (9)
-draft · submitted · dept_pending · dept_approved · dept_rejected · acc_pending · acc_approved · acc_rejected · split
+## 2. Fiş status değerleri (8)
+submitted · dept_pending · dept_approved · dept_rejected · acc_pending · acc_approved · acc_rejected · split
 
 ## 3. Reddet
 Sahaya geri dönüş tek aksiyondur: **reddet**. Ayrı "iade" mekanizması yoktur.
 - **Reddet:** sebep zorunlu (aşağıdaki sebeplerden + serbest metin). Reddedilen fiş **kanıt olarak donar** — düzenlenemez, silinemez, işaretli kalır, reddedilenler listesinde görünür.
-- **Düzenleme sınırı = submit anı.** Fiş `draft` iken saha serbestçe düzenler/siler. Submit sonrası (dept_pending/acc_pending) saha dokunamaz — inceleme bütünlüğü korunur.
+- **Düzenleme sınırı = giriş anı.** Taslak yoktur; fiş doğrudan `submitted` girer. Gönder öncesi düzeltme yalnız tarama ekranında yapılır (lokal, sisteme kaydedilmez). Giriş sonrası saha fişi düzenleyemez/silemez — inceleme bütünlüğü korunur.
 - **10 red sebebi (dropdown):** (1) Veri uyuşmazlığı [alan seçimi: tutar/tarih/KDV/işyeri] (2) Tutar hatalı (3) Tarih hatalı (4) KDV hatalı (5) İşyeri hatalı (6) Belge eklenmemiş (7) Mükerrer giriş (8) Kişisel harcama (9) Limit aşımı (10) Diğer [serbest metin].
 - **Kategori hatası red sebebi DEĞİL:** dept/muhasebe tek tıkla kategoriyi düzeltir, reddetmez.
 - **Küçük hatada reddetmek zorunlu değil:** muhasebe uyarı mesajı atıp onaylayabilir (iletişim açık). Mesaj statüyü değiştirmez, düzenleme penceresi açmaz.

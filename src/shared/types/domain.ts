@@ -1,7 +1,6 @@
 export type UserRole = 'saha' | 'dept' | 'muhasebe'
 
 export type ReceiptStatus =
-  | 'draft'
   | 'submitted'
   | 'dept_pending'
   | 'dept_approved'

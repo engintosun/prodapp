@@ -182,8 +182,8 @@ CREATE TABLE receipts (
   receipt_image_url TEXT,
   invoice_file_url TEXT,
   gib_qr_verified BOOLEAN DEFAULT false,
-  status TEXT DEFAULT 'draft'
-    CHECK (status IN ('draft','submitted','dept_pending','dept_approved','dept_rejected','acc_pending','acc_approved','acc_rejected','split')),
+  status TEXT DEFAULT 'submitted'
+    CHECK (status IN ('submitted','dept_pending','dept_approved','dept_rejected','acc_pending','acc_approved','acc_rejected','split')),
   is_late_entry BOOLEAN DEFAULT false,
   is_documentless BOOLEAN DEFAULT false,
   parent_receipt_id UUID REFERENCES receipts(id),
@@ -652,36 +652,12 @@ CREATE POLICY receipts_insert ON receipts FOR INSERT WITH CHECK (
 CREATE POLICY receipts_update ON receipts FOR UPDATE USING (
   project_id = public.project_id()
   AND (
-    (public.user_role() = 'saha' AND user_id = auth.uid() AND status = 'draft')
-    OR (public.user_role() = 'dept' AND dept_id = public.user_dept_id() AND status = 'dept_pending')
+    (public.user_role() = 'dept' AND dept_id = public.user_dept_id() AND status = 'dept_pending')
     OR public.user_role() = 'muhasebe'
   )
 );
 
-CREATE POLICY receipts_delete ON receipts FOR DELETE USING (
-  project_id = public.project_id()
-  AND public.user_role() = 'saha'
-  AND user_id = auth.uid()
-  AND status = 'draft'
-  AND (
-    EXISTS (
-      SELECT 1 FROM periods p
-      WHERE p.id = receipts.period_id
-        AND p.project_id = public.project_id()
-        AND p.status IN ('open','closing')
-    )
-    OR
-    EXISTS (
-      SELECT 1 FROM exception_permits ep
-      WHERE ep.period_id = receipts.period_id
-        AND ep.user_id = auth.uid()
-        AND ep.project_id = public.project_id()
-        AND ep.permit_type IN ('late_entry', 'reopen')
-        AND ep.is_used = false
-        AND (ep.expires_at IS NULL OR ep.expires_at > now())
-    )
-  )
-);
+-- receipts DELETE policy yok: fiş girince silinemez (denetim kaydı; düzeltme reddet/split — IS-KURALLARI §3, §20).
 
 
 -- ============================================================

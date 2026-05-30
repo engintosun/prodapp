@@ -342,44 +342,18 @@ CREATE POLICY receipts_insert ON receipts FOR INSERT WITH CHECK (
   )
 );
 
--- UPDATE: Saha draft iken, Dept dept_pending iken, Muhasebe acc_pending iken
+-- UPDATE: Dept dept_pending iken, Muhasebe her statüde (saha giriş sonrası dokunamaz)
 CREATE POLICY receipts_update ON receipts FOR UPDATE USING (
   project_id = public.project_id()
   AND (
-    -- Saha: kendi draft fişleri
-    (public.user_role() = 'saha' AND user_id = auth.uid() AND status = 'draft')
     -- Dept: kendi dept'indeki dept_pending fişler
-    OR (public.user_role() = 'dept' AND dept_id = public.user_dept_id() AND status = 'dept_pending')
+    (public.user_role() = 'dept' AND dept_id = public.user_dept_id() AND status = 'dept_pending')
     -- Muhasebe: tüm statüler (her müdahale approval_log'a düşer)
     OR public.user_role() = 'muhasebe'
   )
 );
 
--- DELETE: Saha, kendi draft fişi, açık dönem VEYA exception izni ile
-CREATE POLICY receipts_delete ON receipts FOR DELETE USING (
-  project_id = public.project_id()
-  AND public.user_role() = 'saha'
-  AND user_id = auth.uid()
-  AND status = 'draft'
-  AND (
-    EXISTS (
-      SELECT 1 FROM periods p
-      WHERE p.id = receipts.period_id
-        AND p.project_id = public.project_id()
-        AND p.status IN ('open','closing')
-    )
-    OR
-    EXISTS (
-      SELECT 1 FROM exception_permits ep
-      WHERE ep.period_id = receipts.period_id
-        AND ep.user_id = auth.uid()
-        AND ep.project_id = public.project_id()
-        AND ep.permit_type IN ('late_entry', 'reopen')
-        AND ep.is_used = false
-        AND (ep.expires_at IS NULL OR ep.expires_at > now())
-    )
-  )
-);
+-- DELETE policy yok: fiş girince (submitted) silinemez — denetim kaydı; düzeltme reddet/split (IS-KURALLARI §3, §20).
 
 
 -- ============================================================
@@ -764,7 +738,7 @@ CREATE TRIGGER trg_advance_log
 --    trigger SECURITY DEFINER ile yazıyor, bu sadece log INSERT için.
 -- 4. period_closings INSERT service_role ile (Edge Function veya trigger).
 -- 5. notifications INSERT service_role ile.
--- 6. Saha DELETE: sadece draft + (açık dönem VEYA exception permit).
+-- 6. DELETE yok: fiş girince silinemez (denetim kaydı; düzeltme reddet/split).
 -- 7. Dept exception_permits verebilir (insert policy'de IN ('muhasebe','dept')).
 -- 8. Trigger sayısı: 2 (approval + advance). 5'i geçerse Edge Function değerlendirmesi.
 -- 9. project_rules Faz 2 — policy hazır, tablo boş.
