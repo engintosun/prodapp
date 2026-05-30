@@ -53,8 +53,13 @@ BEGIN
   -- INSERT INTO profiles (user_id, project_id, role, first_name, last_name, invited_by)
   -- VALUES (v_user_id, v_project_id, 'muhasebe', v_muhasebe_first, v_muhasebe_last, NULL);
 
+  -- Adım 6: İlk açık dönem oluştur (dönem yoksa fiş girilemez; saha hemen başlayabilsin)
+  -- created_by = muhasebe (v_user_id). Deadline'lar boş — muhasebe dönem yönetiminde (M2.5) doldurur.
+  -- INSERT INTO periods (project_id, period_number, name, status, created_by)
+  -- VALUES (v_project_id, 1, 'Dönem 1', 'open', v_user_id);
+
   RAISE NOTICE '✅ Proje oluşturuldu: % (ID: %)', v_project_name, v_project_id;
-  RAISE NOTICE '⚠️ Şimdi Auth user oluştur, UUID al, Adım 4-5 yorum satırlarını aç ve çalıştır';
+  RAISE NOTICE '⚠️ Şimdi Auth user oluştur, UUID al, Adım 4-5-6 yorum satırlarını aç ve çalıştır';
 END $$;
 
 -- ============================================================
@@ -63,6 +68,6 @@ END $$;
 -- 2. Çalıştır → proje + company_settings oluşur
 -- 3. Dashboard → Auth → Add User → email + geçici şifre
 -- 4. Auth user UUID'sini kopyala
--- 5. Adım 4-5 yorum satırlarını aç, UUID'yi yapıştır, tekrar çalıştır
+-- 5. Adım 4-5-6 yorum satırlarını aç, UUID'yi yapıştır, tekrar çalıştır
 -- 6. Muhasebe'ye "şifreni değiştir" maili gönder (veya ilk girişte zorla)
 -- ============================================================
