@@ -35,6 +35,7 @@ export interface Receipt {
   vendor_name?: string | null
   description?: string | null
   receipt_image_url?: string | null
+  parent_receipt_id?: string | null
 }
 
 export interface Period {

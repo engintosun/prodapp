@@ -186,8 +186,10 @@ CREATE TABLE receipts (
     CHECK (status IN ('draft','submitted','dept_pending','dept_approved','dept_rejected','acc_pending','acc_approved','acc_rejected','split')),
   is_late_entry BOOLEAN DEFAULT false,
   is_documentless BOOLEAN DEFAULT false,
+  parent_receipt_id UUID REFERENCES receipts(id),
   created_at TIMESTAMPTZ DEFAULT now(),
-  updated_at TIMESTAMPTZ DEFAULT now()
+  updated_at TIMESTAMPTZ DEFAULT now(),
+  CONSTRAINT chk_parent_not_self CHECK (parent_receipt_id IS NULL OR parent_receipt_id <> id)
 );
 
 -- 8. APPROVAL_LOG
@@ -383,6 +385,7 @@ CREATE INDEX IF NOT EXISTS idx_receipts_project_user ON receipts(project_id, use
 CREATE INDEX IF NOT EXISTS idx_receipts_project_dept ON receipts(project_id, dept_id);
 CREATE INDEX IF NOT EXISTS idx_receipts_project_status ON receipts(project_id, status);
 CREATE INDEX IF NOT EXISTS idx_receipts_period ON receipts(period_id);
+CREATE INDEX IF NOT EXISTS idx_receipts_parent ON receipts(parent_receipt_id);
 CREATE INDEX IF NOT EXISTS idx_periods_project ON periods(project_id);
 CREATE INDEX IF NOT EXISTS idx_period_closings_period ON period_closings(period_id, user_id);
 CREATE INDEX IF NOT EXISTS idx_advances_project_user ON advances(project_id, user_id);

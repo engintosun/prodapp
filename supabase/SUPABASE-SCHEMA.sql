@@ -158,8 +158,10 @@ CREATE TABLE receipts (
     CHECK (status IN ('draft','submitted','dept_pending','dept_approved','dept_rejected','acc_pending','acc_approved','acc_rejected','split')),
   is_late_entry BOOLEAN DEFAULT false,
   is_documentless BOOLEAN DEFAULT false,
+  parent_receipt_id UUID REFERENCES receipts(id),
   created_at TIMESTAMPTZ DEFAULT now(),
-  updated_at TIMESTAMPTZ DEFAULT now()
+  updated_at TIMESTAMPTZ DEFAULT now(),
+  CONSTRAINT chk_parent_not_self CHECK (parent_receipt_id IS NULL OR parent_receipt_id <> id)
 );
 
 -- 8. APPROVAL_LOG
