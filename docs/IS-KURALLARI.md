@@ -114,6 +114,14 @@ Canvas imza + zaman damgası (örn 29.05.2026 01:34:40) + "Temizle" + "İmzalanm
 ## 16. QR / OCR akış kuralı
 Kamera QR tespit ederse GİB API'ye istek (3 sn hard timeout), OCR atlanır. QR yoksa/okunamazsa OCR tetiklenir, timeout aşımında sessizce OCR'a fallback. (Ekran tarafı: EKRAN-SAHA §3-4. OCR Edge Function: ayrı, M3.) [G9]
 
+## 17. Zaman / tarih (timezone)
+**Karar (30 Mayıs 2026):** Saklama UTC; tüm gün/tarih hesabı ve gösterimi `Europe/Istanbul`.
+- **Sakla:** tüm zaman damgaları `timestamptz`, UTC (`now()` zaten UTC döner — dokunma).
+- **Hesapla / karşılaştır / göster:** "gün" gereken her yerde önce `... AT TIME ZONE 'Europe/Istanbul'` ile TR'ye çevir, sonra güne yuvarla. Sebep: set "günü" = TR takvim günü; UTC günü TR'den 3 saat geride başlar, sınır kayarsa süre hesabı saha lehine/aleyhine bir gün oynar.
+- **TR offset'ini elle gömme** (+3 yazma yok). Türkiye UTC+3 sabit (yaz saati yok), ama `AT TIME ZONE` / tarih kütüphanesi doğrusunu zaten yapar.
+- **Kapsam:** dönem sınırları + grace bitişi + pasif onay 7/3 gün dolumu (§5), anomali zaman pencereleri (§13), rapor/ekran tarih gösterimi. "Gün" dilindeki süre kuralları TR gününe göre işler (örn. grace_until = ilan anının TR günü + N → o günün TR-günsonu).
+- **Ekran:** kullanıcıya tarih/saat daima TR saatinde gösterilir.
+
 ---
 
 ## AÇIK KARARLAR (kod öncesi netleşmeli)
