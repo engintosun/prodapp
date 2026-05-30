@@ -1,0 +1,23 @@
+/* KAAPA global — reset + token import + 100dvh + taban. Stiller token'dan okunur. */
+@import "./styles/tokens.css";
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  min-height: 100dvh;          /* 100dvh fix — Chrome mobil (B4.6) */
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button { font-family: inherit; }

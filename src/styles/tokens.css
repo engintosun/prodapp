@@ -1,0 +1,82 @@
+/* KAAPA tasarim token'lari — YAPI sabit, DEGERLER placeholder (G6'da swap).
+   Dark-oncelikli: :root = dark. [data-theme="light"] = light override.
+   Bilesenlerde hardcoded renk/olcu YASAK; her zaman var(--...) okunur. */
+
+:root {
+  /* Renk — yuzey & metin */
+  --color-bg: #0f1115;
+  --color-surface: #171a21;
+  --color-surface-2: #1e222b;
+  --color-text: #e6e8eb;
+  --color-text-muted: #9aa3af;
+  --color-border: #2a2f3a;
+
+  /* Renk — marka & aksan (G6'da kesinlesir) */
+  --color-primary: #3b82f6;
+  --color-primary-text: #ffffff;
+
+  /* Renk — semantik durum (onay/red/bekleyen/uyari; IS-KURALLARI durumlariyla eslesir) */
+  --color-success: #22c55e;   /* onay */
+  --color-danger:  #ef4444;   /* red */
+  --color-warning: #f59e0b;   /* uyari */
+  --color-pending: #a78bfa;   /* bekleyen */
+  --color-info:    #38bdf8;
+
+  /* Spacing (4px tabani) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* Touch hedefi (B4.7) */
+  --touch-min: 44px;
+
+  /* Tipografi */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 20px;
+  --text-xl: 26px;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-bold: 700;
+
+  /* Golge (placeholder) */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.30);
+  --shadow-md: 0 6px 20px rgba(0,0,0,0.35);
+
+  /* Z-index katmanlari */
+  --z-nav: 100;
+  --z-modal: 200;
+  --z-toast: 300;
+}
+
+[data-theme="light"] {
+  --color-bg: #ffffff;
+  --color-surface: #f5f6f8;
+  --color-surface-2: #eceef1;
+  --color-text: #1a1d23;
+  --color-text-muted: #5b626d;
+  --color-border: #d8dce2;
+
+  --color-primary: #2563eb;
+  --color-primary-text: #ffffff;
+
+  --color-success: #16a34a;
+  --color-danger:  #dc2626;
+  --color-warning: #d97706;
+  --color-pending: #7c3aed;
+  --color-info:    #0284c7;
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.08);
+  --shadow-md: 0 6px 20px rgba(0,0,0,0.12);
+}
