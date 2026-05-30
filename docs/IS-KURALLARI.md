@@ -7,8 +7,8 @@ Ekranlardan ve yetkiden bağımsız iş mantığı. Birden çok ekranı etkileye
 ---
 
 ## 1. Onay zinciri
-Saha fişi doğrudan submitted olarak girer (taslak yok) → Dept varsa (dept_pending → dept_approved / dept_rejected) → Dept yoksa adım atlanır (SK-AUTH-9, runtime kontrolü) → Muhasebe (acc_pending → acc_approved / acc_rejected / split) → dönem kapatma.
-- submitted → dept_pending/acc_pending geçişinin nerede yapılacağı (trigger mı frontend mi) M2 planında kararlaştırılacak.
+Saha fişi doğrudan submitted olarak girer (taslak yok) → saha'nın departmanında aktif şef VARSA dept_pending → dept_approved / dept_rejected; şef YOKSA adım atlanır, doğrudan acc_pending (SK-AUTH-9, runtime kontrolü) → Muhasebe (acc_pending → acc_approved / acc_rejected / split) → dönem kapatma.
+- Yönlendirme INSERT anında trigger ile (fn_route_receipt, BEFORE INSERT): saha'nın departmanında aktif dept-şefi varsa dept_pending, yoksa acc_pending; dept şefi kendi fişini girerse kendi onayı atlanır → acc_pending. Status'u client değil trigger belirler; saha/dept fişi yalnız giriş statüsünde (submitted/dept_pending/acc_pending) ekleyebilir (RLS).
 - Birden fazla dept kullanıcısı varsa herhangi biri onaylar (ilk gelen yapar, SK-AUTH-9).
 
 ## 2. Fiş status değerleri (8)

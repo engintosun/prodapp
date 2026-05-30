@@ -627,8 +627,9 @@ CREATE POLICY receipts_select ON receipts FOR SELECT USING (
 
 CREATE POLICY receipts_insert ON receipts FOR INSERT WITH CHECK (
   project_id = public.project_id()
-  AND public.user_role() = 'saha'
+  AND public.user_role() IN ('saha','dept')
   AND user_id = auth.uid()
+  AND status IN ('submitted','dept_pending','acc_pending')
   AND (
     EXISTS (
       SELECT 1 FROM periods p
@@ -1002,6 +1003,37 @@ CREATE TRIGGER trg_advance_log
   AFTER INSERT OR UPDATE ON advances
   FOR EACH ROW
   EXECUTE FUNCTION fn_log_advance();
+
+-- Yönlendirme: fiş submitted girince doğru onay kuyruğuna düşür (SK-AUTH-9, runtime kontrolü)
+CREATE OR REPLACE FUNCTION fn_route_receipt()
+RETURNS TRIGGER AS $$
+DECLARE
+  v_role text := public.user_role();
+  v_dept uuid := public.user_dept_id();
+  v_has_chief boolean;
+BEGIN
+  IF v_role = 'saha' THEN
+    NEW.dept_id := v_dept;
+    SELECT EXISTS (
+      SELECT 1 FROM profiles
+      WHERE project_id = NEW.project_id
+        AND dept_id = v_dept
+        AND role = 'dept'
+        AND membership_status = 'active'
+    ) INTO v_has_chief;
+    NEW.status := CASE WHEN v_has_chief THEN 'dept_pending' ELSE 'acc_pending' END;
+  ELSIF v_role = 'dept' THEN
+    NEW.dept_id := v_dept;
+    NEW.status := 'acc_pending';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER trg_route_receipt
+  BEFORE INSERT ON receipts
+  FOR EACH ROW
+  EXECUTE FUNCTION fn_route_receipt();
 
 -- ============================================================
 -- PRODAPP Server-side Admin Functions v1.0
