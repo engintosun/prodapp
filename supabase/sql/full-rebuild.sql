@@ -109,11 +109,13 @@ CREATE TABLE periods (
   period_number INT NOT NULL,
   name TEXT NOT NULL,
   status TEXT DEFAULT 'open'
-    CHECK (status IN ('open','partially_closed','closed','permanently_closed')),
+    CHECK (status IN ('open','partially_closed','closing','closed','permanently_closed')),
   created_by UUID NOT NULL,
   created_at TIMESTAMPTZ DEFAULT now(),
   closed_at TIMESTAMPTZ,
   closed_by UUID,
+  close_declared_at TIMESTAMPTZ,
+  grace_until TIMESTAMPTZ,
   saha_deadline TIMESTAMPTZ,
   dept_deadline TIMESTAMPTZ,
   acc_deadline TIMESTAMPTZ,
@@ -629,7 +631,7 @@ CREATE POLICY receipts_insert ON receipts FOR INSERT WITH CHECK (
       SELECT 1 FROM periods p
       WHERE p.id = receipts.period_id
         AND p.project_id = public.project_id()
-        AND p.status = 'open'
+        AND p.status IN ('open','closing')
     )
     OR
     EXISTS (
@@ -663,7 +665,7 @@ CREATE POLICY receipts_delete ON receipts FOR DELETE USING (
       SELECT 1 FROM periods p
       WHERE p.id = receipts.period_id
         AND p.project_id = public.project_id()
-        AND p.status = 'open'
+        AND p.status IN ('open','closing')
     )
     OR
     EXISTS (

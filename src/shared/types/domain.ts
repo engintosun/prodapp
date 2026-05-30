@@ -14,6 +14,7 @@ export type ReceiptStatus =
 export type PeriodStatus =
   | 'open'
   | 'partially_closed'
+  | 'closing'
   | 'closed'
   | 'permanently_closed'
 
@@ -42,6 +43,8 @@ export interface Period {
   name: string
   status: PeriodStatus
   created_at: string
+  close_declared_at?: string | null
+  grace_until?: string | null
   saha_deadline?: string | null
   dept_deadline?: string | null
   acc_deadline?: string | null

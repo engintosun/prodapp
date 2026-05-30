@@ -325,7 +325,7 @@ CREATE POLICY receipts_insert ON receipts FOR INSERT WITH CHECK (
       SELECT 1 FROM periods p
       WHERE p.id = receipts.period_id
         AND p.project_id = public.project_id()
-        AND p.status = 'open'
+        AND p.status IN ('open','closing')
     )
     OR
     -- Exception permit ile kapalı döneme giriş
@@ -365,7 +365,7 @@ CREATE POLICY receipts_delete ON receipts FOR DELETE USING (
       SELECT 1 FROM periods p
       WHERE p.id = receipts.period_id
         AND p.project_id = public.project_id()
-        AND p.status = 'open'
+        AND p.status IN ('open','closing')
     )
     OR
     EXISTS (
