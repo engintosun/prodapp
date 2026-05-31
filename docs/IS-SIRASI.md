@@ -12,7 +12,7 @@
 
 ```
 M1 ✅  Temel altyapı + auth            → KAPANDI (v0.1-auth)
-M2 🔶  Çekirdek döngü                  → AKTİF (henüz inşa başlamadı)
+M2 🔶  Çekirdek döngü                  → AKTİF (M2.0✅ M2.1✅ M2.2🔶 — storage kaldı)
 M3 ⬜  Tam Faz 1 (OCR/avans/mesaj/...)  → sırada
 M4 ⬜  Pilot hazırlık                   → sonra
 CFE ⬜ Core Finance Engine             → ayrı, zamanlama TBD
@@ -31,26 +31,26 @@ Tamamlanan zincir: DB şeması (A1) → RLS → client → scaffold (B1) → log
 
 **M2 inşa felsefesi:** sıralı — temel önce, sonra Saha tam, sonra Dept tam, sonra Muhasebe tam.
 
-### M2.0 — Karar kapatma (kod ÖNCESİ) ⬜
+### M2.0 — Karar kapatma (kod ÖNCESİ) ✅
 Bu kararlar verilmeden ilgili ekran kodlanamaz:
 - ✅ **G1** — KAPANDI: iade kaldırıldı; sahaya geri dönüş tek aksiyon = reddet (kanıt olarak donar). Tekrar giriş yalnız muhasebe → bağlı yeni fiş (parent_receipt_id). 'returned' gereksiz, 9 statü korunur. Detay: IS-KURALLARI §3.
 - ✅ **G3** — KAPANDI: pasif onay (7 gün) Faz 1'de VAR. Bekleyen fiş 7 günde auto_approved (şüpheli bayrağı kalır, sorumluluk muhasebede, kiralama istisna). Dönem kapama ilanından 7 gün sonra kapanır (grace). Detay: IS-KURALLARI §5.
-- ⬜ **Status geçiş yeri** — submitted→dept_pending/acc_pending trigger mı frontend mi
-- ⬜ **G6 başlangıcı** — token yapısı için renk yaklaşımı (değerler sonra, yapı şimdi)
+- ✅ **Status geçiş yeri** — KAPANDI: yönlendirme trigger'ı (BEFORE INSERT, SECURITY DEFINER) belirler. Saha giriş sonrası fişe dokunamaz; status'u client değil trigger atar. Detay: IS-KURALLARI §1.
+- ✅ **G6 başlangıcı** — KAPANDI: token yapısı + placeholder kuruldu (M2.1). Gerçek renk/aksan/tipografi/logo/favicon G6 görsel oturumunda swap.
 > Not: G2 (dijital imza) ve kategori panelleri M2 çekirdek için zorunlu değil; M2'de basit/placeholder geçilebilir.
 
-### M2.1 — Görsel + yapısal temel ⬜ (her ekranın ön koşulu)
+### M2.1 — Görsel + yapısal temel ✅ (her ekranın ön koşulu)
 Bağımlılık: M2.0 (renk yaklaşımı)
-- ⬜ **[Frontend]** tokens.css iskeleti (placeholder değerler, yapı sabit)
-- ⬜ **[Frontend]** B4.1 Header · B4.2 Avatar menü · B4.3 Alt nav (rol bazlı içerik) · B4.5 Tema · B4.6 100dvh · B4.7 touch target
-- ⬜ **[Frontend]** B5.1–B5.7 paylaşılan bileşenler (error boundary, loading, empty, bağlantı yok, hata mesajı, confirm, toast)
-- 🔶 **[Frontend]** A6 tip tanımları (M2 kapsamı kadar genişlet)
+- ✅ **[Frontend]** tokens.css iskeleti (placeholder değerler, yapı sabit)
+- ✅ **[Frontend]** B4.1 Header · B4.2 Avatar menü · B4.3 Alt nav (rol bazlı içerik) · B4.5 Tema · B4.6 100dvh · B4.7 touch target
+- ✅ **[Frontend]** B5.1–B5.7 paylaşılan bileşenler (error boundary, loading, empty, bağlantı yok, hata mesajı, confirm, toast)
+- ✅ **[Frontend]** A6 tip tanımları (domain.ts, şemadan; M2 kapsamı)
 
-### M2.2 — Storage + dönem ön koşulu ⬜
+### M2.2 — Storage + dönem ön koşulu 🔶
 Bağımlılık: yok (paralel yapılabilir)
 - ⬜ **[Supabase]** A2.1 receipts bucket + A2.4/A2.6 RLS (saha yükler, muhasebe görür) — *fiş fotosu için, C2 bunu bekler*
-- ⬜ **[Supabase]** B4 dönem bootstrap: BOOTSTRAP-MUSTERI.sql'e ilk açık dönem — *dönem yoksa fiş girilemez*
-- 🔶 **[Supabase]** A7.1/A7.2 trigger doğrulama (canlıda çalışıyor mu)
+- ✅ **[Supabase]** B4 dönem bootstrap: BOOTSTRAP-MUSTERI.sql'e ilk açık dönem (Adım 6 template) — *dönem yoksa fiş girilemez*
+- ✅ **[Supabase]** A7.1/A7.2 yönlendirme trigger'ı canlıda doğrulandı
 
 ### M2.3 — SAHA ekranı (sıralı inşa: ilk rol) ⬜
 Bağımlılık: M2.1 + M2.2. Detay: EKRAN-SAHA.md
@@ -58,7 +58,7 @@ Bağımlılık: M2.1 + M2.2. Detay: EKRAN-SAHA.md
 - ⬜ **[Frontend]** C1.6–C1.9 kamera/galeri foto + Storage upload + receipt_image_url
 - ⬜ **[Frontend]** C2 fiş formu (M2: OCR yok → manuel form; confidence/raw/GİB/imza placeholder)
 - ⬜ **[Frontend]** C3 belgesiz form (is_documentless)
-- ⬜ **[Frontend/Supabase]** C4.1–C4.4 fiş durum (draft INSERT/düzenle/sil/submit) + status geçiş (M2.0 kararına göre)
+- ⬜ **[Frontend/Supabase]** C4 fiş giriş: doğrudan `submitted` INSERT (taslak yok); status'u yönlendirme trigger'ı belirler (saha→dept_pending/acc_pending); giriş sonrası saha düzenleme/silme yok
 - ⬜ **[Frontend]** C5 dönem ekranı (pill, özet kart, fiş listesi, filtre, kapama submit minimal; PDF/avans M3)
 - ⬜ **[Frontend]** C6 fiş detay (saha görünümü, işlem geçmişi)
 > M2 dışı (M3): C2 OCR/sesli not, C6 arama tab, C7 avans, C8 bildirim

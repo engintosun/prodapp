@@ -40,7 +40,7 @@ Mail + şifre → (çoklu proje varsa) proje seçimi → ana ekran. Tek projeli 
 - Dijital imza
 **State 1** (tüm alanlar ≥%70): dropdown kapalı, kullanıcı sadece açıklama yazıp gönderir
 **State 2** (herhangi alan <%70): "Kontrol gerekli" badge + dropdown otomatik açık + düşük alanlarda uyarı ikonları, elle düzeltilir, düzeltme flag'lenir
-**Aksiyon:** İptal · Onaya Gönder (draft → submitted)
+**Aksiyon:** İptal (kaydetmeden çık) · Kaydet (= fişi `submitted` olarak gönderir). Taslak yoktur; kaydet = gönder. Gönder öncesi düzeltme yalnız bu tarama ekranında (lokal, sisteme yazılmaz).
 
 > M2 NOTU: OCR yok. Buton kamerayı açar, foto çekilir, OCR yerine alanlar elle doldurulur (form State 2 gibi davranır). OCR geldiğinde aynı yere oturur.
 
@@ -78,7 +78,7 @@ Arama input (vendor_name, description). Sonuç satırı: durum dot + satıcı + 
 Sohbet listesi → sohbet görünümü (mesaj baloncukları: ben sağ/turuncu, diğer sol/gri; zaman; okundu tikleri; compose bar). Detay bkz. MUHASEBE/ortak mesajlaşma kuralları.
 
 ## 10. Fiş detay (saha görünümü)
-Thumbnail (veya belgesiz ikonu, lightbox) + alanlar (satıcı/tutar/KDV/tarih/fiş no/kategori/açıklama) + uyarı banner + belgesiz banner + iş kanıtı foto + işlem geçmişi (approval_log timeline: oluşturma → onay/red). Saha: kendi fişi salt görüntüleme; draft ise düzenle/sil.
+Thumbnail (veya belgesiz ikonu, lightbox) + alanlar (satıcı/tutar/KDV/tarih/fiş no/kategori/açıklama) + uyarı banner + belgesiz banner + iş kanıtı foto + işlem geçmişi (approval_log timeline: oluşturma → onay/red/düzeltme). Saha: kendi fişi yalnız salt görüntüleme. Giriş sonrası saha düzenleme/silme yok (denetim kaydı); düzeltme yalnız dept/muhasebe "düzeltme iste" yoluyla, saha tek tur düzeltir (§3).
 
 ## 11. Avans (saha tarafı)
 Avans talebi (tutar + gerekçe + dönem) · durum takibi (pending/approved/rejected/settled) · bakiye (avans − harcama).

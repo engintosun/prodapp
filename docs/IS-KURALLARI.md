@@ -14,7 +14,10 @@ Saha fişi doğrudan submitted olarak girer (taslak yok) → saha'nın departman
 ## 2. Fiş status değerleri (8)
 submitted · dept_pending · dept_approved · dept_rejected · acc_pending · acc_approved · acc_rejected · split
 
-## 3. Reddet
+## 3. Reddet ve düzeltme iste
+
+### Reddet
+
 Sahaya geri dönüş tek aksiyondur: **reddet**. Ayrı "iade" mekanizması yoktur.
 - **Reddet:** sebep zorunlu (aşağıdaki sebeplerden + serbest metin). Reddedilen fiş **kanıt olarak donar** — düzenlenemez, silinemez, işaretli kalır, reddedilenler listesinde görünür.
 - **Düzenleme sınırı = giriş anı.** Taslak yoktur; fiş doğrudan `submitted` girer. Gönder öncesi düzeltme yalnız tarama ekranında yapılır (lokal, sisteme kaydedilmez). Giriş sonrası saha fişi düzenleyemez/silemez — inceleme bütünlüğü korunur.
@@ -26,6 +29,22 @@ Sahaya geri dönüş tek aksiyondur: **reddet**. Ayrı "iade" mekanizması yoktu
 - **Tekrar giriş:** yalnız **muhasebe** izin verir (dept veremez). İzin verilirse orijinal reddedilen fiş donmuş kalır; düzeltme ona **bağlı yeni fiş** olarak doğar (`parent_receipt_id` — §4 split ile aynı yapı). Orijinal kayıt asla düzenlenmez. [UI M3]
 - Muhasebe gerektiğinde düzeltmeye müdahale edebilir; müdahale **silinemez/işaretli** iz bırakır. [M3]
 - Her red sebebi anomali motoruna sinyaldir (§13). Red logu: kullanıcı + sebep + (varsa alan) + tarih + tutar. Muhasebe dashboard'unda "red pattern analizi".
+
+### Düzeltme iste
+
+**Karar (31 Mayıs 2026):** Fiş geçerli ama insan eli değen bir alanı yanlışsa (açıklama veya saha'nın elle doldurduğu OCR-detayı), Reddet yanlış araçtır — red, fişi kanıt olarak dondurur ve listeden çıkarır. Bunun için ayrı, hafif aksiyon: **düzeltme iste**.
+
+- **Reddet'e karşı sınır:** Fişin kendisi geçersiz/sahte/mükerrer ise → **reddet** (donar). Fiş geçerli ama saha bir alanı yanlış girmişse (parasal alan dahil: tutar/tarih/KDV) → **düzeltme iste** (saha düzeltir). Muhasebenin "sessizce düzeltmez" kuralı bozulmaz: düzeltme talebi açıktır ve loglanır, parasal alanı yine saha düzeltir.
+- **Arayüz:** Reddet ile aynı desen — fiş üstünde dropdown + mesaj kutusu. Ayrı ekran yok.
+- **Kim:** Dept (yalnız kendi departmanının `dept_pending` fişleri) ve muhasebe (her fiş).
+- **Kapsam:** İnsan eli değen her alan — OCR'ın boş/yanlış tanıyıp saha'nın elle girdiği tüm alanlar, açıklama dahil. Saf sistem/değişmez alanlar (id, oluşturma zamanı, yükleyen, belge) hariç.
+- **Akış — tek tur, ping-pong yok:** Talep → saha düzeltir → karşı taraf yalnız **kabul** veya **reddet**. Saha'nın düzeltmesi nihaidir; saha "benimki doğru" diyebilir, karşı taraf zorlayamaz. Sonsuz geri-gönderme yoktur.
+- **İstismarı kesen:** Tek-tur kuralı iki yönü de bağlar. Saha kötü veri dayatamaz (reddedilir, sorumluluk loglanır); dept/muhasebe saha'yı döngüde tutamaz.
+- **Loglama:** Ağır müdahalede (düzeltme talebi · parasal alan düzeltme [tutar/tarih/KDV] · red) `approval_log.not` zorunludur. Hafif düzeltmede (kategori vb. tek-tık düzeltme) sessiz log yeterli.
+- **Şema:** Yeni tablo yok. `approval_log` (kim/ne/ne zaman + not) ve `receipts_update` (dept→`dept_pending`, muhasebe→tümü) hazır.
+- **Misc / departmansız personel:** Şoför/runner gibi departmansızlar için muhasebe, adı "Genel" olan sıradan bir departman açar (özel kod yok). Şefsiz departmanda fişler yönlendirme trigger'ı gereği zaten muhasebeye düşer (§1).
+
+**Açık (3c build'de netleşecek):** statü temsili (`correction_requested` ayrı statü mü, yoksa pending + bayrak mı) · alan-bazlı yön ("dept/muhasebe doğrudan düzeltir" vs "saha'ya geri açılır"; parasal alan değişiyorsa iz daha kritik) · şemada "elle/OCR doldurulmuş alan" işareti gerekip gerekmediği.
 
 ## 4. Kısmi onay (split)
 Dept (½ Kısmi Onay) ve muhasebe (Split) yapabilir. split_amount belirlenir, fiş → split status. Ödenmeyen kısım için ayrı child receipt oluşturulur (parent-child ilişkisi, tek kayıtta alan tutulmaz). [G10 kararı]
