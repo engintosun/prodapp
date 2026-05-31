@@ -58,8 +58,16 @@ BEGIN
   -- INSERT INTO periods (project_id, period_number, name, status, created_by)
   -- VALUES (v_project_id, 1, 'Dönem 1', 'open', v_user_id);
 
+  -- Adım 7: Şirket/Merkez departmanı (şirkete gelen/şirketin yaptığı faturalar — e-fatura dahil)
+  -- Sıradan departman; özel kod yok. Şefsiz (chief_id NULL) → faturalar yönlendirme trigger'ı
+  -- gereği doğrudan muhasebeye düşer. Müşteri adı kendi şirketine çevirir (örn. 'Ay Yapım').
+  -- Faturayı bu departmanın saha/dept rollü AP kullanıcısı girer (muhasebe fiş insert edemez).
+  -- Detay: docs/IS-KURALLARI.md §1 "Şirket/Merkez faturaları".
+  -- INSERT INTO departments (project_id, name)
+  -- VALUES (v_project_id, 'Merkez');
+
   RAISE NOTICE '✅ Proje oluşturuldu: % (ID: %)', v_project_name, v_project_id;
-  RAISE NOTICE '⚠️ Şimdi Auth user oluştur, UUID al, Adım 4-5-6 yorum satırlarını aç ve çalıştır';
+  RAISE NOTICE '⚠️ Şimdi Auth user oluştur, UUID al, Adım 4-5-6-7 yorum satırlarını aç ve çalıştır';
 END $$;
 
 -- ============================================================
@@ -68,6 +76,6 @@ END $$;
 -- 2. Çalıştır → proje + company_settings oluşur
 -- 3. Dashboard → Auth → Add User → email + geçici şifre
 -- 4. Auth user UUID'sini kopyala
--- 5. Adım 4-5-6 yorum satırlarını aç, UUID'yi yapıştır, tekrar çalıştır
+-- 5. Adım 4-5-6-7 yorum satırlarını aç, UUID'yi yapıştır, tekrar çalıştır
 -- 6. Muhasebe'ye "şifreni değiştir" maili gönder (veya ilk girişte zorla)
 -- ============================================================

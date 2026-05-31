@@ -11,6 +11,18 @@ Saha fişi doğrudan submitted olarak girer (taslak yok) → saha'nın departman
 - Yönlendirme INSERT anında trigger ile (fn_route_receipt, BEFORE INSERT): saha'nın departmanında aktif dept-şefi varsa dept_pending, yoksa acc_pending; dept şefi kendi fişini girerse kendi onayı atlanır → acc_pending. Status'u client değil trigger belirler; saha/dept fişi yalnız giriş statüsünde (submitted/dept_pending/acc_pending) ekleyebilir (RLS).
 - Birden fazla dept kullanıcısı varsa herhangi biri onaylar (ilk gelen yapar, SK-AUTH-9).
 
+### Şirket/Merkez faturaları (e-fatura dahil)
+
+Şirkete gelen veya şirketin yaptığı faturalar (e-fatura, kurumsal alım, merkez gideri) sahanın elinden geçmez. Ayrı bir yola değil, **sıradan bir departmana** girilir — özel kod, yeni rol, zincir-atlama bayrağı YOK; "her şey departman, her şey fiş, tek kural" korunur.
+- **Şirket/Merkez departmanı:** Adı "Merkez" (ya da "Şirket Giderleri") olan sıradan departman; bootstrap'ta varsayılan kurulu gelir (BOOTSTRAP-MUSTERI.sql Adım 7). Müşteri kendi şirket adına çevirir (örn. Ay Yapım) → "kim girdi" atfı netleşir. §3'teki departmansız "Genel" ile aynı desen (şefsiz catch-all departman), farklı amaç.
+- **Kim girer:** Departmanın saha/dept rollü **AP (ön-muhasebe) kullanıcısı**. Muhasebe, RLS gereği fiş insert edemez (receipts_insert rolü saha/dept); şirket faturasını da AP kullanıcısı girer, muhasebe değil. Fotoğraf/dosya yükleme aynı kullanıcıyı kapsar (Commit 4 storage).
+- **Yönlendirme:** Departman şefsizse (ideal) fatura trigger gereği doğrudan acc_pending'e (muhasebe) düşer; ara-kontrol istenirse şef atanınca dept onay adımı eklenir.
+- **İkinci göz:** E-fatura GİB-doğrulamalı kanıtın kendisidir; doğrulanacak "saha iddiası" yok, ikinci-göz riski sahadaki kadar kritik değil — şefsiz-doğrudan-muhasebe meşru.
+- **Zorlama organizasyoneldir, kod değil:** Sistem faturayı "şirket faturası" diye sınıflandırmaz; "yalnız buradan girilir" dayatması yapılamaz. E-fatura şirketin GİB kutusuna düşer, AP kişisi oradan girer. "Şirket faturaları buradan" = güçlü varsayılan + konvansiyon (seeded departman + opsiyonel silinemez-koruma).
+- **Kapsam:** GİB'den otomatik çekme Faz 2; Faz 1 = bu departmana **elle** kayıt.
+
+**Açık (sonra):** tek-muhasebeci (küçük yapım) "kim girer / kim onaylar = ikinci göz" ergonomisi — muhasebe insert edemediğinden, muhasebeci Şirket dept'inde ayrı saha üyeliği edinir ya da ayrı AP kişisi atanır. Karara bağlanmadı.
+
 ## 2. Fiş status değerleri (8)
 submitted · dept_pending · dept_approved · dept_rejected · acc_pending · acc_approved · acc_rejected · split
 
@@ -42,7 +54,7 @@ Sahaya geri dönüş tek aksiyondur: **reddet**. Ayrı "iade" mekanizması yoktu
 - **İstismarı kesen:** Tek-tur kuralı iki yönü de bağlar. Saha kötü veri dayatamaz (reddedilir, sorumluluk loglanır); dept/muhasebe saha'yı döngüde tutamaz.
 - **Loglama:** Ağır müdahalede (düzeltme talebi · parasal alan düzeltme [tutar/tarih/KDV] · red) `approval_log.not` zorunludur. Hafif düzeltmede (kategori vb. tek-tık düzeltme) sessiz log yeterli.
 - **Şema:** Yeni tablo yok. `approval_log` (kim/ne/ne zaman + not) ve `receipts_update` (dept→`dept_pending`, muhasebe→tümü) hazır.
-- **Misc / departmansız personel:** Şoför/runner gibi departmansızlar için muhasebe, adı "Genel" olan sıradan bir departman açar (özel kod yok). Şefsiz departmanda fişler yönlendirme trigger'ı gereği zaten muhasebeye düşer (§1).
+- **Misc / departmansız personel:** Şoför/runner gibi departmansızlar için muhasebe, adı "Genel" olan sıradan bir departman açar (özel kod yok). Şefsiz departmanda fişler yönlendirme trigger'ı gereği zaten muhasebeye düşer (§1). Aynı desenin şirket-faturası uygulaması: §1 "Şirket/Merkez faturaları".
 
 **Açık (3c build'de netleşecek):** statü temsili (`correction_requested` ayrı statü mü, yoksa pending + bayrak mı) · alan-bazlı yön ("dept/muhasebe doğrudan düzeltir" vs "saha'ya geri açılır"; parasal alan değişiyorsa iz daha kritik) · şemada "elle/OCR doldurulmuş alan" işareti gerekip gerekmediği.
 

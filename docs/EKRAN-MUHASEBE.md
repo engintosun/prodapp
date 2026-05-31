@@ -43,7 +43,7 @@ Dönem seçici + "ONAY BEKLEYEN (n)" kart: avatar + isim + **Dept rozeti** + kat
 Sohbet listesi (ortak mesajlaşma kuralları).
 
 ## 11. Dönem yönetimi (detay)
-Yeni dönem aç (period_number, name, 3 deadline: saha/dept/acc). Durum: open → partially_closed → closed → permanently_closed. Departman bazlı kapatma durumu izleme. Muhasebe seviyesi kapatma onayı. Zorla kapama (override_reason zorunlu). Tekrar açma (reopen_reason zorunlu). Kural dondurma: kapanınca rules_snapshot JSONB'ye yazılır. Deadline aşımı bildirimi. (Kademeli kapanış kuralı bkz. IS-KURALLARI.md.)
+Yeni dönem aç (period_number, name, 3 deadline: saha/dept/acc). Durum: open → partially_closed → closing → closed → permanently_closed. Departman bazlı kapatma durumu izleme. Muhasebe seviyesi kapatma onayı. Zorla kapama (override_reason zorunlu). Tekrar açma (reopen_reason zorunlu). Kural dondurma: kapanınca rules_snapshot JSONB'ye yazılır. Deadline aşımı bildirimi. (Kademeli kapanış kuralı bkz. IS-KURALLARI.md.)
 
 ## 12. Departman yönetimi
 Oluştur · düzenle · şef ata (chief_id) · liste.

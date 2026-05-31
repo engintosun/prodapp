@@ -29,7 +29,8 @@ Gönder-sonrası küçük düzeltme. Gönder = submitted sonrası saha fişe dok
 **3c build'de açık:** statü temsili (correction_requested ayrı statü mü, pending + bayrak mı) · alan-bazlı yön (dept/muhasebe doğrudan düzeltir vs saha'ya geri açılır) · şemada elle/OCR alan işareti gerekir mi.
 
 ## Açık Kararlar
-- **Commit 4 storage — 2 mini-karar (build öncesi Engin onaylar):** (1) path şeması `projectId/receiptId/dosya` (öneri; RLS path'in ilk klasörünü project_id() ile eşler); (2) yükleyen saha+dept (öneri, 3b ile tutarlı), silme yok (denetim, muhasebe bir tarafa).
+- **Commit 4 storage — KARAR (B, kilitli):** bucket `receipts` (Dashboard'dan açılır) · path `projectId/receiptId/dosya` (RLS ilk klasörü project_id() ile eşler) · yükle saha+dept · gör muhasebe-hepsi + sahibi + dept-kendi-departmanı (receipts_select aynası) · silme YOK (foto=kanıt). SQL yalnız storage.objects policy, trigger yok; repoda henüz yok. Build = Commit 4.
+- **Şirket/Merkez + e-fatura — KARAR (C+D, çözüldü):** şirket faturaları sıradan "Şirket/Merkez" departmanına elle girilir (özel kod/yeni rol/atlama YOK; bootstrap seeded — Adım 7). Eski "muhasebe-direkt ayrı yol" iptal. GİB otomatik Faz 2. Detay: IS-KURALLARI §1. **Açık:** tek-muhasebeci ergonomisi.
 - **G6 görsel değerler** — tokens.css yapısı + placeholder hazır; gerçek renk/aksan/tipografi/logo/favicon swap edilecek (yapı sabit, var(--...) okur).
 - **G2** dijital imza (canvas) · **G10** split child receipt mekanizması · kategori/ulaşım limit değerleri · kiralama dönem-kapanış istisnası teyidi.
 - (Önceden bağlandı) parent_receipt_id zemini atıldı → split & red-tekrar-giriş AKIŞI M3. Dönem kapama ilanı + grace şema temsili → 5c6ff83 ile çözüldü. Status geçiş yeri → trigger (bf45f08).
@@ -65,8 +66,8 @@ Detaylı sıra + bağımlılık: docs/IS-SIRASI.md.
 | docs/TASARIM-KARARLARI.md | güncel | ekranlar-arası ortak ilkeler; G6 token yapısı |
 | docs/EKRAN-SAHA.md | güncel | draft kalıntıları temizlendi (kaydet = gönder; fiş detay düzeltme-iste yolu) |
 | docs/EKRAN-DEPT.md | güncel | dept ekranları |
-| docs/EKRAN-MUHASEBE.md | güncel | muhasebe ekranları (kart-masa açık slot) |
-| docs/IS-KURALLARI.md | güncel | §1 yönlendirme · §3 reddet + düzeltme iste (3c) · §5 grace · §13 anomali · §17 timezone |
+| docs/EKRAN-MUHASEBE.md | güncel | muhasebe ekranları (kart-masa açık slot); §11 dönem statüsü closing'li |
+| docs/IS-KURALLARI.md | güncel | §1 yönlendirme + Şirket/Merkez faturaları (C+D) · §3 reddet + düzeltme iste (3c) · §5 grace · §13 anomali · §17 timezone |
 | docs/IS-SIRASI.md | güncel | M2.0 ✅ M2.1 ✅ M2.2 🔶; C4 draft satırı temizlendi |
 | docs/GLOSSARY.md | güncel | domain terimleri + tehlikeli kökler |
 | docs/TECH-DEBT.md | güncel | 4/5 borç |
@@ -76,7 +77,7 @@ Detaylı sıra + bağımlılık: docs/IS-SIRASI.md.
 | SUPABASE-FUNCTIONS.sql | güncel | clear_user_claims RPC (yönlendirme trigger RLS dosyasında yaşıyor) |
 | sql/full-rebuild.sql | güncel | grace + parent_receipt_id + draft-kaldırma + yönlendirme trigger yansımış (storage Commit 4'te eklenecek) |
 | set-claims / clear-claims | güncel | canlı deployed |
-| BOOTSTRAP-MUSTERI.sql | güncel | profil şablonu + Adım 6 dönem template |
+| BOOTSTRAP-MUSTERI.sql | güncel | profil şablonu + Adım 6 dönem + Adım 7 Şirket/Merkez dept template |
 | src/ (M2.1) | iskelet | tokens.css + B4 shell/nav + B5 7 bileşen + domain.ts (grace/parent yansıdı) + ErrorBoundary/ToastProvider mount |
 | README.md | minimal | G6 todo |
 | STATUS.md | güncel | bu commit'te bf45f08 + edc4e52'ye senkronlandı |
