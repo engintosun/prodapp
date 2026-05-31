@@ -2,11 +2,11 @@
 
 ## Aktif Milestone
 **M2 — Çekirdek Döngü** (ARCHITECTURE 2.5). M1 kapandı (`v0.1-auth`).
-M2.0 ✅ (kararlar) · M2.1 ✅ (görsel + yapısal temel) · **M2.2 🔶** — grace şeması + parent_receipt_id zemini + bootstrap dönem + §17 timezone + draft kaldırma + yönlendirme trigger canlıda; **kalan: Commit 4 storage bucket**. Sıra: Commit 4 (storage) → 3c build (düzeltme katmanı) → M2.3 (saha ekranı).
+M2.0 ✅ (kararlar) · M2.1 ✅ (görsel + yapısal temel) · **M2.2 ✅** — grace şeması + parent_receipt_id zemini + bootstrap dönem + §17 timezone + draft kaldırma + yönlendirme trigger + storage (receipts bucket private + policy) canlıda. Sıra: 3c build (düzeltme katmanı) → M2.3 (saha ekranı).
 
 **Çekirdek döngü canlıda çalışıyor:** fiş gir → yönlendirme trigger'ı otomatik doğru kuyruğa düşürür (saha → aktif şef varsa dept_pending, yoksa acc_pending; dept şefi kendi fişi → acc_pending).
 
-## Son Session (30–31 Mayıs 2026 — M2.2 inşa + doküman-senkronu)
+## Son Session (30–31 Mayıs 2026 — M2.2 (motor + storage) + doküman-senkronu)
 M2.2 motoru yazıldı (6 commit, hepsi origin'den bağımsız doğrulandı: fetch + diff) + doküman-senkronu (2 commit). Canlıya uygulanan (Dashboard, doğrulama sorguları true): grace şeması · parent_receipt_id · draft→submitted geçişi + CHECK · yönlendirme trigger.
 
 **İnşa commit'leri:**
@@ -19,7 +19,9 @@ M2.2 motoru yazıldı (6 commit, hepsi origin'den bağımsız doğrulandı: fetc
 
 **Doküman-senkronu commit'leri:**
 - `edc4e52` — 3c düzeltme katmanı IS-KURALLARI §3'e (başlık "Reddet ve düzeltme iste"; tek tur, ping-pong yok, saha düzeltmesi nihai) + draft model kalıntıları (EKRAN-SAHA aksiyon + fiş detay) + IS-SIRASI M2 milestone ilerlemesi.
-- (bu commit) — STATUS bf45f08 + edc4e52'ye senkron + RLS VARSAYIMLAR notu trigger sayısı 2→3.
+- `d964f55` — STATUS bf45f08 + edc4e52'ye senkron + RLS VARSAYIMLAR notu trigger sayısı 2→3.
+- `0c31eaa` — doküman-senkron (Karar C+D): IS-KURALLARI §1 Şirket/Merkez faturaları + e-fatura elle kayıt + §3 çapraz ref + STATUS açık kararlar + BOOTSTRAP Adım 7 + EKRAN-MUHASEBE closing + IS-SIRASI borç 4/5.
+- (bu commit) — Commit 4 storage: receipts bucket (private, Dashboard'dan) + storage.objects RLS (insert saha/dept · select muhasebe+sahibi+dept · sil/güncelle yok) → SUPABASE-RLS.sql + full-rebuild.sql. Canlı policy doğrulandı (bucket_public=false, insert/select var). M2.2 tamam.
 
 ## M1 Özeti (KAPANDI — 27 Mayıs 2026, tag v0.1-auth)
 Auth + RLS + DB şeması + çoklu-üyelik login uçtan uca. set/clear-claims Edge canlı, üç-hâl App.tsx routing, Vercel prod (prodapp-navy.vercel.app). Detay: git history.
@@ -29,7 +31,7 @@ Gönder-sonrası küçük düzeltme. Gönder = submitted sonrası saha fişe dok
 **3c build'de açık:** statü temsili (correction_requested ayrı statü mü, pending + bayrak mı) · alan-bazlı yön (dept/muhasebe doğrudan düzeltir vs saha'ya geri açılır) · şemada elle/OCR alan işareti gerekir mi.
 
 ## Açık Kararlar
-- **Commit 4 storage — KARAR (B, kilitli):** bucket `receipts` (Dashboard'dan açılır) · path `projectId/receiptId/dosya` (RLS ilk klasörü project_id() ile eşler) · yükle saha+dept · gör muhasebe-hepsi + sahibi + dept-kendi-departmanı (receipts_select aynası) · silme YOK (foto=kanıt). SQL yalnız storage.objects policy, trigger yok; repoda henüz yok. Build = Commit 4.
+- **Commit 4 storage — KARAR (B) ✅ BUILT:** bucket `receipts` (private, Dashboard) · path `projectId/receiptId/dosya` (RLS ilk klasörü project_id() ile eşler) · yükle saha+dept · gör muhasebe-hepsi + sahibi + dept-kendi-departmanı (receipts_select aynası) · sil/güncelle YOK (foto=kanıt). storage.objects policy (insert/select) canlı + repo (SUPABASE-RLS.sql + full-rebuild). Doğrulama true. (Gerçek upload testi M2.3'te — owner=auth.uid() davranışı orada teyit edilir.)
 - **Şirket/Merkez + e-fatura — KARAR (C+D, çözüldü):** şirket faturaları sıradan "Şirket/Merkez" departmanına elle girilir (özel kod/yeni rol/atlama YOK; bootstrap seeded — Adım 7). Eski "muhasebe-direkt ayrı yol" iptal. GİB otomatik Faz 2. Detay: IS-KURALLARI §1. **Açık:** tek-muhasebeci ergonomisi.
 - **G6 görsel değerler** — tokens.css yapısı + placeholder hazır; gerçek renk/aksan/tipografi/logo/favicon swap edilecek (yapı sabit, var(--...) okur).
 - **G2** dijital imza (canvas) · **G10** split child receipt mekanizması · kategori/ulaşım limit değerleri · kiralama dönem-kapanış istisnası teyidi.
@@ -45,9 +47,8 @@ Denetçi modu (G11) · Dil seçimi ekranı · Onboarding tutorial · Mesai hesap
 - Offline kuyruk (PWA, client submit-time, zaman-bazlı uygunluk) → M3 (ARCHITECTURE §5.7).
 
 ## Sonraki Session Gündemi
-1. **Commit 4 — Storage bucket (M2.2 son parçası):** receipts bucket + storage.objects RLS (saha/dept yükler, muhasebe görür). Storage RLS repoda HENÜZ YOK (sıfırdan küçük policy bloğu; trigger yok). Bucket'ı Engin Dashboard'dan açar; SQL + commit + canlı policy. 2 mini-karar yukarıda (Açık Kararlar).
-2. **3c build** — düzeltme katmanı (spec IS-KURALLARI §3).
-3. **M2.3 — Saha ekranı** (ilk rol; domain.ts + shell + B5 + tokens hazır; detay EKRAN-SAHA.md).
+1. **3c build — düzeltme katmanı** (spec IS-KURALLARI §3). 3c build'de açık: statü temsili (`correction_requested` ayrı statü mü, pending+bayrak mı) · alan-bazlı yön · şemada elle/OCR alan işareti.
+2. **M2.3 — Saha ekranı** (ilk rol; domain.ts + shell + B5 + tokens hazır; detay EKRAN-SAHA.md).
 Detaylı sıra + bağımlılık: docs/IS-SIRASI.md.
 
 ## Sonraki Session — Okunacak Dosyalar
@@ -73,9 +74,9 @@ Detaylı sıra + bağımlılık: docs/IS-SIRASI.md.
 | docs/TECH-DEBT.md | güncel | 4/5 borç |
 | docs/RAKIP-ANALIZI-OCR.md | güncel | referans |
 | SUPABASE-SCHEMA.sql | güncel | grace 5 safha + close_declared_at/grace_until · parent_receipt_id (self-FK + chk_parent_not_self) · receipts.status draft kaldırıldı (8 değer, default submitted) |
-| SUPABASE-RLS.sql | güncel | fiş insert/delete dönem IN('open','closing') · receipts_insert saha+dept + giriş-statüsü guard · saha update/delete YOK · yönlendirme trigger (fn_route_receipt/trg_route_receipt); VARSAYIMLAR trigger sayısı 3 |
+| SUPABASE-RLS.sql | güncel | fiş insert/delete dönem IN('open','closing') · receipts_insert saha+dept + giriş-statüsü guard · saha update/delete YOK · yönlendirme trigger (fn_route_receipt/trg_route_receipt); VARSAYIMLAR trigger sayısı 3 · §18 STORAGE receipts policy (insert saha/dept · select muhasebe+sahibi+dept) |
 | SUPABASE-FUNCTIONS.sql | güncel | clear_user_claims RPC (yönlendirme trigger RLS dosyasında yaşıyor) |
-| sql/full-rebuild.sql | güncel | grace + parent_receipt_id + draft-kaldırma + yönlendirme trigger yansımış (storage Commit 4'te eklenecek) |
+| sql/full-rebuild.sql | güncel | grace + parent_receipt_id + draft-kaldırma + yönlendirme trigger + STORAGE receipts policy yansımış |
 | set-claims / clear-claims | güncel | canlı deployed |
 | BOOTSTRAP-MUSTERI.sql | güncel | profil şablonu + Adım 6 dönem + Adım 7 Şirket/Merkez dept template |
 | src/ (M2.1) | iskelet | tokens.css + B4 shell/nav + B5 7 bileşen + domain.ts (grace/parent yansıdı) + ErrorBoundary/ToastProvider mount |
@@ -88,3 +89,4 @@ Detaylı sıra + bağımlılık: docs/IS-SIRASI.md.
 - [x] M2.0 kararlar (G1 · G3 · status geçiş = trigger · G6 yapı) + M2.1 (tokens · B5 7 bileşen · B4 shell/nav · A6 tipleri)
 - [x] M2.2 motoru: grace şeması · parent_receipt_id zemini · bootstrap dönem · §17 timezone · draft kaldırma · yönlendirme trigger (6 commit, 30–31 Mayıs)
 - [x] Doküman-senkronu: 3c → IS-KURALLARI §3 · draft model kalıntıları · IS-SIRASI milestone ilerlemesi · STATUS + RLS senkronu (31 Mayıs)
+- [x] M2.2 Commit 4 storage + doküman-senkron (Karar C+D): receipts bucket (private) + storage.objects RLS (insert saha/dept · select muhasebe+sahibi+dept · sil/güncelle yok) · Şirket/Merkez dept + e-fatura + BOOTSTRAP Adım 7 (0c31eaa + bu commit, 31 Mayıs). **M2.2 tamam.**

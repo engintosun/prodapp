@@ -761,6 +761,49 @@ CREATE TRIGGER trg_route_receipt
 
 
 -- ============================================================
+-- 18. STORAGE — receipts bucket RLS
+-- Bucket Dashboard'dan açılır (private). Bu blok yalnız storage.objects policy'leri.
+-- Path şeması: projectId/receiptId/dosya → [1]=proje izolasyonu, [2]=fiş (dept görünürlüğü).
+-- İdempotent (DROP IF EXISTS + CREATE).
+-- ============================================================
+DROP POLICY IF EXISTS receipts_storage_insert ON storage.objects;
+DROP POLICY IF EXISTS receipts_storage_select ON storage.objects;
+
+-- INSERT (yükle): saha + dept, kendi projesinin path'ine, kendi adına
+CREATE POLICY receipts_storage_insert ON storage.objects
+  FOR INSERT TO authenticated
+  WITH CHECK (
+    bucket_id = 'receipts'
+    AND public.user_role() IN ('saha','dept')
+    AND public.project_id() = ((storage.foldername(name))[1])::uuid
+    AND owner = auth.uid()
+  );
+
+-- SELECT (gör): muhasebe (proje hepsi) + sahibi + dept (kendi departmanının fişi)
+CREATE POLICY receipts_storage_select ON storage.objects
+  FOR SELECT TO authenticated
+  USING (
+    bucket_id = 'receipts'
+    AND public.project_id() = ((storage.foldername(name))[1])::uuid
+    AND (
+      public.user_role() = 'muhasebe'
+      OR owner = auth.uid()
+      OR (
+        public.user_role() = 'dept'
+        AND EXISTS (
+          SELECT 1 FROM receipts r
+          WHERE r.id = ((storage.foldername(name))[2])::uuid
+            AND r.dept_id = public.user_dept_id()
+            AND r.project_id = public.project_id()
+        )
+      )
+    )
+  );
+
+-- DELETE / UPDATE: policy yok → kimse silemez/değiştiremez (foto = kanıt, donar).
+
+
+-- ============================================================
 -- VARSAYIMLAR & NOTLAR
 -- ============================================================
 -- 1. JWT claims auth.users.raw_app_meta_data'da: { project_id, role, dept_id }
@@ -774,3 +817,4 @@ CREATE TRIGGER trg_route_receipt
 -- 7. Dept exception_permits verebilir (insert policy'de IN ('muhasebe','dept')).
 -- 8. Trigger sayısı: 3 (approval + advance + route_receipt). 5'i geçerse Edge Function değerlendirmesi.
 -- 9. project_rules Faz 2 — policy hazır, tablo boş.
+-- 10. Storage: receipts bucket (private, Dashboard'dan açılır) — storage.objects policy'leri (insert saha/dept, select muhasebe+sahibi+dept). Silme/güncelleme yok. Path projectId/receiptId/dosya.

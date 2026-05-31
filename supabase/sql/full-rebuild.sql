@@ -1036,6 +1036,48 @@ CREATE TRIGGER trg_route_receipt
   EXECUTE FUNCTION fn_route_receipt();
 
 -- ============================================================
+-- STORAGE - receipts bucket RLS
+-- Bucket Dashboard'dan acilir (private). Bu blok yalniz storage.objects policy.
+-- Path: projectId/receiptId/dosya -> [1]=proje izolasyonu, [2]=fis (dept gorunurlugu).
+-- Idempotent (DROP IF EXISTS + CREATE).
+-- ============================================================
+DROP POLICY IF EXISTS receipts_storage_insert ON storage.objects;
+DROP POLICY IF EXISTS receipts_storage_select ON storage.objects;
+
+-- INSERT (yukle): saha + dept, kendi projesinin path'ine, kendi adina
+CREATE POLICY receipts_storage_insert ON storage.objects
+  FOR INSERT TO authenticated
+  WITH CHECK (
+    bucket_id = 'receipts'
+    AND public.user_role() IN ('saha','dept')
+    AND public.project_id() = ((storage.foldername(name))[1])::uuid
+    AND owner = auth.uid()
+  );
+
+-- SELECT (gor): muhasebe (proje hepsi) + sahibi + dept (kendi departmaninin fisi)
+CREATE POLICY receipts_storage_select ON storage.objects
+  FOR SELECT TO authenticated
+  USING (
+    bucket_id = 'receipts'
+    AND public.project_id() = ((storage.foldername(name))[1])::uuid
+    AND (
+      public.user_role() = 'muhasebe'
+      OR owner = auth.uid()
+      OR (
+        public.user_role() = 'dept'
+        AND EXISTS (
+          SELECT 1 FROM receipts r
+          WHERE r.id = ((storage.foldername(name))[2])::uuid
+            AND r.dept_id = public.user_dept_id()
+            AND r.project_id = public.project_id()
+        )
+      )
+    )
+  );
+
+-- DELETE / UPDATE: policy yok -> kimse silemez/degistiremez (foto = kanit, donar).
+
+-- ============================================================
 -- PRODAPP Server-side Admin Functions v1.0
 -- Bu dosyadaki fonksiyonlar SECURITY DEFINER ile calisir.
 -- Sadece service_role uzerinden cagirilabilir (Edge Functions).

@@ -12,7 +12,7 @@
 
 ```
 M1 ✅  Temel altyapı + auth            → KAPANDI (v0.1-auth)
-M2 🔶  Çekirdek döngü                  → AKTİF (M2.0✅ M2.1✅ M2.2🔶 — storage kaldı)
+M2 🔶  Çekirdek döngü                  → AKTİF (M2.0✅ M2.1✅ M2.2✅ — sırada 3c → M2.3)
 M3 ⬜  Tam Faz 1 (OCR/avans/mesaj/...)  → sırada
 M4 ⬜  Pilot hazırlık                   → sonra
 CFE ⬜ Core Finance Engine             → ayrı, zamanlama TBD
@@ -46,9 +46,9 @@ Bağımlılık: M2.0 (renk yaklaşımı)
 - ✅ **[Frontend]** B5.1–B5.7 paylaşılan bileşenler (error boundary, loading, empty, bağlantı yok, hata mesajı, confirm, toast)
 - ✅ **[Frontend]** A6 tip tanımları (domain.ts, şemadan; M2 kapsamı)
 
-### M2.2 — Storage + dönem ön koşulu 🔶
+### M2.2 — Storage + dönem ön koşulu ✅
 Bağımlılık: yok (paralel yapılabilir)
-- ⬜ **[Supabase]** A2.1 receipts bucket + A2.4/A2.6 RLS (saha yükler, muhasebe görür) — *fiş fotosu için, C2 bunu bekler*
+- ✅ **[Supabase]** A2.1 receipts bucket (private) + A2.4/A2.6 storage.objects RLS (insert saha/dept · select muhasebe+sahibi+dept · sil/güncelle yok) canlı + repo — *fiş fotosu; C2 bunu bekler*
 - ✅ **[Supabase]** B4 dönem bootstrap: BOOTSTRAP-MUSTERI.sql'e ilk açık dönem (Adım 6 template) — *dönem yoksa fiş girilemez*
 - ✅ **[Supabase]** A7.1/A7.2 yönlendirme trigger'ı canlıda doğrulandı
 
