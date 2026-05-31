@@ -56,7 +56,12 @@ Sahaya geri dönüş tek aksiyondur: **reddet**. Ayrı "iade" mekanizması yoktu
 - **Şema:** Yeni tablo yok. `approval_log` (kim/ne/ne zaman + not) ve `receipts_update` (dept→`dept_pending`, muhasebe→tümü) hazır.
 - **Misc / departmansız personel:** Şoför/runner gibi departmansızlar için muhasebe, adı "Genel" olan sıradan bir departman açar (özel kod yok). Şefsiz departmanda fişler yönlendirme trigger'ı gereği zaten muhasebeye düşer (§1). Aynı desenin şirket-faturası uygulaması: §1 "Şirket/Merkez faturaları".
 
-**Açık (3c build'de netleşecek):** statü temsili (`correction_requested` ayrı statü mü, yoksa pending + bayrak mı) · alan-bazlı yön ("dept/muhasebe doğrudan düzeltir" vs "saha'ya geri açılır"; parasal alan değişiyorsa iz daha kritik) · şemada "elle/OCR doldurulmuş alan" işareti gerekip gerekmediği.
+**Karar (3c, 31 Mayıs 2026):**
+- **(a) Statü temsili:** Ayrı statü AÇILMAZ. Fiş `dept_pending`/`acc_pending` statüsünde KALIR (statü sıradaki onaycıyı taşır; korunur). receipts'e `correction_requested` (bool, default false) bayrağı eklenir. Bayrak, giriş-sonrası kapalı olan saha-düzenleme penceresini **yalnız o fiş için ve yalnız düzeltme istenmişken** açar. RLS muhafızı: `user_id = auth.uid() AND correction_requested = true`. Statü-makinesi (8 değer) değişmez.
+- **(b) Alan-bazlı yön:** Finansal/olgusal alanlar (tutar · tarih · KDV · vendor · açıklama · belgesiz) → **saha'ya geri açılır + zorunlu not** (muhasebe sessizce yazmaz). Sınıflandırma alanları (kategori · alt-kategori) → **dept/muhasebe yerinde tek-tık düzeltir, sessiz log** (kategori için §3'te zaten kararlıydı; alt-kategori aynı doğada).
+- **(c) Alan işareti:** "elle/OCR doldurulmuş alan" işareti EKLENMEZ. Düzeltme akışı approval_log izi (kim/ne/ne zaman + not) ile yeterli; "saha OCR'ı ezdi" türü provenance gerekirse M3/OCR ile gelir.
+
+**Mekanik M2.3'te iner (uçtan uca test):** `correction_requested` kolonu + saha-update RLS penceresi + kolon-disiplini (saha yalnız izinli alanları değiştirir) trigger/servis katmanı + saha/dept/muhasebe UI. Bu commit yalnız kararı kayıtlar.
 
 ## 4. Kısmi onay (split)
 Dept (½ Kısmi Onay) ve muhasebe (Split) yapabilir. split_amount belirlenir, fiş → split status. Ödenmeyen kısım için ayrı child receipt oluşturulur (parent-child ilişkisi, tek kayıtta alan tutulmaz). [G10 kararı]

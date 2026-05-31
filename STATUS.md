@@ -26,9 +26,9 @@ M2.2 motoru yazıldı (6 commit, hepsi origin'den bağımsız doğrulandı: fetc
 ## M1 Özeti (KAPANDI — 27 Mayıs 2026, tag v0.1-auth)
 Auth + RLS + DB şeması + çoklu-üyelik login uçtan uca. set/clear-claims Edge canlı, üç-hâl App.tsx routing, Vercel prod (prodapp-navy.vercel.app). Detay: git history.
 
-## 3c — Düzeltme Katmanı (kilitli; build M2.2 sonrası)
+## 3c — Düzeltme Katmanı (KARARLANDI 31 Mayıs; mekanik M2.3'te)
 Gönder-sonrası küçük düzeltme. Gönder = submitted sonrası saha fişe dokunamaz; red yanlış araç (donar, listeden çıkar). Yeni aksiyon **düzeltme iste** — reddet'in hafif kardeşi, aynı arayüz (fiş üstünde dropdown + mesaj). Dept (kendi dept'inin dept_pending fişleri) + muhasebe (her fiş). **Tek tur, ping-pong yok:** talep → saha düzeltir → karşı taraf yalnız kabul/red; saha düzeltmesi nihaidir. Şema hazır (approval_log + receipts_update), yeni tablo yok. Tam spec: IS-KURALLARI §3.
-**3c build'de açık:** statü temsili (correction_requested ayrı statü mü, pending + bayrak mı) · alan-bazlı yön (dept/muhasebe doğrudan düzeltir vs saha'ya geri açılır) · şemada elle/OCR alan işareti gerekir mi.
+**3c kararı (31 Mayıs):** (a) ayrı statü YOK — fiş dept_pending/acc_pending'de kalır + receipts'e `correction_requested` bool bayrağı (saha-düzenleme penceresini yalnız o fiş + yalnız düzeltme istenmişken açar; RLS: user_id=auth.uid() AND correction_requested=true). (b) finansal/olgusal alan (tutar/tarih/KDV/vendor/açıklama/belgesiz) → saha'ya geri açılır + not; sınıflandırma (kategori/alt-kategori) → dept/muhasebe yerinde tek-tık, sessiz log. (c) elle/OCR alan işareti YOK (gerekirse M3/OCR). Mekanik (kolon + saha-update RLS + kolon-disiplini trigger + UI) M2.3'te uçtan uca iner. Tam spec: IS-KURALLARI §3.
 
 ## Açık Kararlar
 - **Commit 4 storage — KARAR (B) ✅ BUILT:** bucket `receipts` (private, Dashboard) · path `projectId/receiptId/dosya` (RLS ilk klasörü project_id() ile eşler) · yükle saha+dept · gör muhasebe-hepsi + sahibi + dept-kendi-departmanı (receipts_select aynası) · sil/güncelle YOK (foto=kanıt). storage.objects policy (insert/select) canlı + repo (SUPABASE-RLS.sql + full-rebuild). Doğrulama true. (Gerçek upload testi M2.3'te — owner=auth.uid() davranışı orada teyit edilir.)
@@ -47,8 +47,7 @@ Denetçi modu (G11) · Dil seçimi ekranı · Onboarding tutorial · Mesai hesap
 - Offline kuyruk (PWA, client submit-time, zaman-bazlı uygunluk) → M3 (ARCHITECTURE §5.7).
 
 ## Sonraki Session Gündemi
-1. **3c build — düzeltme katmanı** (spec IS-KURALLARI §3). 3c build'de açık: statü temsili (`correction_requested` ayrı statü mü, pending+bayrak mı) · alan-bazlı yön · şemada elle/OCR alan işareti.
-2. **M2.3 — Saha ekranı** (ilk rol; domain.ts + shell + B5 + tokens hazır; detay EKRAN-SAHA.md).
+1. **M2.3 — Saha ekranı** (ilk rol; domain.ts + shell + B5 + tokens hazır; detay EKRAN-SAHA.md). **3c düzeltme mekaniği bu ekranda iner:** receipts.`correction_requested` kolonu + saha-update RLS penceresi + kolon-disiplini trigger + saha düzeltme UI; uçtan uca test (storage upload C1.6–C1.9 + owner=auth.uid() teyidi de burada). Karar: IS-KURALLARI §3.
 Detaylı sıra + bağımlılık: docs/IS-SIRASI.md.
 
 ## Sonraki Session — Okunacak Dosyalar
@@ -68,8 +67,8 @@ Detaylı sıra + bağımlılık: docs/IS-SIRASI.md.
 | docs/EKRAN-SAHA.md | güncel | draft kalıntıları temizlendi (kaydet = gönder; fiş detay düzeltme-iste yolu) |
 | docs/EKRAN-DEPT.md | güncel | dept ekranları |
 | docs/EKRAN-MUHASEBE.md | güncel | muhasebe ekranları (kart-masa açık slot); §11 dönem statüsü closing'li |
-| docs/IS-KURALLARI.md | güncel | §1 yönlendirme + Şirket/Merkez faturaları (C+D) · §3 reddet + düzeltme iste (3c) · §5 grace · §13 anomali · §17 timezone |
-| docs/IS-SIRASI.md | güncel | M2.0 ✅ M2.1 ✅ M2.2 🔶; C4 draft satırı temizlendi |
+| docs/IS-KURALLARI.md | güncel | §1 yönlendirme + Şirket/Merkez faturaları (C+D) · §3 reddet + düzeltme iste (3c KARARLANDI: correction_requested bayrağı + alan-bazlı yön + işaret yok) · §5 grace · §13 anomali · §17 timezone |
+| docs/IS-SIRASI.md | güncel | M2.0 ✅ M2.1 ✅ M2.2 ✅; 3c kararı → M2.3 mekaniği; C4 düzeltme istisnası |
 | docs/GLOSSARY.md | güncel | domain terimleri + tehlikeli kökler |
 | docs/TECH-DEBT.md | güncel | 4/5 borç |
 | docs/RAKIP-ANALIZI-OCR.md | güncel | referans |
@@ -81,7 +80,7 @@ Detaylı sıra + bağımlılık: docs/IS-SIRASI.md.
 | BOOTSTRAP-MUSTERI.sql | güncel | profil şablonu + Adım 6 dönem + Adım 7 Şirket/Merkez dept template |
 | src/ (M2.1) | iskelet | tokens.css + B4 shell/nav + B5 7 bileşen + domain.ts (grace/parent yansıdı) + ErrorBoundary/ToastProvider mount |
 | README.md | minimal | G6 todo |
-| STATUS.md | güncel | bu commit'te bf45f08 + edc4e52'ye senkronlandı |
+| STATUS.md | güncel | 036c889 + 3c kararına senkron |
 
 ## Tamamlanan İşler
 - [x] M1: scaffold, Supabase client, DB/RLS/Bootstrap, auth, proje seçimi, set/clear-claims, üç-hâl routing, v0.1-auth

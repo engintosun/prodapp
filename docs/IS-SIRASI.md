@@ -12,7 +12,7 @@
 
 ```
 M1 ✅  Temel altyapı + auth            → KAPANDI (v0.1-auth)
-M2 🔶  Çekirdek döngü                  → AKTİF (M2.0✅ M2.1✅ M2.2✅ — sırada 3c → M2.3)
+M2 🔶  Çekirdek döngü                  → AKTİF (M2.0✅ M2.1✅ M2.2✅ — sırada M2.3; 3c kararı §3)
 M3 ⬜  Tam Faz 1 (OCR/avans/mesaj/...)  → sırada
 M4 ⬜  Pilot hazırlık                   → sonra
 CFE ⬜ Core Finance Engine             → ayrı, zamanlama TBD
@@ -58,7 +58,7 @@ Bağımlılık: M2.1 + M2.2. Detay: EKRAN-SAHA.md
 - ⬜ **[Frontend]** C1.6–C1.9 kamera/galeri foto + Storage upload + receipt_image_url
 - ⬜ **[Frontend]** C2 fiş formu (M2: OCR yok → manuel form; confidence/raw/GİB/imza placeholder)
 - ⬜ **[Frontend]** C3 belgesiz form (is_documentless)
-- ⬜ **[Frontend/Supabase]** C4 fiş giriş: doğrudan `submitted` INSERT (taslak yok); status'u yönlendirme trigger'ı belirler (saha→dept_pending/acc_pending); giriş sonrası saha düzenleme/silme yok
+- ⬜ **[Frontend/Supabase]** C4 fiş giriş: doğrudan `submitted` INSERT (taslak yok); status'u yönlendirme trigger'ı belirler (saha→dept_pending/acc_pending); giriş sonrası saha düzenleme/silme yok (istisna: düzeltme istenen fiş — 3c/§3)
 - ⬜ **[Frontend]** C5 dönem ekranı (pill, özet kart, fiş listesi, filtre, kapama submit minimal; PDF/avans M3)
 - ⬜ **[Frontend]** C6 fiş detay (saha görünümü, işlem geçmişi)
 > M2 dışı (M3): C2 OCR/sesli not, C6 arama tab, C7 avans, C8 bildirim
