@@ -772,5 +772,5 @@ CREATE TRIGGER trg_route_receipt
 -- 5. notifications INSERT service_role ile.
 -- 6. DELETE yok: fiş girince silinemez (denetim kaydı; düzeltme reddet/split).
 -- 7. Dept exception_permits verebilir (insert policy'de IN ('muhasebe','dept')).
--- 8. Trigger sayısı: 2 (approval + advance). 5'i geçerse Edge Function değerlendirmesi.
+-- 8. Trigger sayısı: 3 (approval + advance + route_receipt). 5'i geçerse Edge Function değerlendirmesi.
 -- 9. project_rules Faz 2 — policy hazır, tablo boş.
