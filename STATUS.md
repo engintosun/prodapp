@@ -2,7 +2,7 @@
 
 ## Aktif Milestone
 **M2 — Çekirdek Döngü** (ARCHITECTURE 2.5). M1 kapandı (`v0.1-auth`).
-M2.0 ✅ (kararlar) · M2.1 ✅ (görsel + yapısal temel) · **M2.2 ✅** — grace şeması + parent_receipt_id zemini + bootstrap dönem + §17 timezone + draft kaldırma + yönlendirme trigger + storage (receipts bucket private + policy) canlıda. Sıra: 3c build (düzeltme katmanı) → M2.3 (saha ekranı).
+M2.0 ✅ (kararlar) · M2.1 ✅ (görsel + yapısal temel) · **M2.2 ✅** — grace şeması + parent_receipt_id zemini + bootstrap dönem + §17 timezone + draft kaldırma + yönlendirme trigger + storage (receipts bucket private + policy) canlıda. 3c kararı kapandı (mekanik M2.3'te). **Sıra: M2.3 saha ekranı.** Bu commit = chrome-hizalama: saha nav→4 (Ana/Dönem/Ara/Mesajlar) + header→spec (avatar-sol/proje-orta/badge-sağ/5-menü) + placeholder-disiplini kuralı. dept/muhasebe nav farklı layout → TODO-SPEC (M2.4/M2.5). NOT: M2.1 nav/header B4 stub'ları spec'e uymuyordu (işaretsizdi); bu commit saha+header'ı hizaladı. Sonra C1 gövdesi (saha-screen + FİŞ TARA diski).
 
 **Çekirdek döngü canlıda çalışıyor:** fiş gir → yönlendirme trigger'ı otomatik doğru kuyruğa düşürür (saha → aktif şef varsa dept_pending, yoksa acc_pending; dept şefi kendi fişi → acc_pending).
 
@@ -78,7 +78,7 @@ Detaylı sıra + bağımlılık: docs/IS-SIRASI.md.
 | sql/full-rebuild.sql | güncel | grace + parent_receipt_id + draft-kaldırma + yönlendirme trigger + STORAGE receipts policy yansımış |
 | set-claims / clear-claims | güncel | canlı deployed |
 | BOOTSTRAP-MUSTERI.sql | güncel | profil şablonu + Adım 6 dönem + Adım 7 Şirket/Merkez dept template |
-| src/ (M2.1) | iskelet | tokens.css + B4 shell/nav + B5 7 bileşen + domain.ts (grace/parent yansıdı) + ErrorBoundary/ToastProvider mount |
+| src/ | M2.3 chrome | iskelet + chrome-hizalama: saha nav→4 · header→spec (Profil/Yardım/Proje-Değiştir/bildirim = TODO-SPEC) · shell proje adı çeker · dept/muhasebe nav = TODO-SPEC (layout M2.4/M2.5) · B4 stub sapması kapandı |
 | README.md | minimal | G6 todo |
 | STATUS.md | güncel | 036c889 + 3c kararına senkron |
 

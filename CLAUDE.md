@@ -145,6 +145,7 @@ Aşağıdaki durumlarda çalışma durur, değerlendirme yapılır:
 - **Modüler karar dosyaları:** Her ekran/konu kendi dosyasında (docs/EKRAN-*, docs/IS-KURALLARI.md). Görev listesi (docs/IS-SIRASI.md) sadece durum tutar, karar detayı tutmaz. Bilgi tek evde yaşar, tekrarlanmaz — başka dosya yalnızca referans verir.
 - **Sistem-genel etki analizi:** Hiçbir karar tek dosyaya bakılarak verilmez veya yazılmaz. Bir konuya başlamadan ilgili tüm dosyalar taranır; karar, etkilediği tüm dosyalara aynı anda yansıtılır.
 - **Dayanıklı/kararsız katman ayrımı:** Yerleşim + akış + mantık yazılır (dayanıklı). Renk + sunum estetiği açık slot bırakılır (kararsız), ayrı oturumda doldurulur.
+- **Placeholder disiplini (işaretsiz placeholder YASAK):** Spec'i (docs/EKRAN-*, docs/IS-KURALLARI.md) olan bir yüzeye kod yazılırken spec'in BİREBİR değerleri kullanılır; uydurma/geçici değer (etiket, başlık, sekme, metin) konmaz. Değer zorunlu olarak erteleniyorsa yanına `// TODO-SPEC: <ne eksik + hangi dok/karar bekliyor>` yorumu konur VE STATUS.md'ye işlenir — aksi halde "bitmiş" sanılır. Her ekran build'i, dokunduğu yüzeyi ilgili docs/EKRAN-*.md'ye karşı doğrular. (B4 stub sapması böyle oluştu: spec 29 May vardı, kod 30 May uymadı, işaretlenmedi, fark edilmedi.)
 
 ### Teknik Kurallar
 

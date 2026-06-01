@@ -2,15 +2,18 @@ import type { UserRole } from '../../shared/types/domain'
 
 export const NAV_ITEMS: Record<UserRole, { key: string; label: string }[]> = {
   saha: [
-    { key: 'tara', label: 'Fiş Tara' },
-    { key: 'fislerim', label: 'Fişlerim' },
+    { key: 'ana', label: 'Ana' },
     { key: 'donem', label: 'Dönem' },
+    { key: 'ara', label: 'Ara' },
+    { key: 'mesajlar', label: 'Mesajlar' },
   ],
+  // TODO-SPEC: dept nav = 6-tab bar (Bekleyen/Ekip/Avanslar/Kiralama/Gecmis/Mesajlar) + ustunde donem pill — saha bottom-nav'dan FARKLI layout (EKRAN-DEPT.md §1-2). Layout karari dept ekran build'inde (M2.4). Asagisi B4 stub'i, spec DEGIL.
   dept: [
     { key: 'bekleyen', label: 'Bekleyen' },
     { key: 'fisler', label: 'Fişler' },
     { key: 'donem', label: 'Dönem' },
   ],
+  // TODO-SPEC: muhasebe nav = 7-tab bar + kart-masa sunumu (ACIK SLOT, Engin tasarlayacak — EKRAN-MUHASEBE.md §2). Layout/sunum karari muhasebe ekran build'inde (M2.5). Asagisi B4 stub'i, spec DEGIL.
   muhasebe: [
     { key: 'masa', label: 'Masa' },
     { key: 'donem', label: 'Dönem' },
