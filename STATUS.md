@@ -2,7 +2,7 @@
 
 ## Aktif Milestone
 **M2 — Çekirdek Döngü** (ARCHITECTURE 2.5). M1 kapandı (`v0.1-auth`).
-M2.0 ✅ (kararlar) · M2.1 ✅ (görsel + yapısal temel) · **M2.2 ✅** — grace şeması + parent_receipt_id zemini + bootstrap dönem + §17 timezone + draft kaldırma + yönlendirme trigger + storage (receipts bucket private + policy) canlıda. 3c kararı kapandı (mekanik M2.3'te). **Sıra: M2.3 saha ekranı.** Bu commit = chrome-hizalama: saha nav→4 (Ana/Dönem/Ara/Mesajlar) + header→spec (avatar-sol/proje-orta/badge-sağ/5-menü) + placeholder-disiplini kuralı. dept/muhasebe nav farklı layout → TODO-SPEC (M2.4/M2.5). NOT: M2.1 nav/header B4 stub'ları spec'e uymuyordu (işaretsizdi); bu commit saha+header'ı hizaladı. Sonra C1 gövdesi (saha-screen + FİŞ TARA diski).
+M2.0 ✅ (kararlar) · M2.1 ✅ (görsel + yapısal temel) · **M2.2 ✅** — grace şeması + parent_receipt_id zemini + bootstrap dönem + §17 timezone + draft kaldırma + yönlendirme trigger + storage (receipts bucket private + policy) canlıda. 3c kararı kapandı (mekanik M2.3'te). **Sıra: M2.3 saha ekranı.** Bu commit = chrome-hizalama: saha nav→4 (Ana/Dönem/Ara/Mesajlar) + header→spec (avatar-sol/proje-orta/badge-sağ/5-menü) + placeholder-disiplini kuralı. dept/muhasebe nav farklı layout → TODO-SPEC (M2.4/M2.5). NOT: M2.1 nav/header B4 stub'ları spec'e uymuyordu (işaretsizdi); bu commit saha+header'ı hizaladı. C1 gövdesi indi: src/app/saha/ (saha-screen router + saha-home-screen) — FİŞ TARA diski (G6 logo açık slot + oturum-bazlı açılış pulse) + Galeri/Belgesiz görünür butonlar; **uzun-bas çıkarıldı** (görünür buton > gizli submenu; EKRAN-SAHA §2 güncellendi). Disk/Galeri/Belgesiz tıklanır ama akış "yakında" (C2/C3). **Scroll-altı veri kartları (bütçe/kategori/son-3-fiş/avans) C1'de BASILMADI** — sahte placeholder yerine gerçek veriyle gelecek (son-3-fiş C2 sonrası; avans/bütçe kendi feature'ı); eksik değil, kasıt (placeholder-disiplini). Sıra: C2 (fiş giriş: kamera→foto→storage upload→manuel form→submitted INSERT; storage uçtan uca + owner=auth.uid() teyidi burada).
 
 **Çekirdek döngü canlıda çalışıyor:** fiş gir → yönlendirme trigger'ı otomatik doğru kuyruğa düşürür (saha → aktif şef varsa dept_pending, yoksa acc_pending; dept şefi kendi fişi → acc_pending).
 
@@ -64,7 +64,7 @@ Detaylı sıra + bağımlılık: docs/IS-SIRASI.md.
 | docs/ARCHITECTURE.md | güncel | §1.8 prensipler; Faz 1 kapsam |
 | docs/AUTH-KARARLARI.md | güncel | SK-AUTH-1..9 |
 | docs/TASARIM-KARARLARI.md | güncel | ekranlar-arası ortak ilkeler; G6 token yapısı |
-| docs/EKRAN-SAHA.md | güncel | draft kalıntıları temizlendi (kaydet = gönder; fiş detay düzeltme-iste yolu) |
+| docs/EKRAN-SAHA.md | güncel | §2 uzun-bas çıkarıldı (Galeri/Belgesiz görünür buton); draft kalıntıları temiz; fiş detay düzeltme-iste yolu |
 | docs/EKRAN-DEPT.md | güncel | dept ekranları |
 | docs/EKRAN-MUHASEBE.md | güncel | muhasebe ekranları (kart-masa açık slot); §11 dönem statüsü closing'li |
 | docs/IS-KURALLARI.md | güncel | §1 yönlendirme + Şirket/Merkez faturaları (C+D) · §3 reddet + düzeltme iste (3c KARARLANDI: correction_requested bayrağı + alan-bazlı yön + işaret yok) · §5 grace · §13 anomali · §17 timezone |
@@ -78,9 +78,9 @@ Detaylı sıra + bağımlılık: docs/IS-SIRASI.md.
 | sql/full-rebuild.sql | güncel | grace + parent_receipt_id + draft-kaldırma + yönlendirme trigger + STORAGE receipts policy yansımış |
 | set-claims / clear-claims | güncel | canlı deployed |
 | BOOTSTRAP-MUSTERI.sql | güncel | profil şablonu + Adım 6 dönem + Adım 7 Şirket/Merkez dept template |
-| src/ | M2.3 chrome | iskelet + chrome-hizalama: saha nav→4 · header→spec (Profil/Yardım/Proje-Değiştir/bildirim = TODO-SPEC) · shell proje adı çeker · dept/muhasebe nav = TODO-SPEC (layout M2.4/M2.5) · B4 stub sapması kapandı |
+| src/ | M2.3 C1 | chrome + C1 saha home: src/app/saha/ (saha-screen router · saha-home-screen = FİŞ TARA diski + Galeri/Belgesiz, uzun-bas yok, pulse 1×) · shell saha rolünü SahaScreen'e yönlendirir (dept/muhasebe hâlâ generic EmptyState) · disk/buton akışları C2/C3 "yakında" · scroll-altı kartlar C1'de basılmadı (gerçek veri ile gelecek) · dept/muhasebe nav = TODO-SPEC |
 | README.md | minimal | G6 todo |
-| STATUS.md | güncel | 036c889 + 3c kararına senkron |
+| STATUS.md | güncel | C1 (saha home) + chrome senkron |
 
 ## Tamamlanan İşler
 - [x] M1: scaffold, Supabase client, DB/RLS/Bootstrap, auth, proje seçimi, set/clear-claims, üç-hâl routing, v0.1-auth
