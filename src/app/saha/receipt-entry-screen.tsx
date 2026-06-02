@@ -54,7 +54,7 @@ export function ReceiptEntryScreen({ file, onClose }: Props) {
   async function handleSave() {
     const amountNum = parseFloat(amount.replace(',', '.'))
     if (!amount || isNaN(amountNum) || amountNum <= 0) {
-      addToast('Tutar zorunlu ve 0'dan büyük olmalı', 'warning')
+      addToast('Tutar zorunlu ve sıfırdan büyük olmalı', 'warning')
       return
     }
     setSubmitting(true)
