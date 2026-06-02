@@ -151,6 +151,7 @@ CREATE TABLE receipts (
   description TEXT,
   vendor_name TEXT,
   receipt_date DATE,
+  receipt_no TEXT,
   receipt_image_url TEXT,
   invoice_file_url TEXT,
   gib_qr_verified BOOLEAN DEFAULT false,

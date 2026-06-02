@@ -72,10 +72,10 @@ Detaylı sıra + bağımlılık: docs/IS-SIRASI.md.
 | docs/GLOSSARY.md | güncel | domain terimleri + tehlikeli kökler |
 | docs/TECH-DEBT.md | güncel | 4/5 borç |
 | docs/RAKIP-ANALIZI-OCR.md | güncel | referans |
-| SUPABASE-SCHEMA.sql | güncel | grace 5 safha + close_declared_at/grace_until · parent_receipt_id (self-FK + chk_parent_not_self) · receipts.status draft kaldırıldı (8 değer, default submitted) |
+| SUPABASE-SCHEMA.sql | güncel | grace 5 safha + close_declared_at/grace_until · parent_receipt_id (self-FK + chk_parent_not_self) · receipts.status draft kaldırıldı (8 değer, default submitted) · receipts.receipt_no (Fiş No; aynı satıcı fişlerini ayırır, nullable — belgesizde yok) |
 | SUPABASE-RLS.sql | güncel | fiş insert/delete dönem IN('open','closing') · receipts_insert saha+dept + giriş-statüsü guard · saha update/delete YOK · yönlendirme trigger (fn_route_receipt/trg_route_receipt); VARSAYIMLAR trigger sayısı 3 · §18 STORAGE receipts policy (insert saha/dept · select muhasebe+sahibi+dept) |
 | SUPABASE-FUNCTIONS.sql | güncel | clear_user_claims RPC (yönlendirme trigger RLS dosyasında yaşıyor) |
-| sql/full-rebuild.sql | güncel | grace + parent_receipt_id + draft-kaldırma + yönlendirme trigger + STORAGE receipts policy yansımış |
+| sql/full-rebuild.sql | güncel | grace + parent_receipt_id + draft-kaldırma + yönlendirme trigger + STORAGE receipts policy + receipt_no yansımış |
 | set-claims / clear-claims | güncel | canlı deployed |
 | BOOTSTRAP-MUSTERI.sql | güncel | profil şablonu + Adım 6 dönem + Adım 7 Şirket/Merkez dept template |
 | src/ | M2.3 C1 | chrome + C1 saha home: src/app/saha/ (saha-screen router · saha-home-screen = FİŞ TARA diski + Galeri/Belgesiz, uzun-bas yok, pulse 1×) · shell saha rolünü SahaScreen'e yönlendirir (dept/muhasebe hâlâ generic EmptyState) · disk/buton akışları C2/C3 "yakında" · scroll-altı kartlar C1'de basılmadı (gerçek veri ile gelecek) · dept/muhasebe nav = TODO-SPEC |
