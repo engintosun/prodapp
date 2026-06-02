@@ -13,10 +13,10 @@ Mail + şifre → (çoklu proje varsa) proje seçimi → ana ekran. Tek projeli 
 **Header:** avatar (sol, tıklayınca menü) · proje adı + "▼ menü" ipucu (orta) · bildirim badge (sağ)
 **Avatar menü:** Profil / Proje Değiştir / Tema / Yardım / Çıkış
 **Merkez:** büyük yuvarlak "FİŞ TARA" diski (üstünde KAAPA logosu). Ekranın görsel merkezi, aksiyon önceliği.
-- Kısa basış → kamera açılır
-- Uzun basış (500ms) → submenu: Fiş Tara / Galeri / Belgesiz / Vazgeç
-- İlk açılışta bir kez pulse animasyonu
-**Disk altı hızlı butonlar:** Galeri · Belgesiz
+- Kısa basış → kamera açılır (M2: OCR yok, alanlar elle — bkz. §4 M2 notu)
+- Uzun basış YOK (karar 2026-06: alttaki Galeri + Belgesiz görünür butonları submenu'yü gereksiz kıldı; görünür buton > gizli uzun-bas)
+- İlk açılışta bir kez pulse animasyonu (oturum-bazlı; tab değişiminde tekrar oynamaz)
+**Disk altı hızlı butonlar:** Galeri · Belgesiz (kameranın yanında iki giriş yolu; her zaman görünür)
 **Scroll altı:** bütçe widget (harcanan/kalan/bütçe + progress) · kategori limit barları · son girilen 3 fiş (yatay) · avans/harcanan özeti
 - Above-the-fold'da yalnızca disk + hızlı butonlar; özet bilgi scroll altında
 - Reddedilenler scroll altında GÖSTERİLMEZ (bildirim + dönem filtresinden görülür)

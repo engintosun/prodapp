@@ -9,6 +9,7 @@ import { AppHeader } from '../layout/app-header'
 import { BottomNav, NAV_ITEMS } from '../layout/bottom-nav'
 import { OfflineBanner } from '../../shared/components/offline-banner'
 import { EmptyState } from '../../shared/components/empty-state'
+import { SahaScreen } from '../saha/saha-screen'
 
 interface Props {
   user: User
@@ -64,7 +65,9 @@ export function AuthenticatedShell({ user, theme, onToggleTheme }: Props) {
         onSignOut={handleSignOut}
       />
       <main style={{ padding: 'var(--space-4)', paddingBottom: '96px', minHeight: '100dvh' }}>
-        <EmptyState title={activeLabel} description="Bu ekran yakında (M2.3+)" />
+        {role === 'saha'
+          ? <SahaScreen activeKey={activeKey} />
+          : <EmptyState title={activeLabel} description="Bu ekran yakında (M2.3+)" />}
       </main>
       <BottomNav role={role} activeKey={activeKey} onSelect={setActiveKey} />
     </>
