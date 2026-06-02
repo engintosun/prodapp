@@ -818,3 +818,20 @@ CREATE POLICY receipts_storage_select ON storage.objects
 -- 8. Trigger sayısı: 3 (approval + advance + route_receipt). 5'i geçerse Edge Function değerlendirmesi.
 -- 9. project_rules Faz 2 — policy hazır, tablo boş.
 -- 10. Storage: receipts bucket (private, Dashboard'dan açılır) — storage.objects policy'leri (insert saha/dept, select muhasebe+sahibi+dept). Silme/güncelleme yok. Path projectId/receiptId/dosya.
+
+-- === Faz-1 authenticated yazma izinleri (B) — canli ile senkron 2026-06-03 ===
+-- SELECT zaten mevcut. Asagidakiler RLS komut haritasina birebir. DELETE yok (soft-delete).
+GRANT INSERT ON
+  public.advances, public.chat_participants, public.chats, public.company_settings,
+  public.departments, public.dept_budgets, public.dept_subcategories,
+  public.exception_permits, public.expense_categories, public.invitations,
+  public.messages, public.period_budgets, public.periods, public.profiles,
+  public.project_rules, public.receipts
+TO authenticated;
+GRANT UPDATE ON
+  public.advances, public.company_settings, public.departments, public.dept_budgets,
+  public.dept_subcategories, public.exception_permits, public.expense_categories,
+  public.invitations, public.notifications, public.period_budgets,
+  public.period_closings, public.periods, public.profiles, public.project_rules,
+  public.receipts
+TO authenticated;

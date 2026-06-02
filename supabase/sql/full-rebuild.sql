@@ -358,6 +358,23 @@ GRANT ALL ON ALL TABLES IN SCHEMA public TO service_role;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO authenticated;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO service_role;
 
+-- === Faz-1 authenticated yazma izinleri (B) — canli ile senkron 2026-06-03 ===
+-- SELECT zaten mevcut. Asagidakiler RLS komut haritasina birebir. DELETE yok (soft-delete).
+GRANT INSERT ON
+  public.advances, public.chat_participants, public.chats, public.company_settings,
+  public.departments, public.dept_budgets, public.dept_subcategories,
+  public.exception_permits, public.expense_categories, public.invitations,
+  public.messages, public.period_budgets, public.periods, public.profiles,
+  public.project_rules, public.receipts
+TO authenticated;
+GRANT UPDATE ON
+  public.advances, public.company_settings, public.departments, public.dept_budgets,
+  public.dept_subcategories, public.exception_permits, public.expense_categories,
+  public.invitations, public.notifications, public.period_budgets,
+  public.period_closings, public.periods, public.profiles, public.project_rules,
+  public.receipts
+TO authenticated;
+
 -- ============================================================
 -- HELPER: JWT claim shortcuts (public schema, RLS-safe)
 -- ============================================================
