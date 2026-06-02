@@ -6,7 +6,10 @@ M2.0 ✅ (kararlar) · M2.1 ✅ (görsel + yapısal temel) · **M2.2 ✅** — g
 
 **Çekirdek döngü canlıda çalışıyor:** fiş gir → yönlendirme trigger'ı otomatik doğru kuyruğa düşürür (saha → aktif şef varsa dept_pending, yoksa acc_pending; dept şefi kendi fişi → acc_pending).
 
-## Son Session (30–31 Mayıs 2026 — M2.2 (motor + storage) + doküman-senkronu)
+## Son Session (1–2 Haziran 2026 — C1 saha home + C2a receipt_no + C2b fiş giriş)
+HEAD 2e1c3f9. C1 (saha Ana ekranı), C2a (receipts.receipt_no, canlı ALTER) ve C2b (fiş giriş: foto → storage → elle form → submitted INSERT) indi; üçü de origin'den doğrulandı, tsc temiz. C2b canlı testte iki engele takıldı: "açık dönem yok" (doğru davranış; test dönemi elle açıldı) ve "permission denied" (authenticated INSERT yetkisi yok — grant kararı A/B, bkz. Açık Kararlar). C2b testi grant kararından sonra bitirilecek. Açık borç: CLAUDE.md git-akışı kuralı eski (branch yasak/main-push varsayıyor; akış değişken) — Engin'ce sonraya bırakıldı.
+
+## M2.2 Detayı (30–31 Mayıs 2026 — motor + storage + doküman-senkronu)
 M2.2 motoru yazıldı (6 commit, hepsi origin'den bağımsız doğrulandı: fetch + diff) + doküman-senkronu (2 commit). Canlıya uygulanan (Dashboard, doğrulama sorguları true): grace şeması · parent_receipt_id · draft→submitted geçişi + CHECK · yönlendirme trigger.
 
 **İnşa commit'leri:**
@@ -31,6 +34,7 @@ Gönder-sonrası küçük düzeltme. Gönder = submitted sonrası saha fişe dok
 **3c kararı (31 Mayıs):** (a) ayrı statü YOK — fiş dept_pending/acc_pending'de kalır + receipts'e `correction_requested` bool bayrağı (saha-düzenleme penceresini yalnız o fiş + yalnız düzeltme istenmişken açar; RLS: user_id=auth.uid() AND correction_requested=true). (b) finansal/olgusal alan (tutar/tarih/KDV/vendor/açıklama/belgesiz) → saha'ya geri açılır + not; sınıflandırma (kategori/alt-kategori) → dept/muhasebe yerinde tek-tık, sessiz log. (c) elle/OCR alan işareti YOK (gerekirse M3/OCR). Mekanik (kolon + saha-update RLS + kolon-disiplini trigger + UI) M2.3'te uçtan uca iner. Tam spec: IS-KURALLARI §3.
 
 ## Açık Kararlar
+- **authenticated YAZMA izni (GRANT) — AÇIK KARAR (2 Haz):** C2b ilk yazma denemesinde permission denied çıktı. Kök sebep: authenticated rolüne yalnız SELECT verilmiş, INSERT yok (SUPABASE-RLS.sql: GRANT SELECT ON ALL TABLES TO authenticated). receipts_insert RLS policy doğru ve mevcut ama tablo INSERT yetkisi yok — iki kapı var: GRANT=tablo izni, RLS=satır izni, ikisi de gerekli. **Seçenek A:** yalnız `GRANT INSERT ON receipts TO authenticated` (C2b'yi açar, her feature kendi grant'ını ister: onay → approval_log INSERT + receipts UPDATE; dönem → periods UPDATE; avans → advances). **Seçenek B (önerilen):** Faz-1 yazma seti, mevcut RLS policy'lerine eşlenmiş (blanket GRANT ALL DEĞİL) — receipts INSERT (+3c için UPDATE), approval_log INSERT, periods/period_closings UPDATE, advances INSERT/UPDATE (policy varsa). B önkoşulu: 21 tabloda RLS-açık teyidi (salt-okunur). Güvenlik: RLS açık tabloda policy yoksa işlem default-reddedilir → geniş grant RLS'i delmez. Karar sonrası: canlı GRANT (Engin SQL Editor) + repo senkron (SUPABASE-RLS.sql + full-rebuild, küçük commit). **KARAR HENÜZ VERİLMEDİ.**
 - **Commit 4 storage — KARAR (B) ✅ BUILT:** bucket `receipts` (private, Dashboard) · path `projectId/receiptId/dosya` (RLS ilk klasörü project_id() ile eşler) · yükle saha+dept · gör muhasebe-hepsi + sahibi + dept-kendi-departmanı (receipts_select aynası) · sil/güncelle YOK (foto=kanıt). storage.objects policy (insert/select) canlı + repo (SUPABASE-RLS.sql + full-rebuild). Doğrulama true. (Gerçek upload testi M2.3'te — owner=auth.uid() davranışı orada teyit edilir.)
 - **Şirket/Merkez + e-fatura — KARAR (C+D, çözüldü):** şirket faturaları sıradan "Şirket/Merkez" departmanına elle girilir (özel kod/yeni rol/atlama YOK; bootstrap seeded — Adım 7). Eski "muhasebe-direkt ayrı yol" iptal. GİB otomatik Faz 2. Detay: IS-KURALLARI §1. **Açık:** tek-muhasebeci ergonomisi.
 - **G6 görsel değerler** — tokens.css yapısı + placeholder hazır; gerçek renk/aksan/tipografi/logo/favicon swap edilecek (yapı sabit, var(--...) okur).
@@ -47,7 +51,8 @@ Denetçi modu (G11) · Dil seçimi ekranı · Onboarding tutorial · Mesai hesap
 - Offline kuyruk (PWA, client submit-time, zaman-bazlı uygunluk) → M3 (ARCHITECTURE §5.7).
 
 ## Sonraki Session Gündemi
-1. **M2.3 — Saha ekranı** (ilk rol; domain.ts + shell + B5 + tokens hazır; detay EKRAN-SAHA.md). **3c düzeltme mekaniği bu ekranda iner:** receipts.`correction_requested` kolonu + saha-update RLS penceresi + kolon-disiplini trigger + saha düzeltme UI; uçtan uca test (storage upload C1.6–C1.9 + owner=auth.uid() teyidi de burada). Karar: IS-KURALLARI §3.
+1. **İLK İŞ — authenticated YAZMA izni (GRANT) kararı (A/B)** — detay: Açık Kararlar. Karar → canlı GRANT (Engin) → repo senkron (Sonnet) → C2b canlı testini bitir (Kaydet, "Fiş gönderildi", receipts satırı + storage objesi + owner=auth.uid() teyidi). Sonra C2c (§6, limit bekliyor) / C5 dönem ekranı / C3 belgesiz.
+2. **M2.3 — Saha ekranı** (ilk rol; domain.ts + shell + B5 + tokens hazır; detay EKRAN-SAHA.md). **3c düzeltme mekaniği bu ekranda iner:** receipts.`correction_requested` kolonu + saha-update RLS penceresi + kolon-disiplini trigger + saha düzeltme UI; uçtan uca test (storage upload C1.6–C1.9 + owner=auth.uid() teyidi de burada). Karar: IS-KURALLARI §3.
 Detaylı sıra + bağımlılık: docs/IS-SIRASI.md.
 
 ## Sonraki Session — Okunacak Dosyalar
@@ -80,7 +85,7 @@ Detaylı sıra + bağımlılık: docs/IS-SIRASI.md.
 | BOOTSTRAP-MUSTERI.sql | güncel | profil şablonu + Adım 6 dönem + Adım 7 Şirket/Merkez dept template |
 | src/ | M2.3 C2b | C1 + C2b fiş giriş: src/app/saha/receipt-entry-screen (foto önizleme + elle form §4: Satıcı/Tutar/KDV/Tarih/Fiş No/Kategori/Açıklama → submitted INSERT) · shared/supabase/receipt-service (getCategories + createReceipt = storage upload + INSERT, kimlik claim'den) · saha-home disk/Galeri → gizli input (capture/galeri) → entry ekranı; Belgesiz hâlâ "yakında" (C3) · kategori ek-panelleri (§6) + imza/mic sonraya · dept/muhasebe nav = TODO-SPEC |
 | README.md | minimal | G6 todo |
-| STATUS.md | güncel | C1 (saha home) + chrome senkron |
+| STATUS.md | güncel | C1 + C2a + C2b işlendi; authenticated GRANT açık kararı (A/B) kayıtlı |
 
 ## Tamamlanan İşler
 - [x] M1: scaffold, Supabase client, DB/RLS/Bootstrap, auth, proje seçimi, set/clear-claims, üç-hâl routing, v0.1-auth
@@ -89,3 +94,6 @@ Detaylı sıra + bağımlılık: docs/IS-SIRASI.md.
 - [x] M2.2 motoru: grace şeması · parent_receipt_id zemini · bootstrap dönem · §17 timezone · draft kaldırma · yönlendirme trigger (6 commit, 30–31 Mayıs)
 - [x] Doküman-senkronu: 3c → IS-KURALLARI §3 · draft model kalıntıları · IS-SIRASI milestone ilerlemesi · STATUS + RLS senkronu (31 Mayıs)
 - [x] M2.2 Commit 4 storage + doküman-senkron (Karar C+D): receipts bucket (private) + storage.objects RLS (insert saha/dept · select muhasebe+sahibi+dept · sil/güncelle yok) · Şirket/Merkez dept + e-fatura + BOOTSTRAP Adım 7 (0c31eaa + bu commit, 31 Mayıs). **M2.2 tamam.**
+- [x] C1 saha Ana ekranı (FİŞ TARA diski + Galeri/Belgesiz, uzun-bas çıkarıldı) — PR #8 (1 Haz)
+- [x] C2a receipts.receipt_no kolonu (canlı ALTER) — d53bde3 (2 Haz)
+- [x] C2b fiş giriş akışı + C2b-fix apostrof — 2e1c3f9 (2 Haz)
