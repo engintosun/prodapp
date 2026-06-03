@@ -18,6 +18,8 @@ export const NAV_ITEMS: Record<UserRole, { key: string; label: string }[]> = {
     { key: 'masa', label: 'Masa' },
     { key: 'donem', label: 'Dönem' },
     { key: 'rapor', label: 'Rapor' },
+    // TODO-SPEC gecici Davet sekmesi -- final muhasebe nav (7-tab + kart-masa) Engin tasarlayacak (M2.5).
+    { key: 'davet', label: 'Davet' },
   ],
 }
 

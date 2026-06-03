@@ -66,3 +66,24 @@ export interface ApprovalLog {
   reason?: string | null
   split_amount?: number | null
 }
+
+export interface Department {
+  id: string
+  name: string
+}
+
+export interface Invitation {
+  id: string
+  project_id: string
+  email: string
+  first_name: string
+  last_name: string
+  role: UserRole
+  dept_id: string | null
+  token: string
+  invited_by: string
+  status: string
+  created_at: string
+  expires_at: string
+  accepted_at: string | null
+}
