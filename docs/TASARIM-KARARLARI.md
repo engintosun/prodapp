@@ -45,4 +45,4 @@ Bu dosyada eskiden karışık duran ekran/iş/auth detayları doğru evlerine ta
 - Reddet/iade · dönem disiplini ve kapama · kategori sistemi · kiralama · avans · hot cost · vergi türleri · şirket kuralları · anomali → **docs/IS-KURALLARI.md**
 - Onboarding · davet zinciri · multi-project · üyelik/silme → **docs/AUTH-KARARLARI.md**
 - Tasarım/görev iş listesi → **docs/IS-SIRASI.md**
-- Dil seçimi · mesai hesaplama · denetçi modu → **Faz 2** (STATUS.md "Faz 2'ye Taşınanlar")
+- Dil seçimi · mesai hesaplama · denetçi modu → **Faz 2** (CURRENT.md "Faz 2'ye Taşınanlar")

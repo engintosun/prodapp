@@ -1,208 +1,62 @@
 # KAAPA — CLAUDE.md
 
-**Amaç:** Her session bu dosyayla başlar. Session protokolü ve context routing burada yaşar.
+Her oturum bu dosyayla başlar. Yalın tutulur (<120 satır); detay ayrı dosyalarda, ihtiyaç anında okunur. Kayıt sinyali boğmaz: az, net, güncel.
 
------
+## Oturum protokolü
+- **Açılış:** CURRENT.md oku → 4-5 satırlık durum raporu → Engin onaylamadan iş başlamaz. Tam-dosya / tüm-tarihçe okuması YOK.
+- **Kapanış:** CURRENT.md'yi baştan YAZ (ekleme değil): milestone · son commit · sıradaki 1-3 iş · açık kararlar. Tarihçe git log'da yaşar.
 
-## Session Protokolü
+## Proje kimliği
+KAAPA — sinema/TV prodüksiyon harcama yönetimi SaaS. (Repo adı: prodapp; ürün adı her zaman KAAPA.)
+Stack: React 19 + TS + Vite PWA · Supabase (AWS İstanbul, KVKK) · Vercel. Canlı: prodapp-navy.vercel.app.
+Dil: chat Türkçe; kod İngilizce (değişken/fonksiyon/dosya/commit/yorum); dokümanlar Türkçe.
 
-### Açılış
+## Opus / Sonnet
+- **Opus (ben):** mimari, plan, karar, spec/prompt. Kod YAZMAM.
+- **Sonnet (Claude Code):** kod, commit, push. Mimari karar almaz.
+- Handoff: Opus tek-commit spec'i verir → Sonnet uygular → oturum kapanır. Sonnet beklenmedik durumda commit atmaz, raporlar, geri döner.
 
-1. STATUS.md oku (proje hafızası — neredeyiz, ne kaldı, okunacak dosyalar)
-2. STATUS.md'deki dosya listesini tam oku
-3. **Durum raporu çıkar** — Engin onaylamadan iş başlamaz
+## Üretim modeli (spec-driven)
+- Özellik = TEK kendi-kendine-yeten spec: hangi dosyalar · neyin kapsam-dışı · sonda uçtan-uca doğrulama adımı.
+- Spec, TEK BLOK düz-metin dosya olarak verilir (present_files); markdown dil etiketi yok, bölünmüş blok yok.
+- Değer spec'i düşünmekte — kısa ve net tut.
 
-Durum raporu formatı:
-```
-DURUM RAPORU
-Milestone: [aktif milestone]
-Son session: [ne yapıldı]
-Bugün gündem: [ne yapılacak]
-Bayraklar: [tutarsızlık, eksik karar, v8 kalıntısı — yoksa "temiz"]
-```
+## Prompt zorunlulukları (Sonnet'e)
+- Baş: `git checkout main && git pull origin main` + branch yasağı (yeni branch açma; commit öncesi `git branch --show-current` ≠ main ise DUR).
+- Checklist KOMUT olarak yazılır: `npm run build` (= tsc -b && vite build) ÇALIŞTIR; "built" görmeden COMMIT ATMA. (tsc --noEmit YETMEZ — build-mode farklı yakalar.)
+- str_replace anchor'ları apostrof/akıllı-tırnak/tire İÇERMEZ; kod string'lerinde de apostrof yok. Yeni/tam dosya = Write.
+- Satır numarası dosyada uymuyorsa DUR ve raporla; tahminle değiştirme.
+- Son: `git push origin main` + `git fetch && rev-parse HEAD ile origin/main` eşitlik teyidi.
 
-### Kapanış
+## Doğrulama
+- Hedef: hook ile otomatik (PostToolUse → npm run build/tsc; Stop → git status). Hook varken Sonnet "build ✓"ine güvenilir.
+- Hook yoksa veya şüphede: commit'i origin'den doğrula (hash · gerçek build). Rutin elle klonlama YOK — yalnız şüphede.
 
-STATUS.md güncellenir:
-- Ne yapıldı, ne kaldı
-- Açık sorular, alınan kararlar
-- Sonraki session gündemi
-- **Sonraki session'da okunması gereken dosyalar listesi**
-- Doküman sağlık tablosu (değişen/sorunlu dokümanlar)
+## Dur kuralları
+- >5 dosya / >300 satır / mantık-tekrarı / scope creep / kalıcı-kararı-olmayan-seçim → DUR.
+- Engin "dur, sahada işlemez, geçtim" → anında keser.
 
------
+## Karar disiplini
+- **Re-soru yasağı:** karar verildiyse UYGULA; aynı kararı tekrar sorma, kendinle tartışma (entropi/loop). Sıkışırsan DUR ve sor — boğuşma.
+- Karar formatı: 1 karar + 1 cümle + "kabul/itiraz?". Karar Engin'in.
+- **Placeholder disiplini:** spec'i olan yüzeye birebir spec değeri yazılır; uydurma değer (etiket/sekme/metin) yok. Zorunlu erteleme → `// TODO-SPEC: <ne + hangi dosya/karar>` + CURRENT.md'ye işle.
+- **Doküman kazanır:** kod-doküman çelişkisinde önce doküman güncellenir.
 
-## Proje Kimliği
+## Teknik kurallar
+- SSOT: Supabase. Client kopya; çakışmada Supabase kazanır.
+- Sessiz hata YASAK: throw veya kullanıcıya bildirim. Boş catch / sessiz return yok.
+- Katman ayrımı: veri (Supabase) → iş mantığı (saf fonksiyon) → UI → orkestrasyon.
+- Supabase client tipsiz → sonuç cast `as unknown as X`. tsconfig: noUnusedLocals + noUnusedParameters AÇIK (kullanılmayan import/değişken bırakma).
+- İsim: DB snake_case · JS camelCase · dosya kebab-case. Tehlikeli kökler (gec/tip/durum/kat) kodda Türkçe KULLANMA → GLOSSARY.md.
 
-KAAPA — Sinema/TV sektörü için prodüksiyon harcama yönetimi SaaS platformu.
+## Şema/RLS · deploy
+- Şema/RLS canlıya MANUEL (Engin SQL Editor) + repo senkron ardışık commit. Yeni tablo → GRANT + RLS policy (ikisi de gerekir).
+- Commit sonrası Engin canlıya alır → prodapp-navy.vercel.app'te uçtan-uca test. Edge Function: canlı kod = repo kodu (fark varsa repo güncellenir).
 
-**Tech stack:** React 19 + TypeScript + Vite + Supabase + Vercel
-**Dil:** Chat Türkçe, kod İngilizce (değişken, fonksiyon, dosya, commit, yorum), dokümanlar Türkçe
-**Domain terimleri kodda:** İngilizce karşılıkları → docs/GLOSSARY.md
+## Context routing
+- Mimari → docs/ARCHITECTURE.md · Auth/rol/RLS → docs/AUTH-KARARLARI.md + supabase/SUPABASE-RLS.sql · Şema → SUPABASE-SCHEMA.sql
+- İş kuralı/onay/dönem/avans → docs/IS-KURALLARI.md · Ekran → docs/EKRAN-{SAHA,DEPT,MUHASEBE}.md + TASARIM-KARARLARI.md · İsim → GLOSSARY.md · Sıra → IS-SIRASI.md
+- Eşleşme yoksa → ARCHITECTURE.md oku, sonra sor.
 
------
-
-## Context Routing Tablosu
-
-|Görev tipi|Okunacak dosyalar|
-|---|---|
-|Mimari karar|docs/ARCHITECTURE.md|
-|Kod yazma (herhangi feature)|docs/ARCHITECTURE.md → ilgili feature dizini → docs/GLOSSARY.md|
-|İsimlendirme|docs/GLOSSARY.md|
-|Teknik borç|docs/TECH-DEBT.md|
-|Auth / rol / izin|docs/AUTH-KARARLARI.md + supabase/SUPABASE-RLS.sql|
-|DB şeması|supabase/SUPABASE-SCHEMA.sql|
-|Tasarım / UI (ortak ilkeler)|docs/TASARIM-KARARLARI.md + ilgili docs/EKRAN-*.md|
-|Saha ekranı|docs/EKRAN-SAHA.md + docs/TASARIM-KARARLARI.md + docs/IS-KURALLARI.md|
-|Dept ekranı|docs/EKRAN-DEPT.md + docs/TASARIM-KARARLARI.md + docs/IS-KURALLARI.md|
-|Muhasebe ekranı|docs/EKRAN-MUHASEBE.md + docs/TASARIM-KARARLARI.md + docs/IS-KURALLARI.md|
-|İş kuralı / onay / dönem / avans / anomali|docs/IS-KURALLARI.md|
-|Görev sırası / ne yapılacak|docs/IS-SIRASI.md|
-|Yeni özellik|docs/ARCHITECTURE.md (Bölüm 2 — kapsam kontrolü) → ilgili feature dizini|
-|Bug fix|İlgili feature dizini → docs/TECH-DEBT.md|
-|Deploy|docs/ARCHITECTURE.md (Bölüm 5.6)|
-|Test|İlgili feature dizini → docs/ARCHITECTURE.md (Bölüm 3.5)|
-
-**Fallback:** Tabloda eşleşme yoksa → önce docs/ARCHITECTURE.md oku, sonra sor.
-
------
-
-## Dosya Yapısı
-
-```
-kaapa/
-  CLAUDE.md              ← bu dosya
-  docs/
-    ARCHITECTURE.md      ← mimari anayasa + çalışma sözleşmesi
-    AUTH-KARARLARI.md    ← SK-AUTH-1..9 (kimlik/yetki/üyelik)
-    TASARIM-KARARLARI.md ← ekranlar-arası ortak görsel/etkileşim ilkeleri
-    EKRAN-SAHA.md        ← saha ekranları (alan/akış/yerleşim)
-    EKRAN-DEPT.md        ← dept ekranları
-    EKRAN-MUHASEBE.md    ← muhasebe ekranları
-    IS-KURALLARI.md      ← iş mantığı (onay/dönem/avans/anomali §13/kurallar)
-    IS-SIRASI.md         ← görev sırası ve bağımlılıklar
-    GLOSSARY.md          ← domain terimleri + tehlikeli kökler
-    TECH-DEBT.md         ← teknik borç takibi
-    RAKIP-ANALIZI-OCR.md ← rakip analizi (referans)
-  supabase/
-    SUPABASE-SCHEMA.sql  ← 17 tablo, v2.0
-    SUPABASE-RLS.sql     ← RLS policy'ler, v2.0
-    SUPABASE-FUNCTIONS.sql ← SECURITY DEFINER admin RPC'ler, v1.0
-    BOOTSTRAP-MUSTERI.sql← müşteri onboarding template
-    sql/
-      full-rebuild.sql   ← canonical temiz kurulum scripti (SCHEMA+RLS+FUNCTIONS)
-  src/
-    App.tsx              ← root component
-    main.tsx             ← Vite entry
-    app/
-      auth/              ← auth guard, login
-      layout/            ← sayfa düzeni
-    features/
-      receipts/          ← fiş/fatura
-      approvals/         ← onay zinciri
-      advances/          ← avans
-      notifications/     ← bildirimler
-      detection/         ← şüpheli işlem tespiti
-      export/            ← PDF/Excel çıktı
-    shared/
-      supabase/client.ts ← Supabase client singleton
-      types/             ← TypeScript domain tipleri
-      utils/             ← ortak yardımcı fonksiyonlar
-```
-
------
-
-## Çalışma Kuralları
-
-### Opus / Sonnet İş Bölümü
-
-- **Opus (Claude.ai):** Mimari, planlama, karar alma, prompt hazırlama. Kod yazmaz.
-- **Sonnet (Claude Code):** Kod yazar, commit atar, push eder. Mimari karar almaz.
-- **Handoff:** Opus prompt hazırlar → Sonnet tek commit hedefler → commit sonrası session kapatılır.
-- **Geri dönüş:** Sonnet beklenmedik durumla karşılaşırsa commit atmaz, bulgusunu raporlar, Opus'a dönülür.
-
-### Commit Disiplini
-
-- Format: `tip(kapsam): açıklama`
-- Tip seti: feat, fix, refactor, docs, chore, test
-- Bir commit = bir tamamlanmış iş. Yarım iş commit edilmez.
-- Kod değiştiyse ilgili md dosyası AYNI commit'te güncellenir.
-- **Push doğrulama (zorunlu):** Her push sonrası `git fetch origin main` + `git rev-parse HEAD` ile `git rev-parse origin/main` karşılaştırılır. Hash'ler eşit değilse push GERÇEKLEŞMEMİŞTİR; hash eşitliği olmadan "push başarılı" geçersizdir. Opus, Sonnet raporuna güvenmeden commit'i origin'den bağımsız doğrular.
-
-### Dur Kuralları
-
-Aşağıdaki durumlarda çalışma durur, değerlendirme yapılır:
-
-- Tek commit'te 5'ten fazla dosya değişecekse
-- Tek dosya 300 satırı geçecekse
-- Aynı iş mantığı ikinci yerde yazılmak üzereyse (mantık tekrarı)
-- Başlanan iş tanımının dışına çıkılıyorsa (scope creep)
-- Kalıcı karar dosyasında karşılığı olmayan seçim yapılması gerekiyorsa
-
-### Doküman ve Karar Disiplini
-
-- **Versiyon dili yasak:** Kararın kendisi yazılır, kaynağı (eski sürüm/demo) yazılmaz. "Hangi versiyonda ne" karmaşası önlenir.
-- **Modüler karar dosyaları:** Her ekran/konu kendi dosyasında (docs/EKRAN-*, docs/IS-KURALLARI.md). Görev listesi (docs/IS-SIRASI.md) sadece durum tutar, karar detayı tutmaz. Bilgi tek evde yaşar, tekrarlanmaz — başka dosya yalnızca referans verir.
-- **Sistem-genel etki analizi:** Hiçbir karar tek dosyaya bakılarak verilmez veya yazılmaz. Bir konuya başlamadan ilgili tüm dosyalar taranır; karar, etkilediği tüm dosyalara aynı anda yansıtılır.
-- **Dayanıklı/kararsız katman ayrımı:** Yerleşim + akış + mantık yazılır (dayanıklı). Renk + sunum estetiği açık slot bırakılır (kararsız), ayrı oturumda doldurulur.
-- **Placeholder disiplini (işaretsiz placeholder YASAK):** Spec'i (docs/EKRAN-*, docs/IS-KURALLARI.md) olan bir yüzeye kod yazılırken spec'in BİREBİR değerleri kullanılır; uydurma/geçici değer (etiket, başlık, sekme, metin) konmaz. Değer zorunlu olarak erteleniyorsa yanına `// TODO-SPEC: <ne eksik + hangi dok/karar bekliyor>` yorumu konur VE STATUS.md'ye işlenir — aksi halde "bitmiş" sanılır. Her ekran build'i, dokunduğu yüzeyi ilgili docs/EKRAN-*.md'ye karşı doğrular. (B4 stub sapması böyle oluştu: spec 29 May vardı, kod 30 May uymadı, işaretlenmedi, fark edilmedi.)
-
-### Teknik Kurallar
-
-- **SSOT:** Supabase tek gerçek kaynak. Client önbellek/kopya. Çakışmada Supabase kazanır.
-- **Sessiz hata yasak:** throw veya kullanıcıya bildirim zorunlu. Boş catch, sessiz return yok.
-- **Doküman kazanır:** Kod-doküman çelişkisinde önce doküman güncellenir, sonra kod düzeltilir.
-- **Katman ayrımı:** Veri erişim (Supabase) → İş mantığı (saf fonksiyonlar) → UI (React) → Orkestrasyon. Katman atlama yasak.
-- **Saf fonksiyonlar:** Hesaplama, validasyon, dönüşüm = parametre alır, return eder, side-effect yok.
-
-### İsimlendirme
-
-- DB (Supabase): `snake_case` → `receipt_status`
-- JS değişken/fonksiyon: `camelCase` → `receiptStatus`
-- Dosya adları: `kebab-case` → `receipt-service.ts`
-- Domain terimleri: docs/GLOSSARY.md'deki İngilizce karşılık
-- **Tehlikeli kökler** (gec, tip, durum, kat): docs/GLOSSARY.md'de ayrı bölüm — bu kökleri kodda Türkçe kullanma
-
-### Deploy Checklist
-
-Sonnet commit sonrası, Engin canlıya almadan önce:
-
-1. **tsc --noEmit** — Sonnet çalıştırır, hata varsa commit atmaz, raporlar
-2. **GRANT kontrolü** — Yeni tablo eklendiyse SQL Editor'de GRANT çalıştırılmalı (veya default_privileges ayarlanmalı)
-3. **Edge Function doğrulama** — Code sekmesinden deploy edilen kodun import satırları ve içeriği doğrulanır
-4. **Canlı test** — Deploy sonrası prodapp-navy.vercel.app'te uçtan uca akış doğrulanır
-5. **Repo-canlı senkron** — Edge Function repo kodu ile canlı kod aynı olmalı; fark varsa repo güncellenir
-
-### Satır Numarası Uyuşmazlığı
-
-Prompt'taki satır numarası dosyada başka bir şey gösteriyorsa:
-
-- DUR
-- "Satır X'te beklenen Y bulamadım, gerçek içerik Z" diye raporla
-- Tahmin ederek değişiklik yapma
-- Kullanıcı onay bekle
-
------
-
-## Faz 1 Kapsamı (özet)
-
-Listede yoksa Faz 1'de yoktur. Tam liste: docs/ARCHITECTURE.md Bölüm 2.1
-
-- Davetiye ile kullanıcı kaydı + rol bazlı erişim
-- Fiş/fatura fotoğrafı yükleme + OCR
-- Harcama kaydı oluşturma/düzenleme
-- Onay zinciri (Saha → Dept → Muhasebe)
-- Avans talebi, kapama, bakiye takibi
-- Şüpheli işlem tespiti (kural bazlı)
-- Listeleme, filtreleme, arama
-- PDF/Excel export
-- Mesajlaşma (onay sürecine bağlı bildirimler)
-- Çoklu proje desteği
-
-**Faz 1'de YOK:** CFE (kur/KDV motoru), e-fatura/GİB entegrasyonu, bütçe oluşturma modülü, envanter, çoklu dil altyapısı, super-admin rolü, cross-company veri paylaşımı.
-
------
-
-## Meta-prensip
-
-> Hiçbir şey "öyle olmaz." Her şey bilinçli karar ile olur, kaydedilir, denetlenebilir.
+## Faz 1 kapsamı
+Tam liste docs/ARCHITECTURE.md §2.1. Listede yoksa Faz 1'de yoktur.

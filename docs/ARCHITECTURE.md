@@ -9,10 +9,10 @@
 
 ### 1.1 Session Protokolü
 
-Session açılış ve kapanış ritüeli CLAUDE.md'de tanımlanır. Proje hafızası STATUS.md'de yaşar.
+Session açılış ve kapanış ritüeli CLAUDE.md'de tanımlanır. Proje hafızası CURRENT.md'de yaşar.
 
 **Karar tarihi:** 22.05.2026 | **Gerekçe:** Bağlam kaybını önlemek, her session'ın aynı zeminden başlamasını garantilemek.
-**Güncelleme:** 22.05.2026 | Ritüel CLAUDE.md'ye taşındı — çünkü CLAUDE.md her session'da okunan ilk dosya. STATUS.md eklendi — projenin dinamik durumunu taşır.
+**Güncelleme:** 22.05.2026 | Ritüel CLAUDE.md'ye taşındı — çünkü CLAUDE.md her session'da okunan ilk dosya. CURRENT.md eklendi — projenin dinamik durumunu taşır.
 
 ### 1.3 Karar Alma ve Kayıt Mekanizması
 
