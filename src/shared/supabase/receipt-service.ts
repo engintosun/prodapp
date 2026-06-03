@@ -109,7 +109,7 @@ export async function getCorrectionReceipts(): Promise<Receipt[]> {
     .eq('correction_requested', true)
     .order('updated_at', { ascending: false })
   if (error) throw new Error(error.message)
-  return (data ?? []) as Receipt[]
+  return (data ?? []) as unknown as Receipt[]
 }
 
 // Inceleme bekleyen fisleri getir (dept: dept_pending, muhasebe: acc_pending).
@@ -123,7 +123,7 @@ export async function getPendingReviewReceipts(role: Extract<UserRole, 'dept' | 
     .eq('status', status)
     .order('created_at', { ascending: true })
   if (error) throw new Error(error.message)
-  return (data ?? []) as Receipt[]
+  return (data ?? []) as unknown as Receipt[]
 }
 
 // Duzeltme iste (reviewer: dept/muhasebe — status'a dokunmaz).
