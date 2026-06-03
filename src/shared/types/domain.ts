@@ -27,14 +27,20 @@ export interface Receipt {
   period_id: string
   user_id: string
   amount: number
+  vat_amount?: number | null
   currency: string
   category_id: string | null
   status: ReceiptStatus
   created_at: string
+  updated_at?: string | null
   vendor_name?: string | null
   description?: string | null
   receipt_image_url?: string | null
+  receipt_date?: string | null
+  receipt_no?: string | null
   parent_receipt_id?: string | null
+  correction_requested: boolean
+  correction_note: string | null
 }
 
 export interface Period {

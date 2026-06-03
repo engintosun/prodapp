@@ -1120,6 +1120,49 @@ REVOKE EXECUTE ON FUNCTION public.clear_user_claims(UUID) FROM authenticated;
 REVOKE EXECUTE ON FUNCTION public.clear_user_claims(UUID) FROM anon;
 GRANT  EXECUTE ON FUNCTION public.clear_user_claims(UUID) TO service_role;
 
+-- === 3c duzeltme mekanigi (Model B) — canli ile senkron 2026-06-03 ===
+ALTER TABLE public.receipts
+  ADD COLUMN IF NOT EXISTS correction_requested BOOLEAN NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS correction_note TEXT;
+DROP POLICY IF EXISTS receipts_saha_correction ON public.receipts;
+CREATE POLICY receipts_saha_correction ON public.receipts
+  FOR UPDATE TO authenticated
+  USING (
+    user_id = auth.uid()
+    AND correction_requested = true
+    AND EXISTS (SELECT 1 FROM public.periods pp WHERE pp.id = receipts.period_id AND pp.status IN ('open','closing'))
+  )
+  WITH CHECK (
+    user_id = auth.uid()
+    AND EXISTS (SELECT 1 FROM public.periods pp WHERE pp.id = receipts.period_id AND pp.status IN ('open','closing'))
+  );
+CREATE OR REPLACE FUNCTION public.fn_receipt_correction_discipline()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF OLD.correction_requested = true AND NEW.user_id = auth.uid() THEN
+    IF NEW.project_id IS DISTINCT FROM OLD.project_id
+       OR NEW.period_id IS DISTINCT FROM OLD.period_id
+       OR NEW.user_id IS DISTINCT FROM OLD.user_id
+       OR NEW.dept_id IS DISTINCT FROM OLD.dept_id
+       OR NEW.parent_receipt_id IS DISTINCT FROM OLD.parent_receipt_id
+       OR NEW.is_late_entry IS DISTINCT FROM OLD.is_late_entry
+       OR NEW.gib_qr_verified IS DISTINCT FROM OLD.gib_qr_verified
+       OR NEW.created_at IS DISTINCT FROM OLD.created_at THEN
+      RAISE EXCEPTION 'Duzeltme penceresinde bu alan degistirilemez';
+    END IF;
+    NEW.correction_requested := false;
+    NEW.correction_note := NULL;
+    NEW.status := 'submitted';
+    NEW.updated_at := now();
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+DROP TRIGGER IF EXISTS trg_receipt_correction_discipline ON public.receipts;
+CREATE TRIGGER trg_receipt_correction_discipline
+  BEFORE UPDATE ON public.receipts
+  FOR EACH ROW EXECUTE FUNCTION public.fn_receipt_correction_discipline();
+
 COMMIT;
 
 -- ============================================================

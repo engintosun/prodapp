@@ -1,7 +1,10 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import type { CSSProperties, ChangeEvent } from 'react'
+import type { Receipt } from '../../shared/types/domain'
 import { useToast } from '../../shared/components/toast'
+import { getCorrectionReceipts } from '../../shared/supabase/receipt-service'
 import { ReceiptEntryScreen } from './receipt-entry-screen'
+import { ReceiptCorrectionScreen } from './receipt-correction-screen'
 
 // Oturum-bazli "ilk acilis" bayragi: pulse yalnizca Ana bu oturumda ilk kez
 // mount oldugunda oynar; tab degisiminde tekrar oynamaz (EKRAN-SAHA.md §2).
@@ -10,6 +13,8 @@ let pulseShownThisSession = false
 export function SahaHomeScreen() {
   const { addToast } = useToast()
   const [pendingFile, setPendingFile] = useState<File | null>(null)
+  const [selectedCorrection, setSelectedCorrection] = useState<Receipt | null>(null)
+  const [correctionReceipts, setCorrectionReceipts] = useState<Receipt[]>([])
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const galleryInputRef = useRef<HTMLInputElement>(null)
   const [showPulse] = useState(() => {
@@ -17,6 +22,12 @@ export function SahaHomeScreen() {
     pulseShownThisSession = true
     return true
   })
+
+  useEffect(() => {
+    getCorrectionReceipts()
+      .then(setCorrectionReceipts)
+      .catch((e) => addToast((e as Error).message, 'error'))
+  }, [])
 
   function handlePicked(e: ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0]
@@ -28,9 +39,20 @@ export function SahaHomeScreen() {
     addToast('Belgesiz harcama yakında (C3)', 'info')
   }
 
-  // Foto secildiyse fis giris formu (EKRAN-SAHA §4; M2: OCR yok, alanlar elle).
   if (pendingFile) {
     return <ReceiptEntryScreen file={pendingFile} onClose={() => setPendingFile(null)} />
+  }
+
+  if (selectedCorrection) {
+    return (
+      <ReceiptCorrectionScreen
+        receipt={selectedCorrection}
+        onClose={() => {
+          setSelectedCorrection(null)
+          getCorrectionReceipts().then(setCorrectionReceipts).catch(() => null)
+        }}
+      />
+    )
   }
 
   return (
@@ -102,6 +124,43 @@ export function SahaHomeScreen() {
         <button onClick={() => galleryInputRef.current?.click()} style={quickBtnStyle}>Galeri</button>
         <button onClick={handleDocumentless} style={quickBtnStyle}>Belgesiz</button>
       </div>
+
+      {/* Duzeltme bekleyen fisler — correction_requested=true olan fisler banner olarak listelenir. */}
+      {correctionReceipts.length > 0 && (
+        <div style={{ width: 'min(86vw, 360px)', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+          <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--weight-medium)', color: 'var(--color-warning, #f59e0b)' }}>
+            Düzeltme Gerekiyor ({correctionReceipts.length})
+          </span>
+          {correctionReceipts.map((r) => (
+            <button
+              key={r.id}
+              onClick={() => setSelectedCorrection(r)}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                gap: 'var(--space-1)',
+                padding: 'var(--space-3)',
+                background: 'var(--color-warning-bg, #fff8e1)',
+                border: '1px solid var(--color-warning, #f59e0b)',
+                borderRadius: 'var(--radius-md)',
+                cursor: 'pointer',
+                width: '100%',
+                textAlign: 'left',
+              }}
+            >
+              <span style={{ fontSize: 'var(--text-md)', fontWeight: 'var(--weight-medium)', color: 'var(--color-text)' }}>
+                {r.vendor_name || 'Satıcısız fiş'} — {r.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺
+              </span>
+              {r.correction_note && (
+                <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-warning-text, #92400e)' }}>
+                  {r.correction_note}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

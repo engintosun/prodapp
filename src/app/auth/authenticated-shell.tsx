@@ -10,6 +10,7 @@ import { BottomNav, NAV_ITEMS } from '../layout/bottom-nav'
 import { OfflineBanner } from '../../shared/components/offline-banner'
 import { EmptyState } from '../../shared/components/empty-state'
 import { SahaScreen } from '../saha/saha-screen'
+import { ReviewerScreen } from '../reviewer/reviewer-screen'
 
 interface Props {
   user: User
@@ -67,7 +68,9 @@ export function AuthenticatedShell({ user, theme, onToggleTheme }: Props) {
       <main style={{ padding: 'var(--space-4)', paddingBottom: '96px', minHeight: '100dvh' }}>
         {role === 'saha'
           ? <SahaScreen activeKey={activeKey} />
-          : <EmptyState title={activeLabel} description="Bu ekran yakında (M2.3+)" />}
+          : (role === 'dept' && activeKey === 'bekleyen') || (role === 'muhasebe' && activeKey === 'masa')
+            ? <ReviewerScreen role={role} />
+            : <EmptyState title={activeLabel} description="Bu ekran yakında (M2.3+)" />}
       </main>
       <BottomNav role={role} activeKey={activeKey} onSelect={setActiveKey} />
     </>
