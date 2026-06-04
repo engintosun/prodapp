@@ -62,15 +62,9 @@ Dil: chat Türkçe; kod İngilizce (değişken/fonksiyon/dosya/commit/yorum); do
 Tam liste docs/ARCHITECTURE.md §2.1. Listede yoksa Faz 1'de yoktur.
 
 ## Ortamlar / deploy
-- **Claude Code (Sonnet):** kod yazar, commit, GitHub push. Supabase'e erisemez.
-- **PowerShell (Engin):** yalniz `git pull` + `supabase functions deploy <ad>`. Kod yazmaz.
-- **GitHub:** tek ortak hafiza, senkron noktasi.
-- **Vercel:** on yuzu push'ta OTOMATIK deploy eder. Elle dokunma.
-- **Supabase:** SQL Editor (sema/RLS) + Logs. Edge function dashboard'dan ASLA deploy edilmez (rastgele isim koyuyor + verify_jwt dugmesi yok) -> sadece CLI.
-
-Uc akis:
-- On yuz degisti -> Sonnet push -> Vercel otomatik -> test. (PowerShell yok.)
-- Edge function degisti -> Sonnet push -> Engin PowerShell: `cd $HOME\prodapp ; git pull origin main ; supabase functions deploy <ad>` -> test.
-- Veritabani degisti -> Sonnet SQL'i repoya yazar -> Engin SQL Editor'de calistirir.
-
-Ellenmeyen: Vercel · GitHub (tarayicidan) · repo dosyalari (elle) · Supabase edge deploy (dashboard'dan). Yeni edge function adi = klasor adi (rastgele isim koyma).
+Sonnet (Claude Code) Engin'in bilgisayarinda terminalde calisir; GitHub + Supabase CLI girisli (girisler tek seferlik yapildi, tekrar login yok). Tek elden:
+- **Sonnet yapar:** kod + commit + push + edge deploy (`supabase functions deploy <ad>`) + SQL/sema/RLS uygulama (CLI).
+- **Engin onayi:** SADECE sema/RLS/grant degisikligi UYGULANMADAN ONCE (canli KVKK verisi guvenlik gecidi). Onay = SQL'i okuyup "kabul" demek; kopyala-yapistir yok, uygulamayi Sonnet yapar. Kod/edge/normal isler onay gerektirmez.
+- **Vercel:** push'ta otomatik deploy, elle dokunma. **GitHub:** ortak hafiza.
+- Edge function dashboard'dan ASLA deploy edilmez (rastgele isim + verify_jwt dugmesi yok) -> sadece CLI. Yeni fonksiyon adi = klasor adi.
+- Not: Sonnet-CLI ile SQL uygulama ilk seferde dogrulanir; takilirsa yedek = Supabase SQL Editor.
