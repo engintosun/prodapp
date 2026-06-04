@@ -1177,3 +1177,69 @@ WHERE n.nspname = 'public' AND c.relkind = 'r';
 
 -- (b) clear_user_claims fonksiyonu var mi?
 SELECT proname FROM pg_proc WHERE proname = 'clear_user_claims';
+
+-- === Fis inceleme tek kapi (onay/red): fn_review_receipt — canli ile senkron 2026-06-04 ===
+-- Statu gecisi + approval_log (sebep dahil) tek transaction. Eski yarim oto-log trigger kaldirildi.
+DROP TRIGGER  IF EXISTS trg_approval_log ON public.receipts;
+DROP FUNCTION IF EXISTS public.fn_log_approval();
+
+CREATE OR REPLACE FUNCTION public.fn_review_receipt(
+  p_receipt_id uuid,
+  p_action     text,
+  p_reason     text DEFAULT NULL
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $reviewfn$
+DECLARE
+  v_uid     uuid := auth.uid();
+  v_role    text := public.user_role();
+  v_dept    uuid := public.user_dept_id();
+  v_project uuid := public.project_id();
+  v_rec     receipts%ROWTYPE;
+  v_status  text;
+  v_log     text;
+BEGIN
+  IF p_action NOT IN ('approve','reject') THEN
+    RAISE EXCEPTION 'Gecersiz aksiyon';
+  END IF;
+
+  SELECT * INTO v_rec FROM receipts WHERE id = p_receipt_id FOR UPDATE;
+  IF NOT FOUND THEN RAISE EXCEPTION 'Fis bulunamadi'; END IF;
+
+  IF v_rec.project_id IS DISTINCT FROM v_project THEN
+    RAISE EXCEPTION 'Yetki yok: proje disi';
+  END IF;
+
+  IF v_role = 'dept' THEN
+    IF v_rec.dept_id IS DISTINCT FROM v_dept OR v_rec.status <> 'dept_pending' THEN
+      RAISE EXCEPTION 'Yetki yok: bu fisi inceleyemezsiniz';
+    END IF;
+    v_status := CASE p_action WHEN 'approve' THEN 'dept_approved' ELSE 'dept_rejected' END;
+  ELSIF v_role = 'muhasebe' THEN
+    IF v_rec.status NOT IN ('acc_pending','dept_approved') THEN
+      RAISE EXCEPTION 'Yetki yok: fis muhasebe onayinda degil';
+    END IF;
+    v_status := CASE p_action WHEN 'approve' THEN 'acc_approved' ELSE 'acc_rejected' END;
+  ELSE
+    RAISE EXCEPTION 'Yetki yok: rol uygun degil';
+  END IF;
+
+  IF p_action = 'reject' AND (p_reason IS NULL OR btrim(p_reason) = '') THEN
+    RAISE EXCEPTION 'Red sebebi zorunlu';
+  END IF;
+
+  v_log := CASE p_action WHEN 'approve' THEN 'approved' ELSE 'rejected' END;
+
+  UPDATE receipts SET status = v_status, updated_at = now() WHERE id = p_receipt_id;
+
+  INSERT INTO approval_log (receipt_id, approver_id, approver_role, action, reason)
+  VALUES (p_receipt_id, v_uid, v_role, v_log,
+          CASE WHEN p_action = 'reject' THEN btrim(p_reason) ELSE NULL END);
+END;
+$reviewfn$;
+
+REVOKE EXECUTE ON FUNCTION public.fn_review_receipt(uuid, text, text) FROM PUBLIC;
+GRANT  EXECUTE ON FUNCTION public.fn_review_receipt(uuid, text, text) TO authenticated;

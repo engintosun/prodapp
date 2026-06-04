@@ -115,12 +115,12 @@ export async function getCorrectionReceipts(): Promise<Receipt[]> {
 // Inceleme bekleyen fisleri getir (dept: dept_pending, muhasebe: acc_pending).
 export async function getPendingReviewReceipts(role: Extract<UserRole, 'dept' | 'muhasebe'>): Promise<Receipt[]> {
   const { projectId } = await getIdentity()
-  const status = role === 'dept' ? 'dept_pending' : 'acc_pending'
+  const statuses = role === 'dept' ? ['dept_pending'] : ['acc_pending', 'dept_approved']
   const { data, error } = await supabase
     .from('receipts')
     .select(RECEIPT_SELECT)
     .eq('project_id', projectId)
-    .eq('status', status)
+    .in('status', statuses)
     .order('created_at', { ascending: true })
   if (error) throw new Error(error.message)
   return (data ?? []) as unknown as Receipt[]
@@ -132,6 +132,24 @@ export async function requestCorrection(receiptId: string, note: string): Promis
     .from('receipts')
     .update({ correction_requested: true, correction_note: note.trim() })
     .eq('id', receiptId)
+  if (error) throw new Error(error.message)
+}
+
+// Onay/red tek kapidan: fn_review_receipt RPC (statu gecisi + approval_log, atomik).
+export async function approveReceipt(receiptId: string): Promise<void> {
+  const { error } = await supabase.rpc('fn_review_receipt', {
+    p_receipt_id: receiptId,
+    p_action: 'approve',
+  })
+  if (error) throw new Error(error.message)
+}
+
+export async function rejectReceipt(receiptId: string, reason: string): Promise<void> {
+  const { error } = await supabase.rpc('fn_review_receipt', {
+    p_receipt_id: receiptId,
+    p_action: 'reject',
+    p_reason: reason.trim(),
+  })
   if (error) throw new Error(error.message)
 }
 
