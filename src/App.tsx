@@ -5,6 +5,7 @@ import { useTheme } from './shared/theme'
 import { ErrorBoundary } from './shared/components/error-boundary'
 import { ToastProvider } from './shared/components/toast'
 import { LoginPage } from './app/auth/login-page'
+import { SignupPage } from './app/auth/signup-page'
 import { AuthenticatedShell } from './app/auth/authenticated-shell'
 import { ProjectSelectionPage } from './app/auth/project-selection-page'
 
@@ -28,6 +29,8 @@ function App() {
 
   function renderRoute() {
     if (loading) return null
+    const inviteToken = new URLSearchParams(window.location.search).get('invite')
+    if (!session && inviteToken) return <SignupPage token={inviteToken} />
     if (!session) return <LoginPage />
     const hasProject = session.user.app_metadata?.project_id
     if (!hasProject) return <ProjectSelectionPage />
