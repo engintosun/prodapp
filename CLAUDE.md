@@ -41,6 +41,8 @@ Dil: chat Türkçe; kod İngilizce (değişken/fonksiyon/dosya/commit/yorum); do
 - Karar formatı: 1 karar + 1 cümle + "kabul/itiraz?". Karar Engin'in.
 - **Placeholder disiplini:** spec'i olan yüzeye birebir spec değeri yazılır; uydurma değer (etiket/sekme/metin) yok. Zorunlu erteleme → `// TODO-SPEC: <ne + hangi dosya/karar>` + CURRENT.md'ye işle.
 - **Doküman kazanır:** kod-doküman çelişkisinde önce doküman güncellenir.
+- **5-KATMAN KURALI:** Her özellik, Sonnet'e prompt yazılmadan ÖNCE beş katmanda birlikte tasarlanır: şema → RLS → trigger → servis → UI. Atlanan katman sonradan "planlanmamış iş" olarak patlar; bu, tekrar eden boşlukların kök çözümüdür.
+- **KALICILIK KURALI:** Bir sohbette mimari karar/plan üretildiğinde o karar AYNI sohbet içinde CURRENT.md'ye işlenir. "Kapanışta yaparız" ertelemesi yasaktır; context dolunca kararı öldürür.
 
 ## Teknik kurallar
 - SSOT: Supabase. Client kopya; çakışmada Supabase kazanır.

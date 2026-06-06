@@ -25,7 +25,11 @@
 
 -----
 
+|TD-7|Ekranlar `src/app/{rol}/` altında organize; ARCHITECTURE.md feature-bazlı organizasyona atıf yapıyor — bu uyumsuzluk milestone gözden geçirmesine bırakıldı, şimdi dokunulmadı|`src/app/`, `docs/ARCHITECTURE.md`|Yapısal karar milestone'a ertelendi|M3 milestone gözden geçirme|06 Haziran 2026|
+
+-----
+
 ## Bütçe Kontrolü
 
-- Açık borç sayısı: 4 / 5
-- Durum: ✅ Bütçe içinde
+- Açık borç sayısı: 5 / 5
+- Durum: ⚠️ Bütçe dolu — yeni özellik öncesi en az 1 borç kapat
