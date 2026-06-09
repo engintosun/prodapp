@@ -26,10 +26,11 @@
 -----
 
 |TD-7|Ekranlar `src/app/{rol}/` altında organize; ARCHITECTURE.md feature-bazlı organizasyona atıf yapıyor — bu uyumsuzluk milestone gözden geçirmesine bırakıldı, şimdi dokunulmadı|`src/app/`, `docs/ARCHITECTURE.md`|Yapısal karar milestone'a ertelendi|M3 milestone gözden geçirme|06 Haziran 2026|
+|TD-8|`departments.chief_id` kullanılmıyor — `fn_route_receipt` "dept şef sorusunu" `profiles` tablosundaki aktif `role=dept` kaydının varlığı üzerinden yanıtlıyor; `departments.chief_id` hiç okunmuyor|`departments`|2026-06-09 onboarding 5-katman tasarımında tespit edildi; ya kolon kaldırılır ya da açık atama yoluna kavuşturulur|M3|09 Haziran 2026|
 
 -----
 
 ## Bütçe Kontrolü
 
-- Açık borç sayısı: 5 / 5
-- Durum: ⚠️ Bütçe dolu — yeni özellik öncesi en az 1 borç kapat
+- Açık borç sayısı: 6 / 5
+- Durum: ⚠️ Bütçe aşıldı — yeni özellik öncesi en az 2 borç kapat

@@ -91,7 +91,8 @@ CREATE TABLE periods (
   saha_deadline TIMESTAMPTZ,
   dept_deadline TIMESTAMPTZ,
   acc_deadline TIMESTAMPTZ,
-  rules_snapshot JSONB
+  rules_snapshot JSONB,
+  UNIQUE (project_id, period_number)
 );
 
 -- 4. PERIOD_CLOSINGS
@@ -228,7 +229,8 @@ CREATE TABLE period_budgets (
   currency TEXT DEFAULT 'TRY',
   set_by UUID NOT NULL,
   created_at TIMESTAMPTZ DEFAULT now(),
-  updated_at TIMESTAMPTZ DEFAULT now()
+  updated_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE (period_id)
 );
 
 -- 13. DEPT_BUDGETS
@@ -238,7 +240,9 @@ CREATE TABLE dept_budgets (
   dept_id UUID NOT NULL REFERENCES departments(id),
   budget_amount NUMERIC(14,2) NOT NULL,
   set_by UUID NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT now()
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE (period_id, dept_id)
 );
 
 -- 14. NOTIFICATIONS
@@ -311,3 +315,23 @@ CREATE TABLE project_rules (
 -- FK: invitations.dept_id -> departments (siralama nedeniyle ayri)
 ALTER TABLE invitations ADD CONSTRAINT fk_invitations_dept
   FOREIGN KEY (dept_id) REFERENCES departments(id);
+
+-- fn_assign_period_number: BEFORE INSERT trigger, period_number=max+1 (proje bazli)
+CREATE OR REPLACE FUNCTION public.fn_assign_period_number()
+RETURNS TRIGGER AS $fn$
+BEGIN
+  IF NEW.period_number IS NULL THEN
+    SELECT COALESCE(MAX(period_number), 0) + 1
+      INTO NEW.period_number
+      FROM periods
+      WHERE project_id = NEW.project_id;
+  END IF;
+  RETURN NEW;
+END;
+$fn$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+DROP TRIGGER IF EXISTS trg_assign_period_number ON periods;
+CREATE TRIGGER trg_assign_period_number
+  BEFORE INSERT ON periods
+  FOR EACH ROW
+  EXECUTE FUNCTION public.fn_assign_period_number();
