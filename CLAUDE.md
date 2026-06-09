@@ -38,6 +38,7 @@ Dil: chat Türkçe; kod İngilizce (değişken/fonksiyon/dosya/commit/yorum); do
 
 ## Karar disiplini
 - **Re-soru yasağı:** karar verildiyse UYGULA; aynı kararı tekrar sorma, kendinle tartışma (entropi/loop). Sıkışırsan DUR ve sor — boğuşma.
+- **Gereksizlik uyarısı:** Opus gereksiz gördüğü mekanizmayı — istek Engin'den gelse bile — kurmadan önce söyler; sessizce inşa etmez.
 - Karar formatı: 1 karar + 1 cümle + "kabul/itiraz?". Karar Engin'in.
 - **Placeholder disiplini:** spec'i olan yüzeye birebir spec değeri yazılır; uydurma değer (etiket/sekme/metin) yok. Zorunlu erteleme → `// TODO-SPEC: <ne + hangi dosya/karar>` + CURRENT.md'ye işle.
 - **Doküman kazanır:** kod-doküman çelişkisinde önce doküman güncellenir.

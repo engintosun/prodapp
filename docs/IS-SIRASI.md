@@ -10,7 +10,7 @@ Aktif milestone: M2 — Çekirdek Döngü.
 
 ## Sıra (bağımlılığa göre)
 1. ⬜ Onboarding: proje oluştur → departman → dönem → minimal bütçe (proje toplamı + departman) → ekip davet.
-   ÖN-KOŞUL (bu işin parçası, UI'dan önce): (a) bütçe→proje taşıması + proje toplamı (şema), (b) proje oluşturma katmanı — muhasebeci kendi projesini açar, açanı o projenin muhasebecisi yapar. Kabuk mekaniği (minimal çerçeve / card-desk) ekran tasarımında. Bütçe iskeleti, kategori/satır/import sonradan altına eklenecek şekilde kurulur. (SK-AUTH-2 + 2026-06-10 kararları → CURRENT.md.)
+   ✅ ÖN-KOŞUL TAMAM (2026-06-10): bütçe→proje şeması (project_budgets + project_dept_budgets) + fn_create_project memuru + servisler (createProject / setProjectBudget / setProjectDeptBudget) canlıda. Sırada: onboarding UI. Kabuk mekaniği (minimal çerçeve / card-desk) ekran tasarımında. Bütçe iskeleti, kategori/satır/import sonradan altına eklenecek şekilde kuruldu. (SK-AUTH-1/2 + 2026-06-10 kararları → CURRENT.md.)
 2. ⬜ Dept/Muhasebe ev + navigasyon (reviewer onay/red'i normal akışta erişilebilir yapar). Card-desk layout burada.
 3. ⬜ C5 Dönem ekranı (kapama + grace)
 4. ⬜ Rapor / Export (PDF/Excel)

@@ -2,6 +2,7 @@
 -- PRODAPP RLS Policies v2.1
 -- Degisiklik: v2.0 — profiles coklu-uyelik remodel; profiles policy'leri user_id=auth.uid(); advances/advance_log profiles join'i user_id+project_id; is_active/soft_deleted -> membership_status; default_privileges eklendi.
 --   v2.1 — TD-1: projects_own_list is_active -> status.
+--   v2.2 — 2026-06-10: project_budgets/project_dept_budgets RLS eklendi; period_budgets/dept_budgets SELECT muhasebe-only.
 -- Güncelleme: 27 Mayıs 2026
 -- Değişiklik: v1.4 — GRANT izinleri eklendi (authenticated SELECT + service_role ALL)
 -- Değişiklik: v1.3 — projects RLS + projects_own_list (claim'siz proje listesi)
@@ -480,6 +481,7 @@ CREATE POLICY period_budgets_select ON period_budgets FOR SELECT USING (
     WHERE p.id = period_budgets.period_id
       AND p.project_id = public.project_id()
   )
+  AND public.user_role() = 'muhasebe'
 );
 
 CREATE POLICY period_budgets_insert ON period_budgets FOR INSERT WITH CHECK (
@@ -506,17 +508,14 @@ CREATE POLICY period_budgets_update ON period_budgets FOR UPDATE USING (
 -- ============================================================
 ALTER TABLE dept_budgets ENABLE ROW LEVEL SECURITY;
 
--- SELECT: Dept kendi dept, Muhasebe tümü
+-- SELECT: yalniz muhasebe (2026-06-10: butce her seviyede yalniz muhasebe gorur)
 CREATE POLICY dept_budgets_select ON dept_budgets FOR SELECT USING (
   EXISTS (
     SELECT 1 FROM periods p
     WHERE p.id = dept_budgets.period_id
       AND p.project_id = public.project_id()
   )
-  AND (
-    public.user_role() = 'muhasebe'
-    OR dept_id = public.user_dept_id()
-  )
+  AND public.user_role() = 'muhasebe'
 );
 
 CREATE POLICY dept_budgets_insert ON dept_budgets FOR INSERT WITH CHECK (
@@ -944,3 +943,31 @@ $reviewfn$;
 
 REVOKE EXECUTE ON FUNCTION public.fn_review_receipt(uuid, text, text) FROM PUBLIC;
 GRANT  EXECUTE ON FUNCTION public.fn_review_receipt(uuid, text, text) TO authenticated;
+
+-- ============================================================
+-- 13B/13C. PROJECT_BUDGETS + PROJECT_DEPT_BUDGETS (2026-06-10)
+-- Butce her seviyede yalniz muhasebe gorur/yazar.
+-- ============================================================
+ALTER TABLE project_budgets ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY project_budgets_select ON project_budgets FOR SELECT USING (
+  project_id = public.project_id() AND public.user_role() = 'muhasebe'
+);
+CREATE POLICY project_budgets_insert ON project_budgets FOR INSERT WITH CHECK (
+  project_id = public.project_id() AND public.user_role() = 'muhasebe'
+);
+CREATE POLICY project_budgets_update ON project_budgets FOR UPDATE USING (
+  project_id = public.project_id() AND public.user_role() = 'muhasebe'
+);
+
+ALTER TABLE project_dept_budgets ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY project_dept_budgets_select ON project_dept_budgets FOR SELECT USING (
+  project_id = public.project_id() AND public.user_role() = 'muhasebe'
+);
+CREATE POLICY project_dept_budgets_insert ON project_dept_budgets FOR INSERT WITH CHECK (
+  project_id = public.project_id() AND public.user_role() = 'muhasebe'
+);
+CREATE POLICY project_dept_budgets_update ON project_dept_budgets FOR UPDATE USING (
+  project_id = public.project_id() AND public.user_role() = 'muhasebe'
+);

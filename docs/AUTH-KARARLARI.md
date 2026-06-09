@@ -6,19 +6,9 @@
 
 ## SK-AUTH-1: Müşteri Onboarding
 
-Admin (Engin) yeni müşteriyi sisteme alır. Minimum veri:
-- Şirket adı, proje adı
-- Muhasebe sorumlusu: email + ad soyad
+**KARAR (2026-06-10 güncellendi):** KAAPA (operatör) yalnız HESAP açar: Dashboard üzerinden e-posta + geçici şifre, ardından hesaba `can_create_projects: true` işareti (raw_app_meta_data; prosedür: supabase/BOOTSTRAP-MUSTERI.sql). Projeyi müşteri muhasebeci uygulama içinden kendisi açar: `fn_create_project` (SECURITY DEFINER) tek hamlede proje + company_settings + açan kişiye o projede `muhasebe` üyeliği yazar; işlem yarıda kalamaz. `projects` tablosuna kullanıcı INSERT izni yoktur. Davetle gelen hesaplar (saha/dept) işaretsizdir, proje açamaz. set-claims / clear-claims yalnız project_id/role/dept_id anahtarlarını yazar/siler; işaret korunur (doğrulandı). Hesap kayıt modeli (Model 1) yeniden tartışılacak — CURRENT.md açık listesi; mekanik değişmez, işareti kim koyar sorusu değişebilir.
 
-Sistem tarafında yapılanlar:
-1. `projects` kaydı oluşturulur
-2. `company_settings` kaydı oluşturulur
-3. `auth.users` oluşturulur (Dashboard veya Edge Function)
-4. `raw_app_meta_data` yazılır: `{ project_id, role: 'muhasebe', dept_id: null }`
-5. `profiles` kaydı oluşturulur
-6. Muhasebe'ye davet/aktivasyon maili atılır
-
-Bootstrap SQL template: `docs/BOOTSTRAP-MUSTERI.sql`
+Eski model (operatör projeyi elle SQL ile açar) GEÇERSİZDİR.
 
 ---
 

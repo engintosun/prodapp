@@ -245,6 +245,30 @@ CREATE TABLE dept_budgets (
   UNIQUE (period_id, dept_id)
 );
 
+-- 13B. PROJECT_BUDGETS (proje toplam butcesi — 2026-06-10)
+CREATE TABLE project_budgets (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  project_id UUID NOT NULL REFERENCES projects(id),
+  total_budget NUMERIC(14,2) NOT NULL,
+  currency TEXT DEFAULT 'TRY',
+  set_by UUID NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE (project_id)
+);
+
+-- 13C. PROJECT_DEPT_BUDGETS (departman paylari, proje seviyesi — 2026-06-10)
+CREATE TABLE project_dept_budgets (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  project_id UUID NOT NULL REFERENCES projects(id),
+  dept_id UUID NOT NULL REFERENCES departments(id),
+  budget_amount NUMERIC(14,2) NOT NULL,
+  set_by UUID NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE (project_id, dept_id)
+);
+
 -- 14. NOTIFICATIONS
 CREATE TABLE notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

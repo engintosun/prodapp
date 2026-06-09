@@ -90,9 +90,10 @@ Dept (½ Kısmi Onay) ve muhasebe (Split) yapabilir. split_amount belirlenir, fi
 - Sistem kategorileri (is_system) silinemez.
 
 ## 7. Bütçe ve limitler
-- Limitler proje/dönem bazlı (period_budgets, dept_budgets).
-- Eşik: sarı ≥%80 · kırmızı ≥%100.
-- Tam limit değerleri proje bazlı yapılandırılır (şirket kuralı, §14) → AÇIK SLOT.
+- Bütçe PROJEYE aittir: proje toplamı (project_budgets) + departman payları (project_dept_budgets). Dönem tabloları (period_budgets, dept_budgets) projenin zaman dilimleridir; sahip projedir.
+- Departman payları toplamı proje toplamına eşit olmak ZORUNDA DEĞİL — fark = dağıtılmamış pay + departman-dışı kalemler (reklam/PR/gösterim/öngörülmeyen). Zengin modülde isimli satır olur.
+- GÖRÜNÜRLÜK: bütçeyi her seviyede yalnız muhasebe görür ve yazar. Şef/saha bütçe görmez; şefin baktığı avans defteridir.
+- Eşik uyarıları (sarı ≥%80 · kırmızı ≥%100) zengin bütçe modülüyle gelir → AÇIK SLOT. Tam limit değerleri şirket kuralı (§14) → AÇIK SLOT.
 
 ## 8. Ulaşım limitleri (form + anomali)
 - Şehiriçi: km başı üst limit (örn 15₺/km). Şehirdışı: daha yüksek (örn 25₺/km).
@@ -127,6 +128,7 @@ Tevkifat · stopaj · self-billing. Faz 1: takip/sayaç (dönem ekranında özel
 > **UYARI — TAMAMLANMAMIŞTIR.** Aşağıdaki kurallar bilinen başlangıç noktasıdır, TAM SET DEĞİLDİR. Kural seti + eşikler + şirket kuralı entegrasyonu AYRI BİR OTURUMDA sıfırdan detaylı tasarlanacaktır.
 
 - **Yöntem:** kural bazlı (istatistiksel/ML değil — ARCHITECTURE 2.2 ile tutarlı).
+- **Sınır:** Anomali FİŞ-BAZLIDIR (tek fiş üzerinde suistimal/mükerrer sinyali). Bütçe-havuzu eşik uyarısı (%80/%100, §7) AYRI sistemdir; ikisi karıştırılmaz.
 - **Çalışma yeri:** Edge Function (sunucu tarafı, client'ta manipüle edilemez — ARCHITECTURE 5.5).
 - **Sonuç:** tespit → muhasebe "Şüpheli" tab'ı + bildirim + denetçi görür. Durum akışı: Beklemede → İnceleniyor → Temizle (temize çıkar) / Reddet.
 - **Şirket kuralı bağımlılığı (KRİTİK):** kuralların bir kısmı şirket kurallarından beslenir (km limiti, kişi başı yemek eşiği, konaklama gece/kişi, kategori bütçe limiti). Motor bu değerleri şirket kuralları yapılandırmasından (§14) okur. Anomali motoru ile şirket kuralları BİRLİKTE tasarlanmalıdır.
