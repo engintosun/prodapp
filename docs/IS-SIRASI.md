@@ -9,20 +9,20 @@ Aktif milestone: M2 — Çekirdek Döngü.
 · ✅ Reviewer onay/red (fn_review_receipt RPC + muhasebe queue dept_approved)
 
 ## Sıra (bağımlılığa göre)
-1. ⬜ Muhasebe onboarding çatısı: departman oluştur → dönem aç → ekip davet et (SK-AUTH-2). Minimal bütçe-limit giriş yolu buraya katlanır. Card-desk layout için Engin girdisi alındı (CURRENT.md'de kilitli).
-2. ⬜ Dept/Muhasebe ev + navigasyon (mevcut reviewer onay/red'i normal akışta erişilebilir yapar)
+1. ⬜ Onboarding: proje oluştur → departman → dönem → minimal bütçe (proje toplamı + departman) → ekip davet.
+   ÖN-KOŞUL (bu işin parçası, UI'dan önce): (a) bütçe→proje taşıması + proje toplamı (şema), (b) proje oluşturma katmanı — muhasebeci kendi projesini açar, açanı o projenin muhasebecisi yapar. Kabuk mekaniği (minimal çerçeve / card-desk) ekran tasarımında. Bütçe iskeleti, kategori/satır/import sonradan altına eklenecek şekilde kurulur. (SK-AUTH-2 + 2026-06-10 kararları → CURRENT.md.)
+2. ⬜ Dept/Muhasebe ev + navigasyon (reviewer onay/red'i normal akışta erişilebilir yapar). Card-desk layout burada.
 3. ⬜ C5 Dönem ekranı (kapama + grace)
 4. ⬜ Rapor / Export (PDF/Excel)
-5. ⬜ Avans akışı
+5. ⬜ Avans akışı (avans→bütçe çift-sayım kuralı netleşince — CURRENT.md açık)
 6. ⬜ C2c kategori panelleri + C3 belgesiz
-7. ⬜ Şüpheli işlem tespiti (ayrı tasarım oturumu — §13 + şirket kural değerleri)
+7. ⬜ Şüpheli işlem tespiti (FİŞ-BAZLI: suistimal/mükerrer) — anomali motoru. Ayrı tasarım oturumu (§13 + şirket kural değerleri). Bütçe-havuzu uyarısından (%80/%100) ayrı sistem.
 8. ⬜ Mesajlaşma / bildirim (en son — kesişen)
 9. ⬜ Üye yönetimi (TD-2'ye bloke)
-Sonra: M4 pilot hazırlık · CFE (zamanlama TBD).
+Sonra: Zengin bütçe modülü (kategori/satır + Excel import + sapma/tahmin paneli + %80/%100 eşik uyarısı) · Tedarikçi hafızası (DÜŞÜNÜLECEK) · Yapımcı/denetçi rolü (Faz 2) · M4 pilot hazırlık · CFE (TBD).
 
 ## Borçlar (yeni özellik öncesi tercihen 1 kapat)
 - Hata maskeleme: accept-invitation + signup genel mesaj → gerçek hatayı göster
-- Departman oluşturma UI (muhasebe onboarding) — davet bunu gerektiriyor
 - Storage upload owner=auth.uid() gerçek testi
 - dynamic-action yanlış fonksiyonu Supabase'den sil
-- TECH-DEBT.md: TD-2/3/5/6 açık
+- TECH-DEBT.md: TD-2/3/5/6 açık (chief_id kullanılmıyor = TD-8)
