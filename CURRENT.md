@@ -6,7 +6,7 @@ Yalnizca SIMDIKI durumu tutar. Her oturum kapanisinda bastan YAZILIR. Tarihce ->
 M2 — Cekirdek Dongu. Muhasebe onboarding altyapisi (sema + trigger + servis) tamamlandi; UI siradaki.
 
 ## Durum
-- origin/main HEAD: `<PENDING>`. Repo + canli senkron.
+- origin/main HEAD: `b7dc4c5`. Repo + canli senkron.
 - Canli: prodapp-navy.vercel.app · Repo: github.com/engintosun/prodapp
 - Davet zinciri CALISIYOR (saha2 test). Reviewer onay/red TAMAMLANDI.
 - Onboarding altyapisi UYGULANDI:
