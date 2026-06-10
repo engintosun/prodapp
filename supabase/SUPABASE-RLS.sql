@@ -971,3 +971,8 @@ CREATE POLICY project_dept_budgets_insert ON project_dept_budgets FOR INSERT WIT
 CREATE POLICY project_dept_budgets_update ON project_dept_budgets FOR UPDATE USING (
   project_id = public.project_id() AND public.user_role() = 'muhasebe'
 );
+
+-- === 2026-06-10 onboarding UI: eksik yazma grantlari ===
+-- project_budgets + project_dept_budgets policy ile birlikte eklenmis,
+-- grant atlanmisti. Kural: yeni tablo = GRANT + RLS policy (ikisi de gerekir).
+GRANT INSERT, UPDATE ON public.project_budgets, public.project_dept_budgets TO authenticated;

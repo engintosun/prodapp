@@ -132,3 +132,22 @@ export async function setProjectDeptBudget(
   if (error) throw new Error(error.message)
   return data as unknown as Record<string, unknown>
 }
+
+export async function updateDepartmentName(deptId: string, name: string): Promise<void> {
+  const { error } = await supabase
+    .from('departments')
+    .update({ name })
+    .eq('id', deptId)
+  if (error) throw new Error(error.message)
+}
+
+export async function hasOpenPeriod(projectId: string): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('periods')
+    .select('id')
+    .eq('project_id', projectId)
+    .eq('status', 'open')
+    .limit(1)
+  if (error) throw new Error(error.message)
+  return (data ?? []).length > 0
+}

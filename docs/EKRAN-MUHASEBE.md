@@ -64,7 +64,8 @@ Harcama geçmişi + fiş listesi + avans durumu + red geçmişi (kaç kez, hangi
 ŞİRKET (ad + logo) + PROJELER (her proje: ad override + logo).
 
 ## 18. Müşteri onboarding (admin akışı)
-İlk giriş yönlendirmesi: departman oluştur → ilk dönem aç → ilk ekip davet et.
+Kilitli akis (2026-06-10): Giris noktasi proje secim ekrani — can_create_projects isaretli hesaba "Yeni proje ac" her zaman gorunur (uyeliksiz dogrudan, uyelikli listenin altinda; bu yuzden isaretli hesapta tek-uyelik otomatik atlamasi kapali). Isaretsiz + uyeliksiz hesap: "Henuz bir projeye davet edilmediniz" + cikis. Proje ac ekrani alanlari: proje adi + yapim sirketi + ad + soyad (fn_create_project; sonrasi normal projeye giris).
+Kurulum modu: alt gezinme gizli, sade baslik + 4 adimli gosterge (Departman -> Donem -> Butce -> Davet). Departman: ekle (aninda kayit) + listeden ad duzeltme, silme yok, en az 1 ile devam. Donem: ad (oneri "Donem 1"), numarayi sunucu verir, teslim tarihleri sorulmaz, tek donem. Butce: proje toplami (TL sabit) + departman paylari, hepsi istege bagli, "Dagitilmamis: X TL" yalniz bilgi satiri. Davet: mevcut davet ekrani + "Kurulumu bitir". Zorunlu adimlar tamamsa sonraki girislerde kurulum hic acilmaz.
 
 ---
 

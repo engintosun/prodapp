@@ -14,12 +14,13 @@ Eski model (operatör projeyi elle SQL ile açar) GEÇERSİZDİR.
 
 ## SK-AUTH-2: Muhasebe Giriş Sonrası İlk Akış
 
-Muhasebe giriş yapınca sıra:
-1. Departman oluştur
-2. Dönem aç
-3. Ekip davet et
-
-Şirket kuralları (harcama limitleri vb.) Faz 1'de sabit, Faz 2'de yapılandırılabilir (`project_rules` tablosu).
+**KARAR (2026-06-10 guncellendi):** Muhasebe ilk giriste kurulum akisina alinir (tek cizgi):
+1. Departman olustur — en az 1, zorunlu
+2. Donem ac — en az 1, zorunlu; teslim tarihleri sorulmaz, donem ekraninda (C5) girilir
+3. Minimal butce — proje toplami (TL) + departman paylari; tamamen atlanabilir
+4. Ekip davet — mevcut davet ekrani; atlanabilir
+Yarida kalirsa sonraki giriste eksik ilk ZORUNLU adimdan devam edilir; ilerleme kaydi tutulmaz, eksik mevcut veriden okunur (departman var mi / acik donem var mi). Butce ve davet giriste dayatilmaz. Kurulum bitince kullanici dogrudan muhasebe kabuguna duser; ayri tamamlandi ekrani yoktur.
+Sirket kurallari (harcama limitleri vb.) Faz 1'de sabit, Faz 2'de yapilandirilabilir (project_rules tablosu).
 
 ---
 
