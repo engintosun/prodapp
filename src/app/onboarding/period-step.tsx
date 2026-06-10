@@ -30,7 +30,7 @@ const inputStyle: CSSProperties = {
 
 export function PeriodStep({ projectId, userId, onDone }: Props) {
   const { addToast } = useToast()
-  const [name, setName] = useState('Donem 1')
+  const [name, setName] = useState('Dönem 1')
   const [submitting, setSubmitting] = useState(false)
 
   async function handleOpen() {
@@ -49,12 +49,12 @@ export function PeriodStep({ projectId, userId, onDone }: Props) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
       <span style={{ fontSize: 'var(--text-lg)', fontWeight: 'var(--weight-bold)', color: 'var(--color-text)' }}>
-        Donem
+        Dönem
       </span>
 
       <div>
-        <label style={labelStyle}>Donem adi *</label>
-        <input style={inputStyle} value={name} onChange={(e) => setName(e.target.value)} placeholder="Donem 1" />
+        <label style={labelStyle}>Dönem adı *</label>
+        <input style={inputStyle} value={name} onChange={(e) => setName(e.target.value)} placeholder="Dönem 1" />
       </div>
 
       <button
@@ -72,7 +72,7 @@ export function PeriodStep({ projectId, userId, onDone }: Props) {
           opacity: submitting || name.trim() === '' ? 0.6 : 1,
         }}
       >
-        {submitting ? 'Aciliyor...' : 'Donemi ac'}
+        {submitting ? 'Açılıyor...' : 'Dönemi aç'}
       </button>
     </div>
   )

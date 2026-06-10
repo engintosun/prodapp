@@ -23,7 +23,7 @@ export function ProjectSelectionPage() {
     async function init() {
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
       if (sessionError || !sessionData.session) {
-        setError('Oturum bulunamadi, tekrar giris yapin')
+        setError('Oturum bulunamadı, tekrar giriş yapın')
         setLoading(false)
         return
       }
@@ -40,7 +40,7 @@ export function ProjectSelectionPage() {
         setProfiles(data)
         setLoading(false)
       } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : 'Bir hata olustu')
+        setError(err instanceof Error ? err.message : 'Bir hata oluştu')
         setLoading(false)
       }
     }
@@ -63,7 +63,7 @@ export function ProjectSelectionPage() {
     try {
       await signOut()
     } catch (_e) {
-      setError('Cikis hatasi, tekrar deneyin')
+      setError('Çıkış hatası, tekrar deneyin')
     }
   }
 
@@ -80,7 +80,7 @@ export function ProjectSelectionPage() {
 
         {profiles.length === 0 && !canCreate && (
           <>
-            <p style={{ margin: 0, color: '#666' }}>Henuz bir projeye davet edilmediniz</p>
+            <p style={{ margin: 0, color: '#666' }}>Henüz bir projeye davet edilmediniz</p>
             <button
               onClick={handleSignOut}
               style={{
@@ -94,13 +94,13 @@ export function ProjectSelectionPage() {
                 fontSize: '14px',
               }}
             >
-              Cikis yap
+              Çıkış yap
             </button>
           </>
         )}
 
         {profiles.length === 0 && canCreate && (
-          <p style={{ margin: 0, color: '#666' }}>Henuz projeniz yok. Ilk projenizi acin.</p>
+          <p style={{ margin: 0, color: '#666' }}>Henüz projeniz yok. İlk projenizi açın.</p>
         )}
 
         {profiles.length > 0 && (
@@ -145,7 +145,7 @@ export function ProjectSelectionPage() {
               background: '#fff',
             }}
           >
-            Yeni proje ac
+            Yeni proje aç
           </button>
         )}
 

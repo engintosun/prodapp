@@ -53,7 +53,7 @@ export function CreateProjectPage({ onBack }: Props) {
       await setClaims(projectId)
       // onAuthStateChange handles the transition to AuthenticatedShell
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Bir hata olustu')
+      setError(err instanceof Error ? err.message : 'Bir hata oluştu')
       setSubmitting(false)
     }
   }
@@ -78,17 +78,17 @@ export function CreateProjectPage({ onBack }: Props) {
         </button>
 
         <span style={{ fontSize: 'var(--text-lg)', fontWeight: 'var(--weight-bold)', color: 'var(--color-text)' }}>
-          Yeni Proje Ac
+          Yeni Proje Aç
         </span>
 
         <div>
-          <label style={labelStyle}>Proje adi *</label>
-          <input style={inputStyle} value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder="Proje adi" />
+          <label style={labelStyle}>Proje adı *</label>
+          <input style={inputStyle} value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder="Proje adı" />
         </div>
 
         <div>
-          <label style={labelStyle}>Yapim sirketi *</label>
-          <input style={inputStyle} value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Yapim sirketi" />
+          <label style={labelStyle}>Yapım şirketi *</label>
+          <input style={inputStyle} value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="Yapım şirketi" />
         </div>
 
         <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
@@ -118,7 +118,7 @@ export function CreateProjectPage({ onBack }: Props) {
             opacity: !canSubmit || submitting ? 0.6 : 1,
           }}
         >
-          {submitting ? 'Aciliyor...' : 'Projeyi ac'}
+          {submitting ? 'Açılıyor...' : 'Projeyi aç'}
         </button>
 
         {error && <p style={{ color: 'var(--color-danger)', margin: 0, fontSize: 'var(--text-sm)' }}>{error}</p>}

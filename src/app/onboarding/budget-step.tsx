@@ -80,7 +80,7 @@ export function BudgetStep({ projectId, userId, onDone }: Props) {
   async function handleSaveAndContinue() {
     const totalParsed = parseAmount(totalStr)
     if (totalStr.trim() !== '' && totalParsed === null) {
-      addToast('Gecersiz tutar: Proje toplam butcesi', 'warning')
+      addToast('Geçersiz tutar: Proje toplam bütçesi', 'warning')
     }
 
     const deptWrites: { deptId: string; amount: number }[] = []
@@ -89,7 +89,7 @@ export function BudgetStep({ projectId, userId, onDone }: Props) {
       if (raw.trim() === '') continue
       const amount = parseAmount(raw)
       if (amount === null) {
-        addToast('Gecersiz tutar: ' + dept.name, 'warning')
+        addToast('Geçersiz tutar: ' + dept.name, 'warning')
         continue
       }
       deptWrites.push({ deptId: dept.id, amount })
@@ -114,11 +114,11 @@ export function BudgetStep({ projectId, userId, onDone }: Props) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
       <span style={{ fontSize: 'var(--text-lg)', fontWeight: 'var(--weight-bold)', color: 'var(--color-text)' }}>
-        Butce
+        Bütçe
       </span>
 
       <div>
-        <label style={labelStyle}>Proje toplam butcesi (TL)</label>
+        <label style={labelStyle}>Proje toplam bütçesi (TL)</label>
         <input
           style={inputStyle}
           inputMode="decimal"
@@ -145,13 +145,13 @@ export function BudgetStep({ projectId, userId, onDone }: Props) {
 
       {hasAnyInput && (
         <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)' }}>
-          Dagitilmamis: {remaining.toLocaleString('tr-TR')} TL
+          Dağıtılmamış: {remaining.toLocaleString('tr-TR')} TL
         </span>
       )}
 
       <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
         <button onClick={onDone} disabled={saving} style={{ ...textButtonStyle, flex: 1, opacity: saving ? 0.6 : 1 }}>
-          Simdilik gec
+          Şimdilik geç
         </button>
         <button
           onClick={handleSaveAndContinue}

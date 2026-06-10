@@ -13,7 +13,7 @@ interface Props {
   onFinish: () => void
 }
 
-const STEP_LABELS = ['Departman', 'Donem', 'Butce', 'Davet']
+const STEP_LABELS = ['Departman', 'Dönem', 'Bütçe', 'Davet']
 
 export function OnboardingFlow({ projectId, projectName, userId, initialStep, onFinish }: Props) {
   const [step, setStep] = useState<number>(initialStep)
@@ -22,7 +22,7 @@ export function OnboardingFlow({ projectId, projectName, userId, initialStep, on
     try {
       await signOut()
     } catch (_e) {
-      alert('Cikis hatasi, tekrar deneyin')
+      alert('Çıkış hatası, tekrar deneyin')
     }
   }
 
@@ -50,7 +50,7 @@ export function OnboardingFlow({ projectId, projectName, userId, initialStep, on
             padding: 0,
           }}
         >
-          Cikis
+          Çıkış
         </button>
       </div>
 

@@ -111,7 +111,7 @@ export function DepartmentStep({ projectId, onDone }: Props) {
           style={{ ...inputStyle, flex: 1 }}
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
-          placeholder="Departman adi"
+          placeholder="Departman adı"
         />
         <button
           onClick={handleAdd}
@@ -150,14 +150,14 @@ export function DepartmentStep({ projectId, onDone }: Props) {
                   Kaydet
                 </button>
                 <button onClick={cancelEdit} disabled={savingEdit} style={secondaryButtonStyle}>
-                  Vazgec
+                  Vazgeç
                 </button>
               </>
             ) : (
               <>
                 <span style={{ flex: 1, color: 'var(--color-text)', fontSize: 'var(--text-md)' }}>{dept.name}</span>
                 <button onClick={() => startEdit(dept)} style={secondaryButtonStyle}>
-                  Duzelt
+                  Düzelt
                 </button>
               </>
             )}
