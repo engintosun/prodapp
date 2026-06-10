@@ -8,7 +8,7 @@ M2 — Cekirdek Dongu. 2026-06-10 (ucuncu tur): onboarding UI insa edildi — pr
 ## Durum
 - HEAD (oturum baslangici): `3ca8da6`. Canli: prodapp-navy.vercel.app · Repo: github.com/engintosun/prodapp
 - KURULU/CALISIYOR: auth + cok-proje login · saha fis girisi · yonlendirme trigger (fn_route_receipt) · duzeltme mekanigi · davet/rol (canli) · reviewer onay/red (fn_review_receipt) · proje olusturma (fn_create_project) + proje butce tablolari + servisler · YENI: onboarding UI — proje secim ekraninda "Yeni proje ac" (can_create_projects isaretli hesaba; tek-uyelik otomatik atlamasi isaretli hesapta kapali) + kurulum akisi + project_budgets/project_dept_budgets authenticated INSERT/UPDATE granti.
-- KRITIK ACIK: canli uctan-uca kurulum testi bekliyor (test hesabi BOOTSTRAP-MUSTERI.sql prosedurusiyle — prosedurun de testi olur) · butce/harcama uyari motoru ve anomali motoru yok (kurallar dosyada, kod yok).
+- TEST GECTI (2026-06-10): onboarding uctan-uca canli test edildi — proje ac -> 7 departman -> donem -> butce -> davet linki uretildi -> kabuk; yarida birakip tekrar giriste kurulum acilmadi, dogrudan kabuga dustu (KARAR 2 dogrulandi). BOOTSTRAP-MUSTERI.sql prosedurusi de calisti. · KRITIK ACIK kalan: butce/harcama uyari motoru ve anomali motoru yok (kurallar dosyada, kod yok). · TECH-DEBT iki kovaya ayrildi (KARAR 13): Acik Borc 4/5 (TD-5/8/9/10), Karar Bekleyen 4 (TD-2/3/6/7, butceye sayilmaz).
 
 ## Bu oturumda KILITLENEN kararlar (2026-06-10, ucuncu tur)
 - AKIS: tek cizgi kurulum departman -> donem -> butce -> davet; departman + donem en az 1 zorunlu, butce + davet atlanabilir ("Simdilik gec").
