@@ -67,10 +67,21 @@ Harcama geçmişi + fiş listesi + avans durumu + red geçmişi (kaç kez, hangi
 Kilitli akis (2026-06-10): Giris noktasi proje secim ekrani — can_create_projects isaretli hesaba "Yeni proje ac" her zaman gorunur (uyeliksiz dogrudan, uyelikli listenin altinda; bu yuzden isaretli hesapta tek-uyelik otomatik atlamasi kapali). Isaretsiz + uyeliksiz hesap: "Henuz bir projeye davet edilmediniz" + cikis. Proje ac ekrani alanlari: proje adi + yapim sirketi + ad + soyad (fn_create_project; sonrasi normal projeye giris).
 Kurulum modu: alt gezinme gizli, sade baslik + 4 adimli gosterge (Departman -> Donem -> Butce -> Davet). Departman: ekle (aninda kayit) + listeden ad duzeltme, silme yok, en az 1 ile devam. Donem: ad (oneri "Donem 1"), numarayi sunucu verir, teslim tarihleri sorulmaz, tek donem. Butce: proje toplami (TL sabit) + departman paylari, hepsi istege bagli, "Dagitilmamis: X TL" yalniz bilgi satiri. Davet: mevcut davet ekrani + "Kurulumu bitir". Zorunlu adimlar tamamsa sonraki girislerde kurulum hic acilmaz.
 
+## 19. Bütçe modülü ekranları (B-serisi, 2026-06-12 — kilitli)
+Ray (yukarıdan aşağı): ① Genel bütçe ② Bütçe girişi ③ Raporlar ④ Gerçekleşen ⑤ —ayraç— Tanımlar.
+
+**Ekran 1 — Genel bütçe (salt okunur icmal):** Üstte görünüm düğmesi: Orijinal | Yürüyen | Gerçekleşen. Tablo: etap satırları (Öngörülen/Gerçekleşen/Fark kolonları); etaba tıklayınca altında harcama grubu satırları açılır. Dipte hesap zinciri (B12): Maliyet toplamı → Öngörülmeyen % → Toplam maliyet → Şirket kârı % (gizlenebilir işaretli) → Genel toplam. Mobil-tam.
+
+**Ekran 2 — Bütçe girişi (kart masası):** Etap başlıkları altında sade kartlar (işaret + isim; RAKAM YOK — rakam icmalin işi). Her etap sonunda "+ Kart ekle". Dipte bütçe sonu yüzdeleri satırı (öngörülmeyen + şirket kârı burada düzenlenir). Dizide üst bağlam çubuğunda bütçe seçici (Sezon / Bölüm 1..n). Masaüstü-önerilir.
+
+**Ekran 3 — Kalem tablosu (kart açılınca masayı kaplar):** Başlık: ← Etap · Grup adı. Kolonlar: Sebep (altında küçük otomatik kod) | Ayrıntı | Birim net | Miktar (sayı+birim) | Adet | Yük (bileşen/paket seçimi) | Toplam (ⓘ döküm) | Gerçekleşen | Fark. Açıklama + fark açıklaması satır detayında. Şablondan gelen boş kalemler soluk, 0, toplama girmez. Son satır "+ Kalem ekle". Altta toplam şeridi: Net · Brüt · Gerçekleşen · Fark. Enter/Tab akışı. Masaüstü-önerilir.
+
+Görsel tasarım (renk/tip/işaret seti) ayrı turda — bu tarifler tel kafestir.
+
 ---
 
 ## AÇIK SLOTLAR
-- **Kart-merkezli çalışma masası sunumu** (öncelik/bildirim bazlı kart sıralama, masaya serme) — Engin ayrıntılandıracak, ayrı oturum
+- **Kart-merkezli çalışma masası** — bütçe tarafı §19 ile dolduruldu; EV/NAV masası açık (sıra #2'de)
 - Renk paleti / tema (G6)
 - Kozmetik biçimlendirme
 - Raporlardaki grafik türleri (yatay bar baz; donut vb. geliştirme açık)

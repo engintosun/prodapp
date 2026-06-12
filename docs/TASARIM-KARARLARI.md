@@ -33,6 +33,22 @@
 ## 6. Görsel tasarım işleri (G6 — açık)
 Her ekranın görsel tasarımı (renk, kozmetik, dark tema, doku, logo/favicon) commit'ten önce G6 oturumunda belirlenir. Ekran dosyalarındaki "AÇIK SLOT" notları bu oturumda doldurulur.
 
+## 8. Bütçe modülü (2026-06-12 — kilitli)
+Karar kaydının tamamı: CURRENT.md B-serisi (B1-B15). Ekran tarifleri: EKRAN-MUHASEBE §19. Kalıcı ilkeler:
+1. 10 dakika kuralı — eğitimsiz muhasebeci 10 dakikada ilk grubu doldurur; kurs gerektiren her şey tasarım hatası.
+2. Kart = tek konu — masada yalnız kartlar; kartın içinde yalnız o grubun satırları.
+3. Görünür hesap, dokunulmaz formül — formül hücresi yok; her toplamda tek dokunuşla düz Türkçe döküm ("75.000 net + %33 yük = 99.750 × 1,75 hafta = 174.563").
+4. Üç alan kuralı — satır eklemek = ad + net + çarpan; yük ve birim gruptan miras.
+5. Klavye akışı — Enter/Tab ile Excel hızı.
+6. Kayıt düğmesi yok — her hücre anında kaydedilir.
+7. Şablondan gelen boş kalem 0'da durur, toplama girmez, gizlenebilir.
+8. Güven = değişiklik izi + orijinal kilidi.
+9. Mobil: bütçe girişi masaüstü-önerilir; icmal/özet mobil-tam.
+10. Uyarı 3 seviye: engel / uyarı / öğreten ipucu ("ne oldu + neden önemli + ne yap").
+11. Tamamlılık ilkesi: kullanıcıya "bunu neden koymamışlar" dedirtme; her erteleme kayıtlı karar.
+12. Görsel tasarım ayrı turda, UI yazılmadan önce (wireframe ≠ kimlik).
+Model bildirisi: omurga dünya standardı (icmal → etap → grup → kalem, hesap kodlu, orijinal/yürüyen/gerçekleşen, EFC kapısı), matematik Türkiye (yük bileşenleri, KDV ayrıştırma, belgeli/belgesiz), sunum KAAPA (kart masası + ray).
+
 ## 7. Referanslar
 - Rakip OCR analizi: docs/RAKIP-ANALIZI-OCR.md
 - Domain terimleri: docs/GLOSSARY.md

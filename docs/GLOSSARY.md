@@ -26,6 +26,16 @@
 |Şüpheli işlem|suspicious_transaction|Kural bazlı tespit sonucu                    |
 |Harcırah     |per_diem              |Günlük yolluk/harcırah                       |
 |Çıktı        |export                |PDF/Excel dışa aktarım                       |
+|Bütçe        |budget                |Öngörülen maliyet planı (dizide bölüm başına)|
+|İcmal        |topsheet              |Bütçenin tek sayfa özeti                     |
+|Etap         |stage                 |Bütçe içi kısım (Hazırlık/Çekim/Post...)     |
+|Harcama grubu|expense_group         |Etap altındaki grup; UI'daki adı "kart"      |
+|Harcama kalemi|budget_item          |Grup altındaki bütçe satırı                  |
+|Yük bileşeni |burden_component      |Stopaj/SGK/ajans gibi net-üstü yük           |
+|Doğrudan ödeme|direct_payment       |Muhasebenin fiş dışı gerçekleşen kaydı       |
+|Yüzde kalemi |percent_line          |Ara toplam üstüne % (öngörülmeyen, kâr)      |
+|Birim        |unit                  |gün/hafta/ay/bölüm/adet/sabit                |
+|Oran kataloğu|rate_catalog          |Merkezi vergi/yük oran kaynağı               |
 
 -----
 
@@ -67,6 +77,15 @@ Bu kökler birden fazla anlama gelir. Kodda Türkçe kök KULLANILMAZ. Her bağl
 |Katman (mimari)    |layer      |`dataLayer`   |
 |Katılımcı          |participant|`participant` |
 |Kat (onay kademesi)|tier       |`approvalTier`|
+
+### `bolum` (2 anlam — YASAK kullanım netleşti)
+
+|Bağlam              |İngilizce|Kural                                        |
+|--------------------|---------|---------------------------------------------|
+|Dizi bölümü         |episode  |"Bölüm" kelimesi YALNIZ bunu ifade eder      |
+|Bütçe içi kısım     |stage    |Türkçesi "etap"; asla "bölüm" denmez         |
+
+**"defter"** terimi kod ve UI'da KULLANILMAZ (2026-06-12, B13).
 
 -----
 
