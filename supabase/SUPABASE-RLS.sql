@@ -976,3 +976,69 @@ CREATE POLICY project_dept_budgets_update ON project_dept_budgets FOR UPDATE USI
 -- project_budgets + project_dept_budgets policy ile birlikte eklenmis,
 -- grant atlanmisti. Kural: yeni tablo = GRANT + RLS policy (ikisi de gerekir).
 GRANT INSERT, UPDATE ON public.project_budgets, public.project_dept_budgets TO authenticated;
+
+-- ===== BUTCE MODULU (Dilim 1, 2026-06-13) =====
+
+create or replace function fn_is_project_muhasebe(p_project uuid)
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (
+    select 1 from profiles pr
+    where pr.user_id = auth.uid()
+      and pr.project_id = p_project
+      and pr.role = 'muhasebe' and pr.membership_status = 'active'
+  );
+$$;
+
+create or replace function fn_is_budget_muhasebe(p_budget uuid)
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (
+    select 1 from budgets b
+    where b.id = p_budget and fn_is_project_muhasebe(b.project_id)
+  );
+$$;
+
+create policy sel_units on units for select to authenticated using (true);
+create policy sel_components on burden_components for select to authenticated using (true);
+create policy sel_rates on rate_catalog for select to authenticated using (true);
+create policy sel_packages on burden_packages for select to authenticated using (true);
+
+create policy sel_budgets on budgets for select to authenticated using (fn_is_project_muhasebe(project_id));
+create policy ins_budgets on budgets for insert to authenticated with check (fn_is_project_muhasebe(project_id));
+create policy upd_budgets on budgets for update to authenticated using (fn_is_project_muhasebe(project_id)) with check (fn_is_project_muhasebe(project_id));
+
+create policy sel_stages on budget_stages for select to authenticated using (fn_is_budget_muhasebe(budget_id));
+create policy ins_stages on budget_stages for insert to authenticated with check (fn_is_budget_muhasebe(budget_id));
+create policy upd_stages on budget_stages for update to authenticated using (fn_is_budget_muhasebe(budget_id)) with check (fn_is_budget_muhasebe(budget_id));
+create policy del_stages on budget_stages for delete to authenticated using (fn_is_budget_muhasebe(budget_id));
+
+create policy sel_groups on expense_groups for select to authenticated using (fn_is_budget_muhasebe(budget_id));
+create policy ins_groups on expense_groups for insert to authenticated with check (fn_is_budget_muhasebe(budget_id));
+create policy upd_groups on expense_groups for update to authenticated using (fn_is_budget_muhasebe(budget_id)) with check (fn_is_budget_muhasebe(budget_id));
+create policy del_groups on expense_groups for delete to authenticated using (fn_is_budget_muhasebe(budget_id));
+
+create policy sel_items on budget_items for select to authenticated using (fn_is_budget_muhasebe(budget_id));
+create policy ins_items on budget_items for insert to authenticated with check (fn_is_budget_muhasebe(budget_id));
+create policy upd_items on budget_items for update to authenticated using (fn_is_budget_muhasebe(budget_id)) with check (fn_is_budget_muhasebe(budget_id));
+create policy del_items on budget_items for delete to authenticated using (fn_is_budget_muhasebe(budget_id));
+
+create policy sel_burdens on item_burdens for select to authenticated using (fn_is_budget_muhasebe(budget_id));
+create policy ins_burdens on item_burdens for insert to authenticated with check (fn_is_budget_muhasebe(budget_id));
+create policy upd_burdens on item_burdens for update to authenticated using (fn_is_budget_muhasebe(budget_id)) with check (fn_is_budget_muhasebe(budget_id));
+create policy del_burdens on item_burdens for delete to authenticated using (fn_is_budget_muhasebe(budget_id));
+
+create policy sel_plines on budget_percent_lines for select to authenticated using (fn_is_budget_muhasebe(budget_id));
+create policy ins_plines on budget_percent_lines for insert to authenticated with check (fn_is_budget_muhasebe(budget_id));
+create policy upd_plines on budget_percent_lines for update to authenticated using (fn_is_budget_muhasebe(budget_id)) with check (fn_is_budget_muhasebe(budget_id));
+
+create policy sel_payments on direct_payments for select to authenticated using (fn_is_budget_muhasebe(budget_id));
+create policy ins_payments on direct_payments for insert to authenticated with check (fn_is_budget_muhasebe(budget_id));
+create policy upd_payments on direct_payments for update to authenticated using (fn_is_budget_muhasebe(budget_id)) with check (fn_is_budget_muhasebe(budget_id));
+
+create policy sel_baselines on budget_baselines for select to authenticated using (fn_is_budget_muhasebe(budget_id));
+create policy ins_baselines on budget_baselines for insert to authenticated with check (fn_is_budget_muhasebe(budget_id));
+
+create policy sel_templates on budget_templates for select to authenticated
+  using (kind = 'system' or (owner_project_id is not null and fn_is_project_muhasebe(owner_project_id)));
+
+create policy sel_changelog on budget_change_log for select to authenticated
+  using (budget_id is null or fn_is_budget_muhasebe(budget_id));
