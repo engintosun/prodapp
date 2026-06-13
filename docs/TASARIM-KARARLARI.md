@@ -49,6 +49,15 @@ Karar kaydının tamamı: CURRENT.md B-serisi (B1-B15). Ekran tarifleri: EKRAN-M
 12. Görsel tasarım ayrı turda, UI yazılmadan önce (wireframe ≠ kimlik).
 Model bildirisi: omurga dünya standardı (icmal → etap → grup → kalem, hesap kodlu, orijinal/yürüyen/gerçekleşen, EFC kapısı), matematik Türkiye (yük bileşenleri, KDV ayrıştırma, belgeli/belgesiz), sunum KAAPA (kart masası + ray).
 
+### Şema kararları (2026-06-13 — kilitli, DB temeli yazıldı b89d67e)
+13. **Hesaplanan değer saklanmaz (B18):** DB'de yalnız girilen sayılar ve belge sayıları durur; tüm toplamlar her bakışta CFE'den doğar. Saklanan türetilmiş tek değer = kasa fotoğrafındaki donmuş toplam (değişmemesi gerektiği için). Aynı formülün iki yerde (TS+SQL) yaşaması yasak; tek hesap makinesi.
+14. **Negatif/bozuk değer kapıdan giremez (B3 engel):** DB CHECK kısıtı, tetikleyici değil.
+15. **Değişiklik izi kapıda (B19):** tek tutanak defteri + tabloya takılı tetikleyici; paraf insana bırakılmaz, izsiz değişiklik imkansız. İz tutar, hesap yapmaz.
+16. **Kasa ve raf koy-ve-bak (B16/B17):** orijinal kilidi ve şablonlar tek jsonb belge; UPDATE/DELETE politikası yok → dokunulmazlık DB seviyesinde. Düzeltme = yeni satır, eskisi durur.
+17. **Kalıcı kalem kodu = kimlik:** bütçe içi artan sayaç, geri kullanılmaz, konumdan bağımsız. Dış format (Bakanlık/AICP) kod eşlemesi ayrı alan.
+18. **Sınav düzeneği:** para hesaplayan her kural cevap anahtarlı testle mühürlenir; matematiğe dokunan, test geçmeden commit edemez. (CFE dilim 1 ile, 1b.)
+Paketleme: Model A — bütçe ile harcama tek kod tabanında paketlenebilir iki yüzey; tek temas receipts.budget_item_id; "modül açık mı" bayrağı ileride proje düzeyinde tek alan.
+
 ## 7. Referanslar
 - Rakip OCR analizi: docs/RAKIP-ANALIZI-OCR.md
 - Domain terimleri: docs/GLOSSARY.md

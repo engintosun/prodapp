@@ -10,7 +10,13 @@ Aktif milestone: M2 — Çekirdek Döngü.
 · ✅ Onboarding UI (proje ac girisi + departman→donem→butce→davet kurulum akisi, 2026-06-10)
 
 ## Sıra (bağımlılığa göre)
-1. ⬜ Zengin bütçe modülü — kavram KİLİTLİ (B1-B15, CURRENT.md). Kalan: B16-B18 şema kararları → RLS → trigger → servis → UI. (KDV/stopaj hesabı = CFE'nin ilk dilimi burada doğar.)
+1. Bütçe modülü — kavram + şema KİLİTLİ (B1-B19). 5 dilim:
+   1a. ✅ DB temeli (14 tablo + RLS + değişiklik izi + sözlük seed) — b89d67e, 2026-06-13.
+   1b. ⬜ Servis + CFE dilim 1 + sınav düzeneği (cevap anahtarlı testler). RPC: bütçe-aç / kilit-vur / fiş-eşle. [Arada: şablon içerikleri seed'i + görsel tasarım turu.]
+   1c. ⬜ Giriş yüzeyi: kart masası + kalem tablosu (§19). Kuruluma tip seçimi eki (B8).
+   1d. ⬜ Okuma yüzeyi: icmal + gerçekleşen + tanımlar.
+   1e. ⬜ Eşleşme + doğrudan ödeme: kalem önerisi + eşleşmemiş havuz + ödeme girişi + önceki projeden kopyala.
+   (KDV/stopaj/yuvarlama hesabı = CFE'nin ilk dilimi, 1b'de doğar.)
 2. ⬜ Dept/Muhasebe ev + navigasyon (reviewer onay/red'i normal akışta erişilebilir yapar). Card-desk layout burada; TD-10 burada kapanır.
 3. ⬜ C5 Dönem ekranı (kapama + grace)
 4. ⬜ Rapor / Export (PDF/Excel) — icmal PDF + EFC + dış format eşlemeleri (Bakanlık/AICP) + amort/bölüm-başı pay raporu

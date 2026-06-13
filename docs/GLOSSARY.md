@@ -36,6 +36,11 @@
 |Yüzde kalemi |percent_line          |Ara toplam üstüne % (öngörülmeyen, kâr)      |
 |Birim        |unit                  |gün/hafta/ay/bölüm/adet/sabit                |
 |Oran kataloğu|rate_catalog          |Merkezi vergi/yük oran kaynağı               |
+|Kasa (orijinal)|budget_baseline      |Kilit anında bütçenin donmuş fotoğrafı (koy-ve-bak)|
+|Şablon (raf)  |budget_template       |Rakamsız bütçe iskeleti; kurulumda fotokopilenir   |
+|Tutanak defteri|budget_change_log    |Her değişikliğin kim/ne zaman/eski→yeni izi        |
+|Sınav düzeneği|—                     |Para hesabı kurallarının cevap anahtarlı testi     |
+|Kalıcı kalem kodu|item_code          |Bütçe içi artan, geri kullanılmayan kalem kimliği  |
 
 -----
 
