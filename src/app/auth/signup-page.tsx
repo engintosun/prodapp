@@ -41,7 +41,7 @@ export function SignupPage({ token }: SignupPageProps) {
         try {
           const b = await (fnError as { context?: { json?: () => Promise<{ error?: string }> } }).context?.json?.()
           if (b?.error) msg = b.error
-        } catch {}
+        } catch { /* en iyi çaba; hata bilerek yutuluyor */ }
         setError(msg)
         setLoading(false)
         return
