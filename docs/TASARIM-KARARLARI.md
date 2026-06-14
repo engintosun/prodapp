@@ -71,3 +71,42 @@ Bu dosyada eskiden karışık duran ekran/iş/auth detayları doğru evlerine ta
 - Onboarding · davet zinciri · multi-project · üyelik/silme → **docs/AUTH-KARARLARI.md**
 - Tasarım/görev iş listesi → **docs/IS-SIRASI.md**
 - Dil seçimi · mesai hesaplama · denetçi modu → **Faz 2** (CURRENT.md "Faz 2'ye Taşınanlar")
+
+## Bütçe modülü - yapı kararı (kilitlendi 2026-06-13)
+
+### A. Giriş yapısı
+- Kart = departman (ana menü); değişmez. Endüstri/saha standardı; ağrı noktası yapı değil uygulamadır.
+- Faz ayrı yapı DEĞİL = dönemin kaba hali. Varsayılan 3 dönem (Hazırlık/Çekim/Post); profesyonel çağrı kâğıdı bloklarına inceltilebilir (Çekim-1, Çekim-2...). Tek dönem ekseni, ayarlanabilir granülerlik.
+- Giriş = sakin liste, kalem başına TEK satır; "ne zaman" göstergesi her satırda.
+- "Tek-dönemlik / çok-dönemlik" diye iki cins kalem yok; her kalem döneme-bölünebilir, tek-dönem = tek dönemi dolu hali. Baştan sınıflama gerekmez.
+- Çoğul dönem girişi: satırdaki "ne zaman"a dokun → dönem işaretle → her seçilene tutar. AYRI "dönem ekle" butonu yok. Az dönemde yan yana hücre, çok dönemde liste (uyarlanır döküm).
+- Tam görünüm = nakit matrisi (2. yüzey): kalemler x dönemler, dönem başına nakit ihtiyacı. Gizli toggle değil, bütçeyi hazırlayanın çekirdek aracı.
+- İki yüzey: GİRDİĞİN yüzey (kart, liste) != OKUDUĞUN yüzey (matris). Aynı veriden türer.
+
+### B. Altı arayüz ilkesi (KAAPA arayüz anayasası)
+1. Tek masada tek iş — ekranda yalnız o an gerekli olan; gerisi bir dokunuş ötede.
+2. Makineyi gizle — kullanıcı "Kamera: 318.760" görür, stage_id/fringe değil; varsayılan çalışır, doldurmaya zorlamaz.
+3. Derinlik talep üzerine — basit yüzey, güç saklı.
+4. Anında ve doğru — her dokunuşta toplam canlı ve doğru (CFE); kırılan formül yok.
+5. Sakin yoğunluk — nefes alan boşluk, az ama net.
+6. Öngörülebilir — aynı jest her yerde aynı, geri-al kolay, çıkmaz sokak yok.
+
+### C. Beş veri kuralı
+1. Satır toplamı her zaman TÜRETİLİR = dönem tutarlarının toplamı. Ayrı elle yazılan toplam alanı YOK.
+2. Her kalemin EN AZ BİR dönemi olmalı (yoksa nakit + karşılaştırmadan düşer). Zamansız kalemler (sigorta gibi) için açık "dönemsiz" kovası.
+3. "Ne zaman" = nakdin çıktığı/gerektiği dönem (amaç nakit akışı), masrafın işlendiği an değil.
+4. Dönemlerin TARİH sınırı olmalı (Hazırlık = şu-bu tarih); gelen fiş hangi döneme düşeceğini bilsin. Dönem = çağrı kâğıdına bağlı çekim blokları (zaten tarihli).
+5. "Ne zaman" İKİ EKSEN: ait-olduğu-dönem (maliyet/karşılaştırma kapısı, kalemden miras, Faz 1) != nakdin-çıktığı-dönem (nakit kapısı, gerçekleşen dilimi). Varsayılan eşit, override edilebilir; tarih otomatik tahmin yapar, kilitli değil. Örnek: hazırlık işi, çekimde ödendi → ait=Hazırlık, nakit=Çekim.
+
+### D. Yuvarlama sözleşmesi
+- Öngörülen (bütçe) taraf: satır toplamı TAM TL'ye yuvarlanır (ROUND_HALF_UP). Üst toplamlar = yuvarlanmış satırların toplamı (önce-yuvarla-sonra-topla; üstte yeniden yuvarlama yok).
+- Gerçekleşen (belge) taraf: KURUŞTA kalır (net + KDV = brüt; belgenin aynası).
+- Yalnızca satır toplamı + üst toplamlar yuvarlanır. Birim net, brüt birim, çarpanlar (miktar/adet) DOKUNULMAZ.
+- Para hesapları decimal.js ile; JS float YASAK. Kanıt: 8/8 test yeşil (src/shared/cfe/cfe.test.ts), commit 0b344e1.
+
+### E. Açık tasarım notları (yapılacak - unutma)
+- Ağır toplu giriş için "hızlı ekle" modu KORUNMALI: kart-cumbasını terk etmeden peş peşe kalem (departman satırda seçilir). Kurulumda bütçe sıfırdan dökülürken gerekir; günlük tek-kalem kullanımda gerekmez.
+- "Ne zaman" göstergesinin DOKUNULABİLİR olduğu görsel olarak belli olmalı; yoksa kullanıcı çoğul dönemi hiç keşfetmez.
+
+### F. Şema sonucu
+- Döneme bağ KALEMDE durur (kart dönemden bağımsız); matris türetilir. Mevcut budget_stages → "dönem" katmanı (ait-dönem). Nakit-dönem ikinci eksen, gerçekleşen diliminde eklenir. Beş katman disiplini (şema→RLS→trigger→servis→UI) bu göçte uygulanır; küçük migration, erken.

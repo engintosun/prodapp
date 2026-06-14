@@ -42,6 +42,16 @@
 |Sınav düzeneği|—                     |Para hesabı kurallarının cevap anahtarlı testi     |
 |Kalıcı kalem kodu|item_code          |Bütçe içi artan, geri kullanılmayan kalem kimliği  |
 
+### Bütçe - dönem/nakit terimleri (2026-06-13)
+
+- **Dönem:** Bütçenin zaman dilimi; çağrı kâğıdına bağlı çekim bloklarıyla hizalı, tarih sınırlı. Varsayılan 3 (Hazırlık/Çekim/Post), inceltilebilir.
+- **Faz:** Dönemin kaba hali; ayrı yapı değil.
+- **Ne zaman (kalem):** Kalemin bağlı olduğu dönem(ler). İki eksen — ait-dönem ve nakit-dönem.
+- **Ait-olduğu-dönem:** Kalemin bütçede karşı geldiği dönem (maliyet/karşılaştırma kapısı).
+- **Nakdin-çıktığı-dönem:** Paranın fiilen çıktığı/gerektiği dönem (nakit akışı kapısı).
+- **Nakit matrisi:** Kalemler x dönemler görünümü; dönem başına nakit ihtiyacı.
+- **Yuvarlama sözleşmesi:** Öngörülen taraf tam TL (ROUND_HALF_UP, önce-yuvarla-sonra-topla), gerçekleşen kuruşta. Detay: TASARIM-KARARLARI.md D bölümü.
+
 -----
 
 ## Tehlikeli Türkçe Kökler
