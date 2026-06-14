@@ -51,6 +51,7 @@
 - **Nakdin-çıktığı-dönem:** Paranın fiilen çıktığı/gerektiği dönem (nakit akışı kapısı).
 - **Nakit matrisi:** Kalemler x dönemler görünümü; dönem başına nakit ihtiyacı.
 - **Yuvarlama sözleşmesi:** Öngörülen taraf tam TL (ROUND_HALF_UP, önce-yuvarla-sonra-topla), gerçekleşen kuruşta. Detay: TASARIM-KARARLARI.md D bölümü.
+- **Kalem-dönem köprüsü (budget_item_periods):** Bir kalemi dönemlere bağlayan ara kayıt listesi; her kalem-dönem çifti tek satır, o dönemdeki miktarı tutar. Tek-dönemlik kalem = bu listede tek satır.
 
 -----
 

@@ -3,15 +3,18 @@
 Yalnizca SIMDIKI durumu tutar. Her oturum kapanisinda bastan YAZILIR. Tarihce -> git log.
 
 ## Milestone
-M2 — Cekirdek Dongu. 2026-06-13: Butce modulu sema kararlari (B16-B19) + 5-katman kilidi + Dilim 1 (DB temeli) canlida (b89d67e). CFE dilim 1 + sinav duzenegi canlida (0b344e1, 8/8 yesil). Lint hijyeni yesile dondu (33cd25e). Butce GIRIS YAPISI karari kilitlendi: kart=departman, faz=donemin kaba hali, nakit matrisi, alti arayuz ilkesi, bes veri kurali, yuvarlama sozlesmesi (TASARIM-KARARLARI.md). Sirada: Dilim 2b (servis RPC'leri) + stage_id/ait-donem gocu.
+M2 — Cekirdek Dongu. 2026-06-13: Butce modulu sema kararlari (B16-B19) + 5-katman kilidi + Dilim 1 (DB temeli) canlida (b89d67e). CFE dilim 1 + sinav duzenegi canlida (0b344e1, 8/8 yesil). Lint hijyeni yesile dondu (33cd25e). Butce GIRIS YAPISI karari kilitlendi: kart=departman, faz=donemin kaba hali, nakit matrisi, alti arayuz ilkesi, bes veri kurali, yuvarlama sozlesmesi (TASARIM-KARARLARI.md). 2026-06-14: Butce GOCU canliya alindi (e63fbb0) — kart=departman, budget_stages=donem (tarihli), budget_item_periods koprusu. Sirada: sablon body format karari -> Engin sablon icerigi -> Dilim 2b RPC'leri.
 
 ## Durum
-- HEAD: 33cd25e — Lint hijyeni (CFE dilim 1 sonrasi). Canli: prodapp-navy.vercel.app · Repo: github.com/engintosun/prodapp
-- KURULU/CALISIYOR: auth + cok-proje login · saha fis girisi · yonlendirme trigger · duzeltme mekanigi · davet/rol (canli) · reviewer onay/red · proje olusturma + proje butce tablolari + servisler · onboarding UI (2026-06-10 canli test gecti) · BUTCE MODULU DB TEMELI (2026-06-13: budgets/stages/expense_groups/budget_items/item_burdens/percent_lines/direct_payments/baselines/templates/change_log + units/burden_components/rate_catalog/burden_packages; receipts'e budget_item_id kolonu; tip kolonu projects'e) · CFE DILIM 1 (saf hesap fonksiyonlari: brutBirim/satirToplam/kdvAyristir/zincirToplam/dokum, henuz UI/servise baglanmadi).
-- KRITIK ACIK: butce/harcama uyari motoru ve anomali motoru yok (kurallar dosyada, kod yok). Butce UI/servis henuz yok (Dilim 2b+). TECH-DEBT: Acik Borc 5/5 (TD-5/8/9/10/11) — SINIRDA; TD-11 bu oturumda eklendi (toast.tsx addToast React efekt hijyeni); yeni borc eklenmeden once kapatma gerekir. TD-10 card-desk ev/nav isinde (sira #2) kapanacak.
+- HEAD: e63fbb0 — Butce goc (kart=departman + donem tarih + kalem-donem koprusu), supabase db push ile canliya alindi, migration list Local=Remote dogrulandi. Canli: prodapp-navy.vercel.app · Repo: github.com/engintosun/prodapp
+- KURULU/CALISIYOR: auth + cok-proje login · saha fis girisi · yonlendirme trigger · duzeltme mekanigi · davet/rol (canli) · reviewer onay/red · proje olusturma + proje butce tablolari + servisler · onboarding UI (2026-06-10 canli test gecti) · BUTCE MODULU DB TEMELI (2026-06-13: budgets/stages/expense_groups/budget_items/item_burdens/percent_lines/direct_payments/baselines/templates/change_log + units/burden_components/rate_catalog/burden_packages; receipts'e budget_item_id kolonu; tip kolonu projects'e) · BUTCE GOCU CANLI (2026-06-14): kart=departman, budget_stages=donem (tarihli), budget_items.quantity -> budget_item_periods koprusu (RLS muhasebe-only + iz/updated_at tetikleyicileri). Detay TASARIM-KARARLARI.md. · CFE DILIM 1 (saf hesap fonksiyonlari: brutBirim/satirToplam/kdvAyristir/zincirToplam/dokum, henuz UI/servise baglanmadi).
+- KRITIK ACIK: butce/harcama uyari motoru ve anomali motoru yok (kurallar dosyada, kod yok). Butce UI/servis henuz yok (Dilim 2b+). TECH-DEBT: Acik Borc 5/5 (TD-5/8/9/10/11) — SINIRDA; yeni borc eklenmeden once kapatma gerekir. TD-10 card-desk ev/nav isinde (sira #2) kapanacak.
 
 ## Butce modulu — giris yapisi karari (kilitlendi 2026-06-13)
 Kart = departman; faz = donemin kaba hali (varsayilan 3, inceltilebilir); giris = sakin liste + "ne zaman" her satirda + cogul donem dokun-isaretle (ayri buton yok) + uyarlanir dokum; tam gorunum = nakit matrisi (2. yuzey). Alti arayuz ilkesi + bes veri kurali + yuvarlama sozlesmesi yazildi. Detay: TASARIM-KARARLARI.md "Butce modulu - yapi karari".
+
+## Butce modulu — goc canliya alindi (2026-06-14, e63fbb0)
+Kart=departman + budget_stages=donem (start/end_date nullable) + budget_items.quantity -> budget_item_periods koprusu (kalem<->donem, ait-donem ekseni; RLS muhasebe-only + iz/updated_at tetikleyicileri). "Donem tarihli olmali" ve "en az bir donem" zorlamalari MUHURDE (fn_lock_budget), iskelette degil. Detay: TASARIM-KARARLARI.md "Butce gocu uygulandi + kopru kararlari".
 
 ## Butce modulu — DB temeli yazildi (Dilim 1, b89d67e)
 Sema B-serisi (B1-B19, asagida) + 5-katman kilidine gore kuruldu. Onemli sema kurallari:
@@ -23,7 +26,7 @@ Sema B-serisi (B1-B19, asagida) + 5-katman kilidine gore kuruldu. Onemli sema ku
 - DIZI AYRIMI: her butce satiri scope tasir (single/season/episode + episode_no). Icmal saklanmaz, bakista toplanir.
 - GERCEKLESNI OLAN KALEM SILINMEZ: is_active=false pasiflesir; FK RESTRICT korur (B16 yan kural).
 - RLS: tum butce tablolari yalniz muhasebe (role='muhasebe' + membership_status='active'), kendi projesinde. Raflar (units/components/rate_catalog/packages) herkes okur, Faz 1'de yazma politikasi YOK (elle beslenir). receipts.budget_item_id'yi ekran dogrudan yazamaz — esleme RPC'siyle Dilim 5'te baglanir.
-- SEED: birimler (gun/hafta/ay/bolum/adet/sabit) · yuk bilesenleri (stopaj/SGK/ajans/damga) · oran katalogu TASLAK isaretli (mevzuat dogrulamasi yasal turda) · paketler (Bordrolu, Ajansli cast).
+- SEED: birimler (gun/hafta/ay/bolum/adet/sabit) · yuk bilesenleri (stopaj/SGK/ajans/damga) · oran katalogu TASLAK isaretli (mevzuat dogrulamasi yasal turde) · paketler (Bordrolu, Ajansli cast).
 - Sonnet ekleri (kabul): check_function_bodies=off (henuz olmayan tabloya referans veren fonksiyon dogrulamasini erteler, semantik ayni) · GRANT blogu (CLAUDE.md kurali, ben atlamistim) · RLS dosya yolu supabase/SUPABASE-RLS.sql (docs/ degil).
 
 ## Butce modulu — KILITLI kavram kararlari (B-serisi)
@@ -40,8 +43,9 @@ Butce ile harcama TEK kod tabaninda, paketlenebilir IKI yuzey: musteri yalniz ha
 ## Siradaki is (5-katman dilimleme)
 1. ✅ DB temeli (b89d67e).
 2. ✅ CFE dilim 1 (brutBirim/satirToplam/kdvAyristir/zincirToplam/dokum) + SINAV DUZENEGI — 0b344e1, 8/8 yesil.
-   ⬜ Dilim 2b — servis RPC'leri, fn_create_project kalibinda atomik: butce-ac (raftan fotokopi + gunun oranlari) · kilit-vur (CFE toplamlari gomulu fotograf -> kasa) · fis-esle (B9 oneri + tek dokunus). + stage_id/ait-donem gocu (5-katman: sema->RLS->trigger->servis->UI).
-   — Arada iki kod-disi tur: (a) sablon icerikleri (Engin taslak -> ayri seed; once film) (b) gorsel tasarim turu (UI'den ONCE).
+   ✅ stage_id/ait-donem gocu canliya alindi (e63fbb0, 2026-06-14): kart=departman + budget_stages=donem (tarihli) + budget_item_periods koprusu.
+   ⬜ Dilim 2b — servis RPC'leri. fn_open_budget ONCE iki seye bagli: (a) sablon body jsonb FORMAT karari (yeni model: kart=departman + kopru) (b) Engin'in film-sablon icerigi (ayri seed). Sira: (a) format karari -> (b) Engin sablon icerigi -> (c) fn_open_budget + ongorulen okuma -> (d) fn_lock_budget (muhur kapilari: en az bir donem + donem tarihli burada zorlanir) -> (e) fn_match_receipt.
+   — Arada kod-disi tur: gorsel tasarim turu (UI'den ONCE).
 3. ⬜ Giris yuzeyi: kart masasi + kalem tablosu (EKRAN-MUHASEBE §19). Kuruluma tip secimi eki (B8); eski projelere butce ilk acilista sorar. Acik tasarim notlari: "hizli ekle" modu + "ne zaman" dokunulabilirligi (TASARIM-KARARLARI E).
 4. ⬜ Okuma yuzeyi: icmal + gerceklesen listesi + tanimlar.
 5. ⬜ Eslesme + dogrudan odeme: onay ekranina kalem onerisi + eslesmemis havuz + odeme girisi + "onceki projeden kopyala".
@@ -63,8 +67,8 @@ Sonra: Dept/Muhasebe ev + navigasyon (card-desk, TD-10 burada kapanir). Tam list
 - Yama yok (CLAUDE.md): cikar-degistir.
 
 ## Durable doc'lara tasinanlar (bu commit)
-- TASARIM-KARARLARI: "Butce modulu - yapi karari" bolumu eklendi (A-F: giris yapisi, alti arayuz ilkesi, bes veri kurali, yuvarlama sozlesmesi, acik tasarim notlari, sema sonucu).
-- GLOSSARY: donem/faz/ne-zaman/ait-donem/nakit-donem/nakit-matrisi/yuvarlama-sozlesmesi terimleri.
-- TECH-DEBT: TD-11 eklendi (Acik Borc 5/5) + schema.sql bayat notu (bilgi).
-- kaapa-devir-2026-06-13.md (yeni devir dosyasi).
+- TASARIM-KARARLARI: "Butce gocu uygulandi + kopru kararlari (2026-06-14)" bolumu eklendi.
+- GLOSSARY: kalem-donem koprusu (budget_item_periods) terimi eklendi.
+- TECH-DEBT: schema.sql bayat notu guncellendi (goc sonrasi yapi da migration'da: 20260614150000).
+- kaapa-devir-2026-06-14.md (yeni devir dosyasi).
 Kalan tasima: yok.
