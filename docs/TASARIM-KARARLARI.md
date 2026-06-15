@@ -116,3 +116,37 @@ Bu dosyada eskiden karışık duran ekran/iş/auth detayları doğru evlerine ta
 - YENİ tablo budget_item_periods (kalem<->dönem köprüsü, ait-dönem ekseni): her kalem-dönem çifti tek satır; o dönemdeki miktar köprüde durur. Kalemde birim net / birim / adet / yük SABİT kalır. Satır toplamı = dönem tutarlarının toplamı (türetilir, A kararı).
 - Dönem tarihi NULLABLE: iskelet açılırken tarih zorunlu değil. "Dönem tarihli olmalı" zorlaması MÜHÜRDE (fn_lock_budget) — iskelet gevşek, mühür sıkı.
 - "En az bir dönem" kuralı da MÜHÜRDE (DB'de çocuk-satır-zorunlu kurmadık, kırılgan olurdu): mühür tam/geçerli fotoğraf ister (B16 kasa).
+
+## Şablon body FORMAT + KDV ayrıştırma (kilitlendi 2026-06-15)
+
+### A. body jsonb FORMAT (budget_templates.body)
+- Tek şekil tüm türler/scope için. Dizi = iki şablon satırı (season + episode) — budget_templates.scope zaten "çift iskelet" diyor. Tür/scope farkı içerikte, şekilde değil.
+- Şekil tabloları aynalar (B16 kasa ile AYNI serileştirici; ref'ler bu round-trip için):
+  - stages[]: { ref, name, sort_order } — tarih YOK (açılışta null; "tarihli olmalı" mühürde). + rezerve "Dönemsiz" etabı.
+  - cards[]: { ref, department_code, name, icon, default_unit, default_package, sort_order, items[] }
+  - items[]: { ref, name (Sebep), detail, note, unit? (null=karttan miras), package? (null=miras), multiplier, sort_order } — unit_net YOK (açılışta 0), periods YOK (köprü boş).
+  - percent_lines[]: { code (contingency|profit), label, rate_percent, is_hidden } — varsayılan contingency 10 / profit 0.
+
+### B. Köprü açılışta BOŞ (Model A)
+- Şablon kalemi döneme bağlamaz; budget_item_periods açılışta tek satır bile yaratılmaz. Kullanıcı "ne zaman"a dokunup dönem işaretleyince köprüye satır düşer.
+- Gerekçe: rakamsız şablon ilkesi (miktar=rakam, köprü miktarı tutar) + "ne zaman" dokun-işaretle tasarımı; hangi kalem hangi dönemde = işe-özel.
+- REDDEDİLEN (Model B): şablon kalemi varsayılan döneme önceden bağlasın (0-miktarlı köprü satırı). Sahte kesinlik.
+- "En az bir dönem" kuralı açılışta DEĞİL, mühürde (kalemler o ana kadar 0/soluk).
+
+### C. Yük = paket kodu + günün oranı
+- Şablon yalnız paket KODU tutar. Açılışta fn_open_budget paketi bileşenlere açar, item_burdens'e GÜNÜN rate_catalog oranlarını kopyalar. Oran kopyası şablonda yok (fotokopi tek yönlü).
+
+### D. budget_percent_lines DEĞİŞMEZ — seçilebilir-tabanlı markup gereksiz (geri alındı)
+- contingency+profit, düz, taban-seçimi yok — AYNEN kalır.
+- AICP/film araştırmasındaki "seçilebilir-tabanlı yüzde" ihtiyacı YÜK içindi ve zaten item_burdens+packages ile karşılanıyor (taban = hangi kalem paketi taşır).
+- AICP "pass-through hariç markup" = bidding/müşteri-fatura inceliği; KAAPA harcama-kontrol -> düz profit yeter. Gerekirse ileride dış-format/export. Çekirdek şemaya eklenmez.
+
+### E. KDV ayrıştırma — Geniş yol (şema eki gelecek)
+- ÖNGÖRÜLEN taraf kilitçe NET (budget_items.unit_net = KDV'siz; KDV indirilebilir). KDV şu an yalnız belge tarafında.
+- KARAR: budget_items'a vat_rate eklenir (uygulama dilimi). body'ye default_vat (kart) + opsiyonel vat (kalem); birim/paket mirası gibi.
+- Kullanıcı NET veya BRÜT (KDV dahil) girer; satır oranını bilir -> CFE kdvAyristir/brutBirim ile diğeri türetilir. B18 KIRILMAZ (oran girdi, tutar saklanmaz).
+- Kazanç: (a) nakit matrisi BRÜT-nakit; (b) karışık oran (20/10/1/muaf); (c) serbest-meslek makbuzu yük+KDV BİRLİKTE -> KDV ile yük AYRI eksen.
+
+### F. Açık bayraklar (uygulama diliminde)
+- department_code -> department_id: fn_open_budget'ta; departmanlar proje-bazlı, sistem şablonu projeyi bilmez -> kanonik departman kodu/seed gerekebilir.
+- "Dönemsiz" etabı mühür muafiyeti: "dönem tarihli olmalı"dan muaf -> budget_stages.is_undated? fn_lock_budget'ta.
