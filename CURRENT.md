@@ -54,3 +54,8 @@ Tum RPC: fn_create_project kalibi (SECURITY DEFINER, atomik, Turkce hata, REVOKE
 ## Durable doc'lara tasinanlar (bu commit)
 - TASARIM-KARARLARI: "Sablon body FORMAT + KDV ayristirma (2026-06-15)" bolumu eklendi.
 - kaapa-devir-2026-06-15.md (yeni devir).
+
+## Butce Sablon Arastirmasi (devam ediyor)
+- Durum + acik kararlar: docs/butce/BUTCE-ARASTIRMA-DURUM.md
+- Master kalem listesi (4746 tekil) Engin'de, yeni chat'te isaretlenecek (S=sablon / X=sil / bos=kutuphane).
+- Kilitli yon: iki-katman (sablon yalin / kutuphane+autocomplete), 2 para-seviyesi derinlik, kart=departman=onay birimi, ekip+ekipman departmana-ozel beraber. KABUL bekleyen detaylar dokumanda.
