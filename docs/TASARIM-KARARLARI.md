@@ -152,7 +152,7 @@ Bu dosyada eskiden karışık duran ekran/iş/auth detayları doğru evlerine ta
 - "Dönemsiz" etabı mühür muafiyeti: "dönem tarihli olmalı"dan muaf -> budget_stages.is_undated? fn_lock_budget'ta.
 
 ## Bütçe kart mimarisi + kalem mekanizması (kilitlendi 2026-06-19)
-Kalıcı mimari. TEK KAYNAK: docs/KAAPA_BUTCE-KART-MIMARISI.md. Aşağısı ÖZET referans; detay o dosyada.
+Kalıcı mimari. TEK KAYNAK: docs/butce/KART-KATALOGU.md. Aşağısı ÖZET referans; detay o dosyada.
 
 ### A. Etap ekseni (5 etap = zaman)
 - Etap = ödeme/zaman etiketi; parayı karttan karta TAŞIMAZ. Beş etap: Geliştirme · Yapım Öncesi · Yapım · Yapım Sonrası · Dağıtım ve Teslimat.
@@ -189,4 +189,4 @@ Kalıcı mimari. TEK KAYNAK: docs/KAAPA_BUTCE-KART-MIMARISI.md. Aşağısı ÖZE
 - §4.9 Genel anomali kuralları (tüm kartlarda aktif): çift-fringe guard (SMM/Loan-out'a fringe binmesini engeller) · Crew Overlap Guard (aynı kişi iki kartta ücret taraması) · geliştirme mahsup kontrolü (1102/1103↔1401/1403/1501) · milestone uyuşmazlık denetimi (hakediş↔teslim kilometre taşı).
 - §5.1 Kart görünürlük katmanları: DB-erişim ≠ UI-görünürlük. Muhasebe DB'de her zaman tam açık (kör nokta yok). Set rollerine: tam maske (1100,1400) / kısmi maske (1300,1500) / departman-açık (2100+). Satır-seviyesi gizleme (hidden row) var. ATL baş-kaşe deseni: baş-kaşe set rollerine daima gizli (çoğul olabilir). Master/Owner katmanı: Muhasebe üstü proje sahibi + Denetmen/Auditor.
 - §6 Compliance Guard: Şablon-bağlamlı uyumluluk denetimi. Hedef Mecra seçimi (Eurimages/Netflix/TRT/Bakanlık) + compliance_rules veri tablosu. Sınır kuralı KİLİTLİ: teşhis+uyarı EVET / gizleme reçetesi HAYIR. Üç senaryo: Overhead tavanı, Mark-up tavanı, gizli kâr transferi görünürlüğü.
-Detay TEK KAYNAK: docs/KAAPA_BUTCE-KART-MIMARISI.md.
+Detay TEK KAYNAK: docs/butce/KART-KATALOGU.md.

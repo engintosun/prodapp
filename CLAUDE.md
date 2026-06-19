@@ -59,6 +59,7 @@ Dil: chat Türkçe; kod İngilizce (değişken/fonksiyon/dosya/commit/yorum); do
 ## Context routing
 - Mimari → docs/ARCHITECTURE.md · Auth/rol/RLS → docs/AUTH-KARARLARI.md + supabase/SUPABASE-RLS.sql · Şema → SUPABASE-SCHEMA.sql
 - İş kuralı/onay/dönem/avans → docs/IS-KURALLARI.md · Ekran → docs/EKRAN-{SAHA,DEPT,MUHASEBE}.md + TASARIM-KARARLARI.md · İsim → GLOSSARY.md · Sıra → IS-SIRASI.md
+- Bütçe kart/kalem domain → docs/butce/ (KART-KATALOGU = kart/kalem katalog+motor · KART-GEREKCELERI = neden/eğitim · BUTCE-ARASTIRMA-DURUM = şablon/kalem araştırması). Bütçe şema/teknik (B-serisi · köprü · KDV · percent_lines) → TASARIM-KARARLARI + SUPABASE-SCHEMA.
 - Eşleşme yoksa → ARCHITECTURE.md oku, sonra sor.
 
 ## Faz 1 kapsamı

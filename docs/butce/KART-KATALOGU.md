@@ -1,5 +1,5 @@
-# KAAPA — BÜTÇE KART MİMARİSİ ve KALEM MEKANİZMASI
-*Kalıcı mimari. Bütçe modülünün kart/kalem yapısının ve kalem davranış motorunun TEK KAYNAĞI. Koster damıtımından ve oturum kararlarından damıtıldı. TASARIM-KARARLARI.md'den referanslanır.*
+# KAAPA — BÜTÇE KART KATALOĞU ve KALEM MEKANİZMASI
+*Kalıcı domain kataloğu. Bütçe modülünün kart/kalem yapısının ve kalem davranış motorunun TEK KAYNAĞI. Koster damıtımından ve oturum kararlarından damıtıldı. TASARIM-KARARLARI.md'den referanslanır.*
 *Oluşturma: 19 Haziran 2026. Güncelleme: 19 Haziran 2026 (KART 1400, 1500 + §4.8 ödeme-statüsü + §4.9 crew overlap + §5.1 görünürlük + §6 Compliance Guard).*
 *Durum: KART 1100, 1300, 1400, 1500 KİLİTLİ; 1600 (Cast) ve sonrasından devam edilecek.*
 
