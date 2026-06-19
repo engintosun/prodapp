@@ -62,6 +62,20 @@
 - **Risk-bayrağı:** Kalem davranış motorunun üçüncü bağı. Kalem eksik/hatalıysa otomatik tetiklenen anomali kodu + açıklama notu (örn. E&O = Errors & Omissions riski).
 - **Alias / çapraz-eşleme:** Bir kalemin başka kartı İŞARET ETMESİ (kopyalama değil). Tek fatura tek yerde toplanır (çift-sayım önlenir); diğer kart görür ama içine almaz. Çoklu çalışmada çapraz-yetki kanalı olarak da kullanılır.
 - **Departman admini:** Kart-bazlı yetki sahibi. Yalnız kendi kartını görür/yazar; alias ile başka karttaki tek ilgili kalemi onaylayabilir (tüm kartı açmadan). Muhasebe her zaman üst yetki.
+- **Ödeme-statüsü (loan-out):** Bir işçilik kaleminin ödeme biçimi (Bordro / SMM / Şirket-faturası / Loan-out). Fringe'in hesaplanıp hesaplanmayacağını ve nereye gideceğini belirler. Kodda: kalem metadata boyutu.
+- **Loan-out:** Kişinin gelirini şahıs/limited şirketi üzerinden faturalandırması (TR karşılığı: şahıs şirketi/SMM). Fringe yönünü değiştirir.
+- **Çift-fringe guard:** Anomali kuralı. Şirket-faturası/SMM/Loan-out statülü kaleme otomatik SGK/Bordro fringe binmesini engeller (çift-vergilendirme önleme).
+- **Crew Overlap Guard:** Anomali kuralı. Aynı kişinin iki ayrı kartta maaş/ücret alması (mükerrer personel/çift maaş) taraması. Tüm kartlarda aktif.
+- **Milestone uyuşmazlık denetimi:** Hakediş taksitinin bağlı olduğu teslim kilometre taşıyla (örn. yönetmen kaşesi ↔ kurgu onayı) uyum kontrolü; teslim olmadan fatura → erken ödeme uyarısı.
+- **Görünürlük maskesi (Privacy Toggle):** Hassas kartın/satırın set rollerine arayüzde maskelenmesi. DB'de Muhasebe erişimi tamdır (kör nokta değildir). "Kör nokta" terimi anomali motoruna aittir, görünürlük için kullanılmaz.
+- **Maskeli kart / Tam maske / Kısmi maske:** Kart görünürlük seviyeleri. Tam maske=set rollerine tümü kapalı (1100,1400); Kısmi maske=baş-kaşe gizli, operasyonel satır açılabilir (1300,1500).
+- **Gizli satır (hidden row):** Kart açık olsa bile içindeki tek satırın set rollerine gizlenmesi.
+- **ATL baş-kaşe deseni:** ATL kartlarında baş-kaşe (yönetmen/yazar/yıldız kaşesi) set rollerine daima gizli; ekip satırları açılabilir. Baş-kaşe çoğul olabilir.
+- **Master/Owner:** Muhasebe'nin üstündeki proje sahibi Yapımcı (ve ayrı Denetmen/Auditor) katmanı. 1400 ticari yatak odası bu katmana ait.
+- **Compliance Guard:** Şablon-bağlamlı uyumluluk denetimi. Seçili Hedef Mecra'nın (Eurimages/Netflix/TRT/Bakanlık) sınırlarına göre yüzde-kalemleri denetler. Teşhis+uyarı verir, gizleme reçetesi vermez.
+- **Hedef Mecra (Bütçe Şablonu):** Bütçenin sunulacağı kurum (Eurimages/Netflix/TRT/Bakanlık). Compliance Guard'ın denetim bağlamını belirler.
+- **Rol-etiketi:** Tek kalemin altında gerçek sözleşmesel rol ayrımı (örn. 1401: Executive/Line/Coordinating/Supervising). Kalem katlanır, etiket gerçek ayrım taşır.
+- **Salt-okunur toplam:** Kart yüzünde tek toplam gösteren, alt-dökümü arkada tutulan kalem (örn. 1108).
 
 -----
 

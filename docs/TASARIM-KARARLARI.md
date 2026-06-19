@@ -181,3 +181,12 @@ Kalıcı mimari. TEK KAYNAK: docs/KAAPA_BUTCE-KART-MIMARISI.md. Aşağısı ÖZE
 - KART 1100 — PROJE GELİŞTİRME ve HAKLAR: Geliştirme etabı, tüm kart recoupable, 9 kalem (1101-1108 + 1190). 1108 salt-okunur.
 - KART 1300 — SENARYO YAZIM & YASAL TEMİZLİK: Yapım Öncesi etabı, recoupable değil. 1306 Legal Clearances = motorun ilk kurulu örneği (3 bağ tam set).
 - 1200 absorbe: "Story & Other Rights" ayrı kart DEĞİL; geliştirme hakları 1101'de, yazım 1300'de.
+- KART 1400 — YAPIMCI BİRİMİ ve FİNANSAL HAKLAR: ATL, recoupable değil, tam maske 🔒 ("ticari yatak odası"). Dört grup: kreatif kaşeler (1401/1402/1403) · şirket gelirleri (1404 Overhead/1405 Mark-up) · komisyon (1406) · lojistik/temsil (1407-1409). Compliance Guard bağlı (1404/1405 şablon tavanı).
+- KART 1500 — YÖNETMEN ve KREATİF REJİ EKİBİ: ATL (Prep→Prod→Post), recoupable değil, kısmi maske 👁️ (1501 baş-kaşe gizli). Dört grup: kreatif ana (1501/1502) · destek ekibi (1503-1505) · görselleştirme (1506/1507) · lojistik/temsil (1508/1509). Milestone denetimi: 1501↔5100.
+
+### G. Yeni mimari kavramlar (19 Haziran 2026 — ek oturum)
+- §4.8 Ödeme-statüsü boyutu (loan-out → fringe yönü): Her işçilik kaleminin Bordro/SMM/Şirket-faturası/Loan-out statüsü vardır; bu statü SGK/fringe'in hesaplanıp hesaplanmayacağını ve nereye gideceğini belirler. Motor tanımlı; hesaplama §8 PARK.
+- §4.9 Genel anomali kuralları (tüm kartlarda aktif): çift-fringe guard (SMM/Loan-out'a fringe binmesini engeller) · Crew Overlap Guard (aynı kişi iki kartta ücret taraması) · geliştirme mahsup kontrolü (1102/1103↔1401/1403/1501) · milestone uyuşmazlık denetimi (hakediş↔teslim kilometre taşı).
+- §5.1 Kart görünürlük katmanları: DB-erişim ≠ UI-görünürlük. Muhasebe DB'de her zaman tam açık (kör nokta yok). Set rollerine: tam maske (1100,1400) / kısmi maske (1300,1500) / departman-açık (2100+). Satır-seviyesi gizleme (hidden row) var. ATL baş-kaşe deseni: baş-kaşe set rollerine daima gizli (çoğul olabilir). Master/Owner katmanı: Muhasebe üstü proje sahibi + Denetmen/Auditor.
+- §6 Compliance Guard: Şablon-bağlamlı uyumluluk denetimi. Hedef Mecra seçimi (Eurimages/Netflix/TRT/Bakanlık) + compliance_rules veri tablosu. Sınır kuralı KİLİTLİ: teşhis+uyarı EVET / gizleme reçetesi HAYIR. Üç senaryo: Overhead tavanı, Mark-up tavanı, gizli kâr transferi görünürlüğü.
+Detay TEK KAYNAK: docs/KAAPA_BUTCE-KART-MIMARISI.md.
