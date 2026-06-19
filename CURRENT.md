@@ -3,11 +3,12 @@
 Yalnizca SIMDIKI durumu tutar. Her oturum kapanisinda bastan YAZILIR. Tarihce -> git log.
 
 ## Milestone
-M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; CFE dilim 1 canli (8/8). 2026-06-15: sablon body jsonb FORMAT + KDV ayristirma (Genis yol) KILITLENDI. Bu oturum kod uretmedi (mimari/arastirma); kararlar doc commit'iyle yazildi. Sirada UYGULAMA: once vat_rate sema eki, sonra fn_open_budget zinciri.
+M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; CFE dilim 1 canli (8/8). 2026-06-15: sablon body jsonb FORMAT + KDV ayristirma (Genis yol) KILITLENDI. 2026-06-19: butce kart-insa basladi; etap modeli + kart/kalem kurallari + "kullanan sahiplenir" + gelistirme=recoupable + kalem davranis motoru + coklu-calisma yetki KILITLENDI; KART 1100 ve 1300 KILITLENDI. Detay: docs/KAAPA_BUTCE-KART-MIMARISI.md. Bu oturumlar kod uretmedi (mimari/karar); kararlar doc commit'iyle yazildi. Sirada 1400 (Producers) ve UYGULAMA: vat_rate sema eki, fn_open_budget zinciri.
 
 ## Durum
-- HEAD: cb0d6c4 (doc; kod e63fbb0 = butce goc, canlida). Repo: github.com/engintosun/prodapp · Canli: prodapp-navy.vercel.app.
+- HEAD: 8a727e1 (doc). Repo: github.com/engintosun/prodapp · Canli: prodapp-navy.vercel.app.
 - KURULU/CALISIYOR: auth + cok-proje login · saha fis girisi · yonlendirme trigger · duzeltme · davet/rol · reviewer onay/red · proje olusturma + butce tablolari + servisler · onboarding UI · BUTCE DB TEMELI (15 tablo + RLS muhasebe-only + iz/updated_at) · BUTCE GOCU CANLI (kart=departman, budget_stages=donem tarihli, budget_item_periods koprusu) · CFE DILIM 1 (saf hesap: brutBirim/satirToplam/kdvAyristir/zincirToplam/dokum; UI/servise bagli degil).
+- KART MIMARISI KILITLI (2026-06-19): 5 etap ekseni, kart=departman+"kullanan sahiplenir", gelistirme=recoupable tek kart, kalem motoru (ait-kart/onay-koprusu/risk-bayragi/alias-isaret-eder), coklu-calisma yetki (kart-bazli admin + Muhasebe ustunlugu). KART 1100 ve KART 1300 kilitlendi. Detay: docs/KAAPA_BUTCE-KART-MIMARISI.md.
 - KRITIK ACIK: butce UI/servis yok (Dilim 2b+); uyari/anomali motoru yok (kural var, kod yok). TECH-DEBT Acik Borc 5/5 SINIRDA — yeni borc oncesi kapatma.
 
 ## Butce — KILITLI kararlar (ozet; detay TASARIM-KARARLARI.md)
@@ -24,6 +25,7 @@ M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; CFE dilim 1
 - KDV AYRISTIRMA (Genis yol): budget_items'a vat_rate eklenecek (sema eki, uygulama dilimi). body'ye default_vat (kart) + opsiyonel vat (kalem). Kullanici NET veya BRUT girer; CFE kdvAyristir/brutBirim turetir; B18 kirilmaz. Kazanc: nakit matrisi BRUT-nakit; karisik oran (20/10/1/muaf) + serbest-meslek (yuk+KDV birlikte). KDV ile yuk AYRI eksen.
 
 ## Siradaki is — UYGULAMA (5-katman dilimleme)
+-1. ⬜ KART 1400 (Producers Unit — yapim donemi) mimari karari: 2026-06-19 oturumuna devam.
 0. ⬜ vat_rate sema eki: budget_items.vat_rate (numeric default 20, >=0). Kucuk migration. supabase db push icin "kabul".
 1. ⬜ Sablon icerik seed (body FORMAT'inda): film (Engin) + reklam (AICP 11 kart hammaddesi) + dizi (film ortusur, season+episode) + belgesel sonra. System sablonlar.
 2. ⬜ fn_open_budget: raftan fotokopi (stages + cards + items[unit_net=0] + percent_lines + paket->item_burdens gunun orani + "Donemsiz" etabi + department_code->department_id cozumu); kopru bos. + ongorulen okuma (kopru + CFE -> matris).

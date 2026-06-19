@@ -150,3 +150,34 @@ Bu dosyada eskiden karışık duran ekran/iş/auth detayları doğru evlerine ta
 ### F. Açık bayraklar (uygulama diliminde)
 - department_code -> department_id: fn_open_budget'ta; departmanlar proje-bazlı, sistem şablonu projeyi bilmez -> kanonik departman kodu/seed gerekebilir.
 - "Dönemsiz" etabı mühür muafiyeti: "dönem tarihli olmalı"dan muaf -> budget_stages.is_undated? fn_lock_budget'ta.
+
+## Bütçe kart mimarisi + kalem mekanizması (kilitlendi 2026-06-19)
+Kalıcı mimari. TEK KAYNAK: docs/KAAPA_BUTCE-KART-MIMARISI.md. Aşağısı ÖZET referans; detay o dosyada.
+
+### A. Etap ekseni (5 etap = zaman)
+- Etap = ödeme/zaman etiketi; parayı karttan karta TAŞIMAZ. Beş etap: Geliştirme · Yapım Öncesi · Yapım · Yapım Sonrası · Dağıtım ve Teslimat.
+- Bir kalem birden çok etaba yayılabilir/bölünebilir.
+
+### B. Kart = departman + "kullanan sahiplenir"
+- Kart (= Harcama Grubu = departman) = giderin NEREYE ait olduğu. Kart ve Etap iki ayrı eksen — çakışmazlar.
+- Temel kural: bir kaynağı günlük kim kullanıyorsa kalem onun kartına yazılır. "Araç hep Ulaşım'a gider" diye kural YOK.
+
+### C. Geliştirme = recoupable tek kart
+- Geliştirme etabının TEK kartı "Proje Geliştirme ve Haklar"; tüm geliştirme bu kartta (genel kartlara DAĞITILMAZ).
+- Recoupable = greenlight'ta geri tahsil edilir; genel kartlar etap etiketiyle ayrılır, Geliştirme bilinçli istisna.
+
+### D. Kalem davranış motoru (üç bağ + alias + atom mirası)
+- Üç bağ: ait-kart (yer, para burada) · onay-köprüsü (kim onaylar, para yerinde) · risk-bayrağı (anomali tetikleyici).
+- Alias / çapraz-eşleme: kalem başka kartı İŞARET EDER, kopyalamaz (kopyalama = çift-sayım, sektörün en sık hatası).
+- Davranış ATOMDA yaşar: bağ/bayrak/kolon/flag kanonik atomda tanımlıdır; kalem atomu çağırınca miras alır.
+- Ek mekanizmalar: ödeme alt-kolonları (peşin/vadeli, v1-v4) · recoupable/iade/depozito ailesi (brüt/iade/net) · salt-okunur toplam · serbest metin notu.
+
+### E. Çoklu çalışma / yetki
+- Kart-bazlı departman admini: yalnız kendi kartını görür/yazar.
+- Alias = çapraz-yetki kanalı: departman admini tüm kartı açmadan başka karttaki tek ilgili kalemi onaylayabilir.
+- Muhasebe üstünlüğü: nihai finansal kontrol Muhasebe'de; alias-onayı ara katman, son söz değil.
+
+### F. Kilitli kartlar (19 Haziran 2026)
+- KART 1100 — PROJE GELİŞTİRME ve HAKLAR: Geliştirme etabı, tüm kart recoupable, 9 kalem (1101-1108 + 1190). 1108 salt-okunur.
+- KART 1300 — SENARYO YAZIM & YASAL TEMİZLİK: Yapım Öncesi etabı, recoupable değil. 1306 Legal Clearances = motorun ilk kurulu örneği (3 bağ tam set).
+- 1200 absorbe: "Story & Other Rights" ayrı kart DEĞİL; geliştirme hakları 1101'de, yazım 1300'de.

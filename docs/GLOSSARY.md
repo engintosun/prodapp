@@ -45,6 +45,7 @@
 ### Bütçe - dönem/nakit terimleri (2026-06-13)
 
 - **Dönem:** Bütçenin zaman dilimi; çağrı kâğıdına bağlı çekim bloklarıyla hizalı, tarih sınırlı. Varsayılan 3 (Hazırlık/Çekim/Post), inceltilebilir.
+- **Etap:** Dönemle eş anlamlı (aynı eksen); bütçede zaman/ödeme etiketi. Beş etap: Geliştirme · Yapım Öncesi · Yapım · Yapım Sonrası · Dağıtım ve Teslimat. Kodda: `stage`.
 - **Faz:** Dönemin kaba hali; ayrı yapı değil.
 - **Ne zaman (kalem):** Kalemin bağlı olduğu dönem(ler). İki eksen — ait-dönem ve nakit-dönem.
 - **Ait-olduğu-dönem:** Kalemin bütçede karşı geldiği dönem (maliyet/karşılaştırma kapısı).
@@ -52,6 +53,15 @@
 - **Nakit matrisi:** Kalemler x dönemler görünümü; dönem başına nakit ihtiyacı.
 - **Yuvarlama sözleşmesi:** Öngörülen taraf tam TL (ROUND_HALF_UP, önce-yuvarla-sonra-topla), gerçekleşen kuruşta. Detay: TASARIM-KARARLARI.md D bölümü.
 - **Kalem-dönem köprüsü (budget_item_periods):** Bir kalemi dönemlere bağlayan ara kayıt listesi; her kalem-dönem çifti tek satır, o dönemdeki miktarı tutar. Tek-dönemlik kalem = bu listede tek satır.
+
+### Bütçe - kart mimarisi ve kalem motoru terimleri (2026-06-19)
+
+- **Kullanan sahiplenir:** Bir kaynağı günlük kim kullanıyorsa kalem onun kartına yazılır. "Araç hep Ulaşım'a gider" gibi kategori-bazlı sabit kural YOK; kullanıcı belirler.
+- **Recoupable (geri-alınabilir):** Geliştirme döneminde cepten harcanan, greenlight'ta kasadan/yatırımcıdan geri tahsil edilen gider. Geliştirme kartı tamamen recoupable; diğer kartlar değil.
+- **Onay-köprüsü:** Kalem davranış motorunun ikinci bağı. Para ait-kartta durur; onay yetkisi başka karta/role köprülenir (harcama-kartı ≠ onay-birimi). Kodda temsil: kalem metadata alanı.
+- **Risk-bayrağı:** Kalem davranış motorunun üçüncü bağı. Kalem eksik/hatalıysa otomatik tetiklenen anomali kodu + açıklama notu (örn. E&O = Errors & Omissions riski).
+- **Alias / çapraz-eşleme:** Bir kalemin başka kartı İŞARET ETMESİ (kopyalama değil). Tek fatura tek yerde toplanır (çift-sayım önlenir); diğer kart görür ama içine almaz. Çoklu çalışmada çapraz-yetki kanalı olarak da kullanılır.
+- **Departman admini:** Kart-bazlı yetki sahibi. Yalnız kendi kartını görür/yazar; alias ile başka karttaki tek ilgili kalemi onaylayabilir (tüm kartı açmadan). Muhasebe her zaman üst yetki.
 
 -----
 
