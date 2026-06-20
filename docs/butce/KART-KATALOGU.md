@@ -1,7 +1,7 @@
 # KAAPA — BÜTÇE KART KATALOĞU ve KALEM MEKANİZMASI
 *Kalıcı domain kataloğu. Bütçe modülünün kart/kalem yapısının ve kalem davranış motorunun TEK KAYNAĞI. Koster damıtımından ve oturum kararlarından damıtıldı. TASARIM-KARARLARI.md'den referanslanır.*
-*Oluşturma: 19 Haziran 2026. Güncelleme: 19 Haziran 2026 (KART 1400, 1500 + §4.8 ödeme-statüsü + §4.9 crew overlap + §5.1 görünürlük + §6 Compliance Guard).*
-*Durum: KART 1100, 1300, 1400, 1500 KİLİTLİ; 1600 (Cast) ve sonrasından devam edilecek.*
+*Oluşturma: 19 Haziran 2026. Güncelleme: 20 Haziran 2026 (KART 1600 OYUNCU + §4.10 cost_object 4. eksen). Önceki: 19 Haziran (KART 1400/1500 + §4.8/§4.9/§5.1/§6).*
+*Durum: KART 1100, 1300, 1400, 1500, 1600 KİLİTLİ; sıradaki = bütçe runtime dikey-dilimi (sonra 1700).*
 
 ---
 
@@ -57,6 +57,15 @@ Aşağıdaki kurallar tek karta değil, TÜM kartlara uygulanır (kart-özel kur
 - Crew Overlap Guard (ekip çakışma): Aynı kişi (isim/kimlik) iki ayrı kartta maaş/ücret alıyorsa — örn. bir kartta paket ücret, başka kartta haftalık — mükerrer personel/çift maaş uyarısı. ATL↔BTL ve kart↔kart çapraz tarama.
 - Geliştirme mahsup kontrolü: Geliştirme etabındaki recoupable avanslar (örn. 1102/1103) ile ana yapım dönemindeki hak edişler (örn. 1401/1403/1501) arasındaki geçiş denetlenir; mahsup edilmemiş avans → mükerrer ödeme uyarısı.
 - Milestone uyuşmazlık denetimi: Hakediş taksitleri, bağlı oldukları teslim kilometre taşıyla (örn. 1501 ↔ 5100 Kurgu onay tiki) uyum kontrol edilir; teslim olmadan fatura → erken ödeme/sözleşme ihlali uyarısı.
+
+### 4.10 cost_object (transversal etiket) — DÖRDÜNCÜ EKSEN
+Kart=yer, etap=zaman, üst-grup=görsel kart-kümesi'ne EK dördüncü eksen: cost_object = bir maliyetin hangi transversal İŞE/öğeye ait olduğu. Kart sınırını AŞAN toplam içindir (departman toplamı zaten kart'tan bedava gelir; cost_object onun için DEĞİL — bir stunt 3 kartta, bir oyuncu 4 kartta yayıldığında "tüm stunt ne?" için).
+- **Model:** MMB "Sets" / Saturation "Tags" (endüstri standardı; MMB Set = satır-başına TEK, Set'e göre rollup/rapor). Satır-başına TEK (Faz 1; çoklu sonra, kapı-açık). Kontrollü liste (budget_cost_objects, bütçe-bazlı) — serbest-metin DEĞİL (typo parçalanması olmaz; "Stunt/stunt" bölünmez).
+- **KATEGORİ seviyesi:** "Stunt", "VFX", "Oyuncu: Ahmet", departman-rollup. Sahne-instance (SFX1/SFX2 oto-numara) DEĞİL — o per-sahne ayrım breakdown'ın işidir, KAAPA breakdown KURMAZ (dev ERP kapsamı, kapsam-dışı). Anlamlı isim ("Çatı yangını") raporlanır; "SFX2" kör. Oto-numara + create-uyarı süsü REDDEDİLDİ (MMB/Saturation yapmaz; dropdown kazara tekrarı zaten önler).
+- **Oto-etiket:** içsel-cross-cut kütüphane kalemleri kanonik öneri-cost_object taşır (Dublör Koordinatörü / Stunt rig → "Stunt"); eklenince oto-yapışır (bul-veya-oluştur). Bağlama-bağlı kalem (bu sefer stunt'a giden düz kamyon) → opsiyonel dropdown. Çoğu satır boş. **Rutin akışta sıfır zorunlu iş.** (Oto-etiket kütüphane katmanına bağlı; o resmîleşene kadar manuel dropdown.)
+- **Gerçekleşen miras:** receipts.budget_item_id + direct_payments.budget_item_id ZATEN var → fiş kaleme eşleşince cost_object'i miras alır; öngörülen + gerçekleşen tek etiketle dilimlenir, yeni alan yok.
+- **Düşük-bahis:** etiket unutulursa bütçe BOZULMAZ — satır kendi kartında doğru durur; sadece opsiyonel cross-cut rollup eksik kalır. Kart toplamları (gerçek bütçe) etiketten bağımsız HER ZAMAN doğru.
+- **Şema PARK (DDL ayrı dilim, §8):** budget_cost_objects (bütçe-bazlı, muhasebe-only) + budget_items.cost_object_id nullable + restrict-silme (kullanımdaki iş silinemez) + B19 iz/updated_at kapsamı + baseline snapshot kapsamı (CFE serializer). Breakdown = gelecek modül (kapı-açık; cost_object'i otomatik besler).
 
 ## 5. ÇOKLU ÇALIŞMA / YETKİ
 - Kart-bazlı departman admini: her karta admin atanır; admin yalnız kendi kartını görür/yazar.
@@ -166,6 +175,55 @@ D. Lojistik & Temsil (operasyonel gider)
 
 Kart-özel anomali kuralları: çift-fringe guard (1501/kreatifler Loan-Out) · milestone uyuşmazlık (1501↔5100) · Crew Overlap (1504/1505 ↔ set ekibi). Genel kurallar §4.9'da.
 
+### 7.5 KART 1600 — OYUNCU  [KİLİTLİ]
+*Üst-grup: OYUNCU · Etap: Yapım (casting Yapım Öncesi'ne sarkar) · Recoupable DEĞİL · Görünürlük: KISMİ MASKE (baş-kaşe satırları set rollerine gizli/çoğul, gerisi açık) · DB'de muhasebe tam · anomali aktif.*
+Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi — gerekçe GEREKCELERI). Kod = Koster köken (provenance); KAAPA item_code ayrı (#0001); [K!] = KAAPA atadı (Koster numarasız); kesin katalog kodu kütüphane resmîleşince. cost_object=Stunt etiketi içsel-stunt kalemlerde oto (§4.10). [Ç]=çekirdek şablon · [K]=kütüphane.
+
+**Grup 1 — Ana Kast** (ödeme-statüsü §4.8; baz+ek; "on-hold" paket kaşe)
+- 1601 Stars / Principal Roles — Başrol Oyuncu: kaşe GİZLİ, normalde çoğul; sette olmasa da anlaşılan tutar ("on-hold"). cost_type=İşçilik. [Ç]
+- 1602 Supporting Cast — Yardımcı Oyuncu: loan-out şirketi olabilir (istisna). cost_type=İşçilik. [Ç]
+- 1603 Day Players — Günlük Oyuncu: ≤3 gün replikli küçük roller. cost_type=İşçilik. [Ç]
+- 1611 Overtime / Turnaround — Mesai: fazla mesai + yetersiz dinlenme telafisi. [K]
+- 1616 Rehearsal — Prova: çekim öncesi prova ücreti. [K]
+- 1614 Second Run Residuals — Tekrar Telifi: yeniden yayın/gösterimden süregelen ödeme (ayrı maliyet doğası). [K]
+
+**Grup 2 — Dublör** (stunt PERFORMANS · baz+stunt adjustment · cost_object=Stunt oto)
+- 1604 Stunt Coordinator — Dublör Koordinatörü: stunt'ı tasarlar/yönetir; uzmanlık (su/ateş/motor); başrolün dublörü olabilir. [Ç]
+- 1606 Stunt Players — Stunt Oyuncusu: genel stunt rolleri (düşen/dövüşen figürler). [Ç]
+- 1607 Stunt Doubles — Dublör: belirli oyuncuya benzetilip onun yerine tehlikeli çekime giren. [K]
+- 1608 Stunt Utility — Aksiyon Teknisyeni: belirli double olmayan, genel amaçlı ek stunt iş gücü. [K]
+
+**Grup 3 — Arkaplan Oyuncusu** (Background Actors · sadece kişiler · AÇIK · baz+premium)
+- 3901 General Extras / Background — Genel Arkaplan Oyuncusu: repliksiz, sahneye hayat veren kalabalık. [Ç]
+- 3902 Stand-Ins — Stand-In: oyuncu yerinde set ışıklanırken duran; regular'dan fazla kazanır. [Ç]
+- 3903 Silent Bits — Sessiz Rol: repliksiz ama öne çıkan/eylemli figür; premium. [K]
+- 3904 Special Ability — Özel Yetenekli Arkaplan Oyuncusu: beceri/tehlike (yüzücü/binici); baz + ek. [K]
+- 3906 [K!] Specialty Background (FR: Silhouette) — Özel Tip: belirli fiziksel tip/görünüm için (dönem yüzü, ayırt edici tip). KAAPA-eklemesi. [K]
+- 3905 [K!] Dancers — Dansçı: koreografili sahne dansçıları. [K]
+
+**Grup 4 — Kast Operasyonu** (hizmet/destek, talent değil)
+- 1605 [K!] Cast Director — Cast Direktörü: oyuncuları seçen/yöneten kişi. cost_type=Hizmet. [Ç]
+- 1609 [K!] Casting Assistant — Cast Asistanı. [Ç]
+- 1610 [K!] Casting Expenses / Screen Tests — Cast Gideri / Deneme Çekimi: seçme süreci giderleri. [Ç]
+- 1613 Looping (ADR) — Dublaj: oyuncunun post diyalog yeniden-seslendirme seansı. ÇAPRAZ: 5300 Post Ses alias — stüdyo/miksaj orada (5300 kendi satırı, sadece işaretçi; çift-sayım denetimi). [Ç]
+- 1615 Welfare Worker / Teacher — Set Öğretmeni / Refah Görevlisi: çocuk/minör oyuncuda ZORUNLU (compliance). cost_type=Hizmet. [Ç]
+- 1612 Musicians (cast) — Müzisyen (kadro): sahnede/kayıtta görünen müzisyenler. [K]
+- 3913 Extras Casting — Arkaplan Oyuncusu Castingi: figüran/kalabalık seçim ajansı. [K]
+- 3914 Crowd Controllers — Kast Sorumlusu: set figüran/kalabalık sevki (Türk saha terimi). [K]
+- 3910 Extras Wardrobe Allowance — Arkaplan Oyuncusu Kostüm Ödeneği: kendi kıyafetini getirmesi için ödenek. [K]
+- 3915 Payroll Service — Bordro Hizmeti: figüran/oyuncu bordrosu dış hizmeti. [K]
+
+**Kart dışı (köken kodu ≠ KAAPA Oyuncu kartı):**
+- 1617 Contractuals — Sözleşmesel → item_burdens (yüzde/yük, kart gövdesinde değil; percent_line adayı §8).
+- Stunt Vehicle — Stunt Aracı → TRANSPORT kartı · cost_object=Stunt (o kartın kodunu alır).
+- Stunt Rigging — Stunt Rig / Kurulum → MEKANİK FX kartı · cost_object=Stunt.
+- 1503 Choreographer — Koreograf → 1500'de KİLİTLİ (alias; Master Oyuncu'da görse de yeri 1500).
+- Crowd AD (reji asistanı) → Prodüksiyon Ekibi / AD kartı (2100+). Ayrım: Kast Sorumlusu (3914) figüranı SEVK eder; Crowd AD sahneyi YÖNETİR (reji). 1500'de YOK (1500 yalnız 1505 yönetmen özel asistanı, set reji departmanından ayrı).
+
+**Stunt = doğa-bölmesi:** tek "Efekt & Dublör" kartı YOK. Performans→Oyuncu (bu kart), araç→Transport, mekanik→Mekanik FX. Üç kartın stunt satırları cost_object=Stunt taşır → CFE tek "Stunt toplam" (§4.10). Gerçekten etkilenen diğer kartlar: Transport, Mekanik FX (5300 değil — alias işaretçi).
+
+**Kart-özel anomali:** çift-fringe guard (§4.9; loan-out'a fringe de mi yüklendi) · Crew Overlap (§4.9; aynı isim cast + set ekibinde maaş) · ÇOCUK-COMPLIANCE: minör/çocuk oyuncu var + set öğretmeni (1615) yok → bayrak (Compliance Guard §6, teşhis+uyarı). Looping çift-sayım: 1613 ↔ 5300 alias denetimi.
+
 ## 8. AÇIK / PARK (ilgili bölümlere gelince)
 - Recoupable + iade/depozito şema/CFE detayı.
 - percent_lines (Completion Bond/Contingency/Overhead/Insurance — dışlamalı, satır-bazlı farklı baz). 1404/1405 percent_line adayı; motor buraya gelince açılır.
@@ -173,7 +231,8 @@ Kart-özel anomali kuralları: çift-fringe guard (1501/kreatifler Loan-Out) · 
 - compliance_rules veri tablosu (şablon/kalem/sınır%/kaynak-tarih) — Compliance Guard'ın veri kaynağı; koda gömülmez, kaynak-tarihli, "doğrulayın" notlu.
 - 1405 kâr-şişirme denetimi (1403 emek + 1405 kâr toplamı fon normunu aşarsa bayrak) — fringe/compliance motoruna bağlı.
 - Kur farkı / çok-para-birimi (Türk bağlamı birincil).
-- Stunt doğa-bölmesi (performans→Cast/Dublör, araç→Transport, mekanik→Mekanik FX), "Sanat" çok-kart bölünmesi, walkie yuvası — ilgili kartlara gelince.
+- Stunt doğa-bölmesi: performans 1600'de KİLİTLİ (§7.5); araç→Transport, mekanik→Mekanik FX o kartlara gelince. "Sanat" çok-kart bölünmesi, walkie yuvası — ilgili kartlara gelince.
+- cost_object şema (DDL ayrı dilim): budget_cost_objects tablosu (bütçe-bazlı, muhasebe-only) + budget_items.cost_object_id nullable + restrict-silme + B19/updated_at + baseline snapshot kapsamı. Konsept §4.10.
 
 ## 9. UI/EKRAN PARK (bütçe ekran tasarımına gelince)
 - Bento Grid görünümü: maskeli kartların asma kilit/flu gösterimi; ağaçta gizleme vs flu seçimi.

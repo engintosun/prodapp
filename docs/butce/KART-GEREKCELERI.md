@@ -145,6 +145,32 @@ Storyboard Artist [8k], Script Timing [6k], Dialogue Coach [4k], Choreographer (
 
 ---
 
+## KART 1600 — OYUNCU  (KART-KATALOGU §7.5)
+
+### Neden TEK kart (Cast + Atmosphere birleşik)?
+Koster Cast'i 1600 (ATL), Atmosphere/figüranı 3900 (Production) AYRI tutar — ama bu konvansiyon, mantık değil: Koster'ın kendi metni "ATL/BTL tarihsel kaza, sınır kayar" der. DÖRT kaynak birleştiriyor: **Saturation** (screen_australia hesap-kodunu korumuş: Principals E(b)2, Standins E(b)4, Stunts E(b)5, Extras E(b)6 — dördü tek "E" Cast hesabı altında alt-satır) · **Eurimages** ("Extras fees, casting & coordination" tek kova; ayrı bölüm yok) · **Master gerçek bütçeler** (figüran Oyuncu altında kümeli: EXTRAS 7k, Stand-ins 7k, General Extras 3k…) · **Türk saha** (figüran genelde cast altında tutulur). Sadece Koster nominal ayırır, o da "konvansiyon" der. KAAPA: tek Oyuncu kartı, 4 görsel grup. Görünürlük zaten satır-seviyesinde (baş-kaşe gizli, figüran açık) — ayrı kart gerektirmez; 2-seviye derinlik de tek-kartı destekler.
+
+### Neden Figüran cast altında, ayrı kart değil?
+Master'da figüran ezici çoğunlukla Oyuncu departmanı altında kümeli. Türk yapımında figüran ayrı bir onay birimi değil — aynı yapım yönetimi tutar. Saturation/MMB de ayrı üst-hesap yapmaz (Set/Tag ile ayrılır, kart ile değil). Grup içinde kalır; görünürlük AÇIK (operasyonel), baş-kaşe GİZLİ.
+
+### Stunt — neden doğa-bölmesi, neden tek "Efekt & Dublör" kartı YOK?
+Bir stunt = üç farklı maliyet doğası. Koster stunt'ı doğasına dağıtır, Master doğrular (Stunt Equipment→Grip, Coordinator→Oyuncu, Bits&Stunts→Lojistik). KAAPA: performans (koordinatör/oyuncu/dublör/aksiyon teknisyeni)→Oyuncu · araç→Transport · mekanik/rigging→Mekanik FX. Eski "Efekt & Dublör" tek-kartı çözüldü ("Dublör" performans Cast'e, "Efekt" mekanik Mekanik FX'e). "Kullanan sahiplenir"in stunt karşılığı: araç yeri Transport, çünkü o departmanın bütçe sorumluluğu; kategorisi değil kullanımı belirler. Toplamı geri-okumak için cost_object=Stunt (§4.10) — kart sınırını aşan tek "Stunt toplam".
+
+### Çocuk oyuncu compliance — neden zorunlu atom?
+Koster Welfare Worker/Teacher'ı hem Cast (1615) hem Atmosphere (3906) altında işaret eder. KAAPA bunu compliance atomu yapar: çocuk/minör oyuncu varsa set öğretmeni ZORUNLU; yoksa bayrak. Master'da düşük frekans (Guardian for minor 1k) ama yasal zorunluluk — frekansla değil hukukla gelir (2026-eklentileri gibi). Compliance Guard (§6): teşhis evet, gizleme hayır.
+
+### cost_object kategori-seviyesi — neden sahne-instance ve breakdown DEĞİL?
+Nature-split kart-aşırı toplam ihtiyacı doğurdu ("stunt toplam ne?"). Çözüm cost_object (MMB Set / Saturation Tag, endüstri standardı). Ama KATEGORİ seviyesinde ("Stunt"), sahne-instance (SFX1/SFX2) DEĞİL: per-sahne ayrım her kaleme ikinci sahne-etiketi demek = breakdown'sız kullanıcı dikkatine bağlı + hataya açık. Sahne-bazlı maliyet aslında BREAKDOWN'ın işidir (Celtx/Gorilla breakdown elementlerini bütçeye otomatik akıtır; Saturation'da breakdown YOK, Tag ile seçici yapar). KAAPA = Saturation gibi: breakdown kurmaz (dev ERP kapsamı), cost_object'i Tag gibi opsiyonel/seçici kullanır. Düşük-bahis: etiket unutulsa bütçe bozulmaz, sadece rollup eksik kalır. Kapı-açık: gelecek breakdown modülü cost_object'i otomatik besler.
+
+### Terim gerekçeleri (Türk saha)
+- **Kast Sorumlusu** (Crowd Controllers) ≠ **Crowd AD**: ilki figüranı SEVK eder (Oyuncu kartı, 3914); ikincisi sahneyi YÖNETİR (reji asistanı → 2100+ AD kartı, 1500'de değil).
+- Üç "öne çıkan figüran" tipi ayrı: **Sessiz Rol** (eylemli, repliksiz) · **Özel Yetenekli** (beceri) · **Özel Tip** (fiziksel görünüm; ABD Specialty Background, FR Silhouette).
+- **Dublör** (Stunt Double) ≠ **Stunt Oyuncusu** (Stunt Players) ≠ **Aksiyon Teknisyeni** (Stunt Utility): birincisi belirli oyuncunun yerine, ikincisi genel stunt rolü, üçüncüsü genel destek.
+- **Dublaj** (Looping/ADR), **Mesai** (Turnaround); **Stand-In** İngilizce kalır (sektör kullanımı).
+
+### Master Excel doğrulaması
+Oyuncu-Kast 197 kalem. Çekirdek (kaynak-sayısı = kaç bütçede): Cast Director 10k · Stunt Coordinator 9k · ADR 7k · Extras 7k · Stand-ins 7k · Looping 6k · Day Players 5k · Principal Cast 5k · Supporting Cast 4k. Stunt kalemlerinin çok-kart dağılımı (Grip/Lojistik/Oyuncu) doğa-bölmesini doğruladı.
+
 ## GENEL EĞİTİM NOTLARI (tüm kartlara yayılan kavramlar)
 
 ### Kalem davranış motoru — neden "not alanı" sadece metin değil?
@@ -158,3 +184,6 @@ Kart = NEREYE ait (departman, kalıcı ev). Etap = NE ZAMAN ödeniyor (zaman eti
 
 ### Kullanan sahiplenir — neden kategori-bazlı sabit kural YOK?
 Bir kaynağı günlük kim kullanıyorsa satır onun kartına yazılır. "Araç hep Ulaşım'a gider" gibi sabit kural YOKTUR: kostüm kamyonu → Kostüm; genel havuz aracı → Ulaşım; vinç şoförü → Grip; inşaat aracı → İnşaat. Neden? Çünkü gerçek sette bir kaynağın maliyeti onu kontrol eden departmanın sorumluluğudur; kategorisi değil kullanımı belirler. Bu, departman bütçe sorumluluğunu gerçeğe uydurur.
+
+### cost_object (transversal etiket) — neden kategori, neden opsiyonel?
+Bazı maliyetler kart sınırını aşar (bir stunt 3 kartta, bir oyuncu 4 kartta). Departman toplamı kart'tan bedava gelir; ama "tüm stunt ne?" için transversal bir eksen gerekir = cost_object (MMB Sets / Saturation Tags, endüstri standardı; dört kaynak: MMB Sets satır-başına tek + Set raporu, Saturation Tags "esnek ikinci boyut"). KATEGORİ seviyesinde tutulur (Stunt/VFX/per-oyuncu), sahne-instance değil — çünkü per-sahne breakdown işidir, KAAPA breakdown kurmaz (kapsam-dışı, gelecek modül). Opsiyonel/seçici: içsel-cross-cut kalemler kütüphaneden oto-etiketlenir (sıfır iş), gerisi isteğe bağlı dropdown. Düşük-bahis: unutulursa bütçe bozulmaz, sadece rollup eksik kalır; kart toplamları her zaman doğru. Dört eksen: kart=yer · etap=zaman · üst-grup=görsel kart-kümesi · cost_object=transversal analiz.
