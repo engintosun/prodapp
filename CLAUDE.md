@@ -52,23 +52,21 @@ Dil: chat Türkçe; kod İngilizce (değişken/fonksiyon/dosya/commit/yorum); do
 - Supabase client tipsiz → sonuç cast `as unknown as X`. tsconfig: noUnusedLocals + noUnusedParameters AÇIK (kullanılmayan import/değişken bırakma).
 - İsim: DB snake_case · JS camelCase · dosya kebab-case. Tehlikeli kökler (gec/tip/durum/kat) kodda Türkçe KULLANMA → GLOSSARY.md.
 
-## Şema/RLS · deploy
-- Şema/RLS canlıya MANUEL (Engin SQL Editor) + repo senkron ardışık commit. Yeni tablo → GRANT + RLS policy (ikisi de gerekir).
-- Commit sonrası Engin canlıya alır → prodapp-navy.vercel.app'te uçtan-uca test. Edge Function: canlı kod = repo kodu (fark varsa repo güncellenir).
-
 ## Context routing
-- Mimari → docs/ARCHITECTURE.md · Auth/rol/RLS → docs/AUTH-KARARLARI.md + supabase/SUPABASE-RLS.sql · Şema → SUPABASE-SCHEMA.sql
+- Mimari → docs/ARCHITECTURE.md · Auth/rol/RLS → docs/AUTH-KARARLARI.md (canlı RLS tanımı baseline'da) · Şema → supabase/migrations/00000000000000_baseline.sql (canlının tek kaynağı)
 - İş kuralı/onay/dönem/avans → docs/IS-KURALLARI.md · Ekran → docs/EKRAN-{SAHA,DEPT,MUHASEBE}.md + TASARIM-KARARLARI.md · İsim → GLOSSARY.md · Sıra → IS-SIRASI.md
-- Bütçe kart/kalem domain → docs/butce/ (KART-KATALOGU = kart/kalem katalog+motor · KART-GEREKCELERI = neden/eğitim · BUTCE-ARASTIRMA-DURUM = şablon/kalem araştırması). Bütçe şema/teknik (B-serisi · köprü · KDV · percent_lines) → TASARIM-KARARLARI + SUPABASE-SCHEMA.
+- Bütçe kart/kalem domain → docs/butce/ (KART-KATALOGU = kart/kalem katalog+motor · KART-GEREKCELERI = neden/eğitim · BUTCE-ARASTIRMA-DURUM = şablon/kalem araştırması). Bütçe şema/teknik (B-serisi · köprü · KDV · percent_lines) → TASARIM-KARARLARI + baseline.
+- Not: eski supabase/SUPABASE-{SCHEMA,RLS,FUNCTIONS}.sql ve full-rebuild.sql artık docs/archive/'te (bayat, tarihsel referans). Canlı şema/RLS/fonksiyon/trigger/grant tek kaynağı baseline'dır.
 - Eşleşme yoksa → ARCHITECTURE.md oku, sonra sor.
 
 ## Faz 1 kapsamı
 Tam liste docs/ARCHITECTURE.md §2.1. Listede yoksa Faz 1'de yoktur.
 
 ## Ortamlar / deploy
-Sonnet (Claude Code) Engin'in bilgisayarinda terminalde calisir; GitHub + Supabase CLI girisli (girisler tek seferlik yapildi, tekrar login yok). Tek elden:
-- **Sonnet yapar:** kod + commit + push + edge deploy (`supabase functions deploy <ad>`) + SQL/sema/RLS uygulama (CLI).
-- **Engin onayi:** SADECE sema/RLS/grant degisikligi UYGULANMADAN ONCE (canli KVKK verisi guvenlik gecidi). Onay = SQL'i okuyup "kabul" demek; kopyala-yapistir yok, uygulamayi Sonnet yapar. Kod/edge/normal isler onay gerektirmez.
-- **Vercel:** push'ta otomatik deploy, elle dokunma. **GitHub:** ortak hafiza.
-- Edge function dashboard'dan ASLA deploy edilmez (rastgele isim + verify_jwt dugmesi yok) -> sadece CLI. Yeni fonksiyon adi = klasor adi.
-- Not: Sonnet-CLI ile SQL uygulama ilk seferde dogrulanir; takilirsa yedek = Supabase SQL Editor.
+Sonnet (Claude Code) Engin'in bilgisayarında terminalde çalışır; GitHub + Supabase CLI girişli (girişler tek seferlik yapıldı, tekrar login yok). Tek elden:
+- **Sonnet yapar:** kod + commit + push + edge deploy (`supabase functions deploy <ad>`) + SQL/şema/RLS uygulama (CLI, `supabase db push`).
+- **Engin onayı:** SADECE şema/RLS/grant değişikliği UYGULANMADAN ÖNCE (canlı KVKK verisi güvenlik geçidi). Onay = SQL'i okuyup "kabul" demek; kopyala-yapıştır yok, uygulamayı Sonnet yapar. Kod/edge/normal işler onay gerektirmez. Salt-okuma (dump/inceleme) onay gerektirmez.
+- **Yeni tablo → GRANT + RLS policy (ikisi de gerekir).** ensure_rls event trigger'ı yeni tabloya RLS'i otomatik açar ama policy yine elle yazılır.
+- **Edge:** canlı kod = repo kodu (fark varsa repo güncellenir). Dashboard'dan ASLA deploy edilmez (rastgele isim + verify_jwt düğmesi yok) → sadece CLI. Yeni fonksiyon adı = klasör adı.
+- **Vercel:** push'ta otomatik deploy, elle dokunma. **GitHub:** ortak hafıza.
+- Not: bazı CLI işlemleri (`db dump` / `db reset`) Docker ister; Engin'de Docker yok → bunlar için Docker'sız yedek kullanılır (doğrudan `pg_dump` / Supabase SQL Editor). `db push` (migration uygulama) Docker'sız çalışır.
