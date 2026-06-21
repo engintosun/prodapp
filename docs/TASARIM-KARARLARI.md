@@ -147,9 +147,11 @@ Bu dosyada eskiden karışık duran ekran/iş/auth detayları doğru evlerine ta
 - Kullanıcı NET veya BRÜT (KDV dahil) girer; satır oranını bilir -> CFE kdvAyristir/brutBirim ile diğeri türetilir. B18 KIRILMAZ (oran girdi, tutar saklanmaz).
 - Kazanç: (a) nakit matrisi BRÜT-nakit; (b) karışık oran (20/10/1/muaf); (c) serbest-meslek makbuzu yük+KDV BİRLİKTE -> KDV ile yük AYRI eksen.
 
-### F. Açık bayraklar (uygulama diliminde)
-- department_code -> department_id: fn_open_budget'ta; departmanlar proje-bazlı, sistem şablonu projeyi bilmez -> kanonik departman kodu/seed gerekebilir.
-- "Dönemsiz" etabı mühür muafiyeti: "dönem tarihli olmalı"dan muaf -> budget_stages.is_undated? fn_lock_budget'ta.
+### F. fn_open_budget kararları (KİLİTLENDİ 2026-06-21, Dilim 2a)
+- department_code -> department_id: ÇÖZÜLDÜ. departments'a `code` kolonu (kanonik anahtar, UNIQUE(project_id,code)); fn_open_budget her şablon kartının department_code'u için projede BUL-VEYA-OLUŞTUR (ON CONFLICT DO NOTHING ile race-safe). Departman proje-bazlı kalır (global raf YOK); name şablondan. İsim-eşleme REDDEDİLDİ (typo bölünmesi).
+- "Dönemsiz" etabı: ÇÖZÜLDÜ. budget_stages'e `is_undated` boolean; fn_open_budget her bütçede bir rezerve "Dönemsiz" etabı yaratır (is_undated=true, sort_order 9999). Mühür (fn_lock_budget) bu etabı "tarihli olmalı"dan MUAF tutar (mantık o dilimde, kolon CANLI).
+- fn_open_budget davranış sözleşmesi (Model A): köprü (budget_item_periods) açılışta BOŞ; unit_net=0 (rakamsız iskelet); cost_object boş; paket->item_burdens günün oranı (rate_catalog valid_from<=bugün).
+- item_code üretimi: `budgets.item_code_seq` MONOTON artırılır (UPDATE ... RETURNING), `max(item_code)+1` DEĞİL. Gerekçe: max boşluk-doldurur, silinen kodu geri verir -> B-serisi kalıcı kimlik İHLALİ. Sayaç "geri dönmez" (temel migration satır 86).
 
 ## Bütçe kart mimarisi + kalem mekanizması (kilitlendi 2026-06-19)
 Kalıcı mimari. TEK KAYNAK: docs/butce/KART-KATALOGU.md. Aşağısı ÖZET referans; detay o dosyada.

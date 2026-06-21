@@ -41,6 +41,9 @@
 |Tutanak defteri|budget_change_log    |Her değişikliğin kim/ne zaman/eski→yeni izi        |
 |Sınav düzeneği|—                     |Para hesabı kurallarının cevap anahtarlı testi     |
 |Kalıcı kalem kodu|item_code          |Bütçe içi artan, geri kullanılmayan kalem kimliği  |
+|Maliyet nesnesi|cost_object|Kart sınırını aşan transversal iş/öğe etiketi (Stunt, VFX, "Oyuncu: Ahmet"). Bütçe-bazlı kontrollü liste; rollup için. 4. eksen (§4.10). Satır-başına tek (Faz 1)|
+|Dönemsiz etap|undated stage|fn_open_budget'ın yarattığı rezerve etap (is_undated=true); döneme bağlanmamış kalemler önce buraya düşer. Mühür tarih-zorlamasından muaf|
+|Kalem kodu sayacı|item_code_seq|budgets üzerinde monoton artan sayaç; kalıcı item_code üretir, geri dönmez (silinen kod tekrar verilmez)|
 
 ### Bütçe - dönem/nakit terimleri (2026-06-13)
 

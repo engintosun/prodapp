@@ -1,6 +1,6 @@
 # KAAPA — Teknik Borç Takibi (TECH-DEBT)
 
-**Son güncelleme:** 13 Haziran 2026
+**Son güncelleme:** 21 Haziran 2026
 **Kural:** Her borç bir milestone'a bağlı. "Bir gün düzeltiriz" yok. **Bütçe sınırı yalnız "Açık Borç" kovasını sayar** (kod/şema ile kapatılacak gerçek borç). "Karar Bekleyen" kalemler milestone'da karara bağlanacak yapısal seçimlerdir, borç sayılmaz. Açık Borç 5'i aşarsa yeni özellik durur.
 
 -----
@@ -41,10 +41,11 @@
 
 - Açık Borç sayısı: 5 / 5 (TD-5, TD-8, TD-9, TD-10, TD-11)
 - Karar Bekleyen: 4 (TD-2, TD-3, TD-6, TD-7) — bütçeye sayılmaz
-- Durum: ⚠️ Bütçe SINIRINDA (5/5). Yeni borç eklenirse (6) yeni özellik durur — önce kapatma gerekir.
+- Durum: ⚠️ Bütçe SINIRINDA (5/5). Yeni borç eklenirse (6) yeni özellik durur — önce kapatma gerekir. Dilim 2a (cost_object şema + fn_open_budget) BORÇ EKLEMEDİ — temiz commit'ler, 5/5 korundu.
 
 -----
 
 ## Bilgi Notu (karar bekleyen değil)
 
 - `supabase/SUPABASE-SCHEMA.sql` BAYAT: yeni 14 bütçe tablosu yalnız migration'da (`20260613115009_butce_modulu_temel.sql`). schema.sql artık göç sonrası yapıyı da göstermiyor (kart=departman, budget_item_periods yalnız migration'da: `20260614150000_butce_goc_kart_departman_kalem_donem.sql`). "Şemayı migration'dan oku" geçerli. İleride schema.sql emekli, `supabase/sql/full-rebuild.sql` tek kaynak yapılabilir.
+- fn_open_budget'ta departman BUL-VEYA-OLUŞTUR `ON CONFLICT (project_id, code) DO NOTHING` ile race-safe (iki muhasebeci aynı anda aynı kodu açarsa ikinci sessiz düşer). cost_object şema dilimi (2f72ecc) + fn_open_budget (13f8e4f) 5-katman disiplinli; max(item_code)+1 spec hatası yakalandı, item_code_seq monoton sayaç ile düzeltildi.
