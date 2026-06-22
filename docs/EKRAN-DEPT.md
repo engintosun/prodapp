@@ -25,8 +25,9 @@ Toplam tutar + durum rozeti (ok/uyarı/aşım) + progress bar + 3 stat (onaylana
 **Fiş kartı:** checkbox + durum dot + satıcı + tutar; alt satır "kişi · kategori · tarih"; anomali uyarısı (sarı, örn "⚠ Ekip 15, 10 porsiyon"); belgesiz mavi etiket (örn "Belgesiz · Ekstra kostüm aksesuarı — nakit ödeme, fiş verilmedi"); kartta Onayla (yeşil) / Reddet (kırmızı).
 
 ## 5. Harcama detay (Dept.)
-Başlık "Harcama Detayı (Dept.)" + fiş thumbnail (lightbox) + alanlar (satıcı/tutar/tarih/kategori/personel/açıklama) + işlem geçmişi + 3 aksiyon: **Onayla (yeşil) / ½ Kısmi Onay (sarı) / Reddet (kırmızı)**.
+Başlık "Harcama Detayı (Dept.)" + fiş thumbnail (lightbox) + alanlar (satıcı/tutar/tarih/kategori/personel/açıklama) + işlem geçmişi + 4 aksiyon: **Onayla (yeşil) / ½ Kısmi Onay (sarı) / Düzeltme İste (mavi) / Reddet (kırmızı)**.
 - **Onayla:** dept_pending → dept_approved (→ otomatik acc_pending)
+- **Düzeltme İste:** fiş geçerli ama saha bir alanı yanlış girmişse (parasal dahil) → red yanlış araç. Statü dept_pending'de KALIR; correction_requested=true + saha'ya not. Tek tur: saha düzeltir → dept yalnız kabul/reddet (ping-pong yok). Kural: IS-KURALLARI.md §3.
 - **Reddet:** dept_pending → dept_rejected (sebep zorunlu, serbest metin)
 - **Reddet:** 10 red sebebi dropdown + opsiyonel alan seçimi (bkz. IS-KURALLARI.md)
 - **Kategori düzeltme:** reddetmeden tek tıkla kategori değiştir

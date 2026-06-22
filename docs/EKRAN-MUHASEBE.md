@@ -21,7 +21,7 @@ Dashboard / Bekleyen (n) / Şüpheli (n) / Raporlar / Kiralama (n) / Avanslar / 
 **Departman kartları:** renk dot + departman adı + kişi sayısı + 4 stat (Toplam/Onaylı/Bekleyen/Şüpheli) + 2 progress bar (harcama + bütçe %). Kart tıklanabilir → departman drill-down detayı.
 
 ## 5. Bekleyen tab
-acc_pending fiş kartları. Detay: tüm confidence verileri her zaman görünür. Aksiyon: Onayla → acc_approved · Reddet → acc_rejected (10 red sebebi dropdown + opsiyonel alan seçimi, sebep zorunlu; bkz. IS-KURALLARI.md §3) · **Split (½ kısmi onay):** split_amount belirle, fiş → split status. approval_log otomatik.
+acc_pending fiş kartları. Detay: tüm confidence verileri her zaman görünür. Aksiyon: Onayla → acc_approved · Reddet → acc_rejected (10 red sebebi dropdown + opsiyonel alan seçimi, sebep zorunlu; bkz. IS-KURALLARI.md §3) · **Split (½ kısmi onay):** split_amount belirle, fiş → split status. · **Düzeltme İste:** fiş geçerli ama saha alanı yanlışsa → acc_pending'de KALIR, correction_requested=true + saha'ya not; tek tur, saha düzeltir → muhasebe kabul/reddet (IS-KURALLARI.md §3). approval_log otomatik.
 
 ## 6. Şüpheli tab
 "Otomatik tespit edilen anormal harcamalar. İnceleyip onaylayabilir veya reddedebilirsiniz." Kart: kişi · departman + kural uyarısı (⚠) + satıcı · kategori · tarih + durum etiketi (Beklemede sarı / İnceleniyor mavi) + tutar (kırmızı) + **Temizle (yeşil, temize çıkar)** / Reddet (kırmızı). Kurallar bkz. IS-KURALLARI.md §13.
