@@ -6,81 +6,7 @@
 -----
 
 ## BÖLÜM 1 — ÇALIŞMA SÖZLEŞMESİ
-
-### 1.1 Session Protokolü
-
-Session açılış ve kapanış ritüeli CLAUDE.md'de tanımlanır. Proje hafızası CURRENT.md'de yaşar.
-
-**Karar tarihi:** 22.05.2026 | **Gerekçe:** Bağlam kaybını önlemek, her session'ın aynı zeminden başlamasını garantilemek.
-**Güncelleme:** 22.05.2026 | Ritüel CLAUDE.md'ye taşındı — çünkü CLAUDE.md her session'da okunan ilk dosya. CURRENT.md eklendi — projenin dinamik durumunu taşır.
-
-### 1.3 Karar Alma ve Kayıt Mekanizması
-
-Üç katmanlı kayıt sistemi:
-
-- **Kalıcı kararlar** → repo dokümanları (ARCHITECTURE.md, TASARIM-KARARLARI.md vb.). Değişmesi yeni bilinçli karar gerektirir.
-- **Operasyonel görevler** → görev listesi dosyası. Tamamlanınca silinir veya done'a taşınır.
-- **Parkur notları** → session kapanışında listelenir. Gözlem, bağlantı, hatırlatma. Engin taşır veya düşürür.
-
-Her kalıcı karar: tek cümle + tarih + gerekçe. Gerekçesiz karar kaydedilmez.
-
-**Karar tarihi:** 22.05.2026 | **Gerekçe:** v8'i öldüren örtük kararlar — her şey bilinçli, kayıtlı, denetlenebilir olmalı.
-
-### 1.4 Commit Disiplini
-
-- Bir commit = bir tamamlanmış iş. Yarım iş commit edilmez.
-- Format: `tip(kapsam): açıklama`
-- Tip seti: feat, fix, refactor, docs, chore, test
-- Kapsam: etkilenen modül veya alan (auth, rls, receipts, arch vb.)
-- Açıklama: tek satır, ne yapıldığını söyler
-- Sonnet handoff'ta her prompt tek commit hedefler, prompt içinde commit mesajı önerisi ve checklist bulunur.
-
-**Karar tarihi:** 22.05.2026 | **Gerekçe:** Atomik, izlenebilir değişiklik geçmişi.
-
-### 1.5 Dur Kuralları
-
-Aşağıdaki sinyallerde çalışma durur, değerlendirme yapılır:
-
-- Tek commit'te 5'ten fazla dosya değişecekse
-- Aynı iş mantığı ikinci yerde yazılmak üzereyse
-- Tek dosya 300 satırı geçecekse
-- Başlanan iş tanımının dışına çıkılıyorsa (scope creep)
-- Kalıcı karar dosyasında karşılığı olmayan seçim yapılması gerekiyorsa
-- Engin: "dur, sahada işlemez, geçtim" → anında keser
-
-Eşikler (5 dosya, 300 satır) başlangıç — pratikte kalibre edilir.
-
-**Karar tarihi:** 22.05.2026 | **Gerekçe:** v8'de kontrolsüz büyüme, her dokunuşta kırılma.
-
-### 1.6 Opus / Sonnet İş Bölümü
-
-- **Opus (Claude.ai):** Mimari, planlama, karar alma, doküman yazımı, prompt hazırlama, etki analizi, code review. Kod yazmaz.
-- **Sonnet (Claude Code):** Kod yazar, commit atar, push eder. Mimari karar almaz.
-- **Handoff:** Opus prompt hazırlar → Sonnet tek commit hedefler → commit sonrası session kapatılır.
-- **Geri dönüş:** Sonnet beklenmedik durumla karşılaşırsa commit atmaz, bulgusunu raporlar, Opus'a dönülür.
-
-**Karar tarihi:** 22.05.2026 | **Gerekçe:** Sorumluluk ayrımı, context bloat önlemi.
-
-### 1.7 İletişim Dili Sözleşmesi
-
-- **Chat:** Türkçe
-- **Kod (tamamı):** İngilizce — değişken, fonksiyon, dosya, commit, yorum
-- **Domain terimleri kodda:** İngilizce karşılıkları, mapping GLOSSARY.md'de
-- **Dokümanlar:** Türkçe, teknik terimler çevrilmez
-- **UI metinleri:** Türkçe, lokalizasyon altyapısı Faz 1'de yok
-
-**Karar tarihi:** 22.05.2026 | **Gerekçe:** Kod tutarlılığı, domain karışıklığını önleme.
-
-### 1.8 Doküman ve Karar Disiplini
-
-- **Versiyon dili yasak:** Kararın kendisi yazılır; kaynağı (eski sürüm, demo, "önceki versiyonda şöyleydi") yazılmaz.
-- **Modüler karar dosyaları:** Her ekran/konu kendi dosyasında yaşar (docs/EKRAN-*, docs/IS-KURALLARI.md). Görev listesi (docs/IS-SIRASI.md) yalnızca durum tutar, karar detayı tutmaz. Bir bilgi tek evde yaşar, tekrarlanmaz; başka dosya yalnızca referans verir.
-- **Sistem-genel etki analizi:** Hiçbir karar tek dosyaya bakılarak verilmez veya yazılmaz. Bir konuya başlamadan o kararın dokunduğu tüm dosyalar taranır; karar, etkilediği tüm dosyalara aynı anda yansıtılır.
-- **Dayanıklı/kararsız katman ayrımı:** Yerleşim, akış ve mantık yazılır (dayanıklı). Renk ve sunum estetiği açık slot bırakılır (kararsız), ayrı oturumda doldurulur.
-
-**Karar tarihi:** 29.05.2026 | **Gerekçe:** Tek dosyanın okunamayacak kadar büyümesi ve versiyon karmaşası, geçmişte entropinin iki ana kaynağıydı; modüler dosya + sistem-genel etki analizi ikisini birden önler.
-
------
+(Çalışma sözleşmesi tek kaynağı CLAUDE.md'dir; buradaki tekrar 2026-06'da kaldırıldı.)
 
 ## BÖLÜM 2 — VİZYON KONTROLÜ
 
@@ -104,9 +30,9 @@ Listede yoksa Faz 1'de yoktur:
 
 ### 2.2 "Hayır" Listesi — Faz 1'de Yapılmayacaklar
 
-- CFE (Core Finance Engine — kur dönüşümü, KDV hesaplama motoru)
+(Not: CFE ve bütçe oluşturma modülü ARTIK YAPILDI — listeden çıkarıldı; güncel durum CURRENT.md + docs/butce/.)
+
 - XML e-fatura / GİB entegrasyonu
-- Bütçe oluşturma modülü (dönem/departman harcama limitleri Faz 1'de mevcut — period_budgets, dept_budgets tabloları. Tam bütçe yönetimi Faz 2.)
 - Envanter yönetimi
 - Departman iş akışı modülleri (sanat, kostüm, prodüksiyon)
 - Çoklu dil desteği / lokalizasyon altyapısı
@@ -116,7 +42,7 @@ Listede yoksa Faz 1'de yoktur:
 - Super-admin / auditor rolü (ihtiyaç pilotta netleşir)
 - Şirketler arası veri paylaşımı (cross-company)
 
-**Karar tarihi:** 22.05.2026 | **Gerekçe:** Açık "hayır" olmadan her şey örtük "belki" olur.
+**Karar:** 22.05.2026 (güncelleme 2026-06: CFE+bütçe çıkarıldı) | **Gerekçe:** Açık "hayır" olmadan her şey örtük "belki" olur.
 
 ### 2.3 MVP → Pilot Tanımı
 
@@ -296,25 +222,15 @@ Oklar tek yönlü: Orkestrasyon → herkesi çağırabilir. UI → sadece orkest
 
 ### 5.1 Korunanlar ve Dondurulmuşlar
 
-**Korunan (taşınır, kullanılmadan önce doğrulanır):**
+**Canlı şema/RLS/fonksiyon tek kaynağı:** supabase/migrations/00000000000000_baseline.sql (39 tablo · 101 policy · 25 trigger · 17 fonksiyon). Eski SUPABASE-SCHEMA/RLS/FUNCTIONS.sql ve full-rebuild.sql → docs/archive/ (bayat, tarihsel referans).
 
-- SUPABASE-SCHEMA.sql (17 tablo)
-- SUPABASE-RLS.sql
-- BOOTSTRAP-MUSTERI.sql
-- AUTH-KARARLARI.md
-- TASARIM-KARARLARI.md
-- RAKIP-ANALIZI-OCR.md
-- İş kuralları, domain bilgisi
+**Korunan referanslar:** BOOTSTRAP-MUSTERI.sql · AUTH-KARARLARI.md · TASARIM-KARARLARI.md · RAKIP-ANALIZI-OCR.md · iş kuralları, domain bilgisi.
 
-**Dondurulan (ham malzeme deposu — gerektiğinde değerlendirilir):**
+**Dondurulan (ham malzeme):** GİB stratejisi, XML export, cross-company, 6 açık "DÜŞÜNÜLECEK" sorusu. (CFE ARTIK YAPILDI — dondurulmuş değil; src/shared/cfe.)
 
-- CFE, GİB stratejisi, XML export, cross-company, 6 açık "DÜŞÜNÜLECEK" sorusu
+**Sıfırlanan (engintosun/prodapp-archive):** tüm eski JS/CSS/HTML, eski ARCHITECTURE.md, dosya yapısı, naming batch'leri.
 
-**Sıfırlanan (engintosun/prodapp-archive reposunda):**
-
-- Tüm JS/CSS/HTML kodu, eski ARCHITECTURE.md, CLAUDE.md, dosya yapısı, naming batch'leri
-
-**Karar tarihi:** 22.05.2026 | **Gerekçe:** Düşünce korunur, bozuk implementasyon sıfırlanır.
+**Karar:** 22.05.2026 (güncelleme 2026-06: baseline tek kaynak, 39 tablo, CFE yapıldı) | **Gerekçe:** Düşünce korunur, bozuk implementasyon sıfırlanır.
 
 ### 5.2 Frontend Mimarisi
 
