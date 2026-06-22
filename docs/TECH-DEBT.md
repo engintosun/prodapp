@@ -14,6 +14,7 @@
 |TD-9|Onboarding davet adimindaki InviteScreen metinleri ASCII (Turkce karaktersiz): "Davet Et", "Davet Olustur", "Davet Olusturuldu", "Davet linki (7 gun gecerli)" vb. KARAR 7 geregi mevcut bilesene dokunulmadi.|`src/app/muhasebe/invite-screen.tsx`|Davet zinciri gozden gecirmesi acik listede; yazim o turda duzelir|Davet zinciri gozden gecirme|10 Haziran 2026|
 |TD-10|Muhasebe kabugunda teknik terim sizintisi: bos durumda "acc_pending durumunda fis bulunmuyor" gibi gelistirici dili kullaniciya gorunuyor. Plain-dil kurali ihlali.|`src/app/muhasebe/` (bekleyen liste bos durumu)|Siradaki is muhasebe ev/nav (card-desk); o ekran elden gecerken duzelir|M2 — muhasebe ev/nav|10 Haziran 2026|
 |TD-11|React efekt hijyeni: toast.tsx'te addToast useCallback/useMemo ile sabitlenmemis; bu yuzden react-hooks/set-state-in-effect uyarilari (reviewer-screen, receipt-entry-screen + bos-dizi efektli ~5 ekran). Duzeltme: addToast'i sabitle, etkilenen efekt bagimliliklarini duzelt.|`src/shared/components/toast.tsx`|Risk: CALISAN ekranlara dokunur + UI testi yok -> AYRI tur + elle dogrulama gerekir. Bu oturumda KAYIT edildi, duzeltilmedi (lint commit 33cd25e gecici override ile yesil: ^_ ignore + 'warn')|Ayri tur (React efekt hijyeni)|13 Haziran 2026|
+|TD-12|Storage upload sahipligi (`owner=auth.uid()`) policy'si canli dogrulanmadi; otomatik test yok|`storage.objects` (receipts bucket)|Storage semasi public pg_dump'a girmiyor (baseline'da yok); saha yukleme calisiyor ama owner zorlamasi test edilmedi|M4 pilot oncesi|22 Haziran 2026|
 
 -----
 
@@ -39,7 +40,7 @@
 
 ## Bütçe Kontrolü
 
-- Açık Borç sayısı: 5 / 5 (TD-5, TD-8, TD-9, TD-10, TD-11)
+- Açık Borç sayısı: 6 (TD-5, TD-8, TD-9, TD-10, TD-11, TD-12)
 - Karar Bekleyen: 4 (TD-2, TD-3, TD-6, TD-7) — bütçeye sayılmaz
 - Durum: ⚠️ Bütçe SINIRINDA (5/5). Yeni borç eklenirse (6) yeni özellik durur — önce kapatma gerekir. Dilim 2a (cost_object şema + fn_open_budget) BORÇ EKLEMEDİ — temiz commit'ler, 5/5 korundu.
 

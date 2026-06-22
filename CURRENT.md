@@ -25,17 +25,11 @@ M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; CFE dilim 1
 - budget_percent_lines DEGISMEZ: contingency+profit duz. "Secilebilir-tabanli markup" GEREKSIZ (geri alindi).
 - KDV AYRISTIRMA (Genis yol): budget_items'a vat_rate eklenecek (sema eki, uygulama dilimi). body'ye default_vat (kart) + opsiyonel vat (kalem). Kullanici NET veya BRUT girer; CFE turetir; B18 kirilmaz. KDV ile yuk AYRI eksen.
 
-## Siradaki is — UYGULAMA (5-katman dilimleme)
--1. ✅ KART 1100/1300/1400/1500/1600 mimari kararlari KILITLI (1600: 2026-06-20). cost_object (4. eksen) karari kilitli. Bu DOC commit'i sonrasi kart-yuruyusu DURDU -> runtime'a doner.
-0. ✅ cost_object SEMA dilimi: budget_cost_objects (btce-bazli, muhasebe-only RLS) + budget_items.cost_object_id nullable + restrict-silme + B19/updated_at kapsami + baseline snapshot kapsami. DDL onayi. 5-katman L1-L3. TAMAMLANDI 2026-06-20.
-0b. ✅ vat_rate sema eki: ZATEN CANLI (20260615120000_butce_items_vat_rate.sql).
-1a. ✅ fn_open_budget + sema eki (departments.code + budget_stages.is_undated) — uctan-uca + cost_object capraz-butce testi GECTI (8 assert, exit 0). 2026-06-21.
-1b. ⬜ TEK kartin calisan giris UI'i (2b).
-1c. ⬜ ongorulen okuma/matris (2c).
-2. ⬜ fn_lock_budget (muhur): CFE toplamlari (+ cost_object atamalari) gomulu fotograf -> budget_baselines. Kapilar: en az bir donem + donem tarihli + "Donemsiz" muafiyeti.
-3. ⬜ fn_match_receipt (Dilim 5): B9 oneri + tek dokunus + cost_object miras.
-4. ⬜ Sablon icerik seed (body FORMAT'inda): film + reklam (AICP) + dizi + belgesel sonra. Kutuphane resmilestirme + katalog-kodu (her katalog kalemine kod; 1600 dahil kodlar orada kesinlesir).
-Tum RPC: fn_create_project kalibi (SECURITY DEFINER, atomik, Turkce hata, REVOKE/GRANT), canli dogrulanir. Tam liste: docs/IS-SIRASI.md.
+## Siradaki is
+Tamamlandi: kart mimari (1100-1600) + cost_object semasi + vat_rate + fn_open_budget (uctan-uca test gecti, 2026-06-21).
+Aktif: Dilim 2b — TEK kartin calisan giris UI'i.
+Tam sira / dilimler / backlog: docs/IS-SIRASI.md (tek kaynak).
+RPC kalibi: fn_create_project (SECURITY DEFINER, atomik, Turkce hata, REVOKE/GRANT), canli dogrulanir.
 
 ## Acik (kararlasmadi)
 - department_code -> department_id cozumu: COZULDU — departments.code kanonik anahtar (20260620140000), fn_open_budget bul-veya-olustur (ON CONFLICT race-safe).
