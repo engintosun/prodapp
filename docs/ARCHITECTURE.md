@@ -301,6 +301,7 @@ src/
 - Branch: main = prod (tek aktif dal). Faz 1'de feature/staging branch kullanılmıyor; staging ortamı M4'te eklenecek.
 - main'e push = otomatik deploy (Vercel), tag kurallarına bağlı (4.6)
 - Hassas bilgiler: Vercel environment variables, kodda bulunmaz
+- Somut deploy akışı + secret haritası: docs/ORKESTRASYON.md
 
 **Karar tarihi:** 22.05.2026 | **Gerekçe:** Standart, güvenilir, React+Supabase ile uyumlu pipeline.
 
