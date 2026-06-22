@@ -25,7 +25,6 @@
 |TD-2|Uyelik yasam dongusu alanlari (`membership_status archived_readonly` dali, `access_until`, `revoked_at`, `projects.status/closed_at/closed_by`) SEKIL olarak var; davranis (cascade, export penceresi, otomatik gecis) YOK|`profiles`, `projects`|M1 kapsam disinda|M2|27 Mayis 2026|
 |TD-3|Person isaret eden FK'lar (`receipts.user_id` vb.) `auth.users(id)`'ye bakar, belirli uyelik satirina degil; uyelik baglami (`user_id+project_id`) RLS ile saglanir|`receipts`, `advances`, `exception_permits`, `approval_log`|Bilinçli sadelestirme|M2 gozden gecirme|27 Mayis 2026|
 |TD-6|In-app produksiyon proje adi iki yerde tutuluyor (`projects.name` + `company_settings.project_name`); hangisi SSOT secilecek karar verilmedi|`projects`, `company_settings`|Onboarding/marka ekrani henuz yok|M3.5 marka ekrani|29 Mayis 2026|
-|TD-7|Ekranlar `src/app/{rol}/` altında organize; ARCHITECTURE.md feature-bazlı organizasyona atıf yapıyor — bu uyumsuzluk milestone gözden geçirmesine bırakıldı|`src/app/`, `docs/ARCHITECTURE.md`|Yapısal karar milestone'a ertelendi|M3 milestone gözden geçirme|06 Haziran 2026|
 
 -----
 
@@ -35,13 +34,14 @@
 |-|--|--------------|---------------|
 |TD-1|`projects.is_active` kaldirildi, `status` enum tek kaynak|28 Mayis 2026|refactor(schema) commit ile|
 |TD-4|clear-claims Edge Function ic hata detayini (rpcErr.message) response govdesinden cikardi; hata yolu korundu|29 Mayis 2026|fix(functions) commit ile|
+|TD-7|Ekran organizasyonu rol-bazlı (`src/app/{rol}/`) standart kabul edildi; ARCHITECTURE §4.2/§5.3/§5.4 güncellendi + boş `src/features/` iskeleti silindi (feature-bazlı plan terk)|22 Haziran 2026|docs(architecture) + chore commit ile|
 
 -----
 
 ## Bütçe Kontrolü
 
 - Açık Borç sayısı: 6 (TD-5, TD-8, TD-9, TD-10, TD-11, TD-12)
-- Karar Bekleyen: 4 (TD-2, TD-3, TD-6, TD-7) — bütçeye sayılmaz
+- Karar Bekleyen: 3 (TD-2, TD-3, TD-6) — bütçeye sayılmaz
 - Durum: ⚠️ Bütçe SINIRINDA (5/5). Yeni borç eklenirse (6) yeni özellik durur — önce kapatma gerekir. Dilim 2a (cost_object şema + fn_open_budget) BORÇ EKLEMEDİ — temiz commit'ler, 5/5 korundu.
 
 -----

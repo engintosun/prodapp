@@ -168,14 +168,14 @@ Oklar tek yönlü: Orkestrasyon → herkesi çağırabilir. UI → sadece orkest
 
 ### 4.2 Dosya Yapısı Kuralları
 
-- Özellik bazlı dizin yapısı (receipts/, approvals/ — rol bazlı değil)
+- Rol bazlı dizin yapısı: ekranlar `app/{rol}/` (saha, muhasebe, reviewer, onboarding, auth, layout); paylaşılan kod `shared/` (özellik bazlı değil)
 - Her dosya tek sorumluluk
 - Dosya başına max 300 satır (1.5 ile tutarlı)
-- Her özellik dizini katmanlarını içerir: validation.ts, repository.ts, orchestrator.ts, ui/
+- Ekran dosyaları `app/{rol}/*-screen.tsx`; Supabase çağrıları `shared/supabase/*-service.ts`'de toplanır; hesap motoru `shared/cfe/`; ortak bileşenler `shared/components/`; domain tipleri `shared/types/domain.ts`
 - Paylaşılan kod: shared/ — "iki yerden çağrılıyor" testi geçmeli
 - utils.js, helpers.js, misc.js yasak
 
-**Karar tarihi:** 22.05.2026 | **Gerekçe:** Özellik değiştiğinde ilgili her şey aynı dizinde, kod tekrarı yok.
+**Karar tarihi:** 22.05.2026 (güncelleme 2026-06-22: kod rol-bazlı evrildi — `app/{rol}` ekranları + `shared/` servisleri; özellik-bazlı plan terk, boş `features` dizini silindi, TD-7 kapandı). | **Gerekçe:** Ekran rol'e göre netleşir; ortak servis/motor tek `shared/` altında, tekrar yok.
 
 ### 4.3 Drift Dedektörü
 
@@ -242,31 +242,31 @@ React + TypeScript + Vite
 
 ```
 src/
-  features/
-    receipts/        — fiş/fatura
-    approvals/       — onay zinciri
-    advances/        — avans
-    notifications/   — bildirimler
-    detection/       — şüpheli işlem tespiti
-    export/          — PDF/Excel çıktı
+  App.tsx, main.tsx      — kök giriş
+  app/                   — rol-bazlı ekranlar
+    saha/                — fiş giriş, düzeltme, ana
+    muhasebe/            — muhasebe ekranları (onay, davet, bütçe)
+    reviewer/            — denetmen
+    onboarding/          — müşteri kurulum
+    auth/                — login, auth guard
+    layout/              — sayfa düzeni
   shared/
-    types/           — TypeScript domain tipleri
-    utils/           — ortak yardımcı fonksiyonlar
-    supabase/        — Supabase client, bağlantı
-  app/
-    layout/          — sayfa düzeni
-    auth/            — auth guard, login
+    supabase/            — client.ts + *-service.ts (Supabase çağrıları)
+    cfe/                 — Core Finance Engine (hesap motoru)
+    components/          — ortak UI bileşenleri
+    types/domain.ts      — TypeScript domain tipleri
+    utils/               — ortak yardımcılar
 ```
 
 4.2 kurallarının somut uygulaması.
 
-**Karar tarihi:** 22.05.2026 | **Gerekçe:** Özellik bazlı, katmanlı, genişlemeye hazır yapı.
+**Karar tarihi:** 22.05.2026 (güncelleme 2026-06-22: rol-bazlı gerçeğe hizalandı). | **Gerekçe:** Rol-bazlı ekranlar + ortak `shared/` servis/motor; genişlemeye hazır.
 
 ### 5.4 Supabase İletişim Katmanı
 
 - Supabase JS SDK doğrudan kullanılır, ara servis katmanı yok
 - Tek client instance: `shared/supabase/client.ts`
-- Repository pattern: her feature kendi repository dosyasında SDK'yı çağırır
+- Servis katmanı: `shared/supabase/*-service.ts` dosyalarında SDK çağrıları toplanır (rol ekranları bu servisleri çağırır)
 - Realtime: Supabase subscription'ları ile anlık bildirim
 - Offline: Faz 1'de yok, bağlantı yoksa kullanıcıya bildirilir
 
