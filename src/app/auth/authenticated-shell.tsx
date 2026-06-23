@@ -15,6 +15,7 @@ import { EmptyState } from '../../shared/components/empty-state'
 import { SahaScreen } from '../saha/saha-screen'
 import { ReviewerScreen } from '../reviewer/reviewer-screen'
 import { InviteScreen } from '../muhasebe/invite-screen'
+import { BudgetCardScreen } from '../muhasebe/budget-card-screen'
 import { OnboardingFlow } from '../onboarding/onboarding-flow'
 
 interface Props {
@@ -123,7 +124,9 @@ export function AuthenticatedShell({ user, theme, onToggleTheme }: Props) {
           ? <SahaScreen activeKey={activeKey} />
           : role === 'muhasebe' && activeKey === 'davet'
             ? <InviteScreen />
-            : (role === 'dept' && activeKey === 'bekleyen') || (role === 'muhasebe' && activeKey === 'masa')
+            : role === 'muhasebe' && activeKey === 'butce'
+              ? <BudgetCardScreen />
+              : (role === 'dept' && activeKey === 'bekleyen') || (role === 'muhasebe' && activeKey === 'masa')
               ? <ReviewerScreen role={role} />
               : <EmptyState title={activeLabel} description="Bu ekran yakında (M2.3+)" />}
       </main>
