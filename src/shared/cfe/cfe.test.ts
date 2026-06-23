@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { brutBirim, satirToplam, kdvAyristir, zincirToplam, dokum } from './cfe'
+import { brutBirim, satirToplam, kdvAyristir, zincirToplam, dokum, brutStopaj } from './cfe'
 
 describe('CFE — öngörülen tarafı', () => {
   it('brüt birim yuvarlanmaz', () => {
@@ -54,5 +54,14 @@ describe('CFE — döküm', () => {
       .toBe('8.250 net + %33 yük = 10.972,50 × 1,75 hafta × 2 adet = 38.404')
     expect(dokum({ unitNet: 75000, ratesPercent: [33], unitLabel: 'hafta', quantity: 1.75, multiplier: 1 }))
       .toBe('75.000 net + %33 yük = 99.750 × 1,75 hafta = 174.563')
+  })
+})
+
+describe('CFE — stopaj şişmesi (net garanti)', () => {
+  it('brüt = net bölü (1 - oran), yuvarlanmaz', () => {
+    expect(brutStopaj(80000, 20)).toBe(100000)
+    expect(brutStopaj(83000, 17)).toBe(100000)
+    expect(brutStopaj(500000, 20)).toBe(625000)
+    expect(brutStopaj(123456, 0)).toBe(123456)
   })
 })

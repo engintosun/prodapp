@@ -49,6 +49,12 @@ export function brutBirim(unitNet: number, ratesPercent: number[]): number {
   return new Decimal(unitNet).mul(rateFactor(ratesPercent)).toNumber()
 }
 
+export function brutStopaj(net: number, stopajPercent: number): number {
+  return new Decimal(net)
+    .div(new Decimal(1).minus(new Decimal(stopajPercent).div(100)))
+    .toNumber()
+}
+
 export function satirToplam(
   unitNet: number,
   ratesPercent: number[],
