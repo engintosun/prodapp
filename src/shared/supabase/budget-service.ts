@@ -1,5 +1,12 @@
 import { supabase } from './client'
 
+export interface StageRow {
+  id: string
+  name: string
+  isUndated: boolean
+  sortOrder: number
+}
+
 export interface BudgetItemRow {
   id: string
   itemCode: number
@@ -10,14 +17,25 @@ export interface BudgetItemRow {
   multiplier: number
   vatRate: number
   ratesPercent: number[]
-  quantity: number
+  periodQty: Record<string, number>
 }
 
 export interface CardView {
   budgetId: string
   groupId: string
   cardName: string
+  stages: StageRow[]
   items: BudgetItemRow[]
+}
+
+export type EditableField = 'name' | 'detail' | 'unitNet' | 'multiplier' | 'vatRate'
+
+const FIELD_COL: Record<EditableField, string> = {
+  name: 'name',
+  detail: 'detail',
+  unitNet: 'unit_net',
+  multiplier: 'multiplier',
+  vatRate: 'vat_rate',
 }
 
 async function getProjectId(): Promise<string> {
@@ -28,8 +46,6 @@ async function getProjectId(): Promise<string> {
   return projectId
 }
 
-// Aktif projede 'single' butce var mi? Yoksa projenin turune uygun aktif sistem
-// sablonundan fn_open_budget ile ac (kimlikli muhasebe; migration'dan acilamaz).
 export async function getOrOpenBudget(): Promise<string> {
   const projectId = await getProjectId()
 
@@ -70,10 +86,22 @@ export async function getOrOpenBudget(): Promise<string> {
   return opened as string
 }
 
-// Butcenin ilk kartini (sort_order) + kalemlerini getir. Birim label ayri raftan
-// map'lenir (PostgREST embed'e bagimli degil). Miktar = kalem-donem koprusu toplami
-// (Model A: acilista bos -> 0). Yuk = item_burdens oranlari.
+// Butcenin ilk kartini (sort_order) + etaplarini + kalemlerini getir.
+// Miktar etap-basina: periodQty[stageId]. Birim label ayri raftan map'lenir.
 export async function getFirstCard(budgetId: string): Promise<CardView | null> {
+  const { data: stageData, error: es } = await supabase
+    .from('budget_stages')
+    .select('id, name, is_undated, sort_order')
+    .eq('budget_id', budgetId)
+    .order('sort_order')
+  if (es) throw new Error(es.message)
+  const stages: StageRow[] = (stageData ?? []).map((s) => ({
+    id: s.id as string,
+    name: s.name as string,
+    isUndated: s.is_undated as boolean,
+    sortOrder: s.sort_order as number,
+  }))
+
   const { data: grp, error: eg } = await supabase
     .from('expense_groups')
     .select('id, name')
@@ -100,7 +128,7 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
   for (const u of units ?? []) unitLabel[u.id as string] = u.label as string
 
   const burdensByItem: Record<string, number[]> = {}
-  const qtyByItem: Record<string, number> = {}
+  const periodByItem: Record<string, Record<string, number>> = {}
   if (itemIds.length) {
     const { data: burdens, error: eb } = await supabase
       .from('item_burdens')
@@ -114,12 +142,12 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
 
     const { data: periods, error: ep } = await supabase
       .from('budget_item_periods')
-      .select('item_id, quantity')
+      .select('item_id, stage_id, quantity')
       .in('item_id', itemIds)
     if (ep) throw new Error(ep.message)
     for (const p of periods ?? []) {
       const k = p.item_id as string
-      qtyByItem[k] = (qtyByItem[k] ?? 0) + Number(p.quantity)
+      ;(periodByItem[k] ??= {})[p.stage_id as string] = Number(p.quantity)
     }
   }
 
@@ -133,8 +161,60 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
     multiplier: Number(i.multiplier),
     vatRate: Number(i.vat_rate),
     ratesPercent: burdensByItem[i.id as string] ?? [],
-    quantity: qtyByItem[i.id as string] ?? 0,
+    periodQty: periodByItem[i.id as string] ?? {},
   }))
 
-  return { budgetId, groupId: grp.id as string, cardName: grp.name as string, items: rows }
+  return { budgetId, groupId: grp.id as string, cardName: grp.name as string, stages, items: rows }
+}
+
+// Tek kalem alanini gunceller (budget_items UPDATE; RLS muhasebe-only, B19 iz).
+export async function updateItemField(
+  itemId: string,
+  field: EditableField,
+  value: string | number,
+): Promise<void> {
+  let payload: Record<string, unknown>
+  if (field === 'name') {
+    const v = String(value).trim()
+    if (!v) throw new Error('Sebep boş olamaz')
+    payload = { name: v }
+  } else if (field === 'detail') {
+    const v = String(value).trim()
+    payload = { detail: v === '' ? null : v }
+  } else {
+    const n = typeof value === 'number' ? value : Number(String(value).replace(',', '.'))
+    if (!Number.isFinite(n)) throw new Error('Geçersiz sayı')
+    if (n < 0) throw new Error('Negatif değer girilemez')
+    payload = { [FIELD_COL[field]]: n }
+  }
+  const { error } = await supabase.from('budget_items').update(payload).eq('id', itemId)
+  if (error) throw new Error(error.message)
+}
+
+// Kalemin bir etaptaki miktarini yazar. 0 -> koprudeki satiri SIL (temiz).
+// >0 -> upsert (item_id,stage_id UNIQUE). budget_id zorunlu (bilesik FK).
+export async function setItemPeriodQuantity(
+  budgetId: string,
+  itemId: string,
+  stageId: string,
+  value: string | number,
+): Promise<void> {
+  const n = typeof value === 'number' ? value : Number(String(value).replace(',', '.'))
+  if (!Number.isFinite(n) || n < 0) throw new Error('Geçersiz miktar')
+  if (n === 0) {
+    const { error } = await supabase
+      .from('budget_item_periods')
+      .delete()
+      .eq('item_id', itemId)
+      .eq('stage_id', stageId)
+    if (error) throw new Error(error.message)
+    return
+  }
+  const { error } = await supabase
+    .from('budget_item_periods')
+    .upsert(
+      { budget_id: budgetId, item_id: itemId, stage_id: stageId, quantity: n },
+      { onConflict: 'item_id,stage_id' },
+    )
+  if (error) throw new Error(error.message)
 }

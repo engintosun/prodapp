@@ -1,8 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
-import { getOrOpenBudget, getFirstCard } from '../../shared/supabase/budget-service'
-import type { CardView } from '../../shared/supabase/budget-service'
+import {
+  getOrOpenBudget,
+  getFirstCard,
+  updateItemField,
+  setItemPeriodQuantity,
+} from '../../shared/supabase/budget-service'
+import type { BudgetItemRow, CardView, EditableField, StageRow } from '../../shared/supabase/budget-service'
 import { satirToplam, dokum } from '../../shared/cfe'
+import { useToast } from '../../shared/components/toast'
 import { Loading } from '../../shared/components/loading'
 import { EmptyState } from '../../shared/components/empty-state'
 import { ErrorMessage } from '../../shared/components/error-message'
@@ -16,6 +22,7 @@ const thStyle: CSSProperties = {
   whiteSpace: 'nowrap',
   borderBottom: '1px solid var(--color-border)',
 }
+const thNum: CSSProperties = { ...thStyle, textAlign: 'right' }
 const tdStyle: CSSProperties = {
   fontSize: 'var(--text-sm)',
   color: 'var(--color-text)',
@@ -24,18 +31,41 @@ const tdStyle: CSSProperties = {
   borderBottom: '1px solid var(--color-border)',
 }
 const numStyle: CSSProperties = { ...tdStyle, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }
-const thNum: CSSProperties = { ...thStyle, textAlign: 'right' }
+const cellInput: CSSProperties = {
+  width: '100%',
+  boxSizing: 'border-box',
+  background: 'var(--color-surface-2)',
+  border: '1px solid var(--color-border)',
+  borderRadius: 'var(--radius-sm)',
+  padding: 'var(--space-1) var(--space-2)',
+  fontSize: 'var(--text-sm)',
+  color: 'var(--color-text)',
+  fontFamily: 'inherit',
+}
+const cellInputNum: CSSProperties = { ...cellInput, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }
+const stageColStyle: CSSProperties = { ...numStyle, minWidth: 96 }
 
 function fmt(n: number): string {
   const dp = Number.isInteger(n) ? 0 : 2
   return new Intl.NumberFormat('tr-TR', { minimumFractionDigits: dp, maximumFractionDigits: dp }).format(n)
 }
 
+function qtySum(r: BudgetItemRow): number {
+  let s = 0
+  for (const k in r.periodQty) s += r.periodQty[k]
+  return s
+}
+
 export function BudgetCardScreen() {
+  const { addToast } = useToast()
   const [card, setCard] = useState<CardView | null>(null)
+  const [rows, setRows] = useState<BudgetItemRow[]>([])
+  const [stages, setStages] = useState<StageRow[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [reload, setReload] = useState(0)
+  const savedRef = useRef<Record<string, BudgetItemRow>>({})
+  const [buffers, setBuffers] = useState<Record<string, string>>({})
 
   useEffect(() => {
     let cancelled = false
@@ -45,7 +75,12 @@ export function BudgetCardScreen() {
         setError(null)
         const budgetId = await getOrOpenBudget()
         const c = await getFirstCard(budgetId)
-        if (!cancelled) setCard(c)
+        if (cancelled) return
+        setCard(c)
+        setRows(c?.items ?? [])
+        setStages(c?.stages ?? [])
+        savedRef.current = {}
+        for (const it of c?.items ?? []) savedRef.current[it.id] = { ...it, periodQty: { ...it.periodQty } }
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : 'Bütçe yüklenemedi')
       } finally {
@@ -57,9 +92,102 @@ export function BudgetCardScreen() {
     }
   }, [reload])
 
+  function clearBuf(key: string) {
+    setBuffers((b) => {
+      const c = { ...b }
+      delete c[key]
+      return c
+    })
+  }
+
+  function patchRow(id: string, patch: Partial<BudgetItemRow>) {
+    setRows((rs) => rs.map((r) => (r.id === id ? { ...r, ...patch } : r)))
+  }
+
+  function onTextChange(id: string, field: 'name' | 'detail', value: string) {
+    patchRow(id, { [field]: value } as Partial<BudgetItemRow>)
+  }
+
+  function onNumChange(id: string, field: 'unitNet' | 'multiplier' | 'vatRate', raw: string) {
+    setBuffers((b) => ({ ...b, [id + ':' + field]: raw }))
+    const n = Number(raw.replace(',', '.'))
+    patchRow(id, { [field]: Number.isFinite(n) ? n : 0 } as Partial<BudgetItemRow>)
+  }
+
+  function onPeriodChange(id: string, stageId: string, raw: string) {
+    setBuffers((b) => ({ ...b, [id + ':stage:' + stageId]: raw }))
+    const n = Number(raw.replace(',', '.'))
+    setRows((rs) =>
+      rs.map((r) =>
+        r.id === id ? { ...r, periodQty: { ...r.periodQty, [stageId]: Number.isFinite(n) ? n : 0 } } : r,
+      ),
+    )
+  }
+
+  async function commitField(id: string, field: EditableField) {
+    const row = rows.find((r) => r.id === id)
+    if (!row) return
+    const value = (row[field] ?? '') as string | number
+    const saved = savedRef.current[id]
+    if (saved && saved[field] === value) {
+      clearBuf(id + ':' + field)
+      return
+    }
+    try {
+      await updateItemField(id, field, value)
+      savedRef.current[id] = {
+        ...(saved ?? row),
+        [field]: value,
+        periodQty: { ...(saved?.periodQty ?? row.periodQty) },
+      } as BudgetItemRow
+    } catch (e) {
+      if (saved) patchRow(id, { [field]: saved[field] } as Partial<BudgetItemRow>)
+      addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error')
+    } finally {
+      clearBuf(id + ':' + field)
+    }
+  }
+
+  async function commitPeriod(id: string, stageId: string) {
+    if (!card) return
+    const row = rows.find((r) => r.id === id)
+    if (!row) return
+    const value = row.periodQty[stageId] ?? 0
+    const saved = savedRef.current[id]
+    const savedVal = saved?.periodQty[stageId] ?? 0
+    if (savedVal === value) {
+      clearBuf(id + ':stage:' + stageId)
+      return
+    }
+    try {
+      await setItemPeriodQuantity(card.budgetId, id, stageId, value)
+      const sp = { ...(saved?.periodQty ?? {}) }
+      if (value === 0) delete sp[stageId]
+      else sp[stageId] = value
+      savedRef.current[id] = { ...(saved ?? row), periodQty: sp } as BudgetItemRow
+    } catch (e) {
+      setRows((rs) =>
+        rs.map((r) => (r.id === id ? { ...r, periodQty: { ...r.periodQty, [stageId]: savedVal } } : r)),
+      )
+      addToast(e instanceof Error ? e.message : 'Miktar kaydedilemedi', 'error')
+    } finally {
+      clearBuf(id + ':stage:' + stageId)
+    }
+  }
+
+  function fieldVal(id: string, field: 'unitNet' | 'multiplier' | 'vatRate', n: number): string {
+    const k = id + ':' + field
+    return k in buffers ? buffers[k] : String(n)
+  }
+
+  function periodVal(id: string, stageId: string, n: number): string {
+    const k = id + ':stage:' + stageId
+    return k in buffers ? buffers[k] : String(n)
+  }
+
   if (loading) return <Loading label="Bütçe yükleniyor..." />
   if (error) return <ErrorMessage message={error} onRetry={() => setReload((n) => n + 1)} />
-  if (!card || card.items.length === 0)
+  if (!card || rows.length === 0)
     return <EmptyState title="Kart boş" description="Bu bütçede kalem yok." />
 
   return (
@@ -68,44 +196,105 @@ export function BudgetCardScreen() {
         {card.cardName}
       </h2>
       <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', margin: '0 0 var(--space-4)' }}>
-        Salt görünüm (2b-1) — düzenleme sonraki dilimde. Açılışta birim net ve miktar 0; toplamlar CFE'den
-        türetilir. Satırın üstüne gelince döküm görünür.
+        Düzenlenebilir: Sebep · Ayrıntı · Birim net · Adet · KDV + etap miktarları. Hücreden çıkınca otomatik
+        kaydeder; kayıt düğmesi yok. Toplam = etap miktarları toplamı × birim net × (1+yük) × adet. Satır
+        üstünde döküm görünür.
       </p>
       <div style={{ overflowX: 'auto' }}>
-        <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 720 }}>
+        <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 980 }}>
           <thead>
             <tr>
               <th style={thStyle}>Kod</th>
               <th style={thStyle}>Sebep</th>
               <th style={thStyle}>Ayrıntı</th>
               <th style={thNum}>Birim net</th>
-              <th style={thNum}>Miktar</th>
+              {stages.map((s) => (
+                <th key={s.id} style={thNum}>
+                  {s.name}
+                </th>
+              ))}
               <th style={thStyle}>Birim</th>
               <th style={thNum}>Adet</th>
+              <th style={thNum}>KDV</th>
               <th style={thNum}>Yük</th>
               <th style={thNum}>Toplam</th>
             </tr>
           </thead>
           <tbody>
-            {card.items.map((it) => {
-              const total = satirToplam(it.unitNet, it.ratesPercent, it.quantity, it.multiplier)
+            {rows.map((it) => {
+              const q = qtySum(it)
+              const total = satirToplam(it.unitNet, it.ratesPercent, q, it.multiplier)
               const yuk = it.ratesPercent.reduce((a, r) => a + r, 0)
               const aciklama = dokum({
                 unitNet: it.unitNet,
                 ratesPercent: it.ratesPercent,
                 unitLabel: it.unitLabel,
-                quantity: it.quantity,
+                quantity: q,
                 multiplier: it.multiplier,
               })
               return (
                 <tr key={it.id} title={aciklama}>
                   <td style={tdStyle}>{it.itemCode}</td>
-                  <td style={tdStyle}>{it.name}</td>
-                  <td style={{ ...tdStyle, color: 'var(--color-text-muted)' }}>{it.detail ?? '—'}</td>
-                  <td style={numStyle}>{fmt(it.unitNet)}</td>
-                  <td style={numStyle}>{fmt(it.quantity)}</td>
+                  <td style={tdStyle}>
+                    <input
+                      style={cellInput}
+                      value={it.name}
+                      onChange={(e) => onTextChange(it.id, 'name', e.target.value)}
+                      onBlur={() => commitField(it.id, 'name')}
+                    />
+                  </td>
+                  <td style={tdStyle}>
+                    <input
+                      style={cellInput}
+                      value={it.detail ?? ''}
+                      placeholder="—"
+                      onChange={(e) => onTextChange(it.id, 'detail', e.target.value)}
+                      onBlur={() => commitField(it.id, 'detail')}
+                    />
+                  </td>
+                  <td style={numStyle}>
+                    <input
+                      style={cellInputNum}
+                      type="text"
+                      inputMode="decimal"
+                      value={fieldVal(it.id, 'unitNet', it.unitNet)}
+                      onChange={(e) => onNumChange(it.id, 'unitNet', e.target.value)}
+                      onBlur={() => commitField(it.id, 'unitNet')}
+                    />
+                  </td>
+                  {stages.map((s) => (
+                    <td key={s.id} style={stageColStyle}>
+                      <input
+                        style={cellInputNum}
+                        type="text"
+                        inputMode="decimal"
+                        value={periodVal(it.id, s.id, it.periodQty[s.id] ?? 0)}
+                        onChange={(e) => onPeriodChange(it.id, s.id, e.target.value)}
+                        onBlur={() => commitPeriod(it.id, s.id)}
+                      />
+                    </td>
+                  ))}
                   <td style={tdStyle}>{it.unitLabel}</td>
-                  <td style={numStyle}>{it.multiplier === 1 ? '—' : fmt(it.multiplier)}</td>
+                  <td style={numStyle}>
+                    <input
+                      style={cellInputNum}
+                      type="text"
+                      inputMode="decimal"
+                      value={fieldVal(it.id, 'multiplier', it.multiplier)}
+                      onChange={(e) => onNumChange(it.id, 'multiplier', e.target.value)}
+                      onBlur={() => commitField(it.id, 'multiplier')}
+                    />
+                  </td>
+                  <td style={numStyle}>
+                    <input
+                      style={cellInputNum}
+                      type="text"
+                      inputMode="decimal"
+                      value={fieldVal(it.id, 'vatRate', it.vatRate)}
+                      onChange={(e) => onNumChange(it.id, 'vatRate', e.target.value)}
+                      onBlur={() => commitField(it.id, 'vatRate')}
+                    />
+                  </td>
                   <td style={numStyle}>{yuk === 0 ? '—' : '%' + fmt(yuk)}</td>
                   <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(total)}</td>
                 </tr>
