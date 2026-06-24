@@ -8,6 +8,7 @@
 - **Mobile-first.** Birincil kullanıcı sette: ayakta, tek elle, zaman baskısı, bazen karanlık ortam. Desktop responsive olarak açılır.
 - **Aksiyon öncelikli.** Her ekranda birincil eylem görsel merkezde; ikincil bilgi geri planda / scroll altında.
 - **Netlik > süs.** Anlaşılırlık her zaman önce gelir.
+- **Karmaşık iş, basit kullanım.** Uygulama karmaşık hesap/analiz yapar; ama kullanım, ayar, optimizasyon ve güncelleme kullanıcı-dostu ve basit kalır, uzmanlık gerektirmez. Kullanıcının zaman içinde değiştirmesi gereken veriler (örn. vergi oranları — Türkiye'de sık değişir) uygulama merkezine/geliştiriciye bağlı olmaz; kullanıcı kendi arayüzünden günceller.
 
 ## 2. Kart-merkezli arayüz
 - **Muhasebe:** TAM kart-merkezli çalışma masası. Her konu (bekleyen / şüpheli / avans / kiralama) bir kart; kartlar masaya serilir, içinde çalışılır; bildirimlere ve önceliklere göre otomatik sıralanır (yukarı/aşağı). Sunum detayı G6'da (EKRAN-MUHASEBE açık slot).

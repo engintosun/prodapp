@@ -3,61 +3,63 @@
 Yalnizca SIMDIKI durumu tutar. Her oturum kapanisinda bastan YAZILIR. Tarihce -> git log.
 
 ## Milestone
-M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; CFE dilim 1 canli (8/8). 2026-06-15: sablon body jsonb FORMAT + KDV ayristirma (Genis yol) KILITLENDI. 2026-06-19 (oturum 1): KART 1100 ve 1300 KILITLENDI; etap/kart/kalem motoru/coklu-calisma yetki kilitlendi. 2026-06-19 (oturum 2): KART 1400 (Yapimci Birimi) ve 1500 (Yonetmen) KILITLENDI; odeme-statusu boyutu (loan-out/fringe), genel anomali kurallari (cift-fringe/crew-overlap/mahsup/milestone), kart gorunurluk katmanlari, Compliance Guard KILITLENDI. 2026-06-20 (oturum 3): KART 1600 (OYUNCU) KILITLENDI — tek kart (Cast+Atmosphere birlesik, 4-kaynak ortusmesi: Saturation/Eurimages/Master/Turk saha), 4 grup (Ana Kast / Dublor / Arkaplan Oyuncusu / Kast Operasyonu), stunt doga-bolmesi (performans Oyuncu, arac Transport, mekanik Mekanik FX; eski "Efekt & Dublor" karti cozuldu), cocuk-compliance (set ogretmeni zorunlu, anomali), terimler Turk sahadan. cost_object (4. EKSEN, MMB Set/Saturation Tag) KARARI: kategori-seviyesi (Stunt/VFX/per-oyuncu), opsiyonel/secici, kutuphaneden oto-etiket, sahne-instance + breakdown KAPSAM-DISI (gelecek modul); sema DDL ayri dilim. Bu oturumlar kod uretmedi (mimari/karar). Detay: docs/butce/KART-KATALOGU.md. SIRADAKI: 2b — TEK kartin calisan giris UI'i (fn_open_budget CANLI, 2026-06-21).
+M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; kart mimarisi 1100-1600 KILITLI.
+- 2026-06-21: fn_open_budget CANLI (uctan-uca test).
+- 2026-06-23: butce giris UI mekanigi (2b: kalem tablosu + hucre duzenleme + etap-basina miktar) CANLI; vergi/yuk modeli tasarlandi (iki belge).
+- 2026-06-24: vergi/yuk modeli GIB ozelgesiyle KILITLENDI; CFE brutStopaj eklendi (9/9 yesil); odeme-statusu semasi CANLI; KART 1500 kolon-kolon model basladi (1. kolon Kalem kilitli).
+SIRADAKI: KART 1500 2. kolon (Statu) -> sonra Donemler/KDV/Yuk/Net/Brut. 1500 model olunca diger kartlar (1100/1300/1400/1600...) bunun ustunden gecilir.
 
 ## Durum
-- HEAD: git log (origin/main) kesin. Repo: github.com/engintosun/prodapp · Canli: prodapp-navy.vercel.app.
-- KURULU/CALISIYOR: auth + cok-proje login · saha fis girisi · yonlendirme trigger · duzeltme · davet/rol · reviewer onay/red · proje olusturma + butce tablolari + servisler · onboarding UI · BUTCE DB TEMELI (15 tablo + RLS muhasebe-only + iz/updated_at) · BUTCE GOCU CANLI (kart=departman, budget_stages=donem tarihli, budget_item_periods koprusu) · CFE DILIM 1 (saf hesap: brutBirim/satirToplam/kdvAyristir/zincirToplam/dokum; UI/servise bagli degil).
-- KART MIMARISI KILITLI: 5 etap ekseni, kart=departman+"kullanan sahiplenir", gelistirme=recoupable tek kart, kalem motoru (ait-kart/onay-koprusu/risk-bayragi/alias-isaret-eder + odeme-statusu/loan-out + genel anomali kurallari + cost_object 4. eksen), kart gorunurluk katmanlari (DB tam erisim != UI maske, ATL bas-kase gizli, Master/Owner), Compliance Guard. Kilitli kartlar: 1100, 1300, 1400, 1500, 1600. Siradaki: butce runtime dikey-dilimi (sonra 1700). Detay: docs/butce/KART-KATALOGU.md. 2026-06-20 DOSYA DUZENI KARARI: butce domain docs/butce/'a toplandi (MIMARISI -> KART-KATALOGU, GEREKCELER -> KART-GEREKCELERI), CLAUDE.md routing eklendi; sema/teknik (B-serisi, kopru, KDV, percent) TASARIM + SCHEMA'da kaldi.
-- KRITIK ACIK: butce UI/servis yok (Dilim 2b+); uyari/anomali motoru yok (kural var, kod yok). cost_object capraz-butce davranis-testi: gercek veriyle dogrulandi — REDDEDILDI (composite-FK calisiyor, 2026-06-21). TECH-DEBT Acik Borc 5/5 SINIRDA — yeni borc oncesi kapatma.
+- HEAD: git log (origin/main) kesin. Repo: github.com/engintosun/prodapp - Canli: prodapp-navy.vercel.app.
+- KURULU/CALISIYOR: auth + cok-proje login - saha fis girisi - yonlendirme/duzeltme - davet/rol - reviewer onay/red - proje olusturma + butce tablolari + servisler - onboarding UI - BUTCE DB TEMELI (RLS muhasebe-only + iz/updated_at) - BUTCE GOCU CANLI - fn_open_budget CANLI - CFE (brutBirim/satirToplam/kdvAyristir/zincirToplam/dokum + brutStopaj = net/(1-oran), 9/9) - 2b butce giris UI (kalem tablosu + hucre duzenleme + etap-basina miktar; bu UI vergi/yuk semasi oturunca yeniden kurulacak).
+- ODEME-STATUSU SEMASI CANLI (2026-06-24, additive goc): budget_items += payment_status (text+CHECK: bordro/smm/telif_belgeli/sirket/kira_sahis/konaklama) + stopaj_rate (null=miras) + vat_deductible; budget_item_periods += unit_net_override (donem-basina farkli ucret); yeni cetvel payment_status_defaults (statu->varsayilan stopaj/sgk/kdv, valid_from'lu, seed TASLAK) + RLS (authenticated okur, service_role yazar).
+- KART MIMARISI KILITLI: 5 etap, kart=departman + "kullanan sahiplenir", kalem motoru (ait-kart/onay-koprusu/risk-bayragi/alias + odeme-statusu + anomali kurallari + cost_object 4. eksen), gorunurluk katmanlari, Compliance Guard. Kilitli kartlar: 1100,1300,1400,1500,1600. Detay: docs/butce/KART-KATALOGU.md.
+- KRITIK ACIK: butce okuma yuzeyi + anomali motoru yok (kural var, kod yok). 2b giris UI yeni vergi/yuk modeline gore yeniden kurulacak (sema CANLI; CFE dallanma + fn_open_budget snapshot + UI bekliyor).
+
+## VERGI / YUK modeli — KILITLI (2026-06-24; detay docs/butce/VERGI-MEVZUATI.md + BUTCE-EKRAN-KARARLARI.md)
+- DAYANAK: Istanbul VDB ozelgesi 22.08.2013 (...1291) + kaynak-dogrulanmis oranlar. Muhasebe onayi icin PDF chart hazirlandi.
+- ILKE: sahada NET anlasilir; kaleme net girilir; Brut = Net + Yuk; yuk'un dogasi statuye gore. Stopaj brutten kesilir -> net garantili: Brut = Net/(1-oran) (brutStopaj, CANLI). SGK net'e EKLENIR (additive, item_burdens). KDV AYRI eksen (gider, indirilir; toplama/yuke girmez). Hesaplanan deger saklanmaz (B18).
+- STOPAJ ADDITIVE YUKTEN CIKACAK: stopaj eski burden_components'ta additive @20 idi (YANLIS); statuye bagli carpan (brutStopaj) olacak; SGK/ajans/damga additive kalir. (CFE dallanma + fn_open_budget snapshot + stopaj component'inin paketlerden cikarilmasi = SIRADAKI vergi/yuk dilimi-2.)
+- STATU->DAVRANIS (ozet): telif_belgeli (eser belgeli senarist/besteci/YONETMEN) %17 -> Net/0,83; smm (OYUNCU + belgesiz + serbest ekip) %20 -> Net/0,80; bordro artan tarife + SGK biner (fringe motoru §8 PARK); sirket faturasi yok; kira_sahis %20; konaklama/yemek KDV %10.
+- KRITIK DUZELTME: OYUNCULUK telif DEGIL -> oyuncu SMM/bordro, %17 ALAMAZ. YONETMEN senarist/besteci grubunda (eser belgesiyle %17). Telif 2026 istisna tavani 5.300.000 TL (asilirsa istisna duser, %40'a kadar + KDV).
+- B20: standart oranlar VERI olarak durur (cetvel), koda gomulmez; acilista butceye snapshot (B16); kullanici-guncellenebilir (oran-yonetimi ekrani ERTELENDI).
+- MUHASEVIRE ACIK (PDF amber): 2026 oran guncelligi (%17/%20/kira %20) + reklam tevkifati 3/10 mu 10/10 mu (kaynaklar celiskili) + telif tavan teyidi. Kesinlesince oranlar cetvelde guncellenir; YAPISAL model kilitli.
+
+## KART 1500 kolon-kolon (MODEL kart — AKTIF)
+Amac: 1500'u kolon kolon kilitle -> diger kartlara model. Kolon seti (kilitli): Kalem - Statu - Donemler - KDV - Yuk - Net toplam - Brut toplam. Kalem acilinca donem-basina birim-net x adet; altta kart toplami + Yasal Yukler (SGK+stopaj; okuma amacli, genel toplama EKLENMEZ).
+- 1. kolon KALEM (KILITLI): ad + ac/kapa chevron; "+ kalem ekle" -> kutuphaneden (4746) oto-tamamlama, kutuphane-disi serbest yazim "kutuphane-disi" isaretiyle (dedup/anomali ayirt etsin); satir eylemleri yeniden adlandir/sirala/gizle (soft, B16); kalici kalem kodu gorunmez (B17, ic kimlik); alias kalem rozetle (tutar burada SAYILMAZ).
+- UI'den kopuk gidilmiyor: her kolonun mobil davranisi o an karara baglanir (ornek: Yuk dropdown'i mobilde bottom-sheet). Mobile DONULMEDI; masaustu kolon-kolon devam.
+- SIRADAKI: 2. kolon STATU (dropdown davranisi + mobil bottom-sheet uyumu).
 
 ## Butce — KILITLI kararlar (ozet; detay docs/butce/BUTCE-SEMA-KARARLARI.md)
-- GIRIS YAPISI (06-13): kart=departman; faz=donemin kaba hali (varsayilan 3, inceltilebilir); giris=sakin liste + "ne zaman" her satirda + cogul donem dokun-isaretle; tam gorunum=nakit matrisi (2. yuzey). 6 arayuz ilkesi + 5 veri kurali + yuvarlama sozlesmesi.
-- GOC CANLI (06-14, e63fbb0): expense_groups.stage_id dustu + department_id NOT NULL; budget_stages start/end_date nullable; budget_items.quantity -> budget_item_periods koprusu (kalem<->donem, unique(item_id,stage_id), miktar koprude, satir toplami turetilir). "En az bir donem" + "donem tarihli" zorlamalari MUHURDE.
-- SEMA B-serisi (B1-B19): hesaplanan deger saklanmaz (B18) · negatif kapidan giremez (B3 CHECK) · degisiklik izi kapida (B19 trigger) · kasa/raf koy-ve-bak (B16/B17) · kalici kalem kodu (item_code) kimlik · dis format kodu (external_code, Bakanlik/AICP) ayri alan · dizi=scope(single/season/episode)+episode_no · RLS her seviyede yalniz muhasebe · yuk=item_burdens+packages (stopaj/SGK/ajans/damga, Turk-yerli) · KDV su an yalniz belge tarafinda.
-- PAKETLEME: Model A — butce+harcama tek kod, paketlenebilir iki yuzey; tek temas receipts.budget_item_id.
-- cost_object (4. EKSEN, 2026-06-20): MMB Set/Saturation Tag; kategori-seviyesi; satir-basina TEK (Faz 1); kontrollu liste (budget_cost_objects, btce-bazli); kutuphaneden oto-etiket (icsel-cross-cut kalem); gerceklesen receipts'ten miras; dusuk-bahis (unutulsa kart toplami dogru kalir); sahne-instance + breakdown KAPSAM-DISI. Sema PARK -> DDL ayri dilim. Detay: KART-KATALOGU §4.10.
-
-## Butce — SABLON FORMAT + KDV (06-15, KILITLI; detay docs/butce/BUTCE-SEMA-KARARLARI.md)
-- body SEKLI: TEK sekil tum tur/scope; dizi=iki sablon satiri (season+episode, sema zaten boyle). Tablolari aynalar: stages[] + cards[] (department_code/name/icon/default_unit/default_package) + her kartta items[] (name/detail/unit?/package?/multiplier) + percent_lines[] (contingency/profit varsayilan). B16 kasa ile ayni serilestirici.
-- KOPRU ACILISTA BOS (Model A): sablon kalemi doneme baglamaz; "ne zaman"i kullanici dokun-isaretle ile kurar. unit_net acilista 0; periods bos. (Model B onceden-baglama REDDEDILDI.)
-- PAKET-KODU + GUNUN ORANI: sablon yalniz paket kodu tutar; acilista item_burdens'e gunun rate_catalog orani kopyalanir.
-- budget_percent_lines DEGISMEZ: contingency+profit duz. "Secilebilir-tabanli markup" GEREKSIZ (geri alindi).
-- KDV AYRISTIRMA (Genis yol): budget_items'a vat_rate eklenecek (sema eki, uygulama dilimi). body'ye default_vat (kart) + opsiyonel vat (kalem). Kullanici NET veya BRUT girer; CFE turetir; B18 kirilmaz. KDV ile yuk AYRI eksen.
+- GIRIS YAPISI (06-13): kart=departman; faz=donemin kaba hali; giris=sakin liste + "ne zaman" her satirda + cogul donem dokun-isaretle; tam gorunum=nakit matrisi. 6 arayuz ilkesi + 5 veri kurali + yuvarlama sozlesmesi.
+- GOC CANLI (06-14): department_id NOT NULL; budget_item_periods koprusu (unique(item_id,stage_id), miktar koprude, satir toplami turetilir). "En az bir donem" + "donem tarihli" MUHURDE.
+- SEMA B1-B20: hesaplanan deger saklanmaz (B18) - negatif kapidan giremez (B3) - degisiklik izi (B19) - kasa/raf dokunulmazlik (B16/B17) - kalici kalem kodu kimlik - dis format kodu ayri - RLS yalniz muhasebe - yuk=item_burdens+packages - standart oranlar veri/cetvel + snapshot (B20).
+- PAKETLEME: Model A — butce+harcama tek kod, iki yuzey; tek temas receipts.budget_item_id.
+- cost_object (4. EKSEN): MMB Set/Saturation Tag; kategori-seviyesi; sema DDL ayri dilim (PARK). Detay KART-KATALOGU §4.10.
+- SABLON FORMAT + KDV (06-15): body TEK sekil; kopru acilista bos (Model A); paket-kodu + gunun orani snapshot; KDV ayristirma (Genis yol) vat_rate CANLI, NET/BRUT girisi CFE turetir (B18).
 
 ## Siradaki is
-Tamamlandi: kart mimari (1100-1600) + cost_object semasi + vat_rate + fn_open_budget (uctan-uca test gecti, 2026-06-21).
-Aktif: Dilim 2b — TEK kartin calisan giris UI'i.
-Tam sira / dilimler / backlog: docs/IS-SIRASI.md (tek kaynak).
-RPC kalibi: fn_create_project (SECURITY DEFINER, atomik, Turkce hata, REVOKE/GRANT), canli dogrulanir.
+Aktif: KART 1500 kolon-kolon (2. kolon Statu). Sonra: VERGI/YUK dilimi-2 = CFE satirToplam dallanma (statu boluyorsa brutStopaj / bordro additive + donem-basina unit_net + cevap-anahtarli test) + fn_open_budget snapshot (payment_status_defaults -> budget_items.stopaj_rate/vat) + stopaj component'inin paketlerden cikarilmasi. Sonra 2b giris UI yeniden-kurulum (yeni model). Tam sira: docs/IS-SIRASI.md.
 
 ## Acik (kararlasmadi)
-- department_code -> department_id cozumu: COZULDU — departments.code kanonik anahtar (20260620140000), fn_open_budget bul-veya-olustur (ON CONFLICT race-safe).
-- "Donemsiz" kovasi muhur muafiyeti: KOLON CANLI — budget_stages.is_undated (20260620140000); muhur MANTIGI fn_lock_budget diliminde (acik).
-- Model 1 (hesabi KAAPA acar) · Avans->butce cift sayim (B10) · Gorunen rol etiketi · Tedarikci hafizasi + Arastir Dilim 2 (BIRLIKTE).
+- Muhasebe oran teyitleri: 2026 oran guncelligi + reklam tevkifati 3/10/10/10 + telif tavan (yukarida).
+- Oran-yonetimi ekrani ERTELENDI (IS-SIRASI'da).
+- fn_lock_budget muhur mantigi (donemsiz kovasi muafiyeti dahil) acik.
+- Model 1 (hesabi KAAPA acar) - Avans->butce cift sayim (B10) - Gorunen rol etiketi - Tedarikci hafizasi + Arastir.
 - "Modul acik mi" bayragi + faturalama/paket fiyat: sirasi gelince.
-- cost_object: kalem-alti tipleme (arac cinsi dropdown) AYRI ozellik -> kutuphane-tasarim fazinda; cogul cost_object/satir (Faz 1 tek).
-- RAPORLAR fazi: icmal PDF · Bakanlik formu birebir esleme · AICP/uluslararasi export · amort/bolum-basi pay raporu · EFC · cost_object cross-kart rollup raporu.
-- KAPI ACIK (sema oldurmez, Faz 1 yapmaz): taahhut · mesai · doviz (CFE) · satir yorumu · breakdown modulu (cost_object'i oto-besler).
-
-## Tur sablon arastirmasi (06-15, referans — icerik seed icin)
-- REKLAM: AICP Bid Form = 11 kart; gun-tipleri Build/Pre-Light/Shoot/Strike; yapi+kalem+yuk aliriz, bidding kapsam disi.
-- FILM: Movie Magic referans. 4 kova (ATL/BTL/Post/Diger) + ~30 kart; Topsheet->Kategori->Hesap->Detay = bizde kova-etiketi->kart->kalem; fringe=Turk yuk makinesi (item_burdens). Cross-cut: MMB Sets = bizde cost_object.
-- DIZI: yeni model YOK — scope+episode_no ile cozulu; kalemler film ile ortusur.
-- ORTAK FILTRE: yapi gecer, ABD rakami/sendika gecmez (Turk yapimi; yuk=SGK/stopaj, completion bond yok).
+- Kutuphane resmilestirme + katalog-kodu (cost_object oto-etiketi ve kesin kalem kodlari buna bagli).
+- RAPORLAR fazi: icmal PDF - Bakanlik formu - AICP/export - EFC - cost_object rollup.
+- KAPI ACIK (sema oldurmez, Faz 1 yapmaz): taahhut - mesai - doviz (CFE) - satir yorumu - breakdown modulu.
+- Onceki devirden devam eden acik: guvenlik DB sifre reset + edge fn deploy mekanizmasi.
 
 ## Korunan onceki kararlar
-- CARD-DESK LAYOUT (kilitli) — muhasebe CALISMA ortami (ev/nav); minimal onboarding'a UYGULANMAZ. Daralabilir sol ray + ust baglam cubugu + orta masa + sag referans yuvasi. (Calisan UI = bunun islevsel hali; gorsel tasarim/komp degil.)
+- CARD-DESK LAYOUT (kilitli) — muhasebe CALISMA ortami; daralabilir sol ray + ust baglam cubugu + orta masa + sag referans yuvasi. (Calisan UI = bunun islevsel hali; gorsel komp ayri.)
 - Iki deger yuzeyi esit: harcama operasyonu + butce gorunurlugu. Anomali = FIS-BAZLI, butce-havuzu uyarisindan AYRI.
-- Butce her seviyede YALNIZ muhasebe gorur+yazar. Butce icin ayrica gorsel tasarim turu.
+- Butce her seviyede YALNIZ muhasebe gorur+yazar.
 - Yama yok: cikar-degistir.
 
-## Bu commit'te dokumana islenenler
-- KART-KATALOGU: §7.5 OYUNCU (1600 kilitli kart) + §4.10 cost_object (4. eksen) eklendi; §8 PARK stunt satiri guncellendi + cost_object sema PARK eklendi.
-- KART-GEREKCELERI: KART 1600 "neden" bolumu + cost_object genel egitim notu eklendi.
-- IS-SIRASI: cost_object sema dilimi + butce runtime dikey-dilimi (kart-yuruyusunden oncelikli) + kutuphane katalog-kodu + breakdown=gelecek eklendi.
-
-## Butce Sablon Arastirmasi (devam ediyor)
-- Durum + acik kararlar: docs/butce/BUTCE-ARASTIRMA-DURUM.md
-- Master kalem listesi (4746 tekil; "Oyuncu-Kast" 197 kalem 1600 icin kullanildi).
-- Kilitli yon: iki-katman (sablon yalin / kutuphane+autocomplete), 2 para-seviyesi derinlik, kart=departman=onay birimi. Kutuphane RESMILESTIRME + KATALOG-KODU isi acik (cost_object oto-etiketi ve kesin kalem kodlari ona bagli). KABUL bekleyen detaylar dokumanda.
+## Referans (icerik seed)
+- Tur sablonlari: REKLAM (AICP 11 kart), FILM (Movie Magic, 4 kova ~30 kart, fringe=Turk yuk makinesi, MMB Sets=cost_object), DIZI (scope+episode_no ile cozulu). ORTAK FILTRE: yapi gecer, ABD/sendika rakami gecmez.
+- Master kalem listesi: 4746 tekil (Oyuncu-Kast 197 kalem 1600 icin kullanildi).
+- Iki-katman: sablon yalin / kutuphane+autocomplete.

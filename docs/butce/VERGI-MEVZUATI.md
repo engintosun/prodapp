@@ -28,7 +28,7 @@ Statü, KART-KATALOGU §4.8'deki ödeme-statüsü boyutudur. Her işçilik/hizme
 
 | # | Ödeme statüsü | KDV oranı | Stopaj (GV tevkifat) | Net → Brüt (stopaj şişmesi) | SGK fringe | Not |
 |---|---|---|---|---|---|---|
-| 1 | **Telifli eser — şahıs** (GVK 18) | %0 veya %20 | **%17** (GVK 94/2-a) | Brüt = Net / 0,83 | Binmez | KDV sorumlu sıfatıyla (2 no'lu KDV); eser FSEK kapsamında olmalı |
+| 1 | **Telif — eser belgeli** (GVK 18) | %0 veya %20 | **%17** (GVK 94/2-a) | Brüt = Net / 0,83 | Binmez | Eser belgesi (Kültür Bak.) ŞART; senarist/besteci/YÖNETMEN kapsar, OYUNCULUK DEĞİL; tavan 5,3M (§1b); KDV alıcı sorumlu (2 no'lu) |
 | 2 | **Serbest meslek — şahıs** (SMM) | %20 | **%20** (GVK 94/2-b) | Brüt = Net / 0,80 | Binmez | Yük faturada; en yaygın şahıs ödemesi |
 | 3 | **Şirket faturası** (Ltd/AŞ) | %20 | **%0** | Brüt = Net (KDV ayrı) | Binmez | KDV indirilebilir (koşullu, §3) |
 | 4 | **Bordro** (kadrolu) | — (ücret KDV dışı) | Artan tarife (GVK 103) | (basit şişme YOK — ayrı motor) | **Biner** | İşveren SGK payı + damga; gerçek fringe. Fringe motoru §8 PARK |
@@ -38,11 +38,23 @@ Statü, KART-KATALOGU §4.8'deki ödeme-statüsü boyutudur. Her işçilik/hizme
 
 **Şişme formülünün mantığı:** Stopaj brütten kesiliyorsa ve alacaklıya **net** garanti ediliyorsa: Brüt × (1 − stopaj) = Net → **Brüt = Net / (1 − stopaj)**. Örn. %17 → /0,83; %20 → /0,80. (Kaynak doğrulama: GVK 94/2-a telif %17; serbest meslek %20.)
 
+### 1b. TELİF KİMDE GEÇERLİ, KİMDE DEĞİL — GİB özelgesi (KİLİT, kaynak doğrulandı 2026-06-24)
+Resmî dayanak: İstanbul VDB özelgesi 22.08.2013, sayı 11395140-105[230-2012/VUK-1-...]-1291 (dizi/film senarist–besteci–yönetmen ödemeleri). Üç dal:
+- **Eser belgesi VARSA** (Kültür ve Turizm Bak. / İl Kültür Müd. "eser" yazısı) → telif **%17** (GVK 94/2-a).
+- **Eser belgesi YOKSA** → serbest meslek **%20** (GVK 94/2-b).
+- **İşçi-işveren sözleşmesi VARSA** (emir + devamlılık + bağlılık) → **ücret/bordro** (kişi başka yerde çalışsa da).
+
+**Kapsar:** senarist, besteci, **YÖNETMEN** (eser belgesiyle). **Kapsamaz:** **OYUNCULUK** (film/dizi/reklam), seslendirme, dublaj, sunuculuk — eser listesinde YOK → telif **alamaz** → SMM %20 veya bordro. (Kaynak: parasut.com SMMM yazısı + alomaliye vergi müfettişi makalesi.)
+
+**2026 istisna tavanı: 5.300.000 TL.** 1 TL bile aşılırsa istisna TÜMDEN düşer → kazanç artan tarifeyle %40'a kadar vergilenir + KDV girer. Yıl içi kümülatif takip.
+
+**KDV:** GVK 18 telifte KDV alıcı sorumlu sıfatıyla (2 no'lu KDV); stopaj dahil bedel üzerinden hesaplanır AMA stopaj matrahına girmez (KDV ayrı eksen). Arızi (süreklilik yok) işte KDV uygulanmaz; gider pusulası.
+
 ---
 
 ## 2. STOPAJ (Gelir Vergisi Tevkifatı) — kim, ne kadar
 
-- **Telif (GVK 18 / 94/2-a): %17.** Sürekli/mutad eser üretiminde geçerli; eserin FSEK'e göre eser sayılması ve İl Kültür Müdürlüğü belgesiyle ispatı gerekir. Telif istisnası sınırı (GVK 103 dördüncü dilim) aşılırsa beyan zorunlu.
+- **Telif (GVK 18 / 94/2-a): %17 — yalnız eser belgeli senarist/besteci/yönetmen (§1b).** OYUNCULUK telif DEĞİL → SMM %20. Eser belgesi: Kültür ve Turizm Bak. yazısı. 2026 istisna tavanı **5.300.000 TL**; aşılırsa istisna düşer (§1b). Reklam tevkifatı 3/10 mü 10/10 mu kaynaklar çelişiyor → müşavire doğrulat.
 - **Serbest meslek (94/2-b): %20.** SMM ile faturalanan şahıs hizmeti.
 - **Kira — şahıs işyeri/mekan (94/5-a): %20.** Kiracı (yapım şirketi) keser, muhtasarla beyan eder. *(Geçmişte pandemi döneminde geçici %10 olmuştu; güncel %20 — doğrula.)*
 - **Şirket faturası: stopaj YOK** (kurum kendi kurumlar vergisini öder).
@@ -107,7 +119,7 @@ Sinema/TV/reklam sektöründe tetiklenen başlıca kalemler (KDV Genel Uygulama 
 
 Bu belge, kurulacak şema+CFE kolonlarının gerekçesidir. **Önerilen** alanlar (şema diliminde ratifiye edilecek):
 
-- `budget_items.payment_status` — enum: `bordro` / `smm` / `sirket_faturasi` / `telif` / `loan_out` / `kira_sahis` / `konaklama` ... **Kaleme ekli; kütüphane/rol atomundan varsayılan gelir (§4.7), kalemde tıklanabilir hücreyle override edilir.** Statü değişince stopaj/fringe/KDV davranışı yeniden türetilir (örn. kamera asistanı varsayılan `bordro`→SGK biner; fatura kesiyorsa hücreden `smm`/`sirket_faturasi`→fringe sıfırlanır).
+- `budget_items.payment_status` — enum: `bordro` / `smm` / `telif_belgeli` / `sirket` / `kira_sahis` / `konaklama` ... **Kaleme ekli; kütüphane/rol atomundan varsayılan gelir (§4.7), kalemde tıklanabilir hücreyle override edilir.** Statü değişince stopaj/fringe/KDV davranışı yeniden türetilir (örn. kamera asistanı varsayılan `bordro`→SGK biner; fatura kesiyorsa hücreden `smm`/`sirket`→fringe sıfırlanır).
 - `budget_items.vat_rate` — CANLI (%0/10/20). Vergi hücresi tıklanabilir.
 - `budget_items.stopaj_rate` — YENİ (statüden varsayılan; override için alan; B18 — oran girdi, tutar saklanmaz).
 - `budget_items.vat_deductible` — YENİ boolean (§3: KDV gerçek maliyet mi).
@@ -115,7 +127,7 @@ Bu belge, kurulacak şema+CFE kolonlarının gerekçesidir. **Önerilen** alanla
 - `tevkifat_orani` — OPSİYONEL / ileride (kamu-alıcı senaryosu; Faz 1'de muhtemelen yalnız Compliance Guard uyarısı, hesap değil).
 - **`fiili tutar` + `beyan edilen matrah` + `elden`** — beyan≠fiili ayrımı (§3.1). FRINGE MOTORU işidir (§8 PARK); şimdiki şema diliminde DEĞİL. SGK fringe beyan üstünden; elden = fiili−beyan, anomali bayraklı.
 
-**Çift-fringe guard (§4.9 zaten karar):** statü `smm`/`sirket_faturasi`/`loan_out`/`telif` ise SGK fringe SIFIRLANIR (yük faturada/ayrı); yalnız `bordro`da fringe biner.
+**Çift-fringe guard (§4.9 zaten karar):** statü `smm`/`sirket`/`telif_belgeli`/`kira_sahis`/`konaklama` ise SGK fringe SIFIRLANIR (yük faturada/ayrı); yalnız `bordro`da fringe biner.
 
 ---
 

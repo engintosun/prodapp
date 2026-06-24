@@ -8,6 +8,7 @@
 16. **Kasa ve raf koy-ve-bak (B16/B17):** orijinal kilidi ve şablonlar tek jsonb belge; UPDATE/DELETE politikası yok → dokunulmazlık DB seviyesinde. Düzeltme = yeni satır, eskisi durur.
 17. **Kalıcı kalem kodu = kimlik:** bütçe içi artan sayaç, geri kullanılmaz, konumdan bağımsız. Dış format (Bakanlık/AICP) kod eşlemesi ayrı alan.
 18. **Sınav düzeneği:** para hesaplayan her kural cevap anahtarlı testle mühürlenir; matematiğe dokunan, test geçmeden commit edemez. (CFE dilim 1 ile, 1b.)
+20. **Standart oranlar veri olarak durur, koda gomulmez (B20):** stopaj/KDV/SGK/ajans/damga gibi mevzuata bagli oranlar DB'de tarihli bir cetvelde durur (rate_catalog + payment_status_defaults); fn_open_budget acilista butceye snapshot'lar (B16 cizgisi — acik yapim donmus kopyasini korur). Mevzuat degisince tek yer guncellenir, acik yapimlar etkilenmez, ve kullanici arayuzunden duzenlenebilir kalir (oran-yonetimi ekrani ERTELENDI -> IS-SIRASI). Orana kod icine gommek YASAK (kullanici goremez/duzenleyemez + B18 cift-kayit). Odeme-statusu kolonlari CANLI (2026-06-24): budget_items.payment_status (text+CHECK) / stopaj_rate (null=miras) / vat_deductible; budget_item_periods.unit_net_override; payment_status_defaults cetveli (seed TASLAK, muhasebe teyidi bekliyor).
 Paketleme: Model A — bütçe ile harcama tek kod tabanında paketlenebilir iki yüzey; tek temas receipts.budget_item_id; "modül açık mı" bayrağı ileride proje düzeyinde tek alan.
 
 ### C. Beş veri kuralı

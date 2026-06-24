@@ -25,7 +25,7 @@ Aktif milestone: M2 — Çekirdek Döngü.
 7. ⬜ Şüpheli işlem tespiti (FİŞ-BAZLI) — anomali motoru. Ayrı tasarım oturumu. Bütçe-havuzu uyarısından ayrı sistem.
 8. ⬜ Mesajlaşma / bildirim (en son — kesişen)
 9. ⬜ Üye yönetimi (TD-2'ye bloke)
-Sonra: Kütüphane resmîleştirme + katalog-kodu (her katalog kalemine kod; 1600 dahil kodlar orada kesinleşir, cost_object oto-etiketi buna bağlı) · Breakdown modülü (gelecek; cost_object'i otomatik besler) · Tedarikçi hafızası (DÜŞÜNÜLECEK) · Yapımcı/denetçi rolü (Faz 2) · M4 pilot hazırlık · CFE (TBD).
+Sonra: Kütüphane resmîleştirme + katalog-kodu (her katalog kalemine kod; 1600 dahil kodlar orada kesinleşir, cost_object oto-etiketi buna bağlı) · Breakdown modülü (gelecek; cost_object'i otomatik besler) · Tedarikçi hafızası (DÜŞÜNÜLECEK) · Yapımcı/denetçi rolü (Faz 2) · M4 pilot hazırlık · CFE (TBD) · Oran yönetimi ekranı (kullanıcı stopaj/KDV/SGK standart oranlarını UI'dan günceller; payment_status_defaults/rate_catalog cetveline valid_from'lu yazar; bütçe modülü oturduktan sonra).
 
 ## Borçlar
 Tüm teknik borçlar tek kaynak: docs/TECH-DEBT.md.
