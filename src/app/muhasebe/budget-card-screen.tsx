@@ -124,6 +124,22 @@ export function BudgetCardScreen() {
     )
   }
 
+  async function onStatusChange(id: string, value: string) {
+    const newStatus = value === '' ? null : value
+    patchRow(id, { paymentStatus: newStatus })
+    const saved = savedRef.current[id]
+    if (saved && saved.paymentStatus === newStatus) return
+    try {
+      await updateItemField(id, 'paymentStatus', value)
+      if (saved) {
+        savedRef.current[id] = { ...saved, paymentStatus: newStatus, periodQty: { ...saved.periodQty } }
+      }
+    } catch (e) {
+      if (saved) patchRow(id, { paymentStatus: saved.paymentStatus })
+      addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error')
+    }
+  }
+
   async function commitField(id: string, field: EditableField) {
     const row = rows.find((r) => r.id === id)
     if (!row) return
@@ -196,17 +212,18 @@ export function BudgetCardScreen() {
         {card.cardName}
       </h2>
       <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', margin: '0 0 var(--space-4)' }}>
-        Düzenlenebilir: Sebep · Ayrıntı · Birim net · Adet · KDV + etap miktarları. Hücreden çıkınca otomatik
+        Düzenlenebilir: Sebep · Ayrıntı · Statü · Birim net · Adet · KDV + etap miktarları. Hücreden çıkınca otomatik
         kaydeder; kayıt düğmesi yok. Toplam = etap miktarları toplamı × birim net × (1+yük) × adet. Satır
         üstünde döküm görünür.
       </p>
       <div style={{ overflowX: 'auto' }}>
-        <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 980 }}>
+        <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 1120 }}>
           <thead>
             <tr>
               <th style={thStyle}>Kod</th>
               <th style={thStyle}>Sebep</th>
               <th style={thStyle}>Ayrıntı</th>
+              <th style={thStyle}>Statü</th>
               <th style={thNum}>Birim net</th>
               {stages.map((s) => (
                 <th key={s.id} style={thNum}>
@@ -251,6 +268,21 @@ export function BudgetCardScreen() {
                       onChange={(e) => onTextChange(it.id, 'detail', e.target.value)}
                       onBlur={() => commitField(it.id, 'detail')}
                     />
+                  </td>
+                  <td style={tdStyle}>
+                    <select
+                      style={cellInput}
+                      value={it.paymentStatus ?? ''}
+                      onChange={(e) => onStatusChange(it.id, e.target.value)}
+                    >
+                      <option value="">Statü seç</option>
+                      <option value="bordro">Bordro</option>
+                      <option value="smm">Serbest meslek (SMM)</option>
+                      <option value="telif_belgeli">Telif (eser belgeli)</option>
+                      <option value="sirket">Şirket faturası</option>
+                      <option value="kira_sahis">Kira (şahıs)</option>
+                      <option value="konaklama">Konaklama / yemek</option>
+                    </select>
                   </td>
                   <td style={numStyle}>
                     <input

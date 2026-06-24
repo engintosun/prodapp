@@ -18,6 +18,7 @@ export interface BudgetItemRow {
   vatRate: number
   ratesPercent: number[]
   periodQty: Record<string, number>
+  paymentStatus: string | null
 }
 
 export interface CardView {
@@ -28,7 +29,7 @@ export interface CardView {
   items: BudgetItemRow[]
 }
 
-export type EditableField = 'name' | 'detail' | 'unitNet' | 'multiplier' | 'vatRate'
+export type EditableField = 'name' | 'detail' | 'unitNet' | 'multiplier' | 'vatRate' | 'paymentStatus'
 
 const FIELD_COL: Record<EditableField, string> = {
   name: 'name',
@@ -36,6 +37,7 @@ const FIELD_COL: Record<EditableField, string> = {
   unitNet: 'unit_net',
   multiplier: 'multiplier',
   vatRate: 'vat_rate',
+  paymentStatus: 'payment_status',
 }
 
 async function getProjectId(): Promise<string> {
@@ -114,7 +116,7 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
 
   const { data: items, error: ei } = await supabase
     .from('budget_items')
-    .select('id, item_code, name, detail, unit_net, unit_id, multiplier, vat_rate')
+    .select('id, item_code, name, detail, unit_net, unit_id, multiplier, vat_rate, payment_status')
     .eq('group_id', grp.id)
     .eq('is_active', true)
     .order('sort_order')
@@ -162,6 +164,7 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
     vatRate: Number(i.vat_rate),
     ratesPercent: burdensByItem[i.id as string] ?? [],
     periodQty: periodByItem[i.id as string] ?? {},
+    paymentStatus: typeof i.payment_status === 'string' ? i.payment_status : null,
   }))
 
   return { budgetId, groupId: grp.id as string, cardName: grp.name as string, stages, items: rows }
@@ -181,6 +184,15 @@ export async function updateItemField(
   } else if (field === 'detail') {
     const v = String(value).trim()
     payload = { detail: v === '' ? null : v }
+  } else if (field === 'paymentStatus') {
+    const v = String(value)
+    if (v === '') {
+      payload = { payment_status: null }
+    } else {
+      const VALID = ['bordro', 'smm', 'telif_belgeli', 'sirket', 'kira_sahis', 'konaklama'] as const
+      if (!(VALID as readonly string[]).includes(v)) throw new Error('Geçersiz statü')
+      payload = { payment_status: v }
+    }
   } else {
     const n = typeof value === 'number' ? value : Number(String(value).replace(',', '.'))
     if (!Number.isFinite(n)) throw new Error('Geçersiz sayı')
