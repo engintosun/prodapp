@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { brutBirim, satirToplam, kdvAyristir, zincirToplam, dokum, brutStopaj } from './cfe'
+import { brutBirim, satirToplam, satirToplamDonemli, kdvAyristir, zincirToplam, dokum, brutStopaj } from './cfe'
 
 describe('CFE — öngörülen tarafı', () => {
   it('brüt birim yuvarlanmaz', () => {
@@ -63,5 +63,20 @@ describe('CFE — stopaj şişmesi (net garanti)', () => {
     expect(brutStopaj(83000, 17)).toBe(100000)
     expect(brutStopaj(500000, 20)).toBe(625000)
     expect(brutStopaj(123456, 0)).toBe(123456)
+  })
+})
+
+describe('CFE — dönem-bazlı satır toplamı', () => {
+  it('tek dönem: mevcut satirToplam ile eşit sonuç', () => {
+    expect(satirToplamDonemli([{ net: 8250, qty: 1.75 }], [33], 2)).toBe(38404)
+  })
+  it('çoklu dönem aynı net, adet farklı', () => {
+    expect(satirToplamDonemli([{ net: 1000, qty: 2 }, { net: 1000, qty: 3 }], [], 1)).toBe(5000)
+  })
+  it('çoklu dönem farklı net', () => {
+    expect(satirToplamDonemli([{ net: 1000, qty: 2 }, { net: 2000, qty: 1 }], [], 1)).toBe(4000)
+  })
+  it('boş dizi → 0', () => {
+    expect(satirToplamDonemli([], [33], 2)).toBe(0)
   })
 })

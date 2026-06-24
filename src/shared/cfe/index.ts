@@ -1,2 +1,2 @@
-export { brutBirim, satirToplam, kdvAyristir, zincirToplam, dokum } from './cfe'
-export type { KdvSonuc, ZincirSonuc, DokumGirdi } from './cfe'
+export { brutBirim, satirToplam, satirToplamDonemli, kdvAyristir, zincirToplam, dokum, brutStopaj } from './cfe'
+export type { KdvSonuc, ZincirSonuc, DokumGirdi, DonemKalemi } from './cfe'

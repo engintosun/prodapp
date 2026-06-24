@@ -18,6 +18,7 @@ export interface BudgetItemRow {
   vatRate: number
   ratesPercent: number[]
   periodQty: Record<string, number>
+  periodNet: Record<string, number | null>
   paymentStatus: string | null
 }
 
@@ -131,6 +132,7 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
 
   const burdensByItem: Record<string, number[]> = {}
   const periodByItem: Record<string, Record<string, number>> = {}
+  const periodNetByItem: Record<string, Record<string, number | null>> = {}
   if (itemIds.length) {
     const { data: burdens, error: eb } = await supabase
       .from('item_burdens')
@@ -144,12 +146,16 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
 
     const { data: periods, error: ep } = await supabase
       .from('budget_item_periods')
-      .select('item_id, stage_id, quantity')
+      .select('item_id, stage_id, quantity, unit_net_override')
       .in('item_id', itemIds)
     if (ep) throw new Error(ep.message)
     for (const p of periods ?? []) {
       const k = p.item_id as string
       ;(periodByItem[k] ??= {})[p.stage_id as string] = Number(p.quantity)
+      ;(periodNetByItem[k] ??= {})[p.stage_id as string] =
+        p.unit_net_override !== null && p.unit_net_override !== undefined
+          ? Number(p.unit_net_override)
+          : null
     }
   }
 
@@ -164,6 +170,7 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
     vatRate: Number(i.vat_rate),
     ratesPercent: burdensByItem[i.id as string] ?? [],
     periodQty: periodByItem[i.id as string] ?? {},
+    periodNet: periodNetByItem[i.id as string] ?? {},
     paymentStatus: typeof i.payment_status === 'string' ? i.payment_status : null,
   }))
 
@@ -200,6 +207,29 @@ export async function updateItemField(
     payload = { [FIELD_COL[field]]: n }
   }
   const { error } = await supabase.from('budget_items').update(payload).eq('id', itemId)
+  if (error) throw new Error(error.message)
+}
+
+// Bir donem satirinin unit_net_override degerini yazar. Bos string -> null (kalitima don).
+export async function setItemPeriodNet(
+  itemId: string,
+  stageId: string,
+  value: string | number,
+): Promise<void> {
+  let override: number | null
+  if (String(value).trim() === '') {
+    override = null
+  } else {
+    const n = typeof value === 'number' ? value : Number(String(value).replace(',', '.'))
+    if (!Number.isFinite(n)) throw new Error('Geçersiz net değer')
+    if (n < 0) throw new Error('Negatif değer girilemez')
+    override = n
+  }
+  const { error } = await supabase
+    .from('budget_item_periods')
+    .update({ unit_net_override: override })
+    .eq('item_id', itemId)
+    .eq('stage_id', stageId)
   if (error) throw new Error(error.message)
 }
 
