@@ -17,6 +17,7 @@ export interface BudgetItemRow {
   multiplier: number
   vatRate: number
   ratesPercent: number[]
+  burdens: { label: string; rate: number }[]
   periodQty: Record<string, number>
   periodNet: Record<string, number | null>
   paymentStatus: string | null
@@ -131,17 +132,22 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
   for (const u of units ?? []) unitLabel[u.id as string] = u.label as string
 
   const burdensByItem: Record<string, number[]> = {}
+  const burdenDetailByItem: Record<string, { label: string; rate: number }[]> = {}
   const periodByItem: Record<string, Record<string, number>> = {}
   const periodNetByItem: Record<string, Record<string, number | null>> = {}
   if (itemIds.length) {
     const { data: burdens, error: eb } = await supabase
       .from('item_burdens')
-      .select('item_id, rate_percent')
+      .select('item_id, rate_percent, burden_components(label)')
       .in('item_id', itemIds)
+      .order('rate_percent', { ascending: false })
     if (eb) throw new Error(eb.message)
     for (const b of burdens ?? []) {
       const k = b.item_id as string
-      ;(burdensByItem[k] ??= []).push(Number(b.rate_percent))
+      const rate = Number(b.rate_percent)
+      ;(burdensByItem[k] ??= []).push(rate)
+      const bLabel = (b as { burden_components?: { label?: string } | null }).burden_components?.label ?? 'Yük'
+      ;(burdenDetailByItem[k] ??= []).push({ label: bLabel, rate })
     }
 
     const { data: periods, error: ep } = await supabase
@@ -169,6 +175,7 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
     multiplier: Number(i.multiplier),
     vatRate: Number(i.vat_rate),
     ratesPercent: burdensByItem[i.id as string] ?? [],
+    burdens: burdenDetailByItem[i.id as string] ?? [],
     periodQty: periodByItem[i.id as string] ?? {},
     periodNet: periodNetByItem[i.id as string] ?? {},
     paymentStatus: typeof i.payment_status === 'string' ? i.payment_status : null,

@@ -8,7 +8,7 @@ import {
   setItemPeriodNet,
 } from '../../shared/supabase/budget-service'
 import type { BudgetItemRow, CardView, EditableField, StageRow } from '../../shared/supabase/budget-service'
-import { satirToplamDonemli, dokum } from '../../shared/cfe'
+import { satirToplamDonemli, brutBirim, dokum } from '../../shared/cfe'
 import { useToast } from '../../shared/components/toast'
 import { Loading } from '../../shared/components/loading'
 import { EmptyState } from '../../shared/components/empty-state'
@@ -66,6 +66,7 @@ export function BudgetCardScreen() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [reload, setReload] = useState(0)
+  const [openBurdenItemId, setOpenBurdenItemId] = useState<string | null>(null)
   const savedRef = useRef<Record<string, BudgetItemRow>>({})
   const [buffers, setBuffers] = useState<Record<string, string>>({})
 
@@ -464,7 +465,27 @@ export function BudgetCardScreen() {
                         onBlur={() => commitField(it.id, 'vatRate')}
                       />
                     </td>
-                    <td style={numStyle}>{yuk === 0 ? '—' : '%' + fmt(yuk)}</td>
+                    <td style={numStyle}>
+                      {yuk > 0 && it.burdens.length > 0 ? (
+                        <button
+                          onClick={() => setOpenBurdenItemId(it.id)}
+                          style={{
+                            background: 'transparent',
+                            border: 'none',
+                            cursor: 'pointer',
+                            color: 'var(--color-primary)',
+                            fontSize: 'var(--text-sm)',
+                            fontVariantNumeric: 'tabular-nums',
+                            padding: 0,
+                            textDecoration: 'underline',
+                          }}
+                        >
+                          {'%' + fmt(yuk)}
+                        </button>
+                      ) : (
+                        '—'
+                      )}
+                    </td>
                     <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(total)}</td>
                   </tr>
                   {addedStages.map((s) => {
@@ -553,6 +574,67 @@ export function BudgetCardScreen() {
           </tbody>
         </table>
       </div>
+      {openBurdenItemId !== null && (() => {
+        const item = rows.find((r) => r.id === openBurdenItemId)
+        if (!item) return null
+        const toplamYuk = item.burdens.reduce((s, b) => s + b.rate, 0)
+        return (
+          <>
+            <div
+              onClick={() => setOpenBurdenItemId(null)}
+              style={{
+                position: 'fixed',
+                inset: 0,
+                background: 'rgba(0,0,0,0.45)',
+                zIndex: 200,
+              }}
+            />
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                position: 'fixed',
+                bottom: 0,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: 'min(480px, 100%)',
+                maxHeight: '70vh',
+                overflowY: 'auto',
+                borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0',
+                background: 'var(--color-surface)',
+                padding: 'var(--space-4)',
+                zIndex: 201,
+                boxShadow: 'var(--shadow-md)',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-3)' }}>
+                <span style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--color-text)' }}>
+                  {item.name}
+                </span>
+                <button
+                  onClick={() => setOpenBurdenItemId(null)}
+                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', fontSize: 'var(--text-lg)', padding: '0 var(--space-1)' }}
+                >
+                  ×
+                </button>
+              </div>
+              {item.burdens.map((b, i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-1) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
+                  <span>{b.label}</span>
+                  <span style={{ fontVariantNumeric: 'tabular-nums' }}>{'%' + fmt(b.rate)}</span>
+                </div>
+              ))}
+              <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: 'var(--space-2) 0' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-text)', marginBottom: 'var(--space-2)' }}>
+                <span>Toplam yük</span>
+                <span style={{ fontVariantNumeric: 'tabular-nums' }}>{'%' + fmt(toplamYuk)}</span>
+              </div>
+              <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', fontVariantNumeric: 'tabular-nums' }}>
+                {'Birim net ' + fmt(item.unitNet) + ' + %' + fmt(toplamYuk) + ' yük = Brüt birim ' + fmt(brutBirim(item.unitNet, item.ratesPercent))}
+              </div>
+            </div>
+          </>
+        )
+      })()}
     </div>
   )
 }
