@@ -212,7 +212,7 @@ export function BudgetCardScreen() {
         {card.cardName}
       </h2>
       <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', margin: '0 0 var(--space-4)' }}>
-        Düzenlenebilir: Sebep · Ayrıntı · Statü · Birim net · Adet · KDV + etap miktarları. Hücreden çıkınca otomatik
+        Düzenlenebilir: Sebep · Açıklama · Statü · Birim net · Adet · KDV + etap miktarları. Hücreden çıkınca otomatik
         kaydeder; kayıt düğmesi yok. Toplam = etap miktarları toplamı × birim net × (1+yük) × adet. Satır
         üstünde döküm görünür.
       </p>
@@ -222,7 +222,7 @@ export function BudgetCardScreen() {
             <tr>
               <th style={thStyle}>Kod</th>
               <th style={thStyle}>Sebep</th>
-              <th style={thStyle}>Ayrıntı</th>
+              <th style={thStyle}>Açıklama</th>
               <th style={thStyle}>Statü</th>
               <th style={thNum}>Birim net</th>
               {stages.map((s) => (
