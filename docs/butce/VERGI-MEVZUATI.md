@@ -50,6 +50,29 @@ Resmî dayanak: İstanbul VDB özelgesi 22.08.2013, sayı 11395140-105[230-2012/
 
 **KDV:** GVK 18 telifte KDV alıcı sorumlu sıfatıyla (2 no'lu KDV); stopaj dahil bedel üzerinden hesaplanır AMA stopaj matrahına girmez (KDV ayrı eksen). Arızi (süreklilik yok) işte KDV uygulanmaz; gider pusulası.
 
+### 1c. ÜÇ EKSEN MODELİ + STATÜ → ÇARPAN TABLOSU (KİLİTLİ, 2026-06-25)
+
+Bütçe "Toplam" = **BRÜT** (yapımcı maliyeti). Üç eksen **birleştirilmez**:
+
+| Eksen | Mekanizma | Kime uygulanır | Net→Brüt formülü |
+|---|---|---|---|
+| **SGK / işveren** | Ekleme (additive): Brüt = Net × (1 + oran) | Yalnız bordro | Net × 1,2175 (varsayılan) |
+| **Stopaj** | Çarpan kesinti: Brüt = Net / (1 − oran) | SMM / Telif / Kira | Net/0,80 veya /0,83 veya /0,80 |
+| **KDV** | Ayrı havuz, geri alınabilir | Tüm faturalı | Toplama/yüke GİRMEZ |
+
+**Statü → Brüt çarpan tablosu (basit):**
+
+| Statü | Stopaj | Brüt formülü | KDV | SGK fringe |
+|---|---|---|---|---|
+| `smm` (oyuncu+serbest ekip) | %20 | Net / 0,80 | %20 havuz | Binmez |
+| `telif_belgeli` (senarist/besteci/yönetmen) | %17 | Net / 0,83 | %20 havuz | Binmez |
+| `kira_sahis` | %20 | Net / 0,80 | — | Binmez |
+| `sirket` (Ltd/AŞ faturası) | — | Net = maliyet | %20 havuz | Binmez |
+| `konaklama` | — | Net = maliyet | %10 havuz | Binmez |
+| `bordro` | Artan tarife (motor) | MOTOR (§7) | — | **Biner** |
+
+**Yük kovası mimarisi (karar: "A reddedildi"):** Stopaj kovadan ÇIKARILMAZ. `item_burdens` kalır; içerik statüye göre dolar (bordro→SGK+işsizlik, smm→stopaj20 bileşeni, telif→stopaj17 bileşeni, kira→stopaj20 bileşeni, fatura/konaklama→boş). Her yük bileşeni **cins** taşır (`burden_components.kind`): `additive` (SGK) veya `deduction` (stopaj). CFE cinse göre hesaplar. *DILIM-2a şema eki: cins alanı + statü→bileşen eşlemesi + rate_catalog oranlar.*
+
 ---
 
 ## 2. STOPAJ (Gelir Vergisi Tevkifatı) — kim, ne kadar
@@ -58,7 +81,8 @@ Resmî dayanak: İstanbul VDB özelgesi 22.08.2013, sayı 11395140-105[230-2012/
 - **Serbest meslek (94/2-b): %20.** SMM ile faturalanan şahıs hizmeti.
 - **Kira — şahıs işyeri/mekan (94/5-a): %20.** Kiracı (yapım şirketi) keser, muhtasarla beyan eder. *(Geçmişte pandemi döneminde geçici %10 olmuştu; güncel %20 — doğrula.)*
 - **Şirket faturası: stopaj YOK** (kurum kendi kurumlar vergisini öder).
-- **Bordro:** stopaj değil, artan tarifeli gelir vergisi (GVK 103) + SGK + damga = ayrı bordro motoru (§8 PARK).
+- **Bordro:** stopaj değil, artan tarifeli gelir vergisi (GVK 103) + SGK + damga = ayrı bordro motoru (§7 aşağıda).
+- **SGK işveren oranı:** ham %21,75 (film/imalat-dışı). Teşvik senaryoları: **%19,75** varsayılan (düzenli ödeme teşviki); **%15,5** bakanlık/bölgesel; **%21,75** borçlu/teşviksiz (7566 SK + Hazine Teşviki). Şirket-Profili checkbox = DILIM-3 parametre paneli.
 
 ---
 
@@ -128,6 +152,48 @@ Bu belge, kurulacak şema+CFE kolonlarının gerekçesidir. **Önerilen** alanla
 - **`fiili tutar` + `beyan edilen matrah` + `elden`** — beyan≠fiili ayrımı (§3.1). FRINGE MOTORU işidir (§8 PARK); şimdiki şema diliminde DEĞİL. SGK fringe beyan üstünden; elden = fiili−beyan, anomali bayraklı.
 
 **Çift-fringe guard (§4.9 zaten karar):** statü `smm`/`sirket`/`telif_belgeli`/`kira_sahis`/`konaklama` ise SGK fringe SIFIRLANIR (yük faturada/ayrı); yalnız `bordro`da fringe biner.
+
+`rate_catalog` = versiyonlu parametre DB'nin veri katmanı; `fn_open_budget` açılışta bütçeye snapshot'lar (B16 — açık yapım donmuş kopyasını korur). Mevzuat değişince tek yer güncellenir, açık yapımlar etkilenmez. Koda oran gömmek YASAK (B20).
+
+---
+
+## 7. BORDRO MOTORU SPESİFİKASYONU (DILIM-3 — henüz kurulmadı)
+
+**KRİTİK:** Bordro basit % DEĞİL, bir motordur. Sabit %42,5 veya benzeri hardcode YANLIŞ ve YASAK.
+
+**Motor girdileri (kişi-başı, aylık):**
+- Net ücret (bütçecinin girdiği)
+- Kümülatif yıllık matrah (o kişi için, o ay başına kadar)
+- Asgari ücret istisnası (2026: aylık brütten düşülür)
+
+**2026 GVK 103 dilimleri:**
+
+| Matrah dilimi (TL) | Oran | Önceki dilim vergisi |
+|---|---|---|
+| 0 – 190.000 | %15 | — |
+| 190.001 – 400.000 | %20 | 28.500 |
+| 400.001 – 1.500.000 | %27 | 70.500 |
+| 1.500.001 – 5.300.000 | %35 | 367.500 |
+| 5.300.001 + | %40 | — |
+
+**SGK 2026 (yaklaşık — doğrulat):**
+- Taban: 33.030 TL, tavan: 297.270 TL (asgari × 9)
+- İşçi SGK %14 + işçi işsizlik %1 = %15 (brütten)
+- İşveren SGK %15,5–21,75 (senaryoya göre §2) + işveren işsizlik %2
+
+**Damga vergisi:** %0,759 (brüt ücret üzerinden)
+
+**Asgari ücret istisnası:** Her personelin gelir vergisinden aylık sabit tutar düşülür (2026 tutarı güncellenir).
+
+**Kümülatif matrah algoritması:** Her ay, o kişinin yıl başından beri kümülatif brüt matrahı hesaplanır; dilim atladıkça o ay hangi dilimden hesaplanacağı değişir → fringe oranı her ay farklı olabilir.
+
+**Örnek:** Aylık 400K net, 3 ay → ~%84 fringe (tahmini; matrah kümülatif büyüdükçe oran artar).
+
+**DILIM-3 parametreleri (hardcode yasak, DB'den okunur):**
+- Vergi dilimleri ve oranları (versiyonlu, `valid_from`'lu)
+- SGK taban/tavan (yıllık güncelleme)
+- Asgari ücret tutarı
+- SGK işveren senaryosu (Şirket-Profili checkbox)
 
 ---
 

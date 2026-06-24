@@ -15,19 +15,25 @@ Kalem başta; Net/× (birim-net ve adet) ana satırda DEĞİL — dönem kırıl
 
 ## 2. Statü (ödeme türü)
 
-**KARAR:** Kalem-bazlı dropdown: **Bordro / SMM / Şirket faturası / Telif / Kira(şahıs)**. Kütüphane/rol atomundan varsayılan gelir, kalemde tıklanabilir override.
+**KARAR (güncel, 2026-06-25):** Kalem-bazlı **native dropdown** (m4: ozel kutu YOK — mobilde işletim sisteminin bottom-sheet'i bedavaya gelir). **6 değer** (eski 5-değer liste ASILDI): `bordro` / `smm` / `telif_belgeli` / `sirket` / `kira_sahis` / `konaklama`. **Kısa etiketler** (m4 kararı): SMM · Telif · Kira · Fatura · Bordro · Konaklama. Kütüphane/rol atomundan varsayılan gelir, kalemde override.
 
-**NEDEN:** Yük'ün hangi mekanizma olduğunu (SGK mı stopaj mı, KDV var mı) statü belirler. Aynı rol farklı kişide farklı statüde olabilir (kameraman bordrolu da olur, SMM kesen de) → kalemde değiştirilebilmeli. Varsayılan kütüphaneden gelir ki her seferinde elle seçilmesin.
+**NEDEN:** Yük'ün hangi mekanizma olduğunu (SGK mı stopaj mı, KDV var mı) statü belirler. Aynı rol farklı kişide farklı statüde olabilir (kameraman bordrolu da olur, SMM kesen de) → kalemde değiştirilebilmeli. Varsayılan kütüphaneden gelir ki her seferinde elle seçilmesin. Native select mobilde OS bottom-sheet'i tetikler — özel kutu gereksiz.
 
-## 3. Net / Brüt ve "Yük"
+## 3. Net / Brüt ve "Yasal Yük" (kolon başlığı güncel)
 
-**KARAR:** Sen **net** rakamı girersin (sahada net anlaşılır). **Brüt = Net + Yük.** "Yük" hücresi = **brüt − net farkı (TL)**, statüye göre motor hesaplar + bütçeci override edebilir:
-- Bordro → SGK işveren payı (net'e **eklenir**)
-- SMM → stopaj, Brüt = Net / 0,80 → fark
-- Telif → stopaj, Brüt = Net / 0,83 → fark
-- Şirket faturası → yük 0 (stopaj yok)
+**KARAR (güncel, 2026-06-25):** Kolon adı = **"Yasal Yük"** (eski "Yük" aşıldı). Bütçe "Toplam" = **Brüt** (yapımcı maliyeti). Net ve Brüt **ayrı iki kolon**. KDV **ayrı kolon** (havuz, geri alınabilir, toplama/yüke GİRMEZ). Üç eksen ayrı:
 
-**NEDEN:** Sahada anlaşma daima net üzerindendir ("eline 10.000 geçsin"); brütü kimse baştan bilmez, sistem türetmeli. Tek bir "yük %" çarpanı YETMEZ çünkü iki mekanizma ters yönde çalışır: **SGK net'in üstüne EKLENİR**, **stopaj brütün içinden KESİLİR** (Brüt×(1−oran)=Net → Brüt=Net/(1−oran); %20→/0,80, %17→/0,83). Ama ekranda ikisi de "brüt−net farkı" olarak tek "Yük" sütununda tutarlı görünür; matematiği motor doğru kurar.
+- **Yasal Yük = Brüt − Net (TL farkı)** statüye göre:
+  - Bordro → SGK işveren payı (net'e **eklenir**, additive)
+  - SMM → stopaj, Brüt = Net / 0,80 (kesinti çarpan)
+  - Telif → stopaj, Brüt = Net / 0,83 (kesinti çarpan)
+  - Kira → stopaj, Brüt = Net / 0,80 (KDV yok)
+  - Şirket faturası → yük 0 (stopaj yok; KDV havuzda)
+  - Konaklama → yük 0 (KDV %10 havuzda)
+
+- **KDV:** Ana tabloda ayrı sütun (oran + "indirilebilir mi?" bayrağı). Personelde (bordro) boş. Yüke GİRMEZ, genel toplama GİRMEZ. Geri-alınabilir havuz olarak gösterilir.
+
+**NEDEN:** Sahada anlaşma net üzerindendir; brütü sistem türetir. Tek "yük %" çarpanı yetmez: SGK ekleme, stopaj kesinti — iki farklı yön. Toplam = Brüt çünkü yapımcının cebinden çıkan odur. KDV ayrı eksen çünkü standart halde geri alınır (maliyet değil). Detay: VERGI-MEVZUATI.md §1c.
 
 ## 4. Dönem seçimi ve kırılım
 
@@ -83,12 +89,24 @@ Kalem başta; Net/× (birim-net ve adet) ana satırda DEĞİL — dönem kırıl
 1. **KAAPA renk/font teması** (warm black #0C0A08 + turuncu #E8962E, DM Sans/Mono) — eski rewrite kararından geliyor, **aday**, kilit değil; değişebilir.
 2. **KDV sütununun** ana tablodaki görünümü/konumu — açık (§7).
 
-## ŞEMAYA BAĞLANIŞ (şema dilimine ait, henüz kurulmadı)
-Bu kararlardan doğan ve **şema dilimi**nde `BUTCE-SEMA-KARARLARI.md`'ye işlenecek alanlar (öneri):
-- `budget_items.payment_status` (enum, kütüphane varsayılanı + override)
-- `budget_items.stopaj_rate` (statüden türetilir, override; B18 oran-girdi)
-- `budget_items.vat_deductible` (boolean; KDV gerçek maliyet mi)
-- `budget_item_periods` → **opsiyonel birim-net override** (dönem-başına farklı ücret)
-- Net/Brüt CFE'den türetilir (saklanmaz): `brutStopaj(net, oran)` + mevcut `kdvAyristir`/`brutBirim`
-- "Yasal Yükler" = transversal okuma (SGK + stopaj kalemlerden köprü, agregat)
-- Beyan/fiili/elden ayrımı = **fringe motoru (§8 PARK)**, bu dilimde değil
+## 12. Birim kolonu (m5+m6 kararı, 2026-06-25)
+
+**KARAR:** Birim = **seçilebilir dropdown** (adet / kişi / gün / hafta / ay). Kaleme göre varsayılan gelir (kütüphane/rol atomundan); üstüne tıklayınca değişir. m5 (birim etiketi) + m6 (birim seçim) birleşik. Mobilde native select → OS bottom-sheet bedava.
+
+**NEDEN:** Farklı kalemler farklı birim gerektirir (kameraman haftalık, ekstra günlük, araç aylık). Varsayılan çalışır; override serbest.
+
+## 13. Yük kovası cins mimarisi (kilitlendi 2026-06-25)
+
+**KARAR:** `item_burdens` tablosunda her bileşen **cins** taşır (`burden_components.kind`): `additive` (SGK, işsizlik — net'e eklenir) veya `deduction` (stopaj — brütün içinden kesilir). CFE cinse göre doğru formülü seçer. Statü seçilince kova o statüye göre dolar: bordro→SGK+işsizlik bileşenleri; smm→stopaj20 bileşeni; telif→stopaj17 bileşeni; kira→stopaj20 bileşeni; fatura/konaklama→boş. **DILIM-2a şema eki** bu alana karşılık gelir.
+
+**NEDEN:** "A reddi": stopaj bileşeni kovadan çıkarılıp ayrı bir mekanizmaya alınması önerildi, reddedildi. Tek kova + cins alanı daha temiz: her yük bileşeni kendi cinsini bilir, CFE branching yapar, eski additive testler kırılmaz, genişleme kolaydır.
+
+## ŞEMAYA BAĞLANIŞ (şema dilimine ait, kısmen yapıldı)
+- `budget_items.payment_status` — **CANLI** (6 değer, CHECK)
+- `budget_items.stopaj_rate` — **CANLI** (null=miras, override için)
+- `budget_items.vat_deductible` — **CANLI**
+- `budget_item_periods.unit_net_override` — **CANLI** (dönem-başına farklı ücret)
+- `burden_components.kind` (additive/deduction) — **DILIM-2a** (henüz yok)
+- Net/Brüt CFE'den türetilir (saklanmaz): `brutStopaj(net, oran)` **CANLI**; cinse göre dallanma DILIM-2c
+- "Yasal Yükler" = transversal okuma (SGK + stopaj köprü, agregat) — DILIM-2d
+- Beyan/fiili/elden ayrımı = **fringe motoru (DILIM-3)**, bu dilimde değil
