@@ -9,7 +9,8 @@ Aktif milestone: M2 — Çekirdek Döngü.
 · ✅ Reviewer onay/red (fn_review_receipt RPC + muhasebe queue dept_approved)
 · ✅ Onboarding UI (proje aç girişi + departman→dönem→bütçe→davet kurulum akışı, 2026-06-10)
 · ✅ Bütçe DB temeli + fn_open_budget + CFE temel + KART 1500 giriş UI 6 kolon
-· ✅ DILIM-2 — basit statüler: 2a şema cins (burden_components.kind) + statü→bileşen eşleme + rate_catalog · 2b fn_open_budget statü-fill · 2c CFE cinse göre brüt/net (25 test) · 2d KART 1500 ekran Net+Brüt+KDV ayrı + Yasal Yük (brüt−net TL) + kişiye-banka şelale dökümü (commit e9dfe58)
+· ✅ DILIM-2 — basit statüler: 2a şema cins + statü→bileşen eşleme + rate_catalog · 2b fn_open_budget statü-fill · 2c CFE cinse göre brüt/net (25 test) · 2d KART 1500 ekran Net+Brüt+KDV ayrı + Yasal Yük (brüt−net TL) + kişiye-banka şelale dökümü (commit e9dfe58)
+· ✅ DILIM-2e statü→kova OTOMATİK tazeleme (fn_refill_item_burdens + after-update trigger + fn_open_budget refactor + backfill) + KDV statüden + döküm etiketi cinse göre
 
 ## Sıra (bağımlılığa göre)
 
@@ -19,6 +20,7 @@ Aktif milestone: M2 — Çekirdek Döngü.
 - m5+m6. ⬜ Birim seçilebilir dropdown (adet/kişi/gün/hafta/ay; kaleme göre varsayılan; üstüne tıklayınca değişir).
 
 ### DILIM-3 — Bordro motoru (ayrı faz)
+- ⬜ İLK ADIM: Tanımlar/cetveller bölümü iskeleti (sol-ray) — rate_catalog + payment_status_defaults + payroll-base + bordro parametreleri burada yaşar (Engin onaylı).
 - ⬜ Parametre DB derinleştirme: GVK 103 dilimler + SGK taban/tavan + damga + asgari ücret istisnası (versiyonlu, `valid_from`'lu).
 - ⬜ Kümülatif matrah algoritması (kişi-bazlı hafıza, aylık, dilim atlama).
 - ⬜ Dönem-bazlı aylık işleyiş (aylık fringe değişimi modeli).
@@ -29,9 +31,9 @@ Aktif milestone: M2 — Çekirdek Döngü.
 - ⬜ 1100, 1300, 1400, 1600 — 1500 modeli üzerinden geçilir.
 
 ### Ana sıra (geri kalan)
-1. ✅ Bütçe modülü DB temeli + fn_open_budget + CFE + KART 1500 ekran (DILIM-2 tam).
+1. ✅ Bütçe modülü DB temeli + fn_open_budget + CFE + KART 1500 ekran (DILIM-2 tam, 2a-2e).
 2. ⬜ Bağımsız UI düzeltmeleri (m2/m3/m5+m6).
-3. ⬜ DILIM-3 bordro motoru.
+3. ⬜ DILIM-3 bordro motoru (ilk adım Tanımlar bölümü).
 4. ⬜ Diğer kartlar (1100/1300/1400/1600).
 5. ⬜ Dept/Muhasebe ev + navigasyon. Card-desk layout burada; TD-10 kapanır.
 6. ⬜ C5 Dönem ekranı (kapama + grace).
@@ -42,7 +44,7 @@ Aktif milestone: M2 — Çekirdek Döngü.
 11. ⬜ Mesajlaşma / bildirim (en son).
 12. ⬜ Üye yönetimi (TD-2'ye bloke).
 
-Backlog (sonraya): m9 bütçe sol-nav alanı · şablon Türkçe karakter (seed + mevcut bütçe isimleri) · dönem-net soluk/koyu kontrast görsel teyidi · Kütüphane resmîleştirme + katalog-kodu · Breakdown modülü · Tedarikçi hafızası · Yapımcı/denetçi rolü (Faz 2) · M4 pilot hazırlık · Oran yönetimi ekranı (kullanıcı stopaj/KDV/SGK standart oranlarını UI'dan günceller; payment_status_defaults/rate_catalog cetveline valid_from'lu yazar; bütçe modülü oturduktan sonra).
+Backlog (sonraya): m9 bütçe sol-nav alanı · şablon Türkçe karakter (seed + mevcut bütçe isimleri) · dönem-net soluk/koyu kontrast görsel teyidi · Kütüphane resmîleştirme + katalog-kodu · Breakdown modülü · Tedarikçi hafızası · Yapımcı/denetçi rolü (Faz 2) · M4 pilot hazırlık · Oran yönetimi ekranı (Tanımlar bölümü içinde; kullanıcı stopaj/KDV/SGK oranlarını valid_from'lu günceller).
 
 ## Borçlar
 Tüm teknik borçlar tek kaynak: docs/TECH-DEBT.md.

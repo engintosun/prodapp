@@ -631,15 +631,19 @@ export function BudgetCardScreen() {
                 <span>= Kişiye banka ödemesi</span>
                 <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(dBanka.toplam)}</span>
               </div>
-              <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: 'var(--space-2) 0' }} />
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-1) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
-                <span>Yasal Yük (stopaj, devlete)</span>
-                <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(dStopaj)}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-2) 0', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-text)' }}>
-                <span>= Brüt (yapımcı maliyeti)</span>
-                <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(dBrut)}</span>
-              </div>
+              {item.burdens.length > 0 && (
+                <>
+                  <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: 'var(--space-2) 0' }} />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-1) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
+                    <span>{"Yasal Yük (" + (item.burdens[0]?.kind === "additive" ? "SGK işveren payı" : "stopaj, devlete") + ")"}</span>
+                    <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(dStopaj)}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-2) 0', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-text)' }}>
+                    <span>= Brüt (yapımcı maliyeti)</span>
+                    <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(dBrut)}</span>
+                  </div>
+                </>
+              )}
             </div>
           </>
         )
