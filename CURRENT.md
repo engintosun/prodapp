@@ -5,47 +5,49 @@ Yalnizca SIMDIKI durumu tutar. Her oturum kapanisinda bastan YAZILIR. Tarihce ->
 ## Milestone
 M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; kart mimarisi 1100-1600 KILITLI.
 - 2026-06-21: fn_open_budget CANLI (uctan-uca test).
-- 2026-06-23: butce giris UI mekanigi + vergi/yuk modeli tasarlandi.
-- 2026-06-24: vergi/yuk modeli GIB ozelgesiyle KILITLENDI; CFE brutStopaj (9/9); odeme-statusu semasi CANLI.
-- 2026-06-25: KART 1500 yapisal 6 kolon kuruldu (Statu 83951d1 + Aciklama d10ca1b + Donemler-A 3c69456 + Donemler-B1 69eb6b2 + Yuk-dokum B2 9298ac4). Uc eksen vergi modeli + yuk kovasi mimarisi KILITLENDI.
-SIRADAKI: DILIM-2 (2a Engin onayi bekliyor) -> UI duzeltmeleri (m2,m3,m5+m6) -> DILIM-3 bordro motoru.
+- 2026-06-24: vergi/yuk modeli GIB ozelgesiyle KILITLENDI; odeme-statusu semasi CANLI.
+- 2026-06-25: KART 1500 yapisal 6 kolon kuruldu. Uc eksen vergi modeli + yuk kovasi cins mimarisi KILITLENDI.
+- 2026-06-25: DILIM-2a CANLI (burden_components.kind + payment_status_burdens eslemesi + stopaj_telif/17; payment_status_defaults.default_stopaj_rate cikti, tek oran evi rate_catalog).
+- 2026-06-25: DILIM-2b CANLI (fn_open_budget kovayi statuden doldurur; 1500 sablonu payment_status tasir; paket yolu emekli).
+SIRADAKI: DILIM-2c (CFE cinse gore brut) -> 2d (ekran Net+Brut+KDV) -> UI duzeltmeleri (m2,m3,m5+m6) -> DILIM-3 bordro motoru.
 
 ## Durum
 - HEAD: git log (origin/main) kesin. Repo: github.com/engintosun/prodapp - Canli: prodapp-navy.vercel.app.
-- KURULU/CALISIYOR: auth + cok-proje login - saha fis girisi - yonlendirme/duzeltme - davet/rol - reviewer onay/red - proje olusturma + butce tablolari + servisler - onboarding UI - BUTCE DB TEMELI - fn_open_budget CANLI - CFE (brutBirim/satirToplam/satirToplamDonemli/kdvAyristir/zincirToplam/dokum/brutStopaj, 13/13) - KART 1500 giris UI (6 kolon: Kalem/Aciklama/Statu/Donemler+net-override/KDV/Yasal Yuk bottom-sheet).
-- ODEME-STATUSU SEMASI CANLI (additive goc): budget_items += payment_status (bordro/smm/telif_belgeli/sirket/kira_sahis/konaklama) + stopaj_rate + vat_deductible; budget_item_periods += unit_net_override; payment_status_defaults cetveli (TASLAK, muhasebe teyidi bekliyor).
+- KURULU/CALISIYOR: auth + cok-proje login - saha fis girisi - yonlendirme/duzeltme - davet/rol - reviewer onay/red - proje olusturma + butce tablolari + servisler - onboarding UI - BUTCE DB TEMELI - fn_open_budget CANLI (statu-fill) - CFE (brutBirim/satirToplam/satirToplamDonemli/kdvAyristir/zincirToplam/dokum/brutStopaj, 13/13) - KART 1500 giris UI (6 kolon).
+- ODEME-STATUSU SEMASI CANLI: budget_items.payment_status (6 deger CHECK) + stopaj_rate (null=miras, override) + vat_deductible; budget_item_periods.unit_net_override; payment_status_defaults cetveli (applies_sgk + default_vat_rate; TASLAK, muhasebe teyidi bekliyor).
+- YUK KOVASI CINS CANLI (DILIM-2a/2b): burden_components.kind (additive/deduction); payment_status_burdens eslemesi (smm/kira->stopaj, telif->stopaj_telif; sirket/konaklama bos; bordro motor bekliyor); rate_catalog tek oran evi (stopaj 20, stopaj_telif 17, ... TASLAK). fn_open_budget statuye gore item_burdens snapshot.
 - KART MIMARISI KILITLI: 5 etap, kart=departman + "kullanan sahiplenir", kalem motoru + gorunurluk katmanlari + Compliance Guard. Kilitli kartlar: 1100,1300,1400,1500,1600. Detay: KART-KATALOGU.md.
-- KRITIK ACIK: yuk kovasi cinsi yok (additive/kesinti ayrimi DILIM-2a'ya ertelendi); Net/Brut/KDV ayri kolon yok (DILIM-2d sonrasi ekranla gelir). Mevcut UI "Toplam" = donem-bazli brut (donem-net override + ratesPercent), KDV ve statu-carpan henuz entegre edilmedi.
+- KRITIK ACIK: CFE henuz cinse gore brut hesaplamiyor (DILIM-2c); Net/Brut/KDV ayri kolon yok (DILIM-2d). Mevcut UI "Toplam" = donem-bazli brut (donem-net override + ratesPercent); cins-dallanma ve statu-carpan ekrana henuz baglanmadi.
 
 ## VERGI / YUK modeli — KILITLI (2026-06-24/25; detay VERGI-MEVZUATI.md + BUTCE-EKRAN-KARARLARI.md)
-- DAYANAK: Istanbul VDB ozelgesi + kaynak-dogrulanmis oranlar. Muhasebe onayi icin PDF chart hazirlandi.
-- UC EKSEN (KILITLI): Butce "Toplam" = BRUT (yapimci maliyeti), net degil. Net ve Brut AYRI iki kolon. KDV AYRI havuz, maliyete GIRMEZ, geri-alinabilir. Uc eksen BIRLESTIRILEMEZ: (1) SGK/isveren = ekleme (brut=net*(1+oran), sadece bordro); (2) Stopaj = carpan kesinti (brut=net/(1-oran), SMM/telif/kira); (3) KDV = ayri eksen, havuz.
-- YUK KOVASI MIMARISI ("A reddedildi" = stopaj kovadan cikarma): Kova (item_burdens) kalir; icerik statuye gore dolar (bordro->SGK+issizlik, SMM->stopaj20, telif->stopaj17, kira->stopaj20, fatura/konaklama->bos). Her yuk bileseni CINS tasir: ekleme mi kesinti mi (burden_components.kind). CFE cinse gore hesaplar. Yama degil.
-- BASIT STATU CARPANLARI: SMM brut=net/0.80 (stopaj20+KDV20); Telif brut=net/0.83 (stopaj17+KDV20); Kira brut=net/0.80 (stopaj20, KDV YOK); Fatura/Sirket net=maliyet (KDV20 havuz, stopaj yok); Konaklama (KDV%10 havuz, stopaj yok).
-- BORDRO: basit % DEGIL, MOTOR (kumulatif aylik matrah + artan GV dilimleri %15-40 + SGK tavan/taban + asgari ucret istisnasi + damga). Hardcode YASAK. DILIM-3 fazi.
-- SGK ISVEREN: ham %21.75; tesvik senaryolari: %19.75 varsayilan (duzenli-odeme), %15.5 bakanlik-bolgesel, %21.75 borclu/tesviksiz (7566 SK + Hazine Tesviki). Sirket-Profili checkbox dilim-3.
-- B20: standart oranlar veri/cetvel, koda gomulmez; acilista snapshot; kullanici-guncellenebilir (oran-yonetimi ekrani ERTELENDI, IS-SIRASI'da).
-- MUHASEVIRE ACIK (PDF amber): 2026 oran guncelligi + reklam tevkifati 3/10 mi 10/10 mu + telif tavan teyidi. Kesinlesince cetvelde guncellenir; YAPISAL model kilitli.
+- DAYANAK: Istanbul VDB ozelgesi + kaynak-dogrulanmis oranlar. Muhasebe onayi icin PDF chart + MMB 6.1 ornek hesap plani referansta.
+- UC EKSEN (KILITLI): Butce "Toplam" = BRUT (yapimci maliyeti). Net ve Brut AYRI kolon. KDV AYRI havuz, geri-alinabilir, maliyete GIRMEZ. (1) SGK/isveren = ekleme (additive); (2) Stopaj = carpan kesinti (deduction); (3) KDV = ayri eksen.
+- YUK KOVASI: item_burdens kalir; icerik statuye gore dolar (esleme klasoru). Her bilesen CINS tasir (burden_components.kind). CFE cinse gore hesaplar. Stopaj kovada (A reddedildi).
+- BASIT STATU CARPANLARI: SMM net/0.80 (stopaj20+KDV20); Telif net/0.83 (stopaj17+KDV20); Kira net/0.80 (stopaj20, KDV YOK); Fatura/Sirket net=maliyet (KDV20 havuz); Konaklama (KDV%10 havuz).
+- BORDRO: basit % DEGIL, MOTOR (kumulatif matrah + artan GV + SGK tavan/taban + asgari ucret istisnasi + damga). Hardcode YASAK. DILIM-3 fazi; ara donemde bordro kalemleri kova bos = "motor bekliyor".
+- SGK ISVEREN: ham %21.75; %19.75 varsayilan / %15.5 bakanlik-bolgesel / %21.75 borclu. Sirket-Profili checkbox DILIM-3.
+- B20: standart oranlar veri/cetvel (rate_catalog), koda gomulmez; acilista snapshot; kullanici-guncellenebilir (oran-yonetimi ekrani ERTELENDI).
+- MUHASEVIRE ACIK (PDF amber): 2026 oran guncelligi + reklam tevkifati 3/10 mi 10/10 mu + telif tavan teyidi. YAPISAL model kilitli.
 
 ## KART 1500 kolon-kolon (MODEL kart)
 Kolon seti (KILITLI): Kalem - Statu - Aciklama - Donemler - KDV - Yasal Yuk - Net toplam - Brut toplam.
-- YAPILDI (2026-06-25): Kalem (KILITLI, oto-tamamlama, alias-rozet) + Aciklama (bos gelir, Ingilizce sablonda kalir) + Statu (6 deger, native dropdown, m4 kisa etiket: SMM/Telif/Kira/Fatura/Bordro/Konaklama) + Donemler (tikla-ekle + donem-net override + donem-bazli total) + Yasal Yuk (bottom-sheet: bileseni goster, salt-okunur).
-- SIRADAKI UI DUZELTMELERI (modelden bagimsiz, sira bekliyor): m2 donem-satiri hizalama (net Birim-net altina, miktar Adet altina); m3 Aciklama tikla-genisle; m5+m6 Birim secilebilir dropdown (adet/kisi/gun/hafta/ay, varsayilandan tiklayinca degisir).
-- SIRADAKI DILIM-2 (2a Engin onayi sonrasi): 2a kovaya cins alani + statu->bilesen eslemesi + rate_catalog oranlar (SEMA degisikligi, db push); 2b statu sec->kova snapshot; 2c CFE brut'u cinse gore, Net+Brut hesaplari; 2d Net+Brut+KDV ayri kolonlar ekran.
-- 1500 model tamam olduktan sonra diger kartlar (1100/1300/1400/1600) ayni model uzerinden gecilir.
+- YAPILDI: Kalem + Aciklama + Statu (6 deger native dropdown kisa etiket) + Donemler (tikla-ekle + donem-net override) + Yasal Yuk (salt-okunur bottom-sheet). Sema: yuk cinsi + statu-esleme + statu-fill CANLI (2a/2b).
+- SIRADAKI 2c: CFE brut'u cinse gore (additive x(1+SUMoran); deduction /(1-SUMoran)); Net+Brut ayri CFE; cevap-anahtarli test.
+- SIRADAKI 2d: ekran Net + Brut + KDV ayri kolon; Yasal Yuk = brut-net farki (TL); dokum statuye gore.
+- SIRADAKI UI (modelden bagimsiz): m2 donem-satiri hizalama; m3 Aciklama tikla-genisle; m5+m6 Birim secilebilir dropdown.
+- 1500 model tamam olunca diger kartlar (1100/1300/1400/1600) ayni model uzerinden gecilir.
 
 ## Butce — KILITLI kararlar (ozet; detay docs/butce/BUTCE-SEMA-KARARLARI.md)
-- GIRIS YAPISI (06-13): kart=departman; faz=donemin kaba hali; giris=sakin liste + "ne zaman" dokun-isaretle; tam gorunum=nakit matrisi. 6 arayuz ilkesi + 5 veri kurali + yuvarlama sozlesmesi.
+- GIRIS YAPISI (06-13): kart=departman; faz=donemin kaba hali; giris=sakin liste + "ne zaman" dokun-isaretle; tam gorunum=nakit matrisi.
 - GOC CANLI (06-14): budget_item_periods koprusu. "En az bir donem" + "donem tarihli" MUHURDE.
-- SEMA B1-B20: hesaplanan deger saklanmaz (B18) - negatif kapidan giremez (B3) - degisiklik izi (B19) - kasa/raf dokunulmazlik (B16/B17) - kalici kalem kodu kimlik - dis format kodu ayri - RLS yalniz muhasebe - yuk=item_burdens+packages - standart oranlar veri/cetvel+snapshot (B20).
-- PAKETLEME: Model A. cost_object (4. EKSEN): PARK, DDL ayri dilim. KART-KATALOGU §4.10.
-- SABLON FORMAT + KDV (06-15): body TEK sekil; kopru acilista bos; vat_rate CANLI, CFE turetir (B18).
+- SEMA B1-B20: hesaplanan deger saklanmaz (B18) - negatif kapidan giremez (B3) - degisiklik izi (B19) - kasa/raf dokunulmazlik (B16/B17) - kalici kalem kodu - dis format kodu ayri - RLS yalniz muhasebe - standart oranlar veri/cetvel+snapshot (B20).
+- PAKETLEME: Model A. cost_object (4. EKSEN): PARK, DDL ayri dilim.
+- SABLON FORMAT + KDV (06-15): body TEK sekil; kopru acilista bos; vat_rate CANLI, CFE turetir (B18). Govde kalem alani: payment_status (paket emekli, DILIM-2b).
 
 ## Siradaki is
-Aktif: DILIM-2 gate (Engin onayi gerekiyor). Paralel yurutulabilir: UI duzeltmeleri m2/m3/m5+m6. Sonra: DILIM-3 bordro motoru -> diger kartlar (1100/1300/1400/1600) -> backlog (m9, Turkce seed, soluk/koyu kontrast). Tam sira: docs/IS-SIRASI.md.
+Aktif: DILIM-2c (CFE cinse gore brut). Sonra 2d (ekran). Paralel: UI duzeltmeleri m2/m3/m5+m6. Sonra DILIM-3 bordro motoru -> diger kartlar (1100/1300/1400/1600) -> backlog. Tam sira: docs/IS-SIRASI.md.
 
 ## Acik (kararlasmadi)
-- DILIM-2 gate: basit statuler simdi, bordro motoru DILIM-3 ayri faz — 2a oncesi Engin onayi.
 - Muhasebe oran teyitleri (amber PDF): reklam tevkifati + 2026 oran guncelligi + telif tavan.
 - Oran-yonetimi ekrani ERTELENDI (IS-SIRASI'da).
 - fn_lock_budget muhur mantigi (donemsiz kovasi muafiyeti dahil).
@@ -55,14 +57,15 @@ Aktif: DILIM-2 gate (Engin onayi gerekiyor). Paralel yurutulabilir: UI duzeltmel
 - RAPORLAR fazi: icmal PDF - Bakanlik - AICP/export - EFC - cost_object rollup.
 - KAPI ACIK (Faz 1 yapmaz): taahhut - mesai - doviz - satir yorumu - breakdown.
 - Onceki devirden devam: DB sifre reset + edge fn deploy mekanizmasi.
+- Eski paket yapisi (burden_packages tablosu + budget_items.package_id) atil; ileride temizlik dilimi.
 
 ## Korunan onceki kararlar
 - CARD-DESK LAYOUT (kilitli): daralabilir sol ray + ust baglam cubugu + orta masa + sag referans yuvasi.
-- Iki deger yuzeyi esit: harcama operasyonu + butce gorunurlugu. Anomali = FIS-BAZLI, butce-havuzu uyarisindan AYRI.
+- Iki deger yuzeyi esit: harcama operasyonu + butce gorunurlugu. Anomali = FIS-BAZLI, ayri.
 - Butce her seviyede YALNIZ muhasebe gorur+yazar.
 - Yama yok: cikar-degistir.
 
 ## Referans (icerik seed)
-- Tur sablonlari: REKLAM (AICP 11 kart), FILM (Movie Magic ~30 kart, fringe=Turk yuk makinesi), DIZI (scope+episode_no). Turkce sahadan, ABD/sendika rakami gecmez.
+- Tur sablonlari: REKLAM (AICP 11 kart), FILM (Movie Magic ~30 kart + MMB 6.1 ornek hesap plani referansta), DIZI (scope+episode_no). Turkce sahadan, ABD/sendika rakami gecmez.
 - Master kalem listesi: 4746 tekil (Oyuncu-Kast 197 kalem 1600 icin kullanildi).
 - Iki-katman: sablon yalin / kutuphane+autocomplete.
