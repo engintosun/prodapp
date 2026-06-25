@@ -17,7 +17,7 @@ export interface BudgetItemRow {
   multiplier: number
   vatRate: number
   ratesPercent: number[]
-  burdens: { label: string; rate: number }[]
+  burdens: { label: string; rate: number; kind: "additive" | "deduction" }[]
   periodQty: Record<string, number>
   periodNet: Record<string, number | null>
   paymentStatus: string | null
@@ -132,13 +132,13 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
   for (const u of units ?? []) unitLabel[u.id as string] = u.label as string
 
   const burdensByItem: Record<string, number[]> = {}
-  const burdenDetailByItem: Record<string, { label: string; rate: number }[]> = {}
+  const burdenDetailByItem: Record<string, { label: string; rate: number; kind: "additive" | "deduction" }[]> = {}
   const periodByItem: Record<string, Record<string, number>> = {}
   const periodNetByItem: Record<string, Record<string, number | null>> = {}
   if (itemIds.length) {
     const { data: burdens, error: eb } = await supabase
       .from('item_burdens')
-      .select('item_id, rate_percent, burden_components(label)')
+      .select('item_id, rate_percent, burden_components(label, kind)')
       .in('item_id', itemIds)
       .order('rate_percent', { ascending: false })
     if (eb) throw new Error(eb.message)
@@ -146,8 +146,9 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
       const k = b.item_id as string
       const rate = Number(b.rate_percent)
       ;(burdensByItem[k] ??= []).push(rate)
-      const bLabel = (b as { burden_components?: { label?: string } | null }).burden_components?.label ?? 'Yük'
-      ;(burdenDetailByItem[k] ??= []).push({ label: bLabel, rate })
+      const bLabel = (b as { burden_components?: { label?: string; kind?: string } | null }).burden_components?.label ?? "Yük"
+      const bKind = (b as { burden_components?: { kind?: string } | null }).burden_components?.kind === "additive" ? "additive" : "deduction"
+      ;(burdenDetailByItem[k] ??= []).push({ label: bLabel, rate, kind: bKind })
     }
 
     const { data: periods, error: ep } = await supabase

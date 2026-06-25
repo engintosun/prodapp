@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { brutBirim, satirToplam, satirToplamDonemli, kdvAyristir, zincirToplam, dokum, brutStopaj, netToplamDonemli, brutToplamDonemli } from './cfe'
+import { brutBirim, satirToplam, satirToplamDonemli, kdvAyristir, zincirToplam, dokum, brutStopaj, netToplamDonemli, brutToplamDonemli, kisiyeBanka } from './cfe'
 
 describe('CFE — öngörülen tarafı', () => {
   it('brüt birim yuvarlanmaz', () => {
@@ -107,5 +107,20 @@ describe('CFE — cinse göre brüt (DILIM-2c)', () => {
   })
   it('kesinti %100+ → hata fırlatır (sessiz hata yasak)', () => {
     expect(() => brutToplamDonemli([{ net: 1000, qty: 1 }], [{ ratePercent: 100, kind: 'deduction' }], 1)).toThrow()
+  })
+})
+
+describe('CFE — kisiye banka odemesi (B18)', () => {
+  it('net 100000, vat 20 -> { kdv: 20000, toplam: 120000 }', () => {
+    expect(kisiyeBanka(100000, 20)).toEqual({ kdv: 20000, toplam: 120000 })
+  })
+  it('net 100000, vat 10 -> { kdv: 10000, toplam: 110000 }', () => {
+    expect(kisiyeBanka(100000, 10)).toEqual({ kdv: 10000, toplam: 110000 })
+  })
+  it('net 100000, vat 0 -> { kdv: 0, toplam: 100000 } (kira)', () => {
+    expect(kisiyeBanka(100000, 0)).toEqual({ kdv: 0, toplam: 100000 })
+  })
+  it('net 53, vat 20 -> { kdv: 11, toplam: 64 } (yuvarlama)', () => {
+    expect(kisiyeBanka(53, 20)).toEqual({ kdv: 11, toplam: 64 })
   })
 })

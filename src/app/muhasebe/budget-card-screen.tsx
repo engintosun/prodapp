@@ -8,7 +8,8 @@ import {
   setItemPeriodNet,
 } from '../../shared/supabase/budget-service'
 import type { BudgetItemRow, CardView, EditableField, StageRow } from '../../shared/supabase/budget-service'
-import { satirToplamDonemli, brutBirim, dokum } from '../../shared/cfe'
+import { netToplamDonemli, brutToplamDonemli, kisiyeBanka } from '../../shared/cfe'
+import type { Yuk } from '../../shared/cfe'
 import { useToast } from '../../shared/components/toast'
 import { Loading } from '../../shared/components/loading'
 import { EmptyState } from '../../shared/components/empty-state'
@@ -45,18 +46,13 @@ const cellInput: CSSProperties = {
 }
 const cellInputNum: CSSProperties = { ...cellInput, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }
 
-const TOTAL_COLS = 11
+const TOTAL_COLS = 12
 
 function fmt(n: number): string {
   const dp = Number.isInteger(n) ? 0 : 2
   return new Intl.NumberFormat('tr-TR', { minimumFractionDigits: dp, maximumFractionDigits: dp }).format(n)
 }
 
-function qtySum(r: BudgetItemRow): number {
-  let s = 0
-  for (const k in r.periodQty) s += r.periodQty[k]
-  return s
-}
 
 export function BudgetCardScreen() {
   const { addToast } = useToast()
@@ -353,8 +349,9 @@ export function BudgetCardScreen() {
               <th style={thStyle}>Birim</th>
               <th style={thNum}>Adet</th>
               <th style={thNum}>KDV</th>
-              <th style={thNum}>Yük</th>
-              <th style={thNum}>Toplam</th>
+              <th style={thNum}>Yasal Yük</th>
+              <th style={thNum}>Net toplam</th>
+              <th style={thNum}>Brut toplam</th>
             </tr>
           </thead>
           <tbody>
@@ -363,18 +360,10 @@ export function BudgetCardScreen() {
                 net: it.periodNet[sid] ?? it.unitNet,
                 qty: it.periodQty[sid],
               }))
-              const total = satirToplamDonemli(donemler, it.ratesPercent, it.multiplier)
-              const yuk = it.ratesPercent.reduce((a, r) => a + r, 0)
-              const hasOverride = Object.keys(it.periodNet).some((sid) => it.periodNet[sid] !== null)
-              const title = hasOverride
-                ? undefined
-                : dokum({
-                    unitNet: it.unitNet,
-                    ratesPercent: it.ratesPercent,
-                    unitLabel: it.unitLabel,
-                    quantity: qtySum(it),
-                    multiplier: it.multiplier,
-                  })
+              const yukler: Yuk[] = it.burdens.map((b) => ({ ratePercent: b.rate, kind: b.kind }))
+              const netToplam = netToplamDonemli(donemler, it.multiplier)
+              const brutToplam = brutToplamDonemli(donemler, yukler, it.multiplier)
+              const yasalYukTl = brutToplam - netToplam
               const periodKeys = new Set(Object.keys(it.periodQty))
               const addableStages = stages.filter((s) => !periodKeys.has(s.id))
               const addedStages = stages.filter((s) => periodKeys.has(s.id))
@@ -382,7 +371,7 @@ export function BudgetCardScreen() {
 
               return (
                 <Fragment key={it.id}>
-                  <tr title={title}>
+                  <tr>
                     <td style={tdStyle}>{it.itemCode}</td>
                     <td style={tdStyle}>
                       <input
@@ -466,7 +455,7 @@ export function BudgetCardScreen() {
                       />
                     </td>
                     <td style={numStyle}>
-                      {yuk > 0 && it.burdens.length > 0 ? (
+                      {brutToplam > netToplam && it.burdens.length > 0 ? (
                         <button
                           onClick={() => setOpenBurdenItemId(it.id)}
                           style={{
@@ -480,13 +469,14 @@ export function BudgetCardScreen() {
                             textDecoration: 'underline',
                           }}
                         >
-                          {'%' + fmt(yuk)}
+                          {fmt(yasalYukTl)}
                         </button>
                       ) : (
                         '—'
                       )}
                     </td>
-                    <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(total)}</td>
+                    <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(netToplam)}</td>
+                    <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(brutToplam)}</td>
                   </tr>
                   {addedStages.map((s) => {
                     const qty = it.periodQty[s.id] ?? 0
@@ -577,7 +567,12 @@ export function BudgetCardScreen() {
       {openBurdenItemId !== null && (() => {
         const item = rows.find((r) => r.id === openBurdenItemId)
         if (!item) return null
-        const toplamYuk = item.burdens.reduce((s, b) => s + b.rate, 0)
+        const dDonemler = Object.keys(item.periodQty).map((sid) => ({ net: item.periodNet[sid] ?? item.unitNet, qty: item.periodQty[sid] }))
+        const dYukler: Yuk[] = item.burdens.map((b) => ({ ratePercent: b.rate, kind: b.kind }))
+        const dNet = netToplamDonemli(dDonemler, item.multiplier)
+        const dBrut = brutToplamDonemli(dDonemler, dYukler, item.multiplier)
+        const dBanka = kisiyeBanka(dNet, item.vatRate)
+        const dStopaj = dBrut - dNet
         return (
           <>
             <div
@@ -619,17 +614,31 @@ export function BudgetCardScreen() {
               </div>
               {item.burdens.map((b, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-1) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
-                  <span>{b.label}</span>
+                  <span>{b.label} <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>{b.kind === "additive" ? "ekleme" : "kesinti"}</span></span>
                   <span style={{ fontVariantNumeric: 'tabular-nums' }}>{'%' + fmt(b.rate)}</span>
                 </div>
               ))}
               <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: 'var(--space-2) 0' }} />
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-text)', marginBottom: 'var(--space-2)' }}>
-                <span>Toplam yük</span>
-                <span style={{ fontVariantNumeric: 'tabular-nums' }}>{'%' + fmt(toplamYuk)}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-1) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
+                <span>Net (kişinin geliri)</span>
+                <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(dNet)}</span>
               </div>
-              <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', fontVariantNumeric: 'tabular-nums' }}>
-                {'Birim net ' + fmt(item.unitNet) + ' + %' + fmt(toplamYuk) + ' yük = Brüt birim ' + fmt(brutBirim(item.unitNet, item.ratesPercent))}
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-1) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
+                <span>{'+ KDV (%' + fmt(item.vatRate) + ', emanet)'}</span>
+                <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(dBanka.kdv)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-2) 0', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-text)' }}>
+                <span>= Kişiye banka ödemesi</span>
+                <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(dBanka.toplam)}</span>
+              </div>
+              <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: 'var(--space-2) 0' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-1) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
+                <span>Yasal Yük (stopaj, devlete)</span>
+                <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(dStopaj)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-2) 0', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-text)' }}>
+                <span>= Brüt (yapımcı maliyeti)</span>
+                <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(dBrut)}</span>
               </div>
             </div>
           </>

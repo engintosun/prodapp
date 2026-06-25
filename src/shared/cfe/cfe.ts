@@ -113,6 +113,15 @@ export function brutToplamDonemli(
     .toNumber()
 }
 
+export function kisiyeBanka(netToplam: number, vatRatePercent: number): { kdv: number; toplam: number } {
+  const kdv = new Decimal(netToplam)
+    .mul(vatRatePercent)
+    .div(100)
+    .toDecimalPlaces(0, Decimal.ROUND_HALF_UP)
+    .toNumber()
+  return { kdv, toplam: netToplam + kdv }
+}
+
 // Eski additive satir toplami: brutToplamDonemli'nin "hepsi ekleme" sarmalayicisi (tek motor).
 export function satirToplamDonemli(
   donemler: DonemKalemi[],
