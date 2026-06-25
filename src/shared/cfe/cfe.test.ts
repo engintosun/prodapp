@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { brutBirim, satirToplam, satirToplamDonemli, kdvAyristir, zincirToplam, dokum, brutStopaj } from './cfe'
+import { brutBirim, satirToplam, satirToplamDonemli, kdvAyristir, zincirToplam, dokum, brutStopaj, netToplamDonemli, brutToplamDonemli } from './cfe'
 
 describe('CFE — öngörülen tarafı', () => {
   it('brüt birim yuvarlanmaz', () => {
@@ -78,5 +78,34 @@ describe('CFE — dönem-bazlı satır toplamı', () => {
   })
   it('boş dizi → 0', () => {
     expect(satirToplamDonemli([], [33], 2)).toBe(0)
+  })
+})
+
+describe('CFE — cinse göre brüt (DILIM-2c)', () => {
+  it('smm: net bölü 0.80 (stopaj %20 kesinti)', () => {
+    expect(brutToplamDonemli([{ net: 80000, qty: 1 }], [{ ratePercent: 20, kind: 'deduction' }], 1)).toBe(100000)
+  })
+  it('telif: net bölü 0.83 (stopaj %17 kesinti)', () => {
+    expect(brutToplamDonemli([{ net: 83000, qty: 1 }], [{ ratePercent: 17, kind: 'deduction' }], 1)).toBe(100000)
+  })
+  it('ekleme (SGK-tipi) eski additive ile birebir', () => {
+    expect(brutToplamDonemli([{ net: 8250, qty: 1.75 }], [{ ratePercent: 33, kind: 'additive' }], 2)).toBe(38404)
+  })
+  it('karışık: %10 ekleme + %20 kesinti', () => {
+    expect(brutToplamDonemli([{ net: 1000, qty: 1 }], [{ ratePercent: 10, kind: 'additive' }, { ratePercent: 20, kind: 'deduction' }], 1)).toBe(1375)
+  })
+  it('boş kova (sirket): net = brüt', () => {
+    expect(brutToplamDonemli([{ net: 5000, qty: 2 }], [], 1)).toBe(10000)
+    expect(netToplamDonemli([{ net: 5000, qty: 2 }], 1)).toBe(10000)
+  })
+  it('net çizelge toplamı: çarpan uygulanır, yüksüz', () => {
+    expect(netToplamDonemli([{ net: 1000, qty: 1 }], 3)).toBe(3000)
+    expect(netToplamDonemli([], 5)).toBe(0)
+  })
+  it('kesinti yuvarlama: %33 → tam TL yarı-yukarı', () => {
+    expect(brutToplamDonemli([{ net: 1000, qty: 1 }], [{ ratePercent: 33, kind: 'deduction' }], 1)).toBe(1493)
+  })
+  it('kesinti %100+ → hata fırlatır (sessiz hata yasak)', () => {
+    expect(() => brutToplamDonemli([{ net: 1000, qty: 1 }], [{ ratePercent: 100, kind: 'deduction' }], 1)).toThrow()
   })
 })

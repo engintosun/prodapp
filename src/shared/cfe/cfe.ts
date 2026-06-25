@@ -23,9 +23,23 @@ export interface DonemKalemi {
   qty: number
 }
 
+export type YukCins = 'additive' | 'deduction'
+
+export interface Yuk {
+  ratePercent: number
+  kind: YukCins
+}
+
 function rateFactor(ratesPercent: number[]): Decimal {
   const sum = ratesPercent.reduce((acc, r) => acc.plus(r), new Decimal(0))
   return new Decimal(1).plus(sum.div(100))
+}
+
+function netBazDonemli(donemler: DonemKalemi[]): Decimal {
+  return donemler.reduce(
+    (acc, d) => acc.plus(new Decimal(d.net).mul(d.qty)),
+    new Decimal(0),
+  )
 }
 
 function fmtPara(n: number): string {
@@ -60,21 +74,53 @@ export function brutStopaj(net: number, stopajPercent: number): number {
     .toNumber()
 }
 
+// Net cizelge toplami (yuksuz): anlasilan net x adet x carpan, tam TL.
+export function netToplamDonemli(
+  donemler: DonemKalemi[],
+  multiplier: number,
+): number {
+  if (donemler.length === 0) return 0
+  return netBazDonemli(donemler)
+    .mul(multiplier)
+    .toDecimalPlaces(0, Decimal.ROUND_HALF_UP)
+    .toNumber()
+}
+
+// Brut cizelge toplami, kova CINSINE gore:
+//   additive (SGK) net'i sisirir x(1+SUMekleme); deduction (stopaj) brutu yukari ceker /(1-SUMkesinti).
+//   Iki eksen bagimsiz carpan. Tam TL, yari-yukari.
+export function brutToplamDonemli(
+  donemler: DonemKalemi[],
+  yukler: Yuk[],
+  multiplier: number,
+): number {
+  if (donemler.length === 0) return 0
+  const eklemeSum = yukler
+    .filter((y) => y.kind === 'additive')
+    .reduce((acc, y) => acc.plus(y.ratePercent), new Decimal(0))
+  const kesintiSum = yukler
+    .filter((y) => y.kind === 'deduction')
+    .reduce((acc, y) => acc.plus(y.ratePercent), new Decimal(0))
+  const kesintiFactor = new Decimal(1).minus(kesintiSum.div(100))
+  if (kesintiFactor.lte(0)) {
+    throw new Error('Kesinti orani toplami yuzde 100 veya uzeri: brut hesaplanamaz')
+  }
+  return netBazDonemli(donemler)
+    .mul(new Decimal(1).plus(eklemeSum.div(100)))
+    .div(kesintiFactor)
+    .mul(multiplier)
+    .toDecimalPlaces(0, Decimal.ROUND_HALF_UP)
+    .toNumber()
+}
+
+// Eski additive satir toplami: brutToplamDonemli'nin "hepsi ekleme" sarmalayicisi (tek motor).
 export function satirToplamDonemli(
   donemler: DonemKalemi[],
   ratesPercent: number[],
   multiplier: number,
 ): number {
-  if (donemler.length === 0) return 0
-  const netBaz = donemler.reduce(
-    (acc, d) => acc.plus(new Decimal(d.net).mul(d.qty)),
-    new Decimal(0),
-  )
-  return netBaz
-    .mul(rateFactor(ratesPercent))
-    .mul(multiplier)
-    .toDecimalPlaces(0, Decimal.ROUND_HALF_UP)
-    .toNumber()
+  const yukler: Yuk[] = ratesPercent.map((r) => ({ ratePercent: r, kind: 'additive' }))
+  return brutToplamDonemli(donemler, yukler, multiplier)
 }
 
 export function satirToplam(
