@@ -11,6 +11,7 @@ Aktif milestone: M2 — Çekirdek Döngü.
 · ✅ Bütçe DB temeli + fn_open_budget + CFE temel + KART 1500 giriş UI 6 kolon
 · ✅ DILIM-2 — basit statüler: 2a şema cins + statü→bileşen eşleme + rate_catalog · 2b fn_open_budget statü-fill · 2c CFE cinse göre brüt/net (25 test) · 2d KART 1500 ekran Net+Brüt+KDV ayrı + Yasal Yük (brüt−net TL) + kişiye-banka şelale dökümü (commit e9dfe58)
 · ✅ DILIM-2e statü→kova OTOMATİK tazeleme (fn_refill_item_burdens + after-update trigger + fn_open_budget refactor + backfill) + KDV statüden + döküm etiketi cinse göre
+· ✅ Dilim A — kisiye-banka KDV matrahi brut (VERGI-MEVZUATI L51) + statü canli tazeleme (getItemBurdensAndVat + patchRow) + bordro motor-bekliyor etiketi — 24/24 test, CANLI TEYIT BEKLIYOR
 
 ## Sıra (bağımlılığa göre)
 

@@ -113,8 +113,9 @@ export function brutToplamDonemli(
     .toNumber()
 }
 
-export function kisiyeBanka(netToplam: number, vatRatePercent: number): { kdv: number; toplam: number } {
-  const kdv = new Decimal(netToplam)
+// KDV matrahi = brut (stopaj dahil bedel), net DEGIL — VERGI-MEVZUATI L51. KDV tasiyan statuler additive yuk tasimaz.
+export function kisiyeBanka(netToplam: number, brutToplam: number, vatRatePercent: number): { kdv: number; toplam: number } {
+  const kdv = new Decimal(brutToplam)
     .mul(vatRatePercent)
     .div(100)
     .toDecimalPlaces(0, Decimal.ROUND_HALF_UP)

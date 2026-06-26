@@ -241,6 +241,31 @@ export async function setItemPeriodNet(
   if (error) throw new Error(error.message)
 }
 
+// Tek kalem icin kova + KDV okur (statu degisince canli tazeleme icin).
+export async function getItemBurdensAndVat(
+  itemId: string,
+): Promise<{ burdens: { label: string; rate: number; kind: "additive" | "deduction" }[]; vatRate: number }> {
+  const { data: burdensData, error: eb } = await supabase
+    .from('item_burdens')
+    .select('rate_percent, burden_components(label, kind)')
+    .eq('item_id', itemId)
+    .order('rate_percent', { ascending: false })
+  if (eb) throw new Error(eb.message)
+  const { data: itemData, error: ei } = await supabase
+    .from('budget_items')
+    .select('vat_rate')
+    .eq('id', itemId)
+    .single()
+  if (ei) throw new Error(ei.message)
+  const burdens = (burdensData ?? []).map((b) => {
+    const bLabel = (b as { burden_components?: { label?: string; kind?: string } | null }).burden_components?.label ?? "Yuk"
+    const bKind: "additive" | "deduction" =
+      (b as { burden_components?: { kind?: string } | null }).burden_components?.kind === "additive" ? "additive" : "deduction"
+    return { label: bLabel, rate: Number(b.rate_percent), kind: bKind }
+  })
+  return { burdens, vatRate: Number(itemData.vat_rate) }
+}
+
 // Kalemin bir etaptaki miktarini yazar. 0 -> koprudeki satiri SIL (temiz).
 // >0 -> upsert (item_id,stage_id UNIQUE). budget_id zorunlu (bilesik FK).
 export async function setItemPeriodQuantity(

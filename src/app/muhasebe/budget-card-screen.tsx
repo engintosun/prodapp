@@ -6,6 +6,7 @@ import {
   updateItemField,
   setItemPeriodQuantity,
   setItemPeriodNet,
+  getItemBurdensAndVat,
 } from '../../shared/supabase/budget-service'
 import type { BudgetItemRow, CardView, EditableField, StageRow } from '../../shared/supabase/budget-service'
 import { netToplamDonemli, brutToplamDonemli, kisiyeBanka } from '../../shared/cfe'
@@ -156,6 +157,8 @@ export function BudgetCardScreen() {
           periodNet: { ...saved.periodNet },
         }
       }
+      const fresh = await getItemBurdensAndVat(id)
+      patchRow(id, { burdens: fresh.burdens, vatRate: fresh.vatRate })
     } catch (e) {
       if (saved) patchRow(id, { paymentStatus: saved.paymentStatus })
       addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error')
@@ -471,6 +474,8 @@ export function BudgetCardScreen() {
                         >
                           {fmt(yasalYukTl)}
                         </button>
+                      ) : it.paymentStatus === 'bordro' && it.burdens.length === 0 ? (
+                        <span style={{ color: 'var(--color-text-muted)', fontStyle: 'italic', fontSize: 'var(--text-xs)' }}>motor bekliyor</span>
                       ) : (
                         '—'
                       )}
@@ -571,7 +576,7 @@ export function BudgetCardScreen() {
         const dYukler: Yuk[] = item.burdens.map((b) => ({ ratePercent: b.rate, kind: b.kind }))
         const dNet = netToplamDonemli(dDonemler, item.multiplier)
         const dBrut = brutToplamDonemli(dDonemler, dYukler, item.multiplier)
-        const dBanka = kisiyeBanka(dNet, item.vatRate)
+        const dBanka = kisiyeBanka(dNet, dBrut, item.vatRate)
         const dStopaj = dBrut - dNet
         return (
           <>

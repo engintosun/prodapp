@@ -111,16 +111,13 @@ describe('CFE — cinse göre brüt (DILIM-2c)', () => {
 })
 
 describe('CFE — kisiye banka odemesi (B18)', () => {
-  it('net 100000, vat 20 -> { kdv: 20000, toplam: 120000 }', () => {
-    expect(kisiyeBanka(100000, 20)).toEqual({ kdv: 20000, toplam: 120000 })
+  it('smm: net 5000, brut 6250, vat 20 -> { kdv: 1250, toplam: 6250 }', () => {
+    expect(kisiyeBanka(5000, 6250, 20)).toEqual({ kdv: 1250, toplam: 6250 })
   })
-  it('net 100000, vat 10 -> { kdv: 10000, toplam: 110000 }', () => {
-    expect(kisiyeBanka(100000, 10)).toEqual({ kdv: 10000, toplam: 110000 })
+  it('sirket: net=brut 5000, vat 20 -> { kdv: 1000, toplam: 6000 }', () => {
+    expect(kisiyeBanka(5000, 5000, 20)).toEqual({ kdv: 1000, toplam: 6000 })
   })
-  it('net 100000, vat 0 -> { kdv: 0, toplam: 100000 } (kira)', () => {
-    expect(kisiyeBanka(100000, 0)).toEqual({ kdv: 0, toplam: 100000 })
-  })
-  it('net 53, vat 20 -> { kdv: 11, toplam: 64 } (yuvarlama)', () => {
-    expect(kisiyeBanka(53, 20)).toEqual({ kdv: 11, toplam: 64 })
+  it('kdvsiz statu: net=brut 5000, vat 0 -> { kdv: 0, toplam: 5000 }', () => {
+    expect(kisiyeBanka(5000, 5000, 0)).toEqual({ kdv: 0, toplam: 5000 })
   })
 })
