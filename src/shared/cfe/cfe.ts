@@ -21,6 +21,7 @@ export interface DokumGirdi {
 export interface DonemKalemi {
   net: number
   qty: number
+  carpan: number
 }
 
 export type YukCins = 'additive' | 'deduction'
@@ -37,7 +38,7 @@ function rateFactor(ratesPercent: number[]): Decimal {
 
 function netBazDonemli(donemler: DonemKalemi[]): Decimal {
   return donemler.reduce(
-    (acc, d) => acc.plus(new Decimal(d.net).mul(d.qty)),
+    (acc, d) => acc.plus(new Decimal(d.net).mul(d.qty).mul(d.carpan)),
     new Decimal(0),
   )
 }
@@ -75,13 +76,9 @@ export function brutStopaj(net: number, stopajPercent: number): number {
 }
 
 // Net cizelge toplami (yuksuz): anlasilan net x adet x carpan, tam TL.
-export function netToplamDonemli(
-  donemler: DonemKalemi[],
-  multiplier: number,
-): number {
+export function netToplamDonemli(donemler: DonemKalemi[]): number {
   if (donemler.length === 0) return 0
   return netBazDonemli(donemler)
-    .mul(multiplier)
     .toDecimalPlaces(0, Decimal.ROUND_HALF_UP)
     .toNumber()
 }
@@ -92,7 +89,6 @@ export function netToplamDonemli(
 export function brutToplamDonemli(
   donemler: DonemKalemi[],
   yukler: Yuk[],
-  multiplier: number,
 ): number {
   if (donemler.length === 0) return 0
   const eklemeSum = yukler
@@ -108,7 +104,6 @@ export function brutToplamDonemli(
   return netBazDonemli(donemler)
     .mul(new Decimal(1).plus(eklemeSum.div(100)))
     .div(kesintiFactor)
-    .mul(multiplier)
     .toDecimalPlaces(0, Decimal.ROUND_HALF_UP)
     .toNumber()
 }
@@ -127,10 +122,9 @@ export function kisiyeBanka(netToplam: number, brutToplam: number, vatRatePercen
 export function satirToplamDonemli(
   donemler: DonemKalemi[],
   ratesPercent: number[],
-  multiplier: number,
 ): number {
   const yukler: Yuk[] = ratesPercent.map((r) => ({ ratePercent: r, kind: 'additive' }))
-  return brutToplamDonemli(donemler, yukler, multiplier)
+  return brutToplamDonemli(donemler, yukler)
 }
 
 export function satirToplam(

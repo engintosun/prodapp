@@ -7,12 +7,20 @@ export interface StageRow {
   sortOrder: number
 }
 
+export interface UnitRow {
+  id: string
+  code: string
+  label: string
+  sortOrder: number
+}
+
 export interface BudgetItemRow {
   id: string
   itemCode: number
   name: string
   detail: string | null
   unitNet: number
+  unitId: string
   unitLabel: string
   multiplier: number
   repeat: number
@@ -21,6 +29,8 @@ export interface BudgetItemRow {
   burdens: { label: string; rate: number; kind: "additive" | "deduction" }[]
   periodQty: Record<string, number>
   periodNet: Record<string, number | null>
+  periodUnit: Record<string, string | null>
+  periodRepeat: Record<string, number | null>
   paymentStatus: string | null
 }
 
@@ -32,7 +42,7 @@ export interface CardView {
   items: BudgetItemRow[]
 }
 
-export type EditableField = 'name' | 'detail' | 'unitNet' | 'multiplier' | 'repeat' | 'vatRate' | 'paymentStatus'
+export type EditableField = 'name' | 'detail' | 'unitNet' | 'multiplier' | 'repeat' | 'vatRate' | 'paymentStatus' | 'unitId'
 
 const FIELD_COL: Record<EditableField, string> = {
   name: 'name',
@@ -42,6 +52,7 @@ const FIELD_COL: Record<EditableField, string> = {
   repeat: 'repeat',
   vatRate: 'vat_rate',
   paymentStatus: 'payment_status',
+  unitId: 'unit_id',
 }
 
 async function getProjectId(): Promise<string> {
@@ -137,6 +148,8 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
   const burdenDetailByItem: Record<string, { label: string; rate: number; kind: "additive" | "deduction" }[]> = {}
   const periodByItem: Record<string, Record<string, number>> = {}
   const periodNetByItem: Record<string, Record<string, number | null>> = {}
+  const periodUnitByItem: Record<string, Record<string, string | null>> = {}
+  const periodRepeatByItem: Record<string, Record<string, number | null>> = {}
   if (itemIds.length) {
     const { data: burdens, error: eb } = await supabase
       .from('item_burdens')
@@ -155,7 +168,7 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
 
     const { data: periods, error: ep } = await supabase
       .from('budget_item_periods')
-      .select('item_id, stage_id, quantity, unit_net_override')
+      .select('item_id, stage_id, quantity, unit_net_override, unit_id_override, repeat_override')
       .in('item_id', itemIds)
     if (ep) throw new Error(ep.message)
     for (const p of periods ?? []) {
@@ -164,6 +177,11 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
       ;(periodNetByItem[k] ??= {})[p.stage_id as string] =
         p.unit_net_override !== null && p.unit_net_override !== undefined
           ? Number(p.unit_net_override)
+          : null
+      ;(periodUnitByItem[k] ??= {})[p.stage_id as string] = (p.unit_id_override as string | null) ?? null
+      ;(periodRepeatByItem[k] ??= {})[p.stage_id as string] =
+        p.repeat_override !== null && p.repeat_override !== undefined
+          ? Number(p.repeat_override)
           : null
     }
   }
@@ -174,6 +192,7 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
     name: i.name as string,
     detail: (i.detail as string | null) ?? null,
     unitNet: Number(i.unit_net),
+    unitId: i.unit_id as string,
     unitLabel: unitLabel[i.unit_id as string] ?? '',
     multiplier: Number(i.multiplier),
     repeat: Number((i as unknown as { repeat?: unknown }).repeat ?? 1),
@@ -182,6 +201,8 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
     burdens: burdenDetailByItem[i.id as string] ?? [],
     periodQty: periodByItem[i.id as string] ?? {},
     periodNet: periodNetByItem[i.id as string] ?? {},
+    periodUnit: periodUnitByItem[i.id as string] ?? {},
+    periodRepeat: periodRepeatByItem[i.id as string] ?? {},
     paymentStatus: typeof i.payment_status === 'string' ? i.payment_status : null,
   }))
 
@@ -211,6 +232,10 @@ export async function updateItemField(
       if (!(VALID as readonly string[]).includes(v)) throw new Error('Geçersiz statü')
       payload = { payment_status: v }
     }
+  } else if (field === 'unitId') {
+    const v = String(value).trim()
+    if (!v) throw new Error('Birim boş olamaz')
+    payload = { unit_id: v }
   } else {
     const n = typeof value === 'number' ? value : Number(String(value).replace(',', '.'))
     if (!Number.isFinite(n)) throw new Error('Geçersiz sayı')
@@ -296,4 +321,114 @@ export async function setItemPeriodQuantity(
       { onConflict: 'item_id,stage_id' },
     )
   if (error) throw new Error(error.message)
+}
+
+// Bir donem satirinin unit_id_override degerini yazar. null -> kalitima don.
+export async function updateItemPeriodUnit(
+  itemId: string,
+  stageId: string,
+  unitId: string | null,
+): Promise<void> {
+  const { error } = await supabase
+    .from('budget_item_periods')
+    .update({ unit_id_override: unitId })
+    .eq('item_id', itemId)
+    .eq('stage_id', stageId)
+  if (error) throw new Error(error.message)
+}
+
+// Bir donem satirinin repeat_override (Carpan) degerini yazar. Bos string -> null (kalitima don).
+export async function updateItemPeriodRepeat(
+  itemId: string,
+  stageId: string,
+  value: string | number,
+): Promise<void> {
+  let override: number | null
+  if (String(value).trim() === '') {
+    override = null
+  } else {
+    const n = typeof value === 'number' ? value : Number(String(value).replace(',', '.'))
+    if (!Number.isFinite(n)) throw new Error('Geçersiz çarpan değeri')
+    if (n < 0) throw new Error('Negatif değer girilemez')
+    override = n
+  }
+  const { error } = await supabase
+    .from('budget_item_periods')
+    .update({ repeat_override: override })
+    .eq('item_id', itemId)
+    .eq('stage_id', stageId)
+  if (error) throw new Error(error.message)
+}
+
+// units cetvelini sort_order'a gore getirir (Birim dropdown icin).
+export async function loadUnits(): Promise<UnitRow[]> {
+  const { data, error } = await supabase
+    .from('units')
+    .select('id, code, label, sort_order')
+    .order('sort_order')
+  if (error) throw new Error(error.message)
+  return (data ?? []).map((u) => ({
+    id: u.id as string,
+    code: u.code as string,
+    label: u.label as string,
+    sortOrder: u.sort_order as number,
+  }))
+}
+
+// Tek -> cok donem gecisi: ana satir degerlerini ilk donem-satirina yazar (satir zaten var, UPDATE).
+export async function copyMainToFirstPeriod(
+  itemId: string,
+  stageId: string,
+  mainUnitNet: number,
+  mainUnitId: string,
+  mainMultiplier: number,
+  mainRepeat: number,
+): Promise<void> {
+  const { error } = await supabase
+    .from('budget_item_periods')
+    .update({
+      unit_net_override: mainUnitNet,
+      unit_id_override: mainUnitId,
+      quantity: mainMultiplier,
+      repeat_override: mainRepeat,
+    })
+    .eq('item_id', itemId)
+    .eq('stage_id', stageId)
+  if (error) throw new Error(error.message)
+}
+
+// Cok -> tek donem gecisi: kalan tek donemin override degerlerini ana satira yazar, donem-satirini siler.
+export async function copyLastPeriodToMainAndDelete(itemId: string, stageId: string): Promise<void> {
+  const { data: period, error: ep } = await supabase
+    .from('budget_item_periods')
+    .select('quantity, unit_net_override, unit_id_override, repeat_override')
+    .eq('item_id', itemId)
+    .eq('stage_id', stageId)
+    .single()
+  if (ep) throw new Error(ep.message)
+
+  const { data: item, error: ei } = await supabase
+    .from('budget_items')
+    .select('unit_net, unit_id, repeat')
+    .eq('id', itemId)
+    .single()
+  if (ei) throw new Error(ei.message)
+
+  const { error: eu } = await supabase
+    .from('budget_items')
+    .update({
+      unit_net: period.unit_net_override ?? item.unit_net,
+      unit_id: period.unit_id_override ?? item.unit_id,
+      multiplier: period.quantity,
+      repeat: period.repeat_override ?? item.repeat,
+    })
+    .eq('id', itemId)
+  if (eu) throw new Error(eu.message)
+
+  const { error: ed } = await supabase
+    .from('budget_item_periods')
+    .delete()
+    .eq('item_id', itemId)
+    .eq('stage_id', stageId)
+  if (ed) throw new Error(ed.message)
 }

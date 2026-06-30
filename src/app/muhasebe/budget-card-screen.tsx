@@ -6,11 +6,16 @@ import {
   updateItemField,
   setItemPeriodQuantity,
   setItemPeriodNet,
+  updateItemPeriodUnit,
+  updateItemPeriodRepeat,
+  loadUnits,
+  copyMainToFirstPeriod,
+  copyLastPeriodToMainAndDelete,
   getItemBurdensAndVat,
 } from '../../shared/supabase/budget-service'
-import type { BudgetItemRow, CardView, EditableField, StageRow } from '../../shared/supabase/budget-service'
+import type { BudgetItemRow, CardView, EditableField, StageRow, UnitRow } from '../../shared/supabase/budget-service'
 import { netToplamDonemli, brutToplamDonemli, kisiyeBanka } from '../../shared/cfe'
-import type { Yuk } from '../../shared/cfe'
+import type { Yuk, DonemKalemi } from '../../shared/cfe'
 import { useToast } from '../../shared/components/toast'
 import { Loading } from '../../shared/components/loading'
 import { EmptyState } from '../../shared/components/empty-state'
@@ -46,20 +51,43 @@ const cellInput: CSSProperties = {
   fontFamily: 'inherit',
 }
 const cellInputNum: CSSProperties = { ...cellInput, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }
-
-const TOTAL_COLS = 12
+const periodRowStyle: CSSProperties = { ...tdStyle, background: 'var(--color-surface-2)' }
+const periodRowNumStyle: CSSProperties = { ...numStyle, background: 'var(--color-surface-2)' }
 
 function fmt(n: number): string {
   const dp = Number.isInteger(n) ? 0 : 2
   return new Intl.NumberFormat('tr-TR', { minimumFractionDigits: dp, maximumFractionDigits: dp }).format(n)
 }
 
+function isMultiPeriod(it: BudgetItemRow): boolean {
+  return Object.keys(it.periodQty).length > 1
+}
+
+// Tek-donem (0 veya 1) modunda ana satir kendi degerlerini parametre olarak kullanir;
+// cok-donem modunda her donem-satiri kendi override/kalitim degerleriyle ozerk.
+function buildDonemler(it: BudgetItemRow): DonemKalemi[] {
+  if (!isMultiPeriod(it)) {
+    return [{ net: it.unitNet, qty: it.multiplier, carpan: it.repeat }]
+  }
+  return Object.keys(it.periodQty).map((sid) => ({
+    net: it.periodNet[sid] ?? it.unitNet,
+    qty: it.periodQty[sid],
+    carpan: it.periodRepeat[sid] ?? it.repeat,
+  }))
+}
+
+function summarizeSame<T>(stageIds: string[], pick: (sid: string) => T): T | null {
+  if (stageIds.length === 0) return null
+  const vals = stageIds.map(pick)
+  return vals.every((v) => v === vals[0]) ? vals[0] : null
+}
 
 export function BudgetCardScreen() {
   const { addToast } = useToast()
   const [card, setCard] = useState<CardView | null>(null)
   const [rows, setRows] = useState<BudgetItemRow[]>([])
   const [stages, setStages] = useState<StageRow[]>([])
+  const [units, setUnits] = useState<UnitRow[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [reload, setReload] = useState(0)
@@ -85,6 +113,8 @@ export function BudgetCardScreen() {
             ...it,
             periodQty: { ...it.periodQty },
             periodNet: { ...it.periodNet },
+            periodUnit: { ...it.periodUnit },
+            periodRepeat: { ...it.periodRepeat },
           }
         }
       } catch (e) {
@@ -97,6 +127,23 @@ export function BudgetCardScreen() {
       cancelled = true
     }
   }, [reload])
+
+  useEffect(() => {
+    let cancelled = false
+    void (async () => {
+      try {
+        const u = await loadUnits()
+        if (!cancelled) setUnits(u)
+      } catch (e) {
+        if (!cancelled) addToast(e instanceof Error ? e.message : 'Birimler yüklenemedi', 'error')
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [addToast])
+
+  const unitLabelById = new Map<string, string>(units.map((u) => [u.id, u.label]))
 
   function clearBuf(key: string) {
     setBuffers((b) => {
@@ -142,6 +189,18 @@ export function BudgetCardScreen() {
     )
   }
 
+  function onPeriodRepeatChange(itemId: string, stageId: string, raw: string) {
+    setBuffers((b) => ({ ...b, [itemId + ':prepeat:' + stageId]: raw }))
+    setRows((rs) =>
+      rs.map((r) => {
+        if (r.id !== itemId) return r
+        const n = Number(raw.replace(',', '.'))
+        const newRepeat = raw.trim() === '' ? null : Number.isFinite(n) ? n : (r.periodRepeat[stageId] ?? null)
+        return { ...r, periodRepeat: { ...r.periodRepeat, [stageId]: newRepeat } }
+      }),
+    )
+  }
+
   async function onStatusChange(id: string, value: string) {
     const newStatus = value === '' ? null : value
     patchRow(id, { paymentStatus: newStatus })
@@ -155,6 +214,8 @@ export function BudgetCardScreen() {
           paymentStatus: newStatus,
           periodQty: { ...saved.periodQty },
           periodNet: { ...saved.periodNet },
+          periodUnit: { ...saved.periodUnit },
+          periodRepeat: { ...saved.periodRepeat },
         }
       }
       const fresh = await getItemBurdensAndVat(id)
@@ -162,6 +223,57 @@ export function BudgetCardScreen() {
     } catch (e) {
       if (saved) patchRow(id, { paymentStatus: saved.paymentStatus })
       addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error')
+    }
+  }
+
+  async function onUnitChange(id: string, unitId: string) {
+    const saved = savedRef.current[id]
+    const newLabel = unitLabelById.get(unitId) ?? ''
+    patchRow(id, { unitId, unitLabel: newLabel })
+    if (saved && saved.unitId === unitId) return
+    try {
+      await updateItemField(id, 'unitId', unitId)
+      if (saved) {
+        savedRef.current[id] = {
+          ...saved,
+          unitId,
+          unitLabel: newLabel,
+          periodQty: { ...saved.periodQty },
+          periodNet: { ...saved.periodNet },
+          periodUnit: { ...saved.periodUnit },
+          periodRepeat: { ...saved.periodRepeat },
+        }
+      }
+    } catch (e) {
+      if (saved) patchRow(id, { unitId: saved.unitId, unitLabel: saved.unitLabel })
+      addToast(e instanceof Error ? e.message : 'Birim kaydedilemedi', 'error')
+    }
+  }
+
+  async function onPeriodUnitChange(itemId: string, stageId: string, unitId: string) {
+    const row = rows.find((r) => r.id === itemId)
+    if (!row) return
+    const prevUnit = row.periodUnit[stageId] ?? null
+    setRows((rs) =>
+      rs.map((r) => (r.id === itemId ? { ...r, periodUnit: { ...r.periodUnit, [stageId]: unitId } } : r)),
+    )
+    try {
+      await updateItemPeriodUnit(itemId, stageId, unitId)
+      const saved = savedRef.current[itemId]
+      if (saved) {
+        savedRef.current[itemId] = {
+          ...saved,
+          periodUnit: { ...saved.periodUnit, [stageId]: unitId },
+          periodQty: { ...saved.periodQty },
+          periodNet: { ...saved.periodNet },
+          periodRepeat: { ...saved.periodRepeat },
+        }
+      }
+    } catch (e) {
+      setRows((rs) =>
+        rs.map((r) => (r.id === itemId ? { ...r, periodUnit: { ...r.periodUnit, [stageId]: prevUnit } } : r)),
+      )
+      addToast(e instanceof Error ? e.message : 'Birim kaydedilemedi', 'error')
     }
   }
 
@@ -181,6 +293,8 @@ export function BudgetCardScreen() {
         [field]: value,
         periodQty: { ...(saved?.periodQty ?? row.periodQty) },
         periodNet: { ...(saved?.periodNet ?? row.periodNet) },
+        periodUnit: { ...(saved?.periodUnit ?? row.periodUnit) },
+        periodRepeat: { ...(saved?.periodRepeat ?? row.periodRepeat) },
       } as BudgetItemRow
     } catch (e) {
       if (saved) patchRow(id, { [field]: saved[field] } as Partial<BudgetItemRow>)
@@ -210,6 +324,8 @@ export function BudgetCardScreen() {
         ...(saved ?? row),
         periodQty: sp,
         periodNet: { ...(saved?.periodNet ?? row.periodNet) },
+        periodUnit: { ...(saved?.periodUnit ?? row.periodUnit) },
+        periodRepeat: { ...(saved?.periodRepeat ?? row.periodRepeat) },
       } as BudgetItemRow
     } catch (e) {
       setRows((rs) =>
@@ -240,6 +356,8 @@ export function BudgetCardScreen() {
           ...saved,
           periodNet: { ...saved.periodNet, [stageId]: hedef },
           periodQty: { ...saved.periodQty },
+          periodUnit: { ...saved.periodUnit },
+          periodRepeat: { ...saved.periodRepeat },
         }
       }
       setRows((rs) =>
@@ -259,19 +377,86 @@ export function BudgetCardScreen() {
     }
   }
 
+  async function commitPeriodRepeat(itemId: string, stageId: string) {
+    const row = rows.find((r) => r.id === itemId)
+    if (!row) return
+    const saved = savedRef.current[itemId]
+    const currentVal = row.periodRepeat[stageId] ?? null
+    const hedef: number | null =
+      currentVal === null || currentVal === row.repeat ? null : currentVal
+    const savedOverride = saved?.periodRepeat?.[stageId] ?? null
+    if (savedOverride === hedef) {
+      clearBuf(itemId + ':prepeat:' + stageId)
+      return
+    }
+    try {
+      await updateItemPeriodRepeat(itemId, stageId, hedef === null ? '' : hedef)
+      if (saved) {
+        savedRef.current[itemId] = {
+          ...saved,
+          periodRepeat: { ...saved.periodRepeat, [stageId]: hedef },
+          periodQty: { ...saved.periodQty },
+          periodNet: { ...saved.periodNet },
+          periodUnit: { ...saved.periodUnit },
+        }
+      }
+      setRows((rs) =>
+        rs.map((r) =>
+          r.id === itemId ? { ...r, periodRepeat: { ...r.periodRepeat, [stageId]: hedef } } : r,
+        ),
+      )
+    } catch (e) {
+      setRows((rs) =>
+        rs.map((r) =>
+          r.id === itemId ? { ...r, periodRepeat: { ...r.periodRepeat, [stageId]: savedOverride } } : r,
+        ),
+      )
+      addToast(e instanceof Error ? e.message : 'Çarpan override kaydedilemedi', 'error')
+    } finally {
+      clearBuf(itemId + ':prepeat:' + stageId)
+    }
+  }
+
   async function onAddPeriod(itemId: string, stageId: string) {
     if (!card) return
+    const row = rows.find((r) => r.id === itemId)
+    if (!row) return
     const saved = savedRef.current[itemId]
+    const existingStageIds = Object.keys(row.periodQty)
+    const willBecomeMulti = existingStageIds.length === 1
+    const oldStageId = existingStageIds[0]
     try {
       await setItemPeriodQuantity(card.budgetId, itemId, stageId, 1)
+      if (willBecomeMulti) {
+        await copyMainToFirstPeriod(itemId, oldStageId, row.unitNet, row.unitId, row.multiplier, row.repeat)
+      }
       setRows((rs) =>
-        rs.map((r) => (r.id === itemId ? { ...r, periodQty: { ...r.periodQty, [stageId]: 1 } } : r)),
+        rs.map((r) => {
+          if (r.id !== itemId) return r
+          const pq = { ...r.periodQty, [stageId]: 1 }
+          const pn = { ...r.periodNet }
+          const pu = { ...r.periodUnit }
+          const pr = { ...r.periodRepeat }
+          if (willBecomeMulti) {
+            pn[oldStageId] = r.unitNet
+            pu[oldStageId] = r.unitId
+            pq[oldStageId] = r.multiplier
+            pr[oldStageId] = r.repeat
+          }
+          return { ...r, periodQty: pq, periodNet: pn, periodUnit: pu, periodRepeat: pr }
+        }),
       )
       if (saved) {
         savedRef.current[itemId] = {
           ...saved,
-          periodQty: { ...saved.periodQty, [stageId]: 1 },
-          periodNet: { ...saved.periodNet },
+          periodQty: {
+            ...saved.periodQty,
+            [stageId]: 1,
+            ...(willBecomeMulti ? { [oldStageId]: row.multiplier } : {}),
+          },
+          periodNet: { ...saved.periodNet, ...(willBecomeMulti ? { [oldStageId]: row.unitNet } : {}) },
+          periodUnit: { ...saved.periodUnit, ...(willBecomeMulti ? { [oldStageId]: row.unitId } : {}) },
+          periodRepeat: { ...saved.periodRepeat, ...(willBecomeMulti ? { [oldStageId]: row.repeat } : {}) },
         }
       }
     } catch (e) {
@@ -281,28 +466,83 @@ export function BudgetCardScreen() {
 
   async function onRemovePeriod(itemId: string, stageId: string) {
     if (!card) return
+    const ok = window.confirm('Bu dönemi kaldırmak istiyor musun?')
+    if (!ok) return
+    const row = rows.find((r) => r.id === itemId)
+    if (!row) return
     const saved = savedRef.current[itemId]
+    const remainingStageIds = Object.keys(row.periodQty).filter((sid) => sid !== stageId)
+    const willCollapseToSingle = Object.keys(row.periodQty).length === 2 && remainingStageIds.length === 1
+    const lastStageId = remainingStageIds[0]
     try {
       await setItemPeriodQuantity(card.budgetId, itemId, stageId, 0)
+      let mainPatch: Partial<BudgetItemRow> = {}
+      if (willCollapseToSingle) {
+        const lastNet = row.periodNet[lastStageId] ?? null
+        const lastUnit = row.periodUnit[lastStageId] ?? null
+        const lastQty = row.periodQty[lastStageId]
+        const lastRepeat = row.periodRepeat[lastStageId] ?? null
+        await copyLastPeriodToMainAndDelete(itemId, lastStageId)
+        mainPatch = {
+          unitNet: lastNet ?? row.unitNet,
+          unitId: lastUnit ?? row.unitId,
+          unitLabel: unitLabelById.get(lastUnit ?? row.unitId) ?? row.unitLabel,
+          multiplier: lastQty,
+          repeat: lastRepeat ?? row.repeat,
+        }
+      }
       setRows((rs) =>
         rs.map((r) => {
           if (r.id !== itemId) return r
           const pq = { ...r.periodQty }
-          delete pq[stageId]
           const pn = { ...r.periodNet }
+          const pu = { ...r.periodUnit }
+          const pr = { ...r.periodRepeat }
+          delete pq[stageId]
           delete pn[stageId]
-          return { ...r, periodQty: pq, periodNet: pn }
+          delete pu[stageId]
+          delete pr[stageId]
+          if (willCollapseToSingle) {
+            delete pq[lastStageId]
+            delete pn[lastStageId]
+            delete pu[lastStageId]
+            delete pr[lastStageId]
+          }
+          return { ...r, periodQty: pq, periodNet: pn, periodUnit: pu, periodRepeat: pr, ...mainPatch }
         }),
       )
       if (saved) {
         const sp = { ...saved.periodQty }
-        delete sp[stageId]
         const sn = { ...saved.periodNet }
+        const su = { ...saved.periodUnit }
+        const sr = { ...saved.periodRepeat }
+        delete sp[stageId]
         delete sn[stageId]
-        savedRef.current[itemId] = { ...saved, periodQty: sp, periodNet: sn }
+        delete su[stageId]
+        delete sr[stageId]
+        if (willCollapseToSingle) {
+          delete sp[lastStageId]
+          delete sn[lastStageId]
+          delete su[lastStageId]
+          delete sr[lastStageId]
+        }
+        savedRef.current[itemId] = {
+          ...saved,
+          periodQty: sp,
+          periodNet: sn,
+          periodUnit: su,
+          periodRepeat: sr,
+          ...mainPatch,
+        }
       }
       clearBuf(itemId + ':stage:' + stageId)
       clearBuf(itemId + ':pnet:' + stageId)
+      clearBuf(itemId + ':prepeat:' + stageId)
+      if (willCollapseToSingle) {
+        clearBuf(itemId + ':stage:' + lastStageId)
+        clearBuf(itemId + ':pnet:' + lastStageId)
+        clearBuf(itemId + ':prepeat:' + lastStageId)
+      }
     } catch (e) {
       addToast(e instanceof Error ? e.message : 'Dönem kaldırılamadı', 'error')
     }
@@ -337,6 +577,12 @@ export function BudgetCardScreen() {
     const k = itemId + ':pnet:' + stageId
     if (k in buffers) return buffers[k]
     return override != null ? String(override) : String(unitNet)
+  }
+
+  function periodRepeatVal(itemId: string, stageId: string, override: number | null | undefined, repeat: number): string {
+    const k = itemId + ':prepeat:' + stageId
+    if (k in buffers) return buffers[k]
+    return override != null ? String(override) : String(repeat)
   }
 
   if (loading) return <Loading label="Bütçe yükleniyor..." />
@@ -374,20 +620,26 @@ export function BudgetCardScreen() {
           </thead>
           <tbody>
             {rows.map((it) => {
-              const donemler = Object.keys(it.periodQty).map((sid) => ({
-                net: it.periodNet[sid] ?? it.unitNet,
-                qty: it.periodQty[sid],
-              }))
+              const multi = isMultiPeriod(it)
+              const addedStageIds = Object.keys(it.periodQty)
+              const donemler = buildDonemler(it)
               const yukler: Yuk[] = it.burdens.map((b) => ({ ratePercent: b.rate, kind: b.kind }))
-              const netToplam = netToplamDonemli(donemler, it.multiplier) * it.repeat
-              const brutYuk = brutToplamDonemli(donemler, yukler, it.multiplier) * it.repeat
+              const netToplam = netToplamDonemli(donemler)
+              const brutYuk = brutToplamDonemli(donemler, yukler)
               const kdvTl = kisiyeBanka(netToplam, brutYuk, it.vatRate).kdv
               const brutToplam = brutYuk + kdvTl
               const yasalYukTl = brutToplam - netToplam
-              const periodKeys = new Set(Object.keys(it.periodQty))
+              const periodKeys = new Set(addedStageIds)
               const addableStages = stages.filter((s) => !periodKeys.has(s.id))
               const addedStages = stages.filter((s) => periodKeys.has(s.id))
               const allAdded = addableStages.length === 0
+
+              const summaryNet = multi ? summarizeSame(addedStageIds, (sid) => it.periodNet[sid] ?? it.unitNet) : null
+              const summaryUnitId = multi ? summarizeSame(addedStageIds, (sid) => it.periodUnit[sid] ?? it.unitId) : null
+              const summaryQty = multi ? summarizeSame(addedStageIds, (sid) => it.periodQty[sid]) : null
+              const summaryRepeatSum = multi
+                ? addedStageIds.reduce((acc, sid) => acc + (it.periodRepeat[sid] ?? it.repeat), 0)
+                : null
 
               return (
                 <Fragment key={it.id}>
@@ -444,35 +696,63 @@ export function BudgetCardScreen() {
                       </select>
                     </td>
                     <td style={numStyle}>
-                      <input
-                        style={cellInputNum}
-                        type="text"
-                        inputMode="decimal"
-                        value={fieldVal(it.id, 'unitNet', it.unitNet)}
-                        onChange={(e) => onNumChange(it.id, 'unitNet', e.target.value)}
-                        onBlur={() => commitField(it.id, 'unitNet')}
-                      />
+                      {multi ? (
+                        summaryNet !== null ? fmt(summaryNet) : '—'
+                      ) : (
+                        <input
+                          style={cellInputNum}
+                          type="text"
+                          inputMode="decimal"
+                          value={fieldVal(it.id, 'unitNet', it.unitNet)}
+                          onChange={(e) => onNumChange(it.id, 'unitNet', e.target.value)}
+                          onBlur={() => commitField(it.id, 'unitNet')}
+                        />
+                      )}
                     </td>
-                    <td style={tdStyle}>{it.unitLabel}</td>
-                    <td style={numStyle}>
-                      <input
-                        style={cellInputNum}
-                        type="text"
-                        inputMode="decimal"
-                        value={fieldVal(it.id, 'multiplier', it.multiplier)}
-                        onChange={(e) => onNumChange(it.id, 'multiplier', e.target.value)}
-                        onBlur={() => commitField(it.id, 'multiplier')}
-                      />
+                    <td style={tdStyle}>
+                      {multi ? (
+                        summaryUnitId !== null ? (unitLabelById.get(summaryUnitId) ?? it.unitLabel) : '—'
+                      ) : (
+                        <select
+                          style={cellInput}
+                          value={it.unitId}
+                          onChange={(e) => void onUnitChange(it.id, e.target.value)}
+                        >
+                          {units.map((u) => (
+                            <option key={u.id} value={u.id}>
+                              {u.label}
+                            </option>
+                          ))}
+                        </select>
+                      )}
                     </td>
                     <td style={numStyle}>
-                      <input
-                        style={cellInputNum}
-                        type="text"
-                        inputMode="decimal"
-                        value={repeatVal(it.id, it.repeat)}
-                        onChange={(e) => onRepeatChange(it.id, e.target.value)}
-                        onBlur={() => commitRepeat(it.id)}
-                      />
+                      {multi ? (
+                        summaryQty !== null ? fmt(summaryQty) : '—'
+                      ) : (
+                        <input
+                          style={cellInputNum}
+                          type="text"
+                          inputMode="decimal"
+                          value={fieldVal(it.id, 'multiplier', it.multiplier)}
+                          onChange={(e) => onNumChange(it.id, 'multiplier', e.target.value)}
+                          onBlur={() => commitField(it.id, 'multiplier')}
+                        />
+                      )}
+                    </td>
+                    <td style={numStyle}>
+                      {multi ? (
+                        fmt(summaryRepeatSum ?? 0)
+                      ) : (
+                        <input
+                          style={cellInputNum}
+                          type="text"
+                          inputMode="decimal"
+                          value={repeatVal(it.id, it.repeat)}
+                          onChange={(e) => onRepeatChange(it.id, e.target.value)}
+                          onBlur={() => commitRepeat(it.id)}
+                        />
+                      )}
                     </td>
                     <td style={numStyle}>
                       {it.paymentStatus === 'bordro' && it.burdens.length === 0 ? (
@@ -500,86 +780,98 @@ export function BudgetCardScreen() {
                     <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(netToplam)}</td>
                     <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(brutToplam)}</td>
                   </tr>
-                  {addedStages.map((s) => {
-                    const qty = it.periodQty[s.id] ?? 0
-                    const override = it.periodNet[s.id] ?? null
-                    const effectiveNet = override ?? it.unitNet
-                    const subtotal = effectiveNet * qty
-                    const isInherited = override === null
-                    return (
-                      <tr key={`${it.id}:${s.id}`}>
-                        <td
-                          colSpan={TOTAL_COLS}
-                          style={{ borderBottom: '1px solid var(--color-border)', padding: 0 }}
-                        >
-                          <div
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 'var(--space-3)',
-                              paddingLeft: 'var(--space-8)',
-                              paddingRight: 'var(--space-2)',
-                              paddingTop: 'var(--space-1)',
-                              paddingBottom: 'var(--space-1)',
-                              background: 'var(--color-surface-2)',
-                              fontSize: 'var(--text-xs)',
-                            }}
-                          >
-                            <span style={{ minWidth: 100, color: 'var(--color-text)', fontWeight: 500 }}>
-                              {stageById.get(s.id)?.name ?? s.name}
-                            </span>
+                  {multi &&
+                    addedStages.map((s) => {
+                      const qty = it.periodQty[s.id] ?? 0
+                      const netOverride = it.periodNet[s.id] ?? null
+                      const effectiveNet = netOverride ?? it.unitNet
+                      const unitOverride = it.periodUnit[s.id] ?? null
+                      const effectiveUnitId = unitOverride ?? it.unitId
+                      const repeatOverride = it.periodRepeat[s.id] ?? null
+                      const effectiveRepeat = repeatOverride ?? it.repeat
+                      const donemKalemi: DonemKalemi = { net: effectiveNet, qty, carpan: effectiveRepeat }
+                      const donemNet = netToplamDonemli([donemKalemi])
+                      const donemBrutYuk = brutToplamDonemli([donemKalemi], yukler)
+                      const donemKdv = kisiyeBanka(donemNet, donemBrutYuk, it.vatRate).kdv
+                      const donemBrut = donemBrutYuk + donemKdv
+                      const donemYasalYuk = donemBrut - donemNet
+                      return (
+                        <tr key={`${it.id}:${s.id}`}>
+                          <td style={periodRowStyle} />
+                          <td style={periodRowStyle} />
+                          <td style={periodRowStyle} />
+                          <td style={periodRowStyle} />
+                          <td style={periodRowStyle}>{stageById.get(s.id)?.name ?? s.name}</td>
+                          <td style={periodRowNumStyle}>
                             <input
-                              style={{
-                                ...cellInputNum,
-                                width: 90,
-                                color: isInherited ? 'var(--color-text-muted)' : 'var(--color-text)',
-                              }}
+                              style={cellInputNum}
                               type="text"
                               inputMode="decimal"
-                              value={periodNetVal(it.id, s.id, override, it.unitNet)}
+                              value={periodNetVal(it.id, s.id, netOverride, it.unitNet)}
                               onChange={(e) => onPeriodNetChange(it.id, s.id, e.target.value)}
                               onBlur={() => commitPeriodNet(it.id, s.id)}
-                              title={isInherited ? 'Kalemden miras (değiştirmek için yaz)' : 'Döneme özel net'}
+                              title={netOverride === null ? 'Kalemden miras (değiştirmek için yaz)' : 'Döneme özel net'}
                             />
+                          </td>
+                          <td style={periodRowStyle}>
+                            <select
+                              style={cellInput}
+                              value={effectiveUnitId}
+                              onChange={(e) => void onPeriodUnitChange(it.id, s.id, e.target.value)}
+                            >
+                              {units.map((u) => (
+                                <option key={u.id} value={u.id}>
+                                  {u.label}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                          <td style={periodRowNumStyle}>
                             <input
-                              style={{ ...cellInputNum, width: 80 }}
+                              style={cellInputNum}
                               type="text"
                               inputMode="decimal"
                               value={periodVal(it.id, s.id, qty)}
                               onChange={(e) => onPeriodChange(it.id, s.id, e.target.value)}
                               onBlur={() => commitPeriod(it.id, s.id)}
                             />
-                            <span
-                              style={{
-                                color: 'var(--color-text-muted)',
-                                fontVariantNumeric: 'tabular-nums',
-                                minWidth: 80,
-                                textAlign: 'right',
-                              }}
-                            >
-                              = {fmt(subtotal)}
-                            </span>
-                            <button
-                              onClick={() => void onRemovePeriod(it.id, s.id)}
-                              style={{
-                                marginLeft: 'auto',
-                                background: 'transparent',
-                                border: 'none',
-                                cursor: 'pointer',
-                                color: 'var(--color-text-muted)',
-                                fontSize: 'var(--text-base)',
-                                padding: '0 var(--space-1)',
-                                lineHeight: 1,
-                              }}
-                              title="Dönemi kaldır"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    )
-                  })}
+                          </td>
+                          <td style={periodRowNumStyle}>
+                            <input
+                              style={cellInputNum}
+                              type="text"
+                              inputMode="decimal"
+                              value={periodRepeatVal(it.id, s.id, repeatOverride, it.repeat)}
+                              onChange={(e) => onPeriodRepeatChange(it.id, s.id, e.target.value)}
+                              onBlur={() => commitPeriodRepeat(it.id, s.id)}
+                              title={repeatOverride === null ? 'Kalemden miras (değiştirmek için yaz)' : 'Döneme özel çarpan'}
+                            />
+                          </td>
+                          <td style={periodRowNumStyle}>{donemBrut > donemNet ? fmt(donemYasalYuk) : '—'}</td>
+                          <td style={periodRowNumStyle}>{fmt(donemNet)}</td>
+                          <td style={periodRowNumStyle}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
+                              <span>{fmt(donemBrut)}</span>
+                              <button
+                                onClick={() => void onRemovePeriod(it.id, s.id)}
+                                style={{
+                                  background: 'transparent',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  color: 'var(--color-text-muted)',
+                                  fontSize: 'var(--text-base)',
+                                  padding: '0 var(--space-1)',
+                                  lineHeight: 1,
+                                }}
+                                title="Dönemi kaldır"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })}
                 </Fragment>
               )
             })}
@@ -589,10 +881,10 @@ export function BudgetCardScreen() {
       {openBurdenItemId !== null && (() => {
         const item = rows.find((r) => r.id === openBurdenItemId)
         if (!item) return null
-        const dDonemler = Object.keys(item.periodQty).map((sid) => ({ net: item.periodNet[sid] ?? item.unitNet, qty: item.periodQty[sid] }))
+        const dDonemler = buildDonemler(item)
         const dYukler: Yuk[] = item.burdens.map((b) => ({ ratePercent: b.rate, kind: b.kind }))
-        const dNet = netToplamDonemli(dDonemler, item.multiplier) * item.repeat
-        const dBrutYuk = brutToplamDonemli(dDonemler, dYukler, item.multiplier) * item.repeat
+        const dNet = netToplamDonemli(dDonemler)
+        const dBrutYuk = brutToplamDonemli(dDonemler, dYukler)
         const dKdv = kisiyeBanka(dNet, dBrutYuk, item.vatRate).kdv
         return (
           <>

@@ -17,6 +17,7 @@ SIRADAKI: UI duzeltmeleri (m2,m3,m5+m6) -> DILIM-3 bordro motoru (ILK ADIM: Tani
 - 2026-06-30: Kayan kolon duzeltildi: artik KDV <td> satirdan kaldirildi, thead ile hizalandi.
 - 2026-06-30: KDV tamam: brut=net+stopaj/SGK+KDV; dropdown sadece stopaj+KDV satirlari (net/kisiye/brut kaldirildi).
 - 2026-06-30: Yasal yuk bottom-sheet: maxHeight 80vh + panel-ici scroll + alt padding; uzun icerik artik kesilmiyor.
+- 2026-06-30: DILIM-2f CANLI — donem-bazli geometri (her donem kendi Birim_net/Birim/Miktar/Carpan) + ana satir rol degisimi (tek=giris, cok=salt-okunur ozet) + Birim dropdown (m5+m6 birlikte) + tek<->cok otomatik kopyalama + sil onay + budget_items.repeat muhurleme + kisi birimi seed. Cift-carpma bug otomatik dustu (CFE multiplier parametresi cikti).
 
 ## Durum
 - HEAD: git log (origin/main) kesin. Repo: github.com/engintosun/prodapp - Canli: prodapp-navy.vercel.app.
@@ -38,9 +39,10 @@ SIRADAKI: UI duzeltmeleri (m2,m3,m5+m6) -> DILIM-3 bordro motoru (ILK ADIM: Tani
 - MUHASEVIRE ACIK (PDF amber): 2026 oran guncelligi + reklam tevkifati 3/10 mi 10/10 mu + telif tavan teyidi. YAPISAL model kilitli.
 
 ## KART 1500 kolon-kolon (MODEL kart)
-Kolon seti (KILITLI): Kalem - Statu - Aciklama - Donemler - KDV - Yasal Yuk - Net toplam - Brut toplam.
-- YAPILDI (2a-2e): Kalem + Aciklama + Statu (6 deger native dropdown) + Donemler (tikla-ekle + donem-net override) + KDV (statuden gelir, elle override) + Yasal Yuk (brut-net TL, tikla->bottom-sheet) + Net toplam + Brut toplam. Sema cins + statu-esleme + statu-fill CANLI; CFE cinse gore brut/net; selale dokum (Net->+KDV=Kisiye banka / Yasal Yuk->Brut); statu->kova OTOMATIK tazeleme + dokum etiketi cinse gore (2e).
-- SIRADAKI UI (modelden bagimsiz): m2 donem-satiri hizalama; m3 Aciklama tikla-genisle; m5+m6 Birim secilebilir dropdown.
+Kolon seti (KILITLI): Kod - Gider - Aciklama - Statu - Donemler - Birim net - Birim - Miktar - Carpan - Yasal Yuk - Net toplam - Brut toplam.
+- Ana satir TEK donemde GIRIS rolu (Birim_net+Birim+Miktar+Carpan girilir), COK donemde SALT-OKUNUR OZET rolu (Birim_net/Birim/Miktar: ayniysa deger, farkliysa "—"; Carpan: SUM; Yasal Yuk/Net/Brut: SUM).
+- Donem-satiri ana tabloyla kolon-kolon hizali (12 ayri td, colSpan yok); sadece COK donemde gorunur, TEK donemde gizli. Birim native select (units cetveli); Sil × onay sorar.
+- Tek<->cok gecisinde degerler otomatik kopyalanir (ana satir <-> ilk/son donem-satiri). Detay: docs/butce/ (DILIM-2f).
 - 1500 model tamam -> diger kartlar (1100/1300/1400/1600) ayni model uzerinden gecilir.
 
 ## Butce — KILITLI kararlar (ozet; detay docs/butce/BUTCE-SEMA-KARARLARI.md)
@@ -51,9 +53,12 @@ Kolon seti (KILITLI): Kalem - Statu - Aciklama - Donemler - KDV - Yasal Yuk - Ne
 - SABLON FORMAT + KDV (06-15): body TEK sekil; kopru acilista bos; vat_rate CANLI, CFE turetir (B18). Govde kalem alani: payment_status (paket emekli, 2b).
 
 ## Siradaki is
-Aktif: UI duzeltmeleri m2/m3/m5+m6 (modelden bagimsiz, paralel). Sonra DILIM-3 bordro motoru -> diger kartlar (1100/1300/1400/1600) -> backlog. Tam sira: docs/IS-SIRASI.md.
+- m5+m6 (Birim dropdown) TAMAM. m2 (donem-satiri hizalama) DILIM-2f icinde TAMAM.
+- Kalan UI: m3 (Aciklama tikla-genisle), Statu kisa etiketler (smm/telif/kira/fatura/bordro/konaklama), MMB hesap numarasi kutuphane esleme.
+- Sonra DILIM-3 bordro motoru -> diger kartlar (1100/1300/1400/1600) -> backlog. Tam sira: docs/IS-SIRASI.md.
 
 ## Acik (kararlasmadi)
+- OTURUM SONU SUREKLENME (Opus, DILIM-2f sonrasi): BUTCE-EKRAN-KARARLARI.md §1/§3/§7/§11 KDV "ayri kolon" karari guncellensin (KDV artik Yasal Yuk dokumunde) + KART-KATALOGU.md ilgili kart satirlari yeni model kolon setiyle (Kod/Birim net/Birim/Miktar/Carpan) senkron edilsin.
 - Muhasebe oran teyitleri (amber PDF): reklam tevkifati + 2026 oran guncelligi + telif tavan.
 - Tanimlar/cetveller bolumu (sol-ray): rate_catalog + payment_status_defaults + payroll-base + bordro parametreleri burada yasar; DILIM-3 ILK ADIMI (Engin onayli).
 - Oran-yonetimi ekrani ERTELENDI (Tanimlar bolumu icinde, IS-SIRASI'da).
