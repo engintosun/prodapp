@@ -380,7 +380,9 @@ export function BudgetCardScreen() {
               }))
               const yukler: Yuk[] = it.burdens.map((b) => ({ ratePercent: b.rate, kind: b.kind }))
               const netToplam = netToplamDonemli(donemler, it.multiplier) * it.repeat
-              const brutToplam = brutToplamDonemli(donemler, yukler, it.multiplier) * it.repeat
+              const brutYuk = brutToplamDonemli(donemler, yukler, it.multiplier) * it.repeat
+              const kdvTl = kisiyeBanka(netToplam, brutYuk, it.vatRate).kdv
+              const brutToplam = brutYuk + kdvTl
               const yasalYukTl = brutToplam - netToplam
               const periodKeys = new Set(Object.keys(it.periodQty))
               const addableStages = stages.filter((s) => !periodKeys.has(s.id))
@@ -589,10 +591,9 @@ export function BudgetCardScreen() {
         if (!item) return null
         const dDonemler = Object.keys(item.periodQty).map((sid) => ({ net: item.periodNet[sid] ?? item.unitNet, qty: item.periodQty[sid] }))
         const dYukler: Yuk[] = item.burdens.map((b) => ({ ratePercent: b.rate, kind: b.kind }))
-        const dNet = netToplamDonemli(dDonemler, item.multiplier)
-        const dBrut = brutToplamDonemli(dDonemler, dYukler, item.multiplier)
-        const dBanka = kisiyeBanka(dNet, dBrut, item.vatRate)
-        const dStopaj = dBrut - dNet
+        const dNet = netToplamDonemli(dDonemler, item.multiplier) * item.repeat
+        const dBrutYuk = brutToplamDonemli(dDonemler, dYukler, item.multiplier) * item.repeat
+        const dKdv = kisiyeBanka(dNet, dBrutYuk, item.vatRate).kdv
         return (
           <>
             <div
@@ -634,35 +635,15 @@ export function BudgetCardScreen() {
               </div>
               {item.burdens.map((b, i) => (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-1) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
-                  <span>{b.label} <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>{b.kind === "additive" ? "ekleme" : "kesinti"}</span></span>
-                  <span style={{ fontVariantNumeric: 'tabular-nums' }}>{'%' + fmt(b.rate)}</span>
+                  <span>{b.label} %{fmt(b.rate)}</span>
+                  <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(b.kind === 'deduction' ? Math.round(dBrutYuk * b.rate / 100) : Math.round(dNet * b.rate / 100))}</span>
                 </div>
               ))}
-              <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: 'var(--space-2) 0' }} />
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-1) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
-                <span>Net (kişinin geliri)</span>
-                <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(dNet)}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-1) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
-                <span>{'+ KDV (%' + fmt(item.vatRate) + ', emanet)'}</span>
-                <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(dBanka.kdv)}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-2) 0', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-text)' }}>
-                <span>= Kişiye banka ödemesi</span>
-                <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(dBanka.toplam)}</span>
-              </div>
-              {item.burdens.length > 0 && (
-                <>
-                  <hr style={{ border: 'none', borderTop: '1px solid var(--color-border)', margin: 'var(--space-2) 0' }} />
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-1) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
-                    <span>{"Yasal Yük (" + (item.burdens[0]?.kind === "additive" ? "SGK işveren payı" : "stopaj, devlete") + ")"}</span>
-                    <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(dStopaj)}</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-2) 0', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-text)' }}>
-                    <span>= Brüt (yapımcı maliyeti)</span>
-                    <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(dBrut)}</span>
-                  </div>
-                </>
+              {item.vatRate > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-1) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
+                  <span>KDV %{fmt(item.vatRate)}</span>
+                  <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(dKdv)}</span>
+                </div>
               )}
             </div>
           </>
