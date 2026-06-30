@@ -678,22 +678,42 @@ export function BudgetCardScreen() {
                       </select>
                     </td>
                     <td style={tdStyle}>
-                      <select
-                        style={cellInput}
-                        value=""
-                        disabled={allAdded}
-                        onChange={(e) => {
-                          const sid = e.target.value
-                          if (sid) void onAddPeriod(it.id, sid)
-                        }}
-                      >
-                        <option value="">{allAdded ? 'Tüm dönemler eklendi' : '+ Dönem ekle'}</option>
-                        {addableStages.map((s) => (
-                          <option key={s.id} value={s.id}>
-                            {s.name}
+                      {!multi && addedStages.length === 1 ? (
+                        <select
+                          style={cellInput}
+                          value={addedStages[0].id}
+                          onChange={(e) => {
+                            const sid = e.target.value
+                            if (sid !== addedStages[0].id) void onAddPeriod(it.id, sid)
+                          }}
+                        >
+                          <option value={addedStages[0].id}>{addedStages[0].name}</option>
+                          {addableStages.map((s) => (
+                            <option key={s.id} value={s.id}>
+                              {s.name}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <select
+                          style={cellInput}
+                          value=""
+                          disabled={allAdded}
+                          onChange={(e) => {
+                            const sid = e.target.value
+                            if (sid) void onAddPeriod(it.id, sid)
+                          }}
+                        >
+                          <option value="">
+                            {allAdded ? 'Tüm dönemler eklendi' : multi ? '+ Dönem ekle' : '+ Dönem seç'}
                           </option>
-                        ))}
-                      </select>
+                          {addableStages.map((s) => (
+                            <option key={s.id} value={s.id}>
+                              {s.name}
+                            </option>
+                          ))}
+                        </select>
+                      )}
                     </td>
                     <td style={numStyle}>
                       {multi ? (
