@@ -613,11 +613,12 @@ export function BudgetCardScreen() {
                 left: '50%',
                 transform: 'translateX(-50%)',
                 width: 'min(480px, 100%)',
-                maxHeight: '70vh',
+                maxHeight: '80vh',
                 overflowY: 'auto',
                 borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0',
                 background: 'var(--color-surface)',
                 padding: 'var(--space-4)',
+                paddingBottom: 'var(--space-6)',
                 zIndex: 201,
                 boxShadow: 'var(--shadow-md)',
               }}

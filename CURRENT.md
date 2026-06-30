@@ -16,6 +16,7 @@ SIRADAKI: UI duzeltmeleri (m2,m3,m5+m6) -> DILIM-3 bordro motoru (ILK ADIM: Tani
 - 2026-06-30: Kolon basliklari: Sebep->Gider, Adet->Miktar (sadece etiket).
 - 2026-06-30: Kayan kolon duzeltildi: artik KDV <td> satirdan kaldirildi, thead ile hizalandi.
 - 2026-06-30: KDV tamam: brut=net+stopaj/SGK+KDV; dropdown sadece stopaj+KDV satirlari (net/kisiye/brut kaldirildi).
+- 2026-06-30: Yasal yuk bottom-sheet: maxHeight 80vh + panel-ici scroll + alt padding; uzun icerik artik kesilmiyor.
 
 ## Durum
 - HEAD: git log (origin/main) kesin. Repo: github.com/engintosun/prodapp - Canli: prodapp-navy.vercel.app.
