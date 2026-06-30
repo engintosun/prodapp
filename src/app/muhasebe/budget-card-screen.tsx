@@ -47,7 +47,7 @@ const cellInput: CSSProperties = {
 }
 const cellInputNum: CSSProperties = { ...cellInput, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }
 
-const TOTAL_COLS = 13
+const TOTAL_COLS = 12
 
 function fmt(n: number): string {
   const dp = Number.isInteger(n) ? 0 : 2
@@ -367,7 +367,6 @@ export function BudgetCardScreen() {
               <th style={thStyle}>Birim</th>
               <th style={thNum}>Miktar</th>
               <th style={thNum}>Çarpan</th>
-              <th style={thNum}>KDV</th>
               <th style={thNum}>Yasal Yük</th>
               <th style={thNum}>Net toplam</th>
               <th style={thNum}>Brut toplam</th>
@@ -484,7 +483,9 @@ export function BudgetCardScreen() {
                       />
                     </td>
                     <td style={numStyle}>
-                      {brutToplam > netToplam && it.burdens.length > 0 ? (
+                      {it.paymentStatus === 'bordro' && it.burdens.length === 0 ? (
+                        <span style={{ color: 'var(--color-text-muted)', fontStyle: 'italic', fontSize: 'var(--text-xs)' }}>motor bekliyor</span>
+                      ) : brutToplam > netToplam ? (
                         <button
                           onClick={() => setOpenBurdenItemId(it.id)}
                           style={{
@@ -500,8 +501,6 @@ export function BudgetCardScreen() {
                         >
                           {fmt(yasalYukTl)}
                         </button>
-                      ) : it.paymentStatus === 'bordro' && it.burdens.length === 0 ? (
-                        <span style={{ color: 'var(--color-text-muted)', fontStyle: 'italic', fontSize: 'var(--text-xs)' }}>motor bekliyor</span>
                       ) : (
                         '—'
                       )}
