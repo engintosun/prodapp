@@ -359,13 +359,13 @@ export function BudgetCardScreen() {
           <thead>
             <tr>
               <th style={thStyle}>Kod</th>
-              <th style={thStyle}>Sebep</th>
+              <th style={thStyle}>Gider</th>
               <th style={thStyle}>Açıklama</th>
               <th style={thStyle}>Statü</th>
               <th style={thStyle}>Dönemler</th>
               <th style={thNum}>Birim net</th>
               <th style={thStyle}>Birim</th>
-              <th style={thNum}>Adet</th>
+              <th style={thNum}>Miktar</th>
               <th style={thNum}>Çarpan</th>
               <th style={thNum}>KDV</th>
               <th style={thNum}>Yasal Yük</th>
