@@ -397,8 +397,8 @@ export async function copyMainToFirstPeriod(
   if (error) throw new Error(error.message)
 }
 
-// Cok -> tek donem gecisi: kalan tek donemin override degerlerini ana satira yazar, donem-satirini siler.
-export async function copyLastPeriodToMainAndDelete(itemId: string, stageId: string): Promise<void> {
+// Cok -> tek donem gecisi: kalan tek donemin override degerlerini ana satira yazar.
+export async function copyLastPeriodToMain(itemId: string, stageId: string): Promise<void> {
   const { data: period, error: ep } = await supabase
     .from('budget_item_periods')
     .select('quantity, unit_net_override, unit_id_override, repeat_override')
@@ -424,11 +424,4 @@ export async function copyLastPeriodToMainAndDelete(itemId: string, stageId: str
     })
     .eq('id', itemId)
   if (eu) throw new Error(eu.message)
-
-  const { error: ed } = await supabase
-    .from('budget_item_periods')
-    .delete()
-    .eq('item_id', itemId)
-    .eq('stage_id', stageId)
-  if (ed) throw new Error(ed.message)
 }

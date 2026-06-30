@@ -10,7 +10,7 @@ import {
   updateItemPeriodRepeat,
   loadUnits,
   copyMainToFirstPeriod,
-  copyLastPeriodToMainAndDelete,
+  copyLastPeriodToMain,
   getItemBurdensAndVat,
 } from '../../shared/supabase/budget-service'
 import type { BudgetItemRow, CardView, EditableField, StageRow, UnitRow } from '../../shared/supabase/budget-service'
@@ -424,7 +424,7 @@ export function BudgetCardScreen() {
     const saved = savedRef.current[itemId]
     const existingStageIds = Object.keys(row.periodQty)
     const willBecomeMulti = existingStageIds.length === 1
-    const alreadyMulti = existingStageIds.length > 1
+    const needsExplicitDefaults = existingStageIds.length >= 1
     const oldStageId = existingStageIds[0]
     try {
       await setItemPeriodQuantity(card.budgetId, itemId, stageId, 1)
@@ -432,7 +432,7 @@ export function BudgetCardScreen() {
         await copyMainToFirstPeriod(itemId, oldStageId, row.unitNet, row.unitId, row.multiplier, row.repeat)
       }
       let sourceUnitId: string | null = null
-      if (alreadyMulti) {
+      if (needsExplicitDefaults) {
         const sourceStageId = stages.find((s) => existingStageIds.includes(s.id))?.id ?? existingStageIds[0]
         sourceUnitId = row.periodUnit[sourceStageId] ?? row.unitId
         await updateItemPeriodUnit(itemId, stageId, sourceUnitId)
@@ -442,7 +442,7 @@ export function BudgetCardScreen() {
       setRows((rs) =>
         rs.map((r) => {
           if (r.id !== itemId) return r
-          const pq = { ...r.periodQty, [stageId]: alreadyMulti ? 0 : 1 }
+          const pq = { ...r.periodQty, [stageId]: needsExplicitDefaults ? 0 : 1 }
           const pn = { ...r.periodNet }
           const pu = { ...r.periodUnit }
           const pr = { ...r.periodRepeat }
@@ -452,7 +452,7 @@ export function BudgetCardScreen() {
             pq[oldStageId] = r.multiplier
             pr[oldStageId] = r.repeat
           }
-          if (alreadyMulti) {
+          if (needsExplicitDefaults) {
             pn[stageId] = 0
             pu[stageId] = sourceUnitId
             pr[stageId] = 1
@@ -465,23 +465,23 @@ export function BudgetCardScreen() {
           ...saved,
           periodQty: {
             ...saved.periodQty,
-            [stageId]: alreadyMulti ? 0 : 1,
+            [stageId]: needsExplicitDefaults ? 0 : 1,
             ...(willBecomeMulti ? { [oldStageId]: row.multiplier } : {}),
           },
           periodNet: {
             ...saved.periodNet,
             ...(willBecomeMulti ? { [oldStageId]: row.unitNet } : {}),
-            ...(alreadyMulti ? { [stageId]: 0 } : {}),
+            ...(needsExplicitDefaults ? { [stageId]: 0 } : {}),
           },
           periodUnit: {
             ...saved.periodUnit,
             ...(willBecomeMulti ? { [oldStageId]: row.unitId } : {}),
-            ...(alreadyMulti ? { [stageId]: sourceUnitId } : {}),
+            ...(needsExplicitDefaults ? { [stageId]: sourceUnitId } : {}),
           },
           periodRepeat: {
             ...saved.periodRepeat,
             ...(willBecomeMulti ? { [oldStageId]: row.repeat } : {}),
-            ...(alreadyMulti ? { [stageId]: 1 } : {}),
+            ...(needsExplicitDefaults ? { [stageId]: 1 } : {}),
           },
         }
       }
@@ -508,7 +508,7 @@ export function BudgetCardScreen() {
         const lastUnit = row.periodUnit[lastStageId] ?? null
         const lastQty = row.periodQty[lastStageId]
         const lastRepeat = row.periodRepeat[lastStageId] ?? null
-        await copyLastPeriodToMainAndDelete(itemId, lastStageId)
+        await copyLastPeriodToMain(itemId, lastStageId)
         mainPatch = {
           unitNet: lastNet ?? row.unitNet,
           unitId: lastUnit ?? row.unitId,
@@ -528,12 +528,6 @@ export function BudgetCardScreen() {
           delete pn[stageId]
           delete pu[stageId]
           delete pr[stageId]
-          if (willCollapseToSingle) {
-            delete pq[lastStageId]
-            delete pn[lastStageId]
-            delete pu[lastStageId]
-            delete pr[lastStageId]
-          }
           return { ...r, periodQty: pq, periodNet: pn, periodUnit: pu, periodRepeat: pr, ...mainPatch }
         }),
       )
@@ -546,12 +540,6 @@ export function BudgetCardScreen() {
         delete sn[stageId]
         delete su[stageId]
         delete sr[stageId]
-        if (willCollapseToSingle) {
-          delete sp[lastStageId]
-          delete sn[lastStageId]
-          delete su[lastStageId]
-          delete sr[lastStageId]
-        }
         savedRef.current[itemId] = {
           ...saved,
           periodQty: sp,
