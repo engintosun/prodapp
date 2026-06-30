@@ -473,16 +473,6 @@ export function BudgetCardScreen() {
                       />
                     </td>
                     <td style={numStyle}>
-                      <input
-                        style={cellInputNum}
-                        type="text"
-                        inputMode="decimal"
-                        value={fieldVal(it.id, 'vatRate', it.vatRate)}
-                        onChange={(e) => onNumChange(it.id, 'vatRate', e.target.value)}
-                        onBlur={() => commitField(it.id, 'vatRate')}
-                      />
-                    </td>
-                    <td style={numStyle}>
                       {it.paymentStatus === 'bordro' && it.burdens.length === 0 ? (
                         <span style={{ color: 'var(--color-text-muted)', fontStyle: 'italic', fontSize: 'var(--text-xs)' }}>motor bekliyor</span>
                       ) : brutToplam > netToplam ? (

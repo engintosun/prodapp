@@ -14,6 +14,7 @@ M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; kart mimari
 SIRADAKI: UI duzeltmeleri (m2,m3,m5+m6) -> DILIM-3 bordro motoru (ILK ADIM: Tanimlar/cetveller bolumu sol-ray iskeleti) -> diger kartlar (1100/1300/1400/1600).
 - 2026-06-30: Carpan DB kolonu (budget_items.repeat, default 1) — kalici; net/brut = netToplamDonemli(donemler, multiplier) x repeat; Adet=multiplier, Carpan=repeat (ikisi DB'de ayri).
 - 2026-06-30: Kolon basliklari: Sebep->Gider, Adet->Miktar (sadece etiket).
+- 2026-06-30: Kayan kolon duzeltildi: artik KDV <td> satirdan kaldirildi, thead ile hizalandi.
 
 ## Durum
 - HEAD: git log (origin/main) kesin. Repo: github.com/engintosun/prodapp - Canli: prodapp-navy.vercel.app.
