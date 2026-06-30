@@ -12,6 +12,7 @@ M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; kart mimari
 - 2026-06-25: DILIM-2e CANLI: statu degisince kova OTOMATIK tazelenir (fn_refill_item_burdens + after-update trigger; fn_open_budget ayni motoru cagirir; mevcut kirli kovalar backfill ile temizlendi). KDV statuden gelir (payment_status_defaults.default_vat_rate). Dokum etiketi cinse gore (bordro->SGK isveren payi / makbuz->stopaj).
 - 2026-06-26: Dilim A CANLI — kisiye-banka KDV matrahi brut + statu canli tazeleme + bordro motor-bekliyor etiketi — 24/24 test gecti, CANLI TEYIT BEKLIYOR.
 SIRADAKI: UI duzeltmeleri (m2,m3,m5+m6) -> DILIM-3 bordro motoru (ILK ADIM: Tanimlar/cetveller bolumu sol-ray iskeleti) -> diger kartlar (1100/1300/1400/1600).
+- 2026-06-30: Carpan (repeat) ayri frontend state'e alindi; net/brut = netToplamDonemli(donemler, multiplier) x repeat; Adet=multiplier(DB), Carpan=repeat(UI-only, default 1).
 
 ## Durum
 - HEAD: git log (origin/main) kesin. Repo: github.com/engintosun/prodapp - Canli: prodapp-navy.vercel.app.
