@@ -15,6 +15,7 @@ export interface BudgetItemRow {
   unitNet: number
   unitLabel: string
   multiplier: number
+  repeat: number
   vatRate: number
   ratesPercent: number[]
   burdens: { label: string; rate: number; kind: "additive" | "deduction" }[]
@@ -31,13 +32,14 @@ export interface CardView {
   items: BudgetItemRow[]
 }
 
-export type EditableField = 'name' | 'detail' | 'unitNet' | 'multiplier' | 'vatRate' | 'paymentStatus'
+export type EditableField = 'name' | 'detail' | 'unitNet' | 'multiplier' | 'repeat' | 'vatRate' | 'paymentStatus'
 
 const FIELD_COL: Record<EditableField, string> = {
   name: 'name',
   detail: 'detail',
   unitNet: 'unit_net',
   multiplier: 'multiplier',
+  repeat: 'repeat',
   vatRate: 'vat_rate',
   paymentStatus: 'payment_status',
 }
@@ -118,7 +120,7 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
 
   const { data: items, error: ei } = await supabase
     .from('budget_items')
-    .select('id, item_code, name, detail, unit_net, unit_id, multiplier, vat_rate, payment_status')
+    .select('id, item_code, name, detail, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status')
     .eq('group_id', grp.id)
     .eq('is_active', true)
     .order('sort_order')
@@ -174,6 +176,7 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
     unitNet: Number(i.unit_net),
     unitLabel: unitLabel[i.unit_id as string] ?? '',
     multiplier: Number(i.multiplier),
+    repeat: Number((i as unknown as { repeat?: unknown }).repeat ?? 1),
     vatRate: Number(i.vat_rate),
     ratesPercent: burdensByItem[i.id as string] ?? [],
     burdens: burdenDetailByItem[i.id as string] ?? [],
@@ -212,6 +215,7 @@ export async function updateItemField(
     const n = typeof value === 'number' ? value : Number(String(value).replace(',', '.'))
     if (!Number.isFinite(n)) throw new Error('Geçersiz sayı')
     if (n < 0) throw new Error('Negatif değer girilemez')
+    if (field === 'repeat' && n <= 0) throw new Error('Çarpan sıfırdan büyük olmalı')
     payload = { [FIELD_COL[field]]: n }
   }
   const { error } = await supabase.from('budget_items').update(payload).eq('id', itemId)

@@ -66,7 +66,6 @@ export function BudgetCardScreen() {
   const [openBurdenItemId, setOpenBurdenItemId] = useState<string | null>(null)
   const savedRef = useRef<Record<string, BudgetItemRow>>({})
   const [buffers, setBuffers] = useState<Record<string, string>>({})
-  const [repeatState, setRepeatState] = useState<Record<string, number>>({})
 
   useEffect(() => {
     let cancelled = false
@@ -314,19 +313,19 @@ export function BudgetCardScreen() {
     return k in buffers ? buffers[k] : String(n)
   }
 
-  function repeatVal(id: string): string {
+  function repeatVal(id: string, n: number): string {
     const k = id + ':repeat'
-    return k in buffers ? buffers[k] : String(repeatState[id] ?? 1)
+    return k in buffers ? buffers[k] : String(n)
   }
 
   function onRepeatChange(id: string, raw: string) {
     setBuffers((b) => ({ ...b, [id + ':repeat']: raw }))
     const n = Number(raw.replace(',', '.'))
-    if (Number.isFinite(n) && n > 0) setRepeatState((s) => ({ ...s, [id]: n }))
+    if (Number.isFinite(n) && n > 0) patchRow(id, { repeat: n })
   }
 
   function commitRepeat(id: string) {
-    clearBuf(id + ':repeat')
+    void commitField(id, 'repeat')
   }
 
   function periodVal(id: string, stageId: string, n: number): string {
@@ -381,9 +380,8 @@ export function BudgetCardScreen() {
                 qty: it.periodQty[sid],
               }))
               const yukler: Yuk[] = it.burdens.map((b) => ({ ratePercent: b.rate, kind: b.kind }))
-              const repeat = repeatState[it.id] ?? 1
-              const netToplam = netToplamDonemli(donemler, it.multiplier) * repeat
-              const brutToplam = brutToplamDonemli(donemler, yukler, it.multiplier) * repeat
+              const netToplam = netToplamDonemli(donemler, it.multiplier) * it.repeat
+              const brutToplam = brutToplamDonemli(donemler, yukler, it.multiplier) * it.repeat
               const yasalYukTl = brutToplam - netToplam
               const periodKeys = new Set(Object.keys(it.periodQty))
               const addableStages = stages.filter((s) => !periodKeys.has(s.id))
@@ -470,7 +468,7 @@ export function BudgetCardScreen() {
                         style={cellInputNum}
                         type="text"
                         inputMode="decimal"
-                        value={repeatVal(it.id)}
+                        value={repeatVal(it.id, it.repeat)}
                         onChange={(e) => onRepeatChange(it.id, e.target.value)}
                         onBlur={() => commitRepeat(it.id)}
                       />
