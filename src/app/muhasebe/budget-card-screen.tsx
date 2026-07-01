@@ -824,7 +824,6 @@ export function BudgetCardScreen() {
                           <td style={periodRowStyle} />
                           <td style={periodRowStyle} />
                           <td style={periodRowStyle} />
-                          <td style={periodRowStyle} />
                           <td style={periodRowStyle}>{stageById.get(s.id)?.name ?? s.name}</td>
                           <td style={periodRowNumStyle}>
                             <input
