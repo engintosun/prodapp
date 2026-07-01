@@ -11,13 +11,17 @@ M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; kart mimari
 - 2026-06-25: DILIM-2d CANLI (commit e9dfe58): KART 1500 ekran Net + Brut + KDV ayri kolon; Yasal Yuk = brut-net (TL); kova cinsi servis->UI borusu; bottom-sheet para selalesi (Net -> +KDV = Kisiye banka odemesi / Yasal Yuk -> Brut). CFE kisiyeBanka eklendi (25 test).
 - 2026-06-25: DILIM-2e CANLI: statu degisince kova OTOMATIK tazelenir (fn_refill_item_burdens + after-update trigger; fn_open_budget ayni motoru cagirir; mevcut kirli kovalar backfill ile temizlendi). KDV statuden gelir (payment_status_defaults.default_vat_rate). Dokum etiketi cinse gore (bordro->SGK isveren payi / makbuz->stopaj).
 - 2026-06-26: Dilim A CANLI — kisiye-banka KDV matrahi brut + statu canli tazeleme + bordro motor-bekliyor etiketi — 24/24 test gecti, CANLI TEYIT BEKLIYOR.
-SIRADAKI: UI duzeltmeleri (m2,m3,m5+m6) -> DILIM-3 bordro motoru (ILK ADIM: Tanimlar/cetveller bolumu sol-ray iskeleti) -> diger kartlar (1100/1300/1400/1600).
-- 2026-06-30: Carpan DB kolonu (budget_items.repeat, default 1) — kalici; net/brut = netToplamDonemli(donemler, multiplier) x repeat; Adet=multiplier, Carpan=repeat (ikisi DB'de ayri).
+SIRADAKI: m3 Aciklama tikla-genisle -> Statu kisa etiketler (smm/telif/kira/fatura/bordro/konaklama) -> MMB hesap numarasi kutuphane esleme -> DILIM-3 bordro motoru (ILK ADIM: Tanimlar/cetveller sol-ray iskeleti) -> diger kartlar (1100/1300/1400/1600).
+- 2026-06-30: Carpan DB kolonu (budget_items.repeat, default 1) — kalici; Adet=multiplier, Carpan=repeat (ikisi DB'de ayri). NET/BRUT artik donem-bazli: her donem net = Birim_net x Miktar x Carpan; ana satir toplami = SUM(donemler). CFE imzasindan multiplier PARAMETRESI CIKTI (netToplamDonemli/brutToplamDonemli sadece donemler[+yukler] alir).
 - 2026-06-30: Kolon basliklari: Sebep->Gider, Adet->Miktar (sadece etiket).
 - 2026-06-30: Kayan kolon duzeltildi: artik KDV <td> satirdan kaldirildi, thead ile hizalandi.
 - 2026-06-30: KDV tamam: brut=net+stopaj/SGK+KDV; dropdown sadece stopaj+KDV satirlari (net/kisiye/brut kaldirildi).
 - 2026-06-30: Yasal yuk bottom-sheet: maxHeight 80vh + panel-ici scroll + alt padding; uzun icerik artik kesilmiyor.
 - 2026-06-30: DILIM-2f CANLI — donem-bazli geometri (her donem kendi Birim_net/Birim/Miktar/Carpan) + ana satir rol degisimi (tek=giris, cok=salt-okunur ozet) + Birim dropdown (m5+m6 birlikte) + tek<->cok otomatik kopyalama + sil onay + budget_items.repeat muhurleme + kisi birimi seed. Cift-carpma bug otomatik dustu (CFE multiplier parametresi cikti).
+- 2026-07-01: DILIM-2f-fix (4bfdacb): Donemler hucresi tek-donem modunda secili donem adini gosterir (onceden hep bos '+ Donem ekle'). Ikinci donem ayni dropdown'dan secilir.
+- 2026-07-01: DILIM-2f-fix2 (5b51817): units tablosundan adet/kisi SILINDI (Birim sadece periyot cinsi tasir: gun/hafta/ay/bolum/sabit; adet/kisi Miktar kolonunun konusu). Migration 20260701090000. 3.+ donem eklerken acik baslangic degerleri (Birim_net=0, gorunur Miktar=0, Carpan=1, ilk donemden Birim mirasi).
+- 2026-07-01: DILIM-2f-fix3 (aed7cb9): 1->2 donem gecisinde de yeni donem ayni acik degerleri alir (needsExplicitDefaults, esik length>=1). 2->1 cokmede kalan donem satiri KORUNUR (copyLastPeriodToMain — DELETE kaldirildi), boylece tek donem adi ekranda gorunur kalir.
+- 2026-07-01: DILIM-2f TAM. CANLI TEYIT: kullanici uretimde dogruladi (donem ekle/sil/gecis + Birim listesi).
 
 ## Durum
 - HEAD: git log (origin/main) kesin. Repo: github.com/engintosun/prodapp - Canli: prodapp-navy.vercel.app.
