@@ -674,11 +674,11 @@ export function BudgetCardScreen() {
                       >
                         <option value="">Statü seç</option>
                         <option value="bordro">Bordro</option>
-                        <option value="smm">Serbest meslek (SMM)</option>
-                        <option value="telif_belgeli">Telif (eser belgeli)</option>
-                        <option value="sirket">Şirket faturası</option>
-                        <option value="kira_sahis">Kira (şahıs)</option>
-                        <option value="konaklama">Konaklama / yemek</option>
+                        <option value="smm">SMM</option>
+                        <option value="telif_belgeli">Telif</option>
+                        <option value="sirket">Fatura</option>
+                        <option value="kira_sahis">Kira</option>
+                        <option value="konaklama">Konaklama</option>
                       </select>
                     </td>
                     <td style={tdStyle}>
