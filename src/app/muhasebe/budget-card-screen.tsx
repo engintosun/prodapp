@@ -157,7 +157,7 @@ export function BudgetCardScreen() {
     setRows((rs) => rs.map((r) => (r.id === id ? { ...r, ...patch } : r)))
   }
 
-  function onTextChange(id: string, field: 'name' | 'detail', value: string) {
+  function onTextChange(id: string, field: 'name', value: string) {
     patchRow(id, { [field]: value } as Partial<BudgetItemRow>)
   }
 
@@ -619,7 +619,6 @@ export function BudgetCardScreen() {
           <thead>
             <tr>
               <th style={thStyle}>Kod</th>
-              <th style={thStyle}>Gider</th>
               <th style={thStyle}>Açıklama</th>
               <th style={thStyle}>Statü</th>
               <th style={thStyle}>Dönemler</th>
@@ -665,15 +664,6 @@ export function BudgetCardScreen() {
                         value={it.name}
                         onChange={(e) => onTextChange(it.id, 'name', e.target.value)}
                         onBlur={() => commitField(it.id, 'name')}
-                      />
-                    </td>
-                    <td style={tdStyle}>
-                      <input
-                        style={cellInput}
-                        value={it.detail ?? ''}
-                        placeholder="—"
-                        onChange={(e) => onTextChange(it.id, 'detail', e.target.value)}
-                        onBlur={() => commitField(it.id, 'detail')}
                       />
                     </td>
                     <td style={tdStyle}>

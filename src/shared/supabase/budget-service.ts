@@ -18,7 +18,7 @@ export interface BudgetItemRow {
   id: string
   itemCode: number
   name: string
-  detail: string | null
+  descriptionEn: string | null
   unitNet: number
   unitId: string
   unitLabel: string
@@ -42,11 +42,11 @@ export interface CardView {
   items: BudgetItemRow[]
 }
 
-export type EditableField = 'name' | 'detail' | 'unitNet' | 'multiplier' | 'repeat' | 'vatRate' | 'paymentStatus' | 'unitId'
+export type EditableField = 'name' | 'descriptionEn' | 'unitNet' | 'multiplier' | 'repeat' | 'vatRate' | 'paymentStatus' | 'unitId'
 
 const FIELD_COL: Record<EditableField, string> = {
   name: 'name',
-  detail: 'detail',
+  descriptionEn: 'description_en',
   unitNet: 'unit_net',
   multiplier: 'multiplier',
   repeat: 'repeat',
@@ -131,7 +131,7 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
 
   const { data: items, error: ei } = await supabase
     .from('budget_items')
-    .select('id, item_code, name, detail, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status')
+    .select('id, item_code, name, description_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status')
     .eq('group_id', grp.id)
     .eq('is_active', true)
     .order('sort_order')
@@ -190,7 +190,7 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
     id: i.id as string,
     itemCode: i.item_code as number,
     name: i.name as string,
-    detail: (i.detail as string | null) ?? null,
+    descriptionEn: (i.description_en as string | null) ?? null,
     unitNet: Number(i.unit_net),
     unitId: i.unit_id as string,
     unitLabel: unitLabel[i.unit_id as string] ?? '',
@@ -220,9 +220,9 @@ export async function updateItemField(
     const v = String(value).trim()
     if (!v) throw new Error('Sebep boş olamaz')
     payload = { name: v }
-  } else if (field === 'detail') {
+  } else if (field === 'descriptionEn') {
     const v = String(value).trim()
-    payload = { detail: v === '' ? null : v }
+    payload = { description_en: v === '' ? null : v }
   } else if (field === 'paymentStatus') {
     const v = String(value)
     if (v === '') {

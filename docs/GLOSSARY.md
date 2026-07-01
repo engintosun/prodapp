@@ -31,10 +31,11 @@
 |Etap         |stage                 |Bütçe içi kısım (Hazırlık/Çekim/Post...)     |
 |Harcama grubu|expense_group         |Etap altındaki grup; UI'daki adı "kart"      |
 |Harcama kalemi|budget_item          |Grup altındaki bütçe satırı                  |
+|Kalemin İngilizce adı|description_en |Köster damıtımından gelen sektör-standart İngilizce ad; ekranda görünmez, ileride İngilizce sunum için arka planda saklanır|
 |Yük bileşeni |burden_component      |Stopaj/SGK/ajans gibi net-üstü yük           |
 |Doğrudan ödeme|direct_payment       |Muhasebenin fiş dışı gerçekleşen kaydı       |
 |Yüzde kalemi |percent_line          |Ara toplam üstüne % (öngörülmeyen, kâr)      |
-|Birim        |unit                  |gün/hafta/ay/bölüm/adet/sabit                |
+|Birim        |unit                  |gün/hafta/ay/bölüm/sabit (adet/kişi kaldırıldı — Miktar'ın konusu, DILIM-2f-fix2)|
 |Oran kataloğu|rate_catalog          |Merkezi vergi/yük oran kaynağı               |
 |Kasa (orijinal)|budget_baseline      |Kilit anında bütçenin donmuş fotoğrafı (koy-ve-bak)|
 |Şablon (raf)  |budget_template       |Rakamsız bütçe iskeleti; kurulumda fotokopilenir   |

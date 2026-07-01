@@ -8,12 +8,12 @@
 
 ## 1. Kalem satırı yapısı
 
-**KARAR (güncel, 2026-07-01, DILIM-2f sonrası):** Kolon sırası: **Kod · Gider · Açıklama · Statü · Dönemler · Birim net · Birim · Miktar · Çarpan · Yasal Yük · Net toplam · Brüt toplam**.
-KDV ARTIK AYRI KOLON DEĞİL — Yasal Yük dökümüne indi (§7). Birim net/Birim/Miktar/Çarpan ana satırda görünür; ama rol dönem sayısına göre değişir:
+**KARAR (güncel, 2026-07-01, detail-rename sonrası):** Kolon sırası: **Kod · Açıklama · Statü · Dönemler · Birim net · Birim · Miktar · Çarpan · Yasal Yük · Net toplam · Brüt toplam** (11 kolon). Eski "Gider" (kalem adı) ve eski "Açıklama" (serbest metin, `detail`) ayrımı KALKTI — tek "Açıklama" kolonu kalemin adını taşır (`budget_items.name`). Eski `detail` alanı `description_en` olarak arka planda yaşıyor (Köster damıtımından gelen İngilizce standart adlar, ileride İngilizce sunum için); ekranda hiçbir kolonda görünmez.
+KDV AYRI KOLON DEĞİL — Yasal Yük dökümüne indi (§7). Birim net/Birim/Miktar/Çarpan ana satırda görünür; ama rol dönem sayısına göre değişir:
 - **Tek dönem:** ana satır GİRİŞ (Birim_net + Birim + Miktar + Çarpan burada girilir).
 - **Çok dönem:** ana satır SALT-OKUNUR ÖZET (Birim_net/Birim/Miktar dönemler arası aynıysa değer, farklıysa "—"; Çarpan = SUM; Yasal Yük/Net/Brüt = SUM); giriş dönem satırlarında yapılır.
 
-**NEDEN:** Bir kalem çok dönemde dönem-başına farklı ücret/miktar/çarpan taşıyabilir → geometri dönem-bazına indi (Net = Birim_net × Miktar × Çarpan, dönem-başına). Ana satır tek dönemde giriş, çok dönemde özet görevi görür; iki mod arası otomatik kopyalama yapılır. KDV'yi ayrı kolonda tutmak vaat edilmişti (2026-06-25 §3 eski karar) ama sahada test edilince KDV'nin cinsi Yasal Yük'ün bir bileşeni olarak daha temiz durdu (statüye göre kovada, dökümde şelale satırı) → ayrı kolon TERSİNE DÖNDÜ. Detay §7.
+**NEDEN:** İki ayrı "kalem adı" kolonu (Gider + Açıklama) yanlış kurulmuştu — eski `detail` alanı hem şablonun İngilizce tohum adını hem kullanıcının serbest notunu aynı hücrede taşıyordu, biri diğerinin üstüne yazılınca kayboluyordu. Tek "Açıklama" kolonu = kalemin adı; İngilizce karşılığı arka planda korunur, ayrı kolon açmaz. Bir kalem çok dönemde dönem-başına farklı ücret/miktar/çarpan taşıyabilir → geometri dönem-bazına indi (Net = Birim_net × Miktar × Çarpan, dönem-başına). Ana satır tek dönemde giriş, çok dönemde özet görevi görür. Detay §7.
 
 ## 2. Statü (ödeme türü)
 
