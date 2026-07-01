@@ -8,10 +8,12 @@
 
 ## 1. Kalem satırı yapısı
 
-**KARAR:** Kolon sırası: **Kalem · Statü · Dönemler · KDV · Yük · Net toplam · Brüt toplam**.
-Kalem başta; Net/× (birim-net ve adet) ana satırda DEĞİL — dönem kırılımına indi.
+**KARAR (güncel, 2026-07-01, DILIM-2f sonrası):** Kolon sırası: **Kod · Gider · Açıklama · Statü · Dönemler · Birim net · Birim · Miktar · Çarpan · Yasal Yük · Net toplam · Brüt toplam**.
+KDV ARTIK AYRI KOLON DEĞİL — Yasal Yük dökümüne indi (§7). Birim net/Birim/Miktar/Çarpan ana satırda görünür; ama rol dönem sayısına göre değişir:
+- **Tek dönem:** ana satır GİRİŞ (Birim_net + Birim + Miktar + Çarpan burada girilir).
+- **Çok dönem:** ana satır SALT-OKUNUR ÖZET (Birim_net/Birim/Miktar dönemler arası aynıysa değer, farklıysa "—"; Çarpan = SUM; Yasal Yük/Net/Brüt = SUM); giriş dönem satırlarında yapılır.
 
-**NEDEN:** Kalem kullanıcının önce gördüğü/aradığı şeydir, başta olmalı. Net/× ana satırdan çıkarıldı çünkü bir kalem birden çok dönemde, dönem-başına farklı ücretle olabilir → tek "Net" hücresi bunu taşıyamaz (yanlış varsayım: "tek birim-net × miktar"). Detay aşağı (kırılıma) indi, ana satır özet kaldı = sade görünüm.
+**NEDEN:** Bir kalem çok dönemde dönem-başına farklı ücret/miktar/çarpan taşıyabilir → geometri dönem-bazına indi (Net = Birim_net × Miktar × Çarpan, dönem-başına). Ana satır tek dönemde giriş, çok dönemde özet görevi görür; iki mod arası otomatik kopyalama yapılır. KDV'yi ayrı kolonda tutmak vaat edilmişti (2026-06-25 §3 eski karar) ama sahada test edilince KDV'nin cinsi Yasal Yük'ün bir bileşeni olarak daha temiz durdu (statüye göre kovada, dökümde şelale satırı) → ayrı kolon TERSİNE DÖNDÜ. Detay §7.
 
 ## 2. Statü (ödeme türü)
 
@@ -21,19 +23,19 @@ Kalem başta; Net/× (birim-net ve adet) ana satırda DEĞİL — dönem kırıl
 
 ## 3. Net / Brüt ve "Yasal Yük" (kolon başlığı güncel)
 
-**KARAR (güncel, 2026-06-25):** Kolon adı = **"Yasal Yük"** (eski "Yük" aşıldı). Bütçe "Toplam" = **Brüt** (yapımcı maliyeti). Net ve Brüt **ayrı iki kolon**. KDV **ayrı kolon** (havuz, geri alınabilir, toplama/yüke GİRMEZ). Üç eksen ayrı:
+**KARAR (güncel, 2026-07-01, DILIM-2f sonrası):** Kolon adı = **"Yasal Yük"** (eski "Yük" aşıldı). Bütçe "Toplam" = **Brüt** (yapımcı maliyeti). Net ve Brüt **ayrı iki kolon**. **KDV artık AYRI KOLON DEĞİL** — Yasal Yük dökümünde şelale satırı olarak gösterilir (2026-06-25'te alınan "KDV ayrı kolon" kararı TERSİNE DÖNDÜ; gerekçe §7 güncel). Üç eksen mantığı korunur:
 
 - **Yasal Yük = Brüt − Net (TL farkı)** statüye göre:
-  - Bordro → SGK işveren payı (net'e **eklenir**, additive)
+  - Bordro → SGK işveren payı (net'e **eklenir**, additive) — bordro motoru DILIM-3'te
   - SMM → stopaj, Brüt = Net / 0,80 (kesinti çarpan)
   - Telif → stopaj, Brüt = Net / 0,83 (kesinti çarpan)
   - Kira → stopaj, Brüt = Net / 0,80 (KDV yok)
-  - Şirket faturası → yük 0 (stopaj yok; KDV havuzda)
-  - Konaklama → yük 0 (KDV %10 havuzda)
+  - Şirket faturası → yük 0 (stopaj yok; KDV Yasal Yük dökümünde havuz satırı)
+  - Konaklama → yük 0 (KDV %10 Yasal Yük dökümünde havuz satırı)
 
-- **KDV:** Ana tabloda ayrı sütun (oran + "indirilebilir mi?" bayrağı). Personelde (bordro) boş. Yüke GİRMEZ, genel toplama GİRMEZ. Geri-alınabilir havuz olarak gösterilir.
+- **KDV:** Yasal Yük hücresine tıklanınca açılan bottom-sheet dökümünde şelale satırı (Net → +stopaj/SGK → +KDV = kişiye banka ödemesi / brüt). Geri-alınabilir havuz olarak gösterilir; genel toplama GİRMEZ, maliyete GİRMEZ. Bordroda KDV yok, satır atlanır.
 
-**NEDEN:** Sahada anlaşma net üzerindendir; brütü sistem türetir. Tek "yük %" çarpanı yetmez: SGK ekleme, stopaj kesinti — iki farklı yön. Toplam = Brüt çünkü yapımcının cebinden çıkan odur. KDV ayrı eksen çünkü standart halde geri alınır (maliyet değil). Detay: VERGI-MEVZUATI.md §1c.
+**NEDEN:** Sahada anlaşma net üzerindendir; brütü sistem türetir. Tek "yük %" çarpanı yetmez: SGK ekleme, stopaj kesinti — iki farklı yön. Toplam = Brüt çünkü yapımcının cebinden çıkan odur. KDV standart halde geri alınır (maliyet değil). Ayrı kolon fikri (2026-06-25) DILIM-2f'de test edilince fazladan gürültü yarattı: KDV zaten Yasal Yük'ün cins-şelalesi içinde doğal yerini alıyor (stopaj/SGK dökümünün altında son satır). Ayrı kolon kaldırıldı; kavram Yasal Yük dökümünde yaşar. Detay: VERGI-MEVZUATI.md §1c.
 
 ## 4. Dönem seçimi ve kırılım
 
@@ -55,9 +57,9 @@ Kalem başta; Net/× (birim-net ve adet) ana satırda DEĞİL — dönem kırıl
 
 ## 7. KDV
 
-**KARAR:** KDV ana tabloda sütun (oran + "indirilebilir mi?" bayrağı). Personelde (bordro) boş. **Yük'e GİRMEZ, genel toplama GİRMEZ.** Ayrı eksen (nakit/beyanname). İndirilemezse (fon/istisna işi) gerçek maliyet, ayrıca işaretli.
+**KARAR (güncel, 2026-07-01, DILIM-2f sonrası):** KDV **ayrı kolon DEĞİL** — Yasal Yük hücresinin şelale dökümünde satır olarak yaşar (Net → +stopaj/SGK → +KDV = kişiye banka ödemesi / brüt). Statüden gelir (`payment_status_defaults.default_vat_rate`; taslak, muhasebe onayı bekliyor); indirilebilir bayrağı `budget_items.vat_deductible`. Personelde (bordro) satır atlanır. **Yük'e GİRMEZ, genel toplama GİRMEZ.** Ayrı eksen (nakit/beyanname). İndirilemezse (fon/istisna işi) gerçek maliyet, dökümde ayrıca işaretli.
 
-**NEDEN:** Bütçe **gider** tarafıdır, satış geliri yoktur (olursa istisna). Hesaplanan KDV (satış) yokken yalnız indirilecek KDV (alım) vardır → standart halde geri alınır, maliyet değil. KDV'yi brüte/toplama katmak her KDV'li alımı ekstra maliyet gibi gösterir = yanlış, çift gösterim. Ücret zaten KDV'nin konusu değil (bağımlı çalışma) → bordroda boş. **Açık karar:** KDV sütununun ana tabloda görünümü/konumu sonra netleşecek (§Açık).
+**NEDEN:** Bütçe **gider** tarafıdır, satış geliri yoktur (olursa istisna). Hesaplanan KDV (satış) yokken yalnız indirilecek KDV (alım) vardır → standart halde geri alınır, maliyet değil. KDV'yi brüte/toplama katmak her KDV'li alımı ekstra maliyet gibi gösterir = yanlış, çift gösterim. Ücret zaten KDV'nin konusu değil (bağımlı çalışma) → bordroda boş. **2026-06-25'te alınan "ayrı sütun" kararı TERSİNE DÖNDÜ:** DILIM-2f'de test edilince ayrı kolon fazladan gürültü yarattı ve statü→cins→şelale mimarisiyle çelişti; KDV Yasal Yük dökümündeki üç eksen şelalesinin doğal son satırı olarak durur (bordroda SGK, SMM/telif/kira'da stopaj, hepsinde son satır KDV). Ana tablo bir kolon daha temiz; kavram tam olarak yerine yerleşti.
 
 ## 8. Düzenleme vs salt-bakış: iki ayrı pattern
 
@@ -87,13 +89,12 @@ Kalem başta; Net/× (birim-net ve adet) ana satırda DEĞİL — dönem kırıl
 
 **NEDEN:** Tevkifat işlem/fatura düzeyinde bir KDV-sorumluluğu paylaşımıdır; bir kişinin ödeme statüsüyle (nasıl ücret aldığı) ilgisi yok. Aynı kalem türü (örn. faturalı taşıma) statüden bağımsız hep aynı tevkifata tabidir; ücret statüsü (SMM/şirket) bunu değiştirmez. Çekirdeğe gömmek modeli kirletir + yanlış olur (tevkifat KDV'nin kime ödeneceğini değiştirir, maliyeti değil — KDV zaten ayrı eksen, §7). Reklam yapımcısı için kritik (reklam işi 3/10) ama Faz 1 kapsamı için uyarı düzeyinde tutmak yeterli; tam tevkifat motoru ileride. Reklam'ın 3/10 kısmi mi tam mı olduğu kaynaklarda çelişkili → mali müşavir doğrulaması şart (VERGI-MEVZUATI §4).
 1. **KAAPA renk/font teması** (warm black #0C0A08 + turuncu #E8962E, DM Sans/Mono) — eski rewrite kararından geliyor, **aday**, kilit değil; değişebilir.
-2. **KDV sütununun** ana tablodaki görünümü/konumu — açık (§7).
 
-## 12. Birim kolonu (m5+m6 kararı, 2026-06-25)
+## 12. Birim kolonu (m5+m6 kararı, 2026-06-25; güncelleme 2026-07-01)
 
-**KARAR:** Birim = **seçilebilir dropdown** (adet / kişi / gün / hafta / ay). Kaleme göre varsayılan gelir (kütüphane/rol atomundan); üstüne tıklayınca değişir. m5 (birim etiketi) + m6 (birim seçim) birleşik. Mobilde native select → OS bottom-sheet bedava.
+**KARAR (güncel, 2026-07-01, DILIM-2f-fix2):** Birim = **seçilebilir dropdown** (gün / hafta / ay / bölüm / sabit). Yalnız periyot cinsi taşır; **adet/kişi units tablosundan SİLİNDİ** — o Miktar kolonunun konusu (kaç birim). Kaleme göre varsayılan gelir (kütüphane/rol atomundan); üstüne tıklayınca değişir. m5 (birim etiketi) + m6 (birim seçim) birleşik. Mobilde native select → OS bottom-sheet bedava. Migration: 20260701090000.
 
-**NEDEN:** Farklı kalemler farklı birim gerektirir (kameraman haftalık, ekstra günlük, araç aylık). Varsayılan çalışır; override serbest.
+**NEDEN:** Farklı kalemler farklı periyot birimi gerektirir (kameraman haftalık, ekstra günlük, araç aylık, dizi bölüm, paket ücret sabit). "Adet" ve "kişi" ise Miktar kolonunun konusu, birimin değil — ikisini karıştırmak "3 adet × 2 kişi × haftalık" gibi anlamsız üçleme doğuruyordu. Ayrım netleşti: **Birim = zaman/paket cinsi, Miktar = kaç, Çarpan = kaç tekrar**.
 
 ## 13. Yük kovası cins mimarisi (kilitlendi 2026-06-25)
 

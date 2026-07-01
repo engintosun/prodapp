@@ -25,7 +25,7 @@ SIRADAKI: m3 Aciklama tikla-genisle -> Statu kisa etiketler (smm/telif/kira/fatu
 
 ## Durum
 - HEAD: git log (origin/main) kesin. Repo: github.com/engintosun/prodapp - Canli: prodapp-navy.vercel.app.
-- KURULU/CALISIYOR: auth + cok-proje login - saha fis girisi - yonlendirme/duzeltme - davet/rol - reviewer onay/red - proje olusturma + butce tablolari + servisler - onboarding UI - BUTCE DB TEMELI - fn_open_budget CANLI (statu-fill) - CFE (brutBirim/satirToplam/satirToplamDonemli/kdvAyristir/zincirToplam/dokum/brutStopaj/netToplamDonemli/brutToplamDonemli/kisiyeBanka, 24/24) - KART 1500 ekran TAM (Net+Brut+KDV ayri + Yasal Yuk TL + selale dokum + statu->kova canli senkron + KDV matrahi=brut + bordro motor-bekliyor etiketi).
+- KURULU/CALISIYOR: auth + cok-proje login - saha fis girisi - yonlendirme/duzeltme - davet/rol - reviewer onay/red - proje olusturma + butce tablolari + servisler - onboarding UI - BUTCE DB TEMELI - fn_open_budget CANLI (statu-fill) - CFE (brutBirim/satirToplam/satirToplamDonemli/kdvAyristir/zincirToplam/dokum/brutStopaj/netToplamDonemli/brutToplamDonemli/kisiyeBanka, 28/28) - KART 1500 ekran TAM (donem-bazli geometri + Net+Brut ayri kolon + KDV Yasal Yuk dokumunde selale satiri + Yasal Yuk TL + statu->kova canli senkron + KDV matrahi=brut + bordro motor-bekliyor etiketi).
 - ODEME-STATUSU SEMASI CANLI: budget_items.payment_status (6 deger CHECK) + stopaj_rate (null=miras, override) + vat_deductible; budget_item_periods.unit_net_override; payment_status_defaults cetveli (applies_sgk + default_vat_rate; TASLAK, muhasebe teyidi bekliyor).
 - YUK KOVASI CINS CANLI (2a-2e): burden_components.kind (additive/deduction); payment_status_burdens eslemesi (smm/kira->stopaj, telif->stopaj_telif; sirket/konaklama bos; bordro motor bekliyor); rate_catalog tek oran evi (stopaj 20, stopaj_telif 17, ... TASLAK). Statu degisince fn_refill + trigger ile kova yeniden snapshot (acilis ve statu-degisimi TEK motor). Servis kovayi kind ile ceker; CFE cinse gore brut (additive x(1+SUM) / deduction /(1-SUM)).
 - KART MIMARISI KILITLI: 5 etap, kart=departman + "kullanan sahiplenir", kalem motoru + gorunurluk katmanlari + Compliance Guard. Kilitli kartlar: 1100,1300,1400,1500,1600. Detay: KART-KATALOGU.md.
@@ -62,7 +62,6 @@ Kolon seti (KILITLI): Kod - Gider - Aciklama - Statu - Donemler - Birim net - Bi
 - Sonra DILIM-3 bordro motoru -> diger kartlar (1100/1300/1400/1600) -> backlog. Tam sira: docs/IS-SIRASI.md.
 
 ## Acik (kararlasmadi)
-- OTURUM SONU SUREKLENME (Opus, DILIM-2f sonrasi): BUTCE-EKRAN-KARARLARI.md §1/§3/§7/§11 KDV "ayri kolon" karari guncellensin (KDV artik Yasal Yuk dokumunde) + KART-KATALOGU.md ilgili kart satirlari yeni model kolon setiyle (Kod/Birim net/Birim/Miktar/Carpan) senkron edilsin.
 - Muhasebe oran teyitleri (amber PDF): reklam tevkifati + 2026 oran guncelligi + telif tavan.
 - Tanimlar/cetveller bolumu (sol-ray): rate_catalog + payment_status_defaults + payroll-base + bordro parametreleri burada yasar; DILIM-3 ILK ADIMI (Engin onayli).
 - Oran-yonetimi ekrani ERTELENDI (Tanimlar bolumu icinde, IS-SIRASI'da).
