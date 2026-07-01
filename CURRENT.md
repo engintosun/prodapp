@@ -11,7 +11,7 @@ M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; kart mimari
 - 2026-06-25: DILIM-2d CANLI (commit e9dfe58): KART 1500 ekran Net + Brut + KDV ayri kolon; Yasal Yuk = brut-net (TL); kova cinsi servis->UI borusu; bottom-sheet para selalesi (Net -> +KDV = Kisiye banka odemesi / Yasal Yuk -> Brut). CFE kisiyeBanka eklendi (25 test).
 - 2026-06-25: DILIM-2e CANLI: statu degisince kova OTOMATIK tazelenir (fn_refill_item_burdens + after-update trigger; fn_open_budget ayni motoru cagirir; mevcut kirli kovalar backfill ile temizlendi). KDV statuden gelir (payment_status_defaults.default_vat_rate). Dokum etiketi cinse gore (bordro->SGK isveren payi / makbuz->stopaj).
 - 2026-06-26: Dilim A CANLI — kisiye-banka KDV matrahi brut + statu canli tazeleme + bordro motor-bekliyor etiketi — 24/24 test gecti, CANLI TEYIT BEKLIYOR.
-SIRADAKI: m3 Aciklama tikla-genisle -> Statu kisa etiketler (smm/telif/kira/fatura/bordro/konaklama) -> MMB hesap numarasi kutuphane esleme -> DILIM-3 bordro motoru (ILK ADIM: Tanimlar/cetveller sol-ray iskeleti) -> diger kartlar (1100/1300/1400/1600).
+SIRADAKI: Not mimarisi (Ic Not+Kamu Notu, TASARLANDI 2026-07-01 — detay BUTCE-EKRAN-KARARLARI.md §14, kod/DB HENUZ YOK) -> MMB hesap numarasi kutuphane esleme -> DILIM-3 bordro motoru (ILK ADIM: Tanimlar/cetveller sol-ray iskeleti) -> diger kartlar (1100/1300/1400/1600).
 - 2026-06-30: Carpan DB kolonu (budget_items.repeat, default 1) — kalici; Adet=multiplier, Carpan=repeat (ikisi DB'de ayri). NET/BRUT artik donem-bazli: her donem net = Birim_net x Miktar x Carpan; ana satir toplami = SUM(donemler). CFE imzasindan multiplier PARAMETRESI CIKTI (netToplamDonemli/brutToplamDonemli sadece donemler[+yukler] alir).
 - 2026-06-30: Kolon basliklari: Sebep->Gider, Adet->Miktar (sadece etiket).
 - 2026-06-30: Kayan kolon duzeltildi: artik KDV <td> satirdan kaldirildi, thead ile hizalandi.
@@ -22,6 +22,7 @@ SIRADAKI: m3 Aciklama tikla-genisle -> Statu kisa etiketler (smm/telif/kira/fatu
 - 2026-07-01: DILIM-2f-fix2 (5b51817): units tablosundan adet/kisi SILINDI (Birim sadece periyot cinsi tasir: gun/hafta/ay/bolum/sabit; adet/kisi Miktar kolonunun konusu). Migration 20260701090000. 3.+ donem eklerken acik baslangic degerleri (Birim_net=0, gorunur Miktar=0, Carpan=1, ilk donemden Birim mirasi).
 - 2026-07-01: DILIM-2f-fix3 (aed7cb9): 1->2 donem gecisinde de yeni donem ayni acik degerleri alir (needsExplicitDefaults, esik length>=1). 2->1 cokmede kalan donem satiri KORUNUR (copyLastPeriodToMain — DELETE kaldirildi), boylece tek donem adi ekranda gorunur kalir.
 - 2026-07-01: DILIM-2f TAM. CANLI TEYIT: kullanici uretimde dogruladi (donem ekle/sil/gecis + Birim listesi).
+- 2026-07-01: detail->description_en rename CANLI (22f0840): Gider+Aciklama kolonlari TEK "Aciklama" kolonunda birlesti (budget_items.name); eski detail alani description_en oldu (Kosterden gelen Ingilizce ad, ekranda gorunmez, ileride Ingilizce sunum icin). 2 regresyon bulundu+duzeltildi ayni oturumda: donem-satiri hala eski 12-kolonluk yapidaydi, fazladan bos td -> 11'e cekildi (d1dd80d); statu dropdown kisa etiketler (m4 karari, 2026-06-25'te dokumante edildi ama kod hic uygulamamisti) -> uygulandi (4f9438f). 28/28 test, SYNC OK.
 
 ## Durum
 - HEAD: git log (origin/main) kesin. Repo: github.com/engintosun/prodapp - Canli: prodapp-navy.vercel.app.
@@ -43,9 +44,9 @@ SIRADAKI: m3 Aciklama tikla-genisle -> Statu kisa etiketler (smm/telif/kira/fatu
 - MUHASEVIRE ACIK (PDF amber): 2026 oran guncelligi + reklam tevkifati 3/10 mi 10/10 mu + telif tavan teyidi. YAPISAL model kilitli.
 
 ## KART 1500 kolon-kolon (MODEL kart)
-Kolon seti (KILITLI): Kod - Gider - Aciklama - Statu - Donemler - Birim net - Birim - Miktar - Carpan - Yasal Yuk - Net toplam - Brut toplam.
+Kolon seti (KILITLI, 2026-07-01 guncel — 11 kolon): Kod - Aciklama - Statu - Donemler - Birim net - Birim - Miktar - Carpan - Yasal Yuk - Net toplam - Brut toplam. (Eski Gider+Aciklama ikilisi TEK "Aciklama" kolonunda birlesti — budget_items.name; kalemin Ingilizce adi description_en olarak arka planda, ekranda kolon degil.)
 - Ana satir TEK donemde GIRIS rolu (Birim_net+Birim+Miktar+Carpan girilir), COK donemde SALT-OKUNUR OZET rolu (Birim_net/Birim/Miktar: ayniysa deger, farkliysa "—"; Carpan: SUM; Yasal Yuk/Net/Brut: SUM).
-- Donem-satiri ana tabloyla kolon-kolon hizali (12 ayri td, colSpan yok); sadece COK donemde gorunur, TEK donemde gizli. Birim native select (units cetveli); Sil × onay sorar.
+- Donem-satiri ana tabloyla kolon-kolon hizali (11 ayri td, colSpan yok); sadece COK donemde gorunur, TEK donemde gizli. Birim native select (units cetveli); Sil × onay sorar.
 - Tek<->cok gecisinde degerler otomatik kopyalanir (ana satir <-> ilk/son donem-satiri). Detay: docs/butce/ (DILIM-2f).
 - 1500 model tamam -> diger kartlar (1100/1300/1400/1600) ayni model uzerinden gecilir.
 
@@ -58,7 +59,7 @@ Kolon seti (KILITLI): Kod - Gider - Aciklama - Statu - Donemler - Birim net - Bi
 
 ## Siradaki is
 - m5+m6 (Birim dropdown) TAMAM. m2 (donem-satiri hizalama) DILIM-2f icinde TAMAM.
-- Kalan UI: m3 (Aciklama tikla-genisle), Statu kisa etiketler (smm/telif/kira/fatura/bordro/konaklama), MMB hesap numarasi kutuphane esleme.
+- Kalan UI: Not mimarisi (Ic Not+Kamu Notu popover — detay BUTCE-EKRAN-KARARLARI.md §14, kod/DB bekliyor), MMB hesap numarasi kutuphane esleme. Statu kisa etiketler TAMAM (2026-07-01, 4f9438f).
 - Sonra DILIM-3 bordro motoru -> diger kartlar (1100/1300/1400/1600) -> backlog. Tam sira: docs/IS-SIRASI.md.
 
 ## Acik (kararlasmadi)
