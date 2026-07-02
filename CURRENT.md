@@ -24,6 +24,7 @@ SIRADAKI: MMB hesap numarasi kutuphane esleme -> DILIM-3 bordro motoru (ILK ADIM
 - 2026-07-01: DILIM-2f TAM. CANLI TEYIT: kullanici uretimde dogruladi (donem ekle/sil/gecis + Birim listesi).
 - 2026-07-01: detail->description_en rename CANLI (22f0840): Gider+Aciklama kolonlari TEK "Aciklama" kolonunda birlesti (budget_items.name); eski detail alani description_en oldu (Kosterden gelen Ingilizce ad, ekranda gorunmez, ileride Ingilizce sunum icin). 2 regresyon bulundu+duzeltildi ayni oturumda: donem-satiri hala eski 12-kolonluk yapidaydi, fazladan bos td -> 11'e cekildi (d1dd80d); statu dropdown kisa etiketler (m4 karari, 2026-06-25'te dokumante edildi ama kod hic uygulamamisti) -> uygulandi (4f9438f). 28/28 test, SYNC OK.
 - 2026-07-02: Not mimarisi (Ic Not+Kamu Notu) CANLI: budget_items.internal_note+public_note (goc 20260702120000) + servis (updateItemField internalNote/publicNote) + UI (Aciklama hucresi yaninda not isareti -> alt-sheet, iki textarea ust uste, Yasal Yuk alt-sheet'iyle ayni doga). Detay BUTCE-EKRAN-KARARLARI.md §14 (YAPILDI guncellendi).
+- 2026-07-02: Birim net/Birim kolon sirasi degisti: Birim artik Birim net'ten once (Donemler'in yaninda). Amac: sayisal kolonlarin (Birim net -> Brut toplam) kesintisiz blok olmasi. Baslik + ana satir + donem alt-satiri, uc noktada pozisyon-only swap (mantik/hesap/binding degismedi). Detay BUTCE-EKRAN-KARARLARI.md §1 (KARAR guncellendi).
 
 ## Durum
 - HEAD: git log (origin/main) kesin. Repo: github.com/engintosun/prodapp - Canli: prodapp-navy.vercel.app.
@@ -46,7 +47,7 @@ SIRADAKI: MMB hesap numarasi kutuphane esleme -> DILIM-3 bordro motoru (ILK ADIM
 - MUHASEVIRE ACIK (PDF amber): 2026 oran guncelligi + reklam tevkifati 3/10 mi 10/10 mu + telif tavan teyidi. YAPISAL model kilitli.
 
 ## KART 1500 kolon-kolon (MODEL kart)
-Kolon seti (KILITLI, 2026-07-01 guncel — 11 kolon): Kod - Aciklama - Statu - Donemler - Birim net - Birim - Miktar - Carpan - Yasal Yuk - Net toplam - Brut toplam. (Eski Gider+Aciklama ikilisi TEK "Aciklama" kolonunda birlesti — budget_items.name; kalemin Ingilizce adi description_en olarak arka planda, ekranda kolon degil.)
+Kolon seti (KILITLI, 2026-07-02 guncel — 11 kolon): Kod - Aciklama - Statu - Donemler - Birim - Birim net - Miktar - Carpan - Yasal Yuk - Net toplam - Brut toplam. (Eski Gider+Aciklama ikilisi TEK "Aciklama" kolonunda birlesti — budget_items.name; kalemin Ingilizce adi description_en olarak arka planda, ekranda kolon degil.)
 - Ana satir TEK donemde GIRIS rolu (Birim_net+Birim+Miktar+Carpan girilir), COK donemde SALT-OKUNUR OZET rolu (Birim_net/Birim/Miktar: ayniysa deger, farkliysa "—"; Carpan: SUM; Yasal Yuk/Net/Brut: SUM).
 - Donem-satiri ana tabloyla kolon-kolon hizali (11 ayri td, colSpan yok); sadece COK donemde gorunur, TEK donemde gizli. Birim native select (units cetveli); Sil × onay sorar.
 - Tek<->cok gecisinde degerler otomatik kopyalanir (ana satir <-> ilk/son donem-satiri). Detay: docs/butce/ (DILIM-2f).

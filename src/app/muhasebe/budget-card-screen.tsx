@@ -637,8 +637,8 @@ export function BudgetCardScreen() {
               <th style={thStyle}>Açıklama</th>
               <th style={thStyle}>Statü</th>
               <th style={thStyle}>Dönemler</th>
-              <th style={thNum}>Birim net</th>
               <th style={thStyle}>Birim</th>
+              <th style={thNum}>Birim net</th>
               <th style={thNum}>Miktar</th>
               <th style={thNum}>Çarpan</th>
               <th style={thNum}>Yasal Yük</th>
@@ -748,20 +748,6 @@ export function BudgetCardScreen() {
                         </select>
                       )}
                     </td>
-                    <td style={numStyle}>
-                      {multi ? (
-                        summaryNet !== null ? fmt(summaryNet) : '—'
-                      ) : (
-                        <input
-                          style={cellInputNum}
-                          type="text"
-                          inputMode="decimal"
-                          value={fieldVal(it.id, 'unitNet', it.unitNet)}
-                          onChange={(e) => onNumChange(it.id, 'unitNet', e.target.value)}
-                          onBlur={() => commitField(it.id, 'unitNet')}
-                        />
-                      )}
-                    </td>
                     <td style={tdStyle}>
                       {multi ? (
                         summaryUnitId !== null ? (unitLabelById.get(summaryUnitId) ?? it.unitLabel) : '—'
@@ -777,6 +763,20 @@ export function BudgetCardScreen() {
                             </option>
                           ))}
                         </select>
+                      )}
+                    </td>
+                    <td style={numStyle}>
+                      {multi ? (
+                        summaryNet !== null ? fmt(summaryNet) : '—'
+                      ) : (
+                        <input
+                          style={cellInputNum}
+                          type="text"
+                          inputMode="decimal"
+                          value={fieldVal(it.id, 'unitNet', it.unitNet)}
+                          onChange={(e) => onNumChange(it.id, 'unitNet', e.target.value)}
+                          onBlur={() => commitField(it.id, 'unitNet')}
+                        />
                       )}
                     </td>
                     <td style={numStyle}>
@@ -854,17 +854,6 @@ export function BudgetCardScreen() {
                           <td style={periodRowStyle} />
                           <td style={periodRowStyle} />
                           <td style={periodRowStyle}>{stageById.get(s.id)?.name ?? s.name}</td>
-                          <td style={periodRowNumStyle}>
-                            <input
-                              style={cellInputNum}
-                              type="text"
-                              inputMode="decimal"
-                              value={periodNetVal(it.id, s.id, netOverride, it.unitNet)}
-                              onChange={(e) => onPeriodNetChange(it.id, s.id, e.target.value)}
-                              onBlur={() => commitPeriodNet(it.id, s.id)}
-                              title={netOverride === null ? 'Kalemden miras (değiştirmek için yaz)' : 'Döneme özel net'}
-                            />
-                          </td>
                           <td style={periodRowStyle}>
                             <select
                               style={cellInput}
@@ -877,6 +866,17 @@ export function BudgetCardScreen() {
                                 </option>
                               ))}
                             </select>
+                          </td>
+                          <td style={periodRowNumStyle}>
+                            <input
+                              style={cellInputNum}
+                              type="text"
+                              inputMode="decimal"
+                              value={periodNetVal(it.id, s.id, netOverride, it.unitNet)}
+                              onChange={(e) => onPeriodNetChange(it.id, s.id, e.target.value)}
+                              onBlur={() => commitPeriodNet(it.id, s.id)}
+                              title={netOverride === null ? 'Kalemden miras (değiştirmek için yaz)' : 'Döneme özel net'}
+                            />
                           </td>
                           <td style={periodRowNumStyle}>
                             <input
