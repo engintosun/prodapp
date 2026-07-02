@@ -11,7 +11,7 @@ M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; kart mimari
 - 2026-06-25: DILIM-2d CANLI (commit e9dfe58): KART 1500 ekran Net + Brut + KDV ayri kolon; Yasal Yuk = brut-net (TL); kova cinsi servis->UI borusu; bottom-sheet para selalesi (Net -> +KDV = Kisiye banka odemesi / Yasal Yuk -> Brut). CFE kisiyeBanka eklendi (25 test).
 - 2026-06-25: DILIM-2e CANLI: statu degisince kova OTOMATIK tazelenir (fn_refill_item_burdens + after-update trigger; fn_open_budget ayni motoru cagirir; mevcut kirli kovalar backfill ile temizlendi). KDV statuden gelir (payment_status_defaults.default_vat_rate). Dokum etiketi cinse gore (bordro->SGK isveren payi / makbuz->stopaj).
 - 2026-06-26: Dilim A CANLI — kisiye-banka KDV matrahi brut + statu canli tazeleme + bordro motor-bekliyor etiketi — 24/24 test gecti, CANLI TEYIT BEKLIYOR.
-SIRADAKI: MMB hesap numarasi kutuphane esleme -> DILIM-3 bordro motoru (ILK ADIM: Tanimlar/cetveller sol-ray iskeleti) -> diger kartlar (1100/1300/1400/1600).
+SIRADAKI: DILIM-3 bordro motoru KARAR TURU (5 acik soru, bkz. VERGI-MEVZUATI.md SS7a) -> spec -> MMB hesap numarasi kutuphane esleme (bagimlilik yok, guvenle ertelendi) -> diger kartlar (1100/1300/1400/1600).
 - 2026-06-30: Carpan DB kolonu (budget_items.repeat, default 1) — kalici; Adet=multiplier, Carpan=repeat (ikisi DB'de ayri). NET/BRUT artik donem-bazli: her donem net = Birim_net x Miktar x Carpan; ana satir toplami = SUM(donemler). CFE imzasindan multiplier PARAMETRESI CIKTI (netToplamDonemli/brutToplamDonemli sadece donemler[+yukler] alir).
 - 2026-06-30: Kolon basliklari: Sebep->Gider, Adet->Miktar (sadece etiket).
 - 2026-06-30: Kayan kolon duzeltildi: artik KDV <td> satirdan kaldirildi, thead ile hizalandi.
@@ -26,6 +26,7 @@ SIRADAKI: MMB hesap numarasi kutuphane esleme -> DILIM-3 bordro motoru (ILK ADIM
 - 2026-07-02: Not mimarisi (Ic Not+Kamu Notu) CANLI: budget_items.internal_note+public_note (goc 20260702120000) + servis (updateItemField internalNote/publicNote) + UI (Aciklama hucresi yaninda not isareti -> alt-sheet, iki textarea ust uste, Yasal Yuk alt-sheet'iyle ayni doga). Detay BUTCE-EKRAN-KARARLARI.md §14 (YAPILDI guncellendi).
 - 2026-07-02: Birim net/Birim kolon sirasi degisti: Birim artik Birim net'ten once (Donemler'in yaninda). Amac: sayisal kolonlarin (Birim net -> Brut toplam) kesintisiz blok olmasi. Baslik + ana satir + donem alt-satiri, uc noktada pozisyon-only swap (mantik/hesap/binding degismedi). Detay BUTCE-EKRAN-KARARLARI.md §1 (KARAR guncellendi).
 - 2026-07-02: Yasal Yuk dokumu donem-bazli oldu: cok donemde donem alt-satirindaki Yasal Yuk degeri de tiklanabilir; ayni alt-sheet o donemin dokumunu acar (baslikta donem adi parantezle). State openBurdenItemId -> openBurden {itemId, stageId|null}; stageId=null kalem toplami (eski davranis birebir korunur). Donem hesabi donem satirindaki formulun birebir kopyasi (tek DonemKalemi). Detay BUTCE-EKRAN-KARARLARI.md §3 (donem-bazli dokum maddesi eklendi).
+- 2026-07-02: DILIM-3 bordro motoru icin genis arastirma yapildi (vergi+SGK+is hukuku+sektorel -- personelin TUM yasal gideri kapsaminda; 3-6 aylik proje-istihdami varsayimiyla, standart 12-ay kadrolu DEGIL -- Engin talimati). VERGI-MEVZUATI.md'deki 3 eski hata duzeltildi (istisna "aylik sabit tutar" degil kumulatif; SGK taban/tavan "yaklasik" degil kesin; "%15,5 bakanlik/bolgesel" hatali, 5225 farkli mekanizma) ve yeni bolum eklendi: SS7a (TASLAK). MMB bagimlilik sorusu kapandi (bagimlilik yok, guvenle ertelenebilir -- bu oturumda karara baglandi, SIRADAKI'ye yansidi). Karar turu (5 acik soru, SS7a sonunda) BASLAMADI -> yeni oturumda devam.
 
 ## Durum
 - HEAD: git log (origin/main) kesin. Repo: github.com/engintosun/prodapp - Canli: prodapp-navy.vercel.app.
@@ -43,7 +44,7 @@ SIRADAKI: MMB hesap numarasi kutuphane esleme -> DILIM-3 bordro motoru (ILK ADIM
 - YUK KOVASI: item_burdens kalir; icerik statuye gore dolar (esleme klasoru). Her bilesen CINS tasir (burden_components.kind). CFE cinse gore hesaplar. Stopaj kovada (A reddedildi).
 - BASIT STATU CARPANLARI: SMM net/0.80 (stopaj20+KDV20); Telif net/0.83 (stopaj17+KDV20); Kira net/0.80 (stopaj20, KDV YOK); Fatura/Sirket net=maliyet (KDV20 havuz); Konaklama (KDV%10 havuz).
 - BORDRO: basit % DEGIL, MOTOR (kumulatif matrah + artan GV + SGK tavan/taban + asgari ucret istisnasi + damga). Hardcode YASAK. DILIM-3 fazi; ara donemde bordro kalemleri kova bos = "motor bekliyor".
-- SGK ISVEREN: ham %21.75; %19.75 varsayilan / %15.5 bakanlik-bolgesel / %21.75 borclu. Sirket-Profili checkbox DILIM-3.
+- SGK ISVEREN: ham %21.75 (7566 SK sonrasi); %19.75 varsayilan (imalat-disi 2 puan indirimli) / %21.75 borclu. "%15.5 bakanlik-bolgesel" ONCEKI TASLAKTA HATALIYDI -- 5225 sayili Kanun sabit oran degil, hisse-karsilama mekanizmasi (bkz. VERGI-MEVZUATI.md SS7a). Sirket-Profili checkbox DILIM-3.
 - B20: standart oranlar veri/cetvel (rate_catalog), koda gomulmez; acilista/statu-degisiminde snapshot; kullanici-guncellenebilir (oran-yonetimi ekrani ERTELENDI).
 - MUHASEVIRE ACIK (PDF amber): 2026 oran guncelligi + reklam tevkifati 3/10 mi 10/10 mu + telif tavan teyidi. YAPISAL model kilitli.
 

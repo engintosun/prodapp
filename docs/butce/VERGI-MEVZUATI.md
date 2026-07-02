@@ -82,7 +82,7 @@ Bütçe "Toplam" = **BRÜT** (yapımcı maliyeti). Üç eksen **birleştirilmez*
 - **Kira — şahıs işyeri/mekan (94/5-a): %20.** Kiracı (yapım şirketi) keser, muhtasarla beyan eder. *(Geçmişte pandemi döneminde geçici %10 olmuştu; güncel %20 — doğrula.)*
 - **Şirket faturası: stopaj YOK** (kurum kendi kurumlar vergisini öder).
 - **Bordro:** stopaj değil, artan tarifeli gelir vergisi (GVK 103) + SGK + damga = ayrı bordro motoru (§7 aşağıda).
-- **SGK işveren oranı:** ham %21,75 (film/imalat-dışı). Teşvik senaryoları: **%19,75** varsayılan (düzenli ödeme teşviki); **%15,5** bakanlık/bölgesel; **%21,75** borçlu/teşviksiz (7566 SK + Hazine Teşviki). Şirket-Profili checkbox = DILIM-3 parametre paneli.
+- **SGK işveren oranı:** ham %21,75 (7566 SK sonrası, film/imalat-dışı). Teşvik senaryoları: **%19,75** varsayılan (imalat-dışı 2 puan indirimi, düzenli ödeme şartlı); **%21,75** borçlu/teşviksiz. "%15,5 bakanlık/bölgesel" ifadesi ÖNCEKİ TASLAKTA HATALIYDI — 5225 sayılı Kanun'un Kültür Yatırım/Girişim Belgesi teşviki sabit oran değil, hisse-karşılama mekanizmasıdır (bkz. §7a). Şirket-Profili checkbox = DILIM-3 parametre paneli.
 
 ---
 
@@ -164,7 +164,7 @@ Bu belge, kurulacak şema+CFE kolonlarının gerekçesidir. **Önerilen** alanla
 **Motor girdileri (kişi-başı, aylık):**
 - Net ücret (bütçecinin girdiği)
 - Kümülatif yıllık matrah (o kişi için, o ay başına kadar)
-- Asgari ücret istisnası (2026: aylık brütten düşülür)
+- Asgari ücret istisnası (2026: kümülatif hesaplanır, aylık SABİT TUTAR DEĞİL — bkz. §7a)
 
 **2026 GVK 103 dilimleri:**
 
@@ -176,14 +176,14 @@ Bu belge, kurulacak şema+CFE kolonlarının gerekçesidir. **Önerilen** alanla
 | 1.500.001 – 5.300.000 | %35 | 367.500 |
 | 5.300.001 + | %40 | — |
 
-**SGK 2026 (yaklaşık — doğrulat):**
+**SGK 2026 (taban/tavan KESİNLEŞTİ — 7566 sayılı Kanun, asgari × 9; işveren senaryosu detayı §7a):**
 - Taban: 33.030 TL, tavan: 297.270 TL (asgari × 9)
 - İşçi SGK %14 + işçi işsizlik %1 = %15 (brütten)
-- İşveren SGK %15,5–21,75 (senaryoya göre §2) + işveren işsizlik %2
+- İşveren SGK %19,75 (film sektörü varsayılan, imalat-dışı 2 puan indirimli) veya %21,75 (indirimsiz) + işveren işsizlik %2 — "%15,5" ÖNCEKİ TASLAKTA HATALIYDI, 5225 farklı mekanizma (bkz. §7a)
 
 **Damga vergisi:** %0,759 (brüt ücret üzerinden)
 
-**Asgari ücret istisnası:** Her personelin gelir vergisinden aylık sabit tutar düşülür (2026 tutarı güncellenir).
+**Asgari ücret istisnası:** SABİT TUTAR DEĞİL — asgari ücret matrahına isabet eden vergi kadardır, kendi kümülatifini koşar (Ocak–Haziran ~4.211,33 TL/ay, Temmuz dilim geçişi ~4.537,75 TL, Ağustos–Aralık ~5.615,10 TL/ay — bkz. §7a detay).
 
 **Kümülatif matrah algoritması:** Her ay, o kişinin yıl başından beri kümülatif brüt matrahı hesaplanır; dilim atladıkça o ay hangi dilimden hesaplanacağı değişir → fringe oranı her ay farklı olabilir.
 
@@ -206,3 +206,35 @@ Bu belge, kurulacak şema+CFE kolonlarının gerekçesidir. **Önerilen** alanla
 - Yük taşıma tevkifatı 2/10: istanbulymmo.org.tr.
 
 **Tüm oranlar TASLAK referanstır.** Gerçek bütçe/fatura öncesi mali müşavire doğrulatılmalıdır (Compliance Guard §6 ilkesi: kaynak-tarihli, "doğrulayın" notlu).
+
+---
+
+## 7a. DILIM-3 Genişletilmiş Araştırma — TASLAK (2026-07-02, kararlar bekleniyor)
+
+**Durum:** Geniş araştırma tamamlandı (10 web araması; GİB, SGK, Yargıtay, sektör sendikaları, mali müşavir kaynakları). Karar turu (aşağıdaki açık sorular) BAŞLAMADI — yeni oturumda Engin ile konuşulacak. Bu bölüm TASLAK'tır, kilitli değildir; §7 ve §2'deki eski hatalar (yukarıda) bu araştırmada tespit edilip düzeltildi.
+
+**Kapsam genişletme talimatı (Engin, 2026-07-02):** Bordro motoru yalnız vergi/SGK olarak değil, personelin TÜM yasal gideri olarak tasarlanacak (fazla mesai, hafta tatili/UBGT, kısa-süreli istihdama özgü durumlar, sektörel rejimler dahil). Ayrıca: "sektör proje bazlı çalışır, bir iş max 3/6 ay sürer" — motor 12 aylık kadrolu değil, **3-6 aylık proje istihdamı** varsayımıyla kurulacak.
+
+### Bordro-dışı yasal personel giderleri (yeni katman)
+- **Fazla mesai:** %50 zamlı (×1,5); sözleşme 45 saat altındaysa 45'e kadar %25 (×1,25). **Yıllık tavan 270 saat** — "FM ücrete dahildir" sözleşme hükmü bu tavana kadar geçerli, üstü ayrı alacak doğurur (Yargıtay). Günlük 11 saat mutlak tavan, gece (20:00-06:00) 7,5 saat üstü FM sayılır.
+- **Hafta tatili çalışması:** +1,5 yevmiye. **UBGT (resmi tatil/bayram) çalışması:** +1 yevmiye, serbest zamanla telafi YASAK.
+- **Kısa projede DOĞMAYAN yükler:** kıdem (1 yıl şartı), ihbar (belirli süreli kendiliğinden biter), yıllık izin ücreti (1 yıl şartı) — 3-6 ay penceresinde üçü de sıfır.
+- **Maruziyet notu (kapsam dışı ama bilinsin):** zincirleme yenilenen sözleşme belirsize döner → kıdem+izin+ihbar doğar (dizi sektörünün dava klasiği). 270 saat aşımı ayrı alacak riski.
+
+### Sektörel rejimler
+- **Set işçileri tam 4857 kapsamında** — sektör istisnası yok.
+- **Ek-6 sanatçı kısmi sigortalılığı (5510 ek m.6):** ayda 10 günden az çalışan sanatçı (film/sahne/ses-saz vb., KTB listesi) primini KENDİSİ öder (%32,5 + isteğe bağlı %3 işsizlik) — işverene SGK yükü BİNMEZ. Karşılığında İş Kazası/Meslek Hastalığı güvencesi YOK. Günlük anlaşılan oyuncu pratiğinin resmi karşılığı; bordro motorunun değil, statü taksonomisinin konusu (ileride "oyuncu-Ek6" statü adayı).
+- **5225 Kültür Yatırımları/Girişimleri teşviki (§2'deki eski "%15,5"in gerçek hali):** sabit oran DEĞİL, hisse-karşılama mekanizması. Kültür Girişim Belgesi: işveren SGK hissesinin %25'i, 7 yıl Bakanlıkça karşılanır. Kültür Yatırım Belgesi: %50'si, 3 yıl. Sıra: önce puan indirimi (2 puan), sonra kalan hissenin yüzdesi → 2026 efektif SGK ≈ %14,81 (+%2 işsizlik). Şart: kurumlar vergisi mükellefi + KTB belgesi + borçsuzluk, işyeri bazlı. AÇIK SORU: tipik yapım şirketi bu belgeyi taşıyor mu, sahada fiilen kullanılıyor mu (Engin'in sahası).
+- Asgari ücret desteği: işverene 1.270 TL/ay/kişi (şartlı, İşsizlik Fonu mahsuplu).
+
+### MMB bağımlılığı (kapandı, karar gerektirmiyor)
+Engin'in sorusuna cevap verildi: MMB hesap numarası eşlemesi motor girdilerini tüketmiyor (motor: statü, aylık net, ay sayısı, parametre tabloları yer; MMB: kütüphane kalemlerine dış-format hesap kodu bağlama, raporlama/ihracat tarafı). Teknik bağımlılık yok, sonraya kalması güvenli.
+
+### Açık sorular — yeni oturumda konuşulacak (sırayla)
+1. **Kapsam sınırı:** Motor çekirdeği (SGK+GV+damga+istisna) mi, yoksa FM/hafta tatili/UBGT katmanı da motora girsin mi (örn. kaleme "aylık FM saati" parametresi)? Bütçe hangi dünyayı modellesin: resmi/beyan mı, tam-yasal mı, iki mod mu (bkz. §3.1 beyan≠fiili ile kesişim)?
+2. **Takvim ayı girdisi:** İstisna/dilimler takvime bağlı (Eylül başlayan iş ≠ Mart başlayan iş). Motora "başlangıç ayı" girdisi mi, sabit Ocak varsayımı mı?
+3. **5225 / Ek-6 / asgari ücret desteği:** parametre mimarisine nasıl girsin — mekanizma (Şirket-Profili'nde belge alanı), senaryo listesi, yoksa kapsam dışı mı?
+4. **Kıdem/ihbar/izin/270-saat maruziyeti:** motor kapsamı dışı ama anomali/uyarı notu olarak ekranda görünsün mü (anomali motoru ailesine komşu)?
+5. **Menü yeri:** Tanımlar/cetveller nereye yerleşecek (sol-ray iskeleti konusu, ayrı görüşülecek).
+
+*Kaynaklar (2026-07-02 arastirmasi): GİB 332 No'lu GV Tebliği, 7566 sayılı Kanun (RG 19.12.2025), SGK teşvik rehberleri (Ocak 2026), Yargıtay 7. ve 9. HD içtihatları, Sinema-TV Sendikası ve Oyuncular Sendikası yayınları, 5225 mevzuat seti, muhasebetr/alomaliye/CottGroup uzman kaynakları.*
