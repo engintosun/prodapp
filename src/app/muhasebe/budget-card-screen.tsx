@@ -59,6 +59,10 @@ function fmt(n: number): string {
   return new Intl.NumberFormat('tr-TR', { minimumFractionDigits: dp, maximumFractionDigits: dp }).format(n)
 }
 
+function itemHasNote(it: BudgetItemRow): boolean {
+  return Boolean((it.internalNote && it.internalNote.trim()) || (it.publicNote && it.publicNote.trim()))
+}
+
 function isMultiPeriod(it: BudgetItemRow): boolean {
   return Object.keys(it.periodQty).length > 1
 }
@@ -92,6 +96,7 @@ export function BudgetCardScreen() {
   const [error, setError] = useState<string | null>(null)
   const [reload, setReload] = useState(0)
   const [openBurdenItemId, setOpenBurdenItemId] = useState<string | null>(null)
+  const [openNoteItemId, setOpenNoteItemId] = useState<string | null>(null)
   const savedRef = useRef<Record<string, BudgetItemRow>>({})
   const [buffers, setBuffers] = useState<Record<string, string>>({})
 
@@ -274,6 +279,16 @@ export function BudgetCardScreen() {
         rs.map((r) => (r.id === itemId ? { ...r, periodUnit: { ...r.periodUnit, [stageId]: prevUnit } } : r)),
       )
       addToast(e instanceof Error ? e.message : 'Birim kaydedilemedi', 'error')
+    }
+  }
+
+  async function commitNote(id: string, field: EditableField, value: string) {
+    try {
+      await updateItemField(id, field, value)
+      const norm = value.trim() === '' ? null : value.trim()
+      patchRow(id, { [field]: norm } as Partial<BudgetItemRow>)
+    } catch (e) {
+      addToast(e instanceof Error ? e.message : 'Not kaydedilemedi', 'error')
     }
   }
 
@@ -659,12 +674,26 @@ export function BudgetCardScreen() {
                   <tr>
                     <td style={tdStyle}>{it.itemCode}</td>
                     <td style={tdStyle}>
-                      <input
-                        style={cellInput}
-                        value={it.name}
-                        onChange={(e) => onTextChange(it.id, 'name', e.target.value)}
-                        onBlur={() => commitField(it.id, 'name')}
-                      />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+                        <input
+                          style={cellInput}
+                          value={it.name}
+                          onChange={(e) => onTextChange(it.id, 'name', e.target.value)}
+                          onBlur={() => commitField(it.id, 'name')}
+                        />
+                        <button
+                          type="button"
+                          title={itemHasNote(it) ? 'Not var' : 'Not ekle'}
+                          onClick={() => setOpenNoteItemId(it.id)}
+                          style={{ display: 'flex', alignItems: 'center', flexShrink: 0, background: 'transparent', border: 'none', cursor: 'pointer', padding: 'var(--space-1)', color: itemHasNote(it) ? 'var(--color-primary)' : 'var(--color-text-muted)', opacity: itemHasNote(it) ? 1 : 0.45 }}
+                        >
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+                            <path d="M14 3v6h6" />
+                            <path d="M9 13h6M9 17h4" />
+                          </svg>
+                        </button>
+                      </div>
                     </td>
                     <td style={tdStyle}>
                       <select
@@ -961,6 +990,54 @@ export function BudgetCardScreen() {
                   <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(dKdv)}</span>
                 </div>
               )}
+            </div>
+          </>
+        )
+      })()}
+      {openNoteItemId !== null && (() => {
+        const item = rows.find((r) => r.id === openNoteItemId)
+        if (!item) return null
+        return (
+          <>
+            <div
+              onClick={() => setOpenNoteItemId(null)}
+              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 200 }}
+            />
+            <div
+              key={item.id}
+              onClick={(e) => e.stopPropagation()}
+              style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: 'min(480px, 100%)', maxHeight: '80vh', overflowY: 'auto', borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0', background: 'var(--color-surface)', padding: 'var(--space-4)', paddingBottom: 'var(--space-6)', zIndex: 201, boxShadow: 'var(--shadow-md)' }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-3)' }}>
+                <span style={{ fontSize: 'var(--text-md)', fontWeight: 600, color: 'var(--color-text)' }}>
+                  #{item.itemCode} {item.name}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setOpenNoteItemId(null)}
+                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', fontSize: 'var(--text-lg)', padding: '0 var(--space-1)' }}
+                >
+                  x
+                </button>
+              </div>
+              <label style={{ display: 'block', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', fontWeight: 600, marginBottom: 'var(--space-1)' }}>
+                Ic Not
+              </label>
+              <textarea
+                defaultValue={item.internalNote ?? ''}
+                onBlur={(e) => void commitNote(item.id, 'internalNote', e.target.value)}
+                rows={4}
+                style={{ width: '100%', boxSizing: 'border-box', background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', padding: 'var(--space-2)', fontSize: 'var(--text-sm)', color: 'var(--color-text)', fontFamily: 'inherit', resize: 'vertical', marginBottom: 'var(--space-3)' }}
+              />
+              <label style={{ display: 'block', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', fontWeight: 600, marginBottom: 'var(--space-1)' }}>
+                Kamu Notu
+              </label>
+              <textarea
+                defaultValue={item.publicNote ?? ''}
+                onBlur={(e) => void commitNote(item.id, 'publicNote', e.target.value)}
+                rows={4}
+                style={{ width: '100%', boxSizing: 'border-box', background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', padding: 'var(--space-2)', fontSize: 'var(--text-sm)', color: 'var(--color-text)', fontFamily: 'inherit', resize: 'vertical' }}
+              />
             </div>
           </>
         )

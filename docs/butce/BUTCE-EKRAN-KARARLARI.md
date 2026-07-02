@@ -112,14 +112,16 @@ KDV AYRI KOLON DEĞİL — Yasal Yük dökümüne indi (§7). Birim net/Birim/Mi
 - "Yasal Yükler" = transversal okuma (SGK + stopaj köprü, agregat) — DILIM-2d
 - Beyan/fiili/elden ayrımı = **fringe motoru (DILIM-3)**, bu dilimde değil
 
-## 14. Not mimarisi (İç Not + Kamu Notu) — TASARLANDI 2026-07-01, kod/DB HENÜZ YOK
+## 14. Not mimarisi (Ic Not + Kamu Notu) -- YAPILDI 2026-07-02
 
-**KARAR:** Kalemin yanına (ana ad kolonuna, "Açıklama" — bkz. §1) **iliştirilmiş küçük işaret** (dolu/boş gösterge) — **kolon DEĞİL**. Tıklayınca **popover** açılır (hücreye yapışık, dışına tıkla kapanır — §8'deki salt-bakış pattern'iyle aynı doğa). Popover içinde **iki textarea ÜST ÜSTE, HER ZAMAN birlikte görünür** (sekme/radyo DEĞİL):
-- **İç Not** (`internal_note`): denetim/handoff için; sunumda **ASLA** görünmez.
-- **Kamu Notu** (`public_note`): sunumda (fon/rapor/PDF, RAPORLAR fazı kurulunca) görünür; kullanıcı bu notu "sunuma çık" olarak işaretlemiş demektir.
+Kaleme iki serbest-metin not: Ic Not ve Kamu Notu.
+- Ic Not (internal_note): denetim/handoff notu. Sunumda ASLA gorunmez.
+- Kamu Notu (public_note): sunuma cikabilen gerekce (RAPORLAR fazinda fon/rapor/PDF). Faz 1'de yalniz muhasebe gorur/yazar.
 
-DB: `budget_items.internal_note` + `budget_items.public_note` (yeni migration ile eklenecek). Eski `detail` alanı bu işe KARIŞMAZ — o `description_en` oldu (İngilizce ad, §1), tamamen ayrı kavram.
+Ekran: Aciklama hucresinde ad yaninda TEK isaret (dolu/bos). Ic Not VEYA Kamu Notu doluysa isaret dolu (aksan rengi), ikisi de bossa soluk. Tiklayinca alt-sheet acilir -- Yasal Yuk panosuyla AYNI doga (backdrop, disina tikla kapanir, paragraf 8 salt-bakis pattern'i). Sheet icinde iki textarea ust uste, ikisi de HEP gorunur (sekme/radio degil): sekme gecisi "hangi not acik, bilgi yanlis nota gitti mi" riski tasir, hep-gorunur ilkesine aykiri.
 
-**NEDEN:** Açıklama (eski Açıklama serbest-metin girişi, şimdi kaldırıldı) kolon-genişliğine sıkışıyordu, ne yazarken ne okurken tam metin görünmüyordu. Excel'in "not" kavramı bunu çözmez — hücrenin yanında ayrı bir katman, içerik hâlâ kırpık kalır; KAAPA Excel'den kaçınmalı. Doğru çözüm: önemli bilgi (var/yok) ekranda hep görünür kalsın, içerik kendi alanında (popover) yaşasın. Denetçinin "bu neden böyle?" sorusuna kalem kendi kendine cevap versin. İç/Kamu ayrımı zorunlu çünkü aynı kalemde iki farklı doğada not birikir: bazen sadece dahili bağlam (ör. "Ali Bey ile mail zinciri var"), bazen dışa açık gerekçe (ör. "bu ücret piyasa ortalaması, referans: X"). Sekme/radyo yerine iki textarea üst üste seçildi çünkü sekme değiştirmek "hangi not şu an açık, yanlış yerde bilgi bırakma" riski taşır — KAAPA'nın hep-görünür ilkesine ters.
+Realizasyon notu: ilk tasarimda "hucreye yapisik popover" denmisti; 11-kolon yatay-kaydirmali mobil tabloda popover + iki textarea sikisik kaliyor ve ikinci overlay mekanizmasi mevcut Yasal Yuk alt-sheet'iyle tutarsiz olurdu. Alt-sheet ayni salt-bakis dogasini tutarli ve mobil-dogru verir; kalem kimligi sheet basliginda (#kod + ad).
 
-**Kapsam dışı (bu kararda YOK):** kod implementasyonu, migration dosyası, popover UI'ı — hepsi ayrı bir oturumun işi.
+DB: budget_items.internal_note + budget_items.public_note (nullable text, goc 20260702120000). Eski atil note kolonu onceki gocte dusmustu; bu iki kolon temiz eklemedir. variance_note (B5 fark aciklamasi) AYRI kavram, dokunulmadi. Yeni tablo degil, yeni GRANT/RLS yok; mevcut budget_items RLS (yalniz muhasebe) iki kolonu da kapsar. Iz: trg_log_items (B19, full-snapshot) + trg_upd_items (updated_at) not duzenlemesini otomatik loglar; yeni trigger YOK.
+
+Ileri seam (acik karar, CURRENT.md): public_note ileride kart/kalem-granulunde ortak-calisma yetkilendirmesine acilacak (yalniz-muhasebe RLS o granulde asilir) + RAPORLAR fazinda sunuma cikis kapisi. Faz 1'de kapali.

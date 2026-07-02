@@ -11,7 +11,7 @@ M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; kart mimari
 - 2026-06-25: DILIM-2d CANLI (commit e9dfe58): KART 1500 ekran Net + Brut + KDV ayri kolon; Yasal Yuk = brut-net (TL); kova cinsi servis->UI borusu; bottom-sheet para selalesi (Net -> +KDV = Kisiye banka odemesi / Yasal Yuk -> Brut). CFE kisiyeBanka eklendi (25 test).
 - 2026-06-25: DILIM-2e CANLI: statu degisince kova OTOMATIK tazelenir (fn_refill_item_burdens + after-update trigger; fn_open_budget ayni motoru cagirir; mevcut kirli kovalar backfill ile temizlendi). KDV statuden gelir (payment_status_defaults.default_vat_rate). Dokum etiketi cinse gore (bordro->SGK isveren payi / makbuz->stopaj).
 - 2026-06-26: Dilim A CANLI — kisiye-banka KDV matrahi brut + statu canli tazeleme + bordro motor-bekliyor etiketi — 24/24 test gecti, CANLI TEYIT BEKLIYOR.
-SIRADAKI: Not mimarisi (Ic Not+Kamu Notu, TASARLANDI 2026-07-01 — detay BUTCE-EKRAN-KARARLARI.md §14, kod/DB HENUZ YOK) -> MMB hesap numarasi kutuphane esleme -> DILIM-3 bordro motoru (ILK ADIM: Tanimlar/cetveller sol-ray iskeleti) -> diger kartlar (1100/1300/1400/1600).
+SIRADAKI: MMB hesap numarasi kutuphane esleme -> DILIM-3 bordro motoru (ILK ADIM: Tanimlar/cetveller sol-ray iskeleti) -> diger kartlar (1100/1300/1400/1600).
 - 2026-06-30: Carpan DB kolonu (budget_items.repeat, default 1) — kalici; Adet=multiplier, Carpan=repeat (ikisi DB'de ayri). NET/BRUT artik donem-bazli: her donem net = Birim_net x Miktar x Carpan; ana satir toplami = SUM(donemler). CFE imzasindan multiplier PARAMETRESI CIKTI (netToplamDonemli/brutToplamDonemli sadece donemler[+yukler] alir).
 - 2026-06-30: Kolon basliklari: Sebep->Gider, Adet->Miktar (sadece etiket).
 - 2026-06-30: Kayan kolon duzeltildi: artik KDV <td> satirdan kaldirildi, thead ile hizalandi.
@@ -23,11 +23,13 @@ SIRADAKI: Not mimarisi (Ic Not+Kamu Notu, TASARLANDI 2026-07-01 — detay BUTCE-
 - 2026-07-01: DILIM-2f-fix3 (aed7cb9): 1->2 donem gecisinde de yeni donem ayni acik degerleri alir (needsExplicitDefaults, esik length>=1). 2->1 cokmede kalan donem satiri KORUNUR (copyLastPeriodToMain — DELETE kaldirildi), boylece tek donem adi ekranda gorunur kalir.
 - 2026-07-01: DILIM-2f TAM. CANLI TEYIT: kullanici uretimde dogruladi (donem ekle/sil/gecis + Birim listesi).
 - 2026-07-01: detail->description_en rename CANLI (22f0840): Gider+Aciklama kolonlari TEK "Aciklama" kolonunda birlesti (budget_items.name); eski detail alani description_en oldu (Kosterden gelen Ingilizce ad, ekranda gorunmez, ileride Ingilizce sunum icin). 2 regresyon bulundu+duzeltildi ayni oturumda: donem-satiri hala eski 12-kolonluk yapidaydi, fazladan bos td -> 11'e cekildi (d1dd80d); statu dropdown kisa etiketler (m4 karari, 2026-06-25'te dokumante edildi ama kod hic uygulamamisti) -> uygulandi (4f9438f). 28/28 test, SYNC OK.
+- 2026-07-02: Not mimarisi (Ic Not+Kamu Notu) CANLI: budget_items.internal_note+public_note (goc 20260702120000) + servis (updateItemField internalNote/publicNote) + UI (Aciklama hucresi yaninda not isareti -> alt-sheet, iki textarea ust uste, Yasal Yuk alt-sheet'iyle ayni doga). Detay BUTCE-EKRAN-KARARLARI.md §14 (YAPILDI guncellendi).
 
 ## Durum
 - HEAD: git log (origin/main) kesin. Repo: github.com/engintosun/prodapp - Canli: prodapp-navy.vercel.app.
 - KURULU/CALISIYOR: auth + cok-proje login - saha fis girisi - yonlendirme/duzeltme - davet/rol - reviewer onay/red - proje olusturma + butce tablolari + servisler - onboarding UI - BUTCE DB TEMELI - fn_open_budget CANLI (statu-fill) - CFE (brutBirim/satirToplam/satirToplamDonemli/kdvAyristir/zincirToplam/dokum/brutStopaj/netToplamDonemli/brutToplamDonemli/kisiyeBanka, 28/28) - KART 1500 ekran TAM (donem-bazli geometri + Net+Brut ayri kolon + KDV Yasal Yuk dokumunde selale satiri + Yasal Yuk TL + statu->kova canli senkron + KDV matrahi=brut + bordro motor-bekliyor etiketi).
 - ODEME-STATUSU SEMASI CANLI: budget_items.payment_status (6 deger CHECK) + stopaj_rate (null=miras, override) + vat_deductible; budget_item_periods.unit_net_override; payment_status_defaults cetveli (applies_sgk + default_vat_rate; TASLAK, muhasebe teyidi bekliyor).
+- NOT KOLONLARI CANLI: budget_items.internal_note + public_note (nullable text, goc 20260702120000). Trigger-free (mevcut B19 izi + updated_at kapsar). RLS mevcut budget_items (yalniz muhasebe).
 - YUK KOVASI CINS CANLI (2a-2e): burden_components.kind (additive/deduction); payment_status_burdens eslemesi (smm/kira->stopaj, telif->stopaj_telif; sirket/konaklama bos; bordro motor bekliyor); rate_catalog tek oran evi (stopaj 20, stopaj_telif 17, ... TASLAK). Statu degisince fn_refill + trigger ile kova yeniden snapshot (acilis ve statu-degisimi TEK motor). Servis kovayi kind ile ceker; CFE cinse gore brut (additive x(1+SUM) / deduction /(1-SUM)).
 - KART MIMARISI KILITLI: 5 etap, kart=departman + "kullanan sahiplenir", kalem motoru + gorunurluk katmanlari + Compliance Guard. Kilitli kartlar: 1100,1300,1400,1500,1600. Detay: KART-KATALOGU.md.
 
@@ -59,10 +61,12 @@ Kolon seti (KILITLI, 2026-07-01 guncel — 11 kolon): Kod - Aciklama - Statu - D
 
 ## Siradaki is
 - m5+m6 (Birim dropdown) TAMAM. m2 (donem-satiri hizalama) DILIM-2f icinde TAMAM.
-- Kalan UI: Not mimarisi (Ic Not+Kamu Notu popover — detay BUTCE-EKRAN-KARARLARI.md §14, kod/DB bekliyor), MMB hesap numarasi kutuphane esleme. Statu kisa etiketler TAMAM (2026-07-01, 4f9438f).
+- Not mimarisi (Ic Not+Kamu Notu) TAMAM (2026-07-02). Statu kisa etiketler TAMAM (2026-07-01, 4f9438f).
+- Kalan UI: MMB hesap numarasi kutuphane esleme.
 - Sonra DILIM-3 bordro motoru -> diger kartlar (1100/1300/1400/1600) -> backlog. Tam sira: docs/IS-SIRASI.md.
 
 ## Acik (kararlasmadi)
+- Kart/kalem-granulunde ortak-calisma yetkilendirmesi: public_note bu granulde sunuma/paylasima acilacak; yalniz-muhasebe RLS o granulde asilir; RAPORLAR cikis-kapisi ile ayni seam. Faz 1 kapali.
 - Muhasebe oran teyitleri (amber PDF): reklam tevkifati + 2026 oran guncelligi + telif tavan.
 - Tanimlar/cetveller bolumu (sol-ray): rate_catalog + payment_status_defaults + payroll-base + bordro parametreleri burada yasar; DILIM-3 ILK ADIMI (Engin onayli).
 - Oran-yonetimi ekrani ERTELENDI (Tanimlar bolumu icinde, IS-SIRASI'da).

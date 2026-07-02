@@ -32,6 +32,8 @@ export interface BudgetItemRow {
   periodUnit: Record<string, string | null>
   periodRepeat: Record<string, number | null>
   paymentStatus: string | null
+  internalNote: string | null
+  publicNote: string | null
 }
 
 export interface CardView {
@@ -42,9 +44,11 @@ export interface CardView {
   items: BudgetItemRow[]
 }
 
-export type EditableField = 'name' | 'descriptionEn' | 'unitNet' | 'multiplier' | 'repeat' | 'vatRate' | 'paymentStatus' | 'unitId'
+export type EditableField = 'name' | 'descriptionEn' | 'unitNet' | 'multiplier' | 'repeat' | 'vatRate' | 'paymentStatus' | 'unitId' | 'internalNote' | 'publicNote'
 
 const FIELD_COL: Record<EditableField, string> = {
+  internalNote: 'internal_note',
+  publicNote: 'public_note',
   name: 'name',
   descriptionEn: 'description_en',
   unitNet: 'unit_net',
@@ -131,7 +135,7 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
 
   const { data: items, error: ei } = await supabase
     .from('budget_items')
-    .select('id, item_code, name, description_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status')
+    .select('id, item_code, name, description_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, public_note')
     .eq('group_id', grp.id)
     .eq('is_active', true)
     .order('sort_order')
@@ -204,6 +208,8 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
     periodUnit: periodUnitByItem[i.id as string] ?? {},
     periodRepeat: periodRepeatByItem[i.id as string] ?? {},
     paymentStatus: typeof i.payment_status === 'string' ? i.payment_status : null,
+    internalNote: (i.internal_note as string | null) ?? null,
+    publicNote: (i.public_note as string | null) ?? null,
   }))
 
   return { budgetId, groupId: grp.id as string, cardName: grp.name as string, stages, items: rows }
@@ -236,6 +242,9 @@ export async function updateItemField(
     const v = String(value).trim()
     if (!v) throw new Error('Birim boş olamaz')
     payload = { unit_id: v }
+  } else if (field === 'internalNote' || field === 'publicNote') {
+    const noteText = String(value).trim()
+    payload = { [FIELD_COL[field]]: noteText === '' ? null : noteText }
   } else {
     const n = typeof value === 'number' ? value : Number(String(value).replace(',', '.'))
     if (!Number.isFinite(n)) throw new Error('Geçersiz sayı')
