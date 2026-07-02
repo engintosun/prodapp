@@ -34,6 +34,7 @@ KDV AYRI KOLON DEĞİL — Yasal Yük dökümüne indi (§7). Birim/Birim net/Mi
   - Konaklama → yük 0 (KDV %10 Yasal Yük dökümünde havuz satırı)
 
 - **KDV:** Yasal Yük hücresine tıklanınca açılan bottom-sheet dökümünde şelale satırı (Net → +stopaj/SGK → +KDV = kişiye banka ödemesi / brüt). Geri-alınabilir havuz olarak gösterilir; genel toplama GİRMEZ, maliyete GİRMEZ. Bordroda KDV yok, satır atlanır.
+- **Dönem-bazlı döküm (2026-07-02):** Çok dönemde dönem alt-satırındaki Yasal Yük değeri de tıklanabilir; aynı bottom-sheet o dönemin dökümünü açar (başlıkta dönem adı parantezle). Ana satır = kalem toplamı dökümü (tüm dönemler), dönem satırı = yalnız o dönemin dökümü; hesap dönem satırıyla birebir aynı formül (tek DonemKalemi). Tek dönemde davranış değişmedi.
 
 **NEDEN:** Sahada anlaşma net üzerindendir; brütü sistem türetir. Tek "yük %" çarpanı yetmez: SGK ekleme, stopaj kesinti — iki farklı yön. Toplam = Brüt çünkü yapımcının cebinden çıkan odur. KDV standart halde geri alınır (maliyet değil). Ayrı kolon fikri (2026-06-25) DILIM-2f'de test edilince fazladan gürültü yarattı: KDV zaten Yasal Yük'ün cins-şelalesi içinde doğal yerini alıyor (stopaj/SGK dökümünün altında son satır). Ayrı kolon kaldırıldı; kavram Yasal Yük dökümünde yaşar. Detay: VERGI-MEVZUATI.md §1c.
 

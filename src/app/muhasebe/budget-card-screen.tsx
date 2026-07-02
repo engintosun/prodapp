@@ -95,7 +95,7 @@ export function BudgetCardScreen() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [reload, setReload] = useState(0)
-  const [openBurdenItemId, setOpenBurdenItemId] = useState<string | null>(null)
+  const [openBurden, setOpenBurden] = useState<{ itemId: string; stageId: string | null } | null>(null)
   const [openNoteItemId, setOpenNoteItemId] = useState<string | null>(null)
   const savedRef = useRef<Record<string, BudgetItemRow>>({})
   const [buffers, setBuffers] = useState<Record<string, string>>({})
@@ -812,7 +812,7 @@ export function BudgetCardScreen() {
                         <span style={{ color: 'var(--color-text-muted)', fontStyle: 'italic', fontSize: 'var(--text-xs)' }}>motor bekliyor</span>
                       ) : brutToplam > netToplam ? (
                         <button
-                          onClick={() => setOpenBurdenItemId(it.id)}
+                          onClick={() => setOpenBurden({ itemId: it.id, stageId: null })}
                           style={{
                             background: 'transparent',
                             border: 'none',
@@ -899,7 +899,27 @@ export function BudgetCardScreen() {
                               title={repeatOverride === null ? 'Kalemden miras (değiştirmek için yaz)' : 'Döneme özel çarpan'}
                             />
                           </td>
-                          <td style={periodRowNumStyle}>{donemBrut > donemNet ? fmt(donemYasalYuk) : '—'}</td>
+                          <td style={periodRowNumStyle}>
+                            {donemBrut > donemNet ? (
+                              <button
+                                onClick={() => setOpenBurden({ itemId: it.id, stageId: s.id })}
+                                style={{
+                                  background: 'transparent',
+                                  border: 'none',
+                                  cursor: 'pointer',
+                                  color: 'var(--color-primary)',
+                                  fontSize: 'var(--text-sm)',
+                                  fontVariantNumeric: 'tabular-nums',
+                                  padding: 0,
+                                  textDecoration: 'underline',
+                                }}
+                              >
+                                {fmt(donemYasalYuk)}
+                              </button>
+                            ) : (
+                              '—'
+                            )}
+                          </td>
                           <td style={periodRowNumStyle}>{fmt(donemNet)}</td>
                           <td style={periodRowNumStyle}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
@@ -930,10 +950,22 @@ export function BudgetCardScreen() {
           </tbody>
         </table>
       </div>
-      {openBurdenItemId !== null && (() => {
-        const item = rows.find((r) => r.id === openBurdenItemId)
+      {openBurden !== null && (() => {
+        const item = rows.find((r) => r.id === openBurden.itemId)
         if (!item) return null
-        const dDonemler = buildDonemler(item)
+        const sheetStage = openBurden.stageId !== null ? stageById.get(openBurden.stageId) : null
+        let dDonemler: DonemKalemi[]
+        if (openBurden.stageId !== null) {
+          const sid = openBurden.stageId
+          const qty = item.periodQty[sid] ?? 0
+          const netOverride = item.periodNet[sid] ?? null
+          const effectiveNet = netOverride ?? item.unitNet
+          const repeatOverride = item.periodRepeat[sid] ?? null
+          const effectiveRepeat = repeatOverride ?? item.repeat
+          dDonemler = [{ net: effectiveNet, qty, carpan: effectiveRepeat }]
+        } else {
+          dDonemler = buildDonemler(item)
+        }
         const dYukler: Yuk[] = item.burdens.map((b) => ({ ratePercent: b.rate, kind: b.kind }))
         const dNet = netToplamDonemli(dDonemler)
         const dBrutYuk = brutToplamDonemli(dDonemler, dYukler)
@@ -941,7 +973,7 @@ export function BudgetCardScreen() {
         return (
           <>
             <div
-              onClick={() => setOpenBurdenItemId(null)}
+              onClick={() => setOpenBurden(null)}
               style={{
                 position: 'fixed',
                 inset: 0,
@@ -969,10 +1001,10 @@ export function BudgetCardScreen() {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-3)' }}>
                 <span style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--color-text)' }}>
-                  {item.name}
+                  {item.name}{sheetStage ? ' (' + sheetStage.name + ')' : ''}
                 </span>
                 <button
-                  onClick={() => setOpenBurdenItemId(null)}
+                  onClick={() => setOpenBurden(null)}
                   style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', fontSize: 'var(--text-lg)', padding: '0 var(--space-1)' }}
                 >
                   ×
