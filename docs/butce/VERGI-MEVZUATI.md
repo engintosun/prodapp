@@ -28,7 +28,7 @@ Statü, KART-KATALOGU §4.8'deki ödeme-statüsü boyutudur. Her işçilik/hizme
 
 | # | Ödeme statüsü | KDV oranı | Stopaj (GV tevkifat) | Net → Brüt (stopaj şişmesi) | SGK fringe | Not |
 |---|---|---|---|---|---|---|
-| 1 | **Telif — eser belgeli** (GVK 18) | %0 veya %20 | **%17** (GVK 94/2-a) | Brüt = Net / 0,83 | Binmez | Eser belgesi (Kültür Bak.) ŞART; senarist/besteci/YÖNETMEN kapsar, OYUNCULUK DEĞİL; tavan 5,3M (§1b); KDV alıcı sorumlu (2 no'lu) |
+| 1 | **Telif — eser belgeli** (GVK 18) | %0 veya %20 | **%17** (GVK 94/2-a) | Brüt = Net / 0,83 | Binmez | FSEK uyumlu yazılı eser sözleşmesi önerilir (belge şart değil); senarist/besteci/YÖNETMEN kapsar, OYUNCULUK DEĞİL; tavan 5,3M (§1b); KDV üç halli (bkz. 1b) |
 | 2 | **Serbest meslek — şahıs** (SMM) | %20 | **%20** (GVK 94/2-b) | Brüt = Net / 0,80 | Binmez | Yük faturada; en yaygın şahıs ödemesi |
 | 3 | **Şirket faturası** (Ltd/AŞ) | %20 | **%0** | Brüt = Net (KDV ayrı) | Binmez | KDV indirilebilir (koşullu, §3) |
 | 4 | **Bordro** (kadrolu) | — (ücret KDV dışı) | Artan tarife (GVK 103) | (basit şişme YOK — ayrı motor) | **Biner** | İşveren SGK payı + damga; gerçek fringe. Fringe motoru §8 PARK |
@@ -39,16 +39,7 @@ Statü, KART-KATALOGU §4.8'deki ödeme-statüsü boyutudur. Her işçilik/hizme
 **Şişme formülünün mantığı:** Stopaj brütten kesiliyorsa ve alacaklıya **net** garanti ediliyorsa: Brüt × (1 − stopaj) = Net → **Brüt = Net / (1 − stopaj)**. Örn. %17 → /0,83; %20 → /0,80. (Kaynak doğrulama: GVK 94/2-a telif %17; serbest meslek %20.)
 
 ### 1b. TELİF KİMDE GEÇERLİ, KİMDE DEĞİL — GİB özelgesi (KİLİT, kaynak doğrulandı 2026-06-24)
-Resmî dayanak: İstanbul VDB özelgesi 22.08.2013, sayı 11395140-105[230-2012/VUK-1-...]-1291 (dizi/film senarist–besteci–yönetmen ödemeleri). Üç dal:
-- **Eser belgesi VARSA** (Kültür ve Turizm Bak. / İl Kültür Müd. "eser" yazısı) → telif **%17** (GVK 94/2-a).
-- **Eser belgesi YOKSA** → serbest meslek **%20** (GVK 94/2-b).
-- **İşçi-işveren sözleşmesi VARSA** (emir + devamlılık + bağlılık) → **ücret/bordro** (kişi başka yerde çalışsa da).
-
-**Kapsar:** senarist, besteci, **YÖNETMEN** (eser belgesiyle). **Kapsamaz:** **OYUNCULUK** (film/dizi/reklam), seslendirme, dublaj, sunuculuk — eser listesinde YOK → telif **alamaz** → SMM %20 veya bordro. (Kaynak: parasut.com SMMM yazısı + alomaliye vergi müfettişi makalesi.)
-
-**2026 istisna tavanı: 5.300.000 TL.** 1 TL bile aşılırsa istisna TÜMDEN düşer → kazanç artan tarifeyle %40'a kadar vergilenir + KDV girer. Yıl içi kümülatif takip.
-
-**KDV:** GVK 18 telifte KDV alıcı sorumlu sıfatıyla (2 no'lu KDV); stopaj dahil bedel üzerinden hesaplanır AMA stopaj matrahına girmez (KDV ayrı eksen). Arızi (süreklilik yok) işte KDV uygulanmaz; gider pusulası.
+Telif kapsamı FSEK md.8'den gelir — sinema eserinde yönetmen, senaryo yazarı, diyalog yazarı ve özgün müzik bestecisi kanunen birlikte eser sahibidir; Kültür Bakanlığı eser belgesi ŞART DEĞİLDİR (kanuni dayanağı yok; Engin düzeltmesi 2026-07-03). FSEK uyumlu yazılı eser sözleşmesi önerilir; filmin kayıt-tescilinde eser sahibi olarak yer almak ispatı tamamlar (tescil yapımcının zorunlu işlemidir). İdare pratiği uyarısı: özelge, eser niteliği belgelenemezse yüzde 20 (94/2-b) öngörür — belgesiz yüzde 17 tarhiyat riskidir (uygunluk uyarısı). Kapsamaz: oyunculuk, seslendirme, dublaj, sunuculuk. Bağımlılık sınırı: emir-talimat + devamlılık + bağlılık varsa ücret sayılır. İstisna tavanı (2026: 5.300.000 TL) ödeme yapanın stopajını DEĞİŞTİRMEZ — GVK 18 son fıkra gereği istisnanın tevkifata şümulü yoktur; tavan aşımı eser sahibinin yıllık beyan konusudur, yapımcı yasal yükünü etkilemez (bilgi notu). Telif KDV üç hal (KDV kişiye asla ödenmez, kişiye banka = NET): (1) arızi teslim KDV konusu dışı, KDV sıfır; (2) sürekli faaliyet + münhasıran GVK 94 mükelleflerine teslim: yapımcı gider pusulası keser, stopaj dahil brüt matrah üzerinden KDV hesaplayıp sorumlu sıfatıyla 2 no'lu beyannameyle devlete öder, aynı dönem 1 no'lu beyannamede indirir; hesaplanan KDV stopaj matrahına girmez; (3) kişi kendi KDV mükellefiyetiyle makbuz keserse kalem telif değil SMM statüsü + stopaj yüzde 17 override olur. Dayanak: satıcıdan alınan üç-halli yazı (tebliğ mekanizması); yazı eksikliği uygunluk uyarısı adayıdır.
 
 ### 1c. ÜÇ EKSEN MODELİ + STATÜ → ÇARPAN TABLOSU (KİLİTLİ, 2026-06-25)
 
@@ -58,7 +49,7 @@ Bütçe "Toplam" = **BRÜT** (yapımcı maliyeti). Üç eksen **birleştirilmez*
 |---|---|---|---|
 | **SGK / işveren** | Ekleme (additive): Brüt = Net × (1 + oran) | Yalnız bordro | Net × 1,2175 (varsayılan) |
 | **Stopaj** | Çarpan kesinti: Brüt = Net / (1 − oran) | SMM / Telif / Kira | Net/0,80 veya /0,83 veya /0,80 |
-| **KDV** | Ayrı havuz, geri alınabilir | Tüm faturalı | Toplama/yüke GİRMEZ |
+| **KDV** | Ayrı havuz, geri alınabilir | Tüm faturalı | Nakit ilkesi: cepten çıkan KDV maliyettir, genel toplama girer; kendi kolonunda ayrı izlenir (bkz. bölüm 3) |
 
 **Statü → Brüt çarpan tablosu (basit):**
 
@@ -88,13 +79,9 @@ Bütçe "Toplam" = **BRÜT** (yapımcı maliyeti). Üç eksen **birleştirilmez*
 
 ## 3. KDV — ne zaman gerçek maliyet, ne zaman değil (KRİTİK)
 
-**Genel kural (standart durum):** Yapım şirketi KDV mükellefiyse, ödediği KDV = **indirilecek KDV** → hesapladığı KDV'den düşülür. Yani standart halde KDV **nihai maliyet DEĞİL**. AMA:
-- **Nakit anında ÖDENİR** → nakit/brüt akışında görünür (sonra mahsup/iade ile geri döner). Bu yüzden brüt toplam KDV'yi içerir.
-- **İstisna/muafiyetli işte indirilemez → GERÇEK MALİYET olur.** Örnekler: KDV'den müstesna teslim/hizmet, ihracat-kayıtlı iş, bazı kamu/fon işleri. Çıktısı KDV'siz olan işte yüklenilen KDV indirilemez, kalemde kalıcı maliyet olarak durur.
+**KAAPA KARARI (KİLİT, 2026-07-03, Engin):** Bütçe nakit dünyasıdır — projenin cebinden çıkan her tutar, KDV dahil, maliyettir ve genel toplama girer. KDV kendi kolonunda ayrı izlenir; bu ayrım maliyetten düşmek için değil, fon/rapor görünümlerinde KDV'siz toplam türetmek ve finansman planında geri-dönüş bilgisini taşımak içindir. KDV'nin indirilip indirilmemesi bütçe hesabının konusu DEĞİLDİR — muhasebe/finansman dünyasının sonraki olayıdır. Ekran davranışı (2026-06-30: brüt = net + stopaj/SGK + KDV) bu ilkeyle hizalıdır. Fon sunumu: Eurimages giderleri KDV'siz ister (geri alınamayan hariç) — türetilmiş rapor görünümü, RAPORLAR fazı. vat_deductible alanının kaderi motor tartışmasına bırakıldı. Devreden KDV riski proje-düzeyi uyarıdır, kalem hesabına girmez.
 
-**KAAPA kararı (öneri):** Kaleme **"KDV indirilebilir mi?"** bayrağı.
-- İndirilebilir → net toplam KDV'siz; KDV yalnız brüt/nakit görünümünde (geçici çıkış).
-- İndirilemez → KDV gerçek satır maliyeti, net tarafa da yansır.
+**KAAPA KARARI — vat_deductible'ın kaderi (2026-07-03, ikinci tur):** `budget_items.vat_deductible` alanı KORUNUR (Boolean, varsayılan true; mevcut alan, migration gerekmez); bütçe motoru bu alanı OKUMAZ — KDV her durumda toplamdadır. Alan iki türetilmiş fonksiyona girdi verir: (1) fon raporu: genel toplam eksi indirilebilir satırların KDV'si = KDV'siz proje raporu (CFE'den anlık türetim, saklanmaz; indirilemeyen satırların KDV'si raporda maliyet olarak kalır — Eurimages kuralıyla uyumlu); (2) nakit akış projeksiyonu: indirilebilir satırlardan biriken tutar İndirilecek KDV havuzu — geri dönüş çıktı KDV'sine bağlı MAHSUP olarak simüle edilir, nakden iade vaat edilmez; çıktı faturası yoksa devreden KDV olarak taşınır ve dönmeyen KDV uyarısı düşer. Not: binek araç kira/yakıt KDV'si kanunen indirilemez (KDVK 30/b) — ilgili satırda bayrak false olmalı; uygunluk uyarı adayı.
 
 **KDV oranları (doğrulandı, 2026):** genel **%20** (07.07.2023'ten); indirimli **%10** (konaklama, yemek, sağlık, eğitim, kültürel); **%1** (temel gıda). Telif eseri %0 veya %20 (kapsamına göre).
 
@@ -115,6 +102,8 @@ Türk yapımında yaygın pratik: resmi evrakta kaşe **asgari ücretten** göst
 ---
 
 ## 4. KDV TEVKİFATI — sektörel kalemler (faturalı hizmet alımı)
+
+**Kapsam kararı (2026-07-03):** KDV tevkifatı bütçe motorunun kapsamı DIŞINDADIR — toplam maliyeti ve KDV tutarını değiştirmez, yalnız ödeme rotasını böler (satıcı / devlet 2 no'lu); her iki parça da indirilecek KDV havuzuna girer. Eşik (2026: 12.000 TL/işlem) ve oran denetimi fiş/gerçekleşen düzeyinde yaşar (Faz-1 fiş dünyası, receipts.budget_item_id köprüsü + uygunluk uyarı adayı); bütçe tarafında yalnız kalem-türü bazlı pasif bilgi notu olabilir. Zamanlama detayı (tevkif edilen kısım ertesi ay devlete ödenir) cash-flow projeksiyonu notudur.
 
 KDV tevkifatı = satıcının hesapladığı KDV'nin bir kısmını **alıcının** kesip doğrudan vergi dairesine yatırması (2 no'lu KDV beyannamesi). **Önemli: tevkifat statüden (Bordro/SMM vb.) DEĞİL, faturalı hizmetin TÜRÜNDEN + alıcının kimliğinden + eşikten doğar.** Kalem-bazlı bir "yük" değil, işlem/fatura düzeyinde ayrı bir boyut.
 
@@ -199,6 +188,8 @@ Bu belge, kurulacak şema+CFE kolonlarının gerekçesidir. **Önerilen** alanla
 
 ## 6. KAYNAKLAR (doğrulama, Haziran 2026)
 
+**Compliance Guard — ürün konumlandırma (KİLİT, 2026-07-03):** "KAAPA bir ERP ve bütçe planlama aracıdır; kesin beyanname/bordro üreticisi (mali müşavir yazılımları) değildir. Buradaki hesaplamalar teşhis ve simülasyon amaçlıdır; oranlar kaynak-tarihli referanstır, resmi beyan ve bordro öncesi mali müşavirinizce doğrulanmalıdır." Gösterim yeri açık soru 4 kapsamında kararlaştırılacak. Konumlandırma notu: KAAPA resmi kayıt/beyan katmanının rakibi değildir, yapım karar katmanıdır; zincirde ardışıktırlar.
+
 - KDV oranları (%1/10/20, genel %20 07.07.2023): GİB / KDV tebliğleri; kdvhesaplama.org, dopigo.com, e-faturamcepte.com (Ocak–Haziran 2026).
 - Telif stopajı %17 (GVK 94/2-a) + net/0,83 mekaniği: adenymm.com.tr, muhasebetr.com (GVK 18 + KDV genel tebliği örneği).
 - Serbest meslek stopajı %20 (GVK 94/2-b): muhasebedunyasi.com, gureli.com.tr.
@@ -214,6 +205,8 @@ Bu belge, kurulacak şema+CFE kolonlarının gerekçesidir. **Önerilen** alanla
 **Durum:** Geniş araştırma tamamlandı (10 web araması; GİB, SGK, Yargıtay, sektör sendikaları, mali müşavir kaynakları). Karar turu (aşağıdaki açık sorular) BAŞLAMADI — yeni oturumda Engin ile konuşulacak. Bu bölüm TASLAK'tır, kilitli değildir; §7 ve §2'deki eski hatalar (yukarıda) bu araştırmada tespit edilip düzeltildi.
 
 **Kapsam genişletme talimatı (Engin, 2026-07-02):** Bordro motoru yalnız vergi/SGK olarak değil, personelin TÜM yasal gideri olarak tasarlanacak (fazla mesai, hafta tatili/UBGT, kısa-süreli istihdama özgü durumlar, sektörel rejimler dahil). Ayrıca: "sektör proje bazlı çalışır, bir iş max 3/6 ay sürer" — motor 12 aylık kadrolu değil, **3-6 aylık proje istihdamı** varsayımıyla kurulacak.
+
+**Mimari/parametre ayrımı ilkesi (2026-07-03):** Motor yalnız mekanizma bilir (kümülatif dilim, ters-bordro denklemi, istisna mahsubu, senaryo formülleri); tüm mevzuat değerleri `rate_catalog`'da yürürlük-dönemli satırlar olarak yaşar (valid_from/valid_to mantığı). Kanun değişikliği cetvele satır eklemektir, matematiksel mimariye dokunulmaz; ay-bazlı hesap o ayın yürürlük parametresiyle yapılır; mühürlü bütçeleri açılışta-snapshot deseni korur.
 
 ### Bordro-dışı yasal personel giderleri (yeni katman)
 - **Fazla mesai:** %50 zamlı (×1,5); sözleşme 45 saat altındaysa 45'e kadar %25 (×1,25). **Yıllık tavan 270 saat** — "FM ücrete dahildir" sözleşme hükmü bu tavana kadar geçerli, üstü ayrı alacak doğurur (Yargıtay). Günlük 11 saat mutlak tavan, gece (20:00-06:00) 7,5 saat üstü FM sayılır.
@@ -231,10 +224,15 @@ Bu belge, kurulacak şema+CFE kolonlarının gerekçesidir. **Önerilen** alanla
 Engin'in sorusuna cevap verildi: MMB hesap numarası eşlemesi motor girdilerini tüketmiyor (motor: statü, aylık net, ay sayısı, parametre tabloları yer; MMB: kütüphane kalemlerine dış-format hesap kodu bağlama, raporlama/ihracat tarafı). Teknik bağımlılık yok, sonraya kalması güvenli.
 
 ### Açık sorular — yeni oturumda konuşulacak (sırayla)
-1. **Kapsam sınırı:** Motor çekirdeği (SGK+GV+damga+istisna) mi, yoksa FM/hafta tatili/UBGT katmanı da motora girsin mi (örn. kaleme "aylık FM saati" parametresi)? Bütçe hangi dünyayı modellesin: resmi/beyan mı, tam-yasal mı, iki mod mu (bkz. §3.1 beyan≠fiili ile kesişim)?
-2. **Takvim ayı girdisi:** İstisna/dilimler takvime bağlı (Eylül başlayan iş ≠ Mart başlayan iş). Motora "başlangıç ayı" girdisi mi, sabit Ocak varsayımı mı?
-3. **5225 / Ek-6 / asgari ücret desteği:** parametre mimarisine nasıl girsin — mekanizma (Şirket-Profili'nde belge alanı), senaryo listesi, yoksa kapsam dışı mı?
-4. **Kıdem/ihbar/izin/270-saat maruziyeti:** motor kapsamı dışı ama anomali/uyarı notu olarak ekranda görünsün mü (anomali motoru ailesine komşu)?
-5. **Menü yeri:** Tanımlar/cetveller nereye yerleşecek (sol-ray iskeleti konusu, ayrı görüşülecek).
+1. **Kapsam sınırı:** Motor çekirdeği (SGK+GV+damga+istisna) mi, yoksa FM/hafta tatili/UBGT katmanı da motora girsin mi (örn. kaleme "aylık FM saati" parametresi)? Bütçe hangi dünyayı modellesin: resmi/beyan mı, tam-yasal mı, iki mod mu (bkz. §3.1 beyan≠fiili ile kesişim)? AÇIK (sektör-standardı-varsayılan önerisi masada).
+2. **Takvim ayı girdisi — KAPANDI (2026-07-03):** Motor penceresi kalemin kendi verisinden türetilir (dönem tarihleri + Birim/Miktar/Çarpan); kümülatif her proje istihdamında sıfırdan ve kişi bazlı koşar (311 No'lu Tebliğ); uzama muhasebe revizyonudur; 12-ay senaryo tasarım hedefi değildir.
+3. **5225 / Ek-6 / asgari ücret desteği — KAPANDI (2026-07-03), üç karar:**
+   - (a) Şirket-Profili tek SGK senaryosu seçimi: Borçlu %21,75 / Standart %19,75 varsayılan / Kültür Girişim Belgeli / Kültür Yatırım Belgeli; efektif oranlar `rate_catalog` girdilerinden formülle türetilir, sabit yazılmaz; şart-ihlali ve işyeri-kapsam uyarıları uygunluk katmanında.
+   - (b) Asgari ücret desteği bütçeye katılmaz, bilgi olarak gösterilir.
+   - (c) Ek-6 için `payment_status` taksonomisine dokunulmaz — bordro altında kalem düzeyi `payroll_profile` alanı (varsayılan standart), profiller ve bileşen-ezmeleri cetvelde yaşar, CFE tek genel mekanizmayla uygular; Ek-6 profili SGK/işsizlik bacaklarını düşürür, GV+damga kalır, kişiye banka net; gelecek profiller Emekli-SGDP ve Yabancı.
+4. **Kıdem/ihbar/izin/270-saat maruziyeti:** motor kapsamı dışı ama anomali/uyarı notu olarak ekranda görünsün mü (anomali motoru ailesine komşu)? AÇIK.
+5. **Menü yeri:** Tanımlar/cetveller nereye yerleşecek (sol-ray iskeleti konusu, ayrı görüşülecek). AÇIK.
+
+**Not (2026-07-03):** Oturum kararlarının insan-okur tam envanteri ayrı belgede tutulmaktadır (KAAPA-personel-yasal-gider-envanteri v2, repo yeri sonraki oturumda kararlaştırılacak). Bordro motorunun kimliği PCCE (Production Cost Compliance Engine — bütçe hesap katmanı + uygunluk/uyarı katmanı) yönünde genişletilme tartışması sonraki oturuma bırakılmıştır.
 
 *Kaynaklar (2026-07-02 arastirmasi): GİB 332 No'lu GV Tebliği, 7566 sayılı Kanun (RG 19.12.2025), SGK teşvik rehberleri (Ocak 2026), Yargıtay 7. ve 9. HD içtihatları, Sinema-TV Sendikası ve Oyuncular Sendikası yayınları, 5225 mevzuat seti, muhasebetr/alomaliye/CottGroup uzman kaynakları.*
