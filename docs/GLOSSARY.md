@@ -1,6 +1,6 @@
 # KAAPA — Domain Terimleri Sözlüğü (GLOSSARY)
 
-**Son güncelleme:** 19 Haziran 2026
+**Son güncelleme:** 3 Temmuz 2026
 **Kural:** Her domain terimi tek İngilizce karşılık alır. Bir terim iki farklı kelimeyle temsil edilmez. Kodda sadece İngilizce karşılık kullanılır.
 
 -----
@@ -80,6 +80,19 @@
 - **Hedef Mecra (Bütçe Şablonu):** Bütçenin sunulacağı kurum (Eurimages/Netflix/TRT/Bakanlık). Compliance Guard'ın denetim bağlamını belirler.
 - **Rol-etiketi:** Tek kalemin altında gerçek sözleşmesel rol ayrımı (örn. 1401: Executive/Line/Coordinating/Supervising). Kalem katlanır, etiket gerçek ayrım taşır.
 - **Salt-okunur toplam:** Kart yüzünde tek toplam gösteren, alt-dökümü arkada tutulan kalem (örn. 1108).
+
+-----
+
+### Miktar / Çarpan / Birim — terminoloji mührü (2026-07-03, K9)
+
+|Terim |Anlam |Kodda |
+|------|------|------|
+|Miktar|Kişi/adet SAYISI (eski UI etiketi: Adet)|`budget_items.multiplier` · köprüde `budget_item_periods.quantity` · CFE `qty`|
+|Çarpan|SÜRE — kaç gün/hafta/ay/bölüm|`budget_items.repeat` · dönem-bazlı `budget_item_periods.repeat_override` · CFE `carpan`|
+|Birim |Periyodun CİNSİ (gün/hafta/ay/bölüm/sabit)|`units` cetveli · `budget_item_periods.unit_id_override`|
+
+- Formül: Dönem net = Birim_net × Miktar × Çarpan.
+- YASAK: "Çarpan"ı kişi sayısı anlamında kullanmak. Eski K5/K9 karar metinlerindeki "Çarpan sonda" ibaresi "Miktar sonda" olarak düzeltildi: bordro kümülatifi kişi-başı çözülür, en sonda o ayın efektif Miktar'ı ile çarpılır (PERSONEL-MEVZUATI §1).
 
 -----
 
