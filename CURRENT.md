@@ -7,11 +7,12 @@ M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; kart mimari
 - 2026-06-21..07-02: fn_open_budget CANLI; vergi/yuk modeli KILITLI; odeme-statusu semasi + kova-cins + donem-bazli geometri CANLI; KART 1500 ekran TAM (11 kolon); Not mimarisi CANLI. Detay: git log.
 - 2026-07-03: DILIM-3 karar+mimari turlari; K1..K11 MUHURLENDI; PERSONEL-MEVZUATI.md DOGDU; VERGI-MEVZUATI saf vergiye daraldi; terminoloji muhru.
 - 2026-07-04: DILIM-3a CANLI (commit 9971771). Sema+davranis, SAYI YOK. item_burdens.rate_percent nullable (K4 iskele); rate_catalog satir turleri (value_kind oran/tutar/tarife + amount_tl + bracket_floor/base_tax; unique nulls not distinct); burden_components.fill_mode (rate/skeleton); payroll_profiles + payroll_profile_burdens tablolari + budget_items.payroll_profile (standart); fn_refill genisledi (iskele NULL-oran + F3 stopaj override okumasi + profil add/remove set mantigi); tetik statu+profil (stopaj_rate tetigi 3d). Backfill davranis bit-ayni (smm/kira/telif degismedi). SQL denetimi: oran-yapismasi hatasi + F3 tel + RLS-acik duzeltmeleri girdi.
+- 2026-07-04: DILIM-3b CANLI (commit 55ef4ea). rate_catalog 2026 seed (asgari brüt 33.030 tutar; işçi SGK%14+işsizlik%1; işsizlik işveren%2; SGK işveren 4 senaryo — standart 19,75 DÜZELTİLDİ [eski 22.5 hatalıydı], borçlu 21,75/kültür girişim 14,81/kültür yatırım 9,88 katalogda REFERANS, henüz kovaya bağlı DEĞİL; GVK103 ücret tarifesi 5 basamak; SGK tavan katsayısı 9 [tutar]). burden_components.kind 3. değer 'parameter' (hiçbir kovaya giremez) + 4 guard trigger CANLI (item_burdens/payment_status_burdens/payroll_profile_burdens INSERT+UPDATE + burden_components UPDATE-dönüşüm guard'ı). Bordro iskelet kovası 6 bacak CANLI (sgk_isci/işsizlik_isci/gv_ucret/damga=kesinti; sgk_isveren/işsizlik_isveren=ekleme). payroll_profiles 'ek6' + 4 remove. Backfill uygulandı.
 
 ## Durum
 - HEAD: git log (origin/main) kesin. Repo: github.com/engintosun/prodapp - Canli: prodapp-navy.vercel.app.
 - KURULU/CALISIYOR: auth + cok-proje - saha fis girisi - yonlendirme/duzeltme - davet/rol - onay/red - proje+butce+servisler - onboarding - BUTCE DB TEMELI - fn_open_budget CANLI - CFE (28/28) - KART 1500 ekran TAM - odeme-statusu semasi CANLI - yuk kovasi cins CANLI - Not kolonlari CANLI.
-- DILIM-3a CANLI (yukarida). Bordro kovasi hala BOS (iskele bilesenleri + katalog sayilari 3b'de dogar; motor 3c).
+- DILIM-3b CANLI (yukarida). Bordro kovası 6 bacakla DOLU (sayılar canlı); motor (CFE bordro-çözücü) 3c'de doğar.
 - KART MIMARISI KILITLI: 1100,1300,1400,1500,1600. Detay: KART-KATALOGU.md.
 - MEVZUAT DOSYA DUZENI (K1): PERSONEL-MEVZUATI.md = insana emek/eser (bordro/smm/telif) + bordro-cozucu + G defteri; VERGI-MEVZUATI.md = saf vergi. Statu cetveli iki dosyanin basinda.
 
@@ -37,12 +38,12 @@ Kolon seti (KILITLI, 11): Kod - Aciklama - Statu - Donemler - Birim - Birim net 
 - PAKETLEME: Model A. cost_object: PARK.
 
 ## Siradaki is
-1. DILIM-3b: rate_catalog 2026 seed — YALNIZ birincil kanun degerleri (asgari brut 33.030, isci %14+%1, GVK 103 ucret tarifesi 5 basamak tarife-satiri, katsayi 9, damga %0.759, SGK senaryo girdileri) + bordro iskelet cetveli (payment_status_burdens'e bordro bilesenleri, fill_mode=skeleton) + payroll_profiles seed (ek6 vb.) + payroll_profile_burdens ezmeleri. Sema/RLS icerdigi olcude Engin SQL onayi. NOT: "katsayi 9" encoding'i (oran mi tutar mi) 3b'de karara baglanir; 3a yapisi ikisini de tasir.
-2. DILIM-3c: CFE bordro-cozucu saf modul + test katmani (altin fiksturler K10 seti + round-trip property testi [binlerce rastgele net/ay/profil, <=1 kurus ASSERT] + sinir testleri; hedef ~50+ test). Sistemin "kanitlanmis motor" oldugu an burasidir.
-3. DILIM-3d: UI — aylik dokum + sinyal yuzeyi v0 + "motor bekliyor" etiketi kalkar + stopaj_rate duzenleme tetigi buraya.
+1. DILIM-3c: CFE bordro-cozucu saf modul + test katmani (altin fiksturler K10 seti + round-trip property testi [binlerce rastgele net/ay/profil, <=1 kurus ASSERT] + sinir testleri; hedef ~50+ test). Sistemin "kanitlanmis motor" oldugu an burasidir.
+2. DILIM-3d: UI — aylik dokum + sinyal yuzeyi v0 + "motor bekliyor" etiketi kalkar + stopaj_rate duzenleme tetigi buraya.
 Sonra: PCCE kavrami (K11) + acik sorular 1/4/5 (PERSONEL-MEVZUATI H).
 
 ## Acik (kararlasmadi)
+- Şirket-Profili SGK senaryo SEÇİMİ altyapısı YOK (proje/şirket düzeyi kolon+ekran); 3b'de yalnız 4 senaryo kataloğa girdi (sgk_isveren=standart KOVAYA bağlı/varsayılan; borçlu/kültür-girişim/kültür-yatırım katalogda REFERANS/bekliyor). Kurulma zamanı: motor (3c) gerçek hesaba başladığında VEYA parametre paneli ekranı (soru 5) açıldığında — hangisi önce gelirse.
 - 1600 AJANS/MENAJER KOMISYONU DIKISLERI (Engin sordu, 3a'da kasitli ertelendi): (a) item_burdens'e origin ('auto'/'manual') ayraci — fn_refill yalniz origin='auto' siler-yeniden-kurar, elle konan komisyonu korur (fn_refill delete cumlesine 'and origin=auto' — tek satir ileri degisiklik, forward-compatible). (b) komisyon evi = ayri kolon DEGIL, ayni additive kova (item_burdens); kalem-bazli oran rate_percent'te; payment_status_burdens'e binmez (her oyuncuda yok, oran degisken -> manual). (c) "Yasal Yuk" mu "Ticari Yuk" mu: komisyon hukuken ticari degil yasal -> burden_components'e category (yasal/ticari) gerekebilir, "Yasal Yuk" toplami temiz kalsin. (d) komisyon AKIS modeli Engin karari: oyucudan kesiliyorsa kovaya girmez (satir eklenmez); yapimci ustleniyorsa additive kova. ajans genelde sirket -> kendi KDV/stopaj. Karar 1600'de.
 - vat_rate'in fn_refill icinde sifirlanmasi latent kuplaj (bugun zararsiz: profil yalniz bordroda, bordro KDV=0). Ileride "vat reset'i burden refill'den ayirma" temizlik adayi.
 - PCCE: ad, mimari yer, DILIM sinirlari, Faz-2 anomali iliskisi (K11). Girdi: G defteri (PERSONEL-MEVZUATI G).
