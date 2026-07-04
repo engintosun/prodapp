@@ -3,7 +3,7 @@
 Her oturum bu dosyayla başlar. Yalın tutulur (<120 satır); detay ayrı dosyalarda, ihtiyaç anında okunur. Kayıt sinyali boğmaz: az, net, güncel.
 
 ## Oturum protokolü
-- **Açılış:** CURRENT.md oku → 4-5 satırlık durum raporu → Engin onaylamadan iş başlamaz. Tam-dosya / tüm-tarihçe okuması YOK.
+- **Açılış:** CURRENT.md oku → 4-5 satırlık durum raporu → Engin onaylamadan iş başlamaz. Tam-dosya / tüm-tarihçe okuması YOK. Okuma TEYİTLİ olmalı: bir araç içerik yerine boş/URL dönerse bu "okundu" değil DUR sinyalidir; gerçek içerik görülmeden "okundu" denmez (raw.githubusercontent güvenilmez → tarball/curl kullan).
 - **Kapanış:** CURRENT.md'yi baştan YAZ (ekleme değil): milestone · son commit · sıradaki 1-3 iş · açık kararlar. Tarihçe git log'da yaşar.
 
 ## Proje kimliği
@@ -53,7 +53,7 @@ Dil: chat Türkçe; kod İngilizce (değişken/fonksiyon/dosya/commit/yorum); do
 - İsim: DB snake_case · JS camelCase · dosya kebab-case. Tehlikeli kökler (gec/tip/durum/kat) kodda Türkçe KULLANMA → GLOSSARY.md.
 
 ## Context routing
-- Mimari → docs/ARCHITECTURE.md · Auth/rol/RLS → docs/AUTH-KARARLARI.md (canlı RLS tanımı baseline'da) · Şema → supabase/migrations/00000000000000_baseline.sql (canlının tek kaynağı)
+- Mimari → docs/ARCHITECTURE.md · Auth/rol/RLS → docs/AUTH-KARARLARI.md (canlı RLS tanımı baseline'da) · Şema → supabase/migrations/ TÜMÜ (baseline = BAYAT taban; güncel şema = baseline + sonraki tüm göçler; şema ararken göçleri kronolojik oku, yalnız baseline'a güvenme)
 - İş kuralı/onay/dönem/avans → docs/IS-KURALLARI.md · Ekran → docs/EKRAN-{SAHA,DEPT,MUHASEBE}.md + TASARIM-KARARLARI.md · İsim → GLOSSARY.md · Sıra → IS-SIRASI.md
 - Bütçe kart/kalem domain → docs/butce/ (KART-KATALOGU = kart/kalem katalog+motor · KART-GEREKCELERI = neden/eğitim · BUTCE-ARASTIRMA-DURUM = şablon/kalem araştırması). Bütçe şema/teknik (B-serisi · köprü · KDV · percent_lines) → TASARIM-KARARLARI + baseline.
 - Not: eski supabase/SUPABASE-{SCHEMA,RLS,FUNCTIONS}.sql ve full-rebuild.sql artık docs/archive/'te (bayat, tarihsel referans). Canlı şema/RLS/fonksiyon/trigger/grant tek kaynağı baseline'dır.
