@@ -12,8 +12,9 @@ import {
   copyMainToFirstPeriod,
   copyLastPeriodToMain,
   getItemBurdensAndVat,
+  deriveBordroFields,
 } from '../../shared/supabase/budget-service'
-import type { BudgetItemRow, CardView, EditableField, StageRow, UnitRow } from '../../shared/supabase/budget-service'
+import type { BudgetItemRow, BordroDerivedFields, CardView, EditableField, StageRow, UnitRow } from '../../shared/supabase/budget-service'
 import { netToplamDonemli, brutToplamDonemli, kisiyeBanka } from '../../shared/cfe'
 import type { Yuk, DonemKalemi } from '../../shared/cfe'
 import { useToast } from '../../shared/components/toast'
@@ -99,6 +100,23 @@ export function BudgetCardScreen() {
   const [openNoteItemId, setOpenNoteItemId] = useState<string | null>(null)
   const savedRef = useRef<Record<string, BudgetItemRow>>({})
   const [buffers, setBuffers] = useState<Record<string, string>>({})
+  const [bordroData, setBordroData] = useState<
+    Record<string, { loading: boolean; data: BordroDerivedFields | null; error: string | null }>
+  >({})
+
+  // Bordro motoru sunucu tarafinda (deriva-BordroFields) DB'den okur; yerel buffer/keystroke degil,
+  // yalniz basarili commit sonrasi cagrilir (K5: motor pahali, her render'da degil sadece gerekince kosar).
+  async function refreshBordro(itemId: string) {
+    setBordroData((b) => ({ ...b, [itemId]: { loading: true, data: b[itemId]?.data ?? null, error: null } }))
+    try {
+      const result = await deriveBordroFields(itemId)
+      setBordroData((b) => ({ ...b, [itemId]: { loading: false, data: result, error: null } }))
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Bordro hesaplanamadı'
+      setBordroData((b) => ({ ...b, [itemId]: { loading: false, data: null, error: message } }))
+      addToast(message, 'error')
+    }
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -121,6 +139,9 @@ export function BudgetCardScreen() {
             periodUnit: { ...it.periodUnit },
             periodRepeat: { ...it.periodRepeat },
           }
+        }
+        for (const it of c?.items ?? []) {
+          if (it.paymentStatus === 'bordro') void refreshBordro(it.id)
         }
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : 'Bütçe yüklenemedi')
@@ -225,6 +246,7 @@ export function BudgetCardScreen() {
       }
       const fresh = await getItemBurdensAndVat(id)
       patchRow(id, { burdens: fresh.burdens, vatRate: fresh.vatRate })
+      if (newStatus === 'bordro') void refreshBordro(id)
     } catch (e) {
       if (saved) patchRow(id, { paymentStatus: saved.paymentStatus })
       addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error')
@@ -238,6 +260,7 @@ export function BudgetCardScreen() {
     if (saved && saved.unitId === unitId) return
     try {
       await updateItemField(id, 'unitId', unitId)
+      if (rows.find((r) => r.id === id)?.paymentStatus === 'bordro') void refreshBordro(id)
       if (saved) {
         savedRef.current[id] = {
           ...saved,
@@ -274,6 +297,7 @@ export function BudgetCardScreen() {
           periodRepeat: { ...saved.periodRepeat },
         }
       }
+      if (row.paymentStatus === 'bordro') void refreshBordro(itemId)
     } catch (e) {
       setRows((rs) =>
         rs.map((r) => (r.id === itemId ? { ...r, periodUnit: { ...r.periodUnit, [stageId]: prevUnit } } : r)),
@@ -292,7 +316,15 @@ export function BudgetCardScreen() {
     }
   }
 
-  async function commitField(id: string, field: EditableField) {
+  // Virtual bordro giris alanlari (unitNetInput/unitGrossInput/totalNetInput/totalGrossInput) bu
+  // fonksiyonun disinda kalir: BudgetItemRow'da karsilik gelen tek bir alan yok, kendi commit
+  // yolunu ADIM 2'de alir (bkz. commitBordroInput).
+  type RowEditableField = Exclude<
+    EditableField,
+    'unitNetInput' | 'unitGrossInput' | 'totalNetInput' | 'totalGrossInput'
+  >
+
+  async function commitField(id: string, field: RowEditableField) {
     const row = rows.find((r) => r.id === id)
     if (!row) return
     const value = (row[field] ?? '') as string | number
@@ -311,11 +343,59 @@ export function BudgetCardScreen() {
         periodUnit: { ...(saved?.periodUnit ?? row.periodUnit) },
         periodRepeat: { ...(saved?.periodRepeat ?? row.periodRepeat) },
       } as BudgetItemRow
+      if (row.paymentStatus === 'bordro' && (field === 'multiplier' || field === 'repeat')) void refreshBordro(id)
     } catch (e) {
       if (saved) patchRow(id, { [field]: saved[field] } as Partial<BudgetItemRow>)
       addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error')
     } finally {
       clearBuf(id + ':' + field)
+    }
+  }
+
+  // Bordro 4-alan girisi (unitNetInput/unitGrossInput/totalNetInput/totalGrossInput): tek payload
+  // atomik yazilir (servis katmaninda), basarili commit sonrasi motor tazelenir (K5).
+  type BordroInputField = 'unitNetInput' | 'unitGrossInput' | 'totalNetInput' | 'totalGrossInput'
+
+  function bordroFieldVal(itemId: string, field: BordroInputField, fallback: number): string {
+    const k = itemId + ':' + field
+    return k in buffers ? buffers[k] : String(fallback)
+  }
+
+  function onBordroFieldChange(itemId: string, field: BordroInputField, raw: string) {
+    setBuffers((b) => ({ ...b, [itemId + ':' + field]: raw }))
+  }
+
+  async function commitBordroInput(itemId: string, field: BordroInputField) {
+    const key = itemId + ':' + field
+    const raw = buffers[key]
+    if (raw === undefined) return
+    const n = Number(raw.replace(',', '.'))
+    if (!Number.isFinite(n) || n < 0) {
+      addToast('Geçersiz sayı', 'error')
+      clearBuf(key)
+      return
+    }
+    const newMode: BudgetItemRow['inputMode'] =
+      field === 'unitNetInput' ? null : field === 'unitGrossInput' ? 'unit_gross' : field === 'totalNetInput' ? 'total_net' : 'total_gross'
+    try {
+      await updateItemField(itemId, field, n)
+      patchRow(itemId, field === 'unitNetInput' ? { unitNet: n, inputMode: null, inputValue: null } : { inputMode: newMode, inputValue: n })
+      const saved = savedRef.current[itemId]
+      if (saved) {
+        savedRef.current[itemId] = {
+          ...saved,
+          ...(field === 'unitNetInput' ? { unitNet: n, inputMode: null, inputValue: null } : { inputMode: newMode, inputValue: n }),
+          periodQty: { ...saved.periodQty },
+          periodNet: { ...saved.periodNet },
+          periodUnit: { ...saved.periodUnit },
+          periodRepeat: { ...saved.periodRepeat },
+        }
+      }
+      await refreshBordro(itemId)
+    } catch (e) {
+      addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error')
+    } finally {
+      clearBuf(key)
     }
   }
 
@@ -342,6 +422,7 @@ export function BudgetCardScreen() {
         periodUnit: { ...(saved?.periodUnit ?? row.periodUnit) },
         periodRepeat: { ...(saved?.periodRepeat ?? row.periodRepeat) },
       } as BudgetItemRow
+      if (row.paymentStatus === 'bordro') void refreshBordro(id)
     } catch (e) {
       setRows((rs) =>
         rs.map((r) => (r.id === id ? { ...r, periodQty: { ...r.periodQty, [stageId]: savedVal } } : r)),
@@ -420,6 +501,7 @@ export function BudgetCardScreen() {
           r.id === itemId ? { ...r, periodRepeat: { ...r.periodRepeat, [stageId]: hedef } } : r,
         ),
       )
+      if (row.paymentStatus === 'bordro') void refreshBordro(itemId)
     } catch (e) {
       setRows((rs) =>
         rs.map((r) =>
@@ -500,6 +582,7 @@ export function BudgetCardScreen() {
           },
         }
       }
+      if (row.paymentStatus === 'bordro') void refreshBordro(itemId)
     } catch (e) {
       addToast(e instanceof Error ? e.message : 'Dönem eklenemedi', 'error')
     }
@@ -572,6 +655,7 @@ export function BudgetCardScreen() {
         clearBuf(itemId + ':pnet:' + lastStageId)
         clearBuf(itemId + ':prepeat:' + lastStageId)
       }
+      if (row.paymentStatus === 'bordro') void refreshBordro(itemId)
     } catch (e) {
       addToast(e instanceof Error ? e.message : 'Dönem kaldırılamadı', 'error')
     }
@@ -650,13 +734,22 @@ export function BudgetCardScreen() {
             {rows.map((it) => {
               const multi = isMultiPeriod(it)
               const addedStageIds = Object.keys(it.periodQty)
-              const donemler = buildDonemler(it)
-              const yukler: Yuk[] = it.burdens.map((b) => ({ ratePercent: b.rate, kind: b.kind }))
-              const netToplam = netToplamDonemli(donemler)
-              const brutYuk = brutToplamDonemli(donemler, yukler)
-              const kdvTl = kisiyeBanka(netToplam, brutYuk, it.vatRate).kdv
-              const brutToplam = brutYuk + kdvTl
+              const isBordro = it.paymentStatus === 'bordro'
+              const bd = bordroData[it.id]
+              // Bordro: motor (deriveBordroFields) kaynak; genel additive/deduction CFE yolu (cfe.ts)
+              // ARTIK CAGRILMAZ (1a borcu - item_burdens skeleton bacaklari null rate tasir).
+              const donemler = isBordro ? [] : buildDonemler(it)
+              const yukler: Yuk[] = isBordro ? [] : it.burdens.map((b) => ({ ratePercent: b.rate, kind: b.kind }))
+              const netToplam = isBordro ? (bd?.data?.totalNet ?? 0) : netToplamDonemli(donemler)
+              const brutYuk = isBordro ? 0 : brutToplamDonemli(donemler, yukler)
+              const kdvTl = isBordro ? 0 : kisiyeBanka(netToplam, brutYuk, it.vatRate).kdv
+              const brutToplam = isBordro ? (bd?.data?.totalGross ?? 0) : brutYuk + kdvTl
               const yasalYukTl = brutToplam - netToplam
+              const bordroMode = it.inputMode
+              const bordroSourceField: 'unit_net' | 'unit_gross' | 'total_net' | 'total_gross' =
+                bordroMode === null ? 'unit_net' : bordroMode
+              const bordroCalcType: 'net_to_gross' | 'gross_to_net' =
+                bordroMode === null || bordroMode === 'total_net' ? 'net_to_gross' : 'gross_to_net'
               const periodKeys = new Set(addedStageIds)
               const addableStages = stages.filter((s) => !periodKeys.has(s.id))
               const addedStages = stages.filter((s) => periodKeys.has(s.id))
@@ -766,7 +859,44 @@ export function BudgetCardScreen() {
                       )}
                     </td>
                     <td style={numStyle}>
-                      {multi ? (
+                      {isBordro ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 130 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 'var(--space-1)' }}>
+                            <span style={{ fontSize: 'var(--text-xs)', color: bordroSourceField === 'unit_net' ? 'var(--color-text)' : 'var(--color-text-muted)', fontWeight: bordroSourceField === 'unit_net' ? 600 : 400 }}>
+                              Net{bordroCalcType === 'gross_to_net' ? ' (ortalama)' : ''}
+                            </span>
+                            {bordroSourceField === 'unit_net' ? (
+                              <input
+                                style={{ ...cellInputNum, width: 90 }}
+                                type="text"
+                                inputMode="decimal"
+                                value={bordroFieldVal(it.id, 'unitNetInput', bd?.data?.unitNet ?? it.unitNet)}
+                                onChange={(e) => onBordroFieldChange(it.id, 'unitNetInput', e.target.value)}
+                                onBlur={() => commitBordroInput(it.id, 'unitNetInput')}
+                              />
+                            ) : (
+                              <span style={{ opacity: 0.55 }}>{bd?.data ? fmt(bd.data.unitNet) : '…'}</span>
+                            )}
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 'var(--space-1)' }}>
+                            <span style={{ fontSize: 'var(--text-xs)', color: bordroSourceField === 'unit_gross' ? 'var(--color-text)' : 'var(--color-text-muted)', fontWeight: bordroSourceField === 'unit_gross' ? 600 : 400 }}>
+                              Brüt{bordroCalcType === 'net_to_gross' ? ' (ortalama)' : ''}
+                            </span>
+                            {bordroSourceField === 'unit_gross' ? (
+                              <input
+                                style={{ ...cellInputNum, width: 90 }}
+                                type="text"
+                                inputMode="decimal"
+                                value={bordroFieldVal(it.id, 'unitGrossInput', bd?.data?.unitGross ?? 0)}
+                                onChange={(e) => onBordroFieldChange(it.id, 'unitGrossInput', e.target.value)}
+                                onBlur={() => commitBordroInput(it.id, 'unitGrossInput')}
+                              />
+                            ) : (
+                              <span style={{ opacity: 0.55 }}>{bd?.data ? fmt(bd.data.unitGross) : '…'}</span>
+                            )}
+                          </div>
+                        </div>
+                      ) : multi ? (
                         summaryNet !== null ? fmt(summaryNet) : '—'
                       ) : (
                         <input
@@ -808,8 +938,10 @@ export function BudgetCardScreen() {
                       )}
                     </td>
                     <td style={numStyle}>
-                      {it.paymentStatus === 'bordro' && it.burdens.length === 0 ? (
-                        <span style={{ color: 'var(--color-text-muted)', fontStyle: 'italic', fontSize: 'var(--text-xs)' }}>motor bekliyor</span>
+                      {isBordro && bd?.loading ? (
+                        <span style={{ color: 'var(--color-text-muted)', fontStyle: 'italic', fontSize: 'var(--text-xs)' }}>hesaplanıyor…</span>
+                      ) : isBordro && bd?.error ? (
+                        <span style={{ color: 'var(--color-danger, #c0392b)', fontSize: 'var(--text-xs)' }}>{bd.error}</span>
                       ) : brutToplam > netToplam ? (
                         <button
                           onClick={() => setOpenBurden({ itemId: it.id, stageId: null })}
@@ -830,8 +962,34 @@ export function BudgetCardScreen() {
                         '—'
                       )}
                     </td>
-                    <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(netToplam)}</td>
-                    <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(brutToplam)}</td>
+                    <td style={{ ...numStyle, fontWeight: 600 }}>
+                      {isBordro && bordroSourceField === 'total_net' ? (
+                        <input
+                          style={cellInputNum}
+                          type="text"
+                          inputMode="decimal"
+                          value={bordroFieldVal(it.id, 'totalNetInput', netToplam)}
+                          onChange={(e) => onBordroFieldChange(it.id, 'totalNetInput', e.target.value)}
+                          onBlur={() => commitBordroInput(it.id, 'totalNetInput')}
+                        />
+                      ) : (
+                        <span style={isBordro ? { opacity: 0.55 } : undefined}>{fmt(netToplam)}</span>
+                      )}
+                    </td>
+                    <td style={{ ...numStyle, fontWeight: 600 }}>
+                      {isBordro && bordroSourceField === 'total_gross' ? (
+                        <input
+                          style={cellInputNum}
+                          type="text"
+                          inputMode="decimal"
+                          value={bordroFieldVal(it.id, 'totalGrossInput', brutToplam)}
+                          onChange={(e) => onBordroFieldChange(it.id, 'totalGrossInput', e.target.value)}
+                          onBlur={() => commitBordroInput(it.id, 'totalGrossInput')}
+                        />
+                      ) : (
+                        <span style={isBordro ? { opacity: 0.55 } : undefined}>{fmt(brutToplam)}</span>
+                      )}
+                    </td>
                   </tr>
                   {multi &&
                     addedStages.map((s) => {
@@ -953,6 +1111,8 @@ export function BudgetCardScreen() {
       {openBurden !== null && (() => {
         const item = rows.find((r) => r.id === openBurden.itemId)
         if (!item) return null
+        const isBordroSheet = item.paymentStatus === 'bordro'
+        const bdSheet = bordroData[item.id]
         const sheetStage = openBurden.stageId !== null ? stageById.get(openBurden.stageId) : null
         let dDonemler: DonemKalemi[]
         if (openBurden.stageId !== null) {
@@ -1010,17 +1170,86 @@ export function BudgetCardScreen() {
                   ×
                 </button>
               </div>
-              {item.burdens.map((b, i) => (
-                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-1) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
-                  <span>{b.label} %{fmt(b.rate)}</span>
-                  <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(b.kind === 'deduction' ? Math.round(dBrutYuk * b.rate / 100) : Math.round(dNet * b.rate / 100))}</span>
-                </div>
-              ))}
-              {item.vatRate > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-1) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
-                  <span>KDV %{fmt(item.vatRate)}</span>
-                  <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(dKdv)}</span>
-                </div>
+              {isBordroSheet ? (
+                <>
+                  {bdSheet?.loading && (
+                    <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>Hesaplanıyor…</p>
+                  )}
+                  {bdSheet?.error && (
+                    <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-danger, #c0392b)' }}>{bdSheet.error}</p>
+                  )}
+                  {bdSheet?.data && (
+                    <>
+                      {bdSheet.data.signals.some((s) => s.code === 'SNL-YIL-ASIMI') && (
+                        <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', background: 'var(--color-surface-2)', padding: 'var(--space-2)', borderRadius: 'var(--radius-sm)', marginBottom: 'var(--space-2)' }}>
+                          Bu kalem yıl sınırını aşıyor; kümülatif vergi matrahı yıl geçişinde sıfırlanmadan buna göre hesaplanmıştır.
+                        </p>
+                      )}
+                      {bdSheet.data.signals.some((s) => s.code === 'SNL-MIKTAR-DEGISIM') && (
+                        <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', background: 'var(--color-surface-2)', padding: 'var(--space-2)', borderRadius: 'var(--radius-sm)', marginBottom: 'var(--space-2)' }}>
+                          Bu kalemde aylar arasında kişi sayısı (Miktar) değişiyor; aylık döküm buna göre değişkenlik gösterir.
+                        </p>
+                      )}
+                      {bdSheet.data.monthlySeries.map((m, i) => {
+                        const employerGroup = m.socialSecurityEmployer + m.unemploymentEmployer
+                        const employeeGroup = m.socialSecurityEmployee + m.unemploymentEmployee + m.incomeTax + m.stampDuty
+                        return (
+                          <div key={i} style={{ borderBottom: '1px solid var(--color-border)', padding: 'var(--space-2) 0' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-text)' }}>
+                              <span>Ay {i + 1}</span>
+                              <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(m.grossPerPerson)} (kişi başı brüt)</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>
+                              <span>İşveren payları</span>
+                              <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(employerGroup)}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>
+                              <span>Net anlaşma gereği üstlenilen işçi tarafı</span>
+                              <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(employeeGroup)}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-xs)', color: 'var(--color-text)' }}>
+                              <span>Kişi başı maliyet · Miktar {fmt(m.effectiveHeadcount)}</span>
+                              <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(m.costPerPerson)}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-xs)', color: 'var(--color-text)', fontWeight: 600 }}>
+                              <span>Ay toplamı</span>
+                              <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(m.monthTotal)}</span>
+                            </div>
+                          </div>
+                        )
+                      })}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 'var(--space-2)', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-text)' }}>
+                        <span>Net toplam</span>
+                        <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(bdSheet.data.totalNet)}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-text)' }}>
+                        <span>Brüt toplam</span>
+                        <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(bdSheet.data.totalGross)}</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-text)' }}>
+                        <span>Genel maliyet</span>
+                        <span style={{ fontVariantNumeric: 'tabular-nums' }}>
+                          {fmt(bdSheet.data.monthlySeries.reduce((acc, m) => acc + m.monthTotal, 0))}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  {item.burdens.map((b, i) => (
+                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-1) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
+                      <span>{b.label} %{fmt(b.rate)}</span>
+                      <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(b.kind === 'deduction' ? Math.round(dBrutYuk * b.rate / 100) : Math.round(dNet * b.rate / 100))}</span>
+                    </div>
+                  ))}
+                  {item.vatRate > 0 && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-1) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
+                      <span>KDV %{fmt(item.vatRate)}</span>
+                      <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(dKdv)}</span>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </>
