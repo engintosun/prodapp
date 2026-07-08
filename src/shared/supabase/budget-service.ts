@@ -1,3 +1,4 @@
+import Decimal from 'decimal.js'
 import { supabase } from './client'
 import { resolvePayrollItem, deriveMinimumWageExemptionSeries, deriveStampDutyExemption } from '../cfe'
 import type { PayrollLegs, TaxBracket, PayrollRates, PayrollMonthInput, PayrollMonthResult, PayrollSignal, PayrollEnvelope } from '../cfe'
@@ -559,15 +560,6 @@ export async function deriveBordroFields(itemId: string): Promise<BordroDerivedF
     .single()
   if (ei) throw new Error(ei.message)
 
-  const { data: budgetData, error: ebg } = await supabase
-    .from('budgets')
-    .select('created_at')
-    .eq('id', itemData.budget_id as string)
-    .single()
-  if (ebg) throw new Error(ebg.message)
-  // K7: butcenin "acilis tarihi" ayri kolon degil, budgets.created_at'in ayidir (dogrulandi).
-  const budgetOpenedAt = new Date(budgetData.created_at as string)
-
   const { data: periodRows, error: ep } = await supabase
     .from('budget_item_periods')
     .select('stage_id, quantity, repeat_override, unit_id_override')
@@ -622,9 +614,16 @@ export async function deriveBordroFields(itemId: string): Promise<BordroDerivedF
     unitCode: string
     sortOrder: number
   }
-  function anchorOf(stage: { startDate: string | null; isUndated: boolean } | undefined): Date {
-    if (stage && !stage.isUndated && stage.startDate) return new Date(stage.startDate)
-    return budgetOpenedAt
+  function anchorOf(stage: { startDate: string | null; isUndated: boolean } | undefined): { year: number; month: number } {
+    if (stage && !stage.isUndated && stage.startDate) {
+      const d = new Date(stage.startDate)
+      return { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1 }
+    }
+    // Tarih bilinmiyorken herkes Ocak'ta ise girmis varsayilir: istisna serisinin en dusuk degerleri ->
+    // maliyet en yuksek (ihtiyat-lehine risk payi, Engin karari 07-07). Iki ozdes butce olusturulma
+    // tarihinden bagimsiz AYNI rakami verir. Gercek tarih girildiginde gercek takvim kullanilir,
+    // maliyet ancak asagi iner.
+    return { year: new Date().getUTCFullYear(), month: 1 }
   }
 
   let firstStage: { startDate: string | null; isUndated: boolean; sortOrder: number } | undefined
@@ -660,8 +659,8 @@ export async function deriveBordroFields(itemId: string): Promise<BordroDerivedF
   // Sadece ilk donem ankorlanir (K7: tarihliyse start_date, tarihsizse butcenin acilis ayi);
   // sonraki donemler ay siniriyla sifirlanmadan, onceki donemin biraktigi noktadan kesintisiz devam eder.
   const anchor = anchorOf(firstStage)
-  let cursorYear = anchor.getUTCFullYear()
-  let cursorMonth = anchor.getUTCMonth() + 1
+  let cursorYear = anchor.year
+  let cursorMonth = anchor.month
   let usedInCursorMonth = 0
 
   const skeleton: { year: number; month: number; dayCount: number; headcount: number }[] = []
@@ -728,15 +727,26 @@ export async function deriveBordroFields(itemId: string): Promise<BordroDerivedF
   )
   const stampExemption = deriveStampDutyExemption(rates.minimumWageGrossThisMonth, rates.stampDutyPercent)
 
+  // Donem gecisi ay ortasindaysa ayni gercek (yil,ay) ikilisine birden fazla skeleton satiri dusebilir;
+  // her satira o ayin istisnasini TAM vermek ayni ay icin istisnayi iki kere sayardi (ihtiyat-ALEYHINE
+  // hata). Istisna dayCount/30 oraniyla dagitilir: tam kapsanan ay toplamda TAM istisna alir, kist ay
+  // gun-oranli (eksik) alir - yon ihtiyat-lehine.
   const months: PayrollMonthInput[] = skeleton.map((s) => {
+    const dayRatio = new Decimal(s.dayCount).div(30)
     const common = {
       year: s.year,
       month: s.month,
       dayCount: s.dayCount,
       headcount: s.headcount,
       priorCumulativeTaxBase: 0,
-      incomeTaxExemptionThisMonth: exemptionSeries[s.month - 1],
-      stampDutyExemptionThisMonth: stampExemption,
+      incomeTaxExemptionThisMonth: new Decimal(exemptionSeries[s.month - 1])
+        .mul(dayRatio)
+        .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
+        .toNumber(),
+      stampDutyExemptionThisMonth: new Decimal(stampExemption)
+        .mul(dayRatio)
+        .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
+        .toNumber(),
     }
     return calculationType === 'net_to_gross'
       ? { ...common, calculationType, targetNetFullMonth: kaynakUnit }
