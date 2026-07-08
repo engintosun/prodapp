@@ -90,3 +90,15 @@ Bu dosyada eskiden karışık duran ekran/iş/auth detayları doğru evlerine ta
 
 ## Bütçe kart mimarisi (kart/kalem yapısı)
 TEK KAYNAK: docs/butce/KART-KATALOGU.md — etap ekseni · kart=departman ("kullanan sahiplenir") · kalem davranış motoru (üç bağ + alias) · kilitli kartlar 1100-1600 · cost_object (4. eksen) · Compliance Guard. Gerekçe/eğitim: docs/butce/KART-GEREKCELERI.md.
+
+## Açık iş — KART 1500 isim onarımı (2026-07-09)
+Kalem açıklamaları şablon aslından (supabase/migrations/20260623120000_seed_sistem_sablon_film_1500.sql) sapmış olabilir. Onarım iki adımlı: (1) salt-okunur fark raporu (item_code eşliğinde, hangi film/proje), (2) Engin onayıyla düzeltme. Kapsam netleşmeden yapılmaz.
+
+## Açık kapı — Kalem Kütüphanesi/Kalibrasyon (gelecek DILIM) (2026-07-09)
+Açıklama kolonu serbest-metinden kontrollü seçime döner; her kütüphane kaydı kendi hesap parametrelerini taşır (statü, yük seti, bordro uygunluğu); yeni kalemler MMB koduna göre otomatik sıralanır. Ön koşul: 1500-serisi için içerik/küratörlük — Engin işi, kod bundan sonra başlar. Bordro'dan bağımsız, ayrı DILIM.
+
+## Açık kapı — Brüt/toplam üzerinden anlaşma girişi (iptal edildi) (2026-07-09)
+4-alan giriş mimarisi sökülüyor. Geçici/manuel yol: kullanıcı neti girer, Brüt Toplam'ı izler, anlaşılan brüte oturana kadar neti ayarlar. İleride gerçek ihtiyaç ölçülürse (Zirve tipi "tahakkuk şekli" — kişi/kalem bazında bir kez seçilen sabit alan, canlı seçici DEĞİL) geri gelebilir; şimdi kurulmuyor.
+
+## ✔ KARAR — input_mode/input_value mimarisi tamamen kaldırılıyor (2026-07-09)
+Bordro kalemi artık istisna değil, DILIM-2f'nin genel deseniyle çalışır — Birim Net dönemsel girilir (budget_item_periods.unit_net_override), Net Toplam/Brüt Toplam her zaman hesaplanan/salt-okunur gösterilir. Gerekçe: üç turluk UI denemesi (segmented-toggle → dropdown) hem görsel hem algısal yük getirdi, kazandırdığı nadir bir ihtiyaç için sık kullanılan ekrana kalıcı karmaşıklık ekliyordu — fayda/maliyet dengesi tutmadı. input_mode/input_value kolonları DILIM-3e-1'de veri-sayım raporu sonrası DROP edilir.
