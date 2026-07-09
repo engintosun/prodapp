@@ -1097,14 +1097,6 @@ export function BudgetCardScreen() {
                         <span>Yasal yük</span>
                         <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(bdSheet.data.totalGross - bdSheet.data.totalNet)}</span>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-text)' }}>
-                        <span>Net toplam</span>
-                        <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(bdSheet.data.totalNet)}</span>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-text)' }}>
-                        <span>Brüt toplam</span>
-                        <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(bdSheet.data.totalGross)}</span>
-                      </div>
                     </>
                   )}
                 </>
