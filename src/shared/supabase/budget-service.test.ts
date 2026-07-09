@@ -117,3 +117,46 @@ describe('budget-service — ham hata sizintisi savunmasi (tipli sonuc)', () => 
     if (result.ok) expect(result.data.totalNet).toBeGreaterThan(0)
   })
 })
+
+describe('budget-service — periodBreakdown: donem-bazli gruplama', () => {
+  it('iki farkli unit_net_override donemi, periodBreakdown 2 ayri eleman - her biri kendi hedefine yakin', () => {
+    const item = itemFields({ unitNet: 1, unitCode: 'month' })
+    const periods: BordroPeriodRow[] = [
+      periodRow({ sortOrder: 0, unitNetOverride: 8000, quantity: 1, repeatOverride: 1 }),
+      periodRow({ sortOrder: 1, unitNetOverride: 12000, quantity: 1, repeatOverride: 1 }),
+    ]
+    const result = computeBordroFields(item, periods, STANDARD_LEGS, RATES_2026)
+    expect(result.periodBreakdown).toHaveLength(2)
+    expect(result.periodBreakdown[0].periodIndex).toBe(0)
+    expect(result.periodBreakdown[0].netTotal).toBeCloseTo(8000, 1)
+    expect(result.periodBreakdown[1].periodIndex).toBe(1)
+    expect(result.periodBreakdown[1].netTotal).toBeCloseTo(12000, 1)
+    // legalBurden = grossTotal - netTotal, isveren payi > 0 oldugu icin daima pozitif.
+    expect(result.periodBreakdown[0].legalBurden).toBeGreaterThan(0)
+    expect(result.periodBreakdown[0].grossTotal).toBeCloseTo(
+      result.periodBreakdown[0].netTotal + result.periodBreakdown[0].legalBurden,
+      2,
+    )
+  })
+
+  it('grup netTotal toplami, kalem-geneli totalNet ile tutarli (aggregate = grup toplami)', () => {
+    const item = itemFields({ unitNet: 1, unitCode: 'month' })
+    const periods: BordroPeriodRow[] = [
+      periodRow({ sortOrder: 0, unitNetOverride: 8000, quantity: 1, repeatOverride: 1 }),
+      periodRow({ sortOrder: 1, unitNetOverride: 12000, quantity: 2, repeatOverride: 1 }),
+    ]
+    const result = computeBordroFields(item, periods, STANDARD_LEGS, RATES_2026)
+    const sumBreakdown = result.periodBreakdown.reduce((acc, p) => acc + p.netTotal, 0)
+    expect(sumBreakdown).toBeCloseTo(result.totalNet, 1)
+  })
+
+  it('tek donem ay sinirini asip birden fazla skeleton parcasina bolunse bile (2 aylik repeat), periodBreakdown TEK eleman', () => {
+    // Tek/sifir-donem modunda (periodRows=[]) item.repeat=2 ay -> 60 gun -> ay sinirinda ikiye bolunur
+    // (usedInCursorMonth mantigi): 2 ayri monthlySeries satiri ama AYNI periodIndex (0).
+    const item = itemFields({ unitNet: 40000, unitCode: 'month', repeat: 2 })
+    const result = computeBordroFields(item, [], STANDARD_LEGS, RATES_2026)
+    expect(result.monthlySeries.length).toBeGreaterThanOrEqual(2)
+    expect(result.periodBreakdown).toHaveLength(1)
+    expect(result.periodBreakdown[0].periodIndex).toBe(0)
+  })
+})

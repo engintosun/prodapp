@@ -547,6 +547,13 @@ async function fetchPayrollRates(): Promise<PayrollRates> {
   }
 }
 
+export interface BordroPeriodBreakdownEntry {
+  periodIndex: number
+  netTotal: number
+  grossTotal: number
+  legalBurden: number
+}
+
 export interface BordroDerivedFields {
   unitNet: number
   unitGross: number
@@ -555,6 +562,7 @@ export interface BordroDerivedFields {
   monthlySeries: PayrollMonthResult[]
   signals: PayrollSignal[]
   bucketBreakdown: PayrollEnvelope['bucketBreakdown']
+  periodBreakdown: BordroPeriodBreakdownEntry[]
 }
 
 export type BordroDerivationReason = 'invalid_net' | 'no_periods' | 'unknown'
@@ -649,19 +657,29 @@ export function computeBordroFields(
   let cursorMonth = anchor.month
   let usedInCursorMonth = 0
 
-  const skeleton: { year: number; month: number; dayCount: number; headcount: number; targetNetFullMonth: number }[] = []
-  for (const per of periods) {
-    if (per.quantity <= 0) continue
+  const skeleton: {
+    year: number
+    month: number
+    dayCount: number
+    headcount: number
+    targetNetFullMonth: number
+    periodIndex: number
+  }[] = []
+  periods.forEach((per, periodIndex) => {
+    if (per.quantity <= 0) return
     let remainingDays = Math.round(per.repeatVal * unitDayLength(per.unitCode))
     while (remainingDays > 0) {
       const spaceLeftInMonth = 30 - usedInCursorMonth
       const chunk = Math.min(spaceLeftInMonth, remainingDays)
+      // Donem ay sinirini asip birden fazla skeleton parcasina bolunse bile (bu while dongusu),
+      // TUM parcalar AYNI periodIndex'i tasir - kasitli, periodBreakdown gruplamasinda birlesecekler.
       skeleton.push({
         year: cursorYear,
         month: cursorMonth,
         dayCount: chunk,
         headcount: per.quantity,
         targetNetFullMonth: per.netFullMonth,
+        periodIndex,
       })
       remainingDays -= chunk
       usedInCursorMonth += chunk
@@ -674,7 +692,7 @@ export function computeBordroFields(
         }
       }
     }
-  }
+  })
   if (skeleton.length === 0) throw new Error('Payroll: kalemin donem/miktar/carpan verisinden ay uretilemedi')
 
   const K = skeleton.reduce((acc, s) => acc + (s.dayCount / 30) * s.headcount, 0)
@@ -712,10 +730,33 @@ export function computeBordroFields(
         .toNumber(),
       calculationType: 'net_to_gross' as const,
       targetNetFullMonth: s.targetNetFullMonth,
+      periodIndex: s.periodIndex,
     }
   })
 
   const envelope = resolvePayrollItem(months, legs, rates)
+
+  // Donem-bazli gruplama: motor ay-bazli calisir (kumulatif vergi tabani ay siniriyla ilerler, K7
+  // ankoru), donem-bazli DEGIL - bir donem ay sinirini asip birden fazla skeleton parcasina
+  // bolunebilir (yukarida periods.forEach). Cozum donemi hesaba karistirmiyor, sadece SONUCA
+  // (monthlySeries) hangi donemden geldigini periodIndex ile etiketleyip burada gruplu topluyor.
+  const breakdownByIndex = new Map<number, { netTotal: Decimal; grossTotal: Decimal }>()
+  for (const r of envelope.monthlySeries) {
+    const hc = new Decimal(r.effectiveHeadcount)
+    const acc = breakdownByIndex.get(r.periodIndex) ?? { netTotal: new Decimal(0), grossTotal: new Decimal(0) }
+    acc.netTotal = acc.netTotal.plus(new Decimal(r.netPerPerson).mul(hc))
+    // grossTotal burada da uretici maliyeti (costPerPerson) - S2 ile ayni mantik, kisi brutu degil.
+    acc.grossTotal = acc.grossTotal.plus(new Decimal(r.costPerPerson).mul(hc))
+    breakdownByIndex.set(r.periodIndex, acc)
+  }
+  const periodBreakdown: BordroPeriodBreakdownEntry[] = [...breakdownByIndex.entries()]
+    .sort(([a], [b]) => a - b)
+    .map(([periodIndex, acc]) => {
+      const netTotal = acc.netTotal.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toNumber()
+      const grossTotal = acc.grossTotal.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toNumber()
+      const legalBurden = acc.grossTotal.minus(acc.netTotal).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toNumber()
+      return { periodIndex, netTotal, grossTotal, legalBurden }
+    })
 
   return {
     unitNet: envelope.netTotal / K,
@@ -725,6 +766,7 @@ export function computeBordroFields(
     monthlySeries: envelope.monthlySeries,
     signals: envelope.signals,
     bucketBreakdown: envelope.bucketBreakdown,
+    periodBreakdown,
   }
 }
 

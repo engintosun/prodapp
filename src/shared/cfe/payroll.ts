@@ -28,6 +28,7 @@ interface PayrollMonthInputBase {
   year: number
   month: number
   dayCount: number
+  periodIndex: number
   headcount: number
   priorCumulativeTaxBase: number
   incomeTaxExemptionThisMonth: number
@@ -42,6 +43,7 @@ export interface PayrollMonthResult {
   year: number
   month: number
   dayCount: number
+  periodIndex: number
   grossPerPerson: number
   socialSecurityEmployee: number
   unemploymentEmployee: number
@@ -83,6 +85,7 @@ interface CoreCommon {
   year: number
   month: number
   dayCount: number
+  periodIndex: number
   headcount: number
   priorCumulativeTaxBase: number
   incomeTaxExemptionThisMonth: number
@@ -191,6 +194,7 @@ function computeMonthFromGross(
     year: common.year,
     month: common.month,
     dayCount: common.dayCount,
+    periodIndex: common.periodIndex,
     grossPerPerson: roundCurrency(gross).toNumber(),
     socialSecurityEmployee: socialSecurityEmployeeAmt.toNumber(),
     unemploymentEmployee: unemploymentEmployeeAmt.toNumber(),
@@ -314,6 +318,7 @@ export function resolvePayrollMonth(input: PayrollMonthInput, legs: PayrollLegs,
     year: input.year,
     month: input.month,
     dayCount: input.dayCount,
+    periodIndex: input.periodIndex,
     headcount: input.headcount,
     priorCumulativeTaxBase: input.priorCumulativeTaxBase,
     incomeTaxExemptionThisMonth: input.incomeTaxExemptionThisMonth,

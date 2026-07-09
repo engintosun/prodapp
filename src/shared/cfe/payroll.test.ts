@@ -52,6 +52,7 @@ function baseFields(year: number, month: number, headcount = 1, dayCount = 30, p
     year,
     month,
     dayCount,
+    periodIndex: 0,
     headcount,
     priorCumulativeTaxBase,
     incomeTaxExemptionThisMonth: EXEMPTION_SERIES[month - 1],
