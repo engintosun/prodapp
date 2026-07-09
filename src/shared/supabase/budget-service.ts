@@ -158,7 +158,7 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
 
   const { data: items, error: ei } = await supabase
     .from('budget_items')
-    .select('id, item_code, name, description_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, public_note, input_mode, input_value')
+    .select('id, item_code, name, description_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, public_note')
     .eq('group_id', grp.id)
     .eq('is_active', true)
     .order('sort_order')
@@ -236,8 +236,11 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
     paymentStatus: typeof i.payment_status === 'string' ? i.payment_status : null,
     internalNote: (i.internal_note as string | null) ?? null,
     publicNote: (i.public_note as string | null) ?? null,
-    inputMode: (i.input_mode as BudgetItemRow['inputMode']) ?? null,
-    inputValue: i.input_value !== null && i.input_value !== undefined ? Number(i.input_value) : null,
+    // input_mode/input_value kolonlari kaldirildi (DILIM-3e-1, K7 EK ek karari): kaynak artik hep
+    // unit_net (item veya donem override). BudgetItemRow.inputMode/inputValue alanlari UI (Prompt C
+    // sokene kadar) icin korunur, daima null - bordroSourceField hep 'unit_net'e collapse eder.
+    inputMode: null,
+    inputValue: null,
   }))
 
   return { budgetId, groupId: grp.id as string, cardName: grp.name as string, stages, items: rows }
@@ -273,24 +276,15 @@ export async function updateItemField(
   } else if (field === 'internalNote' || field === 'publicNote') {
     const noteText = String(value).trim()
     payload = { [FIELD_COL[field]]: noteText === '' ? null : noteText }
-  } else if (
-    field === 'unitNetInput' ||
-    field === 'unitGrossInput' ||
-    field === 'totalNetInput' ||
-    field === 'totalGrossInput'
-  ) {
+  } else if (field === 'unitNetInput') {
     const n = typeof value === 'number' ? value : Number(String(value).replace(',', '.'))
     if (!Number.isFinite(n)) throw new Error('Geçersiz sayı')
     if (n < 0) throw new Error('Negatif değer girilemez')
-    if (field === 'unitNetInput') {
-      payload = { unit_net: n, input_mode: null, input_value: null }
-    } else if (field === 'unitGrossInput') {
-      payload = { input_mode: 'unit_gross', input_value: n }
-    } else if (field === 'totalNetInput') {
-      payload = { input_mode: 'total_net', input_value: n }
-    } else {
-      payload = { input_mode: 'total_gross', input_value: n }
-    }
+    payload = { unit_net: n }
+  } else if (field === 'unitGrossInput' || field === 'totalNetInput' || field === 'totalGrossInput') {
+    // input_mode/input_value kolonlari kaldirildi (DILIM-3e-1): bu giris yollari artik desteklenmiyor,
+    // kaynak her zaman unitNetInput/unit_net. Sessiz-hata yasagi (CLAUDE.md) - no-op degil, acik hata.
+    throw new Error('Bu giriş alanı artık desteklenmiyor, Birim Net kullanın')
   } else {
     const n = typeof value === 'number' ? value : Number(String(value).replace(',', '.'))
     if (!Number.isFinite(n)) throw new Error('Geçersiz sayı')
@@ -482,8 +476,25 @@ export async function copyLastPeriodToMain(itemId: string, stageId: string): Pro
 }
 
 // Birim -> gun karsiligi (bordro ay-dagilimi icin). episode/flat gibi bordroda anlamsiz birimler
-// icin 30 gun varsayilir (console.warn ile isaretlenir), throw ETMEZ.
+// icin 30 gun varsayilir (console.warn ile isaretlenir), throw ETMEZ. Tek kaynak: hem skeleton gun
+// bolusturmede hem Birim Net'i ay-esdegerine cevirmede (S1, DILIM-3e-1) kullanilir.
 const UNIT_DAY_LENGTH: Record<string, number> = { day: 1, week: 7, month: 30 }
+
+function unitDayLength(unitCode: string): number {
+  const len = UNIT_DAY_LENGTH[unitCode]
+  if (len === undefined) {
+    console.warn(`Payroll: beklenmeyen Birim (${unitCode}), bordroda gun/hafta/ay bekleniyordu - 30 gun varsayildi`)
+    return 30
+  }
+  return len
+}
+
+// Girilen Birim Net'i (o birimin TEK doneminde kazanilan net) ay-esdegerine cevirir (S1 duzeltmesi,
+// DILIM-3e-1): motor targetNetFullMonth'u hep TAM AYLIK net bekler - hafta biriminde girilen 5000,
+// 5000*30/7 aylik esdegerine cevrilmeden hic dokunulmadan motora veriliyordu (bug).
+export function monthEquivalentNet(net: number, unitCode: string): number {
+  return new Decimal(net).mul(30).div(unitDayLength(unitCode)).toNumber()
+}
 
 // rate_catalog'dan bu ayin yururlukteki bordro parametrelerini derler. Su an tek yurutluk-donemi
 // (2026-01-01) var; coklu-vintage cozumleme (Temmuz/Ocak parametre degisimi) rate_catalog semasi
@@ -541,32 +552,216 @@ export interface BordroDerivedFields {
   unitGross: number
   totalNet: number
   totalGross: number
-  sourceField: 'unit_net' | 'unit_gross' | 'total_net' | 'total_gross'
   monthlySeries: PayrollMonthResult[]
   signals: PayrollSignal[]
   bucketBreakdown: PayrollEnvelope['bucketBreakdown']
 }
 
-// Bordro kalemi icin 4-alan turetme: kalemin kendi donem/miktar/carpan verisinden ay listesi kurar,
-// bordro motorunu (resolvePayrollItem) cagirir, Birim Net/Brut + Net/Brut Toplam dorduzunu birlikte
-// dondurur. Toplam sure = tum donemlerin (Miktar x Carpan) duz toplami. Aradaki gercek bosluk (kisi
-// bir donemden sonra ayrilip donerse) KAAPA'nin kapsami DISINDA - gerceklesen fark ayri bir konu
-// (Engin karari, 07-07). Sadece ilk donem ankorlanir, sonrakiler kesintisiz devam eder.
+export type BordroDerivationReason = 'invalid_net' | 'no_periods' | 'unknown'
+
+export type BordroDerivationResult = { ok: true; data: BordroDerivedFields } | { ok: false; reason: BordroDerivationReason }
+
+export interface BordroItemFields {
+  unitNet: number
+  unitCode: string
+  multiplier: number
+  repeat: number
+}
+
+export interface BordroPeriodRow {
+  quantity: number
+  repeatOverride: number | null
+  unitCodeOverride: string | null
+  unitNetOverride: number | null
+  sortOrder: number
+  startDate: string | null
+  isUndated: boolean
+}
+
+function anchorOf(stage: { startDate: string | null; isUndated: boolean } | undefined): { year: number; month: number } {
+  if (stage && !stage.isUndated && stage.startDate) {
+    const d = new Date(stage.startDate)
+    return { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1 }
+  }
+  // Tarih bilinmiyorken herkes Ocak'ta ise girmis varsayilir: istisna serisinin en dusuk degerleri ->
+  // maliyet en yuksek (ihtiyat-lehine risk payi, Engin karari 07-07). Iki ozdes butce olusturulma
+  // tarihinden bagimsiz AYNI rakami verir. Gercek tarih girildiginde gercek takvim kullanilir,
+  // maliyet ancak asagi iner.
+  return { year: new Date().getUTCFullYear(), month: 1 }
+}
+
+// Motor hatasini (Error) tipli reason'a cevirir - ham error.message asla disariya sizmaz (savunma
+// kurali, DILIM-3e-1). Mesaj icerigine gore siniflandirir: "net" gecen -> gecersiz hedef net,
+// "donem"/"K faktoru" gecen -> kalemin donem/miktar verisi hic ay uretmedi, digerleri -> bilinmeyen.
+function classifyBordroError(e: unknown): BordroDerivationReason {
+  const message = e instanceof Error ? e.message : ''
+  if (/net/i.test(message)) return 'invalid_net'
+  if (/donem|K faktoru/i.test(message)) return 'no_periods'
+  return 'unknown'
+}
+
+// Saf hesap cekirdegi (DB'ye dokunmaz, dogrudan test edilir). Kalemin donem/miktar/carpan verisinden
+// ay iskeleti kurar: 0/1 donemde ana satir Miktar/Carpan/Birim'ini parametre olarak kullanir (buildDonemler
+// UI ile AYNI davranis, K9 muhuru); >1 donemde her donem KENDI override'iyla ozerktir (S5 duzeltmesi -
+// unit_net_override artik okunuyor). Her donemin Birim Net'i kendi Biriminden ay-esdegerine cevrilir
+// (S1 duzeltmesi) - tek global hedef yok, her donem kendi sozlesmesi. Toplam sure = tum donemlerin
+// (Miktar x Carpan) duz toplami; sadece ilk donem ankorlanir (K7), sonrakiler kesintisiz devam eder.
+export function computeBordroFields(
+  item: BordroItemFields,
+  periodRows: BordroPeriodRow[],
+  legs: PayrollLegs,
+  rates: PayrollRates,
+): BordroDerivedFields {
+  interface PeriodSpec {
+    quantity: number
+    repeatVal: number
+    unitCode: string
+    netFullMonth: number
+  }
+
+  let firstStage: { startDate: string | null; isUndated: boolean } | undefined
+  const periods: PeriodSpec[] = []
+  if (periodRows.length <= 1) {
+    firstStage = periodRows[0]
+    periods.push({
+      quantity: item.multiplier,
+      repeatVal: item.repeat,
+      unitCode: item.unitCode,
+      netFullMonth: monthEquivalentNet(item.unitNet, item.unitCode),
+    })
+  } else {
+    const sorted = [...periodRows].sort((a, b) => a.sortOrder - b.sortOrder)
+    firstStage = sorted[0]
+    for (const p of sorted) {
+      const unitCode = p.unitCodeOverride ?? item.unitCode
+      const netSource = p.unitNetOverride ?? item.unitNet
+      periods.push({
+        quantity: p.quantity,
+        repeatVal: p.repeatOverride ?? item.repeat,
+        unitCode,
+        netFullMonth: monthEquivalentNet(netSource, unitCode),
+      })
+    }
+  }
+
+  const anchor = anchorOf(firstStage)
+  let cursorYear = anchor.year
+  let cursorMonth = anchor.month
+  let usedInCursorMonth = 0
+
+  const skeleton: { year: number; month: number; dayCount: number; headcount: number; targetNetFullMonth: number }[] = []
+  for (const per of periods) {
+    if (per.quantity <= 0) continue
+    let remainingDays = Math.round(per.repeatVal * unitDayLength(per.unitCode))
+    while (remainingDays > 0) {
+      const spaceLeftInMonth = 30 - usedInCursorMonth
+      const chunk = Math.min(spaceLeftInMonth, remainingDays)
+      skeleton.push({
+        year: cursorYear,
+        month: cursorMonth,
+        dayCount: chunk,
+        headcount: per.quantity,
+        targetNetFullMonth: per.netFullMonth,
+      })
+      remainingDays -= chunk
+      usedInCursorMonth += chunk
+      if (usedInCursorMonth >= 30) {
+        usedInCursorMonth = 0
+        cursorMonth += 1
+        if (cursorMonth > 12) {
+          cursorMonth = 1
+          cursorYear += 1
+        }
+      }
+    }
+  }
+  if (skeleton.length === 0) throw new Error('Payroll: kalemin donem/miktar/carpan verisinden ay uretilemedi')
+
+  const K = skeleton.reduce((acc, s) => acc + (s.dayCount / 30) * s.headcount, 0)
+  if (K <= 0) throw new Error('Payroll: K faktoru sifir veya negatif, hesaplanamaz')
+
+  const employeeSSPercent = legs.socialSecurityEmployee ? rates.socialSecurityEmployeePercent : 0
+  const employeeUnempPercent = legs.unemploymentEmployee ? rates.unemploymentEmployeePercent : 0
+  const exemptionSeries = deriveMinimumWageExemptionSeries(
+    rates.minimumWageGrossThisMonth,
+    employeeSSPercent,
+    employeeUnempPercent,
+    rates.incomeTaxBrackets,
+  )
+  const stampExemption = deriveStampDutyExemption(rates.minimumWageGrossThisMonth, rates.stampDutyPercent)
+
+  // Donem gecisi ay ortasindaysa ayni gercek (yil,ay) ikilisine birden fazla skeleton satiri dusebilir;
+  // her satira o ayin istisnasini TAM vermek ayni ay icin istisnayi iki kere sayardi (ihtiyat-ALEYHINE
+  // hata). Istisna dayCount/30 oraniyla dagitilir: tam kapsanan ay toplamda TAM istisna alir, kist ay
+  // gun-oranli (eksik) alir - yon ihtiyat-lehine.
+  const months: PayrollMonthInput[] = skeleton.map((s) => {
+    const dayRatio = new Decimal(s.dayCount).div(30)
+    return {
+      year: s.year,
+      month: s.month,
+      dayCount: s.dayCount,
+      headcount: s.headcount,
+      priorCumulativeTaxBase: 0,
+      incomeTaxExemptionThisMonth: new Decimal(exemptionSeries[s.month - 1])
+        .mul(dayRatio)
+        .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
+        .toNumber(),
+      stampDutyExemptionThisMonth: new Decimal(stampExemption)
+        .mul(dayRatio)
+        .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
+        .toNumber(),
+      calculationType: 'net_to_gross' as const,
+      targetNetFullMonth: s.targetNetFullMonth,
+    }
+  })
+
+  const envelope = resolvePayrollItem(months, legs, rates)
+
+  return {
+    unitNet: envelope.netTotal / K,
+    unitGross: envelope.grossTotal / K,
+    totalNet: envelope.netTotal,
+    totalGross: envelope.grossTotal,
+    monthlySeries: envelope.monthlySeries,
+    signals: envelope.signals,
+    bucketBreakdown: envelope.bucketBreakdown,
+  }
+}
+
+// computeBordroFields'i sarar: motor Error firlatirsa (orn. hedef net 0/negatif) ham mesaji tipli
+// reason'a cevirir. Servis katmaninin temiz sozlesmesi budur - dogrudan test edilir.
+export function computeBordroFieldsResult(
+  item: BordroItemFields,
+  periodRows: BordroPeriodRow[],
+  legs: PayrollLegs,
+  rates: PayrollRates,
+): BordroDerivationResult {
+  try {
+    return { ok: true, data: computeBordroFields(item, periodRows, legs, rates) }
+  } catch (e) {
+    return { ok: false, reason: classifyBordroError(e) }
+  }
+}
+
+// Bordro kalemi icin DB'den okuyup computeBordroFieldsResult'i cagirir. UI (budget-card-screen.tsx)
+// bu fonksiyonu try/catch ile sarar; motor hatasinda ham mesaj degil tipli reason kodu firlatilir
+// (ham hata sizintisi savunmasi, DILIM-3e-1). input_mode/input_value KULLANILMAZ - kaynak her zaman
+// unit_net (item veya donem override).
 export async function deriveBordroFields(itemId: string): Promise<BordroDerivedFields> {
   const { data: itemData, error: ei } = await supabase
     .from('budget_items')
-    .select('id, budget_id, unit_net, unit_id, multiplier, repeat, input_mode, input_value')
+    .select('id, budget_id, unit_net, unit_id, multiplier, repeat')
     .eq('id', itemId)
     .single()
   if (ei) throw new Error(ei.message)
 
-  const { data: periodRows, error: ep } = await supabase
+  const { data: periodRowsRaw, error: ep } = await supabase
     .from('budget_item_periods')
-    .select('stage_id, quantity, repeat_override, unit_id_override')
+    .select('stage_id, quantity, repeat_override, unit_id_override, unit_net_override')
     .eq('item_id', itemId)
   if (ep) throw new Error(ep.message)
 
-  const stageIds = (periodRows ?? []).map((p) => p.stage_id as string)
+  const stageIds = (periodRowsRaw ?? []).map((p) => p.stage_id as string)
   const stageById = new Map<string, { startDate: string | null; isUndated: boolean; sortOrder: number }>()
   if (stageIds.length) {
     const { data: stageRows, error: es } = await supabase
@@ -606,163 +801,28 @@ export async function deriveBordroFields(itemId: string): Promise<BordroDerivedF
 
   const rates = await fetchPayrollRates()
 
-  // Tek-donem (0 veya 1 budget_item_periods satiri) modunda ana satir Miktar/Carpan/Birim'ini
-  // parametre olarak kullanir; buildDonemler (UI) ile AYNI davranis (K9 muhuru).
-  interface PeriodSpec {
-    quantity: number
-    repeatVal: number
-    unitCode: string
-    sortOrder: number
-  }
-  function anchorOf(stage: { startDate: string | null; isUndated: boolean } | undefined): { year: number; month: number } {
-    if (stage && !stage.isUndated && stage.startDate) {
-      const d = new Date(stage.startDate)
-      return { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1 }
+  const periodRows: BordroPeriodRow[] = (periodRowsRaw ?? []).map((p) => {
+    const stage = stageById.get(p.stage_id as string)
+    return {
+      quantity: Number(p.quantity),
+      repeatOverride: p.repeat_override !== null && p.repeat_override !== undefined ? Number(p.repeat_override) : null,
+      unitCodeOverride: p.unit_id_override ? (unitCodeById.get(p.unit_id_override as string) ?? null) : null,
+      unitNetOverride:
+        p.unit_net_override !== null && p.unit_net_override !== undefined ? Number(p.unit_net_override) : null,
+      sortOrder: stage?.sortOrder ?? 0,
+      startDate: stage?.startDate ?? null,
+      isUndated: stage?.isUndated ?? true,
     }
-    // Tarih bilinmiyorken herkes Ocak'ta ise girmis varsayilir: istisna serisinin en dusuk degerleri ->
-    // maliyet en yuksek (ihtiyat-lehine risk payi, Engin karari 07-07). Iki ozdes butce olusturulma
-    // tarihinden bagimsiz AYNI rakami verir. Gercek tarih girildiginde gercek takvim kullanilir,
-    // maliyet ancak asagi iner.
-    return { year: new Date().getUTCFullYear(), month: 1 }
-  }
-
-  let firstStage: { startDate: string | null; isUndated: boolean; sortOrder: number } | undefined
-  const periods: PeriodSpec[] = []
-  if (stageIds.length <= 1) {
-    firstStage = stageIds.length === 1 ? stageById.get(stageIds[0]) : undefined
-    periods.push({
-      quantity: Number(itemData.multiplier),
-      repeatVal: Number(itemData.repeat),
-      unitCode: unitCodeById.get(itemData.unit_id as string) ?? 'month',
-      sortOrder: 0,
-    })
-  } else {
-    const sortedRows = [...(periodRows ?? [])].sort(
-      (a, b) => (stageById.get(a.stage_id as string)?.sortOrder ?? 0) - (stageById.get(b.stage_id as string)?.sortOrder ?? 0),
-    )
-    firstStage = stageById.get(sortedRows[0]?.stage_id as string)
-    for (const p of sortedRows) {
-      const stage = stageById.get(p.stage_id as string)
-      const unitId = (p.unit_id_override as string | null) ?? (itemData.unit_id as string)
-      periods.push({
-        quantity: Number(p.quantity),
-        repeatVal:
-          p.repeat_override !== null && p.repeat_override !== undefined
-            ? Number(p.repeat_override)
-            : Number(itemData.repeat),
-        unitCode: unitCodeById.get(unitId) ?? 'month',
-        sortOrder: stage?.sortOrder ?? 0,
-      })
-    }
-  }
-
-  // Sadece ilk donem ankorlanir (K7: tarihliyse start_date, tarihsizse butcenin acilis ayi);
-  // sonraki donemler ay siniriyla sifirlanmadan, onceki donemin biraktigi noktadan kesintisiz devam eder.
-  const anchor = anchorOf(firstStage)
-  let cursorYear = anchor.year
-  let cursorMonth = anchor.month
-  let usedInCursorMonth = 0
-
-  const skeleton: { year: number; month: number; dayCount: number; headcount: number }[] = []
-  for (const per of periods) {
-    if (per.quantity <= 0) continue
-    const dayLength = UNIT_DAY_LENGTH[per.unitCode]
-    if (dayLength === undefined) {
-      console.warn(`Payroll: beklenmeyen Birim (${per.unitCode}), bordroda gun/hafta/ay bekleniyordu - 30 gun varsayildi`)
-    }
-    let remainingDays = Math.round(per.repeatVal * (dayLength ?? 30))
-    while (remainingDays > 0) {
-      const spaceLeftInMonth = 30 - usedInCursorMonth
-      const chunk = Math.min(spaceLeftInMonth, remainingDays)
-      skeleton.push({ year: cursorYear, month: cursorMonth, dayCount: chunk, headcount: per.quantity })
-      remainingDays -= chunk
-      usedInCursorMonth += chunk
-      if (usedInCursorMonth >= 30) {
-        usedInCursorMonth = 0
-        cursorMonth += 1
-        if (cursorMonth > 12) {
-          cursorMonth = 1
-          cursorYear += 1
-        }
-      }
-    }
-  }
-  if (skeleton.length === 0) throw new Error('Payroll: kalemin donem/miktar/carpan verisinden ay uretilemedi')
-
-  const K = skeleton.reduce((acc, s) => acc + (s.dayCount / 30) * s.headcount, 0)
-  if (K <= 0) throw new Error('Payroll: K faktoru sifir veya negatif, hesaplanamaz')
-
-  const mode = itemData.input_mode as 'unit_gross' | 'total_net' | 'total_gross' | null
-  const inputValue =
-    itemData.input_value !== null && itemData.input_value !== undefined ? Number(itemData.input_value) : null
-
-  let sourceField: BordroDerivedFields['sourceField']
-  let calculationType: 'net_to_gross' | 'gross_to_net'
-  let kaynakUnit: number
-  if (mode === null) {
-    sourceField = 'unit_net'
-    calculationType = 'net_to_gross'
-    kaynakUnit = Number(itemData.unit_net)
-  } else if (mode === 'unit_gross') {
-    sourceField = 'unit_gross'
-    calculationType = 'gross_to_net'
-    kaynakUnit = inputValue ?? 0
-  } else if (mode === 'total_net') {
-    sourceField = 'total_net'
-    calculationType = 'net_to_gross'
-    kaynakUnit = (inputValue ?? 0) / K
-  } else {
-    sourceField = 'total_gross'
-    calculationType = 'gross_to_net'
-    kaynakUnit = (inputValue ?? 0) / K
-  }
-
-  const employeeSSPercent = legs.socialSecurityEmployee ? rates.socialSecurityEmployeePercent : 0
-  const employeeUnempPercent = legs.unemploymentEmployee ? rates.unemploymentEmployeePercent : 0
-  const exemptionSeries = deriveMinimumWageExemptionSeries(
-    rates.minimumWageGrossThisMonth,
-    employeeSSPercent,
-    employeeUnempPercent,
-    rates.incomeTaxBrackets,
-  )
-  const stampExemption = deriveStampDutyExemption(rates.minimumWageGrossThisMonth, rates.stampDutyPercent)
-
-  // Donem gecisi ay ortasindaysa ayni gercek (yil,ay) ikilisine birden fazla skeleton satiri dusebilir;
-  // her satira o ayin istisnasini TAM vermek ayni ay icin istisnayi iki kere sayardi (ihtiyat-ALEYHINE
-  // hata). Istisna dayCount/30 oraniyla dagitilir: tam kapsanan ay toplamda TAM istisna alir, kist ay
-  // gun-oranli (eksik) alir - yon ihtiyat-lehine.
-  const months: PayrollMonthInput[] = skeleton.map((s) => {
-    const dayRatio = new Decimal(s.dayCount).div(30)
-    const common = {
-      year: s.year,
-      month: s.month,
-      dayCount: s.dayCount,
-      headcount: s.headcount,
-      priorCumulativeTaxBase: 0,
-      incomeTaxExemptionThisMonth: new Decimal(exemptionSeries[s.month - 1])
-        .mul(dayRatio)
-        .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
-        .toNumber(),
-      stampDutyExemptionThisMonth: new Decimal(stampExemption)
-        .mul(dayRatio)
-        .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
-        .toNumber(),
-    }
-    return calculationType === 'net_to_gross'
-      ? { ...common, calculationType, targetNetFullMonth: kaynakUnit }
-      : { ...common, calculationType, targetGrossFullMonth: kaynakUnit }
   })
 
-  const envelope = resolvePayrollItem(months, legs, rates)
-
-  return {
-    unitNet: envelope.netTotal / K,
-    unitGross: envelope.grossTotal / K,
-    totalNet: envelope.netTotal,
-    totalGross: envelope.grossTotal,
-    sourceField,
-    monthlySeries: envelope.monthlySeries,
-    signals: envelope.signals,
-    bucketBreakdown: envelope.bucketBreakdown,
+  const item: BordroItemFields = {
+    unitNet: Number(itemData.unit_net),
+    unitCode: unitCodeById.get(itemData.unit_id as string) ?? 'month',
+    multiplier: Number(itemData.multiplier),
+    repeat: Number(itemData.repeat),
   }
+
+  const result = computeBordroFieldsResult(item, periodRows, legs, rates)
+  if (!result.ok) throw new Error(result.reason)
+  return result.data
 }

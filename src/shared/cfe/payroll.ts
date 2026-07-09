@@ -41,6 +41,7 @@ export type PayrollMonthInput =
 export interface PayrollMonthResult {
   year: number
   month: number
+  dayCount: number
   grossPerPerson: number
   socialSecurityEmployee: number
   unemploymentEmployee: number
@@ -189,6 +190,7 @@ function computeMonthFromGross(
   return {
     year: common.year,
     month: common.month,
+    dayCount: common.dayCount,
     grossPerPerson: roundCurrency(gross).toNumber(),
     socialSecurityEmployee: socialSecurityEmployeeAmt.toNumber(),
     unemploymentEmployee: unemploymentEmployeeAmt.toNumber(),
@@ -400,7 +402,9 @@ export function resolvePayrollItem(
   }
   for (const r of monthlySeries) {
     const hc = new Decimal(r.effectiveHeadcount)
-    grossTotal = grossTotal.plus(new Decimal(r.grossPerPerson).mul(hc))
+    // S2 (DILIM-3e-1): grossTotal artik uretici maliyeti (costPerPerson) - kisi brutu degil. "Brut
+    // Toplam" kod genelinde artik TEK anlama sahip: kasadan cikan toplam (isveren SGK/issizlik dahil).
+    grossTotal = grossTotal.plus(new Decimal(r.costPerPerson).mul(hc))
     netTotal = netTotal.plus(new Decimal(r.netPerPerson).mul(hc))
     bucket.socialSecurityEmployee = bucket.socialSecurityEmployee.plus(new Decimal(r.socialSecurityEmployee).mul(hc))
     bucket.unemploymentEmployee = bucket.unemploymentEmployee.plus(new Decimal(r.unemploymentEmployee).mul(hc))
