@@ -37,8 +37,6 @@ export interface BudgetItemRow {
   paymentStatus: string | null
   internalNote: string | null
   publicNote: string | null
-  inputMode: 'unit_gross' | 'total_net' | 'total_gross' | null
-  inputValue: number | null
 }
 
 export interface CardView {
@@ -60,10 +58,6 @@ export type EditableField =
   | 'unitId'
   | 'internalNote'
   | 'publicNote'
-  | 'unitNetInput'
-  | 'unitGrossInput'
-  | 'totalNetInput'
-  | 'totalGrossInput'
 
 const FIELD_COL: Record<EditableField, string> = {
   internalNote: 'internal_note',
@@ -76,10 +70,6 @@ const FIELD_COL: Record<EditableField, string> = {
   vatRate: 'vat_rate',
   paymentStatus: 'payment_status',
   unitId: 'unit_id',
-  unitNetInput: 'unit_net',
-  unitGrossInput: 'input_value',
-  totalNetInput: 'input_value',
-  totalGrossInput: 'input_value',
 }
 
 async function getProjectId(): Promise<string> {
@@ -236,11 +226,6 @@ export async function getFirstCard(budgetId: string): Promise<CardView | null> {
     paymentStatus: typeof i.payment_status === 'string' ? i.payment_status : null,
     internalNote: (i.internal_note as string | null) ?? null,
     publicNote: (i.public_note as string | null) ?? null,
-    // input_mode/input_value kolonlari kaldirildi (DILIM-3e-1, K7 EK ek karari): kaynak artik hep
-    // unit_net (item veya donem override). BudgetItemRow.inputMode/inputValue alanlari UI (Prompt C
-    // sokene kadar) icin korunur, daima null - bordroSourceField hep 'unit_net'e collapse eder.
-    inputMode: null,
-    inputValue: null,
   }))
 
   return { budgetId, groupId: grp.id as string, cardName: grp.name as string, stages, items: rows }
@@ -276,15 +261,6 @@ export async function updateItemField(
   } else if (field === 'internalNote' || field === 'publicNote') {
     const noteText = String(value).trim()
     payload = { [FIELD_COL[field]]: noteText === '' ? null : noteText }
-  } else if (field === 'unitNetInput') {
-    const n = typeof value === 'number' ? value : Number(String(value).replace(',', '.'))
-    if (!Number.isFinite(n)) throw new Error('Geçersiz sayı')
-    if (n < 0) throw new Error('Negatif değer girilemez')
-    payload = { unit_net: n }
-  } else if (field === 'unitGrossInput' || field === 'totalNetInput' || field === 'totalGrossInput') {
-    // input_mode/input_value kolonlari kaldirildi (DILIM-3e-1): bu giris yollari artik desteklenmiyor,
-    // kaynak her zaman unitNetInput/unit_net. Sessiz-hata yasagi (CLAUDE.md) - no-op degil, acik hata.
-    throw new Error('Bu giriş alanı artık desteklenmiyor, Birim Net kullanın')
   } else {
     const n = typeof value === 'number' ? value : Number(String(value).replace(',', '.'))
     if (!Number.isFinite(n)) throw new Error('Geçersiz sayı')
@@ -549,14 +525,13 @@ async function fetchPayrollRates(): Promise<PayrollRates> {
 
 export interface BordroPeriodBreakdownEntry {
   periodIndex: number
+  stageId: string | null
   netTotal: number
   grossTotal: number
   legalBurden: number
 }
 
 export interface BordroDerivedFields {
-  unitNet: number
-  unitGross: number
   totalNet: number
   totalGross: number
   monthlySeries: PayrollMonthResult[]
@@ -584,6 +559,7 @@ export interface BordroPeriodRow {
   sortOrder: number
   startDate: string | null
   isUndated: boolean
+  stageId: string | null
 }
 
 function anchorOf(stage: { startDate: string | null; isUndated: boolean } | undefined): { year: number; month: number } {
@@ -625,6 +601,7 @@ export function computeBordroFields(
     repeatVal: number
     unitCode: string
     netFullMonth: number
+    stageId: string | null
   }
 
   let firstStage: { startDate: string | null; isUndated: boolean } | undefined
@@ -636,6 +613,7 @@ export function computeBordroFields(
       repeatVal: item.repeat,
       unitCode: item.unitCode,
       netFullMonth: monthEquivalentNet(item.unitNet, item.unitCode),
+      stageId: periodRows.length === 1 ? periodRows[0].stageId : null,
     })
   } else {
     const sorted = [...periodRows].sort((a, b) => a.sortOrder - b.sortOrder)
@@ -648,6 +626,7 @@ export function computeBordroFields(
         repeatVal: p.repeatOverride ?? item.repeat,
         unitCode,
         netFullMonth: monthEquivalentNet(netSource, unitCode),
+        stageId: p.stageId,
       })
     }
   }
@@ -755,12 +734,11 @@ export function computeBordroFields(
       const netTotal = acc.netTotal.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toNumber()
       const grossTotal = acc.grossTotal.toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toNumber()
       const legalBurden = acc.grossTotal.minus(acc.netTotal).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toNumber()
-      return { periodIndex, netTotal, grossTotal, legalBurden }
+      const stageId = periods[periodIndex]?.stageId ?? null
+      return { periodIndex, stageId, netTotal, grossTotal, legalBurden }
     })
 
   return {
-    unitNet: envelope.netTotal / K,
-    unitGross: envelope.grossTotal / K,
     totalNet: envelope.netTotal,
     totalGross: envelope.grossTotal,
     monthlySeries: envelope.monthlySeries,
@@ -854,6 +832,7 @@ export async function deriveBordroFields(itemId: string): Promise<BordroDerivedF
       sortOrder: stage?.sortOrder ?? 0,
       startDate: stage?.startDate ?? null,
       isUndated: stage?.isUndated ?? true,
+      stageId: p.stage_id as string,
     }
   })
 

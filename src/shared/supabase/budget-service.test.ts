@@ -47,6 +47,7 @@ function periodRow(overrides: Partial<BordroPeriodRow> = {}): BordroPeriodRow {
     sortOrder: 0,
     startDate: '2026-01-01',
     isUndated: false,
+    stageId: null,
     ...overrides,
   }
 }
