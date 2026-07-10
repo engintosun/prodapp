@@ -562,16 +562,16 @@ export interface BordroPeriodRow {
   stageId: string | null
 }
 
-function anchorOf(stage: { startDate: string | null; isUndated: boolean } | undefined): { year: number; month: number } {
+function anchorOf(stage: { startDate: string | null; isUndated: boolean } | undefined): { year: number; month: number; usesDefaultCalendar: boolean } {
   if (stage && !stage.isUndated && stage.startDate) {
     const d = new Date(stage.startDate)
-    return { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1 }
+    return { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, usesDefaultCalendar: false }
   }
   // Tarih bilinmiyorken herkes Ocak'ta ise girmis varsayilir: istisna serisinin en dusuk degerleri ->
   // maliyet en yuksek (ihtiyat-lehine risk payi, Engin karari 07-07). Iki ozdes butce olusturulma
   // tarihinden bagimsiz AYNI rakami verir. Gercek tarih girildiginde gercek takvim kullanilir,
   // maliyet ancak asagi iner.
-  return { year: new Date().getUTCFullYear(), month: 1 }
+  return { year: new Date().getUTCFullYear(), month: 1, usesDefaultCalendar: true }
 }
 
 // Motor hatasini (Error) tipli reason'a cevirir - ham error.message asla disariya sizmaz (savunma
@@ -710,6 +710,7 @@ export function computeBordroFields(
       calculationType: 'net_to_gross' as const,
       targetNetFullMonth: s.targetNetFullMonth,
       periodIndex: s.periodIndex,
+      usesDefaultCalendar: anchor.usesDefaultCalendar,
     }
   })
 

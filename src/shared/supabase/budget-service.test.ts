@@ -69,6 +69,22 @@ describe('budget-service — S1: Birim -> ay-esdegeri cevrim', () => {
   })
 })
 
+describe('budget-service — SNL-TAKVIM-VARSAYILAN (anchorOf kablolamasi)', () => {
+  it('tarihsiz donem (isUndated=true): sinyal VAR', () => {
+    const item = itemFields({ unitNet: 40000, unitCode: 'month', repeat: 1 })
+    const periods: BordroPeriodRow[] = [periodRow({ isUndated: true, startDate: null })]
+    const result = computeBordroFields(item, periods, STANDARD_LEGS, RATES_2026)
+    expect(result.signals.some((s) => s.code === 'SNL-TAKVIM-VARSAYILAN')).toBe(true)
+  })
+
+  it('tarihli donem (isUndated=false, startDate dolu): sinyal YOK', () => {
+    const item = itemFields({ unitNet: 40000, unitCode: 'month', repeat: 1 })
+    const periods: BordroPeriodRow[] = [periodRow({ isUndated: false, startDate: '2026-03-01' })]
+    const result = computeBordroFields(item, periods, STANDARD_LEGS, RATES_2026)
+    expect(result.signals.some((s) => s.code === 'SNL-TAKVIM-VARSAYILAN')).toBe(false)
+  })
+})
+
 describe('budget-service — S5: donem-bazli bagimsiz net', () => {
   it('iki periyotta farkli unit_net_override, her biri kendi hedefiyle cozulur', () => {
     const item = itemFields({ unitNet: 1, unitCode: 'month' }) // item-level deger periyotlarca gormezden gelinmeli

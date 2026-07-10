@@ -102,6 +102,19 @@
   - Efektif oranlar SABİT YAZILMAZ: motor senaryo formülünü saklar, girdi oranlar rate_catalog'da yaşar (B20); bütçe açılış ve statü-değişim snapshot'ı senaryoyu okur.
   - ⚠ Şart ihlali (borçlanma, geç bildirge → teşvik geri alınır) ve belge işyeri-bazlı olduğu için kapsam teyidi (set lokasyonu ≠ belgeli işyeri) uygunluk katmanında.
   - Referans maliyet: asgari ücretlinin işverene maliyeti standart senaryoda 40.214,03 TL/ay.
+
+#### Senaryo türetme algoritması (2026-07-10)
+
+- ✔ KARAR — **Kullanıcıya senaryo İSMİ sorulmaz;** üç şirket olgusu sorulur:
+  - **Q1 —** Kültür Girişim Belgesi var mı?
+  - **Q2 —** Kültür Yatırım Belgesi var mı?
+  - **Q3 —** SGK Borcu Yoktur aktivasyonu var mı?
+- ✔ **KAPI KURALI:** Q3 = HAYIR (yapılandırılmamış borç) ise sonuç **Borçlu** — Q1/Q2 ne olursa olsun belgeler devre dışıdır (SGK genelgeleri: borçsuzluk, teşviklerin ÖN ŞARTIdır; ayrıca 2 puanlık indirim de borçsuzluk şartlıdır).
+- ✔ Q3 = EVET ise sonuç, uygulanabilir seçenekler içinde **en düşük oranlı** olanıdır: Standart; Q1 = EVET ise Kültür Girişim; Q2 = EVET ise Kültür Yatırım.
+- **Matematik sağlaması (katalogla tutarlılık):** 21,75 taban; borçsuzluk + bildirge → −2 puan = 19,75; Girişim = kalanın %25'i karşılanır → 19,75×0,75 = 14,81; Yatırım = kalanın %50'si → 19,75×0,5 = 9,88.
+- Olguların evi: kullanıcıya 1:1 bağlı **şirket profili** (şema ayrı dilim). Belgelerin işyeri-bazlı geçerlilik teyidi mali müşavir işidir (mevcut ⚠ şart-ihlali hükmü korunur).
+- Ayrı not: **4691 sayılı Kanun (Teknokent/Ar-Ge) istisnaları KAPSAM DIŞI** — üç ayrı vergi eksenini kişi-bazlı/eğitim-kademeli değiştirdiği için tek-eksenli senaryo modeline sokulamaz; ileride ayrı `payroll_profile` tipi olarak ele alınabilir (Ek-6 modeli).
+
 - ✔ KARAR — **payroll_profile (kişi-profili katmanı):** Ek-6 ve gelecekteki kişi-profilleri (Emekli-SGDP, Yabancı vb.) **payment_status'a EKLENMEZ** — taksonomi korunur. Bordro statüsü altında kalem-düzeyi payroll_profile alanı (varsayılan: standart); profiller ve bileşen-ezmeleri CETVELDE yaşar (B20), CFE tek genel mekanizmayla uygular (statü temel seti kurar, profil ezer). Yeni profil eklemek = cetvele satır eklemek, core koda dokunuş yok.
 - **Ek-6 profili:** SGK/işsizlik bacakları düşer; GV + damga + asgari ücret istisnası + kümülatif KALIR (kova boş değil, küçülür); kişiye banka = net.
 - ★ **BES otomatik katılım:** 45 yaş altı, 5+ çalışanlı işyerinde %3 işçi kesintisiyle başlatma zorunlu; **işverene maliyet DEĞİL** — ters-bordro denklemine GİRMEZ, kişi tarafında bilgi satırıdır (kesinti kişinin kendi emeklilik hesabına gider); 2 ay cayma hakkı, kısa istihdamda cayma yaygın.

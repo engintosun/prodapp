@@ -33,6 +33,7 @@ interface PayrollMonthInputBase {
   priorCumulativeTaxBase: number
   incomeTaxExemptionThisMonth: number
   stampDutyExemptionThisMonth: number
+  usesDefaultCalendar?: boolean
 }
 
 export type PayrollMonthInput =
@@ -61,7 +62,7 @@ export interface PayrollMonthResult {
 }
 
 export interface PayrollSignal {
-  code: 'SNL-YIL-ASIMI' | 'SNL-MIKTAR-DEGISIM'
+  code: 'SNL-YIL-ASIMI' | 'SNL-MIKTAR-DEGISIM' | 'SNL-TAKVIM-VARSAYILAN'
   data: Record<string, unknown>
 }
 
@@ -393,6 +394,12 @@ export function resolvePayrollItem(
         signals.push({ code: 'SNL-MIKTAR-DEGISIM', data: { monthIndex: i, from: prev.headcount, to: m.headcount } })
       }
     }
+  }
+
+  // K7 varsayim dali: donem tarihsizse takvim ihtiyatli-lehine (en yuksek maliyetli) varsayimla
+  // kurulur (bkz. budget-service.ts anchorOf). Kullaniciya tek bir uyari yeter, ay-ay tekrar etmez.
+  if (sorted.some((m) => m.usesDefaultCalendar)) {
+    signals.push({ code: 'SNL-TAKVIM-VARSAYILAN', data: {} })
   }
 
   let grossTotal = new Decimal(0)

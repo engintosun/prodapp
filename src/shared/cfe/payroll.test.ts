@@ -210,6 +210,30 @@ describe('payroll — cok-aylik kumulatif', () => {
   })
 })
 
+describe('payroll — SNL-TAKVIM-VARSAYILAN (K7 varsayim dali)', () => {
+  it('tarihsiz donemde (usesDefaultCalendar=true) sinyal VAR', () => {
+    const months: PayrollMonthInput[] = [{
+      ...baseFields(2026, 1),
+      calculationType: 'net_to_gross' as const,
+      targetNetFullMonth: 40000,
+      usesDefaultCalendar: true,
+    }]
+    const envelope = resolvePayrollItem(months, STANDARD_LEGS, RATES_2026)
+    expect(envelope.signals.some((s) => s.code === 'SNL-TAKVIM-VARSAYILAN')).toBe(true)
+  })
+
+  it('tarihli donemde (usesDefaultCalendar=false/absent) sinyal YOK', () => {
+    const months: PayrollMonthInput[] = [{
+      ...baseFields(2026, 1),
+      calculationType: 'net_to_gross' as const,
+      targetNetFullMonth: 40000,
+      usesDefaultCalendar: false,
+    }]
+    const envelope = resolvePayrollItem(months, STANDARD_LEGS, RATES_2026)
+    expect(envelope.signals.some((s) => s.code === 'SNL-TAKVIM-VARSAYILAN')).toBe(false)
+  })
+})
+
 describe('payroll — sinir testleri (K5 kirilma noktalari)', () => {
   it('matrah tam dilim sinirinda (190.000): gelir vergisi tam basamak degerinde', () => {
     const input: PayrollMonthInput = {

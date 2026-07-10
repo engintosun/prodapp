@@ -96,7 +96,19 @@ Bütçe "Toplam" = **BRÜT** (yapımcı maliyeti). Üç eksen **birleştirilmez*
 
 **KAAPA KARARI — vat_deductible'ın kaderi (2026-07-03, ikinci tur):** `budget_items.vat_deductible` alanı KORUNUR (Boolean, varsayılan true; mevcut alan, migration gerekmez); bütçe motoru bu alanı OKUMAZ — KDV her durumda toplamdadır. Alan iki türetilmiş fonksiyona girdi verir: (1) fon raporu: genel toplam eksi indirilebilir satırların KDV'si = KDV'siz proje raporu (CFE'den anlık türetim, saklanmaz; indirilemeyen satırların KDV'si raporda maliyet olarak kalır — Eurimages kuralıyla uyumlu); (2) nakit akış projeksiyonu: indirilebilir satırlardan biriken tutar İndirilecek KDV havuzu — geri dönüş çıktı KDV'sine bağlı MAHSUP olarak simüle edilir, nakden iade vaat edilmez; çıktı faturası yoksa devreden KDV olarak taşınır ve dönmeyen KDV uyarısı düşer. Not: binek araç kira/yakıt KDV'si kanunen indirilemez (KDVK 30/b) — ilgili satırda bayrak false olmalı; uygunluk uyarı adayı.
 
-**KDV oranları (doğrulandı, 2026):** genel **%20** (07.07.2023'ten); indirimli **%10** (konaklama, yemek, sağlık, eğitim, kültürel); **%1** (temel gıda). Telif eseri %0 veya %20 (kapsamına göre).
+**KDV oranları (doğrulandı, 2026):**
+
+- **%20 — genel oran (varsayılan).** 07.07.2023'ten geçerli.
+- **%10 — indirimli:**
+  - Yeme-içme hizmetleri (restoran, lokanta, set catering; alkollü içecekler hariç).
+  - Konaklama (otel/pansiyon geceleme).
+  - Sağlık / ilaç / tıbbi cihaz.
+  - **Tekstil-giyim** (kumaş, giyim eşyası, ayakkabı, çanta, iplik) — **kostüm departmanı alımları bu gruba düşer.**
+  - Kültür-eğlence giriş biletleri (sinema, tiyatro, opera, bale, müze).
+- **%1 — temel gıda maddeleri** (ham malzeme; hizmet olarak alınan catering %10'dur).
+- Telif eseri %0 veya %20 (kapsamına göre, bkz. §1 satır 1).
+
+*Not: bu liste referanstır; kalem bazında `vat_rate` override her zaman mümkündür (§5).*
 
 ### 3.1 Beyan edilen ≠ fiili — asgari ücret pratiği (sektör gerçeği)
 

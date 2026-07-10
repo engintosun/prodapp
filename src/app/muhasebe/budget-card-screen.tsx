@@ -106,6 +106,7 @@ export function BudgetCardScreen() {
   const [reload, setReload] = useState(0)
   const [openBurden, setOpenBurden] = useState<{ itemId: string; stageId: string | null } | null>(null)
   const [openNoteItemId, setOpenNoteItemId] = useState<string | null>(null)
+  const [openStatusInfo, setOpenStatusInfo] = useState(false)
   const savedRef = useRef<Record<string, BudgetItemRow>>({})
   const [buffers, setBuffers] = useState<Record<string, string>>({})
   const [bordroData, setBordroData] = useState<
@@ -672,7 +673,33 @@ export function BudgetCardScreen() {
             <tr>
               <th style={thStyle}>Kod</th>
               <th style={thStyle}>Açıklama</th>
-              <th style={thStyle}>Statü</th>
+              <th style={thStyle}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+                  Statü
+                  <button
+                    type="button"
+                    title="Statü rehberi"
+                    onClick={() => setOpenStatusInfo(true)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: 16,
+                      height: 16,
+                      borderRadius: '50%',
+                      border: '1px solid var(--color-text-muted)',
+                      background: 'transparent',
+                      color: 'var(--color-text-muted)',
+                      fontSize: 10,
+                      lineHeight: 1,
+                      padding: 0,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    ?
+                  </button>
+                </span>
+              </th>
               <th style={thStyle}>Dönemler</th>
               <th style={thStyle}>Birim</th>
               <th style={thNum}>Birim net</th>
@@ -748,7 +775,7 @@ export function BudgetCardScreen() {
                         <option value="telif_belgeli">Telif</option>
                         <option value="sirket">Fatura</option>
                         <option value="kira_sahis">Kira</option>
-                        <option value="konaklama">Konaklama</option>
+                        <option value="konaklama">Konaklama/Yemek</option>
                       </select>
                     </td>
                     <td style={tdStyle}>
@@ -1080,6 +1107,11 @@ export function BudgetCardScreen() {
                           Bu kalemde aylar arasında kişi sayısı (Miktar) değişiyor; aylık döküm buna göre değişkenlik gösterir.
                         </p>
                       )}
+                      {bdSheet.data.signals.some((s) => s.code === 'SNL-TAKVIM-VARSAYILAN') && (
+                        <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', background: 'var(--color-surface-2)', padding: 'var(--space-2)', borderRadius: 'var(--radius-sm)', marginBottom: 'var(--space-2)' }}>
+                          Bu dönemin tarihi girilmediği için ihtiyatlı (en yüksek maliyetli) varsayım kullanıldı. Tarih girildiğinde rakam yalnız aşağı inebilir.
+                        </p>
+                      )}
                       {[
                         { label: 'SGK işçi', amount: bdSheet.data.bucketBreakdown.socialSecurityEmployee },
                         { label: 'İşsizlik işçi', amount: bdSheet.data.bucketBreakdown.unemploymentEmployee },
@@ -1168,6 +1200,42 @@ export function BudgetCardScreen() {
           </>
         )
       })()}
+      {openStatusInfo && (
+        <>
+          <div
+            onClick={() => setOpenStatusInfo(false)}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 200 }}
+          />
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: 'min(480px, 100%)', maxHeight: '80vh', overflowY: 'auto', borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0', background: 'var(--color-surface)', padding: 'var(--space-4)', paddingBottom: 'var(--space-6)', zIndex: 201, boxShadow: 'var(--shadow-md)' }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-3)' }}>
+              <span style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--color-text)' }}>Statü rehberi</span>
+              <button
+                type="button"
+                onClick={() => setOpenStatusInfo(false)}
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', fontSize: 'var(--text-lg)', padding: '0 var(--space-1)' }}
+              >
+                ×
+              </button>
+            </div>
+            {[
+              { label: 'Bordro', text: 'Ücretli çalışan. Net ele geçen tutar girilir; SGK ve vergi yükleri üzerine biner, oranlar şirket tanımına ve güncel mevzuata göre hesaplanır.' },
+              { label: 'SMM', text: 'Serbest meslek makbuzu. Stopaj kesintisi içerir; KDV durumu kişinin mükellefiyetine göre değişir.' },
+              { label: 'Telif', text: 'Senarist, yönetmen, besteci gibi eser sahipleri (oyunculuk DEĞİL). Stopaj kesintisi içerir.' },
+              { label: 'Fatura', text: 'Şirketten alınan mal/hizmet. Stopaj yok; KDV genel oranda, kalem bazında değiştirilebilir.' },
+              { label: 'Kira', text: 'ŞAHISTAN kiralama (lokasyon, araç vb.). Stopaj var, KDV yok. Şirketten kiralama Fatura kalemine girer.' },
+              { label: 'Konaklama/Yemek', text: 'Otel, pansiyon, set catering, restoran. İndirimli KDV; stopaj ve SGK yükü yok.' },
+            ].map(({ label, text }) => (
+              <div key={label} style={{ padding: 'var(--space-2) 0', borderBottom: '1px solid var(--color-border)' }}>
+                <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-text)', marginBottom: 'var(--space-1)' }}>{label}</div>
+                <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)' }}>{text}</div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   )
 }
