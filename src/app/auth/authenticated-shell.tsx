@@ -16,6 +16,7 @@ import { SahaScreen } from '../saha/saha-screen'
 import { ReviewerScreen } from '../reviewer/reviewer-screen'
 import { InviteScreen } from '../muhasebe/invite-screen'
 import { BudgetCardScreen } from '../muhasebe/budget-card-screen'
+import { DefinitionsScreen } from '../muhasebe/definitions-screen'
 import { OnboardingFlow } from '../onboarding/onboarding-flow'
 
 interface Props {
@@ -100,7 +101,7 @@ export function AuthenticatedShell({ user, theme, onToggleTheme }: Props) {
           projectId={projectId as string}
           projectName={projectName}
           userId={user.id}
-          initialStep={setupState === 'departman' ? 0 : 1}
+          initialStep={setupState === 'departman' ? 0 : 2}
           onFinish={() => setSetupState('none')}
         />
       </>
@@ -126,9 +127,11 @@ export function AuthenticatedShell({ user, theme, onToggleTheme }: Props) {
             ? <InviteScreen />
             : role === 'muhasebe' && activeKey === 'butce'
               ? <BudgetCardScreen />
-              : (role === 'dept' && activeKey === 'bekleyen') || (role === 'muhasebe' && activeKey === 'masa')
-              ? <ReviewerScreen role={role} />
-              : <EmptyState title={activeLabel} description="Bu ekran yakında (M2.3+)" />}
+              : role === 'muhasebe' && activeKey === 'tanimlar'
+                ? <DefinitionsScreen projectId={projectId as string} userId={user.id} />
+                : (role === 'dept' && activeKey === 'bekleyen') || (role === 'muhasebe' && activeKey === 'masa')
+                ? <ReviewerScreen role={role} />
+                : <EmptyState title={activeLabel} description="Bu ekran yakında (M2.3+)" />}
       </main>
       <BottomNav role={role} activeKey={activeKey} onSelect={setActiveKey} />
     </>

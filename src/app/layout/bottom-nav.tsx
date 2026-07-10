@@ -22,6 +22,8 @@ export const NAV_ITEMS: Record<UserRole, { key: string; label: string }[]> = {
     { key: 'davet', label: 'Davet' },
     // TODO-SPEC gecici Butce sekmesi (2b-1 salt-gorunur) -- final muhasebe nav + kart-masa Engin tasarlayacak (M2.5).
     { key: 'butce', label: 'Bütçe' },
+    // TODO-SPEC gecici Tanimlar sekmesi (Sirket Profili dilimi, 2026-07-10) -- final muhasebe nav + kart-masa Engin tasarlayacak (M2.5).
+    { key: 'tanimlar', label: 'Tanımlar' },
   ],
 }
 

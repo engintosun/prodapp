@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { signOut } from '../../shared/supabase/auth-service'
 import { InviteScreen } from '../muhasebe/invite-screen'
+import { CompanyProfileStep } from './company-profile-step'
 import { DepartmentStep } from './department-step'
 import { PeriodStep } from './period-step'
 import { BudgetStep } from './budget-step'
@@ -9,11 +10,11 @@ interface Props {
   projectId: string
   projectName: string
   userId: string
-  initialStep: 0 | 1
+  initialStep: 0 | 2
   onFinish: () => void
 }
 
-const STEP_LABELS = ['Departman', 'Dönem', 'Bütçe', 'Davet']
+const STEP_LABELS = ['Şirket Tanımı', 'Departman', 'Dönem', 'Bütçe', 'Davet']
 
 export function OnboardingFlow({ projectId, projectName, userId, initialStep, onFinish }: Props) {
   const [step, setStep] = useState<number>(initialStep)
@@ -80,10 +81,11 @@ export function OnboardingFlow({ projectId, projectName, userId, initialStep, on
       </div>
 
       <main style={{ flex: 1, padding: 'var(--space-4)', paddingBottom: '96px' }}>
-        {step === 0 && <DepartmentStep projectId={projectId} onDone={() => setStep(1)} />}
-        {step === 1 && <PeriodStep projectId={projectId} userId={userId} onDone={() => setStep(2)} />}
-        {step === 2 && <BudgetStep projectId={projectId} userId={userId} onDone={() => setStep(3)} />}
-        {step === 3 && (
+        {step === 0 && <CompanyProfileStep projectId={projectId} userId={userId} onDone={() => setStep(1)} />}
+        {step === 1 && <DepartmentStep projectId={projectId} onDone={() => setStep(2)} />}
+        {step === 2 && <PeriodStep projectId={projectId} userId={userId} onDone={() => setStep(3)} />}
+        {step === 3 && <BudgetStep projectId={projectId} userId={userId} onDone={() => setStep(4)} />}
+        {step === 4 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
             <InviteScreen />
             <button

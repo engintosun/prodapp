@@ -475,7 +475,10 @@ export function monthEquivalentNet(net: number, unitCode: string): number {
 // rate_catalog'dan bu ayin yururlukteki bordro parametrelerini derler. Su an tek yurutluk-donemi
 // (2026-01-01) var; coklu-vintage cozumleme (Temmuz/Ocak parametre degisimi) rate_catalog semasi
 // destekler ama bu DILIM'de tek-donem veriyle calisir (K5: mekanizma hazir, veri buyudukce genisler).
-async function fetchPayrollRates(): Promise<PayrollRates> {
+// sgk_isveren item_burdens'inda daima NULL durur (fill_mode=skeleton, legs boolean'ini isaretler);
+// gercek oran burada fn_resolve_sgk_scenario'nun dondugu component code'a gore CANLI okunur (Sirket
+// Profili DILIMI, 2026-07-10) - projectId yoksa (eski cagri yolu) standart senaryoya duser.
+async function fetchPayrollRates(projectId?: string): Promise<PayrollRates> {
   const today = new Date().toISOString().slice(0, 10)
   const { data: rows, error } = await supabase
     .from('rate_catalog')
@@ -484,6 +487,13 @@ async function fetchPayrollRates(): Promise<PayrollRates> {
     .order('valid_from', { ascending: false })
   if (error) throw new Error(error.message)
   const all = rows ?? []
+
+  let sgkEmployerCode = 'sgk_isveren'
+  if (projectId) {
+    const { data: scenario, error: es } = await supabase.rpc('fn_resolve_sgk_scenario', { p_project_id: projectId })
+    if (es) throw new Error(es.message)
+    if (scenario) sgkEmployerCode = scenario as string
+  }
 
   function codeOf(r: (typeof all)[number]): string | undefined {
     return (r as { burden_components?: { code?: string } | null }).burden_components?.code
@@ -511,10 +521,7 @@ async function fetchPayrollRates(): Promise<PayrollRates> {
   return {
     socialSecurityEmployeePercent: latestOran('sgk_isci'),
     unemploymentEmployeePercent: latestOran('issizlik_isci'),
-    // Sirket-Profili senaryo secici (borclu/kultur girisim/kultur yatirim) henuz UI'da yok (PERSONEL-
-    // MEVZUATI B/H); sgk_isveren item_burdens'inda daima NULL durur (fill_mode=skeleton). Standart
-    // senaryo rate_catalog varsayilanidir - senaryo secimi gelecek bir DILIM'in konusu.
-    socialSecurityEmployerPercent: latestOran('sgk_isveren'),
+    socialSecurityEmployerPercent: latestOran(sgkEmployerCode),
     unemploymentEmployerPercent: latestOran('issizlik_isveren'),
     stampDutyPercent: latestOran('damga'),
     incomeTaxBrackets: brackets,
@@ -771,10 +778,11 @@ export function computeBordroFieldsResult(
 export async function deriveBordroFields(itemId: string): Promise<BordroDerivedFields> {
   const { data: itemData, error: ei } = await supabase
     .from('budget_items')
-    .select('id, budget_id, unit_net, unit_id, multiplier, repeat')
+    .select('id, budget_id, unit_net, unit_id, multiplier, repeat, budgets(project_id)')
     .eq('id', itemId)
     .single()
   if (ei) throw new Error(ei.message)
+  const projectId = (itemData as unknown as { budgets?: { project_id?: string } | null }).budgets?.project_id
 
   const { data: periodRowsRaw, error: ep } = await supabase
     .from('budget_item_periods')
@@ -820,7 +828,7 @@ export async function deriveBordroFields(itemId: string): Promise<BordroDerivedF
     unemploymentEmployer: legCodes.has('issizlik_isveren'),
   }
 
-  const rates = await fetchPayrollRates()
+  const rates = await fetchPayrollRates(projectId)
 
   const periodRows: BordroPeriodRow[] = (periodRowsRaw ?? []).map((p) => {
     const stage = stageById.get(p.stage_id as string)

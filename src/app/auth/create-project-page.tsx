@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { createProject } from '../../shared/supabase/onboarding-service'
 import { setClaims } from '../../shared/supabase/auth-service'
+import { supabase } from '../../shared/supabase/client'
+import { getOwnCompanyProfile } from '../../shared/supabase/company-profile-service'
+import { useToast } from '../../shared/components/toast'
 
 interface Props {
   onBack: () => void
@@ -26,6 +29,7 @@ const inputStyle: CSSProperties = {
 }
 
 export function CreateProjectPage({ onBack }: Props) {
+  const { addToast } = useToast()
   const [projectName, setProjectName] = useState('')
   const [companyName, setCompanyName] = useState('')
   const [firstName, setFirstName] = useState('')
@@ -38,6 +42,24 @@ export function CreateProjectPage({ onBack }: Props) {
     companyName.trim() !== '' &&
     firstName.trim() !== '' &&
     lastName.trim() !== ''
+
+  useEffect(() => {
+    let cancelled = false
+    supabase.auth.getSession().then(({ data }) => {
+      const uid = data.session?.user.id
+      if (!uid) return
+      getOwnCompanyProfile(uid)
+        .then((profile) => {
+          if (!cancelled && profile) setCompanyName(profile.companyName)
+        })
+        .catch((e) => {
+          if (!cancelled) addToast((e as Error).message, 'error')
+        })
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   async function handleSubmit() {
     if (!canSubmit || submitting) return
