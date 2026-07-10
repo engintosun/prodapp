@@ -480,17 +480,20 @@ export function monthEquivalentNet(net: number, unitCode: string): number {
 // Profili DILIMI, 2026-07-10) - projectId yoksa (eski cagri yolu) standart senaryoya duser.
 async function fetchPayrollRates(projectId?: string): Promise<PayrollRates> {
   const today = new Date().toISOString().slice(0, 10)
-  const { data: rows, error } = await supabase
-    .from('rate_catalog')
-    .select('rate_percent, amount_tl, bracket_floor, bracket_base_tax, valid_from, value_kind, burden_components(code)')
-    .lte('valid_from', today)
-    .order('valid_from', { ascending: false })
+  // rate_catalog sorgusu ve senaryo RPC'si birbirinden bagimsiz - paralel baslatilir (perf, davranis ayni).
+  const [{ data: rows, error }, { data: scenario, error: es }] = await Promise.all([
+    supabase
+      .from('rate_catalog')
+      .select('rate_percent, amount_tl, bracket_floor, bracket_base_tax, valid_from, value_kind, burden_components(code)')
+      .lte('valid_from', today)
+      .order('valid_from', { ascending: false }),
+    projectId ? supabase.rpc('fn_resolve_sgk_scenario', { p_project_id: projectId }) : Promise.resolve({ data: null, error: null }),
+  ])
   if (error) throw new Error(error.message)
   const all = rows ?? []
 
   let sgkEmployerCode = 'sgk_isveren'
   if (projectId) {
-    const { data: scenario, error: es } = await supabase.rpc('fn_resolve_sgk_scenario', { p_project_id: projectId })
     if (es) throw new Error(es.message)
     if (scenario) sgkEmployerCode = scenario as string
   }
@@ -776,46 +779,37 @@ export function computeBordroFieldsResult(
 // (ham hata sizintisi savunmasi, DILIM-3e-1). input_mode/input_value KULLANILMAZ - kaynak her zaman
 // unit_net (item veya donem override).
 export async function deriveBordroFields(itemId: string): Promise<BordroDerivedFields> {
-  const { data: itemData, error: ei } = await supabase
-    .from('budget_items')
-    .select('id, budget_id, unit_net, unit_id, multiplier, repeat, budgets(project_id)')
-    .eq('id', itemId)
-    .single()
+  // Ilk dalga: budget_items / budget_item_periods / units / item_burdens birbirinden bagimsiz -
+  // paralel baslatilir (perf, davranis ayni). Hata kontrolu asagida orijinal sirayla yapilir.
+  const [
+    { data: itemData, error: ei },
+    { data: periodRowsRaw, error: ep },
+    { data: unitRows, error: eu },
+    { data: burdenRows, error: eb },
+  ] = await Promise.all([
+    supabase
+      .from('budget_items')
+      .select('id, budget_id, unit_net, unit_id, multiplier, repeat, budgets(project_id)')
+      .eq('id', itemId)
+      .single(),
+    supabase
+      .from('budget_item_periods')
+      .select('stage_id, quantity, repeat_override, unit_id_override, unit_net_override')
+      .eq('item_id', itemId),
+    supabase.from('units').select('id, code'),
+    supabase
+      .from('item_burdens')
+      .select('burden_components(code)')
+      .eq('item_id', itemId),
+  ])
   if (ei) throw new Error(ei.message)
   const projectId = (itemData as unknown as { budgets?: { project_id?: string } | null }).budgets?.project_id
-
-  const { data: periodRowsRaw, error: ep } = await supabase
-    .from('budget_item_periods')
-    .select('stage_id, quantity, repeat_override, unit_id_override, unit_net_override')
-    .eq('item_id', itemId)
   if (ep) throw new Error(ep.message)
-
-  const stageIds = (periodRowsRaw ?? []).map((p) => p.stage_id as string)
-  const stageById = new Map<string, { startDate: string | null; isUndated: boolean; sortOrder: number }>()
-  if (stageIds.length) {
-    const { data: stageRows, error: es } = await supabase
-      .from('budget_stages')
-      .select('id, start_date, is_undated, sort_order')
-      .in('id', stageIds)
-    if (es) throw new Error(es.message)
-    for (const s of stageRows ?? []) {
-      stageById.set(s.id as string, {
-        startDate: (s.start_date as string | null) ?? null,
-        isUndated: s.is_undated as boolean,
-        sortOrder: s.sort_order as number,
-      })
-    }
-  }
-
-  const { data: unitRows, error: eu } = await supabase.from('units').select('id, code')
   if (eu) throw new Error(eu.message)
+  if (eb) throw new Error(eb.message)
+
   const unitCodeById = new Map<string, string>((unitRows ?? []).map((u) => [u.id as string, u.code as string]))
 
-  const { data: burdenRows, error: eb } = await supabase
-    .from('item_burdens')
-    .select('burden_components(code)')
-    .eq('item_id', itemId)
-  if (eb) throw new Error(eb.message)
   const legCodes = new Set(
     (burdenRows ?? [])
       .map((r) => (r as { burden_components?: { code?: string } | null }).burden_components?.code)
@@ -828,7 +822,26 @@ export async function deriveBordroFields(itemId: string): Promise<BordroDerivedF
     unemploymentEmployer: legCodes.has('issizlik_isveren'),
   }
 
-  const rates = await fetchPayrollRates(projectId)
+  const stageIds = (periodRowsRaw ?? []).map((p) => p.stage_id as string)
+  const stageById = new Map<string, { startDate: string | null; isUndated: boolean; sortOrder: number }>()
+
+  // Ikinci dalga: budget_stages (stageIds varsa) ile fetchPayrollRates yalniz ilk dalganin
+  // sonucuna (stageIds / projectId) bagimli - birbirinden bagimsiz, paralel baslatilir.
+  const [stagesResult, rates] = await Promise.all([
+    stageIds.length
+      ? supabase.from('budget_stages').select('id, start_date, is_undated, sort_order').in('id', stageIds)
+      : Promise.resolve({ data: [], error: null }),
+    fetchPayrollRates(projectId),
+  ])
+  const { data: stageRows, error: es } = stagesResult
+  if (es) throw new Error(es.message)
+  for (const s of stageRows ?? []) {
+    stageById.set(s.id as string, {
+      startDate: (s.start_date as string | null) ?? null,
+      isUndated: s.is_undated as boolean,
+      sortOrder: s.sort_order as number,
+    })
+  }
 
   const periodRows: BordroPeriodRow[] = (periodRowsRaw ?? []).map((p) => {
     const stage = stageById.get(p.stage_id as string)
