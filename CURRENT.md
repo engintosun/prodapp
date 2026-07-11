@@ -19,6 +19,7 @@ M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; kart mimari
   **MİMARİ UYARI (Sonnet, karar Engin'e):** fn_lock_budget/B16 (mühürlü bütçe donmuş kopyasını korur) HENÜZ YOK — bordro motorunun TÜM parametreleri (asgari ücret, tarife, ve şimdi SGK senaryo oranı da) her zaman CANLI rate_catalog'dan okunuyor, item_burdens'te DONMUŞ bir kopya YOK. Bu, şirket profili SONRADAN değişirse (örn. Kültür Yatırım Belgesi kaybedilirse) SEALED/mühürlü bir bütçenin bile numaralarının SESSİZCE değişebileceği anlamına gelir — mevcut mimarinin ÖNCEDEN VAR OLAN bir boşluğu, bu dilimle büyümedi ama SGK senaryosu da aynı boşluğa girdi. fn_lock_budget inşa edilene kadar geçerli.
 - 2026-07-11: TERMİNOLOJİ DEVRİMİ — Miktar/X eksenleri yer değiştirdi, Çarpan emekli oldu. Miktar artık SÜRE (DB `repeat`, öncesinde kişi/adet anlamındaydı), X artık kişi/adet (DB `multiplier`, öncesinde Çarpan'dı). Kapsam SADECE: KART 1500 tablosunda hücre-konumu çaprazlandı (4. kolon "Miktar" artık repeat verisini, 5. kolon "X" artık multiplier verisini gösterir — üç set: ana satır giriş, çok-dönem özet, dönem alt-satırı) + UI string/hata mesajları + kod yorumları + doküman metni. DEĞİŞMEYEN: DB şema/RLS/migration, CFE alan adları (`qty`/`carpan`/`multiplier`/`repeat`/`quantity`/`repeat_override`), `fmtMiktar` fonksiyon adı, hiçbir formül/hesap/özet kuralı (davranış sıfır). Sinyal adı: SNL-MIKTAR-DEGISIM → SNL-ADET-DEGISIM (payroll.ts + testler + UI). Yeni konvansiyon: tarihli dokümanların başına "⚠ TERMİNOLOJİ" banner'ı eklendi (BUTCE-EKRAN-KARARLARI, BUTCE-SEMA-KARARLARI, CURRENT.md), geçmiş milestone kayıtlarına dokunulmadı. GLOSSARY K9→K9-r2 yeniden yazıldı (üç fazlı tarihçe + tehlikeli-kök notu), PERSONEL-MEVZUATI/BUTCE-EKRAN-KARARLARI/EKRAN-MUHASEBE/VERGI-MEVZUATI/TASARIM-KARARLARI güncellendi. Build ✓, tüm testler ✓ (bkz. asağıdaki doğrulama).
 - 2026-07-11 (devam): Telescoping kalici regresyon testi CANLI (budget-service.test.ts, tarihsiz + tarihli iki varyant, 400K/ay dilim-atlama serisi, fark ≤3 kurus). SGK atlama-varsayilani karari kayda gecti (bkz. Kapananlar).
+- 2026-07-11 (devam): MÜHÜR-1 CANLI — budgets.is_locked, budget_versions (V-numarali, payload jsonb tam-kopya, SGK kodu+3 boolean, calendar_assumption), budget_rate_snapshot (cetvelin tamami), fn_lock_budget/fn_unlock_budget, kilit guard trigger'lari (7 tablo: stages/items/item_periods/item_burdens/percent_lines/groups/cost_objects), fn_refill is_locked kosulu. K7 tarih sarti REVIZE: muhurden kalkti, yalniz harcama kapisinda. budget_baselines DROP (Dilim-1 atil kalintisi, hic baglanmadi; B16/Kasa kavraminin evi artik budget_versions).
 
 ## Durum
 - HEAD: git log (origin/main) kesin. Repo: github.com/engintosun/prodapp - Canli: prodapp-navy.vercel.app.
@@ -58,10 +59,12 @@ Kolon seti (KILITLI, 11): Kod - Aciklama - Statu - Donemler - Birim - Birim net 
 - **4691 (Teknokent/Ar-Ge)** → ertelenen özellikler listesine düştü (ayrı payroll_profile tipi adayı, şimdi kapsam dışı).
 - **ŞİRKET PROFİLİ ŞEMA DİLİMİ YAPILDI** (bkz. Milestone "2026-07-10 (devam)" — sema+RLS+trigger+servis+UI canlı, mimari uyarı fn_lock_budget/B16 ile ilgili not düşüldü).
 - **SGK atlama varsayılanı KAPANDI** (Engin kararı, 2026-07-11): Şirket Tanımı adımı pas geçilirse senaryo = Standart 19,75 (sgk_borcu_yok default true). İhtiyat-lehine Borçlu-varsayılanı önerisi değerlendirildi ve REDDEDİLDİ; bu karar yeniden açılmaz, migration yorumu (Q1=Hayır Q2=Hayır Q3=Evet) bilinçli ve doğrudur.
+- **MÜHÜR/versiyonlama karar paketi KL-1..KL-12 KAPANDI** (Engin+Opus, 2026-07-11): KL-1 versiyonlama Yol A (V-sekmeleri, dallanma yok); KL-5 mühür tarihsiz olabilir (Ocak-varsayımı donar); KL-7 harcama-tetiklemesi iptal (mühür tek kapı); KL-9 mühürlüye tarih yazılmaz, taslağa yazılır; KL-12 payload jsonb tam-kopya (hesaplanan değer yok, B18). MÜHÜR-1 (şema+çekirdek) bu pakettten türedi.
 
 ## Siradaki is (oncelik sirasiyla)
-1. fn_lock_budget muhur dilimi — artik SGK senaryo oranini da kapsamali (yukaridaki mimari uyari), B16 donmus-kopya ilkesini butun bordro parametreleri icin gercek kilar.
-2. Kalem Kütüphanesi ve sonrası mevcut sıra korunur (4a KART 1500 isim onarımı, 4b Kalem Kütüphanesi/Kalibrasyon).
+1. MÜHÜR-2 — servis okuma çatalı: kilitli→budget_rate_snapshot/payload, açık→canlı katalog + SGK 5-senaryo kalıcı testi + mühür round-trip testi.
+2. MÜHÜR-3 — UI: versiyon sekmeleri, salt-okunur görünüm, Mühür eki rozeti, revizyon akışı.
+3. Kalem Kütüphanesi ve sonrası mevcut sıra korunur (4a KART 1500 isim onarımı, 4b Kalem Kütüphanesi/Kalibrasyon).
 
 ## Acik kalanlar
 - KDV kalem-bazlı düzenleme yüzeyi (kütüphane varsayılanlarına bağlı, Faz sonrası).
@@ -82,6 +85,10 @@ Kolon seti (KILITLI, 11): Kod - Aciklama - Statu - Donemler - Birim - Birim net 
 - RAPORLAR fazi: icmal PDF - Bakanlik - AICP/export - EFC - cost_object rollup - Eurimages KDV'siz gorunum (vat_deductible + ayri KDV kolonu bunu bugunden besliyor). Ic dokum (bordro kendi raporu) 3e'de CANLI; dis kurumsal raporlar bu faz.
 - KAPI ACIK (Faz 1 yapmaz): taahhut - mesai - doviz - satir yorumu - DIZI (TV/Dijital): 6+ ay pencerede K9+K5 birlikte yeniden acilir (kohort-bazli cizgi adayi). Doktrin: PERSONEL-MEVZUATI §1 Dizi Kaydi.
 - Eski paket yapisi (burden_packages + package_id) atil; ileride temizlik.
+- Rol isimlendirmesi (muhasebe/yapımcı; şık-formal ad ya da adsızlık — Engin notu 2026-07-11).
+- Sunum/export dilimi: mühür gerçeği saklar, sunum görünümü yönetir (kalem aç/kapa, detay seviyesi, kayıtlı sunum profilleri; Kamu Notu ileri-dikişinden girer).
+- Kur turu: rate_catalog online güncelleme vizyonu + bütçenin farklı kurlarla ifadesi (Saturation globals deseni referans).
+- Takvim sihirbazı: çapa tarih + etap süreleri → otomatik doldurma (revizyon anı ergonomisi).
 
 ## Korunan onceki kararlar
 - CARD-DESK LAYOUT (kilitli): daralabilir sol ray + ust baglam + orta masa + sag referans.

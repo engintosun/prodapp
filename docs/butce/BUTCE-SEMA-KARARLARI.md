@@ -33,7 +33,7 @@ Paketleme: Model A — bütçe ile harcama tek kod tabanında paketlenebilir iki
 ## Bütçe göçü uygulandı + köprü kararları (2026-06-14)
 - Göç canlıya alındı (commit e63fbb0, supabase db push): kart=departman (dönemden koptu), budget_stages = "dönem" katmanı (start/end_date eklendi, nullable), miktar budget_items'tan budget_item_periods köprüsüne taşındı.
 - YENİ tablo budget_item_periods (kalem<->dönem köprüsü, ait-dönem ekseni): her kalem-dönem çifti tek satır; o dönemdeki miktar köprüde durur. Kalemde birim net / birim / adet / yük SABİT kalır. Satır toplamı = dönem tutarlarının toplamı (türetilir, A kararı).
-- Dönem tarihi NULLABLE: iskelet açılırken tarih zorunlu değil. "Dönem tarihli olmalı" zorlaması MÜHÜRDE (fn_lock_budget) — iskelet gevşek, mühür sıkı.
+- Dönem tarihi NULLABLE: iskelet açılırken tarih zorunlu değil. "Dönem tarihli olmalı" zorlaması MÜHÜRDE DEĞİL, harcama fazına geçiş kapısındadır (REVİZE 2026-07-11, MÜHÜR-1) — mühür (fn_lock_budget) tarih istemez, tarihsiz mühür Ocak-varsayımlı çözümü dondurur (calendar_assumption).
 - "En az bir dönem" kuralı da MÜHÜRDE (DB'de çocuk-satır-zorunlu kurmadık, kırılgan olurdu): mühür tam/geçerli fotoğraf ister (B16 kasa).
 
 ## Şablon body FORMAT + KDV ayrıştırma (kilitlendi 2026-06-15)
@@ -68,6 +68,6 @@ Paketleme: Model A — bütçe ile harcama tek kod tabanında paketlenebilir iki
 
 ### F. fn_open_budget kararları (KİLİTLENDİ 2026-06-21, Dilim 2a)
 - department_code -> department_id: ÇÖZÜLDÜ. departments'a `code` kolonu (kanonik anahtar, UNIQUE(project_id,code)); fn_open_budget her şablon kartının department_code'u için projede BUL-VEYA-OLUŞTUR (ON CONFLICT DO NOTHING ile race-safe). Departman proje-bazlı kalır (global raf YOK); name şablondan. İsim-eşleme REDDEDİLDİ (typo bölünmesi).
-- "Dönemsiz" etabı: ÇÖZÜLDÜ. budget_stages'e `is_undated` boolean; fn_open_budget her bütçede bir rezerve "Dönemsiz" etabı yaratır (is_undated=true, sort_order 9999). Mühür (fn_lock_budget) bu etabı "tarihli olmalı"dan MUAF tutar (mantık o dilimde, kolon CANLI).
+- "Dönemsiz" etabı: ÇÖZÜLDÜ. budget_stages'e `is_undated` boolean; fn_open_budget her bütçede bir rezerve "Dönemsiz" etabı yaratır (is_undated=true, sort_order 9999). Harcama fazına geçiş kapısı bu etabı "tarihli olmalı"dan MUAF tutar (REVİZE 2026-07-11: zorunluluk mühürden harcama kapısına taşındı); MÜHÜR-1 fn_lock_budget ise calendar_assumption'ı hesaplarken bu rezerve etabı HARİÇ tutar (kolon CANLI).
 - fn_open_budget davranış sözleşmesi (Model A): köprü (budget_item_periods) açılışta BOŞ; unit_net=0 (rakamsız iskelet); cost_object boş; paket->item_burdens günün oranı (rate_catalog valid_from<=bugün).
 - item_code üretimi: `budgets.item_code_seq` MONOTON artırılır (UPDATE ... RETURNING), `max(item_code)+1` DEĞİL. Gerekçe: max boşluk-doldurur, silinen kodu geri verir -> B-serisi kalıcı kimlik İHLALİ. Sayaç "geri dönmez" (temel migration satır 86).

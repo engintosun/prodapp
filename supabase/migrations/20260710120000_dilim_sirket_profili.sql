@@ -117,9 +117,8 @@ revoke execute on function public.fn_resolve_sgk_scenario(uuid) from anon;
 grant execute on function public.fn_resolve_sgk_scenario(uuid) to authenticated;
 
 -- ============ 6) Profil degisince yeniden dolum (mevcut fn_refill_item_burdens'i cagirir) ============
--- NOT: budgets henuz muhur/is_locked kolonuna sahip degil (fn_lock_budget ayri dilim, CURRENT.md
--- "Acik kalanlar"). Bugun TUM butceler fiilen "muhursuz" sayilir; o kolon eklendiginde buraya
--- "and not b.is_locked" eklenmesi gerekir (B16).
+-- YAPILDI (MUHUR-1, 2026-07-11): budgets.is_locked eklendi, fonksiyon "and not b.is_locked"
+-- filtresiyle 20260711140000_muhur1_fn_lock_budget.sql'de TAMAMI yeniden tanimlandi (yama yasak).
 create or replace function public.fn_trg_refill_on_company_profile_change()
 returns trigger
 language plpgsql
