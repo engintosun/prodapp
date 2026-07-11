@@ -20,6 +20,7 @@ M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; kart mimari
 - 2026-07-11: TERMİNOLOJİ DEVRİMİ — Miktar/X eksenleri yer değiştirdi, Çarpan emekli oldu. Miktar artık SÜRE (DB `repeat`, öncesinde kişi/adet anlamındaydı), X artık kişi/adet (DB `multiplier`, öncesinde Çarpan'dı). Kapsam SADECE: KART 1500 tablosunda hücre-konumu çaprazlandı (4. kolon "Miktar" artık repeat verisini, 5. kolon "X" artık multiplier verisini gösterir — üç set: ana satır giriş, çok-dönem özet, dönem alt-satırı) + UI string/hata mesajları + kod yorumları + doküman metni. DEĞİŞMEYEN: DB şema/RLS/migration, CFE alan adları (`qty`/`carpan`/`multiplier`/`repeat`/`quantity`/`repeat_override`), `fmtMiktar` fonksiyon adı, hiçbir formül/hesap/özet kuralı (davranış sıfır). Sinyal adı: SNL-MIKTAR-DEGISIM → SNL-ADET-DEGISIM (payroll.ts + testler + UI). Yeni konvansiyon: tarihli dokümanların başına "⚠ TERMİNOLOJİ" banner'ı eklendi (BUTCE-EKRAN-KARARLARI, BUTCE-SEMA-KARARLARI, CURRENT.md), geçmiş milestone kayıtlarına dokunulmadı. GLOSSARY K9→K9-r2 yeniden yazıldı (üç fazlı tarihçe + tehlikeli-kök notu), PERSONEL-MEVZUATI/BUTCE-EKRAN-KARARLARI/EKRAN-MUHASEBE/VERGI-MEVZUATI/TASARIM-KARARLARI güncellendi. Build ✓, tüm testler ✓ (bkz. asağıdaki doğrulama).
 - 2026-07-11 (devam): Telescoping kalici regresyon testi CANLI (budget-service.test.ts, tarihsiz + tarihli iki varyant, 400K/ay dilim-atlama serisi, fark ≤3 kurus). SGK atlama-varsayilani karari kayda gecti (bkz. Kapananlar).
 - 2026-07-11 (devam): MÜHÜR-1 CANLI — budgets.is_locked, budget_versions (V-numarali, payload jsonb tam-kopya, SGK kodu+3 boolean, calendar_assumption), budget_rate_snapshot (cetvelin tamami), fn_lock_budget/fn_unlock_budget, kilit guard trigger'lari (7 tablo: stages/items/item_periods/item_burdens/percent_lines/groups/cost_objects), fn_refill is_locked kosulu. K7 tarih sarti REVIZE: muhurden kalkti, yalniz harcama kapisinda. budget_baselines DROP (Dilim-1 atil kalintisi, hic baglanmadi; B16/Kasa kavraminin evi artik budget_versions).
+- 2026-07-11 (devam): MUHUR-2 CANLI — servis okuma catali (kilitli -> budget_versions/budget_rate_snapshot, yururluk sealed_at'e SABIT, SGK kodu muhurden; acik -> canli katalog). buildPayrollRates saf cekirdek (iki yol da ayni secim mantigi). Kalici testler: SGK 5-senaryo + asOf sabitleme + round-trip. VERIFY-MUHUR2.sql (linked begin/rollback, iz birakmaz) ile canli dogrulama. Payload okuyucusu MUHUR-3'e (V-sekmeleri UI sekli belirler).
 
 ## Durum
 - HEAD: git log (origin/main) kesin. Repo: github.com/engintosun/prodapp - Canli: prodapp-navy.vercel.app.
@@ -62,9 +63,8 @@ Kolon seti (KILITLI, 11): Kod - Aciklama - Statu - Donemler - Birim - Birim net 
 - **MÜHÜR/versiyonlama karar paketi KL-1..KL-12 KAPANDI** (Engin+Opus, 2026-07-11): KL-1 versiyonlama Yol A (V-sekmeleri, dallanma yok); KL-5 mühür tarihsiz olabilir (Ocak-varsayımı donar); KL-7 harcama-tetiklemesi iptal (mühür tek kapı); KL-9 mühürlüye tarih yazılmaz, taslağa yazılır; KL-12 payload jsonb tam-kopya (hesaplanan değer yok, B18). MÜHÜR-1 (şema+çekirdek) bu pakettten türedi.
 
 ## Siradaki is (oncelik sirasiyla)
-1. MÜHÜR-2 — servis okuma çatalı: kilitli→budget_rate_snapshot/payload, açık→canlı katalog + SGK 5-senaryo kalıcı testi + mühür round-trip testi.
-2. MÜHÜR-3 — UI: versiyon sekmeleri, salt-okunur görünüm, Mühür eki rozeti, revizyon akışı.
-3. Kalem Kütüphanesi ve sonrası mevcut sıra korunur (4a KART 1500 isim onarımı, 4b Kalem Kütüphanesi/Kalibrasyon).
+1. MÜHÜR-3 — UI: versiyon sekmeleri, salt-okunur görünüm, Mühür eki rozeti, revizyon akışı.
+2. Kalem Kütüphanesi ve sonrası mevcut sıra korunur (4a KART 1500 isim onarımı, 4b Kalem Kütüphanesi/Kalibrasyon).
 
 ## Acik kalanlar
 - KDV kalem-bazlı düzenleme yüzeyi (kütüphane varsayılanlarına bağlı, Faz sonrası).
@@ -89,6 +89,7 @@ Kolon seti (KILITLI, 11): Kod - Aciklama - Statu - Donemler - Birim - Birim net 
 - Sunum/export dilimi: mühür gerçeği saklar, sunum görünümü yönetir (kalem aç/kapa, detay seviyesi, kayıtlı sunum profilleri; Kamu Notu ileri-dikişinden girer).
 - Kur turu: rate_catalog online güncelleme vizyonu + bütçenin farklı kurlarla ifadesi (Saturation globals deseni referans).
 - Takvim sihirbazı: çapa tarih + etap süreleri → otomatik doldurma (revizyon anı ergonomisi).
+- Eşik-uyarısı paydası: harcama-tarafı %80/%100 eşik uyarılarının paydası budget_versions (mühürlü bütçe) mi, ayrı elle-girilen tavan (IS-KURALLARI par.7 project_budgets/departman payları) mi — par.7 eski AÇIK SLOT'unu versiyon modeliyle kapatma fırsatı (not 2026-07-11, karar ayrı oturumda).
 
 ## Korunan onceki kararlar
 - CARD-DESK LAYOUT (kilitli): daralabilir sol ray + ust baglam + orta masa + sag referans.

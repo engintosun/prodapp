@@ -3,8 +3,10 @@ import {
   monthEquivalentNet,
   computeBordroFields,
   computeBordroFieldsResult,
+  buildPayrollRates,
   type BordroItemFields,
   type BordroPeriodRow,
+  type CatalogRateRow,
 } from './budget-service'
 import type { PayrollLegs, PayrollRates, TaxBracket } from '../cfe'
 
@@ -15,6 +17,34 @@ const BRACKETS_2026: TaxBracket[] = [
   { floor: 1500000, ratePercent: 35, baseTax: 367500 },
   { floor: 5300000, ratePercent: 40, baseTax: 1697500 },
 ]
+
+const CATALOG_2026_ROWS: CatalogRateRow[] = [
+  { code: 'sgk_isci', valueKind: 'oran', ratePercent: 14, amountTl: null, bracketFloor: null, bracketBaseTax: null, validFrom: '2026-01-01' },
+  { code: 'issizlik_isci', valueKind: 'oran', ratePercent: 1, amountTl: null, bracketFloor: null, bracketBaseTax: null, validFrom: '2026-01-01' },
+  { code: 'issizlik_isveren', valueKind: 'oran', ratePercent: 2, amountTl: null, bracketFloor: null, bracketBaseTax: null, validFrom: '2026-01-01' },
+  { code: 'damga', valueKind: 'oran', ratePercent: 0.759, amountTl: null, bracketFloor: null, bracketBaseTax: null, validFrom: '2026-01-01' },
+  { code: 'sgk_isveren', valueKind: 'oran', ratePercent: 19.75, amountTl: null, bracketFloor: null, bracketBaseTax: null, validFrom: '2026-01-01' },
+  { code: 'sgk_isveren_borclu', valueKind: 'oran', ratePercent: 21.75, amountTl: null, bracketFloor: null, bracketBaseTax: null, validFrom: '2026-01-01' },
+  { code: 'sgk_isveren_kultur_girisim', valueKind: 'oran', ratePercent: 14.81, amountTl: null, bracketFloor: null, bracketBaseTax: null, validFrom: '2026-01-01' },
+  { code: 'sgk_isveren_kultur_yatirim', valueKind: 'oran', ratePercent: 9.88, amountTl: null, bracketFloor: null, bracketBaseTax: null, validFrom: '2026-01-01' },
+  { code: 'parametre_asgari_brut', valueKind: 'tutar', ratePercent: null, amountTl: 33030, bracketFloor: null, bracketBaseTax: null, validFrom: '2026-01-01' },
+  { code: 'parametre_sgk_tavan_katsayi', valueKind: 'tutar', ratePercent: null, amountTl: 9, bracketFloor: null, bracketBaseTax: null, validFrom: '2026-01-01' },
+  ...BRACKETS_2026.map(
+    (b): CatalogRateRow => ({
+      code: 'gv_ucret',
+      valueKind: 'tarife',
+      ratePercent: b.ratePercent,
+      amountTl: null,
+      bracketFloor: b.floor,
+      bracketBaseTax: b.baseTax,
+      validFrom: '2026-01-01',
+    }),
+  ),
+]
+
+function cloneRows(): CatalogRateRow[] {
+  return structuredClone(CATALOG_2026_ROWS)
+}
 
 const RATES_2026: PayrollRates = {
   socialSecurityEmployeePercent: 14.0,
@@ -219,5 +249,111 @@ describe('budget-service — telescoping: N donem satiri = tek satir Miktar×N',
     const resultB = computeBordroFields(itemB, periodsB, STANDARD_LEGS, RATES_2026)
     expect(resultA.totalNet).toBeCloseTo(resultB.totalNet, 2)
     expect(Math.abs(resultA.totalGross - resultB.totalGross)).toBeLessThanOrEqual(TOLERANCE_TL)
+  })
+})
+
+describe('budget-service — MUHUR-2: SGK 5-senaryo (kalici)', () => {
+  it('sgk_isveren (atlama-varsayilani senaryosu) -> socialSecurityEmployerPercent 19.75', () => {
+    const rates = buildPayrollRates(cloneRows(), 'sgk_isveren', '2026-07-11')
+    expect(rates.socialSecurityEmployerPercent).toBe(19.75)
+  })
+
+  it('sgk_isveren_borclu -> socialSecurityEmployerPercent 21.75', () => {
+    const rates = buildPayrollRates(cloneRows(), 'sgk_isveren_borclu', '2026-07-11')
+    expect(rates.socialSecurityEmployerPercent).toBe(21.75)
+  })
+
+  it('sgk_isveren_kultur_girisim -> socialSecurityEmployerPercent 14.81', () => {
+    const rates = buildPayrollRates(cloneRows(), 'sgk_isveren_kultur_girisim', '2026-07-11')
+    expect(rates.socialSecurityEmployerPercent).toBe(14.81)
+  })
+
+  it('sgk_isveren_kultur_yatirim -> socialSecurityEmployerPercent 9.88', () => {
+    const rates = buildPayrollRates(cloneRows(), 'sgk_isveren_kultur_yatirim', '2026-07-11')
+    expect(rates.socialSecurityEmployerPercent).toBe(9.88)
+  })
+
+  it('dort senaryonun sonuclari socialSecurityEmployerPercent DISINDAKI tum alanlarda birebir esit', () => {
+    const codes = ['sgk_isveren', 'sgk_isveren_borclu', 'sgk_isveren_kultur_girisim', 'sgk_isveren_kultur_yatirim']
+    const results = codes.map((code) => buildPayrollRates(cloneRows(), code, '2026-07-11'))
+    for (const r of results.slice(1)) {
+      expect(r.socialSecurityEmployeePercent).toBe(results[0].socialSecurityEmployeePercent)
+      expect(r.unemploymentEmployeePercent).toBe(results[0].unemploymentEmployeePercent)
+      expect(r.unemploymentEmployerPercent).toBe(results[0].unemploymentEmployerPercent)
+      expect(r.stampDutyPercent).toBe(results[0].stampDutyPercent)
+      expect(r.incomeTaxBrackets).toEqual(results[0].incomeTaxBrackets)
+      expect(r.minimumWageGrossThisMonth).toBe(results[0].minimumWageGrossThisMonth)
+      expect(r.socialSecurityCeilingMultiplier).toBe(results[0].socialSecurityCeilingMultiplier)
+    }
+  })
+})
+
+describe('budget-service — MUHUR-2: asOf sabitleme', () => {
+  it('gelecek-tarihli vintage asOf oncesinde SECILMEZ, sonrasinda SECILIR', () => {
+    const rows = cloneRows()
+    rows.push({
+      code: 'parametre_asgari_brut',
+      valueKind: 'tutar',
+      ratePercent: null,
+      amountTl: 39000,
+      bracketFloor: null,
+      bracketBaseTax: null,
+      validFrom: '2026-07-01',
+    })
+    const before = buildPayrollRates(rows, 'sgk_isveren', '2026-06-15')
+    expect(before.minimumWageGrossThisMonth).toBe(33030)
+    const after = buildPayrollRates(rows, 'sgk_isveren', '2026-07-15')
+    expect(after.minimumWageGrossThisMonth).toBe(39000)
+  })
+
+  it('eksik parametre (sgk_isci yok) throw eder, mesaj eksik parametre icerir', () => {
+    const rows = cloneRows().filter((r) => r.code !== 'sgk_isci')
+    expect(() => buildPayrollRates(rows, 'sgk_isveren', '2026-07-11')).toThrow('eksik parametre')
+  })
+})
+
+describe('budget-service — MUHUR-2: muhur round-trip (saf katman)', () => {
+  it('muhurlu satirlar canli katalog degisse bile aynen kalir', () => {
+    const sealedRows = cloneRows()
+    const sealed = buildPayrollRates(sealedRows, 'sgk_isveren_kultur_yatirim', '2026-07-11')
+
+    const liveRows = cloneRows()
+    const kultY = liveRows.find((r) => r.code === 'sgk_isveren_kultur_yatirim')
+    if (kultY) kultY.ratePercent = 12.5
+    liveRows.push({
+      code: 'parametre_asgari_brut',
+      valueKind: 'tutar',
+      ratePercent: null,
+      amountTl: 39000,
+      bracketFloor: null,
+      bracketBaseTax: null,
+      validFrom: '2026-07-01',
+    })
+
+    const sealedAgain = buildPayrollRates(sealedRows, 'sgk_isveren_kultur_yatirim', '2026-07-11')
+    expect(sealedAgain).toEqual(sealed)
+  })
+
+  it('ayni liveRows ile canli yol simulasyonu, sealed sonuctan farkli deger doner (acik butce canliya doner)', () => {
+    const liveRows = cloneRows()
+    const kultY = liveRows.find((r) => r.code === 'sgk_isveren_kultur_yatirim')
+    if (kultY) kultY.ratePercent = 12.5
+    liveRows.push({
+      code: 'parametre_asgari_brut',
+      valueKind: 'tutar',
+      ratePercent: null,
+      amountTl: 39000,
+      bracketFloor: null,
+      bracketBaseTax: null,
+      validFrom: '2026-07-01',
+    })
+
+    const live = buildPayrollRates(liveRows, 'sgk_isveren_borclu', '2026-07-15')
+    expect(live.socialSecurityEmployerPercent).toBe(21.75)
+    expect(live.minimumWageGrossThisMonth).toBe(39000)
+
+    const sealed = buildPayrollRates(cloneRows(), 'sgk_isveren_kultur_yatirim', '2026-07-11')
+    expect(live.socialSecurityEmployerPercent).not.toBe(sealed.socialSecurityEmployerPercent)
+    expect(live.minimumWageGrossThisMonth).not.toBe(sealed.minimumWageGrossThisMonth)
   })
 })

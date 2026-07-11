@@ -478,45 +478,39 @@ export function monthEquivalentNet(net: number, unitCode: string): number {
 // sgk_isveren item_burdens'inda daima NULL durur (fill_mode=skeleton, legs boolean'ini isaretler);
 // gercek oran burada fn_resolve_sgk_scenario'nun dondugu component code'a gore CANLI okunur (Sirket
 // Profili DILIMI, 2026-07-10) - projectId yoksa (eski cagri yolu) standart senaryoya duser.
-async function fetchPayrollRates(projectId?: string): Promise<PayrollRates> {
-  const today = new Date().toISOString().slice(0, 10)
-  // rate_catalog sorgusu ve senaryo RPC'si birbirinden bagimsiz - paralel baslatilir (perf, davranis ayni).
-  const [{ data: rows, error }, { data: scenario, error: es }] = await Promise.all([
-    supabase
-      .from('rate_catalog')
-      .select('rate_percent, amount_tl, bracket_floor, bracket_base_tax, valid_from, value_kind, burden_components(code)')
-      .lte('valid_from', today)
-      .order('valid_from', { ascending: false }),
-    projectId ? supabase.rpc('fn_resolve_sgk_scenario', { p_project_id: projectId }) : Promise.resolve({ data: null, error: null }),
-  ])
-  if (error) throw new Error(error.message)
-  const all = rows ?? []
+export interface CatalogRateRow {
+  code: string
+  valueKind: 'oran' | 'tutar' | 'tarife'
+  ratePercent: number | null
+  amountTl: number | null
+  bracketFloor: number | null
+  bracketBaseTax: number | null
+  validFrom: string
+}
 
-  let sgkEmployerCode = 'sgk_isveren'
-  if (projectId) {
-    if (es) throw new Error(es.message)
-    if (scenario) sgkEmployerCode = scenario as string
-  }
+// MUHUR-2: acik (canli rate_catalog) ve kilitli (budget_rate_snapshot) okuma yollarinin PAYLASILAN
+// secim cekirdegi. asOfDate: acik yolda bugun, kilitli yolda sealed_at (sabit) - bkz. fetchSealedPayrollRates.
+export function buildPayrollRates(rows: CatalogRateRow[], sgkEmployerCode: string, asOfDate: string): PayrollRates {
+  const all = rows
+    .filter((r) => r.validFrom <= asOfDate)
+    .sort((a, b) => b.validFrom.localeCompare(a.validFrom))
 
-  function codeOf(r: (typeof all)[number]): string | undefined {
-    return (r as { burden_components?: { code?: string } | null }).burden_components?.code
-  }
   function latestOran(code: string): number {
-    const row = all.find((r) => codeOf(r) === code && r.value_kind === 'oran')
+    const row = all.find((r) => r.code === code && r.valueKind === 'oran')
     if (!row) throw new Error(`Payroll: rate_catalog eksik parametre (${code}, oran)`)
-    return Number(row.rate_percent)
+    return Number(row.ratePercent)
   }
   function latestTutar(code: string): number {
-    const row = all.find((r) => codeOf(r) === code && r.value_kind === 'tutar')
+    const row = all.find((r) => r.code === code && r.valueKind === 'tutar')
     if (!row) throw new Error(`Payroll: rate_catalog eksik parametre (${code}, tutar)`)
-    return Number(row.amount_tl)
+    return Number(row.amountTl)
   }
   const brackets: TaxBracket[] = all
-    .filter((r) => codeOf(r) === 'gv_ucret' && r.value_kind === 'tarife')
+    .filter((r) => r.code === 'gv_ucret' && r.valueKind === 'tarife')
     .map((r) => ({
-      floor: Number(r.bracket_floor),
-      ratePercent: Number(r.rate_percent),
-      baseTax: Number(r.bracket_base_tax),
+      floor: Number(r.bracketFloor),
+      ratePercent: Number(r.ratePercent),
+      baseTax: Number(r.bracketBaseTax),
     }))
     .sort((a, b) => a.floor - b.floor)
   if (brackets.length === 0) throw new Error('Payroll: gv_ucret tarife satirlari bulunamadi')
@@ -531,6 +525,70 @@ async function fetchPayrollRates(projectId?: string): Promise<PayrollRates> {
     minimumWageGrossThisMonth: latestTutar('parametre_asgari_brut'),
     socialSecurityCeilingMultiplier: latestTutar('parametre_sgk_tavan_katsayi'),
   }
+}
+
+async function fetchPayrollRates(projectId?: string): Promise<PayrollRates> {
+  const today = new Date().toISOString().slice(0, 10)
+  // rate_catalog sorgusu ve senaryo RPC'si birbirinden bagimsiz - paralel baslatilir (perf, davranis ayni).
+  const [{ data: rows, error }, { data: scenario, error: es }] = await Promise.all([
+    supabase
+      .from('rate_catalog')
+      .select('rate_percent, amount_tl, bracket_floor, bracket_base_tax, valid_from, value_kind, burden_components(code)')
+      .lte('valid_from', today)
+      .order('valid_from', { ascending: false }),
+    projectId ? supabase.rpc('fn_resolve_sgk_scenario', { p_project_id: projectId }) : Promise.resolve({ data: null, error: null }),
+  ])
+  if (error) throw new Error(error.message)
+
+  let sgkEmployerCode = 'sgk_isveren'
+  if (projectId) {
+    if (es) throw new Error(es.message)
+    if (scenario) sgkEmployerCode = scenario as string
+  }
+
+  const mapped: CatalogRateRow[] = (rows ?? []).map((r) => ({
+    code: (r as { burden_components?: { code?: string } | null }).burden_components?.code ?? '',
+    valueKind: r.value_kind as CatalogRateRow['valueKind'],
+    ratePercent: r.rate_percent === null ? null : Number(r.rate_percent),
+    amountTl: r.amount_tl === null ? null : Number(r.amount_tl),
+    bracketFloor: r.bracket_floor === null ? null : Number(r.bracket_floor),
+    bracketBaseTax: r.bracket_base_tax === null ? null : Number(r.bracket_base_tax),
+    validFrom: r.valid_from as string,
+  }))
+
+  return buildPayrollRates(mapped, sgkEmployerCode, today)
+}
+
+// KRITIK: snapshot katalogun TAMAMINI icerir (gelecek-tarihli satirlar dahil, MUHUR-1); yururluk
+// bugune gore secilirse onceden tohumlanmis bir zam satiri takvim o tarihi gecince muhurlu rakami
+// sessizce oynatir; bu yuzden yururluk muhur anina (sealed_at) SABITLENIR. SGK senaryosu da canli
+// fn_resolve_sgk_scenario'dan DEGIL, muhur aninda dondurulen sgk_component_code'dan okunur.
+async function fetchSealedPayrollRates(budgetId: string): Promise<PayrollRates> {
+  const { data, error } = await supabase
+    .from('budget_versions')
+    .select(
+      'id, version_no, sealed_at, sgk_component_code, budget_rate_snapshot(component_code, value_kind, rate_percent, amount_tl, bracket_floor, bracket_base_tax, valid_from)',
+    )
+    .eq('budget_id', budgetId)
+    .order('version_no', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (error) throw new Error(error.message)
+  if (!data) throw new Error('Muhurlu butcenin versiyonu bulunamadi (is_locked=true yalniz fn_lock_budget ile olusur)')
+
+  const asOf = (data.sealed_at as string).slice(0, 10)
+  const snapshotRows = (data as unknown as { budget_rate_snapshot: Array<Record<string, unknown>> }).budget_rate_snapshot ?? []
+  const mapped: CatalogRateRow[] = snapshotRows.map((r) => ({
+    code: r.component_code as string,
+    valueKind: r.value_kind as CatalogRateRow['valueKind'],
+    ratePercent: r.rate_percent === null ? null : Number(r.rate_percent),
+    amountTl: r.amount_tl === null ? null : Number(r.amount_tl),
+    bracketFloor: r.bracket_floor === null ? null : Number(r.bracket_floor),
+    bracketBaseTax: r.bracket_base_tax === null ? null : Number(r.bracket_base_tax),
+    validFrom: r.valid_from as string,
+  }))
+
+  return buildPayrollRates(mapped, data.sgk_component_code as string, asOf)
 }
 
 export interface BordroPeriodBreakdownEntry {
@@ -789,7 +847,7 @@ export async function deriveBordroFields(itemId: string): Promise<BordroDerivedF
   ] = await Promise.all([
     supabase
       .from('budget_items')
-      .select('id, budget_id, unit_net, unit_id, multiplier, repeat, budgets(project_id)')
+      .select('id, budget_id, unit_net, unit_id, multiplier, repeat, budgets(project_id, is_locked)')
       .eq('id', itemId)
       .single(),
     supabase
@@ -804,6 +862,7 @@ export async function deriveBordroFields(itemId: string): Promise<BordroDerivedF
   ])
   if (ei) throw new Error(ei.message)
   const projectId = (itemData as unknown as { budgets?: { project_id?: string } | null }).budgets?.project_id
+  const isLocked = (itemData as unknown as { budgets?: { is_locked?: boolean } | null }).budgets?.is_locked ?? false
   if (ep) throw new Error(ep.message)
   if (eu) throw new Error(eu.message)
   if (eb) throw new Error(eb.message)
@@ -831,7 +890,7 @@ export async function deriveBordroFields(itemId: string): Promise<BordroDerivedF
     stageIds.length
       ? supabase.from('budget_stages').select('id, start_date, is_undated, sort_order').in('id', stageIds)
       : Promise.resolve({ data: [], error: null }),
-    fetchPayrollRates(projectId),
+    isLocked ? fetchSealedPayrollRates(itemData.budget_id as string) : fetchPayrollRates(projectId),
   ])
   const { data: stageRows, error: es } = stagesResult
   if (es) throw new Error(es.message)

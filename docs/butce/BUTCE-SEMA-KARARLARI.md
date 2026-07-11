@@ -71,3 +71,9 @@ Paketleme: Model A — bütçe ile harcama tek kod tabanında paketlenebilir iki
 - "Dönemsiz" etabı: ÇÖZÜLDÜ. budget_stages'e `is_undated` boolean; fn_open_budget her bütçede bir rezerve "Dönemsiz" etabı yaratır (is_undated=true, sort_order 9999). Harcama fazına geçiş kapısı bu etabı "tarihli olmalı"dan MUAF tutar (REVİZE 2026-07-11: zorunluluk mühürden harcama kapısına taşındı); MÜHÜR-1 fn_lock_budget ise calendar_assumption'ı hesaplarken bu rezerve etabı HARİÇ tutar (kolon CANLI).
 - fn_open_budget davranış sözleşmesi (Model A): köprü (budget_item_periods) açılışta BOŞ; unit_net=0 (rakamsız iskelet); cost_object boş; paket->item_burdens günün oranı (rate_catalog valid_from<=bugün).
 - item_code üretimi: `budgets.item_code_seq` MONOTON artırılır (UPDATE ... RETURNING), `max(item_code)+1` DEĞİL. Gerekçe: max boşluk-doldurur, silinen kodu geri verir -> B-serisi kalıcı kimlik İHLALİ. Sayaç "geri dönmez" (temel migration satır 86).
+
+### G. MUHUR-2 servis okuma çatalı (KİLİTLENDİ 2026-07-11)
+- Kilitli bütçe (is_locked=true): oranlar en yüksek version_no'lu budget_versions + budget_rate_snapshot'tan okunur; SGK senaryosu canlı fn_resolve_sgk_scenario DEĞİL, mühürde dönen sgk_component_code'dur; yürürlük tarihi = sealed_at (SABİT). Gerekçe: snapshot katalogun tamamını içerir — yürürlük bugüne göre seçilseydi önceden tohumlanan gelecek-tarihli satır (ör. Temmuz zammı) takvim geçince mühürlü rakamı sessizce oynatırdı.
+- Açık bütçe: mevcut canlı yol aynen (rate_catalog + fn_resolve_sgk_scenario, yürürlük = bugün).
+- Çatal YALNIZ oran kaynağıdır: kalem/dönem/kova okumaları kilitliyken de canlı tablolardan sürer (guard trigger'lar tabloları donduruyor). Payload okuyucusu MÜHÜR-3 ile gelir (V-sekmeleri, eski versiyonu görüntüleme).
+- Doğrulama: kalıcı vitest (5-senaryo + asOf sabitleme + round-trip) + supabase/VERIFY-MUHUR2.sql (linked, begin/rollback, iz bırakmaz).
