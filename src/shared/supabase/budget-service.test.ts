@@ -177,3 +177,47 @@ describe('budget-service — periodBreakdown: donem-bazli gruplama', () => {
     expect(result.periodBreakdown[0].periodIndex).toBe(0)
   })
 })
+
+describe('budget-service — telescoping: N donem satiri = tek satir Miktar×N', () => {
+  // Tolerans 3 kurus: standart profil turetilmis round-trip toleransi (deriveRoundTripTolerance),
+  // Engin canli dogrulamasi 2026-07-09.
+  const TOLERANCE_TL = 0.03
+
+  it('tarihsiz: 3 ayri donem satiri (Miktar=1 her biri) vs tek satir Miktar=3, ayni totalNet, brut farki <=3 kurus', () => {
+    // 400K/ay kasitli - kumulatif matrah ay ilerledikce dilim atlar (GVK 103 kirilma noktalari);
+    // donem satirlari kumulatifi sifirlasaydi fark kurus degil binlerce lira olurdu, test bunu korur.
+    const itemA = itemFields({ unitNet: 400000, unitCode: 'month', multiplier: 1 })
+    const periodsA: BordroPeriodRow[] = [
+      periodRow({ sortOrder: 0, quantity: 1, repeatOverride: 1, isUndated: true, startDate: null, stageId: 's1' }),
+      periodRow({ sortOrder: 1, quantity: 1, repeatOverride: 1, isUndated: true, startDate: null, stageId: 's2' }),
+      periodRow({ sortOrder: 2, quantity: 1, repeatOverride: 1, isUndated: true, startDate: null, stageId: 's3' }),
+    ]
+    // Tek-satir dalinda (periodRows.length<=1) computeBordroFields periodRow.quantity/repeatOverride'i
+    // OKUMAZ, item.multiplier/item.repeat kullanir (budget-service.ts:619-627) - Miktar=3 burada verilir.
+    const itemB = itemFields({ unitNet: 400000, unitCode: 'month', multiplier: 1, repeat: 3 })
+    const periodsB: BordroPeriodRow[] = [
+      periodRow({ sortOrder: 0, isUndated: true, startDate: null, stageId: null }),
+    ]
+    const resultA = computeBordroFields(itemA, periodsA, STANDARD_LEGS, RATES_2026)
+    const resultB = computeBordroFields(itemB, periodsB, STANDARD_LEGS, RATES_2026)
+    expect(resultA.totalNet).toBeCloseTo(resultB.totalNet, 2)
+    expect(Math.abs(resultA.totalGross - resultB.totalGross)).toBeLessThanOrEqual(TOLERANCE_TL)
+  })
+
+  it('tarihli ardisik: 3 ayri donem satiri (2026-01/02/03) vs tek satir Miktar=3 (2026-01 baslangic), ayni totalNet, brut farki <=3 kurus', () => {
+    const itemA = itemFields({ unitNet: 400000, unitCode: 'month', multiplier: 1 })
+    const periodsA: BordroPeriodRow[] = [
+      periodRow({ sortOrder: 0, quantity: 1, repeatOverride: 1, isUndated: false, startDate: '2026-01-01', stageId: 's1' }),
+      periodRow({ sortOrder: 1, quantity: 1, repeatOverride: 1, isUndated: false, startDate: '2026-02-01', stageId: 's2' }),
+      periodRow({ sortOrder: 2, quantity: 1, repeatOverride: 1, isUndated: false, startDate: '2026-03-01', stageId: 's3' }),
+    ]
+    const itemB = itemFields({ unitNet: 400000, unitCode: 'month', multiplier: 1, repeat: 3 })
+    const periodsB: BordroPeriodRow[] = [
+      periodRow({ sortOrder: 0, isUndated: false, startDate: '2026-01-01', stageId: null }),
+    ]
+    const resultA = computeBordroFields(itemA, periodsA, STANDARD_LEGS, RATES_2026)
+    const resultB = computeBordroFields(itemB, periodsB, STANDARD_LEGS, RATES_2026)
+    expect(resultA.totalNet).toBeCloseTo(resultB.totalNet, 2)
+    expect(Math.abs(resultA.totalGross - resultB.totalGross)).toBeLessThanOrEqual(TOLERANCE_TL)
+  })
+})
