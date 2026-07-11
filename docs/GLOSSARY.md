@@ -35,7 +35,7 @@
 |Yük bileşeni |burden_component      |Stopaj/SGK/ajans gibi net-üstü yük           |
 |Doğrudan ödeme|direct_payment       |Muhasebenin fiş dışı gerçekleşen kaydı       |
 |Yüzde kalemi |percent_line          |Ara toplam üstüne % (öngörülmeyen, kâr)      |
-|Birim        |unit                  |gün/hafta/ay/bölüm/sabit (adet/kişi kaldırıldı — Miktar'ın konusu, DILIM-2f-fix2)|
+|Birim        |unit                  |gün/hafta/ay/bölüm/sabit (adet/kişi kaldırıldı — X'in konusu, DILIM-2f-fix2)|
 |Oran kataloğu|rate_catalog          |Merkezi vergi/yük oran kaynağı               |
 |Kasa (orijinal)|budget_baseline      |Kilit anında bütçenin donmuş fotoğrafı (koy-ve-bak)|
 |Şablon (raf)  |budget_template       |Rakamsız bütçe iskeleti; kurulumda fotokopilenir   |
@@ -56,7 +56,7 @@
 - **Nakdin-çıktığı-dönem:** Paranın fiilen çıktığı/gerektiği dönem (nakit akışı kapısı).
 - **Nakit matrisi:** Kalemler x dönemler görünümü; dönem başına nakit ihtiyacı.
 - **Yuvarlama sözleşmesi:** Öngörülen taraf tam TL (ROUND_HALF_UP, önce-yuvarla-sonra-topla), gerçekleşen kuruşta. Detay: TASARIM-KARARLARI.md D bölümü.
-- **Kalem-dönem köprüsü (budget_item_periods):** Bir kalemi dönemlere bağlayan ara kayıt listesi; her kalem-dönem çifti tek satır, o dönemdeki miktarı tutar. Tek-dönemlik kalem = bu listede tek satır.
+- **Kalem-dönem köprüsü (budget_item_periods):** Bir kalemi dönemlere bağlayan ara kayıt listesi; her kalem-dönem çifti tek satır, o dönemdeki X (adet) değerini tutar. Tek-dönemlik kalem = bu listede tek satır.
 
 ### Bütçe - kart mimarisi ve kalem motoru terimleri (2026-06-19)
 
@@ -83,16 +83,21 @@
 
 -----
 
-### Miktar / Çarpan / Birim — terminoloji mührü (2026-07-03, K9)
+### Miktar / X / Birim — terminoloji mührü (2026-07-11, K9-r2)
 
 |Terim |Anlam |Kodda |
 |------|------|------|
-|Miktar|Kişi/adet SAYISI (eski UI etiketi: Adet)|`budget_items.multiplier` · köprüde `budget_item_periods.quantity` · CFE `qty`|
-|Çarpan|SÜRE — kaç gün/hafta/ay/bölüm|`budget_items.repeat` · dönem-bazlı `budget_item_periods.repeat_override` · CFE `carpan`|
+|Miktar|SÜRE — kaç gün/hafta/ay/bölüm|`budget_items.repeat` · dönem-bazlı `budget_item_periods.repeat_override` · CFE `carpan`|
+|X     |Kişi/adet SAYISI|`budget_items.multiplier` · köprüde `budget_item_periods.quantity` · CFE `qty`|
 |Birim |Periyodun CİNSİ (gün/hafta/ay/bölüm/sabit)|`units` cetveli · `budget_item_periods.unit_id_override`|
 
-- Formül: Dönem net = Birim_net × Miktar × Çarpan.
-- YASAK: "Çarpan"ı kişi sayısı anlamında kullanmak. Eski K5/K9 karar metinlerindeki "Çarpan sonda" ibaresi "Miktar sonda" olarak düzeltildi: bordro kümülatifi kişi-başı çözülür, en sonda o ayın efektif Miktar'ı ile çarpılır (PERSONEL-MEVZUATI §1).
+- Formül: Dönem net = Birim_net × Miktar × X.
+- YASAK: "X"i süre anlamında, "Miktar"ı kişi/adet anlamında kullanmak yasak. 2026-07-11 öncesi kayıtlar için tarihçeye bak.
+
+**Tarihçe (üç faz):**
+1. **Orijinal ekran kararı:** Miktar = süre + birim, Adet = kişi (eski EKRAN-MUHASEBE §, MMB ile paralel).
+2. **2026-07-01/03 (2f-fix2 + K9):** terimler devrildi — Miktar = kişi, Çarpan = süre.
+3. **2026-07-11 (bu karar):** sektör hizasına dönüş — Miktar = süre, X = kişi/adet, Çarpan emekli. Sektör referansı: MMB Amt/X, Showbiz Qty/X, Hot Budget Time Units/No, Saturation quantity/multiplier.
 
 -----
 
@@ -141,6 +146,17 @@ Bu kökler birden fazla anlama gelir. Kodda Türkçe kök KULLANILMAZ. Her bağl
 |--------------------|---------|---------------------------------------------|
 |Dizi bölümü         |episode  |"Bölüm" kelimesi YALNIZ bunu ifade eder      |
 |Bütçe içi kısım     |stage    |Türkçesi "etap"; asla "bölüm" denmez         |
+
+### `miktar` / `carpan` (tarihsel — iki dönem, iki farklı anlam, K9-r2)
+
+|Kök    |Dönem                          |Anlam                                    |
+|-------|--------------------------------|------------------------------------------|
+|miktar |2026-07-01 – 2026-07-11 (K9)   |Kişi/adet SAYISI (artık: X)              |
+|miktar |2026-07-11 sonrası (K9-r2)     |SÜRE — kaç gün/hafta/ay/bölüm             |
+|carpan |2026-07-01 – 2026-07-11 (K9)   |SÜRE — kaç gün/hafta/ay/bölüm (artık: Miktar)|
+|carpan |kod alanı (`DonemKalemi.carpan`)|değişmez — sözleşme gereği hep süre eksenini taşır|
+
+Bulk replace YASAK — tarihli metinde (öncesi/sonrası) aynı kelime farklı okunur; bkz. K9-r2 tarihçe. Yaşayan metinde (yeni yazılan kod/UI/doküman) "miktar" eksen-adı olarak yalnız SÜRE anlamında, kişi/adet için "X" kullanılır; "çarpan" eksen-adı olarak KULLANILMAZ.
 
 **"defter"** terimi kod ve UI'da KULLANILMAZ (2026-06-12, B13).
 

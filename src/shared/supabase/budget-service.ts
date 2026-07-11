@@ -121,7 +121,7 @@ export async function getOrOpenBudget(): Promise<string> {
 }
 
 // Butcenin ilk kartini (sort_order) + etaplarini + kalemlerini getir.
-// Miktar etap-basina: periodQty[stageId]. Birim label ayri raftan map'lenir.
+// X etap-basina: periodQty[stageId]. Birim label ayri raftan map'lenir.
 export async function getFirstCard(budgetId: string): Promise<CardView | null> {
   const { data: stageData, error: es } = await supabase
     .from('budget_stages')
@@ -265,7 +265,7 @@ export async function updateItemField(
     const n = typeof value === 'number' ? value : Number(String(value).replace(',', '.'))
     if (!Number.isFinite(n)) throw new Error('Geçersiz sayı')
     if (n < 0) throw new Error('Negatif değer girilemez')
-    if (field === 'repeat' && n <= 0) throw new Error('Çarpan sıfırdan büyük olmalı')
+    if (field === 'repeat' && n <= 0) throw new Error('Miktar sıfırdan büyük olmalı')
     payload = { [FIELD_COL[field]]: n }
   }
   const { error } = await supabase.from('budget_items').update(payload).eq('id', itemId)
@@ -320,7 +320,7 @@ export async function getItemBurdensAndVat(
   return { burdens, vatRate: Number(itemData.vat_rate) }
 }
 
-// Kalemin bir etaptaki miktarini yazar. 0 -> koprudeki satiri SIL (temiz).
+// Kalemin bir etaptaki X (adet) degerini yazar. 0 -> koprudeki satiri SIL (temiz).
 // >0 -> upsert (item_id,stage_id UNIQUE). budget_id zorunlu (bilesik FK).
 export async function setItemPeriodQuantity(
   budgetId: string,
@@ -329,7 +329,7 @@ export async function setItemPeriodQuantity(
   value: string | number,
 ): Promise<void> {
   const n = typeof value === 'number' ? value : Number(String(value).replace(',', '.'))
-  if (!Number.isFinite(n) || n < 0) throw new Error('Geçersiz miktar')
+  if (!Number.isFinite(n) || n < 0) throw new Error('Geçersiz X değeri')
   if (n === 0) {
     const { error } = await supabase
       .from('budget_item_periods')
@@ -362,7 +362,7 @@ export async function updateItemPeriodUnit(
   if (error) throw new Error(error.message)
 }
 
-// Bir donem satirinin repeat_override (Carpan) degerini yazar. Bos string -> null (kalitima don).
+// Bir donem satirinin repeat_override (Miktar[süre]) degerini yazar. Bos string -> null (kalitima don).
 export async function updateItemPeriodRepeat(
   itemId: string,
   stageId: string,
@@ -373,7 +373,7 @@ export async function updateItemPeriodRepeat(
     override = null
   } else {
     const n = typeof value === 'number' ? value : Number(String(value).replace(',', '.'))
-    if (!Number.isFinite(n)) throw new Error('Geçersiz çarpan değeri')
+    if (!Number.isFinite(n)) throw new Error('Geçersiz Miktar değeri')
     if (n < 0) throw new Error('Negatif değer girilemez')
     override = n
   }
@@ -586,7 +586,7 @@ function anchorOf(stage: { startDate: string | null; isUndated: boolean } | unde
 
 // Motor hatasini (Error) tipli reason'a cevirir - ham error.message asla disariya sizmaz (savunma
 // kurali, DILIM-3e-1). Mesaj icerigine gore siniflandirir: "net" gecen -> gecersiz hedef net,
-// "donem"/"K faktoru" gecen -> kalemin donem/miktar verisi hic ay uretmedi, digerleri -> bilinmeyen.
+// "donem"/"K faktoru" gecen -> kalemin donem/Miktar/X verisi hic ay uretmedi, digerleri -> bilinmeyen.
 function classifyBordroError(e: unknown): BordroDerivationReason {
   const message = e instanceof Error ? e.message : ''
   if (/net/i.test(message)) return 'invalid_net'
@@ -594,12 +594,12 @@ function classifyBordroError(e: unknown): BordroDerivationReason {
   return 'unknown'
 }
 
-// Saf hesap cekirdegi (DB'ye dokunmaz, dogrudan test edilir). Kalemin donem/miktar/carpan verisinden
-// ay iskeleti kurar: 0/1 donemde ana satir Miktar/Carpan/Birim'ini parametre olarak kullanir (buildDonemler
+// Saf hesap cekirdegi (DB'ye dokunmaz, dogrudan test edilir). Kalemin donem/Miktar/X verisinden
+// ay iskeleti kurar: 0/1 donemde ana satir X/Miktar/Birim'ini parametre olarak kullanir (buildDonemler
 // UI ile AYNI davranis, K9 muhuru); >1 donemde her donem KENDI override'iyla ozerktir (S5 duzeltmesi -
 // unit_net_override artik okunuyor). Her donemin Birim Net'i kendi Biriminden ay-esdegerine cevrilir
 // (S1 duzeltmesi) - tek global hedef yok, her donem kendi sozlesmesi. Toplam sure = tum donemlerin
-// (Miktar x Carpan) duz toplami; sadece ilk donem ankorlanir (K7), sonrakiler kesintisiz devam eder.
+// (X x Miktar) duz toplami; sadece ilk donem ankorlanir (K7), sonrakiler kesintisiz devam eder.
 export function computeBordroFields(
   item: BordroItemFields,
   periodRows: BordroPeriodRow[],
@@ -682,7 +682,7 @@ export function computeBordroFields(
       }
     }
   })
-  if (skeleton.length === 0) throw new Error('Payroll: kalemin donem/miktar/carpan verisinden ay uretilemedi')
+  if (skeleton.length === 0) throw new Error('Payroll: kalemin donem/Miktar/X verisinden ay uretilemedi')
 
   const K = skeleton.reduce((acc, s) => acc + (s.dayCount / 30) * s.headcount, 0)
   if (K <= 0) throw new Error('Payroll: K faktoru sifir veya negatif, hesaplanamaz')

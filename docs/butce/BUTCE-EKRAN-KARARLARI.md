@@ -1,5 +1,7 @@
 # KAAPA — BÜTÇE EKRAN & MODEL KARARLARI
 
+⚠ TERMİNOLOJİ: 2026-07-11 öncesi kayıtlarda Miktar=kişi/adet, Çarpan=süre okunur; sonrasında Miktar=süre, X=kişi/adet (bkz. GLOSSARY tarihçe).
+
 *Kalem bütçe ekranının davranış/etkileşim kararları ve bunları doğuran model gerekçeleri. Vergi/oran detayı `VERGI-MEVZUATI.md`'de; şema/RPC kararları `BUTCE-SEMA-KARARLARI.md`'de; bu dosya ikisinin arasındaki EKRAN + MODEL katmanı.*
 
 *Oluşturma: 23 Haziran 2026. Bu kararlar tasarım oturumunda kapatıldı; HENÜZ şema/kod değil — şema dilimi bunlardan türetilecek. Her madde: KARAR + NEDEN.*
@@ -8,12 +10,12 @@
 
 ## 1. Kalem satırı yapısı
 
-**KARAR (güncel, 2026-07-02, Birim/Birim net swap sonrası):** Kolon sırası: **Kod · Açıklama · Statü · Dönemler · Birim · Birim net · Miktar · Çarpan · Yasal Yük · Net toplam · Brüt toplam** (11 kolon). Eski "Gider" (kalem adı) ve eski "Açıklama" (serbest metin, `detail`) ayrımı KALKTI — tek "Açıklama" kolonu kalemin adını taşır (`budget_items.name`). Eski `detail` alanı `description_en` olarak arka planda yaşıyor (Köster damıtımından gelen İngilizce standart adlar, ileride İngilizce sunum için); ekranda hiçbir kolonda görünmez. Birim/Birim net sırası 2026-07-02'de değişti (Birim önce): sayısal kolonlar (Birim net'ten Brüt toplam'a) artık kesintisiz blok.
-KDV AYRI KOLON DEĞİL — Yasal Yük dökümüne indi (§7). Birim/Birim net/Miktar/Çarpan ana satırda görünür; ama rol dönem sayısına göre değişir:
-- **Tek dönem:** ana satır GİRİŞ (Birim + Birim_net + Miktar + Çarpan burada girilir).
-- **Çok dönem:** ana satır SALT-OKUNUR ÖZET (Birim/Birim_net/Miktar dönemler arası aynıysa değer, farklıysa "—"; Çarpan = SUM; Yasal Yük/Net/Brüt = SUM); giriş dönem satırlarında yapılır.
+**KARAR (güncel, 2026-07-02, Birim/Birim net swap sonrası):** Kolon sırası: **Kod · Açıklama · Statü · Dönemler · Birim · Birim net · Miktar · X · Yasal Yük · Net toplam · Brüt toplam** (11 kolon). Eski "Gider" (kalem adı) ve eski "Açıklama" (serbest metin, `detail`) ayrımı KALKTI — tek "Açıklama" kolonu kalemin adını taşır (`budget_items.name`). Eski `detail` alanı `description_en` olarak arka planda yaşıyor (Köster damıtımından gelen İngilizce standart adlar, ileride İngilizce sunum için); ekranda hiçbir kolonda görünmez. Birim/Birim net sırası 2026-07-02'de değişti (Birim önce): sayısal kolonlar (Birim net'ten Brüt toplam'a) artık kesintisiz blok.
+KDV AYRI KOLON DEĞİL — Yasal Yük dökümüne indi (§7). Birim/Birim net/Miktar/X ana satırda görünür; ama rol dönem sayısına göre değişir:
+- **Tek dönem:** ana satır GİRİŞ (Birim + Birim_net + Miktar + X burada girilir).
+- **Çok dönem:** ana satır SALT-OKUNUR ÖZET (X dönemler arası aynıysa değer, değilse çizgi; Miktar = dönemlerin toplamı (SUM); Yasal Yük/Net/Brüt = SUM); giriş dönem satırlarında yapılır.
 
-**NEDEN:** İki ayrı "kalem adı" kolonu (Gider + Açıklama) yanlış kurulmuştu — eski `detail` alanı hem şablonun İngilizce tohum adını hem kullanıcının serbest notunu aynı hücrede taşıyordu, biri diğerinin üstüne yazılınca kayboluyordu. Tek "Açıklama" kolonu = kalemin adı; İngilizce karşılığı arka planda korunur, ayrı kolon açmaz. Bir kalem çok dönemde dönem-başına farklı ücret/miktar/çarpan taşıyabilir → geometri dönem-bazına indi (Net = Birim_net × Miktar × Çarpan, dönem-başına). Ana satır tek dönemde giriş, çok dönemde özet görevi görür. Detay §7.
+**NEDEN:** İki ayrı "kalem adı" kolonu (Gider + Açıklama) yanlış kurulmuştu — eski `detail` alanı hem şablonun İngilizce tohum adını hem kullanıcının serbest notunu aynı hücrede taşıyordu, biri diğerinin üstüne yazılınca kayboluyordu. Tek "Açıklama" kolonu = kalemin adı; İngilizce karşılığı arka planda korunur, ayrı kolon açmaz. Bir kalem çok dönemde dönem-başına farklı ücret/Miktar/X taşıyabilir → geometri dönem-bazına indi (Net = Birim_net × Miktar × X, dönem-başına). Ana satır tek dönemde giriş, çok dönemde özet görevi görür. Detay §7.
 
 ## 2. Statü (ödeme türü)
 
@@ -27,8 +29,8 @@ KDV AYRI KOLON DEĞİL — Yasal Yük dökümüne indi (§7). Birim/Birim net/Mi
 
 - **Yasal Yük = Brüt − Net (TL farkı)** statüye göre:
   - Bordro → SGK işveren payı (net'e **eklenir**, additive) — bordro motoru DILIM-3'te
-  - SMM → stopaj, Brüt = Net / 0,80 (kesinti çarpan)
-  - Telif → stopaj, Brüt = Net / 0,83 (kesinti çarpan)
+  - SMM → stopaj, Brüt = Net / 0,80 (kesinti katsayı)
+  - Telif → stopaj, Brüt = Net / 0,83 (kesinti katsayı)
   - Kira → stopaj, Brüt = Net / 0,80 (KDV yok)
   - Şirket faturası → yük 0 (stopaj yok; KDV Yasal Yük dökümünde havuz satırı)
   - Konaklama → yük 0 (KDV %10 Yasal Yük dökümünde havuz satırı)
@@ -36,7 +38,7 @@ KDV AYRI KOLON DEĞİL — Yasal Yük dökümüne indi (§7). Birim/Birim net/Mi
 - **KDV:** Yasal Yük hücresine tıklanınca açılan bottom-sheet dökümünde şelale satırı (Net → +stopaj/SGK → +KDV = kişiye banka ödemesi / brüt). Geri-alınabilir havuz olarak gösterilir; genel toplama GİRMEZ, maliyete GİRMEZ. Bordroda KDV yok, satır atlanır.
 - **Dönem-bazlı döküm (2026-07-02):** Çok dönemde dönem alt-satırındaki Yasal Yük değeri de tıklanabilir; aynı bottom-sheet o dönemin dökümünü açar (başlıkta dönem adı parantezle). Ana satır = kalem toplamı dökümü (tüm dönemler), dönem satırı = yalnız o dönemin dökümü; hesap dönem satırıyla birebir aynı formül (tek DonemKalemi). Tek dönemde davranış değişmedi.
 
-**NEDEN:** Sahada anlaşma net üzerindendir; brütü sistem türetir. Tek "yük %" çarpanı yetmez: SGK ekleme, stopaj kesinti — iki farklı yön. Toplam = Brüt çünkü yapımcının cebinden çıkan odur. KDV standart halde geri alınır (maliyet değil). Ayrı kolon fikri (2026-06-25) DILIM-2f'de test edilince fazladan gürültü yarattı: KDV zaten Yasal Yük'ün cins-şelalesi içinde doğal yerini alıyor (stopaj/SGK dökümünün altında son satır). Ayrı kolon kaldırıldı; kavram Yasal Yük dökümünde yaşar. Detay: VERGI-MEVZUATI.md §1c.
+**NEDEN:** Sahada anlaşma net üzerindendir; brütü sistem türetir. Tek "yük %" katsayısı yetmez: SGK ekleme, stopaj kesinti — iki farklı yön. Toplam = Brüt çünkü yapımcının cebinden çıkan odur. KDV standart halde geri alınır (maliyet değil). Ayrı kolon fikri (2026-06-25) DILIM-2f'de test edilince fazladan gürültü yarattı: KDV zaten Yasal Yük'ün cins-şelalesi içinde doğal yerini alıyor (stopaj/SGK dökümünün altında son satır). Ayrı kolon kaldırıldı; kavram Yasal Yük dökümünde yaşar. Detay: VERGI-MEVZUATI.md §1c.
 
 ## 4. Dönem seçimi ve kırılım
 
@@ -93,9 +95,9 @@ KDV AYRI KOLON DEĞİL — Yasal Yük dökümüne indi (§7). Birim/Birim net/Mi
 
 ## 12. Birim kolonu (m5+m6 kararı, 2026-06-25; güncelleme 2026-07-01)
 
-**KARAR (güncel, 2026-07-01, DILIM-2f-fix2):** Birim = **seçilebilir dropdown** (gün / hafta / ay / bölüm / sabit). Yalnız periyot cinsi taşır; **adet/kişi units tablosundan SİLİNDİ** — o Miktar kolonunun konusu (kaç birim). Kaleme göre varsayılan gelir (kütüphane/rol atomundan); üstüne tıklayınca değişir. m5 (birim etiketi) + m6 (birim seçim) birleşik. Mobilde native select → OS bottom-sheet bedava. Migration: 20260701090000.
+**KARAR (güncel, 2026-07-01, DILIM-2f-fix2):** Birim = **seçilebilir dropdown** (gün / hafta / ay / bölüm / sabit). Yalnız periyot cinsi taşır; **adet/kişi units tablosundan SİLİNDİ** — o X kolonunun konusu (kaç kişi/adet). Kaleme göre varsayılan gelir (kütüphane/rol atomundan); üstüne tıklayınca değişir. m5 (birim etiketi) + m6 (birim seçim) birleşik. Mobilde native select → OS bottom-sheet bedava. Migration: 20260701090000.
 
-**NEDEN:** Farklı kalemler farklı periyot birimi gerektirir (kameraman haftalık, ekstra günlük, araç aylık, dizi bölüm, paket ücret sabit). "Adet" ve "kişi" ise Miktar kolonunun konusu, birimin değil — ikisini karıştırmak "3 adet × 2 kişi × haftalık" gibi anlamsız üçleme doğuruyordu. Ayrım netleşti: **Birim = zaman/paket cinsi, Miktar = kaç, Çarpan = kaç tekrar**.
+**NEDEN:** Farklı kalemler farklı periyot birimi gerektirir (kameraman haftalık, ekstra günlük, araç aylık, dizi bölüm, paket ücret sabit). "Adet" ve "kişi" ise X kolonunun konusu, birimin değil — ikisini karıştırmak "3 adet × 2 kişi × haftalık" gibi anlamsız üçleme doğuruyordu. Ayrım netleşti: **Birim = zaman/paket cinsi, Miktar = kaç birim (süre), X = kaç kişi/adet**.
 
 ## 13. Yük kovası cins mimarisi (kilitlendi 2026-06-25)
 

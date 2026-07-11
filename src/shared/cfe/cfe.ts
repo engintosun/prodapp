@@ -75,7 +75,7 @@ export function brutStopaj(net: number, stopajPercent: number): number {
     .toNumber()
 }
 
-// Net cizelge toplami (yuksuz): anlasilan net x adet x carpan, tam TL.
+// Net cizelge toplami (yuksuz): anlasilan net x adet x Miktar, tam TL.
 export function netToplamDonemli(donemler: DonemKalemi[]): number {
   if (donemler.length === 0) return 0
   return netBazDonemli(donemler)
@@ -85,7 +85,7 @@ export function netToplamDonemli(donemler: DonemKalemi[]): number {
 
 // Brut cizelge toplami, kova CINSINE gore:
 //   additive (SGK) net'i sisirir x(1+SUMekleme); deduction (stopaj) brutu yukari ceker /(1-SUMkesinti).
-//   Iki eksen bagimsiz carpan. Tam TL, yari-yukari.
+//   Iki eksen bagimsiz katsayi. Tam TL, yari-yukari.
 export function brutToplamDonemli(
   donemler: DonemKalemi[],
   yukler: Yuk[],

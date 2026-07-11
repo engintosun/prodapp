@@ -1,5 +1,7 @@
 # KAAPA — CURRENT.md
 
+⚠ TERMİNOLOJİ: 2026-07-11 öncesi kayıtlarda Miktar=kişi/adet, Çarpan=süre okunur; sonrasında Miktar=süre, X=kişi/adet (bkz. GLOSSARY tarihçe).
+
 Yalnizca SIMDIKI durumu tutar. Her oturum kapanisinda bastan YAZILIR. Tarihce -> git log.
 
 ## Milestone
@@ -15,6 +17,7 @@ M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; kart mimari
 - 2026-07-10: Statü/KDV + Şirket Tanımı KARAR PAKETİ (dokuman + 3 kucuk kod isi, sema/migration YOK). VERGI-MEVZUATI §3 KDV oranlari itemize edildi (tekstil-giyim %10 grubuna eklendi). PERSONEL-MEVZUATI B'ye SGK senaryo turetme algoritmasi islendi (3 olgu + kapi kurali, 4691 kapsam-disi notu). EKRAN-MUHASEBE §18 (Kurulum Modu Sirket Tanimi ilk adim, 5 adima cikti) + §19 (Tanimlar ekrani REFERANS+SIRKET TANIMI iki bolum, oran-yazmama kurali, Butce Giris/Acilis iptal notu) revize edildi. Kod: Konaklama option etiketi "Konaklama/Yemek" oldu; statu sutun basligina "?" ikonu + 6 statuluk referans bottom-sheet (mevcut Yasal Yuk sheet mekanizmasiyla ayni desen); SNL-TAKVIM-VARSAYILAN sinyali eklendi (payroll.ts sinyal union tipi + usesDefaultCalendar alani + K7 varsayim dalinda signals.push, budget-service.ts anchorOf artik bu flag'i tasiyor, UI'da sabit not, 4 yeni test). Build ✓, tum testler ✓.
 - 2026-07-10 (devam): ŞİRKET PROFİLİ DİLİMİ CANLI (5 katman: sema→RLS→trigger→servis→UI). SEMA: company_profile tablosu (user_id 1:1, company_name, legal_type nullable 8-secenek, 3 boolean, updated_at/by) + GRANT + RLS (SELECT/UPDATE: kendi profili VEYA sahibin projesinde aktif uye/muhasebe; INSERT: yalniz kendi user_id — davetli muhasebe sahibin bos profilini ACAMAZ) + goc (her projects.created_by icin EN SON projesinin company_name'i, auth.users FK guvenligiyle) + company_settings.company_name kolonu DROP edildi (tek kaynak artik company_profile; fn_create_project + AUTH-KARARLARI.md + BOOTSTRAP-MUSTERI.sql guncellendi). fn_resolve_sgk_scenario(project_id) SQL fonksiyonu: 3 olgu + kapi kurali (Q3=Hayir->borclu, aksi halde en dusuk oranli uygulanabilir) -> component code doner, ORAN GOMMEZ (B20). Trigger: company_profile'da 3 boolean'dan biri degisince sahibinin bordro kalemleri fn_refill_item_burdens ile yeniden dolar (NOT: budgets henuz is_locked kolonuna sahip degil, fn_lock_budget ayri dilim — bkz Acik kalanlar). SERVIS: budget-service.ts fetchPayrollRates artik projectId aliyor, fn_resolve_sgk_scenario'yu RPC ile cagirip donen code'un rate_catalog satirini CANLI okuyor (item_burdens'in sgk_isveren skeleton/null sozlesmesi DEGISMEDI, legs tespiti etkilenmedi); yeni company-profile-service.ts (getOwnCompanyProfile/getCompanyProfileForProject/updateCompanyProfileForProject). UI: paylasilan CompanyProfileForm (src/shared/components) — Kurulum Modu yeni ilk adimi "Sirket Tanimi" (5 adima cikti, initialStep haritasi guncellendi) ile Tanimlar ekraninin (yeni gecici nav sekmesi, REFERANS rate_catalog cetveli + SIRKET TANIMI ayni form) AYNI bileseni kullaniyor; Proje Ac ekraninda yapim sirketi alani profil varsa dolu gelir. Build ✓, 67/67 test ✓ (yeni SQL-seviyeli 5-senaryo dogrulamasi supabase db query --linked ile push sonrasi yapildi, npm test'e eklenmedi — bkz asagi).
   **MİMARİ UYARI (Sonnet, karar Engin'e):** fn_lock_budget/B16 (mühürlü bütçe donmuş kopyasını korur) HENÜZ YOK — bordro motorunun TÜM parametreleri (asgari ücret, tarife, ve şimdi SGK senaryo oranı da) her zaman CANLI rate_catalog'dan okunuyor, item_burdens'te DONMUŞ bir kopya YOK. Bu, şirket profili SONRADAN değişirse (örn. Kültür Yatırım Belgesi kaybedilirse) SEALED/mühürlü bir bütçenin bile numaralarının SESSİZCE değişebileceği anlamına gelir — mevcut mimarinin ÖNCEDEN VAR OLAN bir boşluğu, bu dilimle büyümedi ama SGK senaryosu da aynı boşluğa girdi. fn_lock_budget inşa edilene kadar geçerli.
+- 2026-07-11: TERMİNOLOJİ DEVRİMİ — Miktar/X eksenleri yer değiştirdi, Çarpan emekli oldu. Miktar artık SÜRE (DB `repeat`, öncesinde kişi/adet anlamındaydı), X artık kişi/adet (DB `multiplier`, öncesinde Çarpan'dı). Kapsam SADECE: KART 1500 tablosunda hücre-konumu çaprazlandı (4. kolon "Miktar" artık repeat verisini, 5. kolon "X" artık multiplier verisini gösterir — üç set: ana satır giriş, çok-dönem özet, dönem alt-satırı) + UI string/hata mesajları + kod yorumları + doküman metni. DEĞİŞMEYEN: DB şema/RLS/migration, CFE alan adları (`qty`/`carpan`/`multiplier`/`repeat`/`quantity`/`repeat_override`), `fmtMiktar` fonksiyon adı, hiçbir formül/hesap/özet kuralı (davranış sıfır). Sinyal adı: SNL-MIKTAR-DEGISIM → SNL-ADET-DEGISIM (payroll.ts + testler + UI). Yeni konvansiyon: tarihli dokümanların başına "⚠ TERMİNOLOJİ" banner'ı eklendi (BUTCE-EKRAN-KARARLARI, BUTCE-SEMA-KARARLARI, CURRENT.md), geçmiş milestone kayıtlarına dokunulmadı. GLOSSARY K9→K9-r2 yeniden yazıldı (üç fazlı tarihçe + tehlikeli-kök notu), PERSONEL-MEVZUATI/BUTCE-EKRAN-KARARLARI/EKRAN-MUHASEBE/VERGI-MEVZUATI/TASARIM-KARARLARI güncellendi. Build ✓, tüm testler ✓ (bkz. asağıdaki doğrulama).
 
 ## Durum
 - HEAD: git log (origin/main) kesin. Repo: github.com/engintosun/prodapp - Canli: prodapp-navy.vercel.app.
@@ -25,17 +28,17 @@ M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; kart mimari
 - MEVZUAT DOSYA DUZENI (K1): PERSONEL-MEVZUATI.md = insana emek/eser (bordro/smm/telif) + bordro-cozucu + G defteri; VERGI-MEVZUATI.md = saf vergi. Statu cetveli iki dosyanin basinda.
 
 ## VERGI / YUK modeli — KILITLI (detay: VERGI-MEVZUATI.md + PERSONEL-MEVZUATI.md)
-- UC EKSEN (KILITLI): "Toplam" = BRUT. Net/Brut AYRI kolon. KDV nakit ilkesi (cepten cikan KDV maliyet, ayri kolon). (1) SGK/isveren=ekleme; (2) Stopaj=carpan kesinti; (3) KDV=ayri eksen.
+- UC EKSEN (KILITLI): "Toplam" = BRUT. Net/Brut AYRI kolon. KDV nakit ilkesi (cepten cikan KDV maliyet, ayri kolon). (1) SGK/isveren=ekleme; (2) Stopaj=katsayı kesinti; (3) KDV=ayri eksen.
 - BIR KALEM = BIR STATU = BIR CINS; statu degisince kova fn_refill ile bastan dolar.
-- BASIT CARPANLAR: SMM net/0.80; Telif net/0.83; Kira net/0.80; Fatura net=maliyet; Konaklama KDV%10.
+- BASIT KATSAYILAR: SMM net/0.80; Telif net/0.83; Kira net/0.80; Fatura net=maliyet; Konaklama KDV%10.
 - BORDRO: basit % DEGIL MOTOR — doktrin PERSONEL-MEVZUATI §1 + B. Hardcode YASAK. UI kablolamasi 3e'de GENEL DESENE sokuldu: 4-alan giris/bordroSourceField YOK, tek Birim Net girisi (herkesle ayni), donem-bazli dokum periodBreakdown'dan (stageId eslesmeli), modal 6-bilesen ozet + Yasal Yuk toplami.
 - KATALOG (K5, 3a'da genisledi): standart oranlar rate_catalog'da yururluk-donemli; value_kind ile uc satir turu (oran/tutar/tarife); turetilebilir sayi katalogda DURMAZ (motor turetir); muhurde pencereyi kapsayan satir-KUMESI snapshot.
 - MIMARI DESENI: OpenFisca DEGIL. K3 uclu sinir: davranis/matematik KODDA (test edilebilir, kanitlanabilir), eslemeler cetvelde, sayilar katalogda. OpenFisca dis emsal olarak incelendi (formul-DB reddi), taban alinmadi. (MMB'nin OpenFisca kullandigi iddiasi DOGRULANMADI.)
 - MUHASEVIRE ACIK (amber): 2026 oran guncelligi + reklam tevkifati 3/10 mu 10/10 mu + telif tavan. YAPISAL model kilitli.
 
 ## KART 1500 kolon-kolon (MODEL kart)
-Kolon seti (KILITLI, 11): Kod - Aciklama - Statu - Donemler - Birim - Birim net - Miktar - Carpan - Yasal Yuk - Net toplam - Brut toplam.
-- TERMINOLOJI MUHRU (K9): Miktar = kisi/adet SAYISI (DB multiplier) · Carpan = SURE (DB repeat) · Birim = periyot CINSI (units). Detay GLOSSARY.md.
+Kolon seti (KILITLI, 11): Kod - Aciklama - Statu - Donemler - Birim - Birim net - Miktar - X - Yasal Yuk - Net toplam - Brut toplam.
+- TERMINOLOJI MUHRU: Miktar = SURE (DB repeat) · X = kisi/adet (DB multiplier) · Birim = periyot CINSI. Carpan emekli (2026-07-11). Detay GLOSSARY.md.
 - Ana satir TEK donemde GIRIS, COK donemde SALT-OKUNUR OZET. Donem-satiri 11 td hizali. Detay: docs/butce/ (DILIM-2f).
 - 1500 model tamam -> diger kartlar ayni modelden gecer.
 - Bordro kalemi artik istisna degil: herkesle AYNI kolon deseni (Birim Net TEK giris alani, Net toplam/Brut toplam hep salt-okunur/hesaplanan) — bkz. DILIM-3e C2. "Yasal Yuk" hucresi bir dugme; tikla acilan sheet'te donem-bazli/genel dokumu gosterir.
@@ -55,7 +58,7 @@ Kolon seti (KILITLI, 11): Kod - Aciklama - Statu - Donemler - Birim - Birim net 
 - **ŞİRKET PROFİLİ ŞEMA DİLİMİ YAPILDI** (bkz. Milestone "2026-07-10 (devam)" — sema+RLS+trigger+servis+UI canlı, mimari uyarı fn_lock_budget/B16 ile ilgili not düşüldü).
 
 ## Siradaki is (oncelik sirasiyla)
-1. Kalici regresyon testi — "N ayri donem satiri = tek satir Carpan×N, ayni toplam net → Brut Toplam farki ≤3 kurus" (telescoping dogrulamasi, Engin'in canli testinde dogrulandi ama test dosyasina eklenmedi). Onay bekliyor.
+1. Kalici regresyon testi — "N ayri donem satiri = tek satır Miktar×N, ayni toplam net → Brut Toplam farki ≤3 kurus" (telescoping dogrulamasi, Engin'in canli testinde dogrulandi ama test dosyasina eklenmedi). Onay bekliyor.
 2. fn_lock_budget muhur dilimi — artik SGK senaryo oranini da kapsamali (yukaridaki mimari uyari), B16 donmus-kopya ilkesini butun bordro parametreleri icin gercek kilar.
 3. Kalem Kütüphanesi ve sonrası mevcut sıra korunur (4a KART 1500 isim onarımı, 4b Kalem Kütüphanesi/Kalibrasyon).
 

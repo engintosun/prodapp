@@ -316,7 +316,7 @@ describe('payroll — sinir testleri (K5 kirilma noktalari)', () => {
       targetNetFullMonth: 60000,
     }))
     const envelope = resolvePayrollItem(months, STANDARD_LEGS, RATES_2026)
-    const signal = envelope.signals.find((s) => s.code === 'SNL-MIKTAR-DEGISIM')
+    const signal = envelope.signals.find((s) => s.code === 'SNL-ADET-DEGISIM')
     expect(signal).toBeTruthy()
     expect(signal?.data).toEqual({ monthIndex: 2, from: 2, to: 5 })
     // Kumulatif TEK cizgi (kisi-basina ayri kumulatif ACILMAZ - K9 ihtiyat-lehine, kasitli): ay3'un

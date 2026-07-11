@@ -39,7 +39,7 @@ Her ekranın görsel tasarımı (renk, kozmetik, dark tema, doku, logo/favicon) 
 1. 10 dakika kuralı — eğitimsiz muhasebeci 10 dakikada ilk grubu doldurur; kurs gerektiren her şey tasarım hatası.
 2. Kart = tek konu — masada yalnız kartlar; kartın içinde yalnız o grubun satırları.
 3. Görünür hesap, dokunulmaz formül — formül hücresi yok; her toplamda tek dokunuşla düz Türkçe döküm ("75.000 net + %33 yük = 99.750 × 1,75 hafta = 174.563").
-4. Üç alan kuralı — satır eklemek = ad + net + çarpan; yük ve birim gruptan miras.
+4. Üç alan kuralı — satır eklemek = ad + net + bir sayısal alan (Miktar veya X; diğeri varsayılan 1'de kalır); yük ve birim gruptan miras.
 5. Klavye akışı — Enter/Tab ile Excel hızı.
 6. Kayıt düğmesi yok — her hücre anında kaydedilir.
 7. Şablondan gelen boş kalem 0'da durur, toplama girmez, gizlenebilir.

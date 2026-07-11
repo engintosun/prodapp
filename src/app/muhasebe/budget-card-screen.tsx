@@ -64,7 +64,7 @@ function fmt(n: number): string {
 // classifyBordroError); ham kod yerine kullaniciya kisa Turkce mesaj gosterilir.
 function bordroReasonMessage(reason: string): string {
   if (reason === 'invalid_net') return 'Net eksik'
-  if (reason === 'no_periods') return 'Dönem/miktar eksik'
+  if (reason === 'no_periods') return 'Dönem verisi eksik'
   return 'Hesaplanamadı'
 }
 
@@ -381,7 +381,7 @@ export function BudgetCardScreen() {
       setRows((rs) =>
         rs.map((r) => (r.id === id ? { ...r, periodQty: { ...r.periodQty, [stageId]: savedVal } } : r)),
       )
-      addToast(e instanceof Error ? e.message : 'Miktar kaydedilemedi', 'error')
+      addToast(e instanceof Error ? e.message : 'X kaydedilemedi', 'error')
     } finally {
       clearBuf(id + ':stage:' + stageId)
     }
@@ -462,7 +462,7 @@ export function BudgetCardScreen() {
           r.id === itemId ? { ...r, periodRepeat: { ...r.periodRepeat, [stageId]: savedOverride } } : r,
         ),
       )
-      addToast(e instanceof Error ? e.message : 'Çarpan override kaydedilemedi', 'error')
+      addToast(e instanceof Error ? e.message : 'Miktar override kaydedilemedi', 'error')
     } finally {
       clearBuf(itemId + ':prepeat:' + stageId)
     }
@@ -665,7 +665,7 @@ export function BudgetCardScreen() {
         {card.cardName}
       </h2>
       <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', margin: '0 0 var(--space-4)' }}>
-        Dönem eklemek için Dönemler hücresinden seç; her dönem için miktar gir. Hücreden çıkınca otomatik kaydeder.
+        Dönem eklemek için Dönemler hücresinden seç; her dönem için X (adet) gir. Hücreden çıkınca otomatik kaydeder.
       </p>
       <div style={{ overflowX: 'auto' }}>
         <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 1000 }}>
@@ -704,7 +704,7 @@ export function BudgetCardScreen() {
               <th style={thStyle}>Birim</th>
               <th style={thNum}>Birim net</th>
               <th style={thNum}>Miktar</th>
-              <th style={thNum}>Çarpan</th>
+              <th style={thNum}>X</th>
               <th style={thNum}>Yasal Yük</th>
               <th style={thNum}>Net toplam</th>
               <th style={thNum}>Brut toplam</th>
@@ -849,20 +849,6 @@ export function BudgetCardScreen() {
                     </td>
                     <td style={numStyle}>
                       {multi ? (
-                        summaryQty !== null ? fmt(summaryQty) : '—'
-                      ) : (
-                        <input
-                          style={cellInputNum}
-                          type="text"
-                          inputMode="decimal"
-                          value={fieldVal(it.id, 'multiplier', it.multiplier)}
-                          onChange={(e) => onNumChange(it.id, 'multiplier', e.target.value)}
-                          onBlur={() => commitField(it.id, 'multiplier')}
-                        />
-                      )}
-                    </td>
-                    <td style={numStyle}>
-                      {multi ? (
                         fmt(summaryRepeatSum ?? 0)
                       ) : (
                         <input
@@ -872,6 +858,20 @@ export function BudgetCardScreen() {
                           value={repeatVal(it.id, it.repeat)}
                           onChange={(e) => onRepeatChange(it.id, e.target.value)}
                           onBlur={() => commitRepeat(it.id)}
+                        />
+                      )}
+                    </td>
+                    <td style={numStyle}>
+                      {multi ? (
+                        summaryQty !== null ? fmt(summaryQty) : '—'
+                      ) : (
+                        <input
+                          style={cellInputNum}
+                          type="text"
+                          inputMode="decimal"
+                          value={fieldVal(it.id, 'multiplier', it.multiplier)}
+                          onChange={(e) => onNumChange(it.id, 'multiplier', e.target.value)}
+                          onBlur={() => commitField(it.id, 'multiplier')}
                         />
                       )}
                     </td>
@@ -958,9 +958,10 @@ export function BudgetCardScreen() {
                               style={cellInputNum}
                               type="text"
                               inputMode="decimal"
-                              value={periodVal(it.id, s.id, qty)}
-                              onChange={(e) => onPeriodChange(it.id, s.id, e.target.value)}
-                              onBlur={() => commitPeriod(it.id, s.id)}
+                              value={periodRepeatVal(it.id, s.id, repeatOverride, it.repeat)}
+                              onChange={(e) => onPeriodRepeatChange(it.id, s.id, e.target.value)}
+                              onBlur={() => commitPeriodRepeat(it.id, s.id)}
+                              title={repeatOverride === null ? 'Kalemden miras (değiştirmek için yaz)' : 'Döneme özel Miktar'}
                             />
                           </td>
                           <td style={periodRowNumStyle}>
@@ -968,10 +969,9 @@ export function BudgetCardScreen() {
                               style={cellInputNum}
                               type="text"
                               inputMode="decimal"
-                              value={periodRepeatVal(it.id, s.id, repeatOverride, it.repeat)}
-                              onChange={(e) => onPeriodRepeatChange(it.id, s.id, e.target.value)}
-                              onBlur={() => commitPeriodRepeat(it.id, s.id)}
-                              title={repeatOverride === null ? 'Kalemden miras (değiştirmek için yaz)' : 'Döneme özel çarpan'}
+                              value={periodVal(it.id, s.id, qty)}
+                              onChange={(e) => onPeriodChange(it.id, s.id, e.target.value)}
+                              onBlur={() => commitPeriod(it.id, s.id)}
                             />
                           </td>
                           <td style={periodRowNumStyle}>
@@ -1102,9 +1102,9 @@ export function BudgetCardScreen() {
                           Bu kalem yıl sınırını aşıyor; kümülatif vergi matrahı yıl geçişinde sıfırlanmadan buna göre hesaplanmıştır.
                         </p>
                       )}
-                      {bdSheet.data.signals.some((s) => s.code === 'SNL-MIKTAR-DEGISIM') && (
+                      {bdSheet.data.signals.some((s) => s.code === 'SNL-ADET-DEGISIM') && (
                         <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', background: 'var(--color-surface-2)', padding: 'var(--space-2)', borderRadius: 'var(--radius-sm)', marginBottom: 'var(--space-2)' }}>
-                          Bu kalemde aylar arasında kişi sayısı (Miktar) değişiyor; aylık döküm buna göre değişkenlik gösterir.
+                          Bu kalemde aylar arasında kişi sayısı (X) değişiyor; aylık döküm buna göre değişkenlik gösterir.
                         </p>
                       )}
                       {bdSheet.data.signals.some((s) => s.code === 'SNL-TAKVIM-VARSAYILAN') && (

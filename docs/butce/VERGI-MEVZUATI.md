@@ -18,7 +18,7 @@ Bu dosya SAF VERGİ doktrinidir. Personelin yasal giderinin tamamı (iş hukuku 
 
 ## 0. NEDEN BU BELGE — net toplam ≠ brüt toplam
 
-Bir kaleme yazdığın **net** rakam (örn. yönetmene 100.000) ile o kalemin **işverene maliyeti** ve **nakit çıkışı** çoğu zaman aynı değildir. Aradaki fark üç ayrı vergi mekanizmasından gelir ve bunlar **birbirinden bağımsız eksenlerdir** — tek bir "yük %" çarpanına sıkıştırılamaz:
+Bir kaleme yazdığın **net** rakam (örn. yönetmene 100.000) ile o kalemin **işverene maliyeti** ve **nakit çıkışı** çoğu zaman aynı değildir. Aradaki fark üç ayrı vergi mekanizmasından gelir ve bunlar **birbirinden bağımsız eksenlerdir** — tek bir "yük %" katsayısına sıkıştırılamaz:
 
 1. **Stopaj (gelir vergisi tevkifatı):** Genelde brütün **içinden kesilir** (alacaklıya giden azalır). Net anlaşıldıysa brüt yukarı şişer.
 2. **SGK işveren payı (bordro):** Netin **üstüne eklenir**, gerçek işveren maliyeti.
@@ -54,17 +54,17 @@ Statü, KART-KATALOGU §4.8'deki ödeme-statüsü boyutudur. Her işçilik/hizme
 
 Telif kapsamı, eser belgesi düzeltmesi (belge ŞART DEĞİL), istisna tavanının yapımcıya etkisizliği, bağımlılık sınırı ve KDV üç-hal mekanizması → **PERSONEL-MEVZUATI.md A bölümü** (kilitli, Engin düzeltmeleri işlenmiş güncel hal).
 
-### 1c. ÜÇ EKSEN MODELİ + STATÜ → ÇARPAN TABLOSU (KİLİTLİ, 2026-06-25)
+### 1c. ÜÇ EKSEN MODELİ + STATÜ → KATSAYI TABLOSU (KİLİTLİ, 2026-06-25)
 
 Bütçe "Toplam" = **BRÜT** (yapımcı maliyeti). Üç eksen **birleştirilmez**:
 
 | Eksen | Mekanizma | Kime uygulanır | Net→Brüt formülü |
 |---|---|---|---|
 | **SGK / işveren** | Ekleme (additive): Brüt = Net × (1 + oran) | Yalnız bordro | Net × 1,2175 (varsayılan) |
-| **Stopaj** | Çarpan kesinti: Brüt = Net / (1 − oran) | SMM / Telif / Kira | Net/0,80 veya /0,83 veya /0,80 |
+| **Stopaj** | Katsayı kesinti: Brüt = Net / (1 − oran) | SMM / Telif / Kira | Net/0,80 veya /0,83 veya /0,80 |
 | **KDV** | Ayrı havuz, geri alınabilir | Tüm faturalı | Nakit ilkesi: cepten çıkan KDV maliyettir, genel toplama girer; kendi kolonunda ayrı izlenir (bkz. bölüm 3) |
 
-**Statü → Brüt çarpan tablosu (basit):**
+**Statü → Brüt katsayı tablosu (basit):**
 
 | Statü | Stopaj | Brüt formülü | KDV | SGK fringe |
 |---|---|---|---|---|

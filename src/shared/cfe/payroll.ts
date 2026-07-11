@@ -62,7 +62,7 @@ export interface PayrollMonthResult {
 }
 
 export interface PayrollSignal {
-  code: 'SNL-YIL-ASIMI' | 'SNL-MIKTAR-DEGISIM' | 'SNL-TAKVIM-VARSAYILAN'
+  code: 'SNL-YIL-ASIMI' | 'SNL-ADET-DEGISIM' | 'SNL-TAKVIM-VARSAYILAN'
   data: Record<string, unknown>
 }
 
@@ -391,7 +391,7 @@ export function resolvePayrollItem(
         signals.push({ code: 'SNL-YIL-ASIMI', data: { fromYear: prev.year, toYear: m.year } })
       }
       if (prev.headcount !== m.headcount) {
-        signals.push({ code: 'SNL-MIKTAR-DEGISIM', data: { monthIndex: i, from: prev.headcount, to: m.headcount } })
+        signals.push({ code: 'SNL-ADET-DEGISIM', data: { monthIndex: i, from: prev.headcount, to: m.headcount } })
       }
     }
   }

@@ -98,7 +98,7 @@ describe('CFE — cinse göre brüt (DILIM-2c)', () => {
     expect(brutToplamDonemli([{ net: 5000, qty: 2, carpan: 1 }], [])).toBe(10000)
     expect(netToplamDonemli([{ net: 5000, qty: 2, carpan: 1 }])).toBe(10000)
   })
-  it('net çizelge toplamı: çarpan uygulanır, yüksüz', () => {
+  it('net çizelge toplamı: Miktar uygulanır, yüksüz', () => {
     expect(netToplamDonemli([{ net: 1000, qty: 1, carpan: 3 }])).toBe(3000)
     expect(netToplamDonemli([])).toBe(0)
   })
@@ -108,20 +108,20 @@ describe('CFE — cinse göre brüt (DILIM-2c)', () => {
   it('kesinti %100+ → hata fırlatır (sessiz hata yasak)', () => {
     expect(() => brutToplamDonemli([{ net: 1000, qty: 1, carpan: 1 }], [{ ratePercent: 100, kind: 'deduction' }])).toThrow()
   })
-  it('donem-bazli carpan dogru sonuc verir', () => {
+  it('donem-bazli Miktar dogru sonuc verir', () => {
     const donemler = [{ net: 30000, qty: 4, carpan: 1 }, { net: 35000, qty: 8, carpan: 2 }]
     expect(netToplamDonemli(donemler)).toBe(30000 * 4 + 35000 * 8 * 2)
   })
-  it('carpan default 1 ile eski davranis uyumlu', () => {
+  it('Miktar default 1 ile eski davranis uyumlu', () => {
     const donemler = [{ net: 1000, qty: 5, carpan: 1 }]
     expect(netToplamDonemli(donemler)).toBe(5000)
   })
-  it('brutToplamDonemli additive yuk ile carpan-bazli net uzerinde', () => {
+  it('brutToplamDonemli additive yuk ile Miktar-bazli net uzerinde', () => {
     const donemler = [{ net: 1000, qty: 1, carpan: 2 }]
     const yukler: Yuk[] = [{ ratePercent: 20, kind: 'additive' }]
     expect(brutToplamDonemli(donemler, yukler)).toBe(2400)
   })
-  it('brutToplamDonemli deduction yuk ile carpan-bazli net uzerinde', () => {
+  it('brutToplamDonemli deduction yuk ile Miktar-bazli net uzerinde', () => {
     const donemler = [{ net: 1000, qty: 1, carpan: 2 }]
     const yukler: Yuk[] = [{ ratePercent: 20, kind: 'deduction' }]
     expect(brutToplamDonemli(donemler, yukler)).toBe(2500)
