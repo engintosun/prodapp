@@ -77,3 +77,12 @@ Paketleme: Model A — bütçe ile harcama tek kod tabanında paketlenebilir iki
 - Açık bütçe: mevcut canlı yol aynen (rate_catalog + fn_resolve_sgk_scenario, yürürlük = bugün).
 - Çatal YALNIZ oran kaynağıdır: kalem/dönem/kova okumaları kilitliyken de canlı tablolardan sürer (guard trigger'lar tabloları donduruyor). Payload okuyucusu MÜHÜR-3 ile gelir (V-sekmeleri, eski versiyonu görüntüleme).
 - Doğrulama: kalıcı vitest (5-senaryo + asOf sabitleme + round-trip) + supabase/VERIFY-MUHUR2.sql (linked, begin/rollback, iz bırakmaz).
+
+## KUR-1 — Çok para birimi YERLEŞİM mührü (KİLİTLENDİ 2026-07-12; uygulama ayrı gelecek dilim)
+Dört parça, dört ev:
+1. Girilen para birimi + tutar = SATIRDA (kalem/dönem alanı) — VERİDİR, saklanır. Şema kolonu bu mühürle AÇILMAZ; gelecek dilim.
+2. Kur = KATALOGDA (rate_catalog deseni, valid_from yürürlüklü satırlar; B20). Mühür snapshot cetvelin tamamını kopyaladığı için mühürlü bütçenin kuru sealed_at tarihine sabitlenir — MÜHÜR-1/2 altyapısı ek işsiz karşılar.
+3. Çevrim matematiği = CFE saf fonksiyonunda; çevrilmiş toplam SAKLANMAZ (B18).
+4. Gösterim birimi = ViewMode / rapor katmanı (icmalde tek birim). Emsal: Saturation faz-başına para birimi; MMB currency aracı.
+Refaktöre etkisi (R1'den itibaren): para biçimleme format.ts'te merkezî; satır bileşenlerine TL sembolü gömmek YASAK; fmt imzası ileride currency parametresine açılır.
+NEDEN: sahadaki gerçek senaryo — görüntü yönetmenine dolar, asistanlara TL ödenir, icmal tek para biriminde okunur. Eksen disiplini (veri → katalog → motor → görünüm) bozulmadan karşılanır.
