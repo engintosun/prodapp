@@ -9,9 +9,9 @@ import {
   copyMainToFirstPeriod,
   copyLastPeriodToMain,
   getItemBurdensAndVat,
-  deriveBordroFields,
 } from '../../../../shared/supabase/budget-service'
 import type { BudgetItemRow, CardView, EditableField, StageRow } from '../../../../shared/supabase/budget-service'
+import { deriveBordroFields } from '../../../../shared/supabase/payroll-read'
 import { useToast } from '../../../../shared/components/toast'
 import { bordroReasonMessage } from '../format'
 import type { BordroSheetEntry } from '../components/burden-sheet'

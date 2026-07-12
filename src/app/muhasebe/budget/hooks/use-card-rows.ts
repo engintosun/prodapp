@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { getOrOpenBudget, getFirstCard, loadUnits } from '../../../../shared/supabase/budget-service'
+import { getOrOpenBudget, getCard, loadUnits } from '../../../../shared/supabase/budget-service'
 import type { BudgetItemRow, CardView, StageRow, UnitRow } from '../../../../shared/supabase/budget-service'
 import { useToast } from '../../../../shared/components/toast'
 
-export function useCardRows() {
+export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
+  const { budgetId: paramBudgetId, cardId } = params ?? {}
   const { addToast } = useToast()
   const [card, setCard] = useState<CardView | null>(null)
   const [rows, setRows] = useState<BudgetItemRow[]>([])
@@ -30,8 +31,8 @@ export function useCardRows() {
       try {
         setLoading(true)
         setError(null)
-        const budgetId = await getOrOpenBudget()
-        const c = await getFirstCard(budgetId)
+        const budgetId = paramBudgetId ?? (await getOrOpenBudget())
+        const c = await getCard(budgetId, cardId)
         if (cancelled) return
         setCard(c)
         setRows(c?.items ?? [])
@@ -55,7 +56,7 @@ export function useCardRows() {
     return () => {
       cancelled = true
     }
-  }, [reload])
+  }, [reload, paramBudgetId, cardId])
 
   useEffect(() => {
     let cancelled = false

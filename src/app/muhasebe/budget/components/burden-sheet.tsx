@@ -1,7 +1,8 @@
 import { netToplamDonemli, brutToplamDonemli, kisiyeBanka } from '../../../../shared/cfe'
 import type { Yuk, DonemKalemi } from '../../../../shared/cfe'
 import { fmt, buildDonemler } from '../format'
-import type { BudgetItemRow, StageRow, BordroDerivedFields } from '../../../../shared/supabase/budget-service'
+import type { BudgetItemRow, StageRow } from '../../../../shared/supabase/budget-service'
+import type { BordroDerivedFields } from '../../../../shared/supabase/payroll-read'
 import { BottomSheet } from './bottom-sheet'
 
 export type BordroSheetEntry = { loading: boolean; data: BordroDerivedFields | null; error: string | null }

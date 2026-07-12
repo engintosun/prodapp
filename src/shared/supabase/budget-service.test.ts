@@ -7,7 +7,7 @@ import {
   type BordroItemFields,
   type BordroPeriodRow,
   type CatalogRateRow,
-} from './budget-service'
+} from './payroll-read'
 import type { PayrollLegs, PayrollRates, TaxBracket } from '../cfe'
 
 const BRACKETS_2026: TaxBracket[] = [

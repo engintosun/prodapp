@@ -12,9 +12,9 @@ import { BurdenSheet } from './components/burden-sheet'
 import { StatusInfoSheet } from './components/status-info-sheet'
 import { NoteSheet } from './components/note-sheet'
 
-export function CardTableScreen() {
+export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardId?: string } = {}) {
   const { card, rows, stages, units, loading, error, refetch, patchRow, rowsRef, savedRef, cardRef, stagesRef, unitLabelByIdRef } =
-    useCardRows()
+    useCardRows({ budgetId, cardId })
   const { buffers, bordroData, refreshBordro, api } = useEditBuffers({
     rowsRef,
     savedRef,
