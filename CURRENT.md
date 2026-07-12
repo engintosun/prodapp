@@ -24,6 +24,8 @@ M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; kart mimari
 
 - 2026-07-12: REFAKTÖR KARAR PAKETİ — budget-card-screen monolit teşhisi (1241 satır tek bileşen) + rakip taraması (MMB/Saturation/Hot Budget) sonrası bütçe UI kod anayasası İ1–İ7 MÜHÜRLENDİ (YENİ docs/butce/BUTCE-UI-MIMARISI.md), KUR-1 çok-para-birimi yerleşim mührü (BUTCE-SEMA-KARARLARI), uygulama sırası R1→R2→R3→KLV→MÜHÜR-3a/3b. Test tabanı düzeltmesi: gerçek sayı 78/78 (önceki 67 kaydı bayattı; MÜHÜR-2 + telescoping testleri sayıma girmemişti).
 
+- 2026-07-12: R1+R2 EKRAN REFAKTORU CANLI — R1 (3e5d947): stiller/format/bottom-sheet primitivi/uc sheet cikarildi. R2: use-card-rows + use-edit-buffers (tek commit bogazi, render-stabil api) + ItemRow/PeriodRow (React.memo, primitif buffer proplari) + ekran budget/card-table-screen.tsx e tasindi, eski dosya silindi. Bilincli sapma: budgetId/cardId parametreleri R3 e (getCard ile birlikte), viewMode MUHUR-3a ya (view-mode.ts ile birlikte) kaydi. Build + 78/78 + Engin gorsel turu kapilari.
+
 ## Durum
 - HEAD: git log (origin/main) kesin. Repo: github.com/engintosun/prodapp - Canli: prodapp-navy.vercel.app.
 - KURULU/CALISIYOR: auth + cok-proje - saha fis girisi - yonlendirme/duzeltme - davet/rol - onay/red - proje+butce+servisler - onboarding - BUTCE DB TEMELI - fn_open_budget CANLI - CFE (28/28) - KART 1500 ekran TAM - odeme-statusu semasi CANLI - yuk kovasi cins CANLI - Not kolonlari CANLI.
@@ -65,12 +67,10 @@ Kolon seti (KILITLI, 11): Kod - Aciklama - Statu - Donemler - Birim - Birim net 
 - **MÜHÜR/versiyonlama karar paketi KL-1..KL-12 KAPANDI** (Engin+Opus, 2026-07-11): KL-1 versiyonlama Yol A (V-sekmeleri, dallanma yok); KL-5 mühür tarihsiz olabilir (Ocak-varsayımı donar); KL-7 harcama-tetiklemesi iptal (mühür tek kapı); KL-9 mühürlüye tarih yazılmaz, taslağa yazılır; KL-12 payload jsonb tam-kopya (hesaplanan değer yok, B18). MÜHÜR-1 (şema+çekirdek) bu pakettten türedi.
 
 ## Siradaki is (oncelik sirasiyla)
-1. R1 — ekran refaktörü, cansız parçalar (stiller/format/bottom-sheet/3 sheet). Davranış-sıfır. Anayasa: BUTCE-UI-MIMARISI.md.
-2. R2 — canlı çekirdek (item-row/period-row + use-edit-buffers + use-card-rows + budgetId/cardId/viewMode parametreleri + budget/ klasörü). Davranış-sıfır.
-3. R3 — servis dikişi (payroll-read.ts mekanik ayrım + getCard(cardId)). Davranış-sıfır.
-4. KLV — klavye motoru (İ7, use-grid-navigation).
-5. MÜHÜR-3a/3b — version-service + versiyon sekmeleri + salt-okunur görünüm + Mühür eki rozeti + revizyon akışı.
-6. Sonrası mevcut sıra: 4a KART 1500 isim onarımı, 4b Kalem Kütüphanesi/Kalibrasyon.
+1. R3 — servis dikişi (payroll-read.ts mekanik ayrım + getCard(cardId) + budgetId/cardId parametreleri (R2 den devir)). Davranış-sıfır.
+2. KLV — klavye motoru (İ7, use-grid-navigation).
+3. MÜHÜR-3a/3b — version-service + versiyon sekmeleri + salt-okunur görünüm + Mühür eki rozeti + revizyon akışı.
+4. Sonrası mevcut sıra: 4a KART 1500 isim onarımı, 4b Kalem Kütüphanesi/Kalibrasyon.
 
 ## Acik kalanlar
 - KDV kalem-bazlı düzenleme yüzeyi (kütüphane varsayılanlarına bağlı, Faz sonrası).

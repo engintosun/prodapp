@@ -15,7 +15,7 @@ import { EmptyState } from '../../shared/components/empty-state'
 import { SahaScreen } from '../saha/saha-screen'
 import { ReviewerScreen } from '../reviewer/reviewer-screen'
 import { InviteScreen } from '../muhasebe/invite-screen'
-import { BudgetCardScreen } from '../muhasebe/budget-card-screen'
+import { CardTableScreen } from '../muhasebe/budget/card-table-screen'
 import { DefinitionsScreen } from '../muhasebe/definitions-screen'
 import { OnboardingFlow } from '../onboarding/onboarding-flow'
 
@@ -126,7 +126,7 @@ export function AuthenticatedShell({ user, theme, onToggleTheme }: Props) {
           : role === 'muhasebe' && activeKey === 'davet'
             ? <InviteScreen />
             : role === 'muhasebe' && activeKey === 'butce'
-              ? <BudgetCardScreen />
+              ? <CardTableScreen />
               : role === 'muhasebe' && activeKey === 'tanimlar'
                 ? <DefinitionsScreen projectId={projectId as string} userId={user.id} />
                 : (role === 'dept' && activeKey === 'bekleyen') || (role === 'muhasebe' && activeKey === 'masa')

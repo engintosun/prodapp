@@ -40,3 +40,25 @@ export function summarizeSame<T>(stageIds: string[], pick: (sid: string) => T): 
   const vals = stageIds.map(pick)
   return vals.every((v) => v === vals[0]) ? vals[0] : null
 }
+
+export function fieldVal(buf: string | undefined, n: number): string {
+  return buf !== undefined ? buf : String(n)
+}
+
+export function repeatVal(buf: string | undefined, n: number): string {
+  return buf !== undefined ? buf : String(n)
+}
+
+export function periodVal(buf: string | undefined, n: number): string {
+  return buf !== undefined ? buf : String(n)
+}
+
+export function periodNetVal(buf: string | undefined, override: number | null | undefined, unitNet: number): string {
+  if (buf !== undefined) return buf
+  return override != null ? String(override) : String(unitNet)
+}
+
+export function periodRepeatVal(buf: string | undefined, override: number | null | undefined, repeat: number): string {
+  if (buf !== undefined) return buf
+  return override != null ? String(override) : String(repeat)
+}
