@@ -28,6 +28,8 @@ M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; kart mimari
 
 - 2026-07-12: R3 SERVIS DIKISI CANLI — bordro okuma kumesi payroll-read.ts e mekanik ayrildi (budget-service kuculdu, re-export yok), getCard(budgetId, cardId) dogdu (getFirstCard ince sarmalayici), useCardRows + CardTableScreen budgetId/cardId parametreli (varsayilanlar bugunku davranis). KLV KAPSAM EKI (Engin R2 tur bulgusu): 6+ haneli giriste tablo auto-layout yeniden akiyor (kolon genislikleri icerikle dagiliyor); I7 sarsilmazlik geregi KLV diliminde table-layout fixed + kolon genislik semasi ile giderilecek. R2 regresyonu degil.
 
+- 2026-07-12: KLV CANLI (KLV-0 9a05cd7, KLV-1 72f2edb) — I7 klavye motoru + sabit tablo duzeni. KLV-0: table-layout fixed + colgroup (colWidths, table-styles.ts; toplam kolonlar 150px yuz-milyonlu tutar + KUR-1 kur payi icin), Aciklama input'u ellipsis (cellInputEllipsis). KLV-1: grid-navigation-core.ts saf reducer (DOM'suz, { mode, active, draft }, CellId kalici kimlik dizi-indeksi degil; 35 birim test) + use-grid-navigation.ts ince hook (data-grid-cell/data-row-id/data-col'dan DOM'a baglanir, geometri her gezinmede yeniden okunur, commit/seed/cancel mevcut onXChange/commitX yollarina delege — dogrulama yeniden yazilmadi). Iki mimari karar KİLİTLENDİ (BUTCE-UI-MIMARISI.md I7 altinda): KLV-K6 (goruntu/taslak ayrimi — nav modu fmt() bicimli, edit modu ham deger) + KLV-K7 (select hucreler — Statu/Donemler/Birim — grid duragi DEGIL, sadece tiklama ile girilir, Tab-intercept onlari atlar). Build ✓, tsc --noEmit temiz, 113/113 test (78 mevcut + 35 yeni cekirdek). MANUEL TARAYICI TESTI BU OTURUMDA YAPILAMADI (Engin kendi ortaminda dogrulayacak — bkz Acik kalanlar).
+
 ## Durum
 - HEAD: git log (origin/main) kesin. Repo: github.com/engintosun/prodapp - Canli: prodapp-navy.vercel.app.
 - KURULU/CALISIYOR: auth + cok-proje - saha fis girisi - yonlendirme/duzeltme - davet/rol - onay/red - proje+butce+servisler - onboarding - BUTCE DB TEMELI - fn_open_budget CANLI - CFE (28/28) - KART 1500 ekran TAM - odeme-statusu semasi CANLI - yuk kovasi cins CANLI - Not kolonlari CANLI.
@@ -69,11 +71,12 @@ Kolon seti (KILITLI, 11): Kod - Aciklama - Statu - Donemler - Birim - Birim net 
 - **MÜHÜR/versiyonlama karar paketi KL-1..KL-12 KAPANDI** (Engin+Opus, 2026-07-11): KL-1 versiyonlama Yol A (V-sekmeleri, dallanma yok); KL-5 mühür tarihsiz olabilir (Ocak-varsayımı donar); KL-7 harcama-tetiklemesi iptal (mühür tek kapı); KL-9 mühürlüye tarih yazılmaz, taslağa yazılır; KL-12 payload jsonb tam-kopya (hesaplanan değer yok, B18). MÜHÜR-1 (şema+çekirdek) bu pakettten türedi.
 
 ## Siradaki is (oncelik sirasiyla)
-1. KLV — klavye motoru (İ7, use-grid-navigation) + tablo reflow sabitleme (table-layout fixed + kolon genislik semasi).
+1. KLV manuel tarayici dogrulamasi (Engin) — bkz Acik kalanlar kontrol listesi; gecerse KLV KAPANIR.
 2. MÜHÜR-3a/3b — version-service + versiyon sekmeleri + salt-okunur görünüm + Mühür eki rozeti + revizyon akışı.
 3. Sonrası mevcut sıra: 4a KART 1500 isim onarımı, 4b Kalem Kütüphanesi/Kalibrasyon.
 
 ## Acik kalanlar
+- KLV manuel tarayici kontrol listesi (Engin, bu oturumda yapilamadi): 6+ haneli giriste kolon genislikleri kipirdamiyor mu; Enter zinciriyle 10 hucre art arda hizli giriste (yavas ag simulasyonu) odak dusuyor mu; Esc eski degeri geri getiriyor mu; PeriodRow acikken Tab akisi donem hucrelerinden geciyor mu; salt-okunur kolonlar (Yasal Yuk/Net/Brut toplam) atlaniyor mu; disari tiklamada deger kaydoluyor mu; Statu/Donemler/Birim select'lerine sadece tiklama ile girilebiliyor mu (grid hucresinden Tab ile ATLANMASI beklenen davranis); birim net'e 5000000 yazip Enter'da hucre 5.000.000 bicimli gorunuyor mu.
 - KDV kalem-bazlı düzenleme yüzeyi (kütüphane varsayılanlarına bağlı, Faz sonrası).
 - EV/NAV genel navigasyon turu (sıra #2, bu pakette çözülmedi).
 - Riskli-durum SNL pop-up'ı (veri birikmeden kurulmaz).
