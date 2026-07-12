@@ -17,6 +17,9 @@ interface PeriodRowProps {
   bufQty: string | undefined
   bufNet: string | undefined
   bufRepeat: string | undefined
+  navQty: string | undefined
+  navNet: string | undefined
+  navRepeat: string | undefined
 }
 
 export const PeriodRow = memo(function PeriodRow({
@@ -29,6 +32,9 @@ export const PeriodRow = memo(function PeriodRow({
   bufQty,
   bufNet,
   bufRepeat,
+  navQty,
+  navNet,
+  navRepeat,
 }: PeriodRowProps) {
   const it = item
   const s = stage
@@ -71,10 +77,13 @@ export const PeriodRow = memo(function PeriodRow({
       </td>
       <td style={periodRowNumStyle}>
         <input
+          data-grid-cell="true"
+          data-row-id={`${it.id}:${s.id}`}
+          data-col="periodNet"
           style={cellInputNum}
           type="text"
           inputMode="decimal"
-          value={periodNetVal(bufNet, netOverride, it.unitNet)}
+          value={navNet ?? periodNetVal(bufNet, netOverride, it.unitNet)}
           onChange={(e) => api.onPeriodNetChange(it.id, s.id, e.target.value)}
           onBlur={() => api.commitPeriodNet(it.id, s.id)}
           title={netOverride === null ? 'Kalemden miras (değiştirmek için yaz)' : 'Döneme özel net'}
@@ -82,10 +91,13 @@ export const PeriodRow = memo(function PeriodRow({
       </td>
       <td style={periodRowNumStyle}>
         <input
+          data-grid-cell="true"
+          data-row-id={`${it.id}:${s.id}`}
+          data-col="periodRepeat"
           style={cellInputNum}
           type="text"
           inputMode="decimal"
-          value={periodRepeatVal(bufRepeat, repeatOverride, it.repeat)}
+          value={navRepeat ?? periodRepeatVal(bufRepeat, repeatOverride, it.repeat)}
           onChange={(e) => api.onPeriodRepeatChange(it.id, s.id, e.target.value)}
           onBlur={() => api.commitPeriodRepeat(it.id, s.id)}
           title={repeatOverride === null ? 'Kalemden miras (değiştirmek için yaz)' : 'Döneme özel Miktar'}
@@ -93,10 +105,13 @@ export const PeriodRow = memo(function PeriodRow({
       </td>
       <td style={periodRowNumStyle}>
         <input
+          data-grid-cell="true"
+          data-row-id={`${it.id}:${s.id}`}
+          data-col="periodQty"
           style={cellInputNum}
           type="text"
           inputMode="decimal"
-          value={periodVal(bufQty, qty)}
+          value={navQty ?? periodVal(bufQty, qty)}
           onChange={(e) => api.onPeriodChange(it.id, s.id, e.target.value)}
           onBlur={() => api.commitPeriod(it.id, s.id)}
         />

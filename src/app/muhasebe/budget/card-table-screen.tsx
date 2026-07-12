@@ -4,7 +4,8 @@ import { EmptyState } from '../../../shared/components/empty-state'
 import { ErrorMessage } from '../../../shared/components/error-message'
 import { useCardRows } from './hooks/use-card-rows'
 import { useEditBuffers } from './hooks/use-edit-buffers'
-import { isMultiPeriod } from './format'
+import { useGridNavigation } from './hooks/use-grid-navigation'
+import { isMultiPeriod, fmt } from './format'
 import { thStyle, thNum, colWidths, tableMinWidth } from './components/table-styles'
 import { ItemRow } from './components/item-row'
 import { PeriodRow } from './components/period-row'
@@ -23,6 +24,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     unitLabelByIdRef,
     patchRow,
   })
+  const grid = useGridNavigation({ rowsRef, savedRef, patchRow, api, rows })
   const [openBurden, setOpenBurden] = useState<{ itemId: string; stageId: string | null } | null>(null)
   const [openNoteItemId, setOpenNoteItemId] = useState<string | null>(null)
   const [openStatusInfo, setOpenStatusInfo] = useState(false)
@@ -61,7 +63,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
       <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', margin: '0 0 var(--space-4)' }}>
         Dönem eklemek için Dönemler hücresinden seç; her dönem için X (adet) gir. Hücreden çıkınca otomatik kaydeder.
       </p>
-      <div style={{ overflowX: 'auto' }}>
+      <div ref={grid.containerRef} onKeyDown={grid.handleKeyDown} onFocus={grid.handleFocus} style={{ overflowX: 'auto' }}>
         <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: tableMinWidth, tableLayout: 'fixed' }}>
           <colgroup>
             <col style={{ width: colWidths.kod }} />
@@ -136,22 +138,34 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                     bufUnitNet={buffers[it.id + ':unitNet']}
                     bufMultiplier={buffers[it.id + ':multiplier']}
                     bufRepeat={buffers[it.id + ':repeat']}
+                    navUnitNet={grid.isActiveNav(it.id, 'unitNet') ? fmt(it.unitNet) : undefined}
+                    navMultiplier={grid.isActiveNav(it.id, 'multiplier') ? fmt(it.multiplier) : undefined}
+                    navRepeat={grid.isActiveNav(it.id, 'repeat') ? fmt(it.repeat) : undefined}
                   />
                   {multi &&
-                    addedStages.map((s) => (
-                      <PeriodRow
-                        key={`${it.id}:${s.id}`}
-                        item={it}
-                        stage={s}
-                        api={api}
-                        units={units}
-                        bordro={bordroData[it.id]}
-                        onOpenBurden={onOpenBurden}
-                        bufQty={buffers[it.id + ':stage:' + s.id]}
-                        bufNet={buffers[it.id + ':pnet:' + s.id]}
-                        bufRepeat={buffers[it.id + ':prepeat:' + s.id]}
-                      />
-                    ))}
+                    addedStages.map((s) => {
+                      const periodRowId = `${it.id}:${s.id}`
+                      const netVal = it.periodNet[s.id] ?? it.unitNet
+                      const repeatVal = it.periodRepeat[s.id] ?? it.repeat
+                      const qtyVal = it.periodQty[s.id] ?? 0
+                      return (
+                        <PeriodRow
+                          key={periodRowId}
+                          item={it}
+                          stage={s}
+                          api={api}
+                          units={units}
+                          bordro={bordroData[it.id]}
+                          onOpenBurden={onOpenBurden}
+                          bufQty={buffers[it.id + ':stage:' + s.id]}
+                          bufNet={buffers[it.id + ':pnet:' + s.id]}
+                          bufRepeat={buffers[it.id + ':prepeat:' + s.id]}
+                          navNet={grid.isActiveNav(periodRowId, 'periodNet') ? fmt(netVal) : undefined}
+                          navRepeat={grid.isActiveNav(periodRowId, 'periodRepeat') ? fmt(repeatVal) : undefined}
+                          navQty={grid.isActiveNav(periodRowId, 'periodQty') ? fmt(qtyVal) : undefined}
+                        />
+                      )
+                    })}
                 </Fragment>
               )
             })}

@@ -18,6 +18,9 @@ interface ItemRowProps {
   bufUnitNet: string | undefined
   bufMultiplier: string | undefined
   bufRepeat: string | undefined
+  navUnitNet: string | undefined
+  navMultiplier: string | undefined
+  navRepeat: string | undefined
 }
 
 export const ItemRow = memo(function ItemRow({
@@ -31,6 +34,9 @@ export const ItemRow = memo(function ItemRow({
   bufUnitNet,
   bufMultiplier,
   bufRepeat,
+  navUnitNet,
+  navMultiplier,
+  navRepeat,
 }: ItemRowProps) {
   const it = item
   const multi = isMultiPeriod(it)
@@ -64,6 +70,9 @@ export const ItemRow = memo(function ItemRow({
       <td style={tdStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
           <input
+            data-grid-cell="true"
+            data-row-id={it.id}
+            data-col="name"
             style={cellInputEllipsis}
             value={it.name}
             onChange={(e) => api.onTextChange(it.id, 'name', e.target.value)}
@@ -158,10 +167,13 @@ export const ItemRow = memo(function ItemRow({
           summaryNet !== null ? fmt(summaryNet) : '—'
         ) : (
           <input
+            data-grid-cell="true"
+            data-row-id={it.id}
+            data-col="unitNet"
             style={cellInputNum}
             type="text"
             inputMode="decimal"
-            value={fieldVal(bufUnitNet, it.unitNet)}
+            value={navUnitNet ?? fieldVal(bufUnitNet, it.unitNet)}
             onChange={(e) => api.onNumChange(it.id, 'unitNet', e.target.value)}
             onBlur={() => api.commitField(it.id, 'unitNet')}
           />
@@ -172,10 +184,13 @@ export const ItemRow = memo(function ItemRow({
           fmt(summaryRepeatSum ?? 0)
         ) : (
           <input
+            data-grid-cell="true"
+            data-row-id={it.id}
+            data-col="repeat"
             style={cellInputNum}
             type="text"
             inputMode="decimal"
-            value={repeatVal(bufRepeat, it.repeat)}
+            value={navRepeat ?? repeatVal(bufRepeat, it.repeat)}
             onChange={(e) => api.onRepeatChange(it.id, e.target.value)}
             onBlur={() => api.commitRepeat(it.id)}
           />
@@ -186,10 +201,13 @@ export const ItemRow = memo(function ItemRow({
           summaryQty !== null ? fmt(summaryQty) : '—'
         ) : (
           <input
+            data-grid-cell="true"
+            data-row-id={it.id}
+            data-col="multiplier"
             style={cellInputNum}
             type="text"
             inputMode="decimal"
-            value={fieldVal(bufMultiplier, it.multiplier)}
+            value={navMultiplier ?? fieldVal(bufMultiplier, it.multiplier)}
             onChange={(e) => api.onNumChange(it.id, 'multiplier', e.target.value)}
             onBlur={() => api.commitField(it.id, 'multiplier')}
           />
