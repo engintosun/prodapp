@@ -1,5 +1,4 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
-import type { CSSProperties } from 'react'
 import {
   getOrOpenBudget,
   getFirstCard,
@@ -14,86 +13,19 @@ import {
   getItemBurdensAndVat,
   deriveBordroFields,
 } from '../../shared/supabase/budget-service'
-import type { BudgetItemRow, BordroDerivedFields, CardView, EditableField, StageRow, UnitRow } from '../../shared/supabase/budget-service'
+import type { BudgetItemRow, CardView, EditableField, StageRow, UnitRow } from '../../shared/supabase/budget-service'
 import { netToplamDonemli, brutToplamDonemli, kisiyeBanka } from '../../shared/cfe'
 import type { Yuk, DonemKalemi } from '../../shared/cfe'
 import { useToast } from '../../shared/components/toast'
 import { Loading } from '../../shared/components/loading'
 import { EmptyState } from '../../shared/components/empty-state'
 import { ErrorMessage } from '../../shared/components/error-message'
-
-const thStyle: CSSProperties = {
-  textAlign: 'left',
-  fontSize: 'var(--text-xs)',
-  color: 'var(--color-text-muted)',
-  fontWeight: 600,
-  padding: 'var(--space-2)',
-  whiteSpace: 'nowrap',
-  borderBottom: '1px solid var(--color-border)',
-}
-const thNum: CSSProperties = { ...thStyle, textAlign: 'right' }
-const tdStyle: CSSProperties = {
-  fontSize: 'var(--text-sm)',
-  color: 'var(--color-text)',
-  padding: 'var(--space-2)',
-  whiteSpace: 'nowrap',
-  borderBottom: '1px solid var(--color-border)',
-}
-const numStyle: CSSProperties = { ...tdStyle, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }
-const cellInput: CSSProperties = {
-  width: '100%',
-  boxSizing: 'border-box',
-  background: 'var(--color-surface-2)',
-  border: '1px solid var(--color-border)',
-  borderRadius: 'var(--radius-sm)',
-  padding: 'var(--space-1) var(--space-2)',
-  fontSize: 'var(--text-sm)',
-  color: 'var(--color-text)',
-  fontFamily: 'inherit',
-}
-const cellInputNum: CSSProperties = { ...cellInput, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }
-const periodRowStyle: CSSProperties = { ...tdStyle, background: 'var(--color-surface-2)' }
-const periodRowNumStyle: CSSProperties = { ...numStyle, background: 'var(--color-surface-2)' }
-
-function fmt(n: number): string {
-  const dp = Number.isInteger(n) ? 0 : 2
-  return new Intl.NumberFormat('tr-TR', { minimumFractionDigits: dp, maximumFractionDigits: dp }).format(n)
-}
-
-// deriveBordroFields, motor hatasini tipli reason koduyla firlatir (bkz. budget-service.ts
-// classifyBordroError); ham kod yerine kullaniciya kisa Turkce mesaj gosterilir.
-function bordroReasonMessage(reason: string): string {
-  if (reason === 'invalid_net') return 'Net eksik'
-  if (reason === 'no_periods') return 'Dönem verisi eksik'
-  return 'Hesaplanamadı'
-}
-
-function itemHasNote(it: BudgetItemRow): boolean {
-  return Boolean((it.internalNote && it.internalNote.trim()) || (it.publicNote && it.publicNote.trim()))
-}
-
-function isMultiPeriod(it: BudgetItemRow): boolean {
-  return Object.keys(it.periodQty).length > 1
-}
-
-// Tek-donem (0 veya 1) modunda ana satir kendi degerlerini parametre olarak kullanir;
-// cok-donem modunda her donem-satiri kendi override/kalitim degerleriyle ozerk.
-function buildDonemler(it: BudgetItemRow): DonemKalemi[] {
-  if (!isMultiPeriod(it)) {
-    return [{ net: it.unitNet, qty: it.multiplier, carpan: it.repeat }]
-  }
-  return Object.keys(it.periodQty).map((sid) => ({
-    net: it.periodNet[sid] ?? it.unitNet,
-    qty: it.periodQty[sid],
-    carpan: it.periodRepeat[sid] ?? it.repeat,
-  }))
-}
-
-function summarizeSame<T>(stageIds: string[], pick: (sid: string) => T): T | null {
-  if (stageIds.length === 0) return null
-  const vals = stageIds.map(pick)
-  return vals.every((v) => v === vals[0]) ? vals[0] : null
-}
+import { thStyle, thNum, tdStyle, numStyle, cellInput, cellInputNum, periodRowStyle, periodRowNumStyle } from './budget/components/table-styles'
+import { fmt, bordroReasonMessage, itemHasNote, isMultiPeriod, buildDonemler, summarizeSame } from './budget/format'
+import { BurdenSheet } from './budget/components/burden-sheet'
+import type { BordroSheetEntry } from './budget/components/burden-sheet'
+import { StatusInfoSheet } from './budget/components/status-info-sheet'
+import { NoteSheet } from './budget/components/note-sheet'
 
 export function BudgetCardScreen() {
   const { addToast } = useToast()
@@ -109,9 +41,7 @@ export function BudgetCardScreen() {
   const [openStatusInfo, setOpenStatusInfo] = useState(false)
   const savedRef = useRef<Record<string, BudgetItemRow>>({})
   const [buffers, setBuffers] = useState<Record<string, string>>({})
-  const [bordroData, setBordroData] = useState<
-    Record<string, { loading: boolean; data: BordroDerivedFields | null; error: string | null }>
-  >({})
+  const [bordroData, setBordroData] = useState<Record<string, BordroSheetEntry>>({})
 
   // Bordro motoru sunucu tarafinda (deriva-BordroFields) DB'den okur; yerel buffer/keystroke degil,
   // yalniz basarili commit sonrasi cagrilir (K5: motor pahali, her render'da degil sadece gerekince kosar).
@@ -1028,214 +958,25 @@ export function BudgetCardScreen() {
       {openBurden !== null && (() => {
         const item = rows.find((r) => r.id === openBurden.itemId)
         if (!item) return null
-        const isBordroSheet = item.paymentStatus === 'bordro'
-        const bdSheet = bordroData[item.id]
-        const sheetStage = openBurden.stageId !== null ? stageById.get(openBurden.stageId) : null
-        let dDonemler: DonemKalemi[]
-        if (openBurden.stageId !== null) {
-          const sid = openBurden.stageId
-          const qty = item.periodQty[sid] ?? 0
-          const netOverride = item.periodNet[sid] ?? null
-          const effectiveNet = netOverride ?? item.unitNet
-          const repeatOverride = item.periodRepeat[sid] ?? null
-          const effectiveRepeat = repeatOverride ?? item.repeat
-          dDonemler = [{ net: effectiveNet, qty, carpan: effectiveRepeat }]
-        } else {
-          dDonemler = buildDonemler(item)
-        }
-        const dYukler: Yuk[] = item.burdens.map((b) => ({ ratePercent: b.rate, kind: b.kind }))
-        const dNet = netToplamDonemli(dDonemler)
-        const dBrutYuk = brutToplamDonemli(dDonemler, dYukler)
-        const dKdv = kisiyeBanka(dNet, dBrutYuk, item.vatRate).kdv
+        const sheetStage = openBurden.stageId !== null ? (stageById.get(openBurden.stageId) ?? null) : null
         return (
-          <>
-            <div
-              onClick={() => setOpenBurden(null)}
-              style={{
-                position: 'fixed',
-                inset: 0,
-                background: 'rgba(0,0,0,0.45)',
-                zIndex: 200,
-              }}
-            />
-            <div
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                position: 'fixed',
-                bottom: 0,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: 'min(480px, 100%)',
-                maxHeight: '80vh',
-                overflowY: 'auto',
-                borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0',
-                background: 'var(--color-surface)',
-                padding: 'var(--space-4)',
-                paddingBottom: 'var(--space-6)',
-                zIndex: 201,
-                boxShadow: 'var(--shadow-md)',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-3)' }}>
-                <span style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--color-text)' }}>
-                  {item.name}{sheetStage ? ' (' + sheetStage.name + ')' : ''}
-                </span>
-                <button
-                  onClick={() => setOpenBurden(null)}
-                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', fontSize: 'var(--text-lg)', padding: '0 var(--space-1)' }}
-                >
-                  ×
-                </button>
-              </div>
-              {isBordroSheet ? (
-                <>
-                  {bdSheet?.loading && (
-                    <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>Hesaplanıyor…</p>
-                  )}
-                  {bdSheet?.error && (
-                    <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-danger, #c0392b)' }}>{bdSheet.error}</p>
-                  )}
-                  {bdSheet?.data && (
-                    <>
-                      {bdSheet.data.signals.some((s) => s.code === 'SNL-YIL-ASIMI') && (
-                        <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', background: 'var(--color-surface-2)', padding: 'var(--space-2)', borderRadius: 'var(--radius-sm)', marginBottom: 'var(--space-2)' }}>
-                          Bu kalem yıl sınırını aşıyor; kümülatif vergi matrahı yıl geçişinde sıfırlanmadan buna göre hesaplanmıştır.
-                        </p>
-                      )}
-                      {bdSheet.data.signals.some((s) => s.code === 'SNL-ADET-DEGISIM') && (
-                        <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', background: 'var(--color-surface-2)', padding: 'var(--space-2)', borderRadius: 'var(--radius-sm)', marginBottom: 'var(--space-2)' }}>
-                          Bu kalemde aylar arasında kişi sayısı (X) değişiyor; aylık döküm buna göre değişkenlik gösterir.
-                        </p>
-                      )}
-                      {bdSheet.data.signals.some((s) => s.code === 'SNL-TAKVIM-VARSAYILAN') && (
-                        <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', background: 'var(--color-surface-2)', padding: 'var(--space-2)', borderRadius: 'var(--radius-sm)', marginBottom: 'var(--space-2)' }}>
-                          Bu dönemin tarihi girilmediği için ihtiyatlı (en yüksek maliyetli) varsayım kullanıldı. Tarih girildiğinde rakam yalnız aşağı inebilir.
-                        </p>
-                      )}
-                      {[
-                        { label: 'SGK işçi', amount: bdSheet.data.bucketBreakdown.socialSecurityEmployee },
-                        { label: 'İşsizlik işçi', amount: bdSheet.data.bucketBreakdown.unemploymentEmployee },
-                        { label: 'Gelir vergisi', amount: bdSheet.data.bucketBreakdown.incomeTax },
-                        { label: 'Damga vergisi', amount: bdSheet.data.bucketBreakdown.stampDuty },
-                        { label: 'SGK işveren', amount: bdSheet.data.bucketBreakdown.socialSecurityEmployer },
-                        { label: 'İşsizlik işveren', amount: bdSheet.data.bucketBreakdown.unemploymentEmployer },
-                      ].map(({ label, amount }) => (
-                        <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-1) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
-                          <span>{label}</span>
-                          <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(amount)}</span>
-                        </div>
-                      ))}
-                      <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: 'var(--space-2)', fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-text)' }}>
-                        <span>Yasal yük</span>
-                        <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(bdSheet.data.totalGross - bdSheet.data.totalNet)}</span>
-                      </div>
-                    </>
-                  )}
-                </>
-              ) : (
-                <>
-                  {item.burdens.map((b, i) => (
-                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-1) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
-                      <span>{b.label} %{fmt(b.rate)}</span>
-                      <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(b.kind === 'deduction' ? Math.round(dBrutYuk * b.rate / 100) : Math.round(dNet * b.rate / 100))}</span>
-                    </div>
-                  ))}
-                  {item.vatRate > 0 && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-1) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
-                      <span>KDV %{fmt(item.vatRate)}</span>
-                      <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(dKdv)}</span>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          </>
+          <BurdenSheet
+            item={item}
+            stageId={openBurden.stageId}
+            stage={sheetStage}
+            bordro={bordroData[item.id]}
+            onClose={() => setOpenBurden(null)}
+          />
         )
       })()}
       {openNoteItemId !== null && (() => {
         const item = rows.find((r) => r.id === openNoteItemId)
         if (!item) return null
         return (
-          <>
-            <div
-              onClick={() => setOpenNoteItemId(null)}
-              style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 200 }}
-            />
-            <div
-              key={item.id}
-              onClick={(e) => e.stopPropagation()}
-              style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: 'min(480px, 100%)', maxHeight: '80vh', overflowY: 'auto', borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0', background: 'var(--color-surface)', padding: 'var(--space-4)', paddingBottom: 'var(--space-6)', zIndex: 201, boxShadow: 'var(--shadow-md)' }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-3)' }}>
-                <span style={{ fontSize: 'var(--text-md)', fontWeight: 600, color: 'var(--color-text)' }}>
-                  #{item.itemCode} {item.name}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setOpenNoteItemId(null)}
-                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', fontSize: 'var(--text-lg)', padding: '0 var(--space-1)' }}
-                >
-                  x
-                </button>
-              </div>
-              <label style={{ display: 'block', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', fontWeight: 600, marginBottom: 'var(--space-1)' }}>
-                Ic Not
-              </label>
-              <textarea
-                defaultValue={item.internalNote ?? ''}
-                onBlur={(e) => void commitNote(item.id, 'internalNote', e.target.value)}
-                rows={4}
-                style={{ width: '100%', boxSizing: 'border-box', background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', padding: 'var(--space-2)', fontSize: 'var(--text-sm)', color: 'var(--color-text)', fontFamily: 'inherit', resize: 'vertical', marginBottom: 'var(--space-3)' }}
-              />
-              <label style={{ display: 'block', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', fontWeight: 600, marginBottom: 'var(--space-1)' }}>
-                Kamu Notu
-              </label>
-              <textarea
-                defaultValue={item.publicNote ?? ''}
-                onBlur={(e) => void commitNote(item.id, 'publicNote', e.target.value)}
-                rows={4}
-                style={{ width: '100%', boxSizing: 'border-box', background: 'var(--color-surface-2)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', padding: 'var(--space-2)', fontSize: 'var(--text-sm)', color: 'var(--color-text)', fontFamily: 'inherit', resize: 'vertical' }}
-              />
-            </div>
-          </>
+          <NoteSheet key={item.id} item={item} onCommit={commitNote} onClose={() => setOpenNoteItemId(null)} />
         )
       })()}
-      {openStatusInfo && (
-        <>
-          <div
-            onClick={() => setOpenStatusInfo(false)}
-            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 200 }}
-          />
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: 'min(480px, 100%)', maxHeight: '80vh', overflowY: 'auto', borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0', background: 'var(--color-surface)', padding: 'var(--space-4)', paddingBottom: 'var(--space-6)', zIndex: 201, boxShadow: 'var(--shadow-md)' }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-3)' }}>
-              <span style={{ fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--color-text)' }}>Statü rehberi</span>
-              <button
-                type="button"
-                onClick={() => setOpenStatusInfo(false)}
-                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', fontSize: 'var(--text-lg)', padding: '0 var(--space-1)' }}
-              >
-                ×
-              </button>
-            </div>
-            {[
-              { label: 'Bordro', text: 'Ücretli çalışan. Net ele geçen tutar girilir; SGK ve vergi yükleri üzerine biner, oranlar şirket tanımına ve güncel mevzuata göre hesaplanır.' },
-              { label: 'SMM', text: 'Serbest meslek makbuzu. Stopaj kesintisi içerir; KDV durumu kişinin mükellefiyetine göre değişir.' },
-              { label: 'Telif', text: 'Senarist, yönetmen, besteci gibi eser sahipleri (oyunculuk DEĞİL). Stopaj kesintisi içerir.' },
-              { label: 'Fatura', text: 'Şirketten alınan mal/hizmet. Stopaj yok; KDV genel oranda, kalem bazında değiştirilebilir.' },
-              { label: 'Kira', text: 'ŞAHISTAN kiralama (lokasyon, araç vb.). Stopaj var, KDV yok. Şirketten kiralama Fatura kalemine girer.' },
-              { label: 'Konaklama/Yemek', text: 'Otel, pansiyon, set catering, restoran. İndirimli KDV; stopaj ve SGK yükü yok.' },
-            ].map(({ label, text }) => (
-              <div key={label} style={{ padding: 'var(--space-2) 0', borderBottom: '1px solid var(--color-border)' }}>
-                <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-text)', marginBottom: 'var(--space-1)' }}>{label}</div>
-                <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)' }}>{text}</div>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
+      {openStatusInfo && <StatusInfoSheet onClose={() => setOpenStatusInfo(false)} />}
     </div>
   )
 }
