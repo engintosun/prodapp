@@ -1,5 +1,37 @@
 import type { CSSProperties } from 'react'
 
+// KLV-0: sabit kolon genislik semasi. En kotu durum icerige gore hesaplandi.
+// Tutar kolonlari (yasalYuk/netToplam/brutToplam): sahada yuz milyonlu tutarlar
+// gorulebilir -> "999.999.999,99" (14 karakter) + KUR-1 gelecekteki kur payi.
+// birimNet biraz daha dar (birim fiyat, toplam kadar buyumez).
+// Aciklama kolonu kasitli disarida: kalan genisligi alir (bkz card-table-screen colgroup).
+export const colWidths = {
+  kod: 56,
+  statu: 128,
+  donemler: 150,
+  birim: 88,
+  birimNet: 130,
+  miktar: 76,
+  x: 68,
+  yasalYuk: 150,
+  netToplam: 150,
+  brutToplam: 150,
+  aciklamaMin: 220,
+} as const
+
+export const tableMinWidth =
+  colWidths.kod +
+  colWidths.statu +
+  colWidths.donemler +
+  colWidths.birim +
+  colWidths.birimNet +
+  colWidths.miktar +
+  colWidths.x +
+  colWidths.yasalYuk +
+  colWidths.netToplam +
+  colWidths.brutToplam +
+  colWidths.aciklamaMin
+
 export const thStyle: CSSProperties = {
   textAlign: 'left',
   fontSize: 'var(--text-xs)',
@@ -30,5 +62,7 @@ export const cellInput: CSSProperties = {
   fontFamily: 'inherit',
 }
 export const cellInputNum: CSSProperties = { ...cellInput, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }
+// Aciklama (ad) input'u: kalan genisligi alir, tasarsa ellipsis (odaksizken).
+export const cellInputEllipsis: CSSProperties = { ...cellInput, overflow: 'hidden', textOverflow: 'ellipsis' }
 export const periodRowStyle: CSSProperties = { ...tdStyle, background: 'var(--color-surface-2)' }
 export const periodRowNumStyle: CSSProperties = { ...numStyle, background: 'var(--color-surface-2)' }

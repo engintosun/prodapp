@@ -5,7 +5,7 @@ import type { BudgetItemRow, StageRow, UnitRow } from '../../../../shared/supaba
 import { fmt, itemHasNote, isMultiPeriod, buildDonemler, summarizeSame, fieldVal, repeatVal } from '../format'
 import type { EditApi } from '../hooks/use-edit-buffers'
 import type { BordroSheetEntry } from './burden-sheet'
-import { tdStyle, numStyle, cellInput, cellInputNum } from './table-styles'
+import { tdStyle, numStyle, cellInput, cellInputNum, cellInputEllipsis } from './table-styles'
 
 interface ItemRowProps {
   item: BudgetItemRow
@@ -64,7 +64,7 @@ export const ItemRow = memo(function ItemRow({
       <td style={tdStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
           <input
-            style={cellInput}
+            style={cellInputEllipsis}
             value={it.name}
             onChange={(e) => api.onTextChange(it.id, 'name', e.target.value)}
             onBlur={() => api.commitField(it.id, 'name')}

@@ -5,7 +5,7 @@ import { ErrorMessage } from '../../../shared/components/error-message'
 import { useCardRows } from './hooks/use-card-rows'
 import { useEditBuffers } from './hooks/use-edit-buffers'
 import { isMultiPeriod } from './format'
-import { thStyle, thNum } from './components/table-styles'
+import { thStyle, thNum, colWidths, tableMinWidth } from './components/table-styles'
 import { ItemRow } from './components/item-row'
 import { PeriodRow } from './components/period-row'
 import { BurdenSheet } from './components/burden-sheet'
@@ -62,7 +62,20 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         Dönem eklemek için Dönemler hücresinden seç; her dönem için X (adet) gir. Hücreden çıkınca otomatik kaydeder.
       </p>
       <div style={{ overflowX: 'auto' }}>
-        <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 1000 }}>
+        <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: tableMinWidth, tableLayout: 'fixed' }}>
+          <colgroup>
+            <col style={{ width: colWidths.kod }} />
+            <col style={{ minWidth: colWidths.aciklamaMin }} />
+            <col style={{ width: colWidths.statu }} />
+            <col style={{ width: colWidths.donemler }} />
+            <col style={{ width: colWidths.birim }} />
+            <col style={{ width: colWidths.birimNet }} />
+            <col style={{ width: colWidths.miktar }} />
+            <col style={{ width: colWidths.x }} />
+            <col style={{ width: colWidths.yasalYuk }} />
+            <col style={{ width: colWidths.netToplam }} />
+            <col style={{ width: colWidths.brutToplam }} />
+          </colgroup>
           <thead>
             <tr>
               <th style={thStyle}>Kod</th>
