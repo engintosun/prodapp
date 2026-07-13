@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { createGridState, reduceGrid } from './grid-navigation-core'
-import type { GridShape, GridState } from './grid-navigation-core'
+import type { ColumnEquivalenceGroups, GridShape, GridState } from './grid-navigation-core'
 
 const GRID_3X3: GridShape = [
   { rowId: 'r1', cols: ['c1', 'c2', 'c3'] },
@@ -246,6 +246,81 @@ describe('setDraft', () => {
     const r = reduceGrid(withDraft, { type: 'esc' }, GRID_3X3)
     expect(r.state.draft).toBeNull()
     expect(r.state.mode).toBe('nav')
+  })
+})
+
+// KLV-K8: KAAPA'ya benzer heterojen satirlar - tek-donemli ItemRow 4 kutu tasir,
+// cok-donemli ItemRow yalniz 'name', PeriodRow isim tasimaz. Gercek eslesme
+// tablosuyla ayni (bkz. use-grid-navigation.ts COLUMN_EQUIVALENCE_GROUPS).
+const KAAPA_GROUPS: ColumnEquivalenceGroups = [
+  ['name'],
+  ['unitNet', 'periodNet'],
+  ['repeat', 'periodRepeat'],
+  ['multiplier', 'periodQty'],
+]
+
+describe('dikey gezinme - kolon esdegerlik grubu (KLV-K8)', () => {
+  it('unitNet den asagi inince bir sonraki ayni-grup kolona duser, name-only satiri atlar', () => {
+    const grid: GridShape = [
+      { rowId: 'item-single', cols: ['name', 'unitNet', 'repeat', 'multiplier'] },
+      { rowId: 'item-multi', cols: ['name'] },
+      { rowId: 'period-1', cols: ['periodNet', 'periodRepeat', 'periodQty'] },
+    ]
+    const r = reduceGrid(navAt('item-single', 'unitNet'), { type: 'arrow', dir: 'down' }, grid, KAAPA_GROUPS)
+    expect(r.state.active).toEqual({ rowId: 'period-1', col: 'periodNet' })
+  })
+
+  it('name den asagi inince period satirlarini atlayip bir sonraki name e duser', () => {
+    const grid: GridShape = [
+      { rowId: 'item-a', cols: ['name', 'unitNet', 'repeat', 'multiplier'] },
+      { rowId: 'period-a1', cols: ['periodNet', 'periodRepeat', 'periodQty'] },
+      { rowId: 'item-b', cols: ['name', 'unitNet', 'repeat', 'multiplier'] },
+    ]
+    const r = reduceGrid(navAt('item-a', 'name'), { type: 'arrow', dir: 'down' }, grid, KAAPA_GROUPS)
+    expect(r.state.active).toEqual({ rowId: 'item-b', col: 'name' })
+  })
+
+  it('ardisik name-only VE 4-kolon satirlar karisik dizildiginde unitNet e giden yol bulunur (index-kilitlenmesi yok)', () => {
+    const grid: GridShape = [
+      { rowId: 'item-1', cols: ['name', 'unitNet', 'repeat', 'multiplier'] },
+      { rowId: 'item-2-multi', cols: ['name'] },
+      { rowId: 'item-3-multi', cols: ['name'] },
+      { rowId: 'item-4', cols: ['name', 'unitNet', 'repeat', 'multiplier'] },
+    ]
+    const r = reduceGrid(navAt('item-1', 'unitNet'), { type: 'arrow', dir: 'down' }, grid, KAAPA_GROUPS)
+    expect(r.state.active).toEqual({ rowId: 'item-4', col: 'unitNet' })
+  })
+
+  it('grid ucunda esdeger kolon hic yoksa yerinde kalir', () => {
+    const grid: GridShape = [
+      { rowId: 'item-1', cols: ['name', 'unitNet', 'repeat', 'multiplier'] },
+      { rowId: 'item-2-multi', cols: ['name'] },
+    ]
+    const r = reduceGrid(navAt('item-1', 'unitNet'), { type: 'arrow', dir: 'down' }, grid, KAAPA_GROUPS)
+    expect(r.state.active).toEqual({ rowId: 'item-1', col: 'unitNet' })
+  })
+
+  it('grup verilmezse (undefined) eski index-clamp davranisi aynen calisir', () => {
+    const grid: GridShape = [
+      { rowId: 'item-1', cols: ['name', 'unitNet', 'repeat', 'multiplier'] },
+      { rowId: 'item-2-multi', cols: ['name'] },
+      { rowId: 'period-1', cols: ['periodNet', 'periodRepeat', 'periodQty'] },
+    ]
+    // groups verilmedi -> eski davranis: bir alttaki satirin ayni INDEKSine (clamp) duser.
+    // item-2-multi tek kolonlu (index 0), unitNet index 1 -> clamp edilip index 0'a (name) duser.
+    const r = reduceGrid(navAt('item-1', 'unitNet'), { type: 'arrow', dir: 'down' }, grid)
+    expect(r.state.active).toEqual({ rowId: 'item-2-multi', col: 'name' })
+  })
+
+  it('Enter in asagi adimi da (edit modunda commit sonrasi) esdegerlik grubunu kullanir', () => {
+    const grid: GridShape = [
+      { rowId: 'item-1', cols: ['name', 'unitNet', 'repeat', 'multiplier'] },
+      { rowId: 'item-2-multi', cols: ['name'] },
+      { rowId: 'period-1', cols: ['periodNet', 'periodRepeat', 'periodQty'] },
+    ]
+    const r = reduceGrid(editAt('item-1', 'unitNet', '500'), { type: 'enter', value: 'unused' }, grid, KAAPA_GROUPS)
+    expect(r.commit).toEqual({ cellId: { rowId: 'item-1', col: 'unitNet' }, value: '500' })
+    expect(r.state.active).toEqual({ rowId: 'period-1', col: 'periodNet' })
   })
 })
 

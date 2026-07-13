@@ -14,6 +14,12 @@ export interface GridRow {
 
 export type GridShape = GridRow[]
 
+// Ayni anlama gelen kolon adlarinin listesi (ornek: unitNet ile periodNet ayni
+// "birim net" alanidir, farkli satir seklinde farkli ad tasir). stepArrow dikey
+// gezinmede kolon-ADI yerine bu GRUBU eslestirir; cekirdek KAAPA'ya ozgu alan
+// adlarini bilmez, sadece cagiran tarafin verdigi string gruplarini kullanir.
+export type ColumnEquivalenceGroups = string[][]
+
 export type GridMode = 'nav' | 'edit'
 
 export interface GridState {
@@ -65,9 +71,46 @@ function findNextNonEmptyRow(grid: GridShape, fromIndex: number, dir: 1 | -1): G
   return null
 }
 
-// Ok tuslari kenarda durur, satirlar arasi sarma yok. Yukari/asagi ayni kolon-INDEKSine
-// gider (satirlar farkli genislikte olabilir -> hedef satirin son kolonuna clamp).
-function stepArrow(grid: GridShape, active: CellId, dir: 'up' | 'down' | 'left' | 'right'): CellId {
+// Dikey adim: aktif kolon bir esdegerlik grubuna aitse, o yonde satir satir
+// ilerleyip GRUBA ait herhangi bir kolonu tasiyan ilk satiri hedefler (araya giren,
+// gruptan hicbir kolon tasimayan satirlar atlanir). Grup verilmemis/aktif kolon
+// hicbir grupta yoksa eski index-clamp davranisi degismeden calisir (geriye uyum).
+function stepArrowVertical(
+  grid: GridShape,
+  row: GridRow,
+  index: number,
+  colIndex: number,
+  dir: 'up' | 'down',
+  groups: ColumnEquivalenceGroups | undefined,
+): CellId {
+  const active: CellId = { rowId: row.rowId, col: row.cols[colIndex] }
+  const group = groups?.find((g) => g.includes(active.col))
+  const step = dir === 'up' ? -1 : 1
+
+  if (!group) {
+    const targetRow = grid[index + step]
+    if (!targetRow || targetRow.cols.length === 0) return active
+    const targetColIndex = Math.min(colIndex, targetRow.cols.length - 1)
+    return { rowId: targetRow.rowId, col: targetRow.cols[targetColIndex] }
+  }
+
+  let i = index + step
+  while (i >= 0 && i < grid.length) {
+    const match = grid[i].cols.find((c) => group.includes(c))
+    if (match) return { rowId: grid[i].rowId, col: match }
+    i += step
+  }
+  return active
+}
+
+// Ok tuslari kenarda durur, satirlar arasi sarma yok. Sol/sag ayni satirda komsu
+// kolona gider (degismedi); yukari/asagi stepArrowVertical'a delege eder.
+function stepArrow(
+  grid: GridShape,
+  active: CellId,
+  dir: 'up' | 'down' | 'left' | 'right',
+  groups?: ColumnEquivalenceGroups,
+): CellId {
   const found = findRow(grid, active.rowId)
   if (!found) return active
   const { row, index } = found
@@ -83,10 +126,7 @@ function stepArrow(grid: GridShape, active: CellId, dir: 'up' | 'down' | 'left' 
     return { rowId: row.rowId, col: row.cols[colIndex + 1] }
   }
 
-  const targetRow = grid[dir === 'up' ? index - 1 : index + 1]
-  if (!targetRow || targetRow.cols.length === 0) return active
-  const targetColIndex = Math.min(colIndex, targetRow.cols.length - 1)
-  return { rowId: targetRow.rowId, col: targetRow.cols[targetColIndex] }
+  return stepArrowVertical(grid, row, index, colIndex, dir, groups)
 }
 
 // Tab satir sonunda/basinda komsu satira sarar; komsu satir editable-hucresiz ise
@@ -111,7 +151,12 @@ function stepTab(grid: GridShape, active: CellId, shift: boolean): CellId {
   return { rowId: prevRow.rowId, col: prevRow.cols[prevRow.cols.length - 1] }
 }
 
-export function reduceGrid(state: GridState, action: GridAction, grid: GridShape): GridResult {
+export function reduceGrid(
+  state: GridState,
+  action: GridAction,
+  grid: GridShape,
+  columnGroups?: ColumnEquivalenceGroups,
+): GridResult {
   switch (action.type) {
     case 'focus':
       return { state: { mode: 'nav', active: action.cell, draft: null }, commit: null }
@@ -138,7 +183,7 @@ export function reduceGrid(state: GridState, action: GridAction, grid: GridShape
         return { state: { ...state, mode: 'edit', draft: action.value }, commit: null }
       }
       const commit: GridCommit = { cellId: state.active, value: state.draft ?? '' }
-      const nextActive = stepArrow(grid, state.active, 'down')
+      const nextActive = stepArrow(grid, state.active, 'down', columnGroups)
       return { state: { mode: 'nav', active: nextActive, draft: null }, commit }
     }
 
@@ -161,14 +206,14 @@ export function reduceGrid(state: GridState, action: GridAction, grid: GridShape
     case 'arrow': {
       if (!state.active) return noop(state)
       if (state.mode === 'nav') {
-        const nextActive = stepArrow(grid, state.active, action.dir)
+        const nextActive = stepArrow(grid, state.active, action.dir, columnGroups)
         return { state: { ...state, active: nextActive }, commit: null }
       }
       // Sol/sag edit modunda cekirdege ulasmaz (imlec input icinde hareket eder);
       // yine de savunma amacli no-op tanimli.
       if (action.dir === 'left' || action.dir === 'right') return noop(state)
       const commit: GridCommit = { cellId: state.active, value: state.draft ?? '' }
-      const nextActive = stepArrow(grid, state.active, action.dir)
+      const nextActive = stepArrow(grid, state.active, action.dir, columnGroups)
       return { state: { mode: 'nav', active: nextActive, draft: null }, commit }
     }
   }

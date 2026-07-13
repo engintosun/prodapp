@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { MutableRefObject } from 'react'
 import { createGridState, reduceGrid } from './grid-navigation-core'
-import type { CellId, GridShape, GridState } from './grid-navigation-core'
+import type { CellId, ColumnEquivalenceGroups, GridShape, GridState } from './grid-navigation-core'
 import type { BudgetItemRow } from '../../../../shared/supabase/budget-service'
 import type { EditApi } from './use-edit-buffers'
 
@@ -9,6 +9,19 @@ import type { EditApi } from './use-edit-buffers'
 // bu hook onu DOM'a baglar, kolon->alan eslemesini yapip MEVCUT onXChange/commitX
 // yollarina delege eder (dogrulama/parse yeniden yazilmaz).
 export type GridCol = 'name' | 'unitNet' | 'repeat' | 'multiplier' | 'periodNet' | 'periodRepeat' | 'periodQty'
+
+// KLV-K8: ItemRow (tek-donemli: name+unitNet+repeat+multiplier / cok-donemli: yalniz
+// name) ve PeriodRow (periodNet+periodRepeat+periodQty, isim yok) farkli genislikte
+// satirlar tasir. Dikey gezinme (ArrowUp/Down + Enter'in asagi adimi) kolon-INDEKSi
+// yerine bu ANLAM esdegerligine gore hedef secmeli - aksi halde ardisik tek-donemli
+// kalemlerde Enter'la asagi inildikce colIndex 0'da (name) kilitlenip Birim Net'e hic
+// erisilemiyordu (canli bulgu, KLV-K8).
+const COLUMN_EQUIVALENCE_GROUPS: ColumnEquivalenceGroups = [
+  ['name'],
+  ['unitNet', 'periodNet'],
+  ['repeat', 'periodRepeat'],
+  ['multiplier', 'periodQty'],
+]
 
 interface UseGridNavigationParams {
   rowsRef: MutableRefObject<BudgetItemRow[]>
@@ -123,7 +136,7 @@ export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows }: Us
   }
 
   function dispatch(action: Parameters<typeof reduceGrid>[1], preState: GridState, cell: CellId, grid: GridShape) {
-    const result = reduceGrid(preState, action, grid)
+    const result = reduceGrid(preState, action, grid, COLUMN_EQUIVALENCE_GROUPS)
     setState(result.state)
     if (result.commit) commitCell(result.commit.cellId)
     if (action.type === 'esc' && preState.mode === 'edit') cancelEdit(cell)
