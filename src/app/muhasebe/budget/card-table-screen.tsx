@@ -138,9 +138,9 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                     bufUnitNet={buffers[it.id + ':unitNet']}
                     bufMultiplier={buffers[it.id + ':multiplier']}
                     bufRepeat={buffers[it.id + ':repeat']}
-                    navUnitNet={grid.isActiveNav(it.id, 'unitNet') ? fmt(it.unitNet) : undefined}
-                    navMultiplier={grid.isActiveNav(it.id, 'multiplier') ? fmt(it.multiplier) : undefined}
-                    navRepeat={grid.isActiveNav(it.id, 'repeat') ? fmt(it.repeat) : undefined}
+                    navUnitNet={grid.isActiveEdit(it.id, 'unitNet') ? undefined : fmt(it.unitNet)}
+                    navMultiplier={grid.isActiveEdit(it.id, 'multiplier') ? undefined : fmt(it.multiplier)}
+                    navRepeat={grid.isActiveEdit(it.id, 'repeat') ? undefined : fmt(it.repeat)}
                   />
                   {multi &&
                     addedStages.map((s) => {
@@ -160,9 +160,9 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                           bufQty={buffers[it.id + ':stage:' + s.id]}
                           bufNet={buffers[it.id + ':pnet:' + s.id]}
                           bufRepeat={buffers[it.id + ':prepeat:' + s.id]}
-                          navNet={grid.isActiveNav(periodRowId, 'periodNet') ? fmt(netVal) : undefined}
-                          navRepeat={grid.isActiveNav(periodRowId, 'periodRepeat') ? fmt(repeatVal) : undefined}
-                          navQty={grid.isActiveNav(periodRowId, 'periodQty') ? fmt(qtyVal) : undefined}
+                          navNet={grid.isActiveEdit(periodRowId, 'periodNet') ? undefined : fmt(netVal)}
+                          navRepeat={grid.isActiveEdit(periodRowId, 'periodRepeat') ? undefined : fmt(repeatVal)}
+                          navQty={grid.isActiveEdit(periodRowId, 'periodQty') ? undefined : fmt(qtyVal)}
                         />
                       )
                     })}

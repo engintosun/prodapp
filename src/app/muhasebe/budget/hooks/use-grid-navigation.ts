@@ -196,5 +196,9 @@ export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows }: Us
     return state.mode === 'nav' && state.active !== null && state.active.rowId === rowId && state.active.col === col
   }
 
-  return { containerRef, handleKeyDown, handleFocus, isActiveNav }
+  function isActiveEdit(rowId: string, col: GridCol): boolean {
+    return state.mode === 'edit' && state.active !== null && state.active.rowId === rowId && state.active.col === col
+  }
+
+  return { containerRef, handleKeyDown, handleFocus, isActiveNav, isActiveEdit }
 }
