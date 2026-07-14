@@ -96,7 +96,7 @@ Kolon seti (KILITLI, 11): Kod - Aciklama - Statu - Donemler - Birim - Birim net 
 - Acik sorular 1/4: PERSONEL-MEVZUATI H (kapsam siniri / gosterim+Compliance Guard yeri). Soru 5 KAPANDI (bkz. Kapananlar yukarida — Tanimlar EKRANI, EKRAN-MUHASEBE §19).
 - Muhasebe oran teyitleri (amber): reklam tevkifati + 2026 oran + telif tavan.
 - Oran-yonetimi ekrani (Tanimlar > REFERANS icinde) ERTELENDI.
-- fn_lock_budget muhur mantigi: K7 tarih kapisi + donemsiz-kova muafiyeti + katalog satir-kumesi snapshot + SGK senaryo oranini da donduma (2026-07-10 mimari uyari, Siradaki is #2).
+- fn_lock_budget mühür mantığı — YAPILDI: K7 tarih kapısı + dönemsiz-kova muafiyeti + katalog satır-kümesi snapshot + SGK senaryo dondurma MÜHÜR-1/2'de tamamlandı (budget_versions.sgk_component_code + üç kutucuk izi; fetchSealedPayrollRates mühürlü yolda canlı fn_resolve_sgk_scenario'yu DEĞİL donmuş kodu okur, yürürlük sealed_at'e sabit). Kalan yalnız MÜHÜR-3a sonrası tarayıcı teyidi.
 - Model 1 (hesabi KAAPA acar) - Avans->butce cift sayim (B10) - Gorunen rol etiketi - Tedarikci hafizasi.
 - "Modul acik mi" bayragi + faturalama/paket fiyat.
 - RAPORLAR fazi: icmal PDF - Bakanlik - AICP/export - EFC - cost_object rollup - Eurimages KDV'siz gorunum (vat_deductible + ayri KDV kolonu bunu bugunden besliyor). Ic dokum (bordro kendi raporu) 3e'de CANLI; dis kurumsal raporlar bu faz.
