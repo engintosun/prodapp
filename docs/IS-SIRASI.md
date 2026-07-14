@@ -17,9 +17,8 @@ Aktif milestone: M2 — Çekirdek Döngü.
 Bu bölüm kasıtlı boş bırakılmıştır. "Sıradaki iş" için CURRENT.md'ye bak.
 
 ## Backlog (uzun vadeli, tarihsiz — CURRENT.md'nin "Sıradaki iş"ine henüz girmedi)
-- G6 görsel tasarım oturumu (renk paleti, tipografi, ikonografi, dark/light değerleri) — tokens.css placeholder yapıda bekliyor.
 - Diğer kartlar (1100/1300/1400/1600) — 1500 modeli üzerinden geçilir.
-- Dept/Muhasebe ev + navigasyon (card-desk layout) — TD-10'u kapatır.
+- KABUK milestone'una taşındı (CURRENT.md Sıradaki iş #4): EV/ana ekran + navigasyon (card-desk) + bütçe rayı + iki davet kapısının yerlerinin kararlaştırılması (M1 yalnız yüzey aidiyetini mühürledi; fiziksel yer — sol ray/üst ray/kart üstü/sağ panel — açık, Engin kararı) + G6 görsel tasarım (renk/tipografi/ikonografi/dark-light; tokens.css placeholder bekliyor) + TD-13/TD-10 kapanışı + şablon-tipi ("ne bütçesi: film/reklam/dizi") yer tutucusu + açılış tutorial'ı (Engin vizyonu 2026-07-15, ekranlar son halini almadan yazılmaz).
 - C5 Dönem ekranı (kapama + grace).
 - Rapor/Export (PDF/Excel) — icmal PDF + EFC + dış format (Bakanlık/AICP) + amort/bölüm payı.
 - Avans akışı (avans→bütçe çift-sayım + B10).
@@ -27,6 +26,7 @@ Bu bölüm kasıtlı boş bırakılmıştır. "Sıradaki iş" için CURRENT.md'y
 - Mesajlaşma/bildirim (en son).
 - Üye yönetimi (TD-2'ye bloke).
 - m9 bütçe sol-nav alanı · şablon Türkçe karakter · Kütüphane resmîleştirme + katalog-kodu · Breakdown modülü · Tedarikçi hafızası · Yapımcı/denetçi rolü (Faz 2) · M4 pilot hazırlık · Oran yönetimi ekranı (Tanımlar içinde).
+- Bütçe-yetki tablosu dilimi (M2/M3, BUTCE-EKRAN-KARARLARI davet mimarisi bölümü): kişi+kapsam yetki tablosu, RLS genişlemesi, invitations genişlemesi, bütçe-rayında davet UI — kart çoğaltma başlayınca. Hafif-bütçe yolu tasarım oturumu da bu evrede.
 
 ## Borçlar
 Tüm teknik borçlar tek kaynak: docs/TECH-DEBT.md.

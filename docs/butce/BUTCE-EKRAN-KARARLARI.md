@@ -114,7 +114,7 @@ KDV AYRI KOLON DEĞİL — Yasal Yük dökümüne indi (§7). Birim/Birim net/Mi
 **KARAR:** Tevkifat kalemin **statüsünden (Bordro/SMM/Şirket/Telif) DOĞMAZ.** Faturalı hizmetin **türünden** (reklam 3/10, işgücü temini 9/10, danışmanlık 9/10, servis taşıma 5/10, yük taşıma 2/10) + **alıcının kimliğinden** (belirlenmiş alıcı/kamu) + **eşikten** (KDV dahil 12.000 TL, 2026) doğar. Bu yüzden tevkifat çekirdek net/brüt/yük hesabına GÖMÜLMEZ. Faz 1'de: kalemde **opsiyonel "tevkifat türü" alanı** + **Compliance Guard uyarısı** (eşik aşıldıysa "bu faturada X/10 tevkifat gerekebilir, mali müşavire danış"). Hesaba dahil değil, teşhis/hatırlatma.
 
 **NEDEN:** Tevkifat işlem/fatura düzeyinde bir KDV-sorumluluğu paylaşımıdır; bir kişinin ödeme statüsüyle (nasıl ücret aldığı) ilgisi yok. Aynı kalem türü (örn. faturalı taşıma) statüden bağımsız hep aynı tevkifata tabidir; ücret statüsü (SMM/şirket) bunu değiştirmez. Çekirdeğe gömmek modeli kirletir + yanlış olur (tevkifat KDV'nin kime ödeneceğini değiştirir, maliyeti değil — KDV zaten ayrı eksen, §7). Reklam yapımcısı için kritik (reklam işi 3/10) ama Faz 1 kapsamı için uyarı düzeyinde tutmak yeterli; tam tevkifat motoru ileride. Reklam'ın 3/10 kısmi mi tam mı olduğu kaynaklarda çelişkili → mali müşavir doğrulaması şart (VERGI-MEVZUATI §4).
-1. **KAAPA renk/font teması** (warm black #0C0A08 + turuncu #E8962E, DM Sans/Mono) — eski rewrite kararından geliyor, **aday**, kilit değil; değişebilir.
+G6 notu (görsel tasarım oturumuna park, KABUK kapsamı): 1. **KAAPA renk/font teması** (warm black #0C0A08 + turuncu #E8962E, DM Sans/Mono) — eski rewrite kararından geliyor, **aday**, kilit değil; değişebilir.
 
 ## 12. Birim kolonu (m5+m6 kararı, 2026-06-25; güncelleme 2026-07-01)
 
@@ -151,3 +151,17 @@ Realizasyon notu: ilk tasarimda "hucreye yapisik popover" denmisti; 11-kolon yat
 DB: budget_items.internal_note + budget_items.public_note (nullable text, goc 20260702120000). Eski atil note kolonu onceki gocte dusmustu; bu iki kolon temiz eklemedir. variance_note (B5 fark aciklamasi) AYRI kavram, dokunulmadi. Yeni tablo degil, yeni GRANT/RLS yok; mevcut budget_items RLS (yalniz muhasebe) iki kolonu da kapsar. Iz: trg_log_items (B19, full-snapshot) + trg_upd_items (updated_at) not duzenlemesini otomatik loglar; yeni trigger YOK.
 
 Ileri seam (acik karar, CURRENT.md): public_note ileride kart/kalem-granulunde ortak-calisma yetkilendirmesine acilacak (yalniz-muhasebe RLS o granulde asilir) + RAPORLAR fazinda sunuma cikis kapisi. Faz 1'de kapali.
+
+## 15. Davet ve bütçe-yetki mimarisi (MÜHÜRLENDİ 2026-07-15)
+
+Sektör taraması (Saturation erişim modeli, MMB/MMS izin seviyeleri, Hot Budget dosya-paylaşımı) + Engin'in ürün vizyonu üzerine üç karar mühürlendi; inşa zamanı ayrıca belirtildi.
+
+**M1 — İki yüzey, iki davet kapısı.** Bütçe çalışma-arkadaşı daveti BÜTÇE yüzeyinden yapılır; harcama-zinciri daveti (saha/dept rolleri) HARCAMA yüzeyinden yapılır. M1 yalnız YÜZEY AİDİYETİNİ ve yetki sınırını mühürler; kapının ekrandaki FİZİKSEL YERİ (sol ray mı, üst ray mı, kart üstü bağlamsal eylem mi, sağ panel mi — ve bunların birleşimi mi) KARARLAŞTIRILMAMIŞTIR, KABUK tasarım oturumunda Engin kararıdır. Kapı, verilebilecek yetki kümesini fiziksel olarak sınırlar: bütçe kapısından rol verilemez, harcama kapısından bütçe yetkisi verilemez ("capability follows context" — yanlış kapıdan yanlış yetki imkânsızlaşır). Mevcut Davet ekranı harcama kapısıdır, dokunulmaz.
+
+**M2 — Bütçe erişimi ROL değil ayrı YETKİ EKSENİdir.** Kişinin harcama zincirindeki rolü (saha/dept/muhasebe) olduğu gibi kalır; bütçe erişimi ayrı bir yetki tablosunda (kişi + kapsam) tutulur. İki kapsam: (a) bütçe-geneli editör, (b) kart-bazlı editör (KART-KATALOGU §5 kart-admin kavramının mekanizması). Mühürleme, versiyon açma, davet etme ve yetki yönetimi SAHİPTE (muhasebe) kalır — bütçe-geneli editör dahi bunları yapamaz (Saturation'ın proje-Admin/Editor çizgisiyle aynı). Gerekçe: tek-rol kısıtı uygulayıcı yapımcı gerçeğini taşıyamaz — aynı kişi sette hem dept şefi hem kart editörüdür; rol çoğaltma yolu bu senaryoda duvara toslar ve geri dönüşü migration ister.
+
+**M3 — Tek davet altyapısı.** Mevcut invitations mekanizması genişler (kabulde rol yerine/yanında bütçe-yetki satırı yazabilir); ikinci bir davet sistemi (ayrı tablo/akış) kurulmaz. Kişi zaten proje üyesiyse davet gerekmez, doğrudan yetki satırı eklenir.
+
+**İnşa zamanı:** Yetki tablosu dilimi (şema+RLS+servis+bütçe-rayında davet UI, 5 katman) kart çoğaltması + KABUK evresiyle gelir; tek kartla yetki tablosunun test edilecek gerçek senaryosu yoktur, erken kurmak boşa iştir. Bugün yalnız karar mühürlüdür.
+
+**AÇIK KARAR (DÜŞÜNÜLECEK) — Hafif-bütçe yolu:** Ayrıntılı bütçe istemeyen kullanıcı kart-bazında ya da toplam-bazında değer girebilmeli (Engin vizyonu). Bunun evi mevcut limit tabloları mı (project_budgets/project_dept_budgets — mühürsüz/versiyonsuz ama ucuz) yoksa bütçe modülünün "kalemsiz, yalnız kart-toplamı" sığ modu mu (tutarlı ama yeni giriş şekli)? Ayrı tasarım oturumu ister. Bu kayıt, üçüncü bir bütçe kavramının sessizce doğmasını önlemek içindir (Haziran denetimi "üç bütçe" uyarısı).

@@ -213,7 +213,7 @@ Oklar tek yönlü: Orkestrasyon → herkesi çağırabilir. UI → sadece orkest
 - Kırılmada en son tag'e dönülür
 - main her zaman çalışır durumda kalır
 - İş doğrudan main üzerinde yürür ve main'e push'lanmış olarak biter; branch açılsa bile main'e merge edilmeden bırakılmaz (orphan branch yasak). Yarım iş main'e girmez.
-- NOT (2026-07-14, MD denetimi): yalnız `v0.1-auth` tag'i mevcut; M2'nin onlarca milestone'ı (DILIM-2/3, R-serisi, KLV, MÜHÜR-1/2) hiç tag'lenmedi. Kural mı gevşetilsin (tag isteğe bağlı) yoksa tag atma pratiği mi başlasın — Engin kararı bekliyor, bu not silinmeden karar verilmez.
+- Tag kuralı (Engin kararı 2026-07-15, hafifletilmiş): her dilimde DEĞİL, yalnız BÜYÜK milestone mühürlerinde tag atılır (sıradaki üçü: v0.2-klv KLV kapanışında, v0.3-muhur3 MÜHÜR-3 kapanışında, v0.4-kabuk KABUK kapanışında). Adlandırma deseni: vX.Y-kisa-ad. Uygulama: milestone'un son Sonnet promptunun kapanış bloğuna `git tag vX.Y-ad && git push origin --tags` satırı eklenir. Commit'ler ince geri-dönüşü zaten sağlar; tag insan-okur çapadır.
 
 **Karar tarihi:** 22.05.2026 | **Gerekçe:** v8'de geri dönüş noktası yoktu, her bozulma üstüne yama yazıldı.
 

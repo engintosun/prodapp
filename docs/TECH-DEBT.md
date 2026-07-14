@@ -43,7 +43,7 @@
 
 - Açık Borç sayısı: 7 (TD-5, TD-8, TD-9, TD-10, TD-11, TD-12, TD-13)
 - Karar Bekleyen: 3 (TD-2, TD-3, TD-6) — bütçeye sayılmaz
-- **DURUM: ⚠️ BÜTÇE AŞILDI (7/5).** Kural gereği ("5'ten fazla açık borç birikirse yeni özellik durur") yeni özellik işi teknik olarak durmalı. Bu satır 14 Temmuz 2026'da bir MD denetiminde fark edildi — sayı muhtemelen bir süredir 5'i aşmış durumdaydı ve kimse fark etmemişti. ENGİN KARARI GEREKİR: (a) bir sonraki oturumda borç kapatma turu yap, (b) sınırı gerçekçi bir değere (örn. 8) revize et, (c) bilinçli olarak bu turu atla ve gerekçesini buraya yaz. Karar verilene kadar bu not silinmez.
+- **DURUM: ⚠️ BÜTÇE AŞILDI (7/5) — KARAR VERİLDİ (Engin, 2026-07-15): (a) borç kapatma turu.** Tur planı CURRENT.md Sıradaki iş #1'de: BORÇ-A → BORÇ-B → BORÇ-C → TD-5 dilimi. Hedef: 7 → 2 (kalan: TD-11'in meşru-desen disable'ları hariç tamamı + TD-13 KABUK'ta kapanır). Tur bitince bu bölüm normal sayıma döner.
 
 -----
 
