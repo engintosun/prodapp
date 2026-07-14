@@ -26,7 +26,7 @@
 ## Acik kararlar (kalan)
 > COZULDU #1: Senaryo/Yapimci/Yonetmen ayri kartlar -> 1100/1300/1400/1500 (KART-KATALOGU.md bolum 7).
 1. Post -> 4 kart mi tek "Post" mi (Post kartlari henuz kilitli degil)
-2. Efekt&Dublor -> ayri kart mi Teknik altinda mi (Dublor 1600'de kalem; ayri Efekt karti acik)
+2. ~~Efekt&Dublor -> ayri kart mi~~ — KAPANDI (KART-KATALOGU.md §7.5): dogru-bolme (performans->Oyuncu 1600, arac->Transport, mekanik->Mekanik FX); tek 'Efekt & Dublor' karti YOK.
 3. Master listede isaretleme (S=sablon / X=sil / bos=kutuphane) yapilmadi
 4. Kart-basi temel kalem + Turkce: 1100/1300/1400/1500/1600 yapildi; kalan kartlar acik
 

@@ -1,6 +1,6 @@
 # KAAPA — Teknik Borç Takibi (TECH-DEBT)
 
-**Son güncelleme:** 21 Haziran 2026
+**Son güncelleme:** 14 Temmuz 2026
 **Kural:** Her borç bir milestone'a bağlı. "Bir gün düzeltiriz" yok. **Bütçe sınırı yalnız "Açık Borç" kovasını sayar** (kod/şema ile kapatılacak gerçek borç). "Karar Bekleyen" kalemler milestone'da karara bağlanacak yapısal seçimlerdir, borç sayılmaz. Açık Borç 5'i aşarsa yeni özellik durur.
 
 -----
@@ -15,6 +15,7 @@
 |TD-10|Muhasebe kabugunda teknik terim sizintisi: bos durumda "acc_pending durumunda fis bulunmuyor" gibi gelistirici dili kullaniciya gorunuyor. Plain-dil kurali ihlali.|`src/app/muhasebe/` (bekleyen liste bos durumu)|Siradaki is muhasebe ev/nav (card-desk); o ekran elden gecerken duzelir|M2 — muhasebe ev/nav|10 Haziran 2026|
 |TD-11|React efekt hijyeni: toast.tsx'te addToast useCallback/useMemo ile sabitlenmemis; bu yuzden react-hooks/set-state-in-effect uyarilari (reviewer-screen, receipt-entry-screen + bos-dizi efektli ~5 ekran). Duzeltme: addToast'i sabitle, etkilenen efekt bagimliliklarini duzelt.|`src/shared/components/toast.tsx`|Risk: CALISAN ekranlara dokunur + UI testi yok -> AYRI tur + elle dogrulama gerekir. Bu oturumda KAYIT edildi, duzeltilmedi (lint commit 33cd25e gecici override ile yesil: ^_ ignore + 'warn')|Ayri tur (React efekt hijyeni)|13 Haziran 2026|
 |TD-12|Storage upload sahipligi (`owner=auth.uid()`) policy'si canli dogrulanmadi; otomatik test yok|`storage.objects` (receipts bucket)|Storage semasi public pg_dump'a girmiyor (baseline'da yok); saha yukleme calisiyor ama owner zorlamasi test edilmedi|M4 pilot oncesi|22 Haziran 2026|
+|TD-13|Alt navigasyon (Masa/Donem/Rapor/Davet/Butce/Tanimlar, 6 sekme) Muhasebe ve Butce ekranlarina siziyor; tasarima gore yalniz harcama-saha yuzeyinde olmali. Kaynak (ortak layout mi sayfa-bazli mi) incelenmedi.|src/app (rota/layout tarafi, henuz tespit edilmedi)|EV/NAV masasi (IS-SIRASI backlog) kurulmadan tespit gecikti; ekran goruntusuyle 2026-07-13'te dogrulandi|EV/NAV masasi VEYA ayri kesif-turu|14 Temmuz 2026|
 
 -----
 
@@ -40,9 +41,9 @@
 
 ## Bütçe Kontrolü
 
-- Açık Borç sayısı: 6 (TD-5, TD-8, TD-9, TD-10, TD-11, TD-12)
+- Açık Borç sayısı: 7 (TD-5, TD-8, TD-9, TD-10, TD-11, TD-12, TD-13)
 - Karar Bekleyen: 3 (TD-2, TD-3, TD-6) — bütçeye sayılmaz
-- Durum: ⚠️ Bütçe SINIRINDA (5/5). Yeni borç eklenirse (6) yeni özellik durur — önce kapatma gerekir. Dilim 2a (cost_object şema + fn_open_budget) BORÇ EKLEMEDİ — temiz commit'ler, 5/5 korundu.
+- **DURUM: ⚠️ BÜTÇE AŞILDI (7/5).** Kural gereği ("5'ten fazla açık borç birikirse yeni özellik durur") yeni özellik işi teknik olarak durmalı. Bu satır 14 Temmuz 2026'da bir MD denetiminde fark edildi — sayı muhtemelen bir süredir 5'i aşmış durumdaydı ve kimse fark etmemişti. ENGİN KARARI GEREKİR: (a) bir sonraki oturumda borç kapatma turu yap, (b) sınırı gerçekçi bir değere (örn. 8) revize et, (c) bilinçli olarak bu turu atla ve gerekçesini buraya yaz. Karar verilene kadar bu not silinmez.
 
 -----
 
