@@ -8,6 +8,29 @@
 
 ---
 
+## 0. Genel bütçe arayüz felsefesi (TASARIM-KARARLARI.md'den taşındı, 2026-07-14, orijinal kilit tarihi 2026-06-13)
+
+### A. Giriş yapısı
+- Kart = departman (ana menü); değişmez. Endüstri/saha standardı; ağrı noktası yapı değil uygulamadır.
+- Faz ayrı yapı DEĞİL = dönemin kaba hali. Varsayılan 3 dönem (Hazırlık/Çekim/Post); profesyonel çağrı kâğıdı bloklarına inceltilebilir (Çekim-1, Çekim-2...). Tek dönem ekseni, ayarlanabilir granülerlik.
+- Giriş = sakin liste, kalem başına TEK satır; "ne zaman" göstergesi her satırda.
+- "Tek-dönemlik / çok-dönemlik" diye iki cins kalem yok; her kalem döneme-bölünebilir, tek-dönem = tek dönemi dolu hali. Baştan sınıflama gerekmez.
+- Çoğul dönem girişi: satırdaki "ne zaman"a dokun → dönem işaretle → her seçilene tutar. AYRI "dönem ekle" butonu yok. Az dönemde yan yana hücre, çok dönemde liste (uyarlanır döküm).
+- Tam görünüm = nakit matrisi (2. yüzey): kalemler x dönemler, dönem başına nakit ihtiyacı. Gizli toggle değil, bütçeyi hazırlayanın çekirdek aracı.
+- İki yüzey: GİRDİĞİN yüzey (kart, liste) != OKUDUĞUN yüzey (matris). Aynı veriden türer.
+
+### B. Altı arayüz ilkesi (KAAPA arayüz anayasası)
+1. Tek masada tek iş — ekranda yalnız o an gerekli olan; gerisi bir dokunuş ötede.
+2. Makineyi gizle — kullanıcı "Kamera: 318.760" görür, stage_id/fringe değil; varsayılan çalışır, doldurmaya zorlamaz.
+3. Derinlik talep üzerine — basit yüzey, güç saklı.
+4. Anında ve doğru — her dokunuşta toplam canlı ve doğru (CFE); kırılan formül yok.
+5. Sakin yoğunluk — nefes alan boşluk, az ama net.
+6. Öngörülebilir — aynı jest her yerde aynı, geri-al kolay, çıkmaz sokak yok.
+
+### E. Açık tasarım notları (yapılacak - unutma)
+- Ağır toplu giriş için "hızlı ekle" modu KORUNMALI: kart-cumbasını terk etmeden peş peşe kalem (departman satırda seçilir). Kurulumda bütçe sıfırdan dökülürken gerekir; günlük tek-kalem kullanımda gerekmez.
+- "Ne zaman" göstergesinin DOKUNULABİLİR olduğu görsel olarak belli olmalı; yoksa kullanıcı çoğul dönemi hiç keşfetmez.
+
 ## 1. Kalem satırı yapısı
 
 **KARAR (güncel, 2026-07-02, Birim/Birim net swap sonrası):** Kolon sırası: **Kod · Açıklama · Statü · Dönemler · Birim · Birim net · Miktar · X · Yasal Yük · Net toplam · Brüt toplam** (11 kolon). Eski "Gider" (kalem adı) ve eski "Açıklama" (serbest metin, `detail`) ayrımı KALKTI — tek "Açıklama" kolonu kalemin adını taşır (`budget_items.name`). Eski `detail` alanı `description_en` olarak arka planda yaşıyor (Köster damıtımından gelen İngilizce standart adlar, ileride İngilizce sunum için); ekranda hiçbir kolonda görünmez. Birim/Birim net sırası 2026-07-02'de değişti (Birim önce): sayısal kolonlar (Birim net'ten Brüt toplam'a) artık kesintisiz blok.
