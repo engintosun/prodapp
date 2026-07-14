@@ -1,7 +1,7 @@
 # KAAPA — Mimari Kararlar Dokümanı
 
-**Son güncelleme:** 29 Mayıs 2026
-**Durum:** M1 (temel altyapı + auth) kapandı. M2 (çekirdek döngü) aktif — kod öncesi doküman yeniden yapılandırması sürüyor.
+**Son güncelleme:** 14 Temmuz 2026
+**Durum:** M1 (temel altyapı + auth) kapandı. M2 (çekirdek döngü) aktif — DILIM-2/DILIM-3 (bordro motoru) tamam, R-serisi ekran refaktörü (R1-R3) tamam, KLV (klavye motoru, K1-K8) tamam, MÜHÜR-1/2 (bütçe mühürleme çekirdeği + servis okuma çatalı) tamam. Sıradaki: MÜHÜR-3a/3b (versiyon UI). Detay: CURRENT.md.
 
 -----
 
@@ -213,6 +213,7 @@ Oklar tek yönlü: Orkestrasyon → herkesi çağırabilir. UI → sadece orkest
 - Kırılmada en son tag'e dönülür
 - main her zaman çalışır durumda kalır
 - İş doğrudan main üzerinde yürür ve main'e push'lanmış olarak biter; branch açılsa bile main'e merge edilmeden bırakılmaz (orphan branch yasak). Yarım iş main'e girmez.
+- NOT (2026-07-14, MD denetimi): yalnız `v0.1-auth` tag'i mevcut; M2'nin onlarca milestone'ı (DILIM-2/3, R-serisi, KLV, MÜHÜR-1/2) hiç tag'lenmedi. Kural mı gevşetilsin (tag isteğe bağlı) yoksa tag atma pratiği mi başlasın — Engin kararı bekliyor, bu not silinmeden karar verilmez.
 
 **Karar tarihi:** 22.05.2026 | **Gerekçe:** v8'de geri dönüş noktası yoktu, her bozulma üstüne yama yazıldı.
 

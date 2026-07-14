@@ -171,12 +171,6 @@ Bu belge, kurulacak şema+CFE kolonlarının gerekçesidir. **Önerilen** alanla
 
 ---
 
-## 7. BORDRO MOTORU — TAŞINDI (✔ K1, 2026-07-03)
-
-Bordro motoru spesifikasyonu, 2026 parametreleri, kümülatif algoritma, SGK senaryoları ve payroll_profile mimarisi → **PERSONEL-MEVZUATI.md §1 (motor doktrini) + B bölümü (parametre envanteri)**. Bu dosyada bordro doktrini tutulmaz.
-
----
-
 ## 6. KAYNAKLAR (doğrulama, Haziran 2026)
 
 **Compliance Guard — ürün konumlandırma (KİLİT, 2026-07-03):** kanonik metin ve konumlandırma **PERSONEL-MEVZUATI.md §0**'dadır; gösterim yeri açık soru 4 kapsamında kararlaştırılacak.
@@ -188,6 +182,12 @@ Bordro motoru spesifikasyonu, 2026 parametreleri, kümülatif algoritma, SGK sen
 - Yük taşıma tevkifatı 2/10: istanbulymmo.org.tr.
 
 **Tüm oranlar TASLAK referanstır.** Gerçek bütçe/fatura öncesi mali müşavire doğrulatılmalıdır (Compliance Guard ilkesi: kaynak-tarihli, "doğrulayın" notlu).
+
+---
+
+## 7. BORDRO MOTORU — TAŞINDI (✔ K1, 2026-07-03)
+
+Bordro motoru spesifikasyonu, 2026 parametreleri, kümülatif algoritma, SGK senaryoları ve payroll_profile mimarisi → **PERSONEL-MEVZUATI.md §1 (motor doktrini) + B bölümü (parametre envanteri)**. Bu dosyada bordro doktrini tutulmaz.
 
 ---
 

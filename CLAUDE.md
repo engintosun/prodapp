@@ -26,7 +26,7 @@ Dil: chat Türkçe; kod İngilizce (değişken/fonksiyon/dosya/commit/yorum); do
 - Checklist KOMUT olarak yazılır: `npm run build` (= tsc -b && vite build) ÇALIŞTIR; "built" görmeden COMMIT ATMA. (tsc --noEmit YETMEZ — build-mode farklı yakalar.)
 - str_replace anchor'ları apostrof/akıllı-tırnak/tire İÇERMEZ; kod string'lerinde de apostrof yok. Yeni/tam dosya = Write.
 - Satır numarası dosyada uymuyorsa DUR ve raporla; tahminle değiştirme.
-- Son: `git push origin main` + `git fetch && rev-parse HEAD ile origin/main` eşitlik teyidi.
+- Son: `git push origin main` + `git fetch && rev-parse HEAD ile origin/main` eşitlik teyidi + `git branch --show-current` çıktısı raporlanır (yalnız bu `main` dönerse "main'e push edildi" denir; aksi halde "main'e BİRLEŞMEDİ, dal adı: X, PR/merge gerekli" yazılır — claude.ai hostlu Claude Code kendiliğinden ayrı dal açabilir, bu durumda PR + Engin'in manuel merge'ü gerekir).
 
 ## Doğrulama
 - Hedef: hook ile otomatik (PostToolUse → npm run build/tsc; Stop → git status). Hook varken Sonnet "build ✓"ine güvenilir.
@@ -44,7 +44,7 @@ Dil: chat Türkçe; kod İngilizce (değişken/fonksiyon/dosya/commit/yorum); do
 - **Placeholder disiplini:** spec'i olan yüzeye birebir spec değeri yazılır; uydurma değer (etiket/sekme/metin) yok. Zorunlu erteleme → `// TODO-SPEC: <ne + hangi dosya/karar>` + CURRENT.md'ye işle.
 - **Doküman kazanır:** kod-doküman çelişkisinde önce doküman güncellenir.
 - **5-KATMAN KURALI:** Her özellik, Sonnet'e prompt yazılmadan ÖNCE beş katmanda birlikte tasarlanır: şema → RLS → trigger → servis → UI. Atlanan katman sonradan "planlanmamış iş" olarak patlar; bu, tekrar eden boşlukların kök çözümüdür.
-- **KALICILIK KURALI:** Bir sohbette mimari karar/plan üretildiğinde o karar AYNI sohbet içinde CURRENT.md'ye işlenir. "Kapanışta yaparız" ertelemesi yasaktır; context dolunca kararı öldürür.
+- **KALICILIK KURALI:** Bir sohbette mimari karar/plan üretildiğinde o karar AYNI sohbet içinde CURRENT.md'ye VE (eğer karar bir özel-ev dosyasının konusuysa — GLOSSARY/ARCHITECTURE/TECH-DEBT/IS-SIRASI/docs/butce/* vb.) O DOSYAYA DA işlenir. Yalnız CURRENT.md'ye yazıp özel-ev dosyasını atlamak yasaktır (2026-07-14 MD denetiminde ARCHITECTURE/GLOSSARY/TECH-DEBT/IS-SIRASI'nın haftalarca dokunulmadığı, CURRENT.md'nin tek yazım yeri haline geldiği tespit edildi — bu madde o tekrarı önler). "Kapanışta yaparız" ertelemesi yasaktır; context dolunca kararı öldürür.
 
 ## Teknik kurallar
 - SSOT: Supabase. Client kopya; çakışmada Supabase kazanır.

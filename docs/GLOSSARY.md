@@ -1,6 +1,6 @@
 # KAAPA — Domain Terimleri Sözlüğü (GLOSSARY)
 
-**Son güncelleme:** 3 Temmuz 2026
+**Son güncelleme:** 11 Temmuz 2026
 **Kural:** Her domain terimi tek İngilizce karşılık alır. Bir terim iki farklı kelimeyle temsil edilmez. Kodda sadece İngilizce karşılık kullanılır.
 
 -----
