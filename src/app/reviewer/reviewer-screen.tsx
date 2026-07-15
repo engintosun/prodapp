@@ -127,7 +127,7 @@ export function ReviewerScreen({ role }: Props) {
 
   if (loading) return <Loading />
 
-  const pendingLabel = role === 'dept' ? 'dept_pending' : 'acc_pending'
+  const pendingLabel = role === 'dept' ? 'Departman onayı' : 'Muhasebe onayı'
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
@@ -136,7 +136,7 @@ export function ReviewerScreen({ role }: Props) {
       </span>
 
       {receipts.length === 0 && (
-        <EmptyState title="Bekleyen fiş yok" description={`${pendingLabel} durumunda fiş bulunmuyor`} />
+        <EmptyState title="Bekleyen fiş yok" description={`${pendingLabel} bekleyen fiş bulunmuyor`} />
       )}
 
       {receipts.map((r) => (

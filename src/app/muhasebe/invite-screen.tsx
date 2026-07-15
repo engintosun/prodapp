@@ -51,9 +51,9 @@ export function InviteScreen() {
   async function handleCreate() {
     if (!firstName.trim()) { addToast('Ad zorunlu', 'warning'); return }
     if (!lastName.trim()) { addToast('Soyad zorunlu', 'warning'); return }
-    if (!email.includes('@')) { addToast('Gecerli bir e-posta adresi girin', 'warning'); return }
-    if (!role) { addToast('Rol secin', 'warning'); return }
-    if (role !== 'muhasebe' && !deptId) { addToast('Departman secin', 'warning'); return }
+    if (!email.includes('@')) { addToast('Geçerli bir e-posta adresi girin', 'warning'); return }
+    if (!role) { addToast('Rol seçin', 'warning'); return }
+    if (role !== 'muhasebe' && !deptId) { addToast('Departman seçin', 'warning'); return }
 
     setSubmitting(true)
     try {
@@ -77,10 +77,10 @@ export function InviteScreen() {
     try {
       await navigator.clipboard.writeText(inviteLink)
       setCopied(true)
-      addToast('Link kopyalandi', 'success')
+      addToast('Link kopyalandı', 'success')
       setTimeout(() => setCopied(false), 2000)
     } catch (_err) {
-      addToast('Kopyalanamadi, linki elle kopyalayin', 'error')
+      addToast('Kopyalanamadı, linki elle kopyalayın', 'error')
     }
   }
 
@@ -98,7 +98,7 @@ export function InviteScreen() {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
         <span style={{ fontSize: 'var(--text-lg)', fontWeight: 'var(--weight-bold)', color: 'var(--color-text)' }}>
-          Davet Olusturuldu
+          Davet Oluşturuldu
         </span>
         <div style={{
           background: 'var(--color-surface-2)',
@@ -110,7 +110,7 @@ export function InviteScreen() {
           gap: 'var(--space-2)',
         }}>
           <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)' }}>
-            Davet linki (7 gun gecerli)
+            Davet linki (7 gün geçerli)
           </span>
           <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text)', wordBreak: 'break-all' }}>
             {inviteLink}
@@ -129,7 +129,7 @@ export function InviteScreen() {
             cursor: 'pointer',
           }}
         >
-          {copied ? 'Kopyalandi' : 'Kopyala'}
+          {copied ? 'Kopyalandı' : 'Kopyala'}
         </button>
         <button
           onClick={handleNewInvite}
@@ -185,7 +185,7 @@ export function InviteScreen() {
           value={role}
           onChange={(e) => { setRole(e.target.value as UserRole | ''); setDeptId('') }}
         >
-          <option value="">Secin</option>
+          <option value="">Seçin</option>
           {(Object.entries(ROLE_LABELS) as [UserRole, string][]).map(([val, lbl]) => (
             <option key={val} value={val}>{lbl}</option>
           ))}
@@ -201,7 +201,7 @@ export function InviteScreen() {
             onChange={(e) => setDeptId(e.target.value)}
             disabled={role === ''}
           >
-            <option value="">Secin</option>
+            <option value="">Seçin</option>
             {departments.map((d) => (
               <option key={d.id} value={d.id}>{d.name}</option>
             ))}
@@ -225,7 +225,7 @@ export function InviteScreen() {
           opacity: submitting ? 0.6 : 1,
         }}
       >
-        {submitting ? 'Olusturuluyor...' : 'Davet Olustur'}
+        {submitting ? 'Oluşturuluyor...' : 'Davet Oluştur'}
       </button>
     </div>
   )

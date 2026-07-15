@@ -1,6 +1,6 @@
 # KAAPA — Teknik Borç Takibi (TECH-DEBT)
 
-**Son güncelleme:** 14 Temmuz 2026
+**Son güncelleme:** 15 Temmuz 2026
 **Kural:** Her borç bir milestone'a bağlı. "Bir gün düzeltiriz" yok. **Bütçe sınırı yalnız "Açık Borç" kovasını sayar** (kod/şema ile kapatılacak gerçek borç). "Karar Bekleyen" kalemler milestone'da karara bağlanacak yapısal seçimlerdir, borç sayılmaz. Açık Borç 5'i aşarsa yeni özellik durur.
 
 -----
@@ -10,12 +10,10 @@
 |#|Ne|Nerede|Neden kabul edildi|Ödeme hedefi|Tarih|
 |-|--|------|------------------|------------|-----|
 |TD-5|`auth-service.signOut()` icindeki `clear-claims` invoke best-effort try/catch ile sessiz kapiyor. Hata olursa kullanici loglardan ogreniyor; UI'da gorunmez.|`src/shared/supabase/auth-service.ts`|signOut tamamen kesilmesin diye|M2|27 Mayis 2026|
-|TD-8|`departments.chief_id` kullanılmıyor — `fn_route_receipt` dept şef sorusunu `profiles` tablosundaki aktif `role=dept` kaydının varlığı üzerinden yanıtlıyor; `departments.chief_id` hiç okunmuyor|`departments`|2026-06-09 onboarding 5-katman tasarımında tespit edildi; ya kolon kaldırılır ya da açık atama yoluna kavuşturulur|M3|09 Haziran 2026|
-|TD-9|Onboarding davet adimindaki InviteScreen metinleri ASCII (Turkce karaktersiz): "Davet Et", "Davet Olustur", "Davet Olusturuldu", "Davet linki (7 gun gecerli)" vb. KARAR 7 geregi mevcut bilesene dokunulmadi.|`src/app/muhasebe/invite-screen.tsx`|Davet zinciri gozden gecirmesi acik listede; yazim o turda duzelir|Davet zinciri gozden gecirme|10 Haziran 2026|
-|TD-10|Muhasebe kabugunda teknik terim sizintisi: bos durumda "acc_pending durumunda fis bulunmuyor" gibi gelistirici dili kullaniciya gorunuyor. Plain-dil kurali ihlali.|`src/app/muhasebe/` (bekleyen liste bos durumu)|Siradaki is muhasebe ev/nav (card-desk); o ekran elden gecerken duzelir|M2 — muhasebe ev/nav|10 Haziran 2026|
+|TD-10|Muhasebe kabugunda teknik terim sizintisi: bos durumda "acc_pending durumunda fis bulunmuyor" gibi gelistirici dili kullaniciya gorunuyordu. Plain-dil kurali ihlali. acc_pending/dept_pending sizintisi BORC-A ile giderildi (15 Temmuz 2026); kalan is muhasebe kabugunun plain-dil taramasi.|`src/app/muhasebe/` (bekleyen liste bos durumu)|Siradaki is muhasebe ev/nav (card-desk); o ekran elden gecerken duzelir|KABUK milestone|10 Haziran 2026|
 |TD-11|React efekt hijyeni: toast.tsx'te addToast useCallback/useMemo ile sabitlenmemis; bu yuzden react-hooks/set-state-in-effect uyarilari (reviewer-screen, receipt-entry-screen + bos-dizi efektli ~5 ekran). Duzeltme: addToast'i sabitle, etkilenen efekt bagimliliklarini duzelt.|`src/shared/components/toast.tsx`|Risk: CALISAN ekranlara dokunur + UI testi yok -> AYRI tur + elle dogrulama gerekir. Bu oturumda KAYIT edildi, duzeltilmedi (lint commit 33cd25e gecici override ile yesil: ^_ ignore + 'warn')|Ayri tur (React efekt hijyeni)|13 Haziran 2026|
 |TD-12|Storage upload sahipligi (`owner=auth.uid()`) policy'si canli dogrulanmadi; otomatik test yok|`storage.objects` (receipts bucket)|Storage semasi public pg_dump'a girmiyor (baseline'da yok); saha yukleme calisiyor ama owner zorlamasi test edilmedi|M4 pilot oncesi|22 Haziran 2026|
-|TD-13|Alt navigasyon (Masa/Donem/Rapor/Davet/Butce/Tanimlar, 6 sekme) Muhasebe ve Butce ekranlarina siziyor; tasarima gore yalniz harcama-saha yuzeyinde olmali. Kaynak (ortak layout mi sayfa-bazli mi) incelenmedi.|src/app (rota/layout tarafi, henuz tespit edilmedi)|EV/NAV masasi (IS-SIRASI backlog) kurulmadan tespit gecikti; ekran goruntusuyle 2026-07-13'te dogrulandi|EV/NAV masasi VEYA ayri kesif-turu|14 Temmuz 2026|
+|TD-13|Alt navigasyon (Masa/Donem/Rapor/Davet/Butce/Tanimlar, 6 sekme) Muhasebe ve Butce ekranlarina siziyor; tasarima gore yalniz harcama-saha yuzeyinde olmali. Kaynak bulundu: kod hatasi degil, bilincli stub — sekmeler dilimlerde kayitli/gecici eklendi, EV/NAV masasi hic kurulmadi; cozum nav tasariminin kendisi.|src/app (rota/layout tarafi, henuz tespit edilmedi)|EV/NAV masasi (IS-SIRASI backlog) kurulmadan tespit gecikti; ekran goruntusuyle 2026-07-13'te dogrulandi|KABUK milestone|14 Temmuz 2026|
 
 -----
 
@@ -26,6 +24,7 @@
 |TD-2|Uyelik yasam dongusu alanlari (`membership_status archived_readonly` dali, `access_until`, `revoked_at`, `projects.status/closed_at/closed_by`) SEKIL olarak var; davranis (cascade, export penceresi, otomatik gecis) YOK|`profiles`, `projects`|M1 kapsam disinda|M2|27 Mayis 2026|
 |TD-3|Person isaret eden FK'lar (`receipts.user_id` vb.) `auth.users(id)`'ye bakar, belirli uyelik satirina degil; uyelik baglami (`user_id+project_id`) RLS ile saglanir|`receipts`, `advances`, `exception_permits`, `approval_log`|Bilinçli sadelestirme|M2 gozden gecirme|27 Mayis 2026|
 |TD-6|In-app produksiyon proje adi iki yerde tutuluyor (`projects.name` + `company_settings.project_name`); hangisi SSOT secilecek karar verilmedi|`projects`, `company_settings`|Onboarding/marka ekrani henuz yok|M3.5 marka ekrani|29 Mayis 2026|
+|TD-8|`departments.chief_id` kullanılmıyor — `fn_route_receipt` dept şef sorusunu `profiles` tablosundaki aktif `role=dept` kaydının varlığı üzerinden yanıtlıyor; `departments.chief_id` hiç okunmuyor|`departments`|2026-06-09 onboarding 5-katman tasarımında tespit edildi; ya kolon kaldırılır ya da açık atama yoluna kavuşturulur|M3 — EKRAN-MUHASEBE sef atama ekrani karari (kolon DROP mu acik atama mi)|09 Haziran 2026|
 
 -----
 
@@ -36,14 +35,15 @@
 |TD-1|`projects.is_active` kaldirildi, `status` enum tek kaynak|28 Mayis 2026|refactor(schema) commit ile|
 |TD-4|clear-claims Edge Function ic hata detayini (rpcErr.message) response govdesinden cikardi; hata yolu korundu|29 Mayis 2026|fix(functions) commit ile|
 |TD-7|Ekran organizasyonu rol-bazlı (`src/app/{rol}/`) standart kabul edildi; ARCHITECTURE §4.2/§5.3/§5.4 güncellendi + boş `src/features/` iskeleti silindi (feature-bazlı plan terk)|22 Haziran 2026|docs(architecture) + chore commit ile|
+|TD-9|InviteScreen metinleri Turkce karakterlere cevrildi|15 Temmuz 2026|BORC-A commit ile|
 
 -----
 
 ## Bütçe Kontrolü
 
-- Açık Borç sayısı: 7 (TD-5, TD-8, TD-9, TD-10, TD-11, TD-12, TD-13)
-- Karar Bekleyen: 3 (TD-2, TD-3, TD-6) — bütçeye sayılmaz
-- **DURUM: ⚠️ BÜTÇE AŞILDI (7/5) — KARAR VERİLDİ (Engin, 2026-07-15): (a) borç kapatma turu.** Tur planı CURRENT.md Sıradaki iş #1'de: BORÇ-A → BORÇ-B → BORÇ-C → TD-5 dilimi. Hedef: 7 → 2 (kalan: TD-11'in meşru-desen disable'ları hariç tamamı + TD-13 KABUK'ta kapanır). Tur bitince bu bölüm normal sayıma döner.
+- Açık Borç sayısı: 5 (TD-5, TD-10, TD-11, TD-12, TD-13)
+- Karar Bekleyen: 4 (TD-2, TD-3, TD-6, TD-8) — bütçeye sayılmaz
+- **DURUM: 5/5 sinirda.** BORC turu suruyor (Engin karari 2026-07-15): BORC-A TAMAM (15 Temmuz 2026) -> sirada BORC-B (toast kok cozum + efekt bagimliliklari + KLV lint + Net-eksik) -> BORC-C -> TD-5 dilimi. Tur plani CURRENT.md Siradaki is #1.
 
 -----
 
