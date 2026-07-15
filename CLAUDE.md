@@ -3,7 +3,7 @@
 Her oturum bu dosyayla başlar. Yalın tutulur (<120 satır); detay ayrı dosyalarda, ihtiyaç anında okunur. Kayıt sinyali boğmaz: az, net, güncel.
 
 ## Oturum protokolü
-- **Açılış:** CURRENT.md oku → 4-5 satırlık durum raporu → Engin onaylamadan iş başlamaz. Tam-dosya / tüm-tarihçe okuması YOK. Okuma TEYİTLİ olmalı: bir araç içerik yerine boş/URL dönerse bu "okundu" değil DUR sinyalidir; gerçek içerik görülmeden "okundu" denmez (raw.githubusercontent güvenilmez → tarball/curl kullan).
+- **Açılış:** CURRENT.md oku → 4-5 satırlık durum raporu → Engin onaylamadan iş başlamaz. Tam-dosya / tüm-tarihçe okuması YOK. Okuma TEYİTLİ olmalı: bir araç içerik yerine boş/URL dönerse bu "okundu" değil DUR sinyalidir; gerçek içerik görülmeden "okundu" denmez (raw.githubusercontent güvenilmez → tarball/curl kullan). Git kimliği (user.name/user.email) her fresh clone'da kontrol edilir, tanımlı değilse --local olarak Claude <noreply@anthropic.com> ile ayarlanır — hangi bilgisayar olduğu önemli değil, bu soru bir daha sorulmaz.
 - **Kapanış:** CURRENT.md'yi baştan YAZ (ekleme değil): milestone · son commit · sıradaki 1-3 iş · açık kararlar. Tarihçe git log'da yaşar.
 
 ## Proje kimliği
