@@ -27,7 +27,7 @@ export function SahaHomeScreen() {
     getCorrectionReceipts()
       .then(setCorrectionReceipts)
       .catch((e) => addToast((e as Error).message, 'error'))
-  }, [])
+  }, [addToast])
 
   function handlePicked(e: ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0]

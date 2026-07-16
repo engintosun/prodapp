@@ -51,7 +51,7 @@ export function AuthenticatedShell({ user, theme, onToggleTheme }: Props) {
           setProjectName(data.name as string)
         }
       })
-  }, [projectId])
+  }, [projectId, addToast])
 
   useEffect(() => {
     if (role !== 'muhasebe' || !projectId) return
@@ -73,7 +73,7 @@ export function AuthenticatedShell({ user, theme, onToggleTheme }: Props) {
         }
       })
     return () => { cancelled = true }
-  }, [role, projectId])
+  }, [role, projectId, addToast])
 
   async function handleSignOut() {
     try {

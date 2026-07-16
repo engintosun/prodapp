@@ -46,7 +46,7 @@ export function InviteScreen() {
     getDepartments()
       .then(setDepartments)
       .catch((e) => addToast((e as Error).message, 'error'))
-  }, [])
+  }, [addToast])
 
   async function handleCreate() {
     if (!firstName.trim()) { addToast('Ad zorunlu', 'warning'); return }

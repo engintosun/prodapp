@@ -126,7 +126,7 @@ export function CompanyProfileForm({ projectId, userId, onSaved, submitLabel, sh
     return () => {
       cancelled = true
     }
-  }, [projectId])
+  }, [projectId, addToast])
 
   async function save(answers: { legalType: string | null; kulturGirisimBelgeli: boolean; kulturYatirimBelgeli: boolean; sgkBorcuYok: boolean }) {
     setSaving(true)

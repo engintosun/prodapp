@@ -59,7 +59,7 @@ export function CreateProjectPage({ onBack }: Props) {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [addToast])
 
   async function handleSubmit() {
     if (!canSubmit || submitting) return

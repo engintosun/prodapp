@@ -70,7 +70,7 @@ export function BudgetStep({ projectId, userId, onDone }: Props) {
     getDepartments()
       .then(setDepartments)
       .catch((e) => addToast((e as Error).message, 'error'))
-  }, [])
+  }, [addToast])
 
   const hasAnyInput = totalStr.trim() !== '' || departments.some((d) => (deptAmounts[d.id] ?? '').trim() !== '')
   const totalForCalc = parseAmount(totalStr) ?? 0

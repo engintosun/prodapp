@@ -47,7 +47,7 @@ export function ReceiptCorrectionScreen({ receipt, onClose }: Props) {
     getCategories()
       .then(setCategories)
       .catch((e) => addToast((e as Error).message, 'error'))
-  }, [])
+  }, [addToast])
 
   async function handleSubmit() {
     const amountNum = parseFloat(amount.replace(',', '.'))

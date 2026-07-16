@@ -49,7 +49,7 @@ export function ReceiptEntryScreen({ file, onClose }: Props) {
     getCategories()
       .then(setCategories)
       .catch((e) => addToast((e as Error).message, 'error'))
-  }, [])
+  }, [addToast])
 
   async function handleSave() {
     const amountNum = parseFloat(amount.replace(',', '.'))

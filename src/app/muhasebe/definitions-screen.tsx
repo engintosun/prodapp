@@ -68,7 +68,7 @@ export function DefinitionsScreen({ projectId, userId }: Props) {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [addToast])
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>

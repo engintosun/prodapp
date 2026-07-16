@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
@@ -62,17 +62,22 @@ function ToastContainer({ toasts, onRemove }: { toasts: ToastItem[]; onRemove: (
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([])
 
-  const removeToast = (id: string) =>
-    setToasts((prev) => prev.filter((t) => t.id !== id))
+  const removeToast = useCallback((id: string) =>
+    setToasts((prev) => prev.filter((t) => t.id !== id)), [])
 
-  const addToast = (message: string, type: ToastType = 'info', durationMs = 3500) => {
+  const addToast = useCallback((message: string, type: ToastType = 'info', durationMs = 3500) => {
     const id = crypto.randomUUID()
-    setToasts((prev) => [...prev, { id, message, type }])
+    setToasts((prev) => {
+      if (prev.some((t) => t.message === message && t.type === type)) return prev
+      return [...prev, { id, message, type }]
+    })
     setTimeout(() => removeToast(id), durationMs)
-  }
+  }, [removeToast])
+
+  const value = useMemo(() => ({ addToast }), [addToast])
 
   return (
-    <ToastContext.Provider value={{ addToast }}>
+    <ToastContext.Provider value={value}>
       {children}
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </ToastContext.Provider>

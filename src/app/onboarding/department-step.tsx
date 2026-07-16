@@ -57,7 +57,7 @@ export function DepartmentStep({ projectId, onDone }: Props) {
     getDepartments()
       .then(setDepartments)
       .catch((e) => addToast((e as Error).message, 'error'))
-  }, [])
+  }, [addToast])
 
   async function handleAdd() {
     const trimmed = newName.trim()
