@@ -23,7 +23,7 @@ export default defineConfig([
     files: ['**/*.{ts,tsx}'],
     rules: {
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }],
-      'react-hooks/set-state-in-effect': 'warn',
+      'react-hooks/set-state-in-effect': 'error',
       'react-refresh/only-export-components': 'warn',
     },
   },

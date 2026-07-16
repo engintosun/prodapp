@@ -24,7 +24,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     unitLabelByIdRef,
     patchRow,
   })
-  const grid = useGridNavigation({ rowsRef, savedRef, patchRow, api, rows })
+  const { containerRef, handleKeyDown, handleFocus, isActiveEdit } = useGridNavigation({ rowsRef, savedRef, patchRow, api, rows })
   const [openBurden, setOpenBurden] = useState<{ itemId: string; stageId: string | null } | null>(null)
   const [openNoteItemId, setOpenNoteItemId] = useState<string | null>(null)
   const [openStatusInfo, setOpenStatusInfo] = useState(false)
@@ -63,7 +63,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
       <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', margin: '0 0 var(--space-4)' }}>
         Dönem eklemek için Dönemler hücresinden seç; her dönem için X (adet) gir. Hücreden çıkınca otomatik kaydeder.
       </p>
-      <div ref={grid.containerRef} onKeyDown={grid.handleKeyDown} onFocus={grid.handleFocus} style={{ overflowX: 'auto' }}>
+      <div ref={containerRef} onKeyDown={handleKeyDown} onFocus={handleFocus} style={{ overflowX: 'auto' }}>
         <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: tableMinWidth, tableLayout: 'fixed' }}>
           <colgroup>
             <col style={{ width: colWidths.kod }} />
@@ -138,9 +138,9 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                     bufUnitNet={buffers[it.id + ':unitNet']}
                     bufMultiplier={buffers[it.id + ':multiplier']}
                     bufRepeat={buffers[it.id + ':repeat']}
-                    navUnitNet={grid.isActiveEdit(it.id, 'unitNet') ? undefined : fmt(it.unitNet)}
-                    navMultiplier={grid.isActiveEdit(it.id, 'multiplier') ? undefined : fmt(it.multiplier)}
-                    navRepeat={grid.isActiveEdit(it.id, 'repeat') ? undefined : fmt(it.repeat)}
+                    navUnitNet={isActiveEdit(it.id, 'unitNet') ? undefined : fmt(it.unitNet)}
+                    navMultiplier={isActiveEdit(it.id, 'multiplier') ? undefined : fmt(it.multiplier)}
+                    navRepeat={isActiveEdit(it.id, 'repeat') ? undefined : fmt(it.repeat)}
                   />
                   {multi &&
                     addedStages.map((s) => {
@@ -160,9 +160,9 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                           bufQty={buffers[it.id + ':stage:' + s.id]}
                           bufNet={buffers[it.id + ':pnet:' + s.id]}
                           bufRepeat={buffers[it.id + ':prepeat:' + s.id]}
-                          navNet={grid.isActiveEdit(periodRowId, 'periodNet') ? undefined : fmt(netVal)}
-                          navRepeat={grid.isActiveEdit(periodRowId, 'periodRepeat') ? undefined : fmt(repeatVal)}
-                          navQty={grid.isActiveEdit(periodRowId, 'periodQty') ? undefined : fmt(qtyVal)}
+                          navNet={isActiveEdit(periodRowId, 'periodNet') ? undefined : fmt(netVal)}
+                          navRepeat={isActiveEdit(periodRowId, 'periodRepeat') ? undefined : fmt(repeatVal)}
+                          navQty={isActiveEdit(periodRowId, 'periodQty') ? undefined : fmt(qtyVal)}
                         />
                       )
                     })}

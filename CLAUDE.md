@@ -26,6 +26,7 @@ Dil: chat Türkçe; kod İngilizce (değişken/fonksiyon/dosya/commit/yorum); do
 ## Prompt zorunlulukları (Sonnet'e)
 - Baş: `git checkout main && git pull origin main` + branch yasağı (yeni branch açma; commit öncesi `git branch --show-current` ≠ main ise DUR).
 - Checklist KOMUT olarak yazılır: `npm run build` (= tsc -b && vite build) ÇALIŞTIR; "built" görmeden COMMIT ATMA. (tsc --noEmit YETMEZ — build-mode farklı yakalar.)
+- `npx eslint .` KOMUT olarak checklist'e girer: 0 HATA görmeden COMMIT ATMA (warning bloklamaz; mevcut 2 react-refresh uyarısı bilinen/kapsam dışı). Kapı yeşil doğdu: BORÇ-B3, 2026-07-16.
 - str_replace anchor'ları apostrof/akıllı-tırnak/tire İÇERMEZ; kod string'lerinde de apostrof yok. Yeni/tam dosya = Write.
 - Satır numarası dosyada uymuyorsa DUR ve raporla; tahminle değiştirme.
 - Son: `git push origin main` + `git fetch && rev-parse HEAD ile origin/main` eşitlik teyidi + `git branch --show-current` çıktısı raporlanır (yalnız bu `main` dönerse "main'e push edildi" denir; aksi halde "main'e BİRLEŞMEDİ, dal adı: X, PR/merge gerekli" yazılır — claude.ai hostlu Claude Code kendiliğinden ayrı dal açabilir, bu durumda PR + Engin'in manuel merge'ü gerekir).

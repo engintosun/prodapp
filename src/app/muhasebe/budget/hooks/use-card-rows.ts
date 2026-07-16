@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { getOrOpenBudget, getCard, loadUnits } from '../../../../shared/supabase/budget-service'
 import type { BudgetItemRow, CardView, StageRow, UnitRow } from '../../../../shared/supabase/budget-service'
 import { useToast } from '../../../../shared/components/toast'
@@ -19,11 +19,14 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
   const stagesRef = useRef<StageRow[]>([])
   const unitLabelByIdRef = useRef<Map<string, string>>(new Map())
 
-  rowsRef.current = rows
-  cardRef.current = card
-  stagesRef.current = stages
   const unitLabelById = useMemo(() => new Map<string, string>(units.map((u) => [u.id, u.label])), [units])
-  unitLabelByIdRef.current = unitLabelById
+
+  useLayoutEffect(() => {
+    rowsRef.current = rows
+    cardRef.current = card
+    stagesRef.current = stages
+    unitLabelByIdRef.current = unitLabelById
+  })
 
   useEffect(() => {
     let cancelled = false
