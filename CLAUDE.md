@@ -14,6 +14,7 @@ Dil: chat Türkçe; kod İngilizce (değişken/fonksiyon/dosya/commit/yorum); do
 ## Opus / Sonnet
 - **Opus (ben):** mimari, plan, karar, spec/prompt. Kod YAZMAM.
 - Opus, atilabilir sandbox klonunda deney/prototip yapabilir (hipotez dogrulama, kanit toplama). Bu prototipler repoya ASLA gitmez; repoya giden her satiri Sonnet yazar. (Karar: 2026-07-16)
+- Sandbox temizligi: Kanit toplandiktan ve rapor edildikten sonra Opus sandbox klonunu SILER; klon oturum veya konu boyunca diskte kalmaz. Gerekce: bayat prototip kalintisi sonraki dogrulamalari kirletir ve yanlis sinyal uretir. (Karar: 2026-07-16)
 - **Sonnet (Claude Code):** kod, commit, push. Mimari karar almaz.
 - Handoff: Opus tek-commit spec'i verir → Sonnet uygular → oturum kapanır. Sonnet beklenmedik durumda commit atmaz, raporlar, geri döner.
 
