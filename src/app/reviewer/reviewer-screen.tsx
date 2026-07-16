@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import type { CSSProperties } from 'react'
 import type { Receipt, UserRole } from '../../shared/types/domain'
 import { useToast } from '../../shared/components/toast'
@@ -56,21 +56,24 @@ export function ReviewerScreen({ role }: Props) {
   const [rejectNote, setRejectNote] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
-  function load() {
-    setLoading(true)
+  // setLoading(true) bilerek load disinda: load efekt icinden de cagrildigindan, icindeki senkron
+  // setState set-state-in-effect ihlali olur. Ilk yuklemede loading zaten true baslar; yenilemelerde
+  // spinner'i olay-ani cagiran handler acar.
+  const load = useCallback(() => {
     getPendingReviewReceipts(role)
       .then(setReceipts)
       .catch((e) => addToast((e as Error).message, 'error'))
       .finally(() => setLoading(false))
-  }
+  }, [role, addToast])
 
-  useEffect(() => { load() }, [role])
+  useEffect(() => { load() }, [load])
 
   async function handleApprove(receipt: Receipt) {
     setSubmitting(true)
     try {
       await approveReceipt(receipt.id)
       addToast('Onaylandı', 'success')
+      setLoading(true)
       load()
     } catch (e) {
       addToast((e as Error).message, 'error')
@@ -97,6 +100,7 @@ export function ReviewerScreen({ role }: Props) {
       setRejectTarget(null)
       setRejectReason('')
       setRejectNote('')
+      setLoading(true)
       load()
     } catch (e) {
       addToast((e as Error).message, 'error')
@@ -117,6 +121,7 @@ export function ReviewerScreen({ role }: Props) {
       addToast('Düzeltme istendi', 'success')
       setCorrectionTarget(null)
       setCorrectionNote('')
+      setLoading(true)
       load()
     } catch (e) {
       addToast((e as Error).message, 'error')

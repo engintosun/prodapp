@@ -214,7 +214,9 @@ export const ItemRow = memo(function ItemRow({
         )}
       </td>
       <td style={numStyle}>
-        {isBordro && bd?.loading ? (
+        {isBordro && bd?.missingNet ? (
+          <span title="Birim Net bekleniyor" style={{ color: 'var(--color-text-muted)' }}>—</span>
+        ) : isBordro && bd?.loading ? (
           <span style={{ color: 'var(--color-text-muted)', fontStyle: 'italic', fontSize: 'var(--text-xs)' }}>hesaplanıyor…</span>
         ) : isBordro && bd?.error ? (
           <span style={{ color: 'var(--color-danger, #c0392b)', fontSize: 'var(--text-xs)' }}>{bd.error}</span>
@@ -239,10 +241,10 @@ export const ItemRow = memo(function ItemRow({
         )}
       </td>
       <td style={{ ...numStyle, fontWeight: 600 }}>
-        <span style={isBordro ? { opacity: 0.55 } : undefined}>{fmt(netToplam)}</span>
+        <span title={isBordro && bd?.missingNet ? 'Birim Net bekleniyor' : undefined} style={isBordro ? { opacity: 0.55 } : undefined}>{isBordro && bd?.missingNet ? '—' : fmt(netToplam)}</span>
       </td>
       <td style={{ ...numStyle, fontWeight: 600 }}>
-        <span style={isBordro ? { opacity: 0.55 } : undefined}>{fmt(brutToplam)}</span>
+        <span title={isBordro && bd?.missingNet ? 'Birim Net bekleniyor' : undefined} style={isBordro ? { opacity: 0.55 } : undefined}>{isBordro && bd?.missingNet ? '—' : fmt(brutToplam)}</span>
       </td>
     </tr>
   )

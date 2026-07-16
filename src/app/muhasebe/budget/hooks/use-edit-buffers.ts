@@ -58,7 +58,14 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
       const result = await deriveBordroFields(itemId)
       setBordroData((b) => ({ ...b, [itemId]: { loading: false, data: result, error: null } }))
     } catch (e) {
-      const message = bordroReasonMessage(e instanceof Error ? e.message : '')
+      const reason = e instanceof Error ? e.message : ''
+      // Taze bordro kaleminde Birim Net yoklugu HATA degil beklenen durumdur (karar 2026-07-15):
+      // toast yok, satirda sessiz gosterge (missingNet). Diger sebepler gercek hata olarak kalir.
+      if (reason === 'invalid_net') {
+        setBordroData((b) => ({ ...b, [itemId]: { loading: false, data: null, error: null, missingNet: true } }))
+        return
+      }
+      const message = bordroReasonMessage(reason)
       setBordroData((b) => ({ ...b, [itemId]: { loading: false, data: null, error: message } }))
       addToast(message, 'error')
     }
@@ -282,6 +289,7 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
         }
         const current = rowsRef.current.find((r) => r.id === itemId) ?? row
         patchRow(itemId, { periodNet: { ...current.periodNet, [stageId]: hedef } })
+        if (row.paymentStatus === 'bordro') void refreshBordro(itemId)
       } catch (e) {
         const current = rowsRef.current.find((r) => r.id === itemId) ?? row
         patchRow(itemId, { periodNet: { ...current.periodNet, [stageId]: savedOverride } })

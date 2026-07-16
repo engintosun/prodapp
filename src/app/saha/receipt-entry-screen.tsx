@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import type { CSSProperties } from 'react'
 import { useToast } from '../../shared/components/toast'
 import { getCategories, createReceipt, type ExpenseCategory } from '../../shared/supabase/receipt-service'
@@ -28,7 +28,6 @@ const inputStyle: CSSProperties = {
 
 export function ReceiptEntryScreen({ file, onClose }: Props) {
   const { addToast } = useToast()
-  const [previewUrl, setPreviewUrl] = useState('')
   const [categories, setCategories] = useState<ExpenseCategory[]>([])
   const [vendorName, setVendorName] = useState('')
   const [amount, setAmount] = useState('')
@@ -39,11 +38,12 @@ export function ReceiptEntryScreen({ file, onClose }: Props) {
   const [description, setDescription] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
+  // Onizleme URL'i dosyadan turetilir (render sirasinda useMemo); effect yalniz eski URL'i
+  // serbest birakir. Effect icinde senkron setState kalmaz (set-state-in-effect kok cozumu).
+  const previewUrl = useMemo(() => URL.createObjectURL(file), [file])
   useEffect(() => {
-    const url = URL.createObjectURL(file)
-    setPreviewUrl(url)
-    return () => URL.revokeObjectURL(url)
-  }, [file])
+    return () => URL.revokeObjectURL(previewUrl)
+  }, [previewUrl])
 
   useEffect(() => {
     getCategories()
