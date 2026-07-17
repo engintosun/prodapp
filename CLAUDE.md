@@ -15,6 +15,7 @@ Dil: chat Türkçe; kod İngilizce (değişken/fonksiyon/dosya/commit/yorum); do
 - **Opus (ben):** mimari, plan, karar, spec/prompt. Kod YAZMAM.
 - Opus, atilabilir sandbox klonunda deney/prototip yapabilir (hipotez dogrulama, kanit toplama). Bu prototipler repoya ASLA gitmez; repoya giden her satiri Sonnet yazar. (Karar: 2026-07-16)
 - Sandbox temizligi: Kanit toplandiktan ve rapor edildikten sonra Opus sandbox klonunu SILER; klon oturum veya konu boyunca diskte kalmaz. Gerekce: bayat prototip kalintisi sonraki dogrulamalari kirletir ve yanlis sinyal uretir. (Karar: 2026-07-16)
+- **Araç orantısı (Karar: 2026-07-17):** Sandbox/klon yalnız davranış kanıtı (lint/build/test sonucu) veya çok-dosyalı kod keşfi için; tek dosya okuma/anchor teyidi API'den yapılır. Klon en ağır araçtır, ilk araç değil.
 - **Sonnet (Claude Code):** kod, commit, push. Mimari karar almaz.
 - Handoff: Opus tek-commit spec'i verir → Sonnet uygular → oturum kapanır. Sonnet beklenmedik durumda commit atmaz, raporlar, geri döner.
 
@@ -22,11 +23,14 @@ Dil: chat Türkçe; kod İngilizce (değişken/fonksiyon/dosya/commit/yorum); do
 - Özellik = TEK kendi-kendine-yeten spec: hangi dosyalar · neyin kapsam-dışı · sonda uçtan-uca doğrulama adımı.
 - Spec, TEK BLOK düz-metin dosya olarak verilir (present_files); markdown dil etiketi yok, bölünmüş blok yok.
 - Değer spec'i düşünmekte — kısa ve net tut.
+- **Yalın spec (Karar: 2026-07-17):** Tören (branch yasağı, kapı komutları, push+hash+dal teyidi, DUR kuralları) yalnız bu dosyada yaşar, spec'e kopyalanmaz. Spec şunları taşır: başta 2 satır sigorta ("CLAUDE.md'yi oku ve uygula; kapılar geçmeden commit yok") · 1 cümle amaç · ESKİ/YENİ blokları · kapsam dışı · işe özgü beklenenler · commit mesajı. İstisna: claude.ai hostlu Claude Code bu dosyayı okumaz → hosted oturumda tam tören spec'e geri döner. CLAUDE.md oturum ortasında değişirse spec'e "yeniden oku" satırı konur.
 
 ## Prompt zorunlulukları (Sonnet'e)
 - Baş: `git checkout main && git pull origin main` + branch yasağı (yeni branch açma; commit öncesi `git branch --show-current` ≠ main ise DUR).
 - Checklist KOMUT olarak yazılır: `npm run build` (= tsc -b && vite build) ÇALIŞTIR; "built" görmeden COMMIT ATMA. (tsc --noEmit YETMEZ — build-mode farklı yakalar.)
 - `npx eslint .` KOMUT olarak checklist'e girer: 0 HATA görmeden COMMIT ATMA (warning bloklamaz; mevcut 2 react-refresh uyarısı bilinen/kapsam dışı). Kapı yeşil doğdu: BORÇ-B3, 2026-07-16.
+- `npm test` KOMUT olarak checklist'e girer: CURRENT.md'deki güncel test sayısı TAM geçmeden COMMIT ATMA (sayı bu dosyada değil CURRENT.md'de yaşar; bugün 119/119).
+- Commit öncesi `git diff --stat` ÇALIŞTIRILIR: yalnız spec'te beklenen dosyalar değişmiş olmalı; fazlası varsa DUR ve raporla.
 - str_replace anchor'ları apostrof/akıllı-tırnak/tire İÇERMEZ; kod string'lerinde de apostrof yok. Yeni/tam dosya = Write.
 - Satır numarası dosyada uymuyorsa DUR ve raporla; tahminle değiştirme.
 - Son: `git push origin main` + `git fetch && rev-parse HEAD ile origin/main` eşitlik teyidi + `git branch --show-current` çıktısı raporlanır (yalnız bu `main` dönerse "main'e push edildi" denir; aksi halde "main'e BİRLEŞMEDİ, dal adı: X, PR/merge gerekli" yazılır — claude.ai hostlu Claude Code kendiliğinden ayrı dal açabilir, bu durumda PR + Engin'in manuel merge'ü gerekir).
