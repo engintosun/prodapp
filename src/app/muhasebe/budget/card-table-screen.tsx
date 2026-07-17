@@ -63,7 +63,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
       <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', margin: '0 0 var(--space-4)' }}>
         Dönem eklemek için Dönemler hücresinden seç; her dönem için X (adet) gir. Hücreden çıkınca otomatik kaydeder.
       </p>
-      <div ref={containerRef} onKeyDown={handleKeyDown} onFocus={handleFocus} style={{ overflowX: 'auto' }}>
+      <div ref={containerRef} onKeyDown={handleKeyDown} onFocus={handleFocus}>
         <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: tableMinWidth, tableLayout: 'fixed' }}>
           <colgroup>
             <col style={{ width: colWidths.kod }} />
