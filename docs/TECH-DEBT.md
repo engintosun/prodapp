@@ -1,6 +1,6 @@
 # KAAPA — Teknik Borç Takibi (TECH-DEBT)
 
-**Son güncelleme:** 16 Temmuz 2026
+**Son güncelleme:** 17 Temmuz 2026
 **Kural:** Her borç bir milestone'a bağlı. "Bir gün düzeltiriz" yok. **Bütçe sınırı yalnız "Açık Borç" kovasını sayar** (kod/şema ile kapatılacak gerçek borç). "Karar Bekleyen" kalemler milestone'da karara bağlanacak yapısal seçimlerdir, borç sayılmaz. Açık Borç 5'i aşarsa yeni özellik durur.
 
 -----
@@ -13,6 +13,7 @@
 |TD-10|Muhasebe kabugunda teknik terim sizintisi: bos durumda "acc_pending durumunda fis bulunmuyor" gibi gelistirici dili kullaniciya gorunuyordu. Plain-dil kurali ihlali. acc_pending/dept_pending sizintisi BORC-A ile giderildi (15 Temmuz 2026); kalan is muhasebe kabugunun plain-dil taramasi.|`src/app/muhasebe/` (bekleyen liste bos durumu)|Siradaki is muhasebe ev/nav (card-desk); o ekran elden gecerken duzelir|KABUK milestone|10 Haziran 2026|
 |TD-12|Storage upload sahipligi (`owner=auth.uid()`) policy'si canli dogrulanmadi; otomatik test yok|`storage.objects` (receipts bucket)|Storage semasi public pg_dump'a girmiyor (baseline'da yok); saha yukleme calisiyor ama owner zorlamasi test edilmedi|M4 pilot oncesi|22 Haziran 2026|
 |TD-13|Alt navigasyon (Masa/Donem/Rapor/Davet/Butce/Tanimlar, 6 sekme) Muhasebe ve Butce ekranlarina siziyor; tasarima gore yalniz harcama-saha yuzeyinde olmali. Kaynak bulundu: kod hatasi degil, bilincli stub — sekmeler dilimlerde kayitli/gecici eklendi, EV/NAV masasi hic kurulmadi; cozum nav tasariminin kendisi.|src/app (rota/layout tarafi, henuz tespit edilmedi)|EV/NAV masasi (IS-SIRASI backlog) kurulmadan tespit gecikti; ekran goruntusuyle 2026-07-13'te dogrulandi|KABUK milestone|14 Temmuz 2026|
+|TD-14|Cok donemli bordro kaleminde bir donemin 0/bos birim neti TUM kalemin hesabini dusuruyor: motor kalem-butunu tek geciste calisiyor, 0 net iceren ay listesi tumden reddediliyor (saglam donem dahil her sey tire/0 gorunuyor). B2 sessizlestirmesi "hic girilmemis" ile "0 girildi"yi ayirt etmedigi icin kullaniciya hicbir geri bildirim yok.|payroll turetim katmani + budget hucre gostergeleri|Tespit: Engin manuel tarayici turu (2026-07-17). Cozum 0'in saha anlamina bagli — karar KLV kapanis paketinde|KLV kapanis paketi|17 Temmuz 2026|
 
 -----
 
@@ -41,9 +42,9 @@
 
 ## Bütçe Kontrolü
 
-- Açık Borç sayısı: 4 (TD-5, TD-10, TD-12, TD-13)
+- Açık Borç sayısı: 5 (TD-5, TD-10, TD-12, TD-13, TD-14)
 - Karar Bekleyen: 4 (TD-2, TD-3, TD-6, TD-8) — bütçeye sayılmaz
-- **DURUM: 4/5.** BORC-A TAMAM (15 Temmuz 2026) + BORC-B TAMAM (16 Temmuz 2026: B1 3e338af, B2 8b94022, B3 bu commit). Sirada: KLV manuel tarayici dogrulamasi (Engin) -> MUHUR-3a. TD-5 dilimi ayri tur olarak planda. Detay CURRENT.md.
+- **DURUM: 5/5 sinirda.** BORC-A + BORC-B TAMAM. TD-14 acildi (17 Temmuz 2026, manuel tur bulgusu) — sinir doldu, TD-14 karari KLV kapanis paketinde onceliklidir. Sirada: KLV kapanis paketi -> MUHUR-3a. Detay CURRENT.md.
 
 -----
 
