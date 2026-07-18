@@ -3,6 +3,7 @@ import { netToplamDonemli, brutToplamDonemli, kisiyeBanka } from '../../../../sh
 import type { Yuk } from '../../../../shared/cfe'
 import type { BudgetItemRow, StageRow, UnitRow } from '../../../../shared/supabase/budget-service'
 import { fmt, itemHasNote, isMultiPeriod, buildDonemler, summarizeSame, fieldVal, repeatVal } from '../format'
+import type { ValueWarning } from '../format'
 import type { EditApi } from '../hooks/use-edit-buffers'
 import type { BordroSheetEntry } from './burden-sheet'
 import { tdStyle, numStyle, cellInput, cellInputNum, cellInputEllipsis } from './table-styles'
@@ -13,6 +14,7 @@ interface ItemRowProps {
   units: UnitRow[]
   api: EditApi
   bordro: BordroSheetEntry | undefined
+  warning: ValueWarning
   onOpenBurden: (itemId: string, stageId: string | null) => void
   onOpenNote: (itemId: string) => void
   bufUnitNet: string | undefined
@@ -29,6 +31,7 @@ export const ItemRow = memo(function ItemRow({
   units,
   api,
   bordro,
+  warning,
   onOpenBurden,
   onOpenNote,
   bufUnitNet,
@@ -214,8 +217,13 @@ export const ItemRow = memo(function ItemRow({
         )}
       </td>
       <td style={numStyle}>
-        {bd?.zeroNet ? (
-          <span style={{ color: 'var(--color-danger, #c0392b)', fontSize: 'var(--text-xs)' }}>{isBordro ? 'Net 0 olamaz' : 'Bedel 0'}</span>
+        {/* TD-14 ucuncu duzeltme (2026-07-18): uyari metni yalniz TEK-donemli kalemde (satirin
+            kendisi = kalem) gosterilir; COK-donemli kalemde ust/ozet satir HER ZAMAN dogru
+            hesaplanan toplami gosterir, uyari sorunlu DONEM satirina tasindi (bkz period-row.tsx). */}
+        {!multi && warning ? (
+          <span style={{ color: 'var(--color-danger, #c0392b)', fontSize: 'var(--text-xs)' }}>
+            {warning === 'net' ? (isBordro ? 'Net 0 olamaz' : 'Bedel 0') : warning === 'x' ? 'X 0 olamaz' : 'Miktar 0 olamaz'}
+          </span>
         ) : isBordro && bd?.missingNet ? (
           <span title="Birim Net bekleniyor" style={{ color: 'var(--color-text-muted)' }}>—</span>
         ) : isBordro && bd?.loading ? (

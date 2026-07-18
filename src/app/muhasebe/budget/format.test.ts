@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseNumericDraft, hasNonPositiveOverride, isNonPositiveNet } from './format'
+import { parseNumericDraft, effectiveWarning } from './format'
 
 describe('parseNumericDraft (PARSE GUVENCESI, K10 revize + TD-16)', () => {
   it('duz rakam metnini sayiya cevirir', () => {
@@ -33,57 +33,29 @@ describe('parseNumericDraft (PARSE GUVENCESI, K10 revize + TD-16)', () => {
   })
 })
 
-describe('hasNonPositiveOverride (TD-14, 2026-07-18)', () => {
-  it('hic girilmemis (override=undefined) donem taramadan HARIC tutulur - gosterge yanmaz', () => {
-    const periodNet = { 'stage-1': 50000 }
-    expect(hasNonPositiveOverride(['stage-1', 'stage-2'], periodNet)).toBe(false)
+describe('effectiveWarning (TD-14 ucuncu duzeltme, 2026-07-18 - Net/X/Miktar)', () => {
+  it('net<=0 diger degerler ne olursa olsun ONCELIKLIDIR', () => {
+    expect(effectiveWarning(0, 5, 5)).toBe('net')
+    expect(effectiveWarning(-1, 5, 5)).toBe('net')
+    expect(effectiveWarning(0, 0, 0)).toBe('net')
   })
 
-  it('acikca 0 girilmis override gostergeyi yakar', () => {
-    const periodNet = { 'stage-1': 0, 'stage-2': undefined as unknown as number | null }
-    expect(hasNonPositiveOverride(['stage-1', 'stage-2'], periodNet)).toBe(true)
+  it('net saglikli + x<=0 -> x', () => {
+    expect(effectiveWarning(1000, 0, 5)).toBe('x')
+    expect(effectiveWarning(1000, -2, 5)).toBe('x')
   })
 
-  it('0 duzeltilip pozitif yapilinca (ve diger donem hala girilmemisken) gosterge soner', () => {
-    const periodNet = { 'stage-1': 15000 }
-    expect(hasNonPositiveOverride(['stage-1', 'stage-2'], periodNet)).toBe(false)
+  it('net ve x saglikli + miktar<=0 -> miktar', () => {
+    expect(effectiveWarning(1000, 3, 0)).toBe('miktar')
+    expect(effectiveWarning(1000, 3, -1)).toBe('miktar')
   })
 
-  it('negatif override da gostergeyi yakar', () => {
-    const periodNet = { 'stage-1': -100 }
-    expect(hasNonPositiveOverride(['stage-1'], periodNet)).toBe(true)
+  it('ucu de saglikli -> null', () => {
+    expect(effectiveWarning(1000, 3, 5)).toBeNull()
   })
 
-  it('eklenmis donem yoksa false doner', () => {
-    expect(hasNonPositiveOverride([], {})).toBe(false)
-  })
-
-  // TD-14 genislemesi (2026-07-18, Engin karari): bu tarama HER ZAMAN statuden bagimsizdi
-  // (paymentStatus parametresi hic almiyor) - genisleme yalniz use-edit-buffers.ts'teki
-  // cagri yerinde bordro sartinin kaldirilmasiydi. Asagidaki testler bordro-disi (orn. SMM)
-  // kalemin donem yolunda AYNI kurala tabi oldugunu acikca dokumante eder.
-  it('bordro-disi (orn. SMM) kalemde acikca 0 override girilince gosterge yanar', () => {
-    const periodNet = { 'stage-1': 0 }
-    expect(hasNonPositiveOverride(['stage-1', 'stage-2'], periodNet)).toBe(true)
-  })
-
-  it('bordro-disi kalemde hic girilmemis donem gostergeyi yakmaz', () => {
-    const periodNet = { 'stage-1': 30000 }
-    expect(hasNonPositiveOverride(['stage-1', 'stage-2'], periodNet)).toBe(false)
-  })
-})
-
-describe('isNonPositiveNet (TD-14, 2026-07-18 - tum statulere genisleme)', () => {
-  it('0 gostergeyi yakar (statuden bagimsiz - SMM/Fatura/Telif/bordro hepsi ayni kural)', () => {
-    expect(isNonPositiveNet(0)).toBe(true)
-  })
-
-  it('negatif deger gostergeyi yakar', () => {
-    expect(isNonPositiveNet(-100)).toBe(true)
-  })
-
-  it('pozitif deger gostergeyi sondurur', () => {
-    expect(isNonPositiveNet(1)).toBe(false)
-    expect(isNonPositiveNet(50000)).toBe(false)
+  it('sinir degerler: 0.01 saglikli sayilir, 0 sayilmaz', () => {
+    expect(effectiveWarning(0.01, 1, 1)).toBeNull()
+    expect(effectiveWarning(0, 1, 1)).toBe('net')
   })
 })

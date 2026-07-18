@@ -16,7 +16,7 @@ import { NoteSheet } from './components/note-sheet'
 export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardId?: string } = {}) {
   const { card, rows, stages, units, loading, error, refetch, patchRow, rowsRef, savedRef, cardRef, stagesRef, unitLabelByIdRef } =
     useCardRows({ budgetId, cardId })
-  const { buffers, bordroData, refreshBordro, api } = useEditBuffers({
+  const { buffers, bordroData, itemWarnings, periodWarnings, refreshBordro, api } = useEditBuffers({
     rowsRef,
     savedRef,
     cardRef,
@@ -133,6 +133,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                     units={units}
                     api={api}
                     bordro={bordroData[it.id]}
+                    warning={itemWarnings[it.id] ?? null}
                     onOpenBurden={onOpenBurden}
                     onOpenNote={onOpenNote}
                     bufUnitNet={buffers[it.id + ':unitNet']}
@@ -156,6 +157,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                           api={api}
                           units={units}
                           bordro={bordroData[it.id]}
+                          warning={periodWarnings[it.id + ':' + s.id] ?? null}
                           onOpenBurden={onOpenBurden}
                           bufQty={buffers[it.id + ':stage:' + s.id]}
                           bufNet={buffers[it.id + ':pnet:' + s.id]}

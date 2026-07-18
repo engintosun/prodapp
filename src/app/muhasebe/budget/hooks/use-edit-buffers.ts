@@ -13,7 +13,8 @@ import {
 import type { BudgetItemRow, CardView, EditableField, StageRow } from '../../../../shared/supabase/budget-service'
 import { deriveBordroFields } from '../../../../shared/supabase/payroll-read'
 import { useToast } from '../../../../shared/components/toast'
-import { bordroReasonMessage, parseNumericDraft, hasNonPositiveOverride, isNonPositiveNet } from '../format'
+import { bordroReasonMessage, parseNumericDraft, effectiveWarning } from '../format'
+import type { ValueWarning } from '../format'
 import type { BordroSheetEntry } from '../components/burden-sheet'
 
 // commitField'in PARSE GUVENCESI dalinda (K10 revize + TD-16, 2026-07-18) hangi alanlar
@@ -57,39 +58,68 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
   // commit yolunun taslak metnini okuyabilmesi icin ayrica bir REF'te (her zaman guncel) tutulur.
   const buffersRef = useRef<Record<string, string>>({})
   const [bordroData, setBordroData] = useState<Record<string, BordroSheetEntry>>({})
+  // TD-14 ucuncu duzeltme (2026-07-18): tek-donemli kalemin KENDI satiri icin (itemId anahtarli).
+  const [itemWarnings, setItemWarnings] = useState<Record<string, ValueWarning>>({})
+  // Cok-donemli kalemde HER DONEM SATIRI icin (itemId+':'+stageId anahtarli, bufKey deseniyle ayni).
+  const [periodWarnings, setPeriodWarnings] = useState<Record<string, ValueWarning>>({})
 
   function setBuf(key: string, value: string) {
     buffersRef.current = { ...buffersRef.current, [key]: value }
     setBuffers(buffersRef.current)
   }
 
-  // TD-14 (2026-07-18): zeroNet disindaki alanlari KORUYARAK gunceller - refreshBordro'nun
-  // loading/success/error gecisleri zeroNet gostergesini SESSIZCE silmemeli (tek yazar commit
-  // yolu olmali).
-  function setZeroNet(itemId: string, value: boolean) {
-    setBordroData((b) => ({
-      ...b,
-      [itemId]: { loading: b[itemId]?.loading ?? false, data: b[itemId]?.data ?? null, error: b[itemId]?.error ?? null, missingNet: b[itemId]?.missingNet, zeroNet: value },
-    }))
+  // TD-14 ucuncu duzeltme (2026-07-18, Engin karari): Net/X/Miktar uyarisi tek-donemli kalemin
+  // KENDI satirinda hesaplanir. rowsRef.current bu cagrinin ANINDA guncel olmasi GEREKIR (cagiran
+  // taraf onceki patchRow'lardan sonra en az bir render/useLayoutEffect dongusu gecmis olmali -
+  // commitField'de saglanir: field'in kendi patch'i onNumChange/onRepeatChange'te YAZIM SIRASINDA
+  // olmustur, commitField icinde YENIDEN patchRow YOKTUR).
+  function checkItemWarning(itemId: string) {
+    const row = rowsRef.current.find((r) => r.id === itemId)
+    if (!row) return
+    setItemWarnings((w) => ({ ...w, [itemId]: effectiveWarning(row.unitNet, row.multiplier, row.repeat) }))
+  }
+
+  // Donem-satiri kontrolu. override: cagiran taraf AYNI ES-ZAMANLI (senkron) fonksiyon icinde
+  // biraz once patchRow ile yazdigi TAZE degeri veriyorsa buradan gecirir - rowsRef.current bir
+  // render dongusu gecmeden guncellenmedigi icin (patchRow -> setRows asenkron), patch'ten hemen
+  // sonraki senkron okuma STALE olur; override bu riski yapisal olarak kapatir.
+  function checkPeriodWarning(
+    itemId: string,
+    stageId: string,
+    override?: {
+      periodNet?: Record<string, number | null>
+      periodQty?: Record<string, number>
+      periodRepeat?: Record<string, number | null>
+    },
+  ) {
+    const row = rowsRef.current.find((r) => r.id === itemId)
+    if (!row) return
+    const periodNet = override?.periodNet ?? row.periodNet
+    const periodQty = override?.periodQty ?? row.periodQty
+    const periodRepeat = override?.periodRepeat ?? row.periodRepeat
+    const net = periodNet[stageId] ?? row.unitNet
+    const x = periodQty[stageId] ?? 0
+    const miktar = periodRepeat[stageId] ?? row.repeat
+    setPeriodWarnings((w) => ({ ...w, [itemId + ':' + stageId]: effectiveWarning(net, x, miktar) }))
   }
 
   // Bordro motoru sunucu tarafinda (deriva-BordroFields) DB'den okur; yerel buffer/keystroke degil,
   // yalniz basarili commit sonrasi cagrilir (K5: motor pahali, her render'da degil sadece gerekince kosar).
   const refreshBordro = useCallback(async (itemId: string) => {
-    setBordroData((b) => ({ ...b, [itemId]: { loading: true, data: b[itemId]?.data ?? null, error: null, zeroNet: b[itemId]?.zeroNet } }))
+    setBordroData((b) => ({ ...b, [itemId]: { loading: true, data: b[itemId]?.data ?? null, error: null } }))
     try {
       const result = await deriveBordroFields(itemId)
-      setBordroData((b) => ({ ...b, [itemId]: { loading: false, data: result, error: null, zeroNet: b[itemId]?.zeroNet } }))
+      setBordroData((b) => ({ ...b, [itemId]: { loading: false, data: result, error: null } }))
     } catch (e) {
       const reason = e instanceof Error ? e.message : ''
       // Taze bordro kaleminde Birim Net yoklugu HATA degil beklenen durumdur (karar 2026-07-15):
       // toast yok, satirda sessiz gosterge (missingNet). Diger sebepler gercek hata olarak kalir.
       if (reason === 'invalid_net') {
-        setBordroData((b) => ({ ...b, [itemId]: { loading: false, data: null, error: null, missingNet: true, zeroNet: b[itemId]?.zeroNet } }))
+        setBordroData((b) => ({ ...b, [itemId]: { loading: false, data: null, error: null, missingNet: true } }))
         return
       }
       const message = bordroReasonMessage(reason)
-      setBordroData((b) => ({ ...b, [itemId]: { loading: false, data: null, error: message, zeroNet: b[itemId]?.zeroNet } }))
+      setBordroData((b) => ({ ...b, [itemId]: { loading: false, data: null, error: message } }))
       addToast(message, 'error')
     }
   }, [addToast])
@@ -157,6 +187,9 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
         }
         const fresh = await getItemBurdensAndVat(id)
         patchRow(id, { burdens: fresh.burdens, vatRate: fresh.vatRate })
+        // TD-14 (2026-07-18): deger degismese de statu degisince metin secimi (bordro/digerleri)
+        // yeniden hesaplanmasi gerekir - zararsiz, checkItemWarning idempotent.
+        checkItemWarning(id)
         if (newStatus === 'bordro') void refreshBordro(id)
       } catch (e) {
         if (saved) patchRow(id, { paymentStatus: saved.paymentStatus })
@@ -259,12 +292,11 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
           periodUnit: { ...(saved?.periodUnit ?? row.periodUnit) },
           periodRepeat: { ...(saved?.periodRepeat ?? row.periodRepeat) },
         } as BudgetItemRow
-        // TD-14 (2026-07-18, TUM STATULERE GENISLEDI - Engin karari): Birim Net commit
-        // ananinda <=0 ise kalici kirmizi gosterge - statuden BAGIMSIZ (KAAPA harcanacak
-        // parayi hesaplar, 0 hesaplanacak rakam degildir). Metin statuye gore item-row.tsx'te
-        // secilir (bordro: "Net 0 olamaz", digerleri: "Bedel 0"). refreshBordro (motor)
-        // yalniz bordro icindir - bordro-disi hesap 0 bedelle ENGELLENMEZ.
-        if (field === 'unitNet') setZeroNet(id, isNonPositiveNet(Number(value)))
+        // TD-14 ucuncu duzeltme (2026-07-18, Engin karari): Net/X/Miktar uc alaninin UCUNDE de
+        // commit sonrasi tam kontrol - statuden BAGIMSIZ (KAAPA harcanacak parayi hesaplar, 0
+        // hesaplanacak rakam degildir). Metin statuye/alana gore item-row.tsx'te secilir.
+        // refreshBordro (motor) yalniz bordro icindir - bordro-disi hesap 0 bedelle ENGELLENMEZ.
+        if (field === 'unitNet' || field === 'multiplier' || field === 'repeat') checkItemWarning(id)
         if (row.paymentStatus === 'bordro' && (field === 'unitNet' || field === 'multiplier' || field === 'repeat')) void refreshBordro(id)
       } catch (e) {
         if (saved) patchRow(id, { [field]: saved[field] } as Partial<BudgetItemRow>)
@@ -307,6 +339,10 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
           periodUnit: { ...(saved?.periodUnit ?? row.periodUnit) },
           periodRepeat: { ...(saved?.periodRepeat ?? row.periodRepeat) },
         } as BudgetItemRow
+        // TD-14 ucuncu duzeltme (2026-07-18): bu fonksiyon periodQty'yi kendi basarili yolunda
+        // YENIDEN patchRow'lamiyor (deger onPeriodChange'de yazim sirasinda zaten islendi) -
+        // rowsRef.current burada guncel, override GEREKMEZ.
+        checkPeriodWarning(id, stageId)
         if (row.paymentStatus === 'bordro') void refreshBordro(id)
       } catch (e) {
         const current = rowsRef.current.find((r) => r.id === id)
@@ -356,8 +392,10 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
         patchRow(itemId, { periodNet: { ...current.periodNet, [stageId]: hedef } })
         // TD-14 (2026-07-18, TUM STATULERE GENISLEDI): tarama statuden BAGIMSIZ calisir;
         // refreshBordro (motor) yalniz bordro icindir.
-        const updatedPeriodNet = { ...current.periodNet, [stageId]: hedef }
-        setZeroNet(itemId, hasNonPositiveOverride(Object.keys(current.periodQty), updatedPeriodNet))
+        // TD-14 ucuncu duzeltme (2026-07-18): patchRow biraz once BU fonksiyonda yeniden yazildi
+        // (hedef ile) - rowsRef.current henuz bir render dongusu gecmedigi icin STALE olabilir;
+        // override ile taze periodNet dogrudan gecirilir (yapisal guvence, spekulatif degil).
+        checkPeriodWarning(itemId, stageId, { periodNet: { ...current.periodNet, [stageId]: hedef } })
         if (row.paymentStatus === 'bordro') void refreshBordro(itemId)
       } catch (e) {
         const current = rowsRef.current.find((r) => r.id === itemId) ?? row
@@ -402,6 +440,9 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
         }
         const current = rowsRef.current.find((r) => r.id === itemId) ?? row
         patchRow(itemId, { periodRepeat: { ...current.periodRepeat, [stageId]: hedef } })
+        // TD-14 ucuncu duzeltme (2026-07-18): ayni staleness gerekcesi (bkz. commitPeriodNet) -
+        // taze periodRepeat override ile gecirilir.
+        checkPeriodWarning(itemId, stageId, { periodRepeat: { ...current.periodRepeat, [stageId]: hedef } })
         if (row.paymentStatus === 'bordro') void refreshBordro(itemId)
       } catch (e) {
         const current = rowsRef.current.find((r) => r.id === itemId) ?? row
@@ -477,6 +518,10 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
             },
           }
         }
+        // TD-14 ucuncu duzeltme (2026-07-18, Engin talebi): yeni donem X=0 ile dogabilir
+        // (needsExplicitDefaults dalinda net=0/qty=0/repeat=1) - ANINDA isaretlenir, hem
+        // willBecomeMulti hem needsExplicitDefaults yollarinda gecerli tek pq/pn/pr uzerinden.
+        checkPeriodWarning(itemId, stageId, { periodNet: pn, periodQty: pq, periodRepeat: pr })
         if (row.paymentStatus === 'bordro') void refreshBordro(itemId)
       } catch (e) {
         addToast(e instanceof Error ? e.message : 'Dönem eklenemedi', 'error')
@@ -585,5 +630,5 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  return { buffers, bordroData, refreshBordro, api }
+  return { buffers, bordroData, itemWarnings, periodWarnings, refreshBordro, api }
 }

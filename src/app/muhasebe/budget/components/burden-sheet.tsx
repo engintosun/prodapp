@@ -5,7 +5,7 @@ import type { BudgetItemRow, StageRow } from '../../../../shared/supabase/budget
 import type { BordroDerivedFields } from '../../../../shared/supabase/payroll-read'
 import { BottomSheet } from './bottom-sheet'
 
-export type BordroSheetEntry = { loading: boolean; data: BordroDerivedFields | null; error: string | null; missingNet?: boolean; zeroNet?: boolean }
+export type BordroSheetEntry = { loading: boolean; data: BordroDerivedFields | null; error: string | null; missingNet?: boolean }
 
 export function BurdenSheet({
   item,

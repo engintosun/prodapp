@@ -3,6 +3,7 @@ import { netToplamDonemli, brutToplamDonemli, kisiyeBanka } from '../../../../sh
 import type { Yuk, DonemKalemi } from '../../../../shared/cfe'
 import type { BudgetItemRow, StageRow, UnitRow } from '../../../../shared/supabase/budget-service'
 import { fmt, periodVal, periodNetVal, periodRepeatVal } from '../format'
+import type { ValueWarning } from '../format'
 import type { EditApi } from '../hooks/use-edit-buffers'
 import type { BordroSheetEntry } from './burden-sheet'
 import { cellInput, cellInputNum, cellInputNumMuted, periodRowStyle, periodRowNumStyle } from './table-styles'
@@ -13,6 +14,7 @@ interface PeriodRowProps {
   api: EditApi
   units: UnitRow[]
   bordro: BordroSheetEntry | undefined
+  warning: ValueWarning
   onOpenBurden: (itemId: string, stageId: string | null) => void
   bufQty: string | undefined
   bufNet: string | undefined
@@ -28,6 +30,7 @@ export const PeriodRow = memo(function PeriodRow({
   api,
   units,
   bordro,
+  warning,
   onOpenBurden,
   bufQty,
   bufNet,
@@ -117,7 +120,14 @@ export const PeriodRow = memo(function PeriodRow({
         />
       </td>
       <td style={periodRowNumStyle}>
-        {donemBrut > donemNet ? (
+        {/* TD-14 ucuncu duzeltme (2026-07-18): cok-donemli kalemde uyari BU donem satirinda
+            gosterilir (item-row.tsx ust/ozet satirinda ARTIK gosterilmiyor) - dogru yer sorunlu
+            donemin kendisi, ust satir hep dogru toplami gosterir. */}
+        {warning ? (
+          <span style={{ color: 'var(--color-danger, #c0392b)', fontSize: 'var(--text-xs)' }}>
+            {warning === 'net' ? (isBordro ? 'Net 0 olamaz' : 'Bedel 0') : warning === 'x' ? 'X 0 olamaz' : 'Miktar 0 olamaz'}
+          </span>
+        ) : donemBrut > donemNet ? (
           <button
             onClick={() => onOpenBurden(it.id, s.id)}
             style={{

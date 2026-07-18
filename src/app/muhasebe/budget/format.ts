@@ -77,20 +77,15 @@ export function parseNumericDraft(raw: string): number | null {
   return Number.isFinite(n) ? n : null
 }
 
-// TD-14 (2026-07-18): coklu-donemli bordro kaleminde ACIKCA OVERRIDE GIRILMIS donemlerden
-// herhangi biri <=0 ise true doner. Override'i HIC OLMAYAN (mirasa dayanan, "hic girilmedi")
-// donemler taramaya HIC girmez - "hic girilmedi" ile "0 girildi" ayrimi budur (B2 sessiz
-// tire davranisi ilkini, bu fonksiyon ikincisini yakalar).
-export function hasNonPositiveOverride(addedStageIds: string[], periodNet: Record<string, number | null>): boolean {
-  return addedStageIds.some((sid) => {
-    const override = periodNet[sid]
-    return override != null && override <= 0
-  })
-}
+export type ValueWarning = 'net' | 'x' | 'miktar' | null
 
-// TD-14 (2026-07-18, TUM STATULERE GENISLEDI - Engin karari): tek-donemli kalemde committen
-// gecen Birim Net <=0 mi - statuden BAGIMSIZ (KAAPA harcanacak parayi hesaplar, 0 hesaplanacak
-// rakam degildir). Metin secimi (bordro: "Net 0 olamaz" / digerleri: "Bedel 0") item-row.tsx'te.
-export function isNonPositiveNet(value: number): boolean {
-  return value <= 0
+// TD-14 UCUNCU DUZELTME (2026-07-18, Engin karari): Net'ten Miktar/X'e genisledi. Uc alan da
+// ayni kurala tabi - KAAPA harcanacak parayi hesaplar, 0 hesaplanacak bir rakam degildir.
+// Oncelik net > x > miktar: ayni anda birden fazlasi bozuksa EN TEMEL sorun gosterilir (once
+// net dogru olmali, sonra kac kisi/adet [X], sonra ne kadar sure [Miktar]).
+export function effectiveWarning(net: number, x: number, miktar: number): ValueWarning {
+  if (net <= 0) return 'net'
+  if (x <= 0) return 'x'
+  if (miktar <= 0) return 'miktar'
+  return null
 }
