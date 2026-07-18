@@ -214,8 +214,8 @@ export const ItemRow = memo(function ItemRow({
         )}
       </td>
       <td style={numStyle}>
-        {isBordro && bd?.zeroNet ? (
-          <span style={{ color: 'var(--color-danger, #c0392b)', fontSize: 'var(--text-xs)' }}>Net 0 olamaz</span>
+        {bd?.zeroNet ? (
+          <span style={{ color: 'var(--color-danger, #c0392b)', fontSize: 'var(--text-xs)' }}>{isBordro ? 'Net 0 olamaz' : 'Bedel 0'}</span>
         ) : isBordro && bd?.missingNet ? (
           <span title="Birim Net bekleniyor" style={{ color: 'var(--color-text-muted)' }}>—</span>
         ) : isBordro && bd?.loading ? (

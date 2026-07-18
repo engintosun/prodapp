@@ -13,7 +13,7 @@ import {
 import type { BudgetItemRow, CardView, EditableField, StageRow } from '../../../../shared/supabase/budget-service'
 import { deriveBordroFields } from '../../../../shared/supabase/payroll-read'
 import { useToast } from '../../../../shared/components/toast'
-import { bordroReasonMessage, parseNumericDraft, hasNonPositiveOverride } from '../format'
+import { bordroReasonMessage, parseNumericDraft, hasNonPositiveOverride, isNonPositiveNet } from '../format'
 import type { BordroSheetEntry } from '../components/burden-sheet'
 
 // commitField'in PARSE GUVENCESI dalinda (K10 revize + TD-16, 2026-07-18) hangi alanlar
@@ -259,12 +259,13 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
           periodUnit: { ...(saved?.periodUnit ?? row.periodUnit) },
           periodRepeat: { ...(saved?.periodRepeat ?? row.periodRepeat) },
         } as BudgetItemRow
-        if (row.paymentStatus === 'bordro' && (field === 'unitNet' || field === 'multiplier' || field === 'repeat')) {
-          // TD-14 (2026-07-18): tek-donemli bordro kaleminde Birim Net commit ananinda
-          // <=0 ise kalici "Net 0 olamaz" gostergesi - toast YOK, sessiz kirmizi yuzey.
-          if (field === 'unitNet') setZeroNet(id, Number(value) <= 0)
-          void refreshBordro(id)
-        }
+        // TD-14 (2026-07-18, TUM STATULERE GENISLEDI - Engin karari): Birim Net commit
+        // ananinda <=0 ise kalici kirmizi gosterge - statuden BAGIMSIZ (KAAPA harcanacak
+        // parayi hesaplar, 0 hesaplanacak rakam degildir). Metin statuye gore item-row.tsx'te
+        // secilir (bordro: "Net 0 olamaz", digerleri: "Bedel 0"). refreshBordro (motor)
+        // yalniz bordro icindir - bordro-disi hesap 0 bedelle ENGELLENMEZ.
+        if (field === 'unitNet') setZeroNet(id, isNonPositiveNet(Number(value)))
+        if (row.paymentStatus === 'bordro' && (field === 'unitNet' || field === 'multiplier' || field === 'repeat')) void refreshBordro(id)
       } catch (e) {
         if (saved) patchRow(id, { [field]: saved[field] } as Partial<BudgetItemRow>)
         addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error')
@@ -353,11 +354,11 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
         }
         const current = rowsRef.current.find((r) => r.id === itemId) ?? row
         patchRow(itemId, { periodNet: { ...current.periodNet, [stageId]: hedef } })
-        if (row.paymentStatus === 'bordro') {
-          const updatedPeriodNet = { ...current.periodNet, [stageId]: hedef }
-          setZeroNet(itemId, hasNonPositiveOverride(Object.keys(current.periodQty), updatedPeriodNet))
-          void refreshBordro(itemId)
-        }
+        // TD-14 (2026-07-18, TUM STATULERE GENISLEDI): tarama statuden BAGIMSIZ calisir;
+        // refreshBordro (motor) yalniz bordro icindir.
+        const updatedPeriodNet = { ...current.periodNet, [stageId]: hedef }
+        setZeroNet(itemId, hasNonPositiveOverride(Object.keys(current.periodQty), updatedPeriodNet))
+        if (row.paymentStatus === 'bordro') void refreshBordro(itemId)
       } catch (e) {
         const current = rowsRef.current.find((r) => r.id === itemId) ?? row
         patchRow(itemId, { periodNet: { ...current.periodNet, [stageId]: savedOverride } })

@@ -87,3 +87,10 @@ export function hasNonPositiveOverride(addedStageIds: string[], periodNet: Recor
     return override != null && override <= 0
   })
 }
+
+// TD-14 (2026-07-18, TUM STATULERE GENISLEDI - Engin karari): tek-donemli kalemde committen
+// gecen Birim Net <=0 mi - statuden BAGIMSIZ (KAAPA harcanacak parayi hesaplar, 0 hesaplanacak
+// rakam degildir). Metin secimi (bordro: "Net 0 olamaz" / digerleri: "Bedel 0") item-row.tsx'te.
+export function isNonPositiveNet(value: number): boolean {
+  return value <= 0
+}

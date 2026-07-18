@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseNumericDraft, hasNonPositiveOverride } from './format'
+import { parseNumericDraft, hasNonPositiveOverride, isNonPositiveNet } from './format'
 
 describe('parseNumericDraft (PARSE GUVENCESI, K10 revize + TD-16)', () => {
   it('duz rakam metnini sayiya cevirir', () => {
@@ -56,5 +56,34 @@ describe('hasNonPositiveOverride (TD-14, 2026-07-18)', () => {
 
   it('eklenmis donem yoksa false doner', () => {
     expect(hasNonPositiveOverride([], {})).toBe(false)
+  })
+
+  // TD-14 genislemesi (2026-07-18, Engin karari): bu tarama HER ZAMAN statuden bagimsizdi
+  // (paymentStatus parametresi hic almiyor) - genisleme yalniz use-edit-buffers.ts'teki
+  // cagri yerinde bordro sartinin kaldirilmasiydi. Asagidaki testler bordro-disi (orn. SMM)
+  // kalemin donem yolunda AYNI kurala tabi oldugunu acikca dokumante eder.
+  it('bordro-disi (orn. SMM) kalemde acikca 0 override girilince gosterge yanar', () => {
+    const periodNet = { 'stage-1': 0 }
+    expect(hasNonPositiveOverride(['stage-1', 'stage-2'], periodNet)).toBe(true)
+  })
+
+  it('bordro-disi kalemde hic girilmemis donem gostergeyi yakmaz', () => {
+    const periodNet = { 'stage-1': 30000 }
+    expect(hasNonPositiveOverride(['stage-1', 'stage-2'], periodNet)).toBe(false)
+  })
+})
+
+describe('isNonPositiveNet (TD-14, 2026-07-18 - tum statulere genisleme)', () => {
+  it('0 gostergeyi yakar (statuden bagimsiz - SMM/Fatura/Telif/bordro hepsi ayni kural)', () => {
+    expect(isNonPositiveNet(0)).toBe(true)
+  })
+
+  it('negatif deger gostergeyi yakar', () => {
+    expect(isNonPositiveNet(-100)).toBe(true)
+  })
+
+  it('pozitif deger gostergeyi sondurur', () => {
+    expect(isNonPositiveNet(1)).toBe(false)
+    expect(isNonPositiveNet(50000)).toBe(false)
   })
 })
