@@ -62,6 +62,9 @@ export const cellInput: CSSProperties = {
   fontFamily: 'inherit',
 }
 export const cellInputNum: CSSProperties = { ...cellInput, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }
+// TD-15 (2026-07-18): override'siz donem net hucresi kalemden MIRAS gosteriyorsa soluk -
+// elle girilmis override normal renkte kalir (Kalemden miras title ipucu degismedi).
+export const cellInputNumMuted: CSSProperties = { ...cellInputNum, color: 'var(--color-text-muted)' }
 // Aciklama (ad) input'u: kalan genisligi alir, tasarsa ellipsis (odaksizken).
 export const cellInputEllipsis: CSSProperties = { ...cellInput, overflow: 'hidden', textOverflow: 'ellipsis' }
 export const periodRowStyle: CSSProperties = { ...tdStyle, background: 'var(--color-surface-2)' }

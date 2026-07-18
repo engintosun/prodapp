@@ -62,3 +62,28 @@ export function periodRepeatVal(buf: string | undefined, override: number | null
   if (buf !== undefined) return buf
   return override != null ? String(override) : String(repeat)
 }
+
+// PARSE GUVENCESI (K10 revize + TD-16, 2026-07-18): sayiya cevrilemeyen veya bos taslak
+// gecersizdir - null doner. Cagiran taraf (commit yolu, use-edit-buffers.ts) null gorunce
+// ESKI (kasadaki/saved) degeri korur, servise hic gitmez. 0 GECERLI sayidir (TD-14 sifir-net
+// gostergesi tam bunu yakalar) - bos ('') ile 0 AYNI SEY DEGILDIR. NOKTA her zaman gecersizdir:
+// tr-TR bicimde (fmt()) nokta binlik ayracidir, ondalik ayirici YALNIZ virguldur - '1.500'i
+// 1.5 okumak sessiz veri bozulmasi olurdu, o yuzden nokta iceren taslak dogrudan reddedilir.
+export function parseNumericDraft(raw: string): number | null {
+  const trimmed = raw.trim()
+  if (trimmed === '') return null
+  if (trimmed.includes('.')) return null
+  const n = Number(trimmed.replace(',', '.'))
+  return Number.isFinite(n) ? n : null
+}
+
+// TD-14 (2026-07-18): coklu-donemli bordro kaleminde ACIKCA OVERRIDE GIRILMIS donemlerden
+// herhangi biri <=0 ise true doner. Override'i HIC OLMAYAN (mirasa dayanan, "hic girilmedi")
+// donemler taramaya HIC girmez - "hic girilmedi" ile "0 girildi" ayrimi budur (B2 sessiz
+// tire davranisi ilkini, bu fonksiyon ikincisini yakalar).
+export function hasNonPositiveOverride(addedStageIds: string[], periodNet: Record<string, number | null>): boolean {
+  return addedStageIds.some((sid) => {
+    const override = periodNet[sid]
+    return override != null && override <= 0
+  })
+}

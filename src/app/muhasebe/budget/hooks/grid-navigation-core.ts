@@ -32,7 +32,7 @@ export type GridAction =
   | { type: 'focus'; cell: CellId }
   | { type: 'arrow'; dir: 'up' | 'down' | 'left' | 'right' }
   | { type: 'tab'; shift: boolean }
-  | { type: 'enter'; value: string }
+  | { type: 'enter'; value: string; shift?: boolean; stay?: boolean }
   | { type: 'type'; char: string }
   | { type: 'setDraft'; value: string }
   | { type: 'esc' }
@@ -180,10 +180,20 @@ export function reduceGrid(
     case 'enter': {
       if (!state.active) return noop(state)
       if (state.mode === 'nav') {
+        // Shift+Enter nav modunda yutulur (Tus Sozlesmesi K10 revize, 2026-07-18) - duzenlemeye
+        // GIRMEZ, MOD+Enter ise duzenli Enter ile ayni acilir (nav'da "yerinde kal" kavraminin
+        // anlami yok, henuz commit edilecek bir sey yok).
+        if (action.shift) return noop(state)
         return { state: { ...state, mode: 'edit', draft: action.value }, commit: null }
       }
       const commit: GridCommit = { cellId: state.active, value: state.draft ?? '' }
-      const nextActive = stepArrow(grid, state.active, 'down', columnGroups)
+      // MOD+Enter: kaydet + odak AYNI hucrede kalir (Shift'ten oncelikli - ikisi ayni anda
+      // basilirsa "yerinde kal" davranisi kazanir). Shift+Enter: K8 grubunda YUKARI.
+      if (action.stay) {
+        return { state: { mode: 'nav', active: state.active, draft: null }, commit }
+      }
+      const dir = action.shift ? 'up' : 'down'
+      const nextActive = stepArrow(grid, state.active, dir, columnGroups)
       return { state: { mode: 'nav', active: nextActive, draft: null }, commit }
     }
 
@@ -217,4 +227,101 @@ export function reduceGrid(
       return { state: { mode: 'nav', active: nextActive, draft: null }, commit }
     }
   }
+}
+
+// ---------------------------------------------------------------------------------------
+// Tus Sozlesmesi (K10 revize + TD-16, 2026-07-18). DOM'suz saf siniflandirici: bir tus
+// olayinin (KeyEventLike) mevcut modda NE anlama geldigine TEK yerde karar verir - hook
+// (use-grid-navigation.ts) bu karari aynen uygular (preventDefault + varsa dispatch),
+// kendi tus-ozel dallanma icermez. Sozlesmede olmayan hicbir tus/kombinasyon nav modunda
+// hucre degerine islemez (varsayilan yasak); sayfa-duzeyi kisayollara (MOD+S/P/F/R, F5 vb.)
+// bu fonksiyon HICBIR SEKILDE dokunmaz (taniMSIZ dal preventDefault=false doner).
+// ---------------------------------------------------------------------------------------
+
+export interface KeyEventLike {
+  key: string
+  ctrlKey: boolean
+  metaKey: boolean
+  shiftKey: boolean
+  altKey: boolean
+}
+
+export interface KeyResolution {
+  action: GridAction | null
+  preventDefault: boolean
+  // MOD+C (nav): panoya YAZILACAK ham deger cagiran tarafta hazir - core I/O yapmaz.
+  copyRaw?: boolean
+}
+
+function isMod(e: KeyEventLike): boolean {
+  return e.ctrlKey || e.metaKey
+}
+
+// AltGr (Windows) tarayiciya ctrlKey+altKey birlikte basili olarak gelir. Kombinasyon TEK
+// yazdirilabilir karakter uretiyorsa (orn. TR klavyede AltGr+E = '€') bu KISAYOL degil
+// KARAKTER GIRISIDIR - MOD-kombinasyonu kurallarindan ONCE kontrol edilir. macOS'ta Option'lu
+// karakterler ctrl bayragi tasimadan geldigi icin bu ayrim kendiliginden gerekmez.
+function isAltGrCharacterInput(e: KeyEventLike): boolean {
+  return e.ctrlKey && e.altKey && !e.metaKey && e.key.length === 1
+}
+
+export function isPrintableKey(e: KeyEventLike): boolean {
+  return e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey
+}
+
+export function resolveKeyAction(e: KeyEventLike, mode: GridMode, currentRawValue: string): KeyResolution {
+  const mod = isMod(e)
+
+  if (e.key === 'Escape') return { action: { type: 'esc' }, preventDefault: true }
+  if (e.key === 'Tab') return { action: { type: 'tab', shift: e.shiftKey }, preventDefault: true }
+
+  if (e.key === 'Enter') {
+    if (mode === 'nav' && e.shiftKey) return { action: null, preventDefault: true }
+    const value = mode === 'nav' ? currentRawValue : ''
+    return { action: { type: 'enter', value, shift: e.shiftKey, stay: mod }, preventDefault: true }
+  }
+
+  if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+    const dir = e.key === 'ArrowUp' ? 'up' : e.key === 'ArrowDown' ? 'down' : e.key === 'ArrowLeft' ? 'left' : 'right'
+    if (mode === 'edit' && (dir === 'left' || dir === 'right')) return { action: null, preventDefault: false }
+    return { action: { type: 'arrow', dir }, preventDefault: true }
+  }
+
+  if (isAltGrCharacterInput(e)) {
+    if (mode === 'nav') return { action: { type: 'type', char: e.key }, preventDefault: true }
+    return { action: null, preventDefault: false }
+  }
+
+  // Backspace/Delete (nav): rakam tuslamakla AYNI yol - bos taslakla (draft='') edit acar.
+  // Edit modunda input'un dogal davranisi, dokunmaz.
+  if ((e.key === 'Backspace' || e.key === 'Delete') && !mod && !e.altKey) {
+    if (mode === 'nav') return { action: { type: 'type', char: '' }, preventDefault: true }
+    return { action: null, preventDefault: false }
+  }
+
+  // MOD+Z / MOD+Y: HER IKI modda yutulur - tarayici undo'su devre disi, ileride uygulama-
+  // duzeyi geri alma icin rezerve (simdilik islevsiz).
+  if (mod && (e.key === 'z' || e.key === 'Z' || e.key === 'y' || e.key === 'Y')) {
+    return { action: null, preventDefault: true }
+  }
+
+  if (mod && (e.key === 'x' || e.key === 'X') && mode === 'nav') {
+    return { action: null, preventDefault: true }
+  }
+
+  if (mod && (e.key === 'c' || e.key === 'C') && mode === 'nav') {
+    return { action: null, preventDefault: true, copyRaw: true }
+  }
+
+  if ((e.key === 'Home' || e.key === 'End' || e.key === 'PageUp' || e.key === 'PageDown') && mode === 'nav') {
+    return { action: null, preventDefault: true }
+  }
+
+  if (mode === 'nav' && isPrintableKey(e)) {
+    return { action: { type: 'type', char: e.key }, preventDefault: true }
+  }
+
+  // Varsayilan yasak: sozlesmede olmayan tus - hucre degerine islemez, sayfa-duzeyi
+  // kisayollara (MOD+S/P/F/R, F5 vb.) dokunmamak icin preventDefault YAPILMAZ.
+  return { action: null, preventDefault: false }
 }

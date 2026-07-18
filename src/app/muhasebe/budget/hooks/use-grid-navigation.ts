@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { MutableRefObject } from 'react'
-import { createGridState, reduceGrid } from './grid-navigation-core'
+import { createGridState, reduceGrid, resolveKeyAction } from './grid-navigation-core'
 import type { CellId, ColumnEquivalenceGroups, GridShape, GridState } from './grid-navigation-core'
 import type { BudgetItemRow } from '../../../../shared/supabase/budget-service'
 import type { EditApi } from './use-edit-buffers'
@@ -51,10 +51,6 @@ function computeGridShape(container: HTMLElement): GridShape {
     else rows.push({ rowId, cols: [col] })
   }
   return rows
-}
-
-function isPrintable(e: React.KeyboardEvent): boolean {
-  return e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey
 }
 
 export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows }: UseGridNavigationParams) {
@@ -145,6 +141,9 @@ export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows }: Us
     focusCell(result.state.active)
   }
 
+  // Tus Sozlesmesi (K10 revize + TD-16, 2026-07-18): tus-ozel karar YALNIZ resolveKeyAction'da
+  // (DOM'suz, test edilebilir); bu fonksiyon karari aynen uygular (preventDefault + varsa
+  // dispatch/kopyalama), kendi tus dallanmasi eklemez.
   function handleKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
     const target = e.target as HTMLElement
     if (!target.dataset.gridCell) return
@@ -156,33 +155,45 @@ export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows }: Us
     if (!container) return
     const grid = computeGridShape(container)
 
-    if (e.key === 'Escape') {
-      e.preventDefault()
-      dispatch({ type: 'esc' }, state, cell, grid)
-      return
-    }
-    if (e.key === 'Tab') {
-      e.preventDefault()
-      dispatch({ type: 'tab', shift: e.shiftKey }, state, cell, grid)
-      return
-    }
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      const value = state.mode === 'nav' ? getRawValue(cell) : ''
-      dispatch({ type: 'enter', value }, state, cell, grid)
-      return
-    }
-    if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-      const dir = e.key === 'ArrowUp' ? 'up' : e.key === 'ArrowDown' ? 'down' : e.key === 'ArrowLeft' ? 'left' : 'right'
-      if (state.mode === 'edit' && (dir === 'left' || dir === 'right')) return
-      e.preventDefault()
-      dispatch({ type: 'arrow', dir }, state, cell, grid)
-      return
-    }
-    if (state.mode === 'nav' && isPrintable(e)) {
-      e.preventDefault()
-      dispatch({ type: 'type', char: e.key }, state, cell, grid)
-    }
+    const rawValue = state.mode === 'nav' ? getRawValue(cell) : ''
+    const resolution = resolveKeyAction(e, state.mode, rawValue)
+    if (resolution.preventDefault) e.preventDefault()
+    if (resolution.copyRaw) void navigator.clipboard?.writeText(getRawValue(cell))
+    if (resolution.action) dispatch(resolution.action, state, cell, grid)
+  }
+
+  // Yapistirma kaynaktan bagimsiz TEK kurala baglanir (MOD+V, sag-tik menu - hepsi ayni
+  // 'paste' DOM olayi). Nav modunda edit acar + pano metnini taslaga yazar, COMMIT ETMEZ
+  // ('type' action tam bunu yapar - draft atar, commit uretmez). Edit modunda dokunmaz,
+  // native input akisi (onChange) zaten calisir.
+  function handlePaste(e: React.ClipboardEvent<HTMLDivElement>) {
+    const target = e.target as HTMLElement
+    if (!target.dataset.gridCell) return
+    if (state.mode !== 'nav') return
+    const rowId = target.dataset.rowId
+    const col = target.dataset.col
+    if (!rowId || !col) return
+    const cell: CellId = { rowId, col }
+    const container = containerRef.current
+    if (!container) return
+    const grid = computeGridShape(container)
+    const text = e.clipboardData.getData('text')
+    e.preventDefault()
+    dispatch({ type: 'type', char: text }, state, cell, grid)
+  }
+
+  // Nav modunda surukle-birak metin engellenir (birakilan metin islenmez); edit modunda
+  // input'un dogal drop davranisi serbest.
+  function handleDrop(e: React.DragEvent<HTMLDivElement>) {
+    const target = e.target as HTMLElement
+    if (!target.dataset.gridCell) return
+    if (state.mode === 'nav') e.preventDefault()
+  }
+
+  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
+    const target = e.target as HTMLElement
+    if (!target.dataset.gridCell) return
+    if (state.mode === 'nav') e.preventDefault()
   }
 
   function handleFocus(e: React.FocusEvent<HTMLDivElement>) {
@@ -213,5 +224,5 @@ export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows }: Us
     return state.mode === 'edit' && state.active !== null && state.active.rowId === rowId && state.active.col === col
   }
 
-  return { containerRef, handleKeyDown, handleFocus, isActiveNav, isActiveEdit }
+  return { containerRef, handleKeyDown, handleFocus, handlePaste, handleDrop, handleDragOver, isActiveNav, isActiveEdit }
 }

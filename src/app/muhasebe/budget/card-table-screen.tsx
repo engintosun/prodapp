@@ -24,7 +24,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     unitLabelByIdRef,
     patchRow,
   })
-  const { containerRef, handleKeyDown, handleFocus, isActiveEdit } = useGridNavigation({ rowsRef, savedRef, patchRow, api, rows })
+  const { containerRef, handleKeyDown, handleFocus, handlePaste, handleDrop, handleDragOver, isActiveEdit } = useGridNavigation({ rowsRef, savedRef, patchRow, api, rows })
   const [openBurden, setOpenBurden] = useState<{ itemId: string; stageId: string | null } | null>(null)
   const [openNoteItemId, setOpenNoteItemId] = useState<string | null>(null)
   const [openStatusInfo, setOpenStatusInfo] = useState(false)
@@ -63,7 +63,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
       <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', margin: '0 0 var(--space-4)' }}>
         Dönem eklemek için Dönemler hücresinden seç; her dönem için X (adet) gir. Hücreden çıkınca otomatik kaydeder.
       </p>
-      <div ref={containerRef} onKeyDown={handleKeyDown} onFocus={handleFocus}>
+      <div ref={containerRef} onKeyDown={handleKeyDown} onFocus={handleFocus} onPaste={handlePaste} onDrop={handleDrop} onDragOver={handleDragOver}>
         <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: tableMinWidth, tableLayout: 'fixed' }}>
           <colgroup>
             <col style={{ width: colWidths.kod }} />

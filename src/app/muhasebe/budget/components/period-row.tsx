@@ -5,7 +5,7 @@ import type { BudgetItemRow, StageRow, UnitRow } from '../../../../shared/supaba
 import { fmt, periodVal, periodNetVal, periodRepeatVal } from '../format'
 import type { EditApi } from '../hooks/use-edit-buffers'
 import type { BordroSheetEntry } from './burden-sheet'
-import { cellInput, cellInputNum, periodRowStyle, periodRowNumStyle } from './table-styles'
+import { cellInput, cellInputNum, cellInputNumMuted, periodRowStyle, periodRowNumStyle } from './table-styles'
 
 interface PeriodRowProps {
   item: BudgetItemRow
@@ -80,7 +80,7 @@ export const PeriodRow = memo(function PeriodRow({
           data-grid-cell="true"
           data-row-id={`${it.id}:${s.id}`}
           data-col="periodNet"
-          style={cellInputNum}
+          style={netOverride === null ? cellInputNumMuted : cellInputNum}
           type="text"
           inputMode="decimal"
           value={navNet ?? periodNetVal(bufNet, netOverride, it.unitNet)}

@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useState } from 'react'
+import { useMemo, useCallback, useState, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 import {
   updateItemField,
@@ -13,8 +13,13 @@ import {
 import type { BudgetItemRow, CardView, EditableField, StageRow } from '../../../../shared/supabase/budget-service'
 import { deriveBordroFields } from '../../../../shared/supabase/payroll-read'
 import { useToast } from '../../../../shared/components/toast'
-import { bordroReasonMessage } from '../format'
+import { bordroReasonMessage, parseNumericDraft, hasNonPositiveOverride } from '../format'
 import type { BordroSheetEntry } from '../components/burden-sheet'
+
+// commitField'in PARSE GUVENCESI dalinda (K10 revize + TD-16, 2026-07-18) hangi alanlar
+// sayisal - yalniz bunlar buffer'dan parse edilip garanti altina alinir; 'name' gibi metin
+// alanlari bu denetimden gecmez.
+const NUMERIC_EDITABLE_FIELDS = new Set<EditableField>(['unitNet', 'multiplier', 'repeat', 'vatRate'])
 
 export type EditApi = {
   onTextChange: (id: string, field: 'name', value: string) => void
@@ -48,36 +53,53 @@ interface UseEditBuffersParams {
 export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabelByIdRef, patchRow }: UseEditBuffersParams) {
   const { addToast } = useToast()
   const [buffers, setBuffers] = useState<Record<string, string>>({})
+  // api useMemo deps=[] ile bir kere kurulur (asagida); buffers STATE'i o kapaniste bayatlar,
+  // commit yolunun taslak metnini okuyabilmesi icin ayrica bir REF'te (her zaman guncel) tutulur.
+  const buffersRef = useRef<Record<string, string>>({})
   const [bordroData, setBordroData] = useState<Record<string, BordroSheetEntry>>({})
+
+  function setBuf(key: string, value: string) {
+    buffersRef.current = { ...buffersRef.current, [key]: value }
+    setBuffers(buffersRef.current)
+  }
+
+  // TD-14 (2026-07-18): zeroNet disindaki alanlari KORUYARAK gunceller - refreshBordro'nun
+  // loading/success/error gecisleri zeroNet gostergesini SESSIZCE silmemeli (tek yazar commit
+  // yolu olmali).
+  function setZeroNet(itemId: string, value: boolean) {
+    setBordroData((b) => ({
+      ...b,
+      [itemId]: { loading: b[itemId]?.loading ?? false, data: b[itemId]?.data ?? null, error: b[itemId]?.error ?? null, missingNet: b[itemId]?.missingNet, zeroNet: value },
+    }))
+  }
 
   // Bordro motoru sunucu tarafinda (deriva-BordroFields) DB'den okur; yerel buffer/keystroke degil,
   // yalniz basarili commit sonrasi cagrilir (K5: motor pahali, her render'da degil sadece gerekince kosar).
   const refreshBordro = useCallback(async (itemId: string) => {
-    setBordroData((b) => ({ ...b, [itemId]: { loading: true, data: b[itemId]?.data ?? null, error: null } }))
+    setBordroData((b) => ({ ...b, [itemId]: { loading: true, data: b[itemId]?.data ?? null, error: null, zeroNet: b[itemId]?.zeroNet } }))
     try {
       const result = await deriveBordroFields(itemId)
-      setBordroData((b) => ({ ...b, [itemId]: { loading: false, data: result, error: null } }))
+      setBordroData((b) => ({ ...b, [itemId]: { loading: false, data: result, error: null, zeroNet: b[itemId]?.zeroNet } }))
     } catch (e) {
       const reason = e instanceof Error ? e.message : ''
       // Taze bordro kaleminde Birim Net yoklugu HATA degil beklenen durumdur (karar 2026-07-15):
       // toast yok, satirda sessiz gosterge (missingNet). Diger sebepler gercek hata olarak kalir.
       if (reason === 'invalid_net') {
-        setBordroData((b) => ({ ...b, [itemId]: { loading: false, data: null, error: null, missingNet: true } }))
+        setBordroData((b) => ({ ...b, [itemId]: { loading: false, data: null, error: null, missingNet: true, zeroNet: b[itemId]?.zeroNet } }))
         return
       }
       const message = bordroReasonMessage(reason)
-      setBordroData((b) => ({ ...b, [itemId]: { loading: false, data: null, error: message } }))
+      setBordroData((b) => ({ ...b, [itemId]: { loading: false, data: null, error: message, zeroNet: b[itemId]?.zeroNet } }))
       addToast(message, 'error')
     }
   }, [addToast])
 
   const api = useMemo<EditApi>(() => {
     function clearBuf(key: string) {
-      setBuffers((b) => {
-        const c = { ...b }
-        delete c[key]
-        return c
-      })
+      const c = { ...buffersRef.current }
+      delete c[key]
+      buffersRef.current = c
+      setBuffers(c)
     }
 
     function onTextChange(id: string, field: 'name', value: string) {
@@ -85,13 +107,13 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
     }
 
     function onNumChange(id: string, field: 'unitNet' | 'multiplier' | 'vatRate', raw: string) {
-      setBuffers((b) => ({ ...b, [id + ':' + field]: raw }))
+      setBuf(id + ':' + field, raw)
       const n = Number(raw.replace(',', '.'))
       patchRow(id, { [field]: Number.isFinite(n) ? n : 0 } as Partial<BudgetItemRow>)
     }
 
     function onPeriodChange(id: string, stageId: string, raw: string) {
-      setBuffers((b) => ({ ...b, [id + ':stage:' + stageId]: raw }))
+      setBuf(id + ':stage:' + stageId, raw)
       const n = Number(raw.replace(',', '.'))
       const current = rowsRef.current.find((r) => r.id === id)
       if (!current) return
@@ -99,7 +121,7 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
     }
 
     function onPeriodNetChange(itemId: string, stageId: string, raw: string) {
-      setBuffers((b) => ({ ...b, [itemId + ':pnet:' + stageId]: raw }))
+      setBuf(itemId + ':pnet:' + stageId, raw)
       const current = rowsRef.current.find((r) => r.id === itemId)
       if (!current) return
       const n = Number(raw.replace(',', '.'))
@@ -108,7 +130,7 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
     }
 
     function onPeriodRepeatChange(itemId: string, stageId: string, raw: string) {
-      setBuffers((b) => ({ ...b, [itemId + ':prepeat:' + stageId]: raw }))
+      setBuf(itemId + ':prepeat:' + stageId, raw)
       const current = rowsRef.current.find((r) => r.id === itemId)
       if (!current) return
       const n = Number(raw.replace(',', '.'))
@@ -205,10 +227,26 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
     async function commitField(id: string, field: EditableField) {
       const row = rowsRef.current.find((r) => r.id === id)
       if (!row) return
-      const value = (row[field] ?? '') as string | number
       const saved = savedRef.current[id]
+      const bufKey = id + ':' + field
+      // PARSE GUVENCESI (K10 revize + TD-16, 2026-07-18): sayisal alanda taslak metni
+      // ayristirilamiyorsa (veya repeat<=0, mevcut onRepeatChange kurali korunur) kasadaki
+      // eski (saved) deger AYNEN geri yazilir, servise hic gidilmez.
+      if (NUMERIC_EDITABLE_FIELDS.has(field)) {
+        const raw = buffersRef.current[bufKey]
+        if (raw !== undefined) {
+          const parsed = parseNumericDraft(raw)
+          const invalid = parsed === null || (field === 'repeat' && parsed <= 0)
+          if (invalid) {
+            if (saved) patchRow(id, { [field]: saved[field] } as Partial<BudgetItemRow>)
+            clearBuf(bufKey)
+            return
+          }
+        }
+      }
+      const value = (row[field] ?? '') as string | number
       if (saved && saved[field] === value) {
-        clearBuf(id + ':' + field)
+        clearBuf(bufKey)
         return
       }
       try {
@@ -221,12 +259,17 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
           periodUnit: { ...(saved?.periodUnit ?? row.periodUnit) },
           periodRepeat: { ...(saved?.periodRepeat ?? row.periodRepeat) },
         } as BudgetItemRow
-        if (row.paymentStatus === 'bordro' && (field === 'unitNet' || field === 'multiplier' || field === 'repeat')) void refreshBordro(id)
+        if (row.paymentStatus === 'bordro' && (field === 'unitNet' || field === 'multiplier' || field === 'repeat')) {
+          // TD-14 (2026-07-18): tek-donemli bordro kaleminde Birim Net commit ananinda
+          // <=0 ise kalici "Net 0 olamaz" gostergesi - toast YOK, sessiz kirmizi yuzey.
+          if (field === 'unitNet') setZeroNet(id, Number(value) <= 0)
+          void refreshBordro(id)
+        }
       } catch (e) {
         if (saved) patchRow(id, { [field]: saved[field] } as Partial<BudgetItemRow>)
         addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error')
       } finally {
-        clearBuf(id + ':' + field)
+        clearBuf(bufKey)
       }
     }
 
@@ -235,11 +278,20 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
       if (!card) return
       const row = rowsRef.current.find((r) => r.id === id)
       if (!row) return
-      const value = row.periodQty[stageId] ?? 0
       const saved = savedRef.current[id]
+      const bufKey = id + ':stage:' + stageId
+      const raw = buffersRef.current[bufKey]
+      if (raw !== undefined && parseNumericDraft(raw) === null) {
+        const savedVal = saved?.periodQty[stageId] ?? 0
+        const current = rowsRef.current.find((r) => r.id === id) ?? row
+        patchRow(id, { periodQty: { ...current.periodQty, [stageId]: savedVal } })
+        clearBuf(bufKey)
+        return
+      }
+      const value = row.periodQty[stageId] ?? 0
       const savedVal = saved?.periodQty[stageId] ?? 0
       if (savedVal === value) {
-        clearBuf(id + ':stage:' + stageId)
+        clearBuf(bufKey)
         return
       }
       try {
@@ -260,7 +312,7 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
         if (current) patchRow(id, { periodQty: { ...current.periodQty, [stageId]: savedVal } })
         addToast(e instanceof Error ? e.message : 'X kaydedilemedi', 'error')
       } finally {
-        clearBuf(id + ':stage:' + stageId)
+        clearBuf(bufKey)
       }
     }
 
@@ -268,12 +320,24 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
       const row = rowsRef.current.find((r) => r.id === itemId)
       if (!row) return
       const saved = savedRef.current[itemId]
+      const bufKey = itemId + ':pnet:' + stageId
+      const raw = buffersRef.current[bufKey]
+      // Bos taslak ('') KASITLI: override'i temizleyip kaleme mirasi geri verir (asagida
+      // hedef=null olarak zaten dogru islenir). PARSE GUVENCESI yalniz BOS-OLMAYAN, sayiya
+      // cevrilemeyen ('abc', '€') taslaklari yakalar.
+      if (raw !== undefined && raw.trim() !== '' && parseNumericDraft(raw) === null) {
+        const savedOverride = saved?.periodNet?.[stageId] ?? null
+        const current = rowsRef.current.find((r) => r.id === itemId) ?? row
+        patchRow(itemId, { periodNet: { ...current.periodNet, [stageId]: savedOverride } })
+        clearBuf(bufKey)
+        return
+      }
       const currentVal = row.periodNet[stageId] ?? null
       const hedef: number | null =
         currentVal === null || currentVal === row.unitNet ? null : currentVal
       const savedOverride = saved?.periodNet?.[stageId] ?? null
       if (savedOverride === hedef) {
-        clearBuf(itemId + ':pnet:' + stageId)
+        clearBuf(bufKey)
         return
       }
       try {
@@ -289,13 +353,17 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
         }
         const current = rowsRef.current.find((r) => r.id === itemId) ?? row
         patchRow(itemId, { periodNet: { ...current.periodNet, [stageId]: hedef } })
-        if (row.paymentStatus === 'bordro') void refreshBordro(itemId)
+        if (row.paymentStatus === 'bordro') {
+          const updatedPeriodNet = { ...current.periodNet, [stageId]: hedef }
+          setZeroNet(itemId, hasNonPositiveOverride(Object.keys(current.periodQty), updatedPeriodNet))
+          void refreshBordro(itemId)
+        }
       } catch (e) {
         const current = rowsRef.current.find((r) => r.id === itemId) ?? row
         patchRow(itemId, { periodNet: { ...current.periodNet, [stageId]: savedOverride } })
         addToast(e instanceof Error ? e.message : 'Net override kaydedilemedi', 'error')
       } finally {
-        clearBuf(itemId + ':pnet:' + stageId)
+        clearBuf(bufKey)
       }
     }
 
@@ -303,12 +371,21 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
       const row = rowsRef.current.find((r) => r.id === itemId)
       if (!row) return
       const saved = savedRef.current[itemId]
+      const bufKey = itemId + ':prepeat:' + stageId
+      const raw = buffersRef.current[bufKey]
+      if (raw !== undefined && raw.trim() !== '' && parseNumericDraft(raw) === null) {
+        const savedOverride = saved?.periodRepeat?.[stageId] ?? null
+        const current = rowsRef.current.find((r) => r.id === itemId) ?? row
+        patchRow(itemId, { periodRepeat: { ...current.periodRepeat, [stageId]: savedOverride } })
+        clearBuf(bufKey)
+        return
+      }
       const currentVal = row.periodRepeat[stageId] ?? null
       const hedef: number | null =
         currentVal === null || currentVal === row.repeat ? null : currentVal
       const savedOverride = saved?.periodRepeat?.[stageId] ?? null
       if (savedOverride === hedef) {
-        clearBuf(itemId + ':prepeat:' + stageId)
+        clearBuf(bufKey)
         return
       }
       try {
@@ -330,7 +407,7 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
         patchRow(itemId, { periodRepeat: { ...current.periodRepeat, [stageId]: savedOverride } })
         addToast(e instanceof Error ? e.message : 'Miktar override kaydedilemedi', 'error')
       } finally {
-        clearBuf(itemId + ':prepeat:' + stageId)
+        clearBuf(bufKey)
       }
     }
 
@@ -476,7 +553,7 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
     }
 
     function onRepeatChange(id: string, raw: string) {
-      setBuffers((b) => ({ ...b, [id + ':repeat']: raw }))
+      setBuf(id + ':repeat', raw)
       const n = Number(raw.replace(',', '.'))
       if (Number.isFinite(n) && n > 0) patchRow(id, { repeat: n })
     }

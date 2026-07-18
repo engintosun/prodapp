@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { createGridState, reduceGrid } from './grid-navigation-core'
-import type { ColumnEquivalenceGroups, GridShape, GridState } from './grid-navigation-core'
+import { createGridState, reduceGrid, resolveKeyAction } from './grid-navigation-core'
+import type { ColumnEquivalenceGroups, GridShape, GridState, KeyEventLike } from './grid-navigation-core'
 
 const GRID_3X3: GridShape = [
   { rowId: 'r1', cols: ['c1', 'c2', 'c3'] },
@@ -329,5 +329,194 @@ describe('focus (dis senkron - tiklama)', () => {
     const r = reduceGrid(editAt('r2', 'c3', 'v'), { type: 'focus', cell: { rowId: 'r1', col: 'c1' } }, GRID_3X3)
     expect(r.state).toEqual({ mode: 'nav', active: { rowId: 'r1', col: 'c1' }, draft: null })
     expect(r.commit).toBeNull()
+  })
+})
+
+// Tus Sozlesmesi (K10 revize + TD-16, 2026-07-18): reducer-seviyesi Shift+Enter (yukari) ve
+// MOD+Enter (yerinde kal) davranislari - dogrudan action.shift/action.stay ile.
+describe('edit modu - Shift+Enter ve MOD+Enter (Tus Sozlesmesi K10 revize)', () => {
+  it('Shift+Enter commit eder + K8 grubunda YUKARI gecer', () => {
+    const r = reduceGrid(editAt('r2', 'c2', 'v'), { type: 'enter', value: 'unused', shift: true }, GRID_3X3)
+    expect(r.commit).toEqual({ cellId: { rowId: 'r2', col: 'c2' }, value: 'v' })
+    expect(r.state.active).toEqual({ rowId: 'r1', col: 'c2' })
+    expect(r.state.mode).toBe('nav')
+  })
+
+  it('Shift+Enter ilk satirda kenarda commit eder ama ayni hucrede kalir', () => {
+    const r = reduceGrid(editAt('r1', 'c2', 'v'), { type: 'enter', value: 'unused', shift: true }, GRID_3X3)
+    expect(r.commit).toEqual({ cellId: { rowId: 'r1', col: 'c2' }, value: 'v' })
+    expect(r.state.active).toEqual({ rowId: 'r1', col: 'c2' })
+  })
+
+  it('MOD+Enter (stay) commit eder + odak AYNI hucrede kalir', () => {
+    const r = reduceGrid(editAt('r1', 'c1', 'v'), { type: 'enter', value: 'unused', stay: true }, GRID_3X3)
+    expect(r.commit).toEqual({ cellId: { rowId: 'r1', col: 'c1' }, value: 'v' })
+    expect(r.state).toEqual({ mode: 'nav', active: { rowId: 'r1', col: 'c1' }, draft: null })
+  })
+
+  it('nav modunda Shift+Enter yutulur (duzenlemeye girmez, no-op)', () => {
+    const s = navAt('r1', 'c1')
+    const r = reduceGrid(s, { type: 'enter', value: '5', shift: true }, GRID_3X3)
+    expect(r.state).toEqual(s)
+    expect(r.commit).toBeNull()
+  })
+
+  it('nav modunda MOD+Enter duzenli Enter ile ayni acilir (stay yerinde kalacak sey olmadigindan etkisiz)', () => {
+    const r = reduceGrid(navAt('r1', 'c1'), { type: 'enter', value: '5', stay: true }, GRID_3X3)
+    expect(r.state.mode).toBe('edit')
+    expect(r.state.draft).toBe('5')
+    expect(r.state.active).toEqual({ rowId: 'r1', col: 'c1' })
+  })
+})
+
+// ---------------------------------------------------------------------------------------
+// resolveKeyAction - Tus Sozlesmesi siniflandiricisi (K10 revize + TD-16, 2026-07-18)
+// ---------------------------------------------------------------------------------------
+
+function keyEvent(partial: Partial<KeyEventLike> & { key: string }): KeyEventLike {
+  return { ctrlKey: false, metaKey: false, shiftKey: false, altKey: false, ...partial }
+}
+
+describe('resolveKeyAction - Enter varyantlari', () => {
+  it('Shift+Enter nav modunda yutulur (action yok, preventDefault var)', () => {
+    const r = resolveKeyAction(keyEvent({ key: 'Enter', shiftKey: true }), 'nav', '5')
+    expect(r).toEqual({ action: null, preventDefault: true })
+  })
+
+  it('Shift+Enter edit modunda commit + shift:true uretir', () => {
+    const r = resolveKeyAction(keyEvent({ key: 'Enter', shiftKey: true }), 'edit', '')
+    expect(r).toEqual({ action: { type: 'enter', value: '', shift: true, stay: false }, preventDefault: true })
+  })
+
+  it('MOD+Enter (ctrlKey) edit modunda stay:true uretir', () => {
+    const r = resolveKeyAction(keyEvent({ key: 'Enter', ctrlKey: true }), 'edit', '')
+    expect(r).toEqual({ action: { type: 'enter', value: '', shift: false, stay: true }, preventDefault: true })
+  })
+
+  it('MOD+Enter (metaKey) edit modunda stay:true uretir', () => {
+    const r = resolveKeyAction(keyEvent({ key: 'Enter', metaKey: true }), 'edit', '')
+    expect(r).toEqual({ action: { type: 'enter', value: '', shift: false, stay: true }, preventDefault: true })
+  })
+
+  it('duz Enter nav modunda mevcut ham degeri seed olarak tasir', () => {
+    const r = resolveKeyAction(keyEvent({ key: 'Enter' }), 'nav', '5000000')
+    expect(r).toEqual({ action: { type: 'enter', value: '5000000', shift: false, stay: false }, preventDefault: true })
+  })
+})
+
+describe('resolveKeyAction - Backspace/Delete', () => {
+  it('nav modunda bos taslakla (type char="") edit acar - rakam tuslamakla ayni yol', () => {
+    const backspace = resolveKeyAction(keyEvent({ key: 'Backspace' }), 'nav', '5000')
+    const del = resolveKeyAction(keyEvent({ key: 'Delete' }), 'nav', '5000')
+    expect(backspace).toEqual({ action: { type: 'type', char: '' }, preventDefault: true })
+    expect(del).toEqual({ action: { type: 'type', char: '' }, preventDefault: true })
+  })
+
+  it('edit modunda dokunmaz (input dogal davranisi)', () => {
+    const r = resolveKeyAction(keyEvent({ key: 'Backspace' }), 'edit', '')
+    expect(r).toEqual({ action: null, preventDefault: false })
+  })
+})
+
+describe('resolveKeyAction - MOD+Z / MOD+Y (tarayici undo/redo devre disi)', () => {
+  it('MOD+Z (ctrlKey) her iki modda da yutulur', () => {
+    expect(resolveKeyAction(keyEvent({ key: 'z', ctrlKey: true }), 'nav', '')).toEqual({ action: null, preventDefault: true })
+    expect(resolveKeyAction(keyEvent({ key: 'z', ctrlKey: true }), 'edit', '')).toEqual({ action: null, preventDefault: true })
+  })
+
+  it('MOD+Z (metaKey) her iki modda da yutulur', () => {
+    expect(resolveKeyAction(keyEvent({ key: 'z', metaKey: true }), 'nav', '')).toEqual({ action: null, preventDefault: true })
+    expect(resolveKeyAction(keyEvent({ key: 'z', metaKey: true }), 'edit', '')).toEqual({ action: null, preventDefault: true })
+  })
+
+  it('MOD+Y her iki modda da yutulur', () => {
+    expect(resolveKeyAction(keyEvent({ key: 'y', ctrlKey: true }), 'nav', '')).toEqual({ action: null, preventDefault: true })
+    expect(resolveKeyAction(keyEvent({ key: 'y', metaKey: true }), 'edit', '')).toEqual({ action: null, preventDefault: true })
+  })
+})
+
+describe('resolveKeyAction - AltGr karakter girisi', () => {
+  it('AltGr (ctrlKey+altKey+tek karakter, orn. TR AltGr+E=€) nav modunda kisayol DEGIL karakter girisidir', () => {
+    const r = resolveKeyAction(keyEvent({ key: '€', ctrlKey: true, altKey: true }), 'nav', '')
+    expect(r).toEqual({ action: { type: 'type', char: '€' }, preventDefault: true })
+  })
+
+  it('AltGr karakteri MOD+Z/X/C kombinasyonlarindan ONCE degerlendirilir (yanlislikla yutulmaz)', () => {
+    // AltGr+Z gibi bir kombinasyon MOD+Z kuralina denk gelmemeli - key farkli oldugu icin zaten
+    // carpismaz, ama AltGr yolu MOD kontrollerinden ONCE calisir (siralama garantisi).
+    const r = resolveKeyAction(keyEvent({ key: 'ß', ctrlKey: true, altKey: true }), 'nav', '')
+    expect(r).toEqual({ action: { type: 'type', char: 'ß' }, preventDefault: true })
+  })
+})
+
+describe('resolveKeyAction - varsayilan yasak + sayfa-duzeyi kisayollar', () => {
+  it('tanimsiz tus (nav) hucre degerine islemez, preventDefault YAPILMAZ', () => {
+    const r = resolveKeyAction(keyEvent({ key: 'F2' }), 'nav', '')
+    expect(r).toEqual({ action: null, preventDefault: false })
+  })
+
+  it('sayfa-duzeyi kisayollara (MOD+S, MOD+P, MOD+F, MOD+R, F5) dokunulmaz', () => {
+    expect(resolveKeyAction(keyEvent({ key: 's', ctrlKey: true }), 'nav', '')).toEqual({ action: null, preventDefault: false })
+    expect(resolveKeyAction(keyEvent({ key: 'p', ctrlKey: true }), 'nav', '')).toEqual({ action: null, preventDefault: false })
+    expect(resolveKeyAction(keyEvent({ key: 'f', ctrlKey: true }), 'nav', '')).toEqual({ action: null, preventDefault: false })
+    expect(resolveKeyAction(keyEvent({ key: 'r', ctrlKey: true }), 'nav', '')).toEqual({ action: null, preventDefault: false })
+    expect(resolveKeyAction(keyEvent({ key: 'F5' }), 'nav', '')).toEqual({ action: null, preventDefault: false })
+  })
+
+  it('duz yazdirilabilir karakter nav modunda type action uretir (mevcut davranis)', () => {
+    const r = resolveKeyAction(keyEvent({ key: '7' }), 'nav', '')
+    expect(r).toEqual({ action: { type: 'type', char: '7' }, preventDefault: true })
+  })
+})
+
+describe('resolveKeyAction - MOD+C / MOD+X (nav)', () => {
+  it('MOD+C nav modunda action uretmez ama copyRaw isaretler', () => {
+    const r = resolveKeyAction(keyEvent({ key: 'c', ctrlKey: true }), 'nav', '5000')
+    expect(r).toEqual({ action: null, preventDefault: true, copyRaw: true })
+  })
+
+  it('MOD+X nav modunda yutulur', () => {
+    const r = resolveKeyAction(keyEvent({ key: 'x', ctrlKey: true }), 'nav', '')
+    expect(r).toEqual({ action: null, preventDefault: true })
+  })
+
+  it('MOD+X edit modunda dokunmaz (native kes)', () => {
+    const r = resolveKeyAction(keyEvent({ key: 'x', ctrlKey: true }), 'edit', '')
+    expect(r).toEqual({ action: null, preventDefault: false })
+  })
+})
+
+describe('resolveKeyAction - Home/End/PageUp/PageDown', () => {
+  it('nav modunda yutulur', () => {
+    expect(resolveKeyAction(keyEvent({ key: 'Home' }), 'nav', '')).toEqual({ action: null, preventDefault: true })
+    expect(resolveKeyAction(keyEvent({ key: 'End' }), 'nav', '')).toEqual({ action: null, preventDefault: true })
+    expect(resolveKeyAction(keyEvent({ key: 'PageUp' }), 'nav', '')).toEqual({ action: null, preventDefault: true })
+    expect(resolveKeyAction(keyEvent({ key: 'PageDown' }), 'nav', '')).toEqual({ action: null, preventDefault: true })
+  })
+
+  it('edit modunda input dogal davranisi (dokunulmaz)', () => {
+    expect(resolveKeyAction(keyEvent({ key: 'Home' }), 'edit', '')).toEqual({ action: null, preventDefault: false })
+  })
+})
+
+describe('resolveKeyAction - Esc/Tab/Arrow mevcut davranis degismedi', () => {
+  it('Escape her modda esc action uretir', () => {
+    expect(resolveKeyAction(keyEvent({ key: 'Escape' }), 'nav', '')).toEqual({ action: { type: 'esc' }, preventDefault: true })
+    expect(resolveKeyAction(keyEvent({ key: 'Escape' }), 'edit', '')).toEqual({ action: { type: 'esc' }, preventDefault: true })
+  })
+
+  it('Tab/Shift+Tab tab action uretir', () => {
+    expect(resolveKeyAction(keyEvent({ key: 'Tab' }), 'nav', '')).toEqual({ action: { type: 'tab', shift: false }, preventDefault: true })
+    expect(resolveKeyAction(keyEvent({ key: 'Tab', shiftKey: true }), 'nav', '')).toEqual({ action: { type: 'tab', shift: true }, preventDefault: true })
+  })
+
+  it('ArrowLeft/Right edit modunda dokunmaz (imlec input icinde hareket eder)', () => {
+    expect(resolveKeyAction(keyEvent({ key: 'ArrowLeft' }), 'edit', '')).toEqual({ action: null, preventDefault: false })
+    expect(resolveKeyAction(keyEvent({ key: 'ArrowRight' }), 'edit', '')).toEqual({ action: null, preventDefault: false })
+  })
+
+  it('ArrowUp/Down her modda arrow action uretir', () => {
+    expect(resolveKeyAction(keyEvent({ key: 'ArrowUp' }), 'nav', '')).toEqual({ action: { type: 'arrow', dir: 'up' }, preventDefault: true })
+    expect(resolveKeyAction(keyEvent({ key: 'ArrowDown' }), 'edit', '')).toEqual({ action: { type: 'arrow', dir: 'down' }, preventDefault: true })
   })
 })
