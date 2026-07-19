@@ -148,25 +148,27 @@ export const PeriodRow = memo(function PeriodRow({
         )}
       </td>
       <td style={periodRowNumStyle}>{fmt(donemNet)}</td>
-      <td style={periodRowNumStyle}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
-          <span>{fmt(donemBrut)}</span>
-          <button
-            onClick={() => void api.onRemovePeriod(it.id, s.id)}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--color-text-muted)',
-              fontSize: 'var(--text-base)',
-              padding: '0 var(--space-1)',
-              lineHeight: 1,
-            }}
-            title="Dönemi kaldır"
-          >
-            ×
-          </button>
-        </div>
+      <td style={{ ...periodRowNumStyle, position: 'relative' }}>
+        {fmt(donemBrut)}
+        <button
+          onClick={() => void api.onRemovePeriod(it.id, s.id)}
+          style={{
+            position: 'absolute',
+            top: '50%',
+            right: 0,
+            transform: 'translateY(-50%)',
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'var(--color-text-muted)',
+            fontSize: 'var(--text-base)',
+            padding: '0 var(--space-1)',
+            lineHeight: 1,
+          }}
+          title="Dönemi kaldır"
+        >
+          ×
+        </button>
       </td>
     </tr>
   )

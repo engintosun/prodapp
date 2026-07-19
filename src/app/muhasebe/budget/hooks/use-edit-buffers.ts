@@ -279,6 +279,7 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
       }
       const value = (row[field] ?? '') as string | number
       if (saved && saved[field] === value) {
+        if (field === 'unitNet' || field === 'multiplier' || field === 'repeat') checkItemWarning(id)
         clearBuf(bufKey)
         return
       }
@@ -324,6 +325,7 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
       const value = row.periodQty[stageId] ?? 0
       const savedVal = saved?.periodQty[stageId] ?? 0
       if (savedVal === value) {
+        checkPeriodWarning(id, stageId)
         clearBuf(bufKey)
         return
       }
@@ -370,10 +372,10 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
         return
       }
       const currentVal = row.periodNet[stageId] ?? null
-      const hedef: number | null =
-        currentVal === null || currentVal === row.unitNet ? null : currentVal
+      const hedef: number | null = currentVal
       const savedOverride = saved?.periodNet?.[stageId] ?? null
       if (savedOverride === hedef) {
+        checkPeriodWarning(itemId, stageId, { periodNet: { ...row.periodNet, [stageId]: hedef } })
         clearBuf(bufKey)
         return
       }
@@ -420,10 +422,10 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
         return
       }
       const currentVal = row.periodRepeat[stageId] ?? null
-      const hedef: number | null =
-        currentVal === null || currentVal === row.repeat ? null : currentVal
+      const hedef: number | null = currentVal
       const savedOverride = saved?.periodRepeat?.[stageId] ?? null
       if (savedOverride === hedef) {
+        checkPeriodWarning(itemId, stageId, { periodRepeat: { ...row.periodRepeat, [stageId]: hedef } })
         clearBuf(bufKey)
         return
       }
