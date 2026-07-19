@@ -69,3 +69,4 @@ export const cellInputNumMuted: CSSProperties = { ...cellInputNum, color: 'var(-
 export const cellInputEllipsis: CSSProperties = { ...cellInput, overflow: 'hidden', textOverflow: 'ellipsis' }
 export const periodRowStyle: CSSProperties = { ...tdStyle, background: 'var(--color-surface-2)' }
 export const periodRowNumStyle: CSSProperties = { ...numStyle, background: 'var(--color-surface-2)' }
+export const periodRowInputTd: CSSProperties = { ...periodRowNumStyle, padding: 0 }

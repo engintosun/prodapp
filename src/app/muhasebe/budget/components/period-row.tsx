@@ -6,7 +6,7 @@ import { fmt, periodVal, periodNetVal, periodRepeatVal } from '../format'
 import type { ValueWarning } from '../format'
 import type { EditApi } from '../hooks/use-edit-buffers'
 import type { BordroSheetEntry } from './burden-sheet'
-import { cellInput, cellInputNum, cellInputNumMuted, periodRowStyle, periodRowNumStyle } from './table-styles'
+import { cellInput, cellInputNum, cellInputNumMuted, periodRowStyle, periodRowNumStyle, periodRowInputTd } from './table-styles'
 
 interface PeriodRowProps {
   item: BudgetItemRow
@@ -78,7 +78,7 @@ export const PeriodRow = memo(function PeriodRow({
           ))}
         </select>
       </td>
-      <td style={periodRowNumStyle}>
+      <td style={periodRowInputTd}>
         <input
           data-grid-cell="true"
           data-row-id={`${it.id}:${s.id}`}
@@ -92,7 +92,7 @@ export const PeriodRow = memo(function PeriodRow({
           title={netOverride === null ? 'Kalemden miras (değiştirmek için yaz)' : 'Döneme özel net'}
         />
       </td>
-      <td style={periodRowNumStyle}>
+      <td style={periodRowInputTd}>
         <input
           data-grid-cell="true"
           data-row-id={`${it.id}:${s.id}`}
@@ -106,7 +106,7 @@ export const PeriodRow = memo(function PeriodRow({
           title={repeatOverride === null ? 'Kalemden miras (değiştirmek için yaz)' : 'Döneme özel Miktar'}
         />
       </td>
-      <td style={periodRowNumStyle}>
+      <td style={periodRowInputTd}>
         <input
           data-grid-cell="true"
           data-row-id={`${it.id}:${s.id}`}
@@ -148,27 +148,28 @@ export const PeriodRow = memo(function PeriodRow({
         )}
       </td>
       <td style={periodRowNumStyle}>{fmt(donemNet)}</td>
-      <td style={{ ...periodRowNumStyle, position: 'relative' }}>
-        {fmt(donemBrut)}
-        <button
-          onClick={() => void api.onRemovePeriod(it.id, s.id)}
-          style={{
-            position: 'absolute',
-            top: '50%',
-            right: 0,
-            transform: 'translateY(-50%)',
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--color-text-muted)',
-            fontSize: 'var(--text-base)',
-            padding: '0 var(--space-1)',
-            lineHeight: 1,
-          }}
-          title="Dönemi kaldır"
-        >
-          ×
-        </button>
+      <td style={periodRowNumStyle}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
+          <span>{fmt(donemBrut)}</span>
+          <button
+            onClick={() => void api.onRemovePeriod(it.id, s.id)}
+            style={{
+              display: 'inline-flex',
+              width: 20,
+              justifyContent: 'center',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--color-text-muted)',
+              fontSize: 'var(--text-base)',
+              padding: 0,
+              lineHeight: 1,
+            }}
+            title="Dönemi kaldır"
+          >
+            ×
+          </button>
+        </div>
       </td>
     </tr>
   )
