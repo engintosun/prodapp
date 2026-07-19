@@ -70,3 +70,7 @@ export const cellInputEllipsis: CSSProperties = { ...cellInput, overflow: 'hidde
 export const periodRowStyle: CSSProperties = { ...tdStyle, background: 'var(--color-surface-2)' }
 export const periodRowNumStyle: CSSProperties = { ...numStyle, background: 'var(--color-surface-2)' }
 export const periodRowInputTd: CSSProperties = { ...periodRowNumStyle, padding: 0 }
+// Birim (unit) hucreleri: select kendi border+padding'ini tasir; disaridaki td padding
+// uygularsa cift-padding olusur (167d5c8'deki Net/Miktar/X deseniyle ayni kok neden).
+export const selectTd: CSSProperties = { ...tdStyle, padding: 0 }
+export const periodRowSelectTd: CSSProperties = { ...periodRowStyle, padding: 0 }

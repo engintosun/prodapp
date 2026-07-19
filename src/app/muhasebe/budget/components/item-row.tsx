@@ -6,7 +6,7 @@ import { fmt, itemHasNote, isMultiPeriod, buildDonemler, summarizeSame, fieldVal
 import type { ValueWarning } from '../format'
 import type { EditApi } from '../hooks/use-edit-buffers'
 import type { BordroSheetEntry } from './burden-sheet'
-import { tdStyle, numStyle, cellInput, cellInputNum, cellInputEllipsis } from './table-styles'
+import { tdStyle, selectTd, numStyle, cellInput, cellInputNum, cellInputEllipsis } from './table-styles'
 
 interface ItemRowProps {
   item: BudgetItemRow
@@ -148,7 +148,7 @@ export const ItemRow = memo(function ItemRow({
           </select>
         )}
       </td>
-      <td style={tdStyle}>
+      <td style={multi ? tdStyle : selectTd}>
         {multi ? (
           summaryUnitId !== null ? (units.find((u) => u.id === summaryUnitId)?.label ?? it.unitLabel) : '—'
         ) : (
