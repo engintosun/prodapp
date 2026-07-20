@@ -53,7 +53,7 @@ M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; kart mimari
 - KARAR: Tarihsiz bordro = Ocak-baslangic varsayimi (ihtiyat-lehine risk payi, deterministik — created_at bagimliligi kalkti); tarihli stage = gercek takvim. Istisna kist parcalara gun-oranli dagitilir (cift sayim yapisal olarak bitti).
 - KART MIMARISI KILITLI: 1100,1300,1400,1500,1600. Detay: KART-KATALOGU.md.
 - MEVZUAT DOSYA DUZENI (K1): PERSONEL-MEVZUATI.md = insana emek/eser (bordro/smm/telif) + bordro-cozucu + G defteri; VERGI-MEVZUATI.md = saf vergi. Statu cetveli iki dosyanin basinda.
-- TECH-DEBT: Acik Borc 5/5 (SINIRDA) — TD-17 (bordro motor-mimarisi) + TD-18 (asgari ucret alt sinir uyarisi yok, Karar Bekleyen) 19 Temmuz 2026'da acildi. Yeni acik borc kapanmadan yeni ozellik baslamamali. Siradaki oturumun ana isi TD-17 (Engin karari, 2026-07-20).
+- TECH-DEBT: Acik Borc 4/5 — TD-17 (bordro motor-mimarisi) 20 Temmuz 2026'da KAPANDI (servis-katmani filtresi, motor degismedi). TD-18 (asgari ucret alt sinir uyarisi yok, Karar Bekleyen) hala acik.
 - KLV KAPANMADI: 167d5c8 saha teyidi kismen gecti (Net/Miktar/X + x-buton icin); Birim select ayrica c2ce55d ile dogrulandi. Ancak Donemler/Statu select + Birim net/Miktar/X hizalamasi ACIK KALDI (Engin karariyla duruldu, 2026-07-20). macOS turu hala yapilmadi. v0.2-klv etiketi ATILAMAZ.
 
 ## VERGI / YUK modeli — KILITLI (detay: VERGI-MEVZUATI.md + PERSONEL-MEVZUATI.md)
@@ -89,9 +89,10 @@ Kolon seti (KILITLI, 11): Kod - Aciklama - Statu - Donemler - Birim - Birim net 
 - **ŞİRKET PROFİLİ ŞEMA DİLİMİ YAPILDI** (bkz. Milestone "2026-07-10 (devam)" — sema+RLS+trigger+servis+UI canlı, mimari uyarı fn_lock_budget/B16 ile ilgili not düşüldü).
 - **SGK atlama varsayılanı KAPANDI** (Engin kararı, 2026-07-11): Şirket Tanımı adımı pas geçilirse senaryo = Standart 19,75 (sgk_borcu_yok default true). İhtiyat-lehine Borçlu-varsayılanı önerisi değerlendirildi ve REDDEDİLDİ; bu karar yeniden açılmaz, migration yorumu (Q1=Hayır Q2=Hayır Q3=Evet) bilinçli ve doğrudur.
 - **MÜHÜR/versiyonlama karar paketi KL-1..KL-12 KAPANDI** (Engin+Opus, 2026-07-11): KL-1 versiyonlama Yol A (V-sekmeleri, dallanma yok); KL-5 mühür tarihsiz olabilir (Ocak-varsayımı donar); KL-7 harcama-tetiklemesi iptal (mühür tek kapı); KL-9 mühürlüye tarih yazılmaz, taslağa yazılır; KL-12 payload jsonb tam-kopya (hesaplanan değer yok, B18). MÜHÜR-1 (şema+çekirdek) bu pakettten türedi.
+- **TD-17 KAPANDI** (20 Temmuz 2026): sorun kümülatif zincirin diğer dönemleri bozması değil, atomik throw'du (bir ayın net<=0'ı tüm kalemi {ok:false} yapıyordu); servis-katmanı filtresiyle çözüldü (net<=0 dönem X<=0 gibi iskelete girmez, motor değişmedi), 162/162 test.
 
 ## Siradaki is (oncelik sirasiyla)
-1. TD-17 (bordro motor-mimarisi) — bir donemin net<=0 olmasi diger donemlerin hesabini dusuruyor (computeBordroFields tek resolvePayrollItem cagrisinda tum donemleri birlestiriyor). Engin karari (2026-07-20): siradaki oturumun ana konusu.
+1. Siradaki is Engin'le belirlenecek (TD-17 kapandi, 20 Temmuz 2026).
 2. Hizalama serisi (Donemler/Statu select + Birim net/Miktar/X cift-padding, item-row.tsx) — ERTELENDI (Engin karari, 2026-07-20), ne zaman devam edilecegi belirsiz. Kok neden Birim'deki (c2ce55d) ile ayni: td hala padding tasiyorsa + icindeki select/input kendi border+padding'ini tasiyorsa cift-padding olusuyor. Donemler+Statu: <td style={tdStyle}> -> <td style={selectTd}> (selectTd zaten var/import edilmis). Birim net/Miktar/X: <td style={numStyle}> -> <td style={multi ? numStyle : numInputTd}> (numInputTd yeni: {...numStyle, padding:0}). Tekrar acilirsa buradan devam edilir.
 3. macOS gercek cihaz turu (BUTCE-UI-MIMARISI I7 KLV-K10 serhli) — cihaz bulununca kosulacak; "simdi konu degil" (Engin, 2026-07-20).
 4. MUHUR-3a/3b — version-service + versiyon sekmeleri + salt-okunur gorunum + Muhur eki rozeti + revizyon akisi. 3a bitince 07-10 mimari uyarisinin tarayici teyidi yapilir (bkz. Kapananlar ustu not); MUHUR-3 kapanisinda tag (v0.3-muhur3).

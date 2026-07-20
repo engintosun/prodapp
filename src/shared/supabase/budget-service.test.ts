@@ -357,3 +357,35 @@ describe('budget-service — MUHUR-2: muhur round-trip (saf katman)', () => {
     expect(live.minimumWageGrossThisMonth).not.toBe(sealed.minimumWageGrossThisMonth)
   })
 })
+
+describe('budget-service — TD-17: net<=0 donem atlanir, kalem yasar', () => {
+  it('bozuk orta donem hesap disi kalir, kalan donemler one cekilmis esdegerle birebir ayni (A1)', () => {
+    const item = itemFields({ unitNet: 40000 })
+    const periods: BordroPeriodRow[] = [
+      periodRow({ sortOrder: 0, stageId: 'p1' }),
+      periodRow({ sortOrder: 1, unitNetOverride: 0, stageId: 'p2' }),
+      periodRow({ sortOrder: 2, unitNetOverride: 50000, stageId: 'p3' }),
+    ]
+    const withBad = computeBordroFields(item, periods, STANDARD_LEGS, RATES_2026)
+    // Referans: bozuk donem hic yokmus gibi ayni kalem - A1 dogruysa (imlec ilerlemez, zincir
+    // kesintisiz surer) iki hesap ayni takvimi ve ayni kumulatif matrahi kurar, sonuc birebir esittir.
+    const reference = computeBordroFields(item, [
+      periodRow({ sortOrder: 0, stageId: 'p1' }),
+      periodRow({ sortOrder: 2, unitNetOverride: 50000, stageId: 'p3' }),
+    ], STANDARD_LEGS, RATES_2026)
+    expect(withBad.totalNet).toBe(reference.totalNet)
+    expect(withBad.totalGross).toBe(reference.totalGross)
+    expect(withBad.periodBreakdown.map((p) => p.stageId)).toEqual(['p1', 'p3'])
+  })
+
+  it('tum donemler net<=0 ise tipli { ok:false, reason: invalid_net } doner', () => {
+    const item = itemFields({ unitNet: 40000 })
+    const periods: BordroPeriodRow[] = [
+      periodRow({ sortOrder: 0, unitNetOverride: 0 }),
+      periodRow({ sortOrder: 1, unitNetOverride: -5 }),
+    ]
+    const result = computeBordroFieldsResult(item, periods, STANDARD_LEGS, RATES_2026)
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.reason).toBe('invalid_net')
+  })
+})

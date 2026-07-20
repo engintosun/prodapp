@@ -210,6 +210,11 @@ function classifyBordroError(e: unknown): BordroDerivationReason {
 // unit_net_override artik okunuyor). Her donemin Birim Net'i kendi Biriminden ay-esdegerine cevrilir
 // (S1 duzeltmesi) - tek global hedef yok, her donem kendi sozlesmesi. Toplam sure = tum donemlerin
 // (X x Miktar) duz toplami; sadece ilk donem ankorlanir (K7), sonrakiler kesintisiz devam eder.
+// TD-17 (Engin karari 2026-07-20): net<=0 donem iskelete girmez (X<=0 ile ayni sessiz atlama) -
+// 0-bedel doktrininin donem tanecigi: hesaplanamayan donem 0 katki verir (kirmizi uyari donem
+// satirinda zaten yanar), kalemin gecerli donemleri hesaplanmaya devam eder. Atlanan donem takvim
+// imlecini DE ilerletmez (A1): sonraki donemler one cekilir, net girilince duzelir; yon ihtiyat-
+// lehine (erken ay = dusuk istisna = yuksek maliyet). Motor kati kalir, filtre servis katmaninda.
 export function computeBordroFields(
   item: BordroItemFields,
   periodRows: BordroPeriodRow[],
@@ -264,8 +269,13 @@ export function computeBordroFields(
     targetNetFullMonth: number
     periodIndex: number
   }[] = []
+  let skippedInvalidNet = false
   periods.forEach((per, periodIndex) => {
     if (per.quantity <= 0) return
+    if (per.netFullMonth <= 0) {
+      skippedInvalidNet = true
+      return
+    }
     let remainingDays = Math.round(per.repeatVal * unitDayLength(per.unitCode))
     while (remainingDays > 0) {
       const spaceLeftInMonth = 30 - usedInCursorMonth
@@ -292,7 +302,12 @@ export function computeBordroFields(
       }
     }
   })
-  if (skeleton.length === 0) throw new Error('Payroll: kalemin donem/Miktar/X verisinden ay uretilemedi')
+  if (skeleton.length === 0) {
+    // Hepsi net<=0 yuzunden elendiyse kullanicinin gercek sorunu net'tir -> mesajda "net" gecer,
+    // classifyBordroError 'invalid_net' uretir (tek-donemli net=0 ile ayni reason, tutarlilik).
+    if (skippedInvalidNet) throw new Error('Payroll: hedef net 0 veya negatif, hesaplanamaz')
+    throw new Error('Payroll: kalemin donem/Miktar/X verisinden ay uretilemedi')
+  }
 
   const K = skeleton.reduce((acc, s) => acc + (s.dayCount / 30) * s.headcount, 0)
   if (K <= 0) throw new Error('Payroll: K faktoru sifir veya negatif, hesaplanamaz')
