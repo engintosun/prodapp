@@ -24,6 +24,29 @@ export function monthEquivalentNet(net: number, unitCode: string): number {
   return new Decimal(net).mul(30).div(unitDayLength(unitCode)).toNumber()
 }
 
+export interface MinimumWageThresholds {
+  day: number
+  week: number
+  month: number
+}
+
+// TD-18 (Engin karari 2026-07-20): asgari ucretin NETi ayrica kayitli degil, brutten (parametre_asgari_brut)
+// ve iki sabit isci-payi oranindan (sgk_isci, issizlik_isci) turer - asgari ucretli tam asgari ucret
+// kazaniyorsa gelir vergisi/damga istisnasi ikisini de tam sifirlar (kanun geregi), geriye yalniz
+// SGK+issizlik isci payi kalir. Gun/hafta esdegerleri motorun kendi gun-uzunlugu tablosuyla (unitDayLength)
+// ayni orantidan turer - ayri bir sabit GEREKMEZ.
+export function minimumWageNetThresholds(rates: PayrollRates): MinimumWageThresholds {
+  const employeeDeductionPercent = rates.socialSecurityEmployeePercent + rates.unemploymentEmployeePercent
+  const netMonth = new Decimal(rates.minimumWageGrossThisMonth)
+    .mul(new Decimal(1).minus(new Decimal(employeeDeductionPercent).div(100)))
+    .toNumber()
+  return {
+    day: new Decimal(netMonth).mul(unitDayLength('day')).div(30).toNumber(),
+    week: new Decimal(netMonth).mul(unitDayLength('week')).div(30).toNumber(),
+    month: netMonth,
+  }
+}
+
 // rate_catalog'dan bu ayin yururlukteki bordro parametrelerini derler. Su an tek yurutluk-donemi
 // (2026-01-01) var; coklu-vintage cozumleme (Temmuz/Ocak parametre degisimi) rate_catalog semasi
 // destekler ama bu DILIM'de tek-donem veriyle calisir (K5: mekanizma hazir, veri buyudukce genisler).
@@ -141,6 +164,18 @@ async function fetchSealedPayrollRates(budgetId: string): Promise<PayrollRates> 
   }))
 
   return buildPayrollRates(mapped, data.sgk_component_code as string, asOf)
+}
+
+// Kart acilirken BIR KEZ cagrilir (per-item deriveBordroFields'in agir tam hesabi degil, yalniz
+// esik degerleri icin). Kilitli/acik ayrimi deriveBordroFields ile AYNI kaynaklardan besleniyor
+// (MUHUR-2 disiplinini burada da koruyoruz).
+export async function fetchMinimumWageThresholds(budgetId: string): Promise<MinimumWageThresholds> {
+  const { data, error } = await supabase.from('budgets').select('project_id, is_locked').eq('id', budgetId).single()
+  if (error) throw new Error(error.message)
+  const isLocked = data.is_locked as boolean
+  const projectId = (data.project_id as string | null) ?? undefined
+  const rates = isLocked ? await fetchSealedPayrollRates(budgetId) : await fetchPayrollRates(projectId)
+  return minimumWageNetThresholds(rates)
 }
 
 export interface BordroPeriodBreakdownEntry {

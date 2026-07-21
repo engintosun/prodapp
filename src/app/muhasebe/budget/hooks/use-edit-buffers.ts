@@ -12,6 +12,7 @@ import {
 } from '../../../../shared/supabase/budget-service'
 import type { BudgetItemRow, CardView, EditableField, StageRow } from '../../../../shared/supabase/budget-service'
 import { deriveBordroFields } from '../../../../shared/supabase/payroll-read'
+import type { MinimumWageThresholds } from '../../../../shared/supabase/payroll-read'
 import { useToast } from '../../../../shared/components/toast'
 import { bordroReasonMessage, parseNumericDraft, effectiveWarning } from '../format'
 import type { ValueWarning } from '../format'
@@ -48,10 +49,21 @@ interface UseEditBuffersParams {
   cardRef: MutableRefObject<CardView | null>
   stagesRef: MutableRefObject<StageRow[]>
   unitLabelByIdRef: MutableRefObject<Map<string, string>>
+  unitCodeByIdRef: MutableRefObject<Map<string, string>>
+  minWageThresholdsRef: MutableRefObject<MinimumWageThresholds | null>
   patchRow: (id: string, patch: Partial<BudgetItemRow>) => void
 }
 
-export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabelByIdRef, patchRow }: UseEditBuffersParams) {
+export function useEditBuffers({
+  rowsRef,
+  savedRef,
+  cardRef,
+  stagesRef,
+  unitLabelByIdRef,
+  unitCodeByIdRef,
+  minWageThresholdsRef,
+  patchRow,
+}: UseEditBuffersParams) {
   const { addToast } = useToast()
   const [buffers, setBuffers] = useState<Record<string, string>>({})
   // api useMemo deps=[] ile bir kere kurulur (asagida); buffers STATE'i o kapaniste bayatlar,
@@ -73,10 +85,25 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
   // taraf onceki patchRow'lardan sonra en az bir render/useLayoutEffect dongusu gecmis olmali -
   // commitField'de saglanir: field'in kendi patch'i onNumChange/onRepeatChange'te YAZIM SIRASINDA
   // olmustur, commitField icinde YENIDEN patchRow YOKTUR).
+  // TD-18 (Engin karari 2026-07-20): Birim koduna gore (day/week/month) ilgili esigi doner; kod
+  // taninmiyorsa (bordroda artik zaten secilemeyen bolum/sabit) veya esikler henuz yuklenmediyse
+  // null - effectiveWarning null'da kontrolu sessizce atlar.
+  function minWageThresholdFor(unitId: string): number | null {
+    const code = unitCodeByIdRef.current.get(unitId)
+    const t = minWageThresholdsRef.current
+    if (!t || (code !== 'day' && code !== 'week' && code !== 'month')) return null
+    return t[code]
+  }
+
   function checkItemWarning(itemId: string) {
     const row = rowsRef.current.find((r) => r.id === itemId)
     if (!row) return
-    setItemWarnings((w) => ({ ...w, [itemId]: effectiveWarning(row.unitNet, row.multiplier, row.repeat) }))
+    const isBordro = row.paymentStatus === 'bordro'
+    const threshold = isBordro ? minWageThresholdFor(row.unitId) : null
+    setItemWarnings((w) => ({
+      ...w,
+      [itemId]: effectiveWarning(row.unitNet, row.multiplier, row.repeat, isBordro, threshold),
+    }))
   }
 
   // Donem-satiri kontrolu. override: cagiran taraf AYNI ES-ZAMANLI (senkron) fonksiyon icinde
@@ -100,7 +127,13 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
     const net = periodNet[stageId] ?? row.unitNet
     const x = periodQty[stageId] ?? 0
     const miktar = periodRepeat[stageId] ?? row.repeat
-    setPeriodWarnings((w) => ({ ...w, [itemId + ':' + stageId]: effectiveWarning(net, x, miktar) }))
+    const isBordro = row.paymentStatus === 'bordro'
+    const effectiveUnitId = row.periodUnit[stageId] ?? row.unitId
+    const threshold = isBordro ? minWageThresholdFor(effectiveUnitId) : null
+    setPeriodWarnings((w) => ({
+      ...w,
+      [itemId + ':' + stageId]: effectiveWarning(net, x, miktar, isBordro, threshold),
+    }))
   }
 
   // Bordro motoru sunucu tarafinda (deriva-BordroFields) DB'den okur; yerel buffer/keystroke degil,
@@ -205,6 +238,7 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
       try {
         await updateItemField(id, 'unitId', unitId)
         if (rowsRef.current.find((r) => r.id === id)?.paymentStatus === 'bordro') void refreshBordro(id)
+        checkItemWarning(id)
         if (saved) {
           savedRef.current[id] = {
             ...saved,
@@ -240,6 +274,7 @@ export function useEditBuffers({ rowsRef, savedRef, cardRef, stagesRef, unitLabe
           }
         }
         if (row.paymentStatus === 'bordro') void refreshBordro(itemId)
+        checkPeriodWarning(itemId, stageId)
       } catch (e) {
         const current = rowsRef.current.find((r) => r.id === itemId)
         if (current) patchRow(itemId, { periodUnit: { ...current.periodUnit, [stageId]: prevUnit } })

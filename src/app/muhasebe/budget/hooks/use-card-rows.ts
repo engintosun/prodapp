@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { getOrOpenBudget, getCard, loadUnits } from '../../../../shared/supabase/budget-service'
 import type { BudgetItemRow, CardView, StageRow, UnitRow } from '../../../../shared/supabase/budget-service'
+import { fetchMinimumWageThresholds } from '../../../../shared/supabase/payroll-read'
+import type { MinimumWageThresholds } from '../../../../shared/supabase/payroll-read'
 import { useToast } from '../../../../shared/components/toast'
 
 export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
@@ -18,14 +20,20 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
   const cardRef = useRef<CardView | null>(null)
   const stagesRef = useRef<StageRow[]>([])
   const unitLabelByIdRef = useRef<Map<string, string>>(new Map())
+  // TD-18: id->code (label degil) - esik secimi (day/week/month) kodla yapilir, TR gorunen metinle degil.
+  const unitCodeByIdRef = useRef<Map<string, string>>(new Map())
+  // TD-18: kart acilirken BIR KEZ cekilir (asagidaki useEffect), her tus vurusunda DEGIL.
+  const minWageThresholdsRef = useRef<MinimumWageThresholds | null>(null)
 
   const unitLabelById = useMemo(() => new Map<string, string>(units.map((u) => [u.id, u.label])), [units])
+  const unitCodeById = useMemo(() => new Map<string, string>(units.map((u) => [u.id, u.code])), [units])
 
   useLayoutEffect(() => {
     rowsRef.current = rows
     cardRef.current = card
     stagesRef.current = stages
     unitLabelByIdRef.current = unitLabelById
+    unitCodeByIdRef.current = unitCodeById
   })
 
   useEffect(() => {
@@ -76,6 +84,25 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
     }
   }, [addToast])
 
+  // TD-18 (Engin karari 2026-07-20): asgari ucret esikleri kart acilirken BIR KEZ cekilir (units
+  // fetch'iyle ayni desende, birbirinden bagimsiz). Basarisizlik SESSIZ (console.warn) - bu yalniz
+  // ikincil bir uyari kaynagi, ana bordro hesabini (deriveBordroFields) ETKILEMEZ.
+  useEffect(() => {
+    if (!card?.budgetId) return
+    let cancelled = false
+    void (async () => {
+      try {
+        const t = await fetchMinimumWageThresholds(card.budgetId)
+        if (!cancelled) minWageThresholdsRef.current = t
+      } catch (e) {
+        console.warn('Asgari ucret esikleri yuklenemedi:', e instanceof Error ? e.message : e)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [card?.budgetId])
+
   const patchRow = useCallback((id: string, patch: Partial<BudgetItemRow>) => {
     setRows((rs) => rs.map((r) => (r.id === id ? { ...r, ...patch } : r)))
   }, [])
@@ -99,5 +126,7 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
     cardRef,
     stagesRef,
     unitLabelByIdRef,
+    unitCodeByIdRef,
+    minWageThresholdsRef,
   }
 }

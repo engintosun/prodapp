@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseNumericDraft, effectiveWarning } from './format'
+import { parseNumericDraft, effectiveWarning, bordroAllowedUnits } from './format'
 
 describe('parseNumericDraft (PARSE GUVENCESI, K10 revize + TD-16)', () => {
   it('duz rakam metnini sayiya cevirir', () => {
@@ -57,5 +57,41 @@ describe('effectiveWarning (TD-14 ucuncu duzeltme, 2026-07-18 - Net/X/Miktar)', 
   it('sinir degerler: 0.01 saglikli sayilir, 0 sayilmaz', () => {
     expect(effectiveWarning(0.01, 1, 1)).toBeNull()
     expect(effectiveWarning(0, 1, 1)).toBe('net')
+  })
+})
+
+describe('effectiveWarning — TD-18: asgari ucret alti (Engin karari 2026-07-20)', () => {
+  it('bordro + net esik altinda ise net-min-wage doner', () => {
+    expect(effectiveWarning(20000, 1, 1, true, 28075.5)).toBe('net-min-wage')
+  })
+
+  it('ayni net esik altinda ama isBordro=false ise kontrol calismaz (null)', () => {
+    expect(effectiveWarning(20000, 1, 1, false, 28075.5)).toBeNull()
+  })
+
+  it('esik henuz yuklenmemisse (null) kontrol atlanir', () => {
+    expect(effectiveWarning(20000, 1, 1, true, null)).toBeNull()
+  })
+
+  it('X<=0 iken esik-alti net olsa bile x uyarisi kazanir (oncelik korunur)', () => {
+    expect(effectiveWarning(20000, 0, 1, true, 28075.5)).toBe('x')
+  })
+
+  it('Miktar<=0 iken esik-alti net olsa bile miktar uyarisi kazanir', () => {
+    expect(effectiveWarning(20000, 1, 0, true, 28075.5)).toBe('miktar')
+  })
+
+  it('net esige esit veya ustundeyse uyari yok (sinir degeri)', () => {
+    expect(effectiveWarning(28075.5, 1, 1, true, 28075.5)).toBeNull()
+    expect(effectiveWarning(30000, 1, 1, true, 28075.5)).toBeNull()
+  })
+})
+
+describe('bordroAllowedUnits — TD-18', () => {
+  it('bolum ve sabiti eler, gun/hafta/ay i korur', () => {
+    const units = [
+      { code: 'day' }, { code: 'week' }, { code: 'month' }, { code: 'episode' }, { code: 'flat' },
+    ]
+    expect(bordroAllowedUnits(units).map((u) => u.code)).toEqual(['day', 'week', 'month'])
   })
 })

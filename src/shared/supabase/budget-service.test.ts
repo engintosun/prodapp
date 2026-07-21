@@ -4,6 +4,7 @@ import {
   computeBordroFields,
   computeBordroFieldsResult,
   buildPayrollRates,
+  minimumWageNetThresholds,
   type BordroItemFields,
   type BordroPeriodRow,
   type CatalogRateRow,
@@ -387,5 +388,14 @@ describe('budget-service — TD-17: net<=0 donem atlanir, kalem yasar', () => {
     const result = computeBordroFieldsResult(item, periods, STANDARD_LEGS, RATES_2026)
     expect(result.ok).toBe(false)
     if (!result.ok) expect(result.reason).toBe('invalid_net')
+  })
+})
+
+describe('budget-service — TD-18: minimumWageNetThresholds', () => {
+  it('RATES_2026 icin gun/hafta/ay net esiklerini dogru turetir', () => {
+    const t = minimumWageNetThresholds(RATES_2026)
+    expect(t.month).toBeCloseTo(28075.5, 2)
+    expect(t.day).toBeCloseTo(935.85, 2)
+    expect(t.week).toBeCloseTo(6550.95, 2)
   })
 })

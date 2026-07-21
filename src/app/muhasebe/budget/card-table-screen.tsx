@@ -14,14 +14,31 @@ import { StatusInfoSheet } from './components/status-info-sheet'
 import { NoteSheet } from './components/note-sheet'
 
 export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardId?: string } = {}) {
-  const { card, rows, stages, units, loading, error, refetch, patchRow, rowsRef, savedRef, cardRef, stagesRef, unitLabelByIdRef } =
-    useCardRows({ budgetId, cardId })
+  const {
+    card,
+    rows,
+    stages,
+    units,
+    loading,
+    error,
+    refetch,
+    patchRow,
+    rowsRef,
+    savedRef,
+    cardRef,
+    stagesRef,
+    unitLabelByIdRef,
+    unitCodeByIdRef,
+    minWageThresholdsRef,
+  } = useCardRows({ budgetId, cardId })
   const { buffers, bordroData, itemWarnings, periodWarnings, refreshBordro, api } = useEditBuffers({
     rowsRef,
     savedRef,
     cardRef,
     stagesRef,
     unitLabelByIdRef,
+    unitCodeByIdRef,
+    minWageThresholdsRef,
     patchRow,
   })
   const { containerRef, handleKeyDown, handleFocus, handlePaste, handleDrop, handleDragOver, isActiveEdit } = useGridNavigation({ rowsRef, savedRef, patchRow, api, rows })

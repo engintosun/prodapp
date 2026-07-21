@@ -77,15 +77,35 @@ export function parseNumericDraft(raw: string): number | null {
   return Number.isFinite(n) ? n : null
 }
 
-export type ValueWarning = 'net' | 'x' | 'miktar' | null
+export type ValueWarning = 'net' | 'net-min-wage' | 'x' | 'miktar' | null
 
 // TD-14 UCUNCU DUZELTME (2026-07-18, Engin karari): Net'ten Miktar/X'e genisledi. Uc alan da
 // ayni kurala tabi - KAAPA harcanacak parayi hesaplar, 0 hesaplanacak bir rakam degildir.
 // Oncelik net > x > miktar: ayni anda birden fazlasi bozuksa EN TEMEL sorun gosterilir (once
 // net dogru olmali, sonra kac kisi/adet [X], sonra ne kadar sure [Miktar]).
-export function effectiveWarning(net: number, x: number, miktar: number): ValueWarning {
+// TD-18 (Engin karari 2026-07-20): asgari-alti kontrolu EN SONA eklendi (net>x>miktar sirasindan
+// SONRA) - X veya Miktar zaten <=0 ise kimse/sure yok demektir, maas karsilastirmasi anlamsizlasir,
+// bu yuzden bastirilir. isBordro=false veya threshold=null (henuz yuklenmedi) ise kontrol hic
+// calismaz - ikisi de varsayilan deger tasir, eski 3-parametreli cagrilar (mevcut testler dahil)
+// DEGISMEDEN calismaya devam eder.
+export function effectiveWarning(
+  net: number,
+  x: number,
+  miktar: number,
+  isBordro = false,
+  minWageThreshold: number | null = null,
+): ValueWarning {
   if (net <= 0) return 'net'
   if (x <= 0) return 'x'
   if (miktar <= 0) return 'miktar'
+  if (isBordro && minWageThreshold !== null && net < minWageThreshold) return 'net-min-wage'
   return null
+}
+
+// TD-18 (Engin karari 2026-07-20): Bordro sure uzerinden hesaplanir (SGK prim gun sayisi kanunen
+// tam gun ister). Bolum degisken sureli (sabit gun sayisi YOK) ve sabit sure kavrami hic tasimiyor -
+// ikisi de bordroda Birim secimine SUNULMAZ. Gecmis veri yok (sistem sifirdan kuruluyor), bu yuzden
+// "mevcut secili degeri koru" inceligine gerek YOK - kosulsuz filtre yeterli.
+export function bordroAllowedUnits<T extends { code: string }>(units: T[]): T[] {
+  return units.filter((u) => u.code !== 'episode' && u.code !== 'flat')
 }

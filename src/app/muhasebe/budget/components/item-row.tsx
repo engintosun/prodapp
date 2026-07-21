@@ -2,7 +2,7 @@ import { memo } from 'react'
 import { netToplamDonemli, brutToplamDonemli, kisiyeBanka } from '../../../../shared/cfe'
 import type { Yuk } from '../../../../shared/cfe'
 import type { BudgetItemRow, StageRow, UnitRow } from '../../../../shared/supabase/budget-service'
-import { fmt, itemHasNote, isMultiPeriod, buildDonemler, summarizeSame, fieldVal, repeatVal } from '../format'
+import { fmt, itemHasNote, isMultiPeriod, buildDonemler, summarizeSame, fieldVal, repeatVal, bordroAllowedUnits } from '../format'
 import type { ValueWarning } from '../format'
 import type { EditApi } from '../hooks/use-edit-buffers'
 import type { BordroSheetEntry } from './burden-sheet'
@@ -157,7 +157,7 @@ export const ItemRow = memo(function ItemRow({
             value={it.unitId}
             onChange={(e) => void api.onUnitChange(it.id, e.target.value)}
           >
-            {units.map((u) => (
+            {(isBordro ? bordroAllowedUnits(units) : units).map((u) => (
               <option key={u.id} value={u.id}>
                 {u.label}
               </option>
@@ -222,7 +222,15 @@ export const ItemRow = memo(function ItemRow({
             hesaplanan toplami gosterir, uyari sorunlu DONEM satirina tasindi (bkz period-row.tsx). */}
         {!multi && warning ? (
           <span style={{ color: 'var(--color-danger, #c0392b)', fontSize: 'var(--text-xs)' }}>
-            {warning === 'net' ? (isBordro ? 'Net 0 olamaz' : 'Bedel 0') : warning === 'x' ? 'X 0 olamaz' : 'Miktar 0 olamaz'}
+            {warning === 'net'
+              ? isBordro
+                ? 'Net 0 olamaz'
+                : 'Bedel 0'
+              : warning === 'net-min-wage'
+                ? 'Net asgari altı'
+                : warning === 'x'
+                  ? 'X 0 olamaz'
+                  : 'Miktar 0 olamaz'}
           </span>
         ) : isBordro && bd?.missingNet ? (
           <span title="Birim Net bekleniyor" style={{ color: 'var(--color-text-muted)' }}>—</span>
