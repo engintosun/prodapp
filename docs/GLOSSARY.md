@@ -89,6 +89,7 @@
 - **Serbest kalem:** kütüphane dışından kullanıcı girişiyle doğan kalem; kütüphane referansı NULL, kodu muhtelif kuyruğundan.
 - **Muhtelif kuyruğu:** kartın x698 hesabı; serbest kalemlerin kod aldığı ve kartın sonunda blok oluşturduğu bölge.
 - **Mini istasyon:** serbest kalem eklerken araya giren zorunlu statü+birim seçim adımı.
+- **DB adlari (D1, 2026-07-23):** kutuphane tablosu = item_library; kanonik kod = budget_items.catalog_code (NOT NULL); kutuphane referansi = budget_items.library_item_id (NULL = serbest kalem).
 
 -----
 

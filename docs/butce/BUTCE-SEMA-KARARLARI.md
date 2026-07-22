@@ -113,3 +113,14 @@ NEDEN: sahadaki gerçek senaryo — görüntü yönetmenine dolar, asistanlara T
 ### L. Tek-kalem-ekleme fonksiyonu (spec özeti, uygulama dilimi ayrı)
 - fn_open_budget'ın kalem döngüsünün tek kalemlik hali: item_code_seq'ten kimlik + katalog kodu (kütüphaneden ya da muhtelif alt-kod) + group_id = hedef kartın grubu + fn_refill_item_burdens çağrısı. Yerleşim kod sırasından; sort_order kod sırasına göre.
 - Mühürlü/kilitli bütçeye ekleme yapısal olarak kapalı (guard trigger'lar), kapı revizyon akışı (MÜHÜR-3).
+
+### M. Uygulama dilimlemesi (KARARLANDI 2026-07-23, Engin onayi)
+- Sira: D1 -> D2 -> D3. Gerekce: onay kapisindan gececek SQL'ler ayrik ve okunur kalir; bos-raf yuzunden test edilemeyen dilim dogmaz.
+- D1 (sema paketi, bu commit): item_library tablosu (salt-okunur SELECT/authenticated + service_role, rate_catalog deseni) + budget_items.catalog_code (NOT NULL) + library_item_id (NULL = serbest) + mevcut veri backfill + fn_open_budget guncellemesi + 1500 mini seed (5 kalem, sablon body kaynakli; aliases bos dogar, damitim doldurur).
+- D1-a isimler: item_library(catalog_code tekil, name, description_en, default_payment_status, default_unit_code, provenance, aliases text[]). Statu/birim metin-kod olarak durur — sablon ve fn_open_budget dili ile ayni, ceviri katmani yok.
+- D1-b sablon resmilesmesi: body item'larina ACIK catalog_code alani (1501..1505); ref atil etiket kalir, ref'ten kod turetme sihri YOK. fn_open_budget kodu body'den okur, library_item_id'yi kutuphaneden bulur; kod var ama kutuphane kaydi yok -> exception (sessiz hata yasak).
+- D1-c backfill anahtari: sort_order n -> 150n. Isim anahtar OLAMAZ (kullanici hucrede duzenlemis olabilir); sort_order dogumdan beri sabit (elle siralama bilincli kapali, satir ekleme arayuzu hic olmadi).
+- D1-d/e: mini seed provenance = Koster/MMB-6.1. Kapsam disi: sort_order yeniden hesabi (mevcut 1..5 kod sirasiyla zaten ortusuyor), Kod kolonu UI gecisi D3'te, serbest alt-kod sayaci D2'de.
+- CATAL NOTU (bilincli cift-kayit): catalog_code satira KOPYALANIR; kutuphanede bir kod sonradan duzeltilirse mevcut satirlar eski kodu tasimaya devam eder. Muhur tutanagi tarihi gercegi korumali — "kutuphanede duzelt, her yerde duzelsin" senaryosu bu tasarimla yakalanmaz.
+- D2 (siradaki): fn_add_budget_item (item_code_seq + group_id + fn_refill_item_burdens + kod-sirali sort_order) + serbest x698 KALICI monoton alt-kod sayaci (max+1 YASAK: silinen kod geri doner, muhur eslesmesi bozulur). Saf SQL.
+- D3: "+ kalem ekle" satiri + autocomplete + mini istasyon + KLV dikisi + TS servis fonksiyonlari + Kod kolonunun catalog_code okumaya gecisi. Buyukluk tasarsa mini istasyon D3b olarak ayrilir (DUR kurali yakalar).
