@@ -165,3 +165,13 @@ Sektör taraması (Saturation erişim modeli, MMB/MMS izin seviyeleri, Hot Budge
 **İnşa zamanı:** Yetki tablosu dilimi (şema+RLS+servis+bütçe-rayında davet UI, 5 katman) kart çoğaltması + KABUK evresiyle gelir; tek kartla yetki tablosunun test edilecek gerçek senaryosu yoktur, erken kurmak boşa iştir. Bugün yalnız karar mühürlüdür.
 
 **AÇIK KARAR (DÜŞÜNÜLECEK) — Hafif-bütçe yolu:** Ayrıntılı bütçe istemeyen kullanıcı kart-bazında ya da toplam-bazında değer girebilmeli (Engin vizyonu). Bunun evi mevcut limit tabloları mı (project_budgets/project_dept_budgets — mühürsüz/versiyonsuz ama ucuz) yoksa bütçe modülünün "kalemsiz, yalnız kart-toplamı" sığ modu mu (tutarlı ama yeni giriş şekli)? Ayrı tasarım oturumu ister. Bu kayıt, üçüncü bir bütçe kavramının sessizce doğmasını önlemek içindir (Haziran denetimi "üç bütçe" uyarısı).
+
+## 16. Satır ekleme + autocomplete + KLV dikişi (KİLİTLENDİ 2026-07-21)
+- Giriş noktası: kartın en altında TEK "+ kalem ekle" satırı. Grup-altı giriş yok (grup = kart olduğundan gerekçesi de yok).
+- Yerleşim: kod sırası = görünüm sırası. Elle sıralama (sürükle-bırak, satır taşıma) BİLİNÇLİ KAPALI — MMB'de de yok, sektör alışık. Serbest kalemler muhtelif alt-kodlarıyla kartın sonunda blok oluşturur.
+- Autocomplete: isim hücresine yazmaya başlayınca dropdown; kart açılışında o kartın kütüphane kalemleri bir kez çekilir, filtre istemci tarafında. Türkçe-duyarsız eşleşme (İ/i, ı/I, ş/s) + İÇEREN-eşleşme ("asistan" → "Yönetmen Asistanı"). Liste YALNIZ aktif kartın kod aralığında arar, diğer kartların kalemleri GİZLİ (K-E) — uyarıya gerek yok çünkü aidiyet=kod doktrini altında "kodu başka, kartı bu" melez durumu tanımsız.
+- Eşleşme yoksa dropdown'un altında "『yazılan isim』 serbest kalem olarak ekle" seçeneği.
+- Serbest kalem mini istasyonu (K-H): satır hemen doğmaz; statü (zorunlu) + birim (zorunlu) seçilir, statü seçimi birim listesini TD-18 kuralına göre filtreler (Bordro → bölüm/sabit listede görünmez). Tutar/çarpan şablon kalemler gibi sıfırla doğar. Kütüphane kalemi bu adımı görmez.
+- Mini istasyon bilgi notu (K-H zeyli): NÖTR ton (bilgi ikonu, uyarı/kırmızı değil — serbest kalem meşru yol). Metin taslağı: "Bu kalem resmî kütüphanede yok; serbest kalem olarak eklenecek ve kartın sonundaki Muhtelif bölümüne yerleşecek. Statü ve birim seçimi size ait — yasal yükler bu seçime göre hesaplanır."
+- Kütüphaneden gelen statü/birim VARSAYILANDIR, kilit değil — kullanıcı hücrede sonradan değiştirebilir (mevcut grid davranışı).
+- KLV dikişi: dropdown açıkken ok yukarı/aşağı LİSTEDE gezinir, Enter SEÇER (hücre-commit değil), Esc listeyi kapatır; grid gezinme tuşları bu durumda askıda. K10 tuş matrisine tanımlı yeni durum olarak girer — sözleşme dışı tuş yasağı korunur.

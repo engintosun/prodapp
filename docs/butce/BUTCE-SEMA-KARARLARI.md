@@ -86,3 +86,30 @@ Dört parça, dört ev:
 4. Gösterim birimi = ViewMode / rapor katmanı (icmalde tek birim). Emsal: Saturation faz-başına para birimi; MMB currency aracı.
 Refaktöre etkisi (R1'den itibaren): para biçimleme format.ts'te merkezî; satır bileşenlerine TL sembolü gömmek YASAK; fmt imzası ileride currency parametresine açılır.
 NEDEN: sahadaki gerçek senaryo — görüntü yönetmenine dolar, asistanlara TL ödenir, icmal tek para biriminde okunur. Eksen disiplini (veri → katalog → motor → görünüm) bozulmadan karşılanır.
+
+## SATIR-EKLEME + KALEM KÜTÜPHANESİ (KİLİTLENDİ 2026-07-21, Opus tasarım oturumu)
+
+### H. İki-kod doktrini (K-A)
+- `item_code` AYNEN KALIR: bütçe-yerel monoton kimlik sayacı, silinen kod geri verilmez (mevcut doktrin). Kimliktir, konum söylemez.
+- **Katalog kodu** yeni kanonik alan: MMB-uyumlu, kütüphanede doğar, budget_items'a kopyalanır. Görünüm sırası ve UI "Kod" kolonu katalog kodundan okunur.
+- Kod biçimi alt-kod taşıyabilir (örn. 1601-03): MMB'de kart altı ~97 numaralı hesap + hesap altı numarasız detay satırları var (MMB-6.1 örnek plan, 1600 Talent: 1601–1617 + 1698 Miscellaneous + 1699 Fringe); KAAPA düz tabloyu korur, derinliği koda gömer. Damıtımda çoğu kalem düz hesaba oturur (kapasite kararı: 2+3 karışımı).
+- Pilot şablondaki item ref'leri (i1501–i1505) katalog koduna resmîleşecek — kod sıfırdan icat edilmeyecek.
+
+### I. Aidiyet = kod (K-B)
+- Kart aidiyeti ayrı alan DEĞİL, kodun aralığıdır (15xx → KART 1500). SSOT tek: kod.
+- Çok-karta uyan kavram her kart için o kartın aralığından ayrı kodla ayrı kütüphane kaydı olur (Stunt Vehicle → TRANSPORT örneğindeki mevcut ilke genelleşti).
+
+### J. Kütüphane tablosu şeması (K-C)
+- Kolonlar: katalog kodu (tekil) · isim · varsayılan statü · varsayılan birim · köken (Koster provenance) · eş adlar (autocomplete için, örn. Gaffer/Işık Şefi).
+- Grup alanı YOK: şemada grup = kart (şablon body'deki her card tek expense_groups satırı; alt-grup katmanı yok — 2026-07-21 kontrol raporu). İleride kart içi görsel bölüm başlıkları istenirse kod aralığından türetilir, ayrı alan yine gerekmez.
+- RLS: rate_catalog gibi herkese açık SALT-OKUNUR küresel referans. Kullanıcının serbest kalemleri bütçesinde yaşar, kütüphaneye yazılmaz; ileride "kendi kütüphanem" istenirse owner alanı göçle eklenir.
+- Kütüphane içeriğinin doldurulması (damıtım) ayrı iş — şimdi yalnız şema.
+
+### K. Serbest kalem kodu (K-F) + kütüphane referansı (K-G) + mükerrer (K-D)
+- Serbest kalem kartın muhtelif hesabından (x698) bütçe-içi MONOTON alt-kod alır (1698-01, 1698-02…), silinen alt-kod geri verilmez. Gerekçe: MÜHÜR versiyon farkları kod üzerinden eşleşir; kod geri dönerse silme+ekleme yeniden-adlandırma gibi görünür, mühür tutanağı yalan söyler.
+- budget_items'a kütüphane referans kolonu eklenir: kütüphaneden gelen kalem referans taşır, serbest kalem NULL. Köken sonradan türetilemez; damıtım geri-beslemesi bu ayrımdan okunur.
+- Aynı katalog kalemi bir karta birden çok kez eklenebilir (iki farklı ücretli asistan): kod tekrar eder, item_code ayrıştırır, yerleşim bitişik.
+
+### L. Tek-kalem-ekleme fonksiyonu (spec özeti, uygulama dilimi ayrı)
+- fn_open_budget'ın kalem döngüsünün tek kalemlik hali: item_code_seq'ten kimlik + katalog kodu (kütüphaneden ya da muhtelif alt-kod) + group_id = hedef kartın grubu + fn_refill_item_burdens çağrısı. Yerleşim kod sırasından; sort_order kod sırasına göre.
+- Mühürlü/kilitli bütçeye ekleme yapısal olarak kapalı (guard trigger'lar), kapı revizyon akışı (MÜHÜR-3).

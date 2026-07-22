@@ -177,7 +177,7 @@ Kart-özel anomali kuralları: çift-fringe guard (1501/kreatifler Loan-Out) · 
 
 ### 7.5 KART 1600 — OYUNCU  [KİLİTLİ]
 *Üst-grup: OYUNCU · Etap: Yapım (casting Yapım Öncesi'ne sarkar) · Recoupable DEĞİL · Görünürlük: KISMİ MASKE (baş-kaşe satırları set rollerine gizli/çoğul, gerisi açık) · DB'de muhasebe tam · anomali aktif.*
-Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi — gerekçe GEREKCELERI). Kod = Koster köken (provenance); KAAPA item_code ayrı (#0001); [K!] = KAAPA atadı (Koster numarasız); kesin katalog kodu kütüphane resmîleşince. cost_object=Stunt etiketi içsel-stunt kalemlerde oto (§4.10). [Ç]=çekirdek şablon · [K]=kütüphane.
+Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi — gerekçe GEREKCELERI). Kod = Koster köken (provenance); KAAPA item_code ayrı (#0001); [K!] = KAAPA atadı (Koster numarasız); kesin katalog kodu kütüphane resmîleşince (karar 2026-07-21: iki-kod doktrini kilitlendi — item_code kimlik olarak kalır, MMB-uyumlu katalog kodu kanonik alan olarak doğar, aidiyet=kod aralığı, çok-kart=ayrı kod, serbest kalem x698 muhtelif alt-kodu; detay BUTCE-SEMA-KARARLARI §H–L). cost_object=Stunt etiketi içsel-stunt kalemlerde oto (§4.10). [Ç]=çekirdek şablon · [K]=kütüphane.
 
 **Grup 1 — Ana Kast** (ödeme-statüsü §4.8; baz+ek; "on-hold" paket kaşe)
 - 1601 Stars / Principal Roles — Başrol Oyuncu: kaşe GİZLİ, normalde çoğul; sette olmasa da anlaşılan tutar ("on-hold"). cost_type=İşçilik. [Ç]

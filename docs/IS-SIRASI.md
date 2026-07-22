@@ -27,6 +27,10 @@ Bu bölüm kasıtlı boş bırakılmıştır. "Sıradaki iş" için CURRENT.md'y
 - Üye yönetimi (TD-2'ye bloke).
 - m9 bütçe sol-nav alanı · şablon Türkçe karakter · Kütüphane resmîleştirme + katalog-kodu · Breakdown modülü · Tedarikçi hafızası · Yapımcı/denetçi rolü (Faz 2) · M4 pilot hazırlık · Oran yönetimi ekranı (Tanımlar içinde).
 - Bütçe-yetki tablosu dilimi (M2/M3, BUTCE-EKRAN-KARARLARI davet mimarisi bölümü): kişi+kapsam yetki tablosu, RLS genişlemesi, invitations genişlemesi, bütçe-rayında davet UI — kart çoğaltma başlayınca. Hafif-bütçe yolu tasarım oturumu da bu evrede.
+- Kart toplam satırı (2026-07-21, Engin notu — kart masası ekranı)
+- Kart içerik grafikleri (2026-07-21, Engin notu — kart masası ekranı)
+- Autocomplete "diğer kartlarda ara" genişletmesi: başka kartın kalemini isim/varsayılanlarıyla kopyalar, kodu bu kartın muhtelif kuyruğundan verir (2026-07-21, park kararı — Faz 1 dışı)
+- Serbest kalem mini istasyonunda bulanık/yakın eşleşme önerisi: "bunu mu demek istediniz: X?" (2026-07-21, park kararı — Faz 1 dışı; içeren-eşleşme çoğu durumu zaten karşılıyor)
 
 ## Borçlar
 Tüm teknik borçlar tek kaynak: docs/TECH-DEBT.md.

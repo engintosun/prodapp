@@ -83,6 +83,15 @@
 
 -----
 
+### Satır-ekleme + Kalem Kütüphanesi terimleri (2026-07-21)
+
+- **Katalog kodu:** MMB-uyumlu kanonik kalem kodu; kütüphanede doğar, yerleşimi ve kart aidiyetini belirler. item_code (iç kimlik) ile karıştırılmaz.
+- **Serbest kalem:** kütüphane dışından kullanıcı girişiyle doğan kalem; kütüphane referansı NULL, kodu muhtelif kuyruğundan.
+- **Muhtelif kuyruğu:** kartın x698 hesabı; serbest kalemlerin kod aldığı ve kartın sonunda blok oluşturduğu bölge.
+- **Mini istasyon:** serbest kalem eklerken araya giren zorunlu statü+birim seçim adımı.
+
+-----
+
 ### Miktar / X / Birim — terminoloji mührü (2026-07-11, K9-r2)
 
 |Terim |Anlam |Kodda |
