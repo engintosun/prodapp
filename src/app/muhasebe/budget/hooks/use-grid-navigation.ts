@@ -225,12 +225,18 @@ export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows }: Us
 
   // Refetch/yeniden-siralama sonrasi odak DOM'dan dusmusse (kalici active kimlik hala
   // gecerliyken) yeniden odaklar. Bagimlilik rows: satir verisi degistiginde tetiklenir.
+  // Serh (2026-07-24 tarayici bulgusu): odak GERCEKTEN kaybolmadan (DOM node silinip
+  // activeElement document.body'ye dusmeden) bu efekt calismaz - aksi halde odak baska
+  // bir gercek elemana (orn. BottomSheet ici) BILEREK tasinmisken bile geri cekiliyordu
+  // (Not sheet'inde Kamu Notu sonrasi Tab -> blur -> commitNote rows'u gunceller -> efekt
+  // odagi arkadaki grid hucresine zorla geri cekiyordu, KLV-K12).
   useEffect(() => {
     if (!state.active || !containerRef.current) return
+    if (document.activeElement !== document.body) return
     const expected = containerRef.current.querySelector<HTMLElement>(
       `[data-row-id="${state.active.rowId}"][data-col="${state.active.col}"]`,
     )
-    if (expected && document.activeElement !== expected) expected.focus()
+    expected?.focus()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows])
 
