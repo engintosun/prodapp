@@ -10,6 +10,7 @@ import { tdStyle, selectTd, numStyle, cellInput, cellInputNum, cellInputEllipsis
 
 interface ItemRowProps {
   item: BudgetItemRow
+  rowNo: number
   stages: StageRow[]
   units: UnitRow[]
   api: EditApi
@@ -27,6 +28,7 @@ interface ItemRowProps {
 
 export const ItemRow = memo(function ItemRow({
   item,
+  rowNo,
   stages,
   units,
   api,
@@ -69,7 +71,7 @@ export const ItemRow = memo(function ItemRow({
 
   return (
     <tr>
-      <td style={tdStyle}>{it.catalogCode}</td>
+      <td style={tdStyle}>{rowNo}</td>
       <td style={tdStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
           <input

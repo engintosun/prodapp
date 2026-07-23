@@ -97,7 +97,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           </colgroup>
           <thead>
             <tr>
-              <th style={thStyle}>Kod</th>
+              <th style={thStyle}>No</th>
               <th style={thStyle}>Açıklama</th>
               <th style={thStyle}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
@@ -137,7 +137,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
             </tr>
           </thead>
           <tbody>
-            {rows.map((it) => {
+            {rows.map((it, idx) => {
               const multi = isMultiPeriod(it)
               const addedStageIds = Object.keys(it.periodQty)
               const periodKeys = new Set(addedStageIds)
@@ -146,6 +146,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                 <Fragment key={it.id}>
                   <ItemRow
                     item={it}
+                    rowNo={idx + 1}
                     stages={stages}
                     units={units}
                     api={api}

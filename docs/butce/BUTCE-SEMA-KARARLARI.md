@@ -91,7 +91,7 @@ NEDEN: sahadaki gerçek senaryo — görüntü yönetmenine dolar, asistanlara T
 
 ### H. İki-kod doktrini (K-A)
 - `item_code` AYNEN KALIR: bütçe-yerel monoton kimlik sayacı, silinen kod geri verilmez (mevcut doktrin). Kimliktir, konum söylemez.
-- **Katalog kodu** yeni kanonik alan: MMB-uyumlu, kütüphanede doğar, budget_items'a kopyalanır. Görünüm sırası ve UI "Kod" kolonu katalog kodundan okunur.
+- **Katalog kodu** yeni kanonik alan: MMB-uyumlu, kütüphanede doğar, budget_items'a kopyalanır. Görünüm SIRASI katalog kodundan; ekrandaki kolon ise kart-içi düz sıra numarasıdır ("No", 1..N — araya ekleme alttakileri kaydırır). Katalog kodu ekranın HİÇBİR yerinde görünmez, autocomplete dahil (KARAR 2026-07-23 gece-2, Engin: kod muhasebe dilidir ve şemada yaşar; Faz 1 kullanıcı ekranında gürültü ve MMB-kopyası algısıdır). "Kodları göster" görünüm seçeneği ileriye açık kapı — şema kodu taşıdığı için sıfır göç maliyeti.
 - Kod biçimi alt-kod taşıyabilir (örn. 1601-03): MMB'de kart altı ~97 numaralı hesap + hesap altı numarasız detay satırları var (MMB-6.1 örnek plan, 1600 Talent: 1601–1617 + 1698 Miscellaneous + 1699 Fringe); KAAPA düz tabloyu korur, derinliği koda gömer. Damıtımda çoğu kalem düz hesaba oturur (kapasite kararı: 2+3 karışımı).
 - Pilot şablondaki item ref'leri (i1501–i1505) katalog koduna resmîleşecek — kod sıfırdan icat edilmeyecek.
 
