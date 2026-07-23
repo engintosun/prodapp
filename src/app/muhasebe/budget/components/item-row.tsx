@@ -69,7 +69,7 @@ export const ItemRow = memo(function ItemRow({
 
   return (
     <tr>
-      <td style={tdStyle}>{it.itemCode}</td>
+      <td style={tdStyle}>{it.catalogCode}</td>
       <td style={tdStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
           <input

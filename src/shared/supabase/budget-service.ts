@@ -17,6 +17,8 @@ export interface UnitRow {
 export interface BudgetItemRow {
   id: string
   itemCode: number
+  catalogCode: string
+  libraryItemId: string | null
   name: string
   descriptionEn: string | null
   unitNet: number
@@ -140,7 +142,7 @@ export async function getCard(budgetId: string, cardId?: string): Promise<CardVi
 
   const { data: items, error: ei } = await supabase
     .from('budget_items')
-    .select('id, item_code, name, description_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, public_note')
+    .select('id, item_code, catalog_code, library_item_id, name, description_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, public_note')
     .eq('group_id', grp.id)
     .eq('is_active', true)
     .order('sort_order')
@@ -201,6 +203,8 @@ export async function getCard(budgetId: string, cardId?: string): Promise<CardVi
   const rows: BudgetItemRow[] = itemList.map((i) => ({
     id: i.id as string,
     itemCode: i.item_code as number,
+    catalogCode: i.catalog_code as string,
+    libraryItemId: (i.library_item_id as string | null) ?? null,
     name: i.name as string,
     descriptionEn: (i.description_en as string | null) ?? null,
     unitNet: Number(i.unit_net),
@@ -446,5 +450,23 @@ export async function copyLastPeriodToMain(itemId: string, stageId: string): Pro
     })
     .eq('id', itemId)
   if (eu) throw new Error(eu.message)
+}
+
+// D2 fn_add_budget_item sarmalayicisi (BUTCE-SEMA-KARARLARI L + M/D2-d).
+// Kutuphane modu: yalniz catalogCode; serbest mod: name + paymentStatus + unitCode (ucu birden).
+// Iki modun karisimi tip duzeyinde imkansizdir; sunucu tarafi ayrica exception ile korur.
+export async function addBudgetItem(
+  groupId: string,
+  opts: { catalogCode: string } | { name: string; paymentStatus: string; unitCode: string }
+): Promise<string> {
+  const { data, error } = await supabase.rpc('fn_add_budget_item', {
+    p_group_id: groupId,
+    p_catalog_code: 'catalogCode' in opts ? opts.catalogCode : null,
+    p_name: 'catalogCode' in opts ? null : opts.name,
+    p_payment_status: 'catalogCode' in opts ? null : opts.paymentStatus,
+    p_unit_code: 'catalogCode' in opts ? null : opts.unitCode,
+  })
+  if (error) throw new Error(error.message)
+  return data as unknown as string
 }
 
