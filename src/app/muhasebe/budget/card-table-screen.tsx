@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useState } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import { Loading } from '../../../shared/components/loading'
 import { EmptyState } from '../../../shared/components/empty-state'
 import { ErrorMessage } from '../../../shared/components/error-message'
@@ -45,6 +45,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   const [openBurden, setOpenBurden] = useState<{ itemId: string; stageId: string | null } | null>(null)
   const [openNoteItemId, setOpenNoteItemId] = useState<string | null>(null)
   const [openStatusInfo, setOpenStatusInfo] = useState(false)
+  const didInitialFocusRef = useRef(false)
 
   useEffect(() => {
     for (const it of rows) {
@@ -54,6 +55,12 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     // ama bu efekt sadece card kimligine bagli oldugu icin edit sirasinda yeniden tetiklenmez (K5).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [card, refreshBordro])
+
+  useEffect(() => {
+    if (didInitialFocusRef.current || rows.length === 0) return
+    didInitialFocusRef.current = true
+    containerRef.current?.querySelector<HTMLElement>('[data-col="name"]')?.focus()
+  }, [rows, containerRef])
 
   const onOpenBurden = useCallback((itemId: string, stageId: string | null) => {
     setOpenBurden({ itemId, stageId })
