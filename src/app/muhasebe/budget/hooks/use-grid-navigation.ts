@@ -31,6 +31,7 @@ const COLUMN_EQUIVALENCE_GROUPS: ColumnEquivalenceGroups = [
   ['repeat', 'periodRepeat'],
   ['multiplier', 'periodQty'],
   ['burden', 'periodBurden'],
+  ['periodRemove'],
 ]
 
 interface UseGridNavigationParams {

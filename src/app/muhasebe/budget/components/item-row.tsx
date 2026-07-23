@@ -123,13 +123,14 @@ export const ItemRow = memo(function ItemRow({
       <td style={tdStyle}>
         {!multi && addedStages.length === 1 ? (
           <select
+            key={addedStages[0].id}
             data-grid-cell="true"
             data-row-id={it.id}
             data-col="periods"
             data-cell-kind="select"
             style={cellInput}
-            value={addedStages[0].id}
-            onChange={(e) => {
+            defaultValue={addedStages[0].id}
+            onBlur={(e) => {
               const sid = e.target.value
               if (sid !== addedStages[0].id) void api.onAddPeriod(it.id, sid)
             }}
@@ -143,14 +144,15 @@ export const ItemRow = memo(function ItemRow({
           </select>
         ) : (
           <select
+            key={addedStages.length}
             data-grid-cell="true"
             data-row-id={it.id}
             data-col="periods"
             data-cell-kind="select"
             style={cellInput}
-            value=""
+            defaultValue=""
             disabled={allAdded}
-            onChange={(e) => {
+            onBlur={(e) => {
               const sid = e.target.value
               if (sid) void api.onAddPeriod(it.id, sid)
             }}

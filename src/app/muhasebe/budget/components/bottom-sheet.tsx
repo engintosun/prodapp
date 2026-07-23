@@ -21,6 +21,8 @@ export function BottomSheet({ title, onClose, children }: { title: ReactNode; on
       if (e.key === 'Escape') {
         e.preventDefault()
         e.stopPropagation()
+        const active = document.activeElement
+        if (active instanceof HTMLElement && panelRef.current?.contains(active)) active.blur()
         onCloseRef.current()
       }
     }

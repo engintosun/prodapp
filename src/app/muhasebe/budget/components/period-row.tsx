@@ -168,6 +168,10 @@ export const PeriodRow = memo(function PeriodRow({
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
           <span>{fmt(donemBrut)}</span>
           <button
+            data-grid-cell="true"
+            data-row-id={`${it.id}:${s.id}`}
+            data-col="periodRemove"
+            data-cell-kind="button"
             onClick={() => void api.onRemovePeriod(it.id, s.id)}
             style={{
               display: 'inline-flex',
