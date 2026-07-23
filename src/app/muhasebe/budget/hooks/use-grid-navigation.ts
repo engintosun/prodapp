@@ -16,11 +16,21 @@ export type GridCol = 'name' | 'unitNet' | 'repeat' | 'multiplier' | 'periodNet'
 // yerine bu ANLAM esdegerligine gore hedef secmeli - aksi halde ardisik tek-donemli
 // kalemlerde Enter'la asagi inildikce colIndex 0'da (name) kilitlenip Birim Net'e hic
 // erisilemiyordu (canli bulgu, KLV-K8).
+// Bolum 17 GEDIK A (2026-07-24): select/buton hucreler (Statu/Donemler/Birim/Not/Yasal Yuk +
+// donem-satiri Birim/Yasal Yuk) motora katildi - name/note/status/periods tek-elemanli
+// gruplar (dikey gezinme donem satirlarini atlayip bir sonraki ana satirin ayni hucresine
+// gider, K8 mekanizmasi kendiliginden yapar), unit/periodUnit ve burden/periodBurden ana
+// satir <-> donem satiri eslesmesi tasir (K8 ile ayni desen).
 const COLUMN_EQUIVALENCE_GROUPS: ColumnEquivalenceGroups = [
   ['name'],
+  ['note'],
+  ['status'],
+  ['periods'],
+  ['unit', 'periodUnit'],
   ['unitNet', 'periodNet'],
   ['repeat', 'periodRepeat'],
   ['multiplier', 'periodQty'],
+  ['burden', 'periodBurden'],
 ]
 
 interface UseGridNavigationParams {
@@ -155,8 +165,9 @@ export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows }: Us
     if (!container) return
     const grid = computeGridShape(container)
 
+    const cellKind = target.dataset.cellKind as 'select' | 'button' | undefined
     const rawValue = state.mode === 'nav' ? getRawValue(cell) : ''
-    const resolution = resolveKeyAction(e, state.mode, rawValue)
+    const resolution = resolveKeyAction(e, state.mode, rawValue, cellKind)
     if (resolution.preventDefault) e.preventDefault()
     if (resolution.copyRaw) void navigator.clipboard?.writeText(getRawValue(cell))
     if (resolution.action) dispatch(resolution.action, state, cell, grid)
@@ -170,6 +181,12 @@ export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows }: Us
     const target = e.target as HTMLElement
     if (!target.dataset.gridCell) return
     if (state.mode !== 'nav') return
+    // select/buton hucrede yapistirma yutulur - mevcut yol nav modunda 'type' dispatch edip
+    // input'suz hucrede edit state aciyordu (sizinti), bu iki tip edit moduna hic girmez (K7-r2).
+    if (target.dataset.cellKind === 'select' || target.dataset.cellKind === 'button') {
+      e.preventDefault()
+      return
+    }
     const rowId = target.dataset.rowId
     const col = target.dataset.col
     if (!rowId || !col) return

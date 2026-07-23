@@ -499,6 +499,75 @@ describe('resolveKeyAction - Home/End/PageUp/PageDown', () => {
   })
 })
 
+// Bolum 17 GEDIK A (2026-07-24): select/buton hucreler grid duragi ama edit moduna
+// hic girmez - Tab (buton icin +ok) motor karari doner, geri kalan HER SEY native.
+describe('resolveKeyAction cellKind', () => {
+  describe('select', () => {
+    it('Tab motor karari doner (preventDefault true)', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'Tab' }), 'nav', '', 'select')
+      expect(r).toEqual({ action: { type: 'tab', shift: false }, preventDefault: true })
+    })
+
+    it('Shift+Tab motor karari doner (preventDefault true)', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'Tab', shiftKey: true }), 'nav', '', 'select')
+      expect(r).toEqual({ action: { type: 'tab', shift: true }, preventDefault: true })
+    })
+
+    it('ArrowUp/Down/Left/Right native kalir (action null, preventDefault false)', () => {
+      expect(resolveKeyAction(keyEvent({ key: 'ArrowUp' }), 'nav', '', 'select')).toEqual({ action: null, preventDefault: false })
+      expect(resolveKeyAction(keyEvent({ key: 'ArrowDown' }), 'nav', '', 'select')).toEqual({ action: null, preventDefault: false })
+      expect(resolveKeyAction(keyEvent({ key: 'ArrowLeft' }), 'nav', '', 'select')).toEqual({ action: null, preventDefault: false })
+      expect(resolveKeyAction(keyEvent({ key: 'ArrowRight' }), 'nav', '', 'select')).toEqual({ action: null, preventDefault: false })
+    })
+
+    it('Enter native kalir (edit moduna girmez)', () => {
+      expect(resolveKeyAction(keyEvent({ key: 'Enter' }), 'nav', '', 'select')).toEqual({ action: null, preventDefault: false })
+    })
+
+    it('Escape native kalir', () => {
+      expect(resolveKeyAction(keyEvent({ key: 'Escape' }), 'nav', '', 'select')).toEqual({ action: null, preventDefault: false })
+    })
+
+    it('yazdirilabilir karakter (rakam) native kalir, edit acmaz', () => {
+      expect(resolveKeyAction(keyEvent({ key: '7' }), 'nav', '', 'select')).toEqual({ action: null, preventDefault: false })
+    })
+  })
+
+  describe('buton', () => {
+    it('Tab motor karari doner', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'Tab' }), 'nav', '', 'button')
+      expect(r).toEqual({ action: { type: 'tab', shift: false }, preventDefault: true })
+    })
+
+    it('dort ok motor karari doner', () => {
+      expect(resolveKeyAction(keyEvent({ key: 'ArrowUp' }), 'nav', '', 'button')).toEqual({ action: { type: 'arrow', dir: 'up' }, preventDefault: true })
+      expect(resolveKeyAction(keyEvent({ key: 'ArrowDown' }), 'nav', '', 'button')).toEqual({ action: { type: 'arrow', dir: 'down' }, preventDefault: true })
+      expect(resolveKeyAction(keyEvent({ key: 'ArrowLeft' }), 'nav', '', 'button')).toEqual({ action: { type: 'arrow', dir: 'left' }, preventDefault: true })
+      expect(resolveKeyAction(keyEvent({ key: 'ArrowRight' }), 'nav', '', 'button')).toEqual({ action: { type: 'arrow', dir: 'right' }, preventDefault: true })
+    })
+
+    it('Enter native click yolu (action null, preventDefault false)', () => {
+      expect(resolveKeyAction(keyEvent({ key: 'Enter' }), 'nav', '', 'button')).toEqual({ action: null, preventDefault: false })
+    })
+
+    it('Space native click yolu', () => {
+      expect(resolveKeyAction(keyEvent({ key: ' ' }), 'nav', '', 'button')).toEqual({ action: null, preventDefault: false })
+    })
+  })
+
+  describe('geriye uyum', () => {
+    it('cellKind verilmeden cagri mevcut input davranisiyla ayni (yazdirilabilir karakter type acar)', () => {
+      const r = resolveKeyAction(keyEvent({ key: '7' }), 'nav', '')
+      expect(r).toEqual({ action: { type: 'type', char: '7' }, preventDefault: true })
+    })
+
+    it('cellKind="input" acikca verilse de mevcut Tab davranisiyla ayni', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'Tab' }), 'nav', '', 'input')
+      expect(r).toEqual({ action: { type: 'tab', shift: false }, preventDefault: true })
+    })
+  })
+})
+
 describe('resolveKeyAction - Esc/Tab/Arrow mevcut davranis degismedi', () => {
   it('Escape her modda esc action uretir', () => {
     expect(resolveKeyAction(keyEvent({ key: 'Escape' }), 'nav', '')).toEqual({ action: { type: 'esc' }, preventDefault: true })

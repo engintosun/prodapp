@@ -85,6 +85,10 @@ export const ItemRow = memo(function ItemRow({
           />
           <button
             type="button"
+            data-grid-cell="true"
+            data-row-id={it.id}
+            data-col="note"
+            data-cell-kind="button"
             title={itemHasNote(it) ? 'Not var' : 'Not ekle'}
             onClick={() => onOpenNote(it.id)}
             style={{ display: 'flex', alignItems: 'center', flexShrink: 0, background: 'transparent', border: 'none', cursor: 'pointer', padding: 'var(--space-1)', color: itemHasNote(it) ? 'var(--color-primary)' : 'var(--color-text-muted)', opacity: itemHasNote(it) ? 1 : 0.45 }}
@@ -99,6 +103,10 @@ export const ItemRow = memo(function ItemRow({
       </td>
       <td style={tdStyle}>
         <select
+          data-grid-cell="true"
+          data-row-id={it.id}
+          data-col="status"
+          data-cell-kind="select"
           style={cellInput}
           value={it.paymentStatus ?? ''}
           onChange={(e) => api.onStatusChange(it.id, e.target.value)}
@@ -115,6 +123,10 @@ export const ItemRow = memo(function ItemRow({
       <td style={tdStyle}>
         {!multi && addedStages.length === 1 ? (
           <select
+            data-grid-cell="true"
+            data-row-id={it.id}
+            data-col="periods"
+            data-cell-kind="select"
             style={cellInput}
             value={addedStages[0].id}
             onChange={(e) => {
@@ -131,6 +143,10 @@ export const ItemRow = memo(function ItemRow({
           </select>
         ) : (
           <select
+            data-grid-cell="true"
+            data-row-id={it.id}
+            data-col="periods"
+            data-cell-kind="select"
             style={cellInput}
             value=""
             disabled={allAdded}
@@ -155,6 +171,10 @@ export const ItemRow = memo(function ItemRow({
           summaryUnitId !== null ? (units.find((u) => u.id === summaryUnitId)?.label ?? it.unitLabel) : '—'
         ) : (
           <select
+            data-grid-cell="true"
+            data-row-id={it.id}
+            data-col="unit"
+            data-cell-kind="select"
             style={cellInput}
             value={it.unitId}
             onChange={(e) => void api.onUnitChange(it.id, e.target.value)}
@@ -242,6 +262,10 @@ export const ItemRow = memo(function ItemRow({
           <span style={{ color: 'var(--color-danger, #c0392b)', fontSize: 'var(--text-xs)' }}>{bd.error}</span>
         ) : brutToplam > netToplam ? (
           <button
+            data-grid-cell="true"
+            data-row-id={it.id}
+            data-col="burden"
+            data-cell-kind="button"
             onClick={() => onOpenBurden(it.id, null)}
             style={{
               background: 'transparent',

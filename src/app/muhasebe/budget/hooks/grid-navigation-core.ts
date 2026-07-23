@@ -246,6 +246,13 @@ export interface KeyEventLike {
   altKey: boolean
 }
 
+// Bolum 17 GEDIK A (2026-07-24): grid duragi olan hucrelerin hepsi input degil - native
+// select (Statu/Donemler/Birim) ve buton (Not/Yasal Yuk) hucreler de motora katildi.
+// cellKind resolveKeyAction'a NE karari uygulanacagini soyler; select/buton icin native
+// tus davranisi (ok tuslari, Enter, harfler) korunur, yalniz gezinme (Tab, buton icin +ok)
+// motor karari doner - bu iki tip edit moduna HIC girmez (K7-r2, BUTCE-UI-MIMARISI I7).
+export type CellKind = 'input' | 'select' | 'button'
+
 export interface KeyResolution {
   action: GridAction | null
   preventDefault: boolean
@@ -269,7 +276,26 @@ export function isPrintableKey(e: KeyEventLike): boolean {
   return e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey
 }
 
-export function resolveKeyAction(e: KeyEventLike, mode: GridMode, currentRawValue: string): KeyResolution {
+export function resolveKeyAction(
+  e: KeyEventLike,
+  mode: GridMode,
+  currentRawValue: string,
+  cellKind: CellKind = 'input',
+): KeyResolution {
+  if (cellKind === 'select') {
+    if (e.key === 'Tab') return { action: { type: 'tab', shift: e.shiftKey }, preventDefault: true }
+    return { action: null, preventDefault: false }
+  }
+
+  if (cellKind === 'button') {
+    if (e.key === 'Tab') return { action: { type: 'tab', shift: e.shiftKey }, preventDefault: true }
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      const dir = e.key === 'ArrowUp' ? 'up' : e.key === 'ArrowDown' ? 'down' : e.key === 'ArrowLeft' ? 'left' : 'right'
+      return { action: { type: 'arrow', dir }, preventDefault: true }
+    }
+    return { action: null, preventDefault: false }
+  }
+
   const mod = isMod(e)
 
   if (e.key === 'Escape') return { action: { type: 'esc' }, preventDefault: true }

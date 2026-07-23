@@ -67,6 +67,10 @@ export const PeriodRow = memo(function PeriodRow({
       <td style={periodRowStyle}>{s.name}</td>
       <td style={periodRowSelectTd}>
         <select
+          data-grid-cell="true"
+          data-row-id={`${it.id}:${s.id}`}
+          data-col="periodUnit"
+          data-cell-kind="select"
           style={cellInput}
           value={effectiveUnitId}
           onChange={(e) => void api.onPeriodUnitChange(it.id, s.id, e.target.value)}
@@ -137,6 +141,10 @@ export const PeriodRow = memo(function PeriodRow({
           </span>
         ) : donemBrut > donemNet ? (
           <button
+            data-grid-cell="true"
+            data-row-id={`${it.id}:${s.id}`}
+            data-col="periodBurden"
+            data-cell-kind="button"
             onClick={() => onOpenBurden(it.id, s.id)}
             style={{
               background: 'transparent',
