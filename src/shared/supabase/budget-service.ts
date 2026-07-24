@@ -41,6 +41,7 @@ export interface BudgetItemRow {
 export interface CardView {
   budgetId: string
   groupId: string
+  cardCode: string
   cardName: string
   stages: StageRow[]
   items: BudgetItemRow[]
@@ -135,7 +136,9 @@ export async function getCard(budgetId: string, cardId?: string): Promise<CardVi
     sortOrder: s.sort_order as number,
   }))
 
-  const grpQuery = supabase.from('expense_groups').select('id, name').eq('budget_id', budgetId)
+  // D3b-2a: card_code kutuphane sorgusunun ANAHTARIDIR (aidiyet=kod doktrini, K-B). Kart ADI
+  // anahtar OLAMAZ - kullanici hucrede degistirmis olabilir; kod dogumdan beri sabittir.
+  const grpQuery = supabase.from('expense_groups').select('id, name, card_code').eq('budget_id', budgetId)
   const { data: grp, error: eg } = await (cardId ? grpQuery.eq('id', cardId) : grpQuery.order('sort_order').limit(1)).maybeSingle()
   if (eg) throw new Error(eg.message)
   if (!grp) return null
@@ -224,7 +227,14 @@ export async function getCard(budgetId: string, cardId?: string): Promise<CardVi
     publicNote: (i.public_note as string | null) ?? null,
   }))
 
-  return { budgetId, groupId: grp.id as string, cardName: grp.name as string, stages, items: rows }
+  return {
+    budgetId,
+    groupId: grp.id as string,
+    cardCode: grp.card_code as string,
+    cardName: grp.name as string,
+    stages,
+    items: rows,
+  }
 }
 
 // Ince geriye-uyum sarmalayicisi (R3): getCard'in cardId verilmemis hali.

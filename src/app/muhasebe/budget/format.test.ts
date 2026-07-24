@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseNumericDraft, effectiveWarning, bordroAllowedUnits } from './format'
+import { parseNumericDraft, effectiveWarning, bordroAllowedUnits, normalizeForSearch, matchLibraryItems } from './format'
 
 describe('parseNumericDraft (PARSE GUVENCESI, K10 revize + TD-16)', () => {
   it('duz rakam metnini sayiya cevirir', () => {
@@ -93,5 +93,106 @@ describe('bordroAllowedUnits — TD-18', () => {
       { code: 'day' }, { code: 'week' }, { code: 'month' }, { code: 'episode' }, { code: 'flat' },
     ]
     expect(bordroAllowedUnits(units).map((u) => u.code)).toEqual(['day', 'week', 'month'])
+  })
+})
+
+describe('normalizeForSearch', () => {
+  it('İ -> i', () => {
+    expect(normalizeForSearch('İ')).toBe('i')
+  })
+
+  it('I -> i', () => {
+    expect(normalizeForSearch('I')).toBe('i')
+  })
+
+  it('ı -> i', () => {
+    expect(normalizeForSearch('ı')).toBe('i')
+  })
+
+  it('Ş -> s, ş -> s', () => {
+    expect(normalizeForSearch('Ş')).toBe('s')
+    expect(normalizeForSearch('ş')).toBe('s')
+  })
+
+  it('Ğ -> g', () => {
+    expect(normalizeForSearch('Ğ')).toBe('g')
+  })
+
+  it('Ü -> u', () => {
+    expect(normalizeForSearch('Ü')).toBe('u')
+  })
+
+  it('Ö -> o', () => {
+    expect(normalizeForSearch('Ö')).toBe('o')
+  })
+
+  it('Ç -> c', () => {
+    expect(normalizeForSearch('Ç')).toBe('c')
+  })
+
+  it('Isik Sefi -> isik sefi', () => {
+    expect(normalizeForSearch('Işık Şefi')).toBe('isik sefi')
+  })
+
+  it('Turkce olmayan metin bozulmadan kucultulur', () => {
+    expect(normalizeForSearch('Gaffer')).toBe('gaffer')
+  })
+})
+
+describe('matchLibraryItems', () => {
+  const FIXTURE = [
+    { name: 'Yönetmen Özel Asistanı', aliases: [] },
+    { name: 'Işık Şefi', aliases: ['Gaffer'] },
+    { name: 'Koreograf', aliases: [] },
+  ]
+
+  it('asistan -> yalniz Yonetmen Ozel Asistani (ICEREN eslesme, bastan degil)', () => {
+    const r = matchLibraryItems(FIXTURE, 'asistan')
+    expect(r.map((i) => i.name)).toEqual(['Yönetmen Özel Asistanı'])
+  })
+
+  it('ASISTAN -> ayni sonuc (buyuk harf duyarsiz)', () => {
+    const r = matchLibraryItems(FIXTURE, 'ASISTAN')
+    expect(r.map((i) => i.name)).toEqual(['Yönetmen Özel Asistanı'])
+  })
+
+  it('asıstan -> ayni sonuc (i/i katlamasi)', () => {
+    const r = matchLibraryItems(FIXTURE, 'asıstan')
+    expect(r.map((i) => i.name)).toEqual(['Yönetmen Özel Asistanı'])
+  })
+
+  it('ASİSTAN -> ayni sonuc (İ katlamasi)', () => {
+    const r = matchLibraryItems(FIXTURE, 'ASİSTAN')
+    expect(r.map((i) => i.name)).toEqual(['Yönetmen Özel Asistanı'])
+  })
+
+  it('gaffer -> Isik Sefi doner (es-ad uzerinden bulunur, donen nesne KANONIK)', () => {
+    const r = matchLibraryItems(FIXTURE, 'gaffer')
+    expect(r).toHaveLength(1)
+    expect(r[0].name).toBe('Işık Şefi')
+  })
+
+  it('ısık -> Isik Sefi doner (i/i + s/s katlamasi birlikte)', () => {
+    const r = matchLibraryItems(FIXTURE, 'ısık')
+    expect(r.map((i) => i.name)).toEqual(['Işık Şefi'])
+  })
+
+  it('bos sorgu -> tum liste (3 kayit, sira korunur)', () => {
+    const r = matchLibraryItems(FIXTURE, '')
+    expect(r.map((i) => i.name)).toEqual(['Yönetmen Özel Asistanı', 'Işık Şefi', 'Koreograf'])
+  })
+
+  it('yalniz bosluk -> tum liste (bos sorgu sayilir)', () => {
+    const r = matchLibraryItems(FIXTURE, '   ')
+    expect(r.map((i) => i.name)).toEqual(['Yönetmen Özel Asistanı', 'Işık Şefi', 'Koreograf'])
+  })
+
+  it('xyzq -> bos dizi', () => {
+    expect(matchLibraryItems(FIXTURE, 'xyzq')).toEqual([])
+  })
+
+  it('tek harf a -> iceren tum kayitlar (minimum uzunluk sarti yok)', () => {
+    const r = matchLibraryItems(FIXTURE, 'a')
+    expect(r.map((i) => i.name)).toEqual(['Yönetmen Özel Asistanı', 'Işık Şefi', 'Koreograf'])
   })
 })

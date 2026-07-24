@@ -3,6 +3,8 @@ import { getOrOpenBudget, getCard, loadUnits } from '../../../../shared/supabase
 import type { BudgetItemRow, CardView, StageRow, UnitRow } from '../../../../shared/supabase/budget-service'
 import { fetchMinimumWageThresholds } from '../../../../shared/supabase/payroll-read'
 import type { MinimumWageThresholds } from '../../../../shared/supabase/payroll-read'
+import { fetchCardLibrary } from '../../../../shared/supabase/library-service'
+import type { LibraryItem } from '../../../../shared/supabase/library-service'
 import { useToast } from '../../../../shared/components/toast'
 
 export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
@@ -12,6 +14,10 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
   const [rows, setRows] = useState<BudgetItemRow[]>([])
   const [stages, setStages] = useState<StageRow[]>([])
   const [units, setUnits] = useState<UnitRow[]>([])
+  // D3b-2a: kartin kutuphane kalemleri kart acilirken BIR KEZ cekilir (BUTCE-EKRAN-KARARLARI
+  // bolum 16), filtreleme istemci tarafinda (format.matchLibraryItems). Bu dilimde HENUZ HICBIR
+  // YERDE KULLANILMIYOR - autocomplete dikisi D3b-2b'de.
+  const [library, setLibrary] = useState<LibraryItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [reload, setReload] = useState(0)
@@ -103,6 +109,25 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
     }
   }, [card?.budgetId])
 
+  // D3b-2a: cekim kartin KODUNA baglidir (aidiyet=kod, K-B). Basarisizlik TOAST'lanir (units
+  // deseni) - asgari-ucret esiklerinden farkli olarak bu gorunur bir ozelligi (autocomplete)
+  // besler, sessiz gecilmez.
+  useEffect(() => {
+    if (!card?.cardCode) return
+    let cancelled = false
+    void (async () => {
+      try {
+        const lib = await fetchCardLibrary(card.cardCode)
+        if (!cancelled) setLibrary(lib)
+      } catch (e) {
+        if (!cancelled) addToast(e instanceof Error ? e.message : 'Kalem kütüphanesi yüklenemedi', 'error')
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [card?.cardCode, addToast])
+
   const patchRow = useCallback((id: string, patch: Partial<BudgetItemRow>) => {
     setRows((rs) => rs.map((r) => (r.id === id ? { ...r, ...patch } : r)))
   }, [])
@@ -116,6 +141,7 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
     rows,
     stages,
     units,
+    library,
     unitLabelById,
     loading,
     error,

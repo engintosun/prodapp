@@ -109,3 +109,39 @@ export function effectiveWarning(
 export function bordroAllowedUnits<T extends { code: string }>(units: T[]): T[] {
   return units.filter((u) => u.code !== 'episode' && u.code !== 'flat')
 }
+
+// D3b-2a — Kutuphane eslesmesi (BUTCE-EKRAN-KARARLARI bolum 16): Turkce-duyarsiz + ICEREN
+// eslesme + es-ad taramasi. SAF fonksiyon: DOM/servis bilmez, listeyi cagiran taraf tutar.
+
+// Turkce harf katlamasi: I/İ/ı/i ayrimi ARANIRKEN kaldirilir ("asıstan" -> "asistan"i bulur).
+// toLocaleLowerCase('tr') TEK BASINA YETMEZ: 'I'.toLocaleLowerCase('tr') = 'ı' verir ve 'i' ile
+// eslesmez - bu yuzden ONCE katlanir, SONRA kucultulur.
+const SEARCH_FOLD: Record<string, string> = {
+  'ı': 'i', 'İ': 'i', 'I': 'i',
+  'ş': 's', 'Ş': 's',
+  'ğ': 'g', 'Ğ': 'g',
+  'ü': 'u', 'Ü': 'u',
+  'ö': 'o', 'Ö': 'o',
+  'ç': 'c', 'Ç': 'c',
+}
+
+export function normalizeForSearch(s: string): string {
+  return s.replace(/[ıİIşŞğĞüÜöÖçÇ]/g, (ch) => SEARCH_FOLD[ch] ?? ch).toLowerCase()
+}
+
+// Bos sorgu = SUZME YOK, tum liste doner. Dropdown'un ne zaman ACILACAGI cagiran tarafin
+// karari, bu fonksiyonun konusu degil. Donen kayit KANONIK nesnedir - es-ad uzerinden bulunsa
+// bile ekranda gosterilecek metin item.name'dir (bolum 16). Siralama kutuphaneden geldigi gibi
+// korunur (katalog kodu sirasi); puanlama/yeniden-siralama YOK.
+export function matchLibraryItems<T extends { name: string; aliases: string[] }>(
+  items: T[],
+  query: string,
+): T[] {
+  const q = normalizeForSearch(query.trim())
+  if (q === '') return items
+  return items.filter(
+    (it) =>
+      normalizeForSearch(it.name).includes(q) ||
+      it.aliases.some((a) => normalizeForSearch(a).includes(q)),
+  )
+}
