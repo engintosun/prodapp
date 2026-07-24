@@ -589,3 +589,124 @@ describe('resolveKeyAction - Esc/Tab/Arrow mevcut davranis degismedi', () => {
     expect(resolveKeyAction(keyEvent({ key: 'ArrowDown' }), 'edit', '')).toEqual({ action: { type: 'arrow', dir: 'down' }, preventDefault: true })
   })
 })
+
+// KLV-K13 (D3b-1): combobox hucresi grid duragidir ama EDIT MODU TASIMAZ - yazi inputun
+// kendi isidir. listOpen cagiran tarafca yalniz liste acik VE en az bir secilebilir
+// secenek varken true verilir.
+describe('resolveKeyAction — combobox', () => {
+  describe('liste acik (listOpen=true)', () => {
+    it('ArrowDown listDown niyeti doner', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'ArrowDown' }), 'nav', '', 'combobox', true)
+      expect(r).toEqual({ action: null, preventDefault: true, listIntent: 'listDown' })
+    })
+
+    it('ArrowUp listUp niyeti doner', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'ArrowUp' }), 'nav', '', 'combobox', true)
+      expect(r).toEqual({ action: null, preventDefault: true, listIntent: 'listUp' })
+    })
+
+    it('Enter listSelect niyeti doner', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'Enter' }), 'nav', '', 'combobox', true)
+      expect(r).toEqual({ action: null, preventDefault: true, listIntent: 'listSelect' })
+    })
+
+    it('Tab (shift yok) listSelect niyeti doner', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'Tab' }), 'nav', '', 'combobox', true)
+      expect(r).toEqual({ action: null, preventDefault: true, listIntent: 'listSelect' })
+    })
+
+    it('Shift+Tab listClose niyeti + tab action doner (kayit dogurmaz)', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'Tab', shiftKey: true }), 'nav', '', 'combobox', true)
+      expect(r).toEqual({ action: { type: 'tab', shift: true }, preventDefault: true, listIntent: 'listClose' })
+    })
+
+    it('Escape listClose niyeti doner', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'Escape' }), 'nav', '', 'combobox', true)
+      expect(r).toEqual({ action: null, preventDefault: true, listIntent: 'listClose' })
+    })
+
+    it('yazdirilabilir karakter inputun dogal davranisi (dokunulmaz)', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'a' }), 'nav', '', 'combobox', true)
+      expect(r).toEqual({ action: null, preventDefault: false })
+    })
+
+    it('Backspace inputun dogal davranisi (dokunulmaz)', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'Backspace' }), 'nav', '', 'combobox', true)
+      expect(r).toEqual({ action: null, preventDefault: false })
+    })
+
+    it('ArrowLeft inputun imlecine birakilir (dokunulmaz)', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'ArrowLeft' }), 'nav', '', 'combobox', true)
+      expect(r).toEqual({ action: null, preventDefault: false })
+    })
+  })
+
+  describe('liste kapali (listOpen=false / verilmemis)', () => {
+    it('Tab motor karari doner', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'Tab' }), 'nav', '', 'combobox')
+      expect(r).toEqual({ action: { type: 'tab', shift: false }, preventDefault: true })
+    })
+
+    it('Shift+Tab motor karari doner', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'Tab', shiftKey: true }), 'nav', '', 'combobox', false)
+      expect(r).toEqual({ action: { type: 'tab', shift: true }, preventDefault: true })
+    })
+
+    it('ArrowDown motor karari doner', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'ArrowDown' }), 'nav', '', 'combobox', false)
+      expect(r).toEqual({ action: { type: 'arrow', dir: 'down' }, preventDefault: true })
+    })
+
+    it('ArrowUp motor karari doner', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'ArrowUp' }), 'nav', '', 'combobox', false)
+      expect(r).toEqual({ action: { type: 'arrow', dir: 'up' }, preventDefault: true })
+    })
+
+    it('ArrowLeft native kalir (action null, preventDefault false)', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'ArrowLeft' }), 'nav', '', 'combobox', false)
+      expect(r).toEqual({ action: null, preventDefault: false })
+    })
+
+    it('ArrowRight native kalir (action null, preventDefault false)', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'ArrowRight' }), 'nav', '', 'combobox', false)
+      expect(r).toEqual({ action: null, preventDefault: false })
+    })
+
+    it('Enter native kalir (edit moduna girmez)', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'Enter' }), 'nav', '', 'combobox', false)
+      expect(r).toEqual({ action: null, preventDefault: false })
+    })
+
+    it('Escape native kalir', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'Escape' }), 'nav', '', 'combobox', false)
+      expect(r).toEqual({ action: null, preventDefault: false })
+    })
+
+    it('yazdirilabilir karakter native kalir, edit acmaz', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'a' }), 'nav', '', 'combobox', false)
+      expect(r).toEqual({ action: null, preventDefault: false })
+    })
+  })
+
+  it('regresyon: combobox hicbir girdi kombinasyonunda type veya enter tipi action uretmez', () => {
+    const events: KeyEventLike[] = [
+      keyEvent({ key: 'ArrowDown' }),
+      keyEvent({ key: 'ArrowUp' }),
+      keyEvent({ key: 'Enter' }),
+      keyEvent({ key: 'Tab' }),
+      keyEvent({ key: 'Tab', shiftKey: true }),
+      keyEvent({ key: 'Escape' }),
+      keyEvent({ key: 'a' }),
+      keyEvent({ key: 'Backspace' }),
+      keyEvent({ key: 'ArrowLeft' }),
+      keyEvent({ key: 'ArrowRight' }),
+    ]
+    for (const listOpen of [true, false]) {
+      for (const e of events) {
+        const r = resolveKeyAction(e, 'nav', '', 'combobox', listOpen)
+        expect(r.action?.type).not.toBe('type')
+        expect(r.action?.type).not.toBe('enter')
+      }
+    }
+  })
+})

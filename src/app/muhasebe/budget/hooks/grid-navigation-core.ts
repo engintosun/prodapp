@@ -251,13 +251,20 @@ export interface KeyEventLike {
 // cellKind resolveKeyAction'a NE karari uygulanacagini soyler; select/buton icin native
 // tus davranisi (ok tuslari, Enter, harfler) korunur, yalniz gezinme (Tab, buton icin +ok)
 // motor karari doner - bu iki tip edit moduna HIC girmez (K7-r2, BUTCE-UI-MIMARISI I7).
-export type CellKind = 'input' | 'select' | 'button'
+export type CellKind = 'input' | 'select' | 'button' | 'combobox'
+
+// D3b-1 (KLV-K13): combobox hucresinde ACIK listenin tuslari grid'e ait DEGILDIR. Liste
+// state'i (hangi secenek vurgulu, liste acik mi) cagiran tarafta yasar - cekirdek yalniz
+// NIYETI soyler, kendi liste state'i tutmaz (DOM'suz saf kalir).
+export type ListIntent = 'listUp' | 'listDown' | 'listSelect' | 'listClose'
 
 export interface KeyResolution {
   action: GridAction | null
   preventDefault: boolean
   // MOD+C (nav): panoya YAZILACAK ham deger cagiran tarafta hazir - core I/O yapmaz.
   copyRaw?: boolean
+  // Yalniz combobox hucrelerde dolar; cagiran taraf kendi liste state'ine uygular.
+  listIntent?: ListIntent
 }
 
 function isMod(e: KeyEventLike): boolean {
@@ -281,7 +288,36 @@ export function resolveKeyAction(
   mode: GridMode,
   currentRawValue: string,
   cellKind: CellKind = 'input',
+  listOpen = false,
 ): KeyResolution {
+  // KLV-K13 (combobox, D3b-1): hucre grid duragidir ama EDIT MODU YOKTUR - yazi inputun
+  // kendi isidir, cekirdek 'type'/'enter' URETMEZ (select/buton ile ayni ilke, K7-r2).
+  // listOpen cagiran tarafca YALNIZ liste acik VE en az bir SECILEBILIR secenek varken
+  // true verilir; boylece "vurgulu secenek var mi" sorusu ayri parametre olarak girmez.
+  if (cellKind === 'combobox') {
+    if (listOpen) {
+      if (e.key === 'ArrowDown') return { action: null, preventDefault: true, listIntent: 'listDown' }
+      if (e.key === 'ArrowUp') return { action: null, preventDefault: true, listIntent: 'listUp' }
+      if (e.key === 'Enter') return { action: null, preventDefault: true, listIntent: 'listSelect' }
+      if (e.key === 'Escape') return { action: null, preventDefault: true, listIntent: 'listClose' }
+      if (e.key === 'Tab') {
+        // Ileri Tab SECER (ARIA combobox hizasi, BUTCE-EKRAN-KARARLARI bolum 17).
+        // Shift+Tab GERI gidistir - kayit dogurmaz: liste kapanir, gezinme normal isler.
+        if (e.shiftKey) return { action: { type: 'tab', shift: true }, preventDefault: true, listIntent: 'listClose' }
+        return { action: null, preventDefault: true, listIntent: 'listSelect' }
+      }
+      // Yazi / imlec / silme: inputun dogal davranisi, dokunulmaz.
+      return { action: null, preventDefault: false }
+    }
+    if (e.key === 'Tab') return { action: { type: 'tab', shift: e.shiftKey }, preventDefault: true }
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      return { action: { type: 'arrow', dir: e.key === 'ArrowUp' ? 'up' : 'down' }, preventDefault: true }
+    }
+    // Sol/sag ok inputun imlecine birakilir -> hucreden YATAY cikis yalniz Tab'dir
+    // (K7-r2 select hucrelerdeki bilincli bedelin aynisi, tutarli).
+    return { action: null, preventDefault: false }
+  }
+
   if (cellKind === 'select') {
     if (e.key === 'Tab') return { action: { type: 'tab', shift: e.shiftKey }, preventDefault: true }
     return { action: null, preventDefault: false }
