@@ -1,17 +1,22 @@
-import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Loading } from '../../../shared/components/loading'
 import { EmptyState } from '../../../shared/components/empty-state'
 import { ErrorMessage } from '../../../shared/components/error-message'
 import { useCardRows } from './hooks/use-card-rows'
 import { useEditBuffers } from './hooks/use-edit-buffers'
 import { useGridNavigation } from './hooks/use-grid-navigation'
-import { isMultiPeriod, fmt } from './format'
+import { isMultiPeriod, fmt, matchLibraryItems } from './format'
+import { addBudgetItem } from '../../../shared/supabase/budget-service'
+import type { LibraryItem } from '../../../shared/supabase/library-service'
+import { useToast } from '../../../shared/components/toast'
+import type { ListIntent } from './hooks/grid-navigation-core'
 import { thStyle, thNum, colWidths, tableMinWidth } from './components/table-styles'
 import { ItemRow } from './components/item-row'
 import { PeriodRow } from './components/period-row'
 import { BurdenSheet } from './components/burden-sheet'
 import { StatusInfoSheet } from './components/status-info-sheet'
 import { NoteSheet } from './components/note-sheet'
+import { AddItemRow, ADD_ROW_ID } from './components/add-item-row'
 
 export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardId?: string } = {}) {
   const {
@@ -19,6 +24,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     rows,
     stages,
     units,
+    library,
     loading,
     error,
     refetch,
@@ -41,7 +47,76 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     minWageThresholdsRef,
     patchRow,
   })
-  const { containerRef, handleKeyDown, handleFocus, handlePaste, handleDrop, handleDragOver, isActiveEdit } = useGridNavigation({ rowsRef, savedRef, patchRow, api, rows })
+  const { addToast } = useToast()
+  const [addQuery, setAddQuery] = useState('')
+  const [addOpen, setAddOpen] = useState(false)
+  const [addHighlight, setAddHighlight] = useState(0)
+  const [adding, setAdding] = useState(false)
+  const addInputRef = useRef<HTMLInputElement>(null)
+
+  // Sorgu bos iken TUM kart kutuphanesi doner (Engin karari 2026-07-24: dropdown ODAKTA acilir,
+  // ilk tusta degil - kullanici once bakar, isterse yazarak daraltir).
+  const addOptions = useMemo(() => matchLibraryItems(library, addQuery), [library, addQuery])
+
+  // Tus olayi anindaki GUNCEL degerler; handler'lar sabit referansli kalsin diye ref'te tutulur
+  // (I1 prop stabilitesi + api useMemo deps=[] deseni).
+  const addOptionsRef = useRef<LibraryItem[]>([])
+  const addHighlightRef = useRef(0)
+  const addOpenRef = useRef(false)
+  useEffect(() => {
+    addOptionsRef.current = addOptions
+    addHighlightRef.current = addHighlight
+    addOpenRef.current = addOpen
+  })
+
+  const isListOpen = useCallback((rowId: string) => rowId === ADD_ROW_ID && addOpenRef.current, [])
+
+  const onSelectLibraryItem = useCallback(
+    async (item: LibraryItem) => {
+      if (!cardRef.current || adding) return
+      try {
+        setAdding(true)
+        await addBudgetItem(cardRef.current.groupId, { catalogCode: item.catalogCode })
+        setAddQuery('')
+        setAddOpen(false)
+        setAddHighlight(0)
+        refetch()
+        // Engin karari 2026-07-24: odak "+ kalem ekle" satirinda KALIR (pes pese kalem dokme).
+        addInputRef.current?.focus()
+      } catch (e) {
+        addToast(e instanceof Error ? e.message : 'Kalem eklenemedi', 'error')
+      } finally {
+        setAdding(false)
+      }
+    },
+    [adding, refetch, addToast, cardRef],
+  )
+
+  const onListIntent = useCallback(
+    (rowId: string, intent: ListIntent) => {
+      if (rowId !== ADD_ROW_ID) return
+      if (intent === 'listDown') setAddHighlight((i) => Math.min(i + 1, addOptionsRef.current.length - 1))
+      else if (intent === 'listUp') setAddHighlight((i) => Math.max(i - 1, 0))
+      else if (intent === 'listClose') setAddOpen(false)
+      else if (intent === 'listSelect') {
+        const picked = addOptionsRef.current[addHighlightRef.current]
+        if (picked) void onSelectLibraryItem(picked)
+      }
+    },
+    [onSelectLibraryItem],
+  )
+
+  // Sorgu degisince vurgu basa doner ve liste acilir (yazmak listeyi kapatmaz).
+  const onAddQueryChange = useCallback((value: string) => {
+    setAddQuery(value)
+    setAddHighlight(0)
+    setAddOpen(true)
+  }, [])
+
+  const onAddOpen = useCallback(() => setAddOpen(true), [])
+  const onAddClose = useCallback(() => setAddOpen(false), [])
+
+  const { containerRef, handleKeyDown, handleFocus, handlePaste, handleDrop, handleDragOver, isActiveEdit } = useGridNavigation({ rowsRef, savedRef, patchRow, api, rows, isListOpen, onListIntent })
   const [openBurden, setOpenBurden] = useState<{ itemId: string; stageId: string | null } | null>(null)
   const [openNoteItemId, setOpenNoteItemId] = useState<string | null>(null)
   const [openStatusInfo, setOpenStatusInfo] = useState(false)
@@ -56,11 +131,13 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [card, refreshBordro])
 
+  // D3b-2b: kosul rows.length'ten card'a tasindi - kalemi olmayan kartta da tablo (ve "+ kalem
+  // ekle" satiri) cizilir, acilis odagi oraya duser.
   useEffect(() => {
-    if (didInitialFocusRef.current || rows.length === 0) return
+    if (didInitialFocusRef.current || !card) return
     didInitialFocusRef.current = true
     containerRef.current?.querySelector<HTMLElement>('[data-col="name"]')?.focus()
-  }, [rows, containerRef])
+  }, [rows, card, containerRef])
 
   const onOpenBurden = useCallback((itemId: string, stageId: string | null) => {
     setOpenBurden({ itemId, stageId })
@@ -76,8 +153,9 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
 
   if (loading) return <Loading label="Bütçe yükleniyor..." />
   if (error) return <ErrorMessage message={error} onRetry={refetch} />
-  if (!card || rows.length === 0)
-    return <EmptyState title="Kart boş" description="Bu bütçede kalem yok." />
+  // D3b-2b: rows.length===0 erken donusu KALDIRILDI - kalemsiz kartta "+ kalem ekle" satirina
+  // ulasilamiyordu (cikmaz sokak). Tablo satir sayisindan BAGIMSIZ cizilir.
+  if (!card) return <EmptyState title="Kart bulunamadı" description="Bu bütçede kart yok." />
 
   return (
     <div>
@@ -196,6 +274,18 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                 </Fragment>
               )
             })}
+            <AddItemRow
+              ref={addInputRef}
+              query={addQuery}
+              options={addOptions}
+              isOpen={addOpen}
+              highlightIndex={addHighlight}
+              disabled={adding}
+              onQueryChange={onAddQueryChange}
+              onOpen={onAddOpen}
+              onClose={onAddClose}
+              onSelect={onSelectLibraryItem}
+            />
           </tbody>
         </table>
       </div>

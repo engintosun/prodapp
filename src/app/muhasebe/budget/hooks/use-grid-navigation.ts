@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { MutableRefObject } from 'react'
 import { createGridState, reduceGrid, resolveKeyAction } from './grid-navigation-core'
-import type { CellId, ColumnEquivalenceGroups, GridShape, GridState } from './grid-navigation-core'
+import type { CellId, CellKind, ColumnEquivalenceGroups, GridShape, GridState, ListIntent } from './grid-navigation-core'
 import type { BudgetItemRow } from '../../../../shared/supabase/budget-service'
 import type { EditApi } from './use-edit-buffers'
 
@@ -40,6 +40,10 @@ interface UseGridNavigationParams {
   patchRow: (id: string, patch: Partial<BudgetItemRow>) => void
   api: EditApi
   rows: BudgetItemRow[]
+  // D3b-2b (KLV-K13): liste state'i cagiran tarafta yasar; motor yalniz SORAR ve donen NIYETI
+  // geri verir. Ikisi de opsiyonel - combobox hucre olmayan ekranlar eskisi gibi calisir.
+  isListOpen?: (rowId: string) => boolean
+  onListIntent?: (rowId: string, intent: ListIntent) => void
 }
 
 // PeriodRow hucreleri rowId'yi "itemId:stageId" olarak tasir (itemId/stageId UUID,
@@ -64,7 +68,7 @@ function computeGridShape(container: HTMLElement): GridShape {
   return rows
 }
 
-export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows }: UseGridNavigationParams) {
+export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows, isListOpen, onListIntent }: UseGridNavigationParams) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [state, setState] = useState<GridState>(createGridState)
 
@@ -166,11 +170,13 @@ export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows }: Us
     if (!container) return
     const grid = computeGridShape(container)
 
-    const cellKind = target.dataset.cellKind as 'select' | 'button' | undefined
+    const cellKind = target.dataset.cellKind as CellKind | undefined
     const rawValue = state.mode === 'nav' ? getRawValue(cell) : ''
-    const resolution = resolveKeyAction(e, state.mode, rawValue, cellKind)
+    const listOpen = cellKind === 'combobox' && isListOpen ? isListOpen(rowId) : false
+    const resolution = resolveKeyAction(e, state.mode, rawValue, cellKind, listOpen)
     if (resolution.preventDefault) e.preventDefault()
     if (resolution.copyRaw) void navigator.clipboard?.writeText(getRawValue(cell))
+    if (resolution.listIntent && onListIntent) onListIntent(rowId, resolution.listIntent)
     if (resolution.action) dispatch(resolution.action, state, cell, grid)
   }
 
