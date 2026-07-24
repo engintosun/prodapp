@@ -258,6 +258,14 @@ export type CellKind = 'input' | 'select' | 'button' | 'combobox'
 // NIYETI soyler, kendi liste state'i tutmaz (DOM'suz saf kalir).
 export type ListIntent = 'listUp' | 'listDown' | 'listSelect' | 'listClose'
 
+// D3b-2d (Engin tarayici bulgusu 2026-07-24): "liste acik mi" ile "vurgulu secenek var mi"
+// AYRI sorulardir. D3b-1'de ikisi tek boolean'a katlanmisti; sonuc: liste odakta acilip ilk
+// secenek bastan vurgulu geldigi icin hucreden Tab'la GECMEK bile kalem doguruyordu. Ayrildi.
+export interface ListState {
+  open: boolean
+  hasHighlight: boolean
+}
+
 export interface KeyResolution {
   action: GridAction | null
   preventDefault: boolean
@@ -288,23 +296,31 @@ export function resolveKeyAction(
   mode: GridMode,
   currentRawValue: string,
   cellKind: CellKind = 'input',
-  listOpen = false,
+  list: ListState = { open: false, hasHighlight: false },
 ): KeyResolution {
   // KLV-K13 (combobox, D3b-1): hucre grid duragidir ama EDIT MODU YOKTUR - yazi inputun
   // kendi isidir, cekirdek 'type'/'enter' URETMEZ (select/buton ile ayni ilke, K7-r2).
   // listOpen cagiran tarafca YALNIZ liste acik VE en az bir SECILEBILIR secenek varken
   // true verilir; boylece "vurgulu secenek var mi" sorusu ayri parametre olarak girmez.
   if (cellKind === 'combobox') {
-    if (listOpen) {
+    if (list.open) {
       if (e.key === 'ArrowDown') return { action: null, preventDefault: true, listIntent: 'listDown' }
       if (e.key === 'ArrowUp') return { action: null, preventDefault: true, listIntent: 'listUp' }
-      if (e.key === 'Enter') return { action: null, preventDefault: true, listIntent: 'listSelect' }
       if (e.key === 'Escape') return { action: null, preventDefault: true, listIntent: 'listClose' }
+      // SECIM ANCAK vurgulu secenek varken olur; vurgu YALNIZ ok tusuyla baslar (D3b-2d).
+      // Gerekce bolum 17'nin blur kuralinin AYNISI: secim = gercek kayit (fn_add_budget_item),
+      // kaza sonucu tus basisi kalem doguramaz.
+      if (e.key === 'Enter') {
+        if (list.hasHighlight) return { action: null, preventDefault: true, listIntent: 'listSelect' }
+        // Vurgu yoksa secilecek sey yok; grid'e de sizmaz (ekleme satirinin commit edilecek
+        // bir degeri yoktur).
+        return { action: null, preventDefault: true }
+      }
       if (e.key === 'Tab') {
-        // Ileri Tab SECER (ARIA combobox hizasi, BUTCE-EKRAN-KARARLARI bolum 17).
-        // Shift+Tab GERI gidistir - kayit dogurmaz: liste kapanir, gezinme normal isler.
-        if (e.shiftKey) return { action: { type: 'tab', shift: true }, preventDefault: true, listIntent: 'listClose' }
-        return { action: null, preventDefault: true, listIntent: 'listSelect' }
+        // Ileri Tab vurgu VARSA secer (ARIA combobox hizasi). Vurgu YOKSA "hucreden gec"
+        // demektir: liste kapanir, gezinme normal isler - satirdan gecmek kalem DOGURMAZ.
+        if (!e.shiftKey && list.hasHighlight) return { action: null, preventDefault: true, listIntent: 'listSelect' }
+        return { action: { type: 'tab', shift: e.shiftKey }, preventDefault: true, listIntent: 'listClose' }
       }
       // Yazi / imlec / silme: inputun dogal davranisi, dokunulmaz.
       return { action: null, preventDefault: false }

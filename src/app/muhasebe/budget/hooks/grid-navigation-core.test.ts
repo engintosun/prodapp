@@ -590,53 +590,93 @@ describe('resolveKeyAction - Esc/Tab/Arrow mevcut davranis degismedi', () => {
   })
 })
 
-// KLV-K13 (D3b-1): combobox hucresi grid duragidir ama EDIT MODU TASIMAZ - yazi inputun
-// kendi isidir. listOpen cagiran tarafca yalniz liste acik VE en az bir secilebilir
-// secenek varken true verilir.
+// KLV-K13 (D3b-1, revize D3b-2d 2026-07-24): combobox hucresi grid duragidir ama EDIT MODU
+// TASIMAZ - yazi inputun kendi isidir. list: ListState = { open, hasHighlight } iki AYRI
+// sorudur - vurgu YALNIZ ok tusuyla baslar, odakta acilma/yazarak suzme vurgu OLUSTURMAZ.
 describe('resolveKeyAction — combobox', () => {
   describe('liste acik (listOpen=true)', () => {
     it('ArrowDown listDown niyeti doner', () => {
-      const r = resolveKeyAction(keyEvent({ key: 'ArrowDown' }), 'nav', '', 'combobox', true)
+      const r = resolveKeyAction(keyEvent({ key: 'ArrowDown' }), 'nav', '', 'combobox', { open: true, hasHighlight: true })
       expect(r).toEqual({ action: null, preventDefault: true, listIntent: 'listDown' })
     })
 
     it('ArrowUp listUp niyeti doner', () => {
-      const r = resolveKeyAction(keyEvent({ key: 'ArrowUp' }), 'nav', '', 'combobox', true)
+      const r = resolveKeyAction(keyEvent({ key: 'ArrowUp' }), 'nav', '', 'combobox', { open: true, hasHighlight: true })
       expect(r).toEqual({ action: null, preventDefault: true, listIntent: 'listUp' })
     })
 
     it('Enter listSelect niyeti doner', () => {
-      const r = resolveKeyAction(keyEvent({ key: 'Enter' }), 'nav', '', 'combobox', true)
+      const r = resolveKeyAction(keyEvent({ key: 'Enter' }), 'nav', '', 'combobox', { open: true, hasHighlight: true })
       expect(r).toEqual({ action: null, preventDefault: true, listIntent: 'listSelect' })
     })
 
     it('Tab (shift yok) listSelect niyeti doner', () => {
-      const r = resolveKeyAction(keyEvent({ key: 'Tab' }), 'nav', '', 'combobox', true)
+      const r = resolveKeyAction(keyEvent({ key: 'Tab' }), 'nav', '', 'combobox', { open: true, hasHighlight: true })
       expect(r).toEqual({ action: null, preventDefault: true, listIntent: 'listSelect' })
     })
 
     it('Shift+Tab listClose niyeti + tab action doner (kayit dogurmaz)', () => {
-      const r = resolveKeyAction(keyEvent({ key: 'Tab', shiftKey: true }), 'nav', '', 'combobox', true)
+      const r = resolveKeyAction(keyEvent({ key: 'Tab', shiftKey: true }), 'nav', '', 'combobox', { open: true, hasHighlight: true })
       expect(r).toEqual({ action: { type: 'tab', shift: true }, preventDefault: true, listIntent: 'listClose' })
     })
 
     it('Escape listClose niyeti doner', () => {
-      const r = resolveKeyAction(keyEvent({ key: 'Escape' }), 'nav', '', 'combobox', true)
+      const r = resolveKeyAction(keyEvent({ key: 'Escape' }), 'nav', '', 'combobox', { open: true, hasHighlight: true })
       expect(r).toEqual({ action: null, preventDefault: true, listIntent: 'listClose' })
     })
 
     it('yazdirilabilir karakter inputun dogal davranisi (dokunulmaz)', () => {
-      const r = resolveKeyAction(keyEvent({ key: 'a' }), 'nav', '', 'combobox', true)
+      const r = resolveKeyAction(keyEvent({ key: 'a' }), 'nav', '', 'combobox', { open: true, hasHighlight: true })
       expect(r).toEqual({ action: null, preventDefault: false })
     })
 
     it('Backspace inputun dogal davranisi (dokunulmaz)', () => {
-      const r = resolveKeyAction(keyEvent({ key: 'Backspace' }), 'nav', '', 'combobox', true)
+      const r = resolveKeyAction(keyEvent({ key: 'Backspace' }), 'nav', '', 'combobox', { open: true, hasHighlight: true })
       expect(r).toEqual({ action: null, preventDefault: false })
     })
 
     it('ArrowLeft inputun imlecine birakilir (dokunulmaz)', () => {
-      const r = resolveKeyAction(keyEvent({ key: 'ArrowLeft' }), 'nav', '', 'combobox', true)
+      const r = resolveKeyAction(keyEvent({ key: 'ArrowLeft' }), 'nav', '', 'combobox', { open: true, hasHighlight: true })
+      expect(r).toEqual({ action: null, preventDefault: false })
+    })
+  })
+
+  // ASIL BULGU (D3b-2d, Engin tarayici bulgusu 2026-07-24): liste acik ama HENUZ hicbir
+  // secenek vurgulanmamis - odakta acilma/yazarak suzme bu durumu dogurur. Bu durumda
+  // Tab'la hucreden GECMEK kalem DOGURMAMALI (eski davranis buydu ve hatali bulundu).
+  describe('liste acik ama vurgu YOK (open:true, hasHighlight:false)', () => {
+    it('Tab hucreden cikar, kalem DOGURMAZ (ASIL BULGU)', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'Tab' }), 'nav', '', 'combobox', { open: true, hasHighlight: false })
+      expect(r).toEqual({ action: { type: 'tab', shift: false }, preventDefault: true, listIntent: 'listClose' })
+    })
+
+    it('Shift+Tab hucreden geri cikar, listeyi kapatir', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'Tab', shiftKey: true }), 'nav', '', 'combobox', { open: true, hasHighlight: false })
+      expect(r).toEqual({ action: { type: 'tab', shift: true }, preventDefault: true, listIntent: 'listClose' })
+    })
+
+    it('Enter yutulur, secim yok (secilecek vurgulu secenek yoktur)', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'Enter' }), 'nav', '', 'combobox', { open: true, hasHighlight: false })
+      expect(r).toEqual({ action: null, preventDefault: true })
+    })
+
+    it('ArrowDown listDown niyeti doner (vurguyu baslatir)', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'ArrowDown' }), 'nav', '', 'combobox', { open: true, hasHighlight: false })
+      expect(r).toEqual({ action: null, preventDefault: true, listIntent: 'listDown' })
+    })
+
+    it('ArrowUp listUp niyeti doner', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'ArrowUp' }), 'nav', '', 'combobox', { open: true, hasHighlight: false })
+      expect(r).toEqual({ action: null, preventDefault: true, listIntent: 'listUp' })
+    })
+
+    it('Escape listClose niyeti doner', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'Escape' }), 'nav', '', 'combobox', { open: true, hasHighlight: false })
+      expect(r).toEqual({ action: null, preventDefault: true, listIntent: 'listClose' })
+    })
+
+    it('yazdirilabilir karakter inputun dogal davranisi (dokunulmaz)', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'a' }), 'nav', '', 'combobox', { open: true, hasHighlight: false })
       expect(r).toEqual({ action: null, preventDefault: false })
     })
   })
@@ -648,42 +688,42 @@ describe('resolveKeyAction — combobox', () => {
     })
 
     it('Shift+Tab motor karari doner', () => {
-      const r = resolveKeyAction(keyEvent({ key: 'Tab', shiftKey: true }), 'nav', '', 'combobox', false)
+      const r = resolveKeyAction(keyEvent({ key: 'Tab', shiftKey: true }), 'nav', '', 'combobox', { open: false, hasHighlight: false })
       expect(r).toEqual({ action: { type: 'tab', shift: true }, preventDefault: true })
     })
 
     it('ArrowDown motor karari doner', () => {
-      const r = resolveKeyAction(keyEvent({ key: 'ArrowDown' }), 'nav', '', 'combobox', false)
+      const r = resolveKeyAction(keyEvent({ key: 'ArrowDown' }), 'nav', '', 'combobox', { open: false, hasHighlight: false })
       expect(r).toEqual({ action: { type: 'arrow', dir: 'down' }, preventDefault: true })
     })
 
     it('ArrowUp motor karari doner', () => {
-      const r = resolveKeyAction(keyEvent({ key: 'ArrowUp' }), 'nav', '', 'combobox', false)
+      const r = resolveKeyAction(keyEvent({ key: 'ArrowUp' }), 'nav', '', 'combobox', { open: false, hasHighlight: false })
       expect(r).toEqual({ action: { type: 'arrow', dir: 'up' }, preventDefault: true })
     })
 
     it('ArrowLeft native kalir (action null, preventDefault false)', () => {
-      const r = resolveKeyAction(keyEvent({ key: 'ArrowLeft' }), 'nav', '', 'combobox', false)
+      const r = resolveKeyAction(keyEvent({ key: 'ArrowLeft' }), 'nav', '', 'combobox', { open: false, hasHighlight: false })
       expect(r).toEqual({ action: null, preventDefault: false })
     })
 
     it('ArrowRight native kalir (action null, preventDefault false)', () => {
-      const r = resolveKeyAction(keyEvent({ key: 'ArrowRight' }), 'nav', '', 'combobox', false)
+      const r = resolveKeyAction(keyEvent({ key: 'ArrowRight' }), 'nav', '', 'combobox', { open: false, hasHighlight: false })
       expect(r).toEqual({ action: null, preventDefault: false })
     })
 
     it('Enter native kalir (edit moduna girmez)', () => {
-      const r = resolveKeyAction(keyEvent({ key: 'Enter' }), 'nav', '', 'combobox', false)
+      const r = resolveKeyAction(keyEvent({ key: 'Enter' }), 'nav', '', 'combobox', { open: false, hasHighlight: false })
       expect(r).toEqual({ action: null, preventDefault: false })
     })
 
     it('Escape native kalir', () => {
-      const r = resolveKeyAction(keyEvent({ key: 'Escape' }), 'nav', '', 'combobox', false)
+      const r = resolveKeyAction(keyEvent({ key: 'Escape' }), 'nav', '', 'combobox', { open: false, hasHighlight: false })
       expect(r).toEqual({ action: null, preventDefault: false })
     })
 
     it('yazdirilabilir karakter native kalir, edit acmaz', () => {
-      const r = resolveKeyAction(keyEvent({ key: 'a' }), 'nav', '', 'combobox', false)
+      const r = resolveKeyAction(keyEvent({ key: 'a' }), 'nav', '', 'combobox', { open: false, hasHighlight: false })
       expect(r).toEqual({ action: null, preventDefault: false })
     })
   })
@@ -701,9 +741,14 @@ describe('resolveKeyAction — combobox', () => {
       keyEvent({ key: 'ArrowLeft' }),
       keyEvent({ key: 'ArrowRight' }),
     ]
-    for (const listOpen of [true, false]) {
+    const listStates = [
+      { open: true, hasHighlight: true },
+      { open: true, hasHighlight: false },
+      { open: false, hasHighlight: false },
+    ]
+    for (const list of listStates) {
       for (const e of events) {
-        const r = resolveKeyAction(e, 'nav', '', 'combobox', listOpen)
+        const r = resolveKeyAction(e, 'nav', '', 'combobox', list)
         expect(r.action?.type).not.toBe('type')
         expect(r.action?.type).not.toBe('enter')
       }

@@ -9,7 +9,7 @@ import { isMultiPeriod, fmt, matchLibraryItems } from './format'
 import { addBudgetItem } from '../../../shared/supabase/budget-service'
 import type { LibraryItem } from '../../../shared/supabase/library-service'
 import { useToast } from '../../../shared/components/toast'
-import type { ListIntent } from './hooks/grid-navigation-core'
+import type { ListIntent, ListState } from './hooks/grid-navigation-core'
 import { thStyle, thNum, colWidths, tableMinWidth } from './components/table-styles'
 import { ItemRow } from './components/item-row'
 import { PeriodRow } from './components/period-row'
@@ -50,7 +50,9 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   const { addToast } = useToast()
   const [addQuery, setAddQuery] = useState('')
   const [addOpen, setAddOpen] = useState(false)
-  const [addHighlight, setAddHighlight] = useState(0)
+  // -1 = HICBIR secenek vurgulu degil (D3b-2d). Vurgu YALNIZ ok tusuyla baslar; odakta acilma ve
+  // yazarak suzme vurgu OLUSTURMAZ - aksi halde hucreden Tab'la gecmek kalem doguruyordu.
+  const [addHighlight, setAddHighlight] = useState(-1)
   const [adding, setAdding] = useState(false)
   const addInputRef = useRef<HTMLInputElement>(null)
 
@@ -69,7 +71,13 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     addOpenRef.current = addOpen
   })
 
-  const isListOpen = useCallback((rowId: string) => rowId === ADD_ROW_ID && addOpenRef.current, [])
+  const listState = useCallback(
+    (rowId: string): ListState => ({
+      open: rowId === ADD_ROW_ID && addOpenRef.current,
+      hasHighlight: rowId === ADD_ROW_ID && addHighlightRef.current >= 0,
+    }),
+    [],
+  )
 
   const onSelectLibraryItem = useCallback(
     async (item: LibraryItem) => {
@@ -79,7 +87,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         await addBudgetItem(cardRef.current.groupId, { catalogCode: item.catalogCode })
         setAddQuery('')
         setAddOpen(false)
-        setAddHighlight(0)
+        setAddHighlight(-1)
         refetch()
         // Engin karari 2026-07-24: odak "+ kalem ekle" satirinda KALIR (pes pese kalem dokme).
         addInputRef.current?.focus()
@@ -95,8 +103,10 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   const onListIntent = useCallback(
     (rowId: string, intent: ListIntent) => {
       if (rowId !== ADD_ROW_ID) return
+      // -1'den asagi ok ilk secenege girer; yukari ok 0'dan -1'e DONER (listeden vurgusuz hale
+      // cikilabilir). Bos listede listDown -1'de kalir.
       if (intent === 'listDown') setAddHighlight((i) => Math.min(i + 1, addOptionsRef.current.length - 1))
-      else if (intent === 'listUp') setAddHighlight((i) => Math.max(i - 1, 0))
+      else if (intent === 'listUp') setAddHighlight((i) => Math.max(i - 1, -1))
       else if (intent === 'listClose') setAddOpen(false)
       else if (intent === 'listSelect') {
         const picked = addOptionsRef.current[addHighlightRef.current]
@@ -109,14 +119,18 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // Sorgu degisince vurgu basa doner ve liste acilir (yazmak listeyi kapatmaz).
   const onAddQueryChange = useCallback((value: string) => {
     setAddQuery(value)
-    setAddHighlight(0)
+    // Yazmak vurgu OLUSTURMAZ (D3b-2d): suzulen listede de secim ok tusuyla baslar.
+    setAddHighlight(-1)
     setAddOpen(true)
   }, [])
 
-  const onAddOpen = useCallback(() => setAddOpen(true), [])
+  const onAddOpen = useCallback(() => {
+    setAddOpen(true)
+    setAddHighlight(-1)
+  }, [])
   const onAddClose = useCallback(() => setAddOpen(false), [])
 
-  const { containerRef, handleKeyDown, handleFocus, handlePaste, handleDrop, handleDragOver, isActiveEdit } = useGridNavigation({ rowsRef, savedRef, patchRow, api, rows, isListOpen, onListIntent })
+  const { containerRef, handleKeyDown, handleFocus, handlePaste, handleDrop, handleDragOver, isActiveEdit } = useGridNavigation({ rowsRef, savedRef, patchRow, api, rows, listState, onListIntent })
   const [openBurden, setOpenBurden] = useState<{ itemId: string; stageId: string | null } | null>(null)
   const [openNoteItemId, setOpenNoteItemId] = useState<string | null>(null)
   const [openStatusInfo, setOpenStatusInfo] = useState(false)
