@@ -45,9 +45,15 @@ export const AddItemRow = memo(
             <ul
               role="listbox"
               style={{
+                // Liste YUKARI acilir (Engin tarayici bulgusu 2026-07-24): "+ kalem ekle" satiri
+                // YAPISAL OLARAK kartin son satiridir, asagi acilan liste her zaman sayfanin
+                // dibine tasar. Olcum/carpisma tespiti gerekmez - bu satirin yeri hep sonda.
                 position: 'absolute',
-                zIndex: 20,
-                top: '100%',
+                // --z-dropdown (150) nav'in (100) USTUNDE, modallarin (200) ALTINDA: acilir liste
+                // sayfa mobilyasini orter ama bir alt-sheet acilinca onun arkasinda kalir.
+                // Ciplak sayi YASAK - katman sirasi tokens.css'te TEK yerde yasar.
+                zIndex: 'var(--z-dropdown)' as unknown as number,
+                bottom: '100%',
                 left: 0,
                 minWidth: '100%',
                 maxHeight: 240,
