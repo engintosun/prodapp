@@ -43,7 +43,7 @@ Paketleme: Model A — bütçe ile harcama tek kod tabanında paketlenebilir iki
 - Şekil tabloları aynalar (B16 kasa ile AYNI serileştirici; ref'ler bu round-trip için):
   - stages[]: { ref, name, sort_order } — tarih YOK (açılışta null; "tarihli olmalı" mühürde). + rezerve "Dönemsiz" etabı.
   - cards[]: { ref, department_code, name, icon, default_unit, default_package, sort_order, items[] }
-  - items[]: { ref, name (Sebep), detail, note, unit? (null=karttan miras), payment_status? (null=sirket), multiplier, sort_order } — unit_net YOK (açılışta 0), periods YOK (köprü boş). NOT (DILIM-2b): paket yolu emekli; kova artik statuden dolar (payment_status_burdens eslemesi). cards[] default_package ve items[] package alanlari okunmaz.
+  - items[]: { ref, name (kalem adi, UI: Ad), detail, note, unit? (null=karttan miras), payment_status? (null=sirket), multiplier, sort_order } — unit_net YOK (açılışta 0), periods YOK (köprü boş). NOT (DILIM-2b): paket yolu emekli; kova artik statuden dolar (payment_status_burdens eslemesi). cards[] default_package ve items[] package alanlari okunmaz. ŞERH (D3-ARA, 26 Temmuz 2026): sablon govdesinde anahtar adi `detail` kalmistir, hedef kolon artik `name_en`'dir, hizalama TD-21.
   - percent_lines[]: { code (contingency|profit), label, rate_percent, is_hidden } — varsayılan contingency 10 / profit 0.
 
 ### B. Köprü açılışta BOŞ (Model A)

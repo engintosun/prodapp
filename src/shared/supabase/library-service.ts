@@ -8,7 +8,7 @@ export interface LibraryItem {
   id: string
   catalogCode: string
   name: string
-  descriptionEn: string | null
+  nameEn: string | null
   defaultPaymentStatus: string
   defaultUnitCode: string
   aliases: string[]
@@ -18,7 +18,7 @@ export async function fetchCardLibrary(cardCode: string): Promise<LibraryItem[]>
   const prefix = cardCode.slice(0, 2)
   const { data, error } = await supabase
     .from('item_library')
-    .select('id, catalog_code, name, description_en, default_payment_status, default_unit_code, aliases')
+    .select('id, catalog_code, name, name_en, default_payment_status, default_unit_code, aliases')
     .like('catalog_code', prefix + '%')
     .order('catalog_code')
   if (error) throw new Error(error.message)
@@ -26,7 +26,7 @@ export async function fetchCardLibrary(cardCode: string): Promise<LibraryItem[]>
     id: r.id as string,
     catalogCode: r.catalog_code as string,
     name: r.name as string,
-    descriptionEn: (r.description_en as string | null) ?? null,
+    nameEn: (r.name_en as string | null) ?? null,
     defaultPaymentStatus: r.default_payment_status as string,
     defaultUnitCode: r.default_unit_code as string,
     aliases: (r.aliases as string[] | null) ?? [],

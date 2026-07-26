@@ -31,7 +31,7 @@
 |Etap         |stage                 |Bütçe içi kısım (Hazırlık/Çekim/Post...)     |
 |Harcama grubu|expense_group         |Etap altındaki grup; UI'daki adı "kart"      |
 |Harcama kalemi|budget_item          |Grup altındaki bütçe satırı                  |
-|Kalemin İngilizce adı|description_en |Köster damıtımından gelen sektör-standart İngilizce ad; ekranda görünmez, ileride İngilizce sunum için arka planda saklanır|
+|Kalemin İngilizce adı|name_en |Köster damıtımından gelen sektör-standart İngilizce ad; ekranda görünmez, ileride İngilizce sunum için arka planda saklanır|
 |Yük bileşeni |burden_component      |Stopaj/SGK/ajans gibi net-üstü yük           |
 |Doğrudan ödeme|direct_payment       |Muhasebenin fiş dışı gerçekleşen kaydı       |
 |Yüzde kalemi |percent_line          |Ara toplam üstüne % (öngörülmeyen, kâr)      |
@@ -109,6 +109,16 @@
 1. **Orijinal ekran kararı:** Miktar = süre + birim, Adet = kişi (eski EKRAN-MUHASEBE §, MMB ile paralel).
 2. **2026-07-01/03 (2f-fix2 + K9):** terimler devrildi — Miktar = kişi, Çarpan = süre.
 3. **2026-07-11 (bu karar):** sektör hizasına dönüş — Miktar = süre, X = kişi/adet, Çarpan emekli. Sektör referansı: MMB Amt/X, Showbiz Qty/X, Hot Budget Time Units/No, Saturation quantity/multiplier.
+
+-----
+
+## Alan adlandırma doktrini (KİLİTLENDİ 2026-07-26)
+
+- Varsayılan içerik dili Türkçe, SONEK YOK: `name`, `description`, `internal_note`, `public_note`.
+- Sonek YALNIZ ikinci bir dil aynı anda saklanıyorsa: `_en`. Bugün tek örnek katalog kalem adı → `name_en`.
+- Sonek DİLİ işaret eder, ROLÜ değil. Rol ayrımı ayrı ad ister.
+- Gerçek çoklu dil gerekirse çözüm kolon değil çeviri tablosudur; `_tr/_en` kolon çifti ölçeklenmez.
+- REDDEDİLDİ: tüm Türkçe alanlara `_tr` soneki ekleme önerisi (Engin kararı 2026-07-26). Gerekçe: sonek istisnayı işaretlemeli, kuralı değil; `name` kolonu 15+ tabloda var, süpürge kozmetik ve devasa; kod tabanı zaten soneksiz Türkçe kuralını uyguluyor.
 
 -----
 
