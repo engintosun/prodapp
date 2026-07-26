@@ -20,7 +20,8 @@ export interface BudgetItemRow {
   catalogCode: string
   libraryItemId: string | null
   name: string
-  descriptionEn: string | null
+  nameEn: string | null
+  description: string | null
   unitNet: number
   unitId: string
   unitLabel: string
@@ -49,7 +50,8 @@ export interface CardView {
 
 export type EditableField =
   | 'name'
-  | 'descriptionEn'
+  | 'nameEn'
+  | 'description'
   | 'unitNet'
   | 'multiplier'
   | 'repeat'
@@ -63,7 +65,8 @@ const FIELD_COL: Record<EditableField, string> = {
   internalNote: 'internal_note',
   publicNote: 'public_note',
   name: 'name',
-  descriptionEn: 'description_en',
+  nameEn: 'name_en',
+  description: 'description',
   unitNet: 'unit_net',
   multiplier: 'multiplier',
   repeat: 'repeat',
@@ -145,7 +148,7 @@ export async function getCard(budgetId: string, cardId?: string): Promise<CardVi
 
   const { data: items, error: ei } = await supabase
     .from('budget_items')
-    .select('id, item_code, catalog_code, library_item_id, name, description_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, public_note')
+    .select('id, item_code, catalog_code, library_item_id, name, name_en, description, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, public_note')
     .eq('group_id', grp.id)
     .eq('is_active', true)
     .order('sort_order')
@@ -209,7 +212,8 @@ export async function getCard(budgetId: string, cardId?: string): Promise<CardVi
     catalogCode: i.catalog_code as string,
     libraryItemId: (i.library_item_id as string | null) ?? null,
     name: i.name as string,
-    descriptionEn: (i.description_en as string | null) ?? null,
+    nameEn: (i.name_en as string | null) ?? null,
+    description: (i.description as string | null) ?? null,
     unitNet: Number(i.unit_net),
     unitId: i.unit_id as string,
     unitLabel: unitLabel[i.unit_id as string] ?? '',
@@ -251,11 +255,14 @@ export async function updateItemField(
   let payload: Record<string, unknown>
   if (field === 'name') {
     const v = String(value).trim()
-    if (!v) throw new Error('Sebep boş olamaz')
+    if (!v) throw new Error('Ad boş olamaz')
     payload = { name: v }
-  } else if (field === 'descriptionEn') {
+  } else if (field === 'nameEn') {
     const v = String(value).trim()
-    payload = { description_en: v === '' ? null : v }
+    payload = { name_en: v === '' ? null : v }
+  } else if (field === 'description') {
+    const v = String(value).trim()
+    payload = { description: v === '' ? null : v }
   } else if (field === 'paymentStatus') {
     const v = String(value)
     if (v === '') {
