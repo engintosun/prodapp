@@ -16,7 +16,8 @@ export const colWidths = {
   yasalYuk: 150,
   netToplam: 150,
   brutToplam: 150,
-  aciklamaMin: 220,
+  adMin: 220,
+  aciklama: 220,
 } as const
 
 export const tableMinWidth =
@@ -30,7 +31,8 @@ export const tableMinWidth =
   colWidths.yasalYuk +
   colWidths.netToplam +
   colWidths.brutToplam +
-  colWidths.aciklamaMin
+  colWidths.adMin +
+  colWidths.aciklama
 
 export const thStyle: CSSProperties = {
   textAlign: 'left',
@@ -65,7 +67,8 @@ export const cellInputNum: CSSProperties = { ...cellInput, textAlign: 'right', f
 // TD-15 (2026-07-18): override'siz donem net hucresi kalemden MIRAS gosteriyorsa soluk -
 // elle girilmis override normal renkte kalir (Kalemden miras title ipucu degismedi).
 export const cellInputNumMuted: CSSProperties = { ...cellInputNum, color: 'var(--color-text-muted)' }
-// Aciklama (ad) input'u: kalan genisligi alir, tasarsa ellipsis (odaksizken).
+// Ad input'u: kalan genisligi alir, tasarsa ellipsis (odaksizken). Yeni Aciklama
+// kolonu SABIT genislikte ama odaksizken ayni sekilde ellipsis gosterir (D3-UI).
 export const cellInputEllipsis: CSSProperties = { ...cellInput, overflow: 'hidden', textOverflow: 'ellipsis' }
 export const periodRowStyle: CSSProperties = { ...tdStyle, background: 'var(--color-surface-2)' }
 export const periodRowNumStyle: CSSProperties = { ...numStyle, background: 'var(--color-surface-2)' }

@@ -102,6 +102,17 @@ export const ItemRow = memo(function ItemRow({
         </div>
       </td>
       <td style={tdStyle}>
+        <input
+          data-grid-cell="true"
+          data-row-id={it.id}
+          data-col="description"
+          style={cellInputEllipsis}
+          value={it.description ?? ''}
+          onChange={(e) => api.onTextChange(it.id, 'description', e.target.value)}
+          onBlur={() => api.commitField(it.id, 'description')}
+        />
+      </td>
+      <td style={tdStyle}>
         <select
           data-grid-cell="true"
           data-row-id={it.id}

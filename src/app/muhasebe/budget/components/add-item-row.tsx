@@ -95,7 +95,7 @@ export const AddItemRow = memo(
             </ul>
           )}
         </td>
-        <td style={tdStyle} colSpan={9} />
+        <td style={tdStyle} colSpan={10} />
       </tr>
     )
   }),

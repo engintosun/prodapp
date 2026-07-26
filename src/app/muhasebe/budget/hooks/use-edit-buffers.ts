@@ -24,7 +24,7 @@ import type { BordroSheetEntry } from '../components/burden-sheet'
 const NUMERIC_EDITABLE_FIELDS = new Set<EditableField>(['unitNet', 'multiplier', 'repeat', 'vatRate'])
 
 export type EditApi = {
-  onTextChange: (id: string, field: 'name', value: string) => void
+  onTextChange: (id: string, field: 'name' | 'description', value: string) => void
   onNumChange: (id: string, field: 'unitNet' | 'multiplier' | 'vatRate', raw: string) => void
   onPeriodChange: (id: string, stageId: string, raw: string) => void
   onPeriodNetChange: (itemId: string, stageId: string, raw: string) => void
@@ -165,7 +165,7 @@ export function useEditBuffers({
       setBuffers(c)
     }
 
-    function onTextChange(id: string, field: 'name', value: string) {
+    function onTextChange(id: string, field: 'name' | 'description', value: string) {
       patchRow(id, { [field]: value } as Partial<BudgetItemRow>)
     }
 

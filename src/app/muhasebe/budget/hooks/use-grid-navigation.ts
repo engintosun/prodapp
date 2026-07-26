@@ -8,7 +8,7 @@ import type { EditApi } from './use-edit-buffers'
 // I7 motoru DOM baglayicisi. Cekirdek (grid-navigation-core) DOM'suz saf reducer;
 // bu hook onu DOM'a baglar, kolon->alan eslemesini yapip MEVCUT onXChange/commitX
 // yollarina delege eder (dogrulama/parse yeniden yazilmaz).
-export type GridCol = 'name' | 'unitNet' | 'repeat' | 'multiplier' | 'periodNet' | 'periodRepeat' | 'periodQty'
+export type GridCol = 'name' | 'description' | 'unitNet' | 'repeat' | 'multiplier' | 'periodNet' | 'periodRepeat' | 'periodQty'
 
 // KLV-K8: ItemRow (tek-donemli: name+unitNet+repeat+multiplier / cok-donemli: yalniz
 // name) ve PeriodRow (periodNet+periodRepeat+periodQty, isim yok) farkli genislikte
@@ -24,6 +24,7 @@ export type GridCol = 'name' | 'unitNet' | 'repeat' | 'multiplier' | 'periodNet'
 const COLUMN_EQUIVALENCE_GROUPS: ColumnEquivalenceGroups = [
   ['name'],
   ['note'],
+  ['description'],
   ['status'],
   ['periods'],
   ['unit', 'periodUnit'],
@@ -90,6 +91,7 @@ export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows, list
     const row = findItemRow(cell.rowId)
     if (!row) return ''
     if (cell.col === 'name') return row.name
+    if (cell.col === 'description') return row.description ?? ''
     if (cell.col === 'unitNet') return String(row.unitNet)
     if (cell.col === 'multiplier') return String(row.multiplier)
     if (cell.col === 'repeat') return String(row.repeat)
@@ -105,6 +107,7 @@ export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows, list
       return
     }
     if (cell.col === 'name') api.onTextChange(cell.rowId, 'name', value)
+    else if (cell.col === 'description') api.onTextChange(cell.rowId, 'description', value)
     else if (cell.col === 'unitNet') api.onNumChange(cell.rowId, 'unitNet', value)
     else if (cell.col === 'multiplier') api.onNumChange(cell.rowId, 'multiplier', value)
     else if (cell.col === 'repeat') api.onRepeatChange(cell.rowId, value)
@@ -119,7 +122,7 @@ export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows, list
       return
     }
     if (cell.col === 'repeat') api.commitRepeat(cell.rowId)
-    else if (cell.col === 'name' || cell.col === 'unitNet' || cell.col === 'multiplier') void api.commitField(cell.rowId, cell.col)
+    else if (cell.col === 'name' || cell.col === 'description' || cell.col === 'unitNet' || cell.col === 'multiplier') void api.commitField(cell.rowId, cell.col)
   }
 
   function cancelEdit(cell: CellId) {
@@ -136,6 +139,7 @@ export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows, list
     const saved = savedRef.current[cell.rowId]
     if (!saved) return
     if (cell.col === 'name') patchRow(cell.rowId, { name: saved.name })
+    else if (cell.col === 'description') patchRow(cell.rowId, { description: saved.description })
     else if (cell.col === 'unitNet') patchRow(cell.rowId, { unitNet: saved.unitNet })
     else if (cell.col === 'multiplier') patchRow(cell.rowId, { multiplier: saved.multiplier })
     else if (cell.col === 'repeat') patchRow(cell.rowId, { repeat: saved.repeat })

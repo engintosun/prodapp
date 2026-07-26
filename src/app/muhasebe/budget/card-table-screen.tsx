@@ -183,7 +183,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: tableMinWidth, tableLayout: 'fixed' }}>
           <colgroup>
             <col style={{ width: colWidths.kod }} />
-            <col style={{ minWidth: colWidths.aciklamaMin }} />
+            <col style={{ minWidth: colWidths.adMin }} />
+            <col style={{ width: colWidths.aciklama }} />
             <col style={{ width: colWidths.statu }} />
             <col style={{ width: colWidths.donemler }} />
             <col style={{ width: colWidths.birim }} />
@@ -197,6 +198,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           <thead>
             <tr>
               <th style={thStyle}>No</th>
+              <th style={thStyle}>Ad</th>
               <th style={thStyle}>Açıklama</th>
               <th style={thStyle}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>

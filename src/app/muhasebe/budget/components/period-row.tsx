@@ -64,6 +64,7 @@ export const PeriodRow = memo(function PeriodRow({
       <td style={periodRowStyle} />
       <td style={periodRowStyle} />
       <td style={periodRowStyle} />
+      <td style={periodRowStyle} />
       <td style={periodRowStyle}>{s.name}</td>
       <td style={periodRowSelectTd}>
         <select
