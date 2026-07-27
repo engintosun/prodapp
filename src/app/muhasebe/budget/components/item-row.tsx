@@ -18,6 +18,7 @@ interface ItemRowProps {
   warning: ValueWarning
   onOpenBurden: (itemId: string, stageId: string | null) => void
   onOpenNote: (itemId: string) => void
+  onRemove: (itemId: string) => void
   bufUnitNet: string | undefined
   bufMultiplier: string | undefined
   bufRepeat: string | undefined
@@ -36,6 +37,7 @@ export const ItemRow = memo(function ItemRow({
   warning,
   onOpenBurden,
   onOpenNote,
+  onRemove,
   bufUnitNet,
   bufMultiplier,
   bufRepeat,
@@ -303,7 +305,28 @@ export const ItemRow = memo(function ItemRow({
       <td style={{ ...numStyle, fontWeight: 600 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
           <span title={isBordro && bd?.missingNet ? 'Birim Net bekleniyor' : undefined} style={isBordro ? { opacity: 0.55 } : undefined}>{isBordro && bd?.missingNet ? '—' : fmt(brutToplam)}</span>
-          <span style={{ display: 'inline-block', width: 20 }} aria-hidden="true" />
+          <button
+            data-grid-cell="true"
+            data-row-id={item.id}
+            data-col="itemRemove"
+            data-cell-kind="button"
+            onClick={() => onRemove(item.id)}
+            style={{
+              display: 'inline-flex',
+              width: 20,
+              justifyContent: 'center',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--color-text-muted)',
+              fontSize: 'var(--text-base)',
+              padding: 0,
+              lineHeight: 1,
+            }}
+            title="Kalemi sil"
+          >
+            ×
+          </button>
         </div>
       </td>
     </tr>

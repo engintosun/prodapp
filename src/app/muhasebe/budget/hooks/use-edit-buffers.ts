@@ -23,6 +23,12 @@ import type { BordroSheetEntry } from '../components/burden-sheet'
 // alanlari bu denetimden gecmez.
 const NUMERIC_EDITABLE_FIELDS = new Set<EditableField>(['unitNet', 'multiplier', 'repeat', 'vatRate'])
 
+// EditApi SINIRI (Engin karari 2026-07-27): api yalniz useEditBuffers'in SAHIP OLDUGU state'e
+// dokunur, yani buffers + patchRow. refetch veya card-table-screen useState'i gerektiren is
+// EditApi'ye GIRMEZ, ItemRow'a prop olarak gider (onOpenBurden, onOpenNote, onRemove).
+// Ornek cift: commitNote api'de (notun degerini satira yazar), onOpenNote prop (ekranin
+// modalini acar). Bu yuzden donem silme api'de (yalniz yerel patch), kalem silme prop'ta
+// (karti refetch eder).
 export type EditApi = {
   onTextChange: (id: string, field: 'name' | 'description', value: string) => void
   onNumChange: (id: string, field: 'unitNet' | 'multiplier' | 'vatRate', raw: string) => void

@@ -487,3 +487,11 @@ export async function addBudgetItem(
   return data as unknown as string
 }
 
+export async function softDeleteBudgetItem(itemId: string): Promise<void> {
+  const { error } = await supabase
+    .from('budget_items')
+    .update({ is_active: false })
+    .eq('id', itemId)
+  if (error) throw new Error(error.message)
+}
+

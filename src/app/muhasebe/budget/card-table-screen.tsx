@@ -6,7 +6,7 @@ import { useCardRows } from './hooks/use-card-rows'
 import { useEditBuffers } from './hooks/use-edit-buffers'
 import { useGridNavigation } from './hooks/use-grid-navigation'
 import { isMultiPeriod, fmt, matchLibraryItems } from './format'
-import { addBudgetItem } from '../../../shared/supabase/budget-service'
+import { addBudgetItem, softDeleteBudgetItem } from '../../../shared/supabase/budget-service'
 import type { LibraryItem } from '../../../shared/supabase/library-service'
 import { useToast } from '../../../shared/components/toast'
 import type { ListIntent, ListState } from './hooks/grid-navigation-core'
@@ -161,6 +161,20 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     setOpenNoteItemId(itemId)
   }, [])
 
+  const onRemoveItem = useCallback(
+    async (itemId: string) => {
+      const ok = window.confirm('Bu kalemi silmek istiyor musun?')
+      if (!ok) return
+      try {
+        await softDeleteBudgetItem(itemId)
+        refetch()
+      } catch (e) {
+        addToast(e instanceof Error ? e.message : 'Kalem silinemedi', 'error')
+      }
+    },
+    [refetch, addToast],
+  )
+
   const onOpenStatusInfo = useCallback(() => {
     setOpenStatusInfo(true)
   }, [])
@@ -255,6 +269,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                     warning={itemWarnings[it.id] ?? null}
                     onOpenBurden={onOpenBurden}
                     onOpenNote={onOpenNote}
+                    onRemove={onRemoveItem}
                     bufUnitNet={buffers[it.id + ':unitNet']}
                     bufMultiplier={buffers[it.id + ':multiplier']}
                     bufRepeat={buffers[it.id + ':repeat']}
