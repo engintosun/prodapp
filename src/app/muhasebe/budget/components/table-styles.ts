@@ -4,7 +4,8 @@ import type { CSSProperties } from 'react'
 // Tutar kolonlari (yasalYuk/netToplam/brutToplam): sahada yuz milyonlu tutarlar
 // gorulebilir -> "999.999.999,99" (14 karakter) + KUR-1 gelecekteki kur payi.
 // birimNet biraz daha dar (birim fiyat, toplam kadar buyumez).
-// Aciklama kolonu kasitli disarida: kalan genisligi alir (bkz card-table-screen colgroup).
+// Ad kolonu kalan genisligi alir: colgroup'ta tek minWidth tanimli kolon odur
+// (bkz card-table-screen colgroup). Aciklama sabit genislikte, listenin icinde.
 export const colWidths = {
   kod: 56,
   statu: 128,

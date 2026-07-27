@@ -10,8 +10,9 @@ import type { EditApi } from './use-edit-buffers'
 // yollarina delege eder (dogrulama/parse yeniden yazilmaz).
 export type GridCol = 'name' | 'description' | 'unitNet' | 'repeat' | 'multiplier' | 'periodNet' | 'periodRepeat' | 'periodQty'
 
-// KLV-K8: ItemRow (tek-donemli: name+unitNet+repeat+multiplier / cok-donemli: yalniz
-// name) ve PeriodRow (periodNet+periodRepeat+periodQty, isim yok) farkli genislikte
+// KLV-K8: ItemRow (tek-donemli: name+description+unitNet+repeat+multiplier /
+// cok-donemli: name+description) ve PeriodRow (periodNet+periodRepeat+periodQty,
+// isim yok) farkli genislikte
 // satirlar tasir. Dikey gezinme (ArrowUp/Down + Enter'in asagi adimi) kolon-INDEKSi
 // yerine bu ANLAM esdegerligine gore hedef secmeli - aksi halde ardisik tek-donemli
 // kalemlerde Enter'la asagi inildikce colIndex 0'da (name) kilitlenip Birim Net'e hic
