@@ -19,6 +19,10 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
   // YERDE KULLANILMIYOR - autocomplete dikisi D3b-2b'de.
   const [library, setLibrary] = useState<LibraryItem[]>([])
   const [loading, setLoading] = useState(true)
+  // Sessiz yenileme (D3b-2f): kalem ekleme/silme sonrasi tablo sokulup yeniden cizilmesin diye
+  // bu turda loading YUKSELTILMEZ. Bayrak effect basinda okunup HEMEN sifirlanir; art arda iki
+  // sessiz yenileme gelirse yaris olusmaz.
+  const silentReloadRef = useRef(false)
   const [error, setError] = useState<string | null>(null)
   const [reload, setReload] = useState(0)
   const savedRef = useRef<Record<string, BudgetItemRow>>({})
@@ -44,9 +48,11 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
 
   useEffect(() => {
     let cancelled = false
+    const silent = silentReloadRef.current
+    silentReloadRef.current = false
     void (async () => {
       try {
-        setLoading(true)
+        if (!silent) setLoading(true)
         setError(null)
         const budgetId = paramBudgetId ?? (await getOrOpenBudget())
         const c = await getCard(budgetId, cardId)
@@ -132,7 +138,8 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
     setRows((rs) => rs.map((r) => (r.id === id ? { ...r, ...patch } : r)))
   }, [])
 
-  const refetch = useCallback(() => {
+  const refetch = useCallback((opts?: { silent?: boolean }) => {
+    silentReloadRef.current = opts?.silent === true
     setReload((n) => n + 1)
   }, [])
 

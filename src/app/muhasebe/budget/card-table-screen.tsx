@@ -86,9 +86,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         setAdding(true)
         await addBudgetItem(cardRef.current.groupId, { catalogCode: item.catalogCode })
         setAddQuery('')
-        setAddOpen(false)
         setAddHighlight(-1)
-        refetch()
+        refetch({ silent: true })
         // Engin karari 2026-07-24: odak "+ kalem ekle" satirinda KALIR (pes pese kalem dokme).
         addInputRef.current?.focus()
       } catch (e) {
@@ -166,13 +165,25 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
       const ok = window.confirm('Bu kalemi silmek istiyor musun?')
       if (!ok) return
       try {
+        const list = rowsRef.current
+        const idx = list.findIndex((r) => r.id === itemId)
+        const neighbour = idx > 0 ? list[idx - 1] : list[idx + 1]
         await softDeleteBudgetItem(itemId)
-        refetch()
+        refetch({ silent: true })
+        // Silinen satir gozden kayboluyor, odak bosta kalmasin (Engin karari 2026-07-27):
+        // bir USTTEKI kaleme gider; ilk satir siliniyorsa alttakine; kart tamamen bosaliyorsa
+        // kalem ekleme kutusuna. Hedef DOM dugumu bu anda hala duruyor (sessiz yenileme henuz
+        // render etmedi) ve ayni id ile yeniden kullanilacagi icin odak korunur.
+        const container = containerRef.current
+        const target = neighbour
+          ? container?.querySelector<HTMLElement>(`[data-row-id="${neighbour.id}"][data-col="itemRemove"]`)
+          : container?.querySelector<HTMLElement>(`[data-row-id="${ADD_ROW_ID}"][data-col="name"]`)
+        target?.focus()
       } catch (e) {
         addToast(e instanceof Error ? e.message : 'Kalem silinemedi', 'error')
       }
     },
-    [refetch, addToast],
+    [refetch, addToast, rowsRef, containerRef],
   )
 
   const onOpenStatusInfo = useCallback(() => {
