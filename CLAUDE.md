@@ -4,7 +4,7 @@ Her oturum bu dosyayla başlar. Yalın tutulur (<120 satır); detay ayrı dosyal
 
 ## Oturum protokolü
 - **Açılış:** CURRENT.md oku → 4-5 satırlık durum raporu → Engin onaylamadan iş başlamaz. Tam-dosya / tüm-tarihçe okuması YOK. Okuma TEYİTLİ olmalı: bir araç içerik yerine boş/URL dönerse bu "okundu" değil DUR sinyalidir; gerçek içerik görülmeden "okundu" denmez (raw.githubusercontent güvenilmez → tarball/curl kullan). Git kimliği (user.name/user.email) her fresh clone'da kontrol edilir, tanımlı değilse --local olarak Claude <noreply@anthropic.com> ile ayarlanır — hangi bilgisayar olduğu önemli değil, bu soru bir daha sorulmaz.
-- **Kapanış:** CURRENT.md'yi baştan YAZ (ekleme değil): milestone · son commit · sıradaki 1-3 iş · açık kararlar. Tarihçe git log'da yaşar.
+- **Kapanış:** CURRENT.md'yi baştan YAZ (ekleme değil): milestone · son commit · sıradaki 1-3 iş · açık kararlar. Tarihçe git log'da yaşar. **Diyet (zorunlu):** Milestone günlüğünde son 10 kayıt kalır; daha eskiler tek paragraflık "buraya kadar ne kuruldu" özetine iner. Özete inen kaydın taşıdığı kararın özel-ev dosyasında karşılığı yoksa, budamadan ÖNCE oraya taşınır (KALICILIK KURALI). Dosya tavanı 120 satır — aşılıyorsa önce özet paragrafı sıkıştırılır, mühürlü/kilitli kararlar budanmaz.
 
 ## Proje kimliği
 KAAPA — sinema/TV prodüksiyon harcama yönetimi SaaS. (Repo adı: prodapp; ürün adı her zaman KAAPA.)
