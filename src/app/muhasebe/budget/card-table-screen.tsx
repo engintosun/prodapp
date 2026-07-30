@@ -9,7 +9,6 @@ import { isMultiPeriod, fmt, matchLibraryItems } from './format'
 import { addBudgetItem, softDeleteBudgetItem } from '../../../shared/supabase/budget-service'
 import type { LibraryItem } from '../../../shared/supabase/library-service'
 import { useToast } from '../../../shared/components/toast'
-import type { ListIntent, ListState } from './hooks/grid-navigation-core'
 import { thStyle, thNum, colWidths, tableMinWidth } from './components/table-styles'
 import { ItemRow } from './components/item-row'
 import { PeriodRow } from './components/period-row'
@@ -17,6 +16,7 @@ import { BurdenSheet } from './components/burden-sheet'
 import { StatusInfoSheet } from './components/status-info-sheet'
 import { NoteSheet } from './components/note-sheet'
 import { AddItemRow, ADD_ROW_ID } from './components/add-item-row'
+import { AddItemPanel } from './components/add-item-panel'
 
 export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardId?: string } = {}) {
   const {
@@ -49,35 +49,16 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   })
   const { addToast } = useToast()
   const [addQuery, setAddQuery] = useState('')
-  const [addOpen, setAddOpen] = useState(false)
-  // -1 = HICBIR secenek vurgulu degil (D3b-2d). Vurgu YALNIZ ok tusuyla baslar; odakta acilma ve
-  // yazarak suzme vurgu OLUSTURMAZ - aksi halde hucreden Tab'la gecmek kalem doguruyordu.
+  const [addPanelOpen, setAddPanelOpen] = useState(false)
+  // -1 = HICBIR secenek vurgulu degil (D3b-2d). Vurgu YALNIZ ok tusuyla baslar; odada acilma ve
+  // yazarak suzme vurgu OLUSTURMAZ - aksi halde vurgusuz Enter/Tab kalem doguruyordu.
   const [addHighlight, setAddHighlight] = useState(-1)
   const [adding, setAdding] = useState(false)
   const addInputRef = useRef<HTMLInputElement>(null)
 
-  // Sorgu bos iken TUM kart kutuphanesi doner (Engin karari 2026-07-24: dropdown ODAKTA acilir,
+  // Sorgu bos iken TUM kart kutuphanesi doner (Engin karari 2026-07-24: liste odakta gorunur,
   // ilk tusta degil - kullanici once bakar, isterse yazarak daraltir).
   const addOptions = useMemo(() => matchLibraryItems(library, addQuery), [library, addQuery])
-
-  // Tus olayi anindaki GUNCEL degerler; handler'lar sabit referansli kalsin diye ref'te tutulur
-  // (I1 prop stabilitesi + api useMemo deps=[] deseni).
-  const addOptionsRef = useRef<LibraryItem[]>([])
-  const addHighlightRef = useRef(0)
-  const addOpenRef = useRef(false)
-  useEffect(() => {
-    addOptionsRef.current = addOptions
-    addHighlightRef.current = addHighlight
-    addOpenRef.current = addOpen
-  })
-
-  const listState = useCallback(
-    (rowId: string): ListState => ({
-      open: rowId === ADD_ROW_ID && addOpenRef.current,
-      hasHighlight: rowId === ADD_ROW_ID && addHighlightRef.current >= 0,
-    }),
-    [],
-  )
 
   const onSelectLibraryItem = useCallback(
     async (item: LibraryItem) => {
@@ -88,7 +69,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         setAddQuery('')
         setAddHighlight(-1)
         refetch({ silent: true })
-        // Engin karari 2026-07-24: odak "+ kalem ekle" satirinda KALIR (pes pese kalem dokme).
+        // Oda KAPANMAZ (Engin karari 2026-07-27) - pes pese kalem dokme yazmadan surer.
+        // Fareyle secildiginde odak secenek dugmesine kacmis olur, yazi alanina geri alinir.
         addInputRef.current?.focus()
       } catch (e) {
         addToast(e instanceof Error ? e.message : 'Kalem eklenemedi', 'error')
@@ -99,37 +81,23 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     [adding, refetch, addToast, cardRef],
   )
 
-  const onListIntent = useCallback(
-    (rowId: string, intent: ListIntent) => {
-      if (rowId !== ADD_ROW_ID) return
-      // -1'den asagi ok ilk secenege girer; yukari ok 0'dan -1'e DONER (listeden vurgusuz hale
-      // cikilabilir). Bos listede listDown -1'de kalir.
-      if (intent === 'listDown') setAddHighlight((i) => Math.min(i + 1, addOptionsRef.current.length - 1))
-      else if (intent === 'listUp') setAddHighlight((i) => Math.max(i - 1, -1))
-      else if (intent === 'listClose') setAddOpen(false)
-      else if (intent === 'listSelect') {
-        const picked = addOptionsRef.current[addHighlightRef.current]
-        if (picked) void onSelectLibraryItem(picked)
-      }
-    },
-    [onSelectLibraryItem],
-  )
-
-  // Sorgu degisince vurgu basa doner ve liste acilir (yazmak listeyi kapatmaz).
   const onAddQueryChange = useCallback((value: string) => {
     setAddQuery(value)
     // Yazmak vurgu OLUSTURMAZ (D3b-2d): suzulen listede de secim ok tusuyla baslar.
     setAddHighlight(-1)
-    setAddOpen(true)
   }, [])
 
-  const onAddOpen = useCallback(() => {
-    setAddOpen(true)
+  // YUZEY dilimi (2026-07-30): ekleme satiri artik bir dugme, kutuphane listesi odanin icinde.
+  // Motorun tus dinleyicisi tabloyu saran kaba bagli oldugu icin oda kendi tuslarini yonetir;
+  // kararlari yine resolveKeyAction'a sorar (bkz. add-item-panel.tsx).
+  const onOpenAddPanel = useCallback(() => {
+    setAddQuery('')
     setAddHighlight(-1)
+    setAddPanelOpen(true)
   }, [])
-  const onAddClose = useCallback(() => setAddOpen(false), [])
+  const onCloseAddPanel = useCallback(() => setAddPanelOpen(false), [])
 
-  const { containerRef, handleKeyDown, handleFocus, handlePaste, handleDrop, handleDragOver, isActiveEdit } = useGridNavigation({ rowsRef, savedRef, patchRow, api, rows, listState, onListIntent })
+  const { containerRef, handleKeyDown, handleFocus, handlePaste, handleDrop, handleDragOver, isActiveEdit } = useGridNavigation({ rowsRef, savedRef, patchRow, api, rows })
   const [openBurden, setOpenBurden] = useState<{ itemId: string; stageId: string | null } | null>(null)
   const [openNoteItemId, setOpenNoteItemId] = useState<string | null>(null)
   const [openStatusInfo, setOpenStatusInfo] = useState(false)
@@ -316,21 +284,23 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                 </Fragment>
               )
             })}
-            <AddItemRow
-              ref={addInputRef}
-              query={addQuery}
-              options={addOptions}
-              isOpen={addOpen}
-              highlightIndex={addHighlight}
-              disabled={adding}
-              onQueryChange={onAddQueryChange}
-              onOpen={onAddOpen}
-              onClose={onAddClose}
-              onSelect={onSelectLibraryItem}
-            />
+            <AddItemRow disabled={adding} onOpen={onOpenAddPanel} />
           </tbody>
         </table>
       </div>
+      {addPanelOpen && (
+        <AddItemPanel
+          query={addQuery}
+          options={addOptions}
+          highlightIndex={addHighlight}
+          disabled={adding}
+          inputRef={addInputRef}
+          onQueryChange={onAddQueryChange}
+          onHighlightChange={setAddHighlight}
+          onSelect={onSelectLibraryItem}
+          onClose={onCloseAddPanel}
+        />
+      )}
       {openBurden !== null && (() => {
         const item = rows.find((r) => r.id === openBurden.itemId)
         if (!item) return null
