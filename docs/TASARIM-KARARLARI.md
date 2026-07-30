@@ -51,6 +51,14 @@ Her ekranın görsel tasarımı (renk, kozmetik, dark tema, doku, logo/favicon) 
 Model bildirisi: omurga dünya standardı (icmal → etap → grup → kalem, hesap kodlu, orijinal/yürüyen/gerçekleşen, EFC kapısı), matematik Türkiye (yük bileşenleri, KDV ayrıştırma, belgeli/belgesiz), sunum KAAPA (kart masası + ray).
 
 
+## 9. Katman sırası ve odak göstergesi (KARARLAŞTI 2026-07-28, Engin onayı)
+Ekranlar-arası ortak ilke — bütçeye özel değildir, her ekran için geçerlidir.
+- Katman sırası TEK yerde yaşar: `src/styles/tokens.css`. Bileşen içinde çıplak z-index sayısı YASAK.
+- Sıra: `--z-nav` (100) sayfa mobilyası (üst başlık, alt menü) → `--z-dropdown` (150) açılır listeler → `--z-panel` (160, YENİ) odaklı çalışma yüzeyleri, ilk sakini bütçe hızlı ekleme yüzeyi → `--z-modal` (200) alt-sheet ailesi ve tam modallar → `--z-toast` (300) uyarı balonları ve çevrimdışı şeridi, her zaman en üstte.
+- **Çalışma yüzeyi (panel) ile modal farkı:** panel karartmaz, altındaki içerik okunur kalır ama dokunulamaz, dışına tıklamak kapatır (Esc ile aynı). Modal/alt-sheet karartır ve odağı içine kilitler. İkisi aynı anda açık olmaz.
+- Bir yüzeyin İÇİNDEKİ açılır liste kendi yığın bağlamında kalır; global sayı yarışı yoktur.
+- **Odak göstergesi:** klavyeyle üstünde durulan her durağın çevresinde ince, vurgu renginde çerçeve belirir. Görünüm (renk, kalınlık, köşe) TEK yerde tanımlanır; G6/UI turunda değiştirildiğinde bütün duraklarda birlikte değişir. Vurgu rengi projenin genel vurgu rengidir — değiştirilirse o rengin göründüğü her yer birlikte değişir.
+
 ## 7. Referanslar
 - Rakip OCR analizi: docs/RAKIP-ANALIZI-OCR.md
 - Domain terimleri: docs/GLOSSARY.md

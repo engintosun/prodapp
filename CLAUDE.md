@@ -3,8 +3,20 @@
 Her oturum bu dosyayla başlar. Yalın tutulur (<120 satır); detay ayrı dosyalarda, ihtiyaç anında okunur. Kayıt sinyali boğmaz: az, net, güncel.
 
 ## Oturum protokolü
-- **Açılış:** CURRENT.md oku → 4-5 satırlık durum raporu → Engin onaylamadan iş başlamaz. Tam-dosya / tüm-tarihçe okuması YOK. Okuma TEYİTLİ olmalı: bir araç içerik yerine boş/URL dönerse bu "okundu" değil DUR sinyalidir; gerçek içerik görülmeden "okundu" denmez (raw.githubusercontent güvenilmez → tarball/curl kullan). Git kimliği (user.name/user.email) her fresh clone'da kontrol edilir, tanımlı değilse --local olarak Claude <noreply@anthropic.com> ile ayarlanır — hangi bilgisayar olduğu önemli değil, bu soru bir daha sorulmaz.
+- **Açılış:** CURRENT.md oku → 4-5 satırlık durum raporu → Engin onaylamadan iş başlamaz. Durum raporu ayrıca BAYATLIK TARAMASI içerir: o oturumda çalışılacak konunun kendi karar dosyası ile CURRENT.md birbirini tutuyor mu, tek satırla söylenir (genel tarama değil, yalnız o günkü konu). Tam-dosya / tüm-tarihçe okuması YOK. Okuma TEYİTLİ olmalı: bir araç içerik yerine boş/URL dönerse bu "okundu" değil DUR sinyalidir; gerçek içerik görülmeden "okundu" denmez (raw.githubusercontent güvenilmez → tarball/curl kullan). Git kimliği (user.name/user.email) her fresh clone'da kontrol edilir, tanımlı değilse --local olarak Claude <noreply@anthropic.com> ile ayarlanır — hangi bilgisayar olduğu önemli değil, bu soru bir daha sorulmaz.
 - **Kapanış:** CURRENT.md'yi baştan YAZ (ekleme değil): milestone · son commit · sıradaki 1-3 iş · açık kararlar. Tarihçe git log'da yaşar. **Diyet (zorunlu):** Milestone günlüğünde son 10 kayıt kalır; daha eskiler tek paragraflık "buraya kadar ne kuruldu" özetine iner. Özete inen kaydın taşıdığı kararın özel-ev dosyasında karşılığı yoksa, budamadan ÖNCE oraya taşınır (KALICILIK KURALI). Dosya tavanı 120 satır — aşılıyorsa önce özet paragrafı sıkıştırılır, mühürlü/kilitli kararlar budanmaz.
+
+## Karar nereye yazılır (yol haritası)
+KALICILIK KURALI gereği her karar CURRENT.md'ye VE kendi özel-ev dosyasına yazılır. Ev adresleri:
+- Bir ekranın davranışı (ne görünür, ne olur) → o ekranın kararlar dosyası (bütçe: docs/butce/BUTCE-EKRAN-KARARLARI.md)
+- Ekranlar-arası ortak ilke (renk, katman sırası, odak görünümü, etkileşim) → docs/TASARIM-KARARLARI.md
+- Veri yapısı (tablo, kolon, fonksiyon) → docs/butce/BUTCE-SEMA-KARARLARI.md
+- Kodun nerede duracağı → docs/butce/BUTCE-UI-MIMARISI.md
+- Terim ve adlandırma → docs/GLOSSARY.md
+- Hesap ve iş kuralı → docs/IS-KURALLARI.md
+- Bilerek bırakılan borç → docs/TECH-DEBT.md
+- Sıra ve öncelik → docs/IS-SIRASI.md
+Emin olunamayan durumda dosya listesine BAKILIR, tahmin edilmez.
 
 ## Proje kimliği
 KAAPA — sinema/TV prodüksiyon harcama yönetimi SaaS. (Repo adı: prodapp; ürün adı her zaman KAAPA.)
