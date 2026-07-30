@@ -28,3 +28,16 @@ button { font-family: inherit; }
   outline: var(--focus-ring);
   outline-offset: var(--focus-ring-offset);
 }
+
+/* Yeni eklenen kalemin isareti (Engin karari 2026-07-31): HER HUCRE ayri cerceve
+   alir, satiri saran tek cerceve degil. Gorunum yeniden tanimlanmaz, odak
+   cercevesiyle ayni tokenlardan gelir. */
+tr[data-just-added="true"] td {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Satir gorunur alana sokulurken altinda kalacak bosluk. */
+tr[data-item-id] {
+  scroll-margin-bottom: var(--reveal-margin-bottom);
+}

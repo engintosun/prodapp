@@ -19,6 +19,7 @@ interface ItemRowProps {
   onOpenBurden: (itemId: string, stageId: string | null) => void
   onOpenNote: (itemId: string) => void
   onRemove: (itemId: string) => void
+  justAdded: boolean
   bufUnitNet: string | undefined
   bufMultiplier: string | undefined
   bufRepeat: string | undefined
@@ -38,6 +39,7 @@ export const ItemRow = memo(function ItemRow({
   onOpenBurden,
   onOpenNote,
   onRemove,
+  justAdded,
   bufUnitNet,
   bufMultiplier,
   bufRepeat,
@@ -72,7 +74,7 @@ export const ItemRow = memo(function ItemRow({
     : null
 
   return (
-    <tr>
+    <tr data-item-id={it.id} data-just-added={justAdded ? 'true' : undefined}>
       <td style={tdStyle}>{rowNo}</td>
       <td style={tdStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>

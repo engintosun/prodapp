@@ -55,6 +55,10 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   const [addHighlight, setAddHighlight] = useState(-1)
   const [adding, setAdding] = useState(false)
   const addInputRef = useRef<HTMLInputElement>(null)
+  // Yeni eklenen kalemler. Her id KENDI 1 saniyesini yakar (Engin karari 2026-07-31):
+  // pes pese eklemede onceki cerceve hemen sonmez, birden fazlasi ayni anda yanabilir.
+  const [justAddedIds, setJustAddedIds] = useState<string[]>([])
+  const pendingScrollIdRef = useRef<string | null>(null)
 
   // Sorgu bos iken TUM kart kutuphanesi doner (Engin karari 2026-07-24: liste odakta gorunur,
   // ilk tusta degil - kullanici once bakar, isterse yazarak daraltir).
@@ -65,9 +69,14 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
       if (!cardRef.current || adding) return
       try {
         setAdding(true)
-        await addBudgetItem(cardRef.current.groupId, { catalogCode: item.catalogCode })
+        const newItemId = await addBudgetItem(cardRef.current.groupId, { catalogCode: item.catalogCode })
         setAddQuery('')
         setAddHighlight(-1)
+        pendingScrollIdRef.current = newItemId
+        setJustAddedIds((prev) => [...prev, newItemId])
+        window.setTimeout(() => {
+          setJustAddedIds((prev) => prev.filter((id) => id !== newItemId))
+        }, 1000)
         refetch({ silent: true })
         // Oda KAPANMAZ (Engin karari 2026-07-27) - pes pese kalem dokme yazmadan surer.
         // Fareyle secildiginde odak secenek dugmesine kacmis olur, yazi alanina geri alinir.
@@ -98,6 +107,22 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   const onCloseAddPanel = useCallback(() => setAddPanelOpen(false), [])
 
   const { containerRef, handleKeyDown, handleFocus, handlePaste, handleDrop, handleDragOver, isActiveEdit } = useGridNavigation({ rowsRef, savedRef, patchRow, api, rows })
+
+  // Yeni eklenen kalem sessiz yenilemeden sonra tabloya inince gorunur alana sokulur.
+  // block: nearest = satir tam gorunuyorsa hicbir sey oynamaz, degilse en az hareketle
+  // iceri girer; alt bosluk scroll-margin-bottom ile gelir. DIKKAT: bu efekt odaga
+  // DOKUNMAZ, bu yuzden KLV-K12 dialog korumasinin ICINE ALINMAZ - oda acikken de
+  // calismasi gerekir, ekleme zaten oda acikken oluyor.
+  useEffect(() => {
+    const pendingId = pendingScrollIdRef.current
+    if (!pendingId) return
+    if (!rows.some((r) => r.id === pendingId)) return
+    pendingScrollIdRef.current = null
+    const el = containerRef.current?.querySelector<HTMLElement>(`[data-item-id="${pendingId}"]`)
+    if (!el) return
+    el.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+  }, [rows, containerRef])
+
   const [openBurden, setOpenBurden] = useState<{ itemId: string; stageId: string | null } | null>(null)
   const [openNoteItemId, setOpenNoteItemId] = useState<string | null>(null)
   const [openStatusInfo, setOpenStatusInfo] = useState(false)
@@ -249,6 +274,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                     onOpenBurden={onOpenBurden}
                     onOpenNote={onOpenNote}
                     onRemove={onRemoveItem}
+                    justAdded={justAddedIds.includes(it.id)}
                     bufUnitNet={buffers[it.id + ':unitNet']}
                     bufMultiplier={buffers[it.id + ':multiplier']}
                     bufRepeat={buffers[it.id + ':repeat']}

@@ -65,6 +65,11 @@
      ekrandaki butun duraklar birlikte degisir; bilesende tekrar tanimlanmaz. */
   --focus-ring: 2px solid var(--color-primary);
   --focus-ring-offset: -1px;
+
+  /* Yeni eklenen kalem gorunur alana sokulurken satirin ALTINDA birakilan bosluk:
+     ustune binen alt navigasyon + bir satir boyu. Alt nav butce ekranindan
+     kalkinca (KABUK) yalniz bu satir degisir, kaydirma mantigina dokunulmaz. */
+  --reveal-margin-bottom: 130px;
 }
 
 [data-theme="light"] {
