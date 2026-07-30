@@ -21,3 +21,10 @@ body {
 }
 
 button { font-family: inherit; }
+
+/* Odak gostergesi — klavyeyle gelinen her durakta ayni cerceve belirir.
+   Fare tiklamasinda cikmaz (:focus-visible). Gorunum tokens.css'te TEK yerde. */
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}

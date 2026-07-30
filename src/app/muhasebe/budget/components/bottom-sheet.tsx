@@ -58,7 +58,8 @@ export function BottomSheet({ title, onClose, children }: { title: ReactNode; on
           position: 'fixed',
           inset: 0,
           background: 'rgba(0,0,0,0.45)',
-          zIndex: 200,
+          // Katman sirasi tokens.css'te TEK yerde yasar (TASARIM-KARARLARI bolum 9).
+          zIndex: 'var(--z-modal)' as unknown as number,
         }}
       />
       <div
@@ -79,7 +80,8 @@ export function BottomSheet({ title, onClose, children }: { title: ReactNode; on
           background: 'var(--color-surface)',
           padding: 'var(--space-4)',
           paddingBottom: 'var(--space-6)',
-          zIndex: 201,
+          // Govde scrim ile AYNI katmanda; DOM sirasi geregi ustte kalir.
+          zIndex: 'var(--z-modal)' as unknown as number,
           boxShadow: 'var(--shadow-md)',
         }}
       >

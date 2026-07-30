@@ -57,8 +57,14 @@
   /* Z-index katmanlari */
   --z-nav: 100;
   --z-dropdown: 150;
+  --z-panel: 160;             /* odakli calisma yuzeyleri (hizli ekleme yuzeyi) */
   --z-modal: 200;
   --z-toast: 300;
+
+  /* Odak gostergesi — TEK yer (TASARIM-KARARLARI bolum 9). Burasi degisirse
+     ekrandaki butun duraklar birlikte degisir; bilesende tekrar tanimlanmaz. */
+  --focus-ring: 2px solid var(--color-primary);
+  --focus-ring-offset: -1px;
 }
 
 [data-theme="light"] {
