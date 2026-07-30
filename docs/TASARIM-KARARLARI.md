@@ -58,6 +58,7 @@ Ekranlar-arası ortak ilke — bütçeye özel değildir, her ekran için geçer
 - **Çalışma yüzeyi (panel) ile modal farkı:** panel karartmaz, altındaki içerik okunur kalır ama dokunulamaz, dışına tıklamak kapatır (Esc ile aynı). Modal/alt-sheet karartır ve odağı içine kilitler. İkisi aynı anda açık olmaz.
 - Bir yüzeyin İÇİNDEKİ açılır liste kendi yığın bağlamında kalır; global sayı yarışı yoktur.
 - **Odak göstergesi:** klavyeyle üstünde durulan her durağın çevresinde ince, vurgu renginde çerçeve belirir. Görünüm (renk, kalınlık, köşe) TEK yerde tanımlanır; G6/UI turunda değiştirildiğinde bütün duraklarda birlikte değişir. Vurgu rengi projenin genel vurgu rengidir — değiştirilirse o rengin göründüğü her yer birlikte değişir.
+- **Fare ile klavye ayrımı (tarayıcı teyidi 2026-07-28, Engin: "böyle kalsın"):** kural `:focus-visible` üzerinden işler. Sonuç olarak yazı hücreleri ve seçim hücreleri (Statü, Dönemler, Birim) fareyle tıklandığında da çerçeveyi gösterir; düğmeler (Not, Yasal Yük, satır silme x) yalnızca klavyeyle gelindiğinde gösterir. Bu tarayıcının kendi ayrımıdır, KABUL EDİLDİ ve tutarsızlık SAYILMAZ — ileride "düzeltilmesi gereken fark" diye ele alınmaz. Her durakta fareyle de çerçeve istenirse `:focus-visible` yerine `:focus` kullanılır; bu ayrı bir karardır ve alınmadı.
 
 ## 7. Referanslar
 - Rakip OCR analizi: docs/RAKIP-ANALIZI-OCR.md
