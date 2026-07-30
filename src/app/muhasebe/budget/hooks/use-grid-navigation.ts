@@ -245,6 +245,15 @@ export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows, list
   useEffect(() => {
     if (!state.active || !containerRef.current) return
     if (document.activeElement !== document.body) return
+    // YUZEY KORUMASI (KLV-K12 revizesi, 2026-07-30 tarayici bulgusu). Yukaridaki body kontrolu
+    // TEK BASINA YETMIYOR: acik bir yuzeyin icindeki alan gecici olarak disabled olursa tarayici
+    // odagi body'ye dusuruyor, guard deliniyor ve imlec yuzeyin ARDINDAKI hucreye kaciyor
+    // (hizli ekleme odasinda birebir bu yasandi; Esc de odaya ulasamaz hale geldi).
+    // Motor KENDI BAKAR - ekranin "yuzey acik" diye bildirmesine bagli DEGIL (Engin karari
+    // 2026-07-30): bildirmeye bagli olsaydi ileride eklenen her yeni yuzeyde bildirmeyi unutan
+    // biri ayni hatayi sessizce geri getirirdi. role=dialog TEK isaret: hem alt-sheet ailesi
+    // hem hizli ekleme odasi bunu tasiyor ve ikisi de yalniz acikken render ediliyor.
+    if (document.querySelector('[role="dialog"]')) return
     const expected = containerRef.current.querySelector<HTMLElement>(
       `[data-row-id="${state.active.rowId}"][data-col="${state.active.col}"]`,
     )

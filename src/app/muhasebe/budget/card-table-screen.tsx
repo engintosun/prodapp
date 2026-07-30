@@ -293,7 +293,6 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           query={addQuery}
           options={addOptions}
           highlightIndex={addHighlight}
-          disabled={adding}
           inputRef={addInputRef}
           onQueryChange={onAddQueryChange}
           onHighlightChange={setAddHighlight}

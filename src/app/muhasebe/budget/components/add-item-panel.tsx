@@ -7,7 +7,6 @@ interface AddItemPanelProps {
   query: string
   options: LibraryItem[]
   highlightIndex: number
-  disabled: boolean
   inputRef: RefObject<HTMLInputElement | null>
   onQueryChange: (value: string) => void
   onHighlightChange: (next: number) => void
@@ -22,7 +21,6 @@ export function AddItemPanel({
   query,
   options,
   highlightIndex,
-  disabled,
   inputRef,
   onQueryChange,
   onHighlightChange,
@@ -131,7 +129,6 @@ export function AddItemPanel({
           ref={inputRef}
           type="text"
           value={query}
-          disabled={disabled}
           onChange={(e) => onQueryChange(e.target.value)}
           style={{
             width: '100%',
