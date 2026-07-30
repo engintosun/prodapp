@@ -55,8 +55,10 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   const [addHighlight, setAddHighlight] = useState(-1)
   const [adding, setAdding] = useState(false)
   const addInputRef = useRef<HTMLInputElement>(null)
-  // Yeni eklenen kalemler. Her id KENDI 1 saniyesini yakar (Engin karari 2026-07-31):
+  // Yeni eklenen kalemler. Her id KENDI 2 saniyesini yakar (Engin karari 2026-07-31):
   // pes pese eklemede onceki cerceve hemen sonmez, birden fazlasi ayni anda yanabilir.
+  // Sayac kalem EKLENDIGINDE baslar, satirin ekrana gelmesi beklenmez - bilincli tercih,
+  // sonraki bir turda "satir gelince baslasin" diye degistirilmez (Engin karari 2026-07-31).
   const [justAddedIds, setJustAddedIds] = useState<string[]>([])
   const pendingScrollIdRef = useRef<string | null>(null)
 
@@ -76,7 +78,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         setJustAddedIds((prev) => [...prev, newItemId])
         window.setTimeout(() => {
           setJustAddedIds((prev) => prev.filter((id) => id !== newItemId))
-        }, 1000)
+        }, 2000)
         refetch({ silent: true })
         // Oda KAPANMAZ (Engin karari 2026-07-27) - pes pese kalem dokme yazmadan surer.
         // Fareyle secildiginde odak secenek dugmesine kacmis olur, yazi alanina geri alinir.
