@@ -119,6 +119,7 @@
 - Sonek DİLİ işaret eder, ROLÜ değil. Rol ayrımı ayrı ad ister.
 - Gerçek çoklu dil gerekirse çözüm kolon değil çeviri tablosudur; `_tr/_en` kolon çifti ölçeklenmez.
 - REDDEDİLDİ: tüm Türkçe alanlara `_tr` soneki ekleme önerisi (Engin kararı 2026-07-26). Gerekçe: sonek istisnayı işaretlemeli, kuralı değil; `name` kolonu 15+ tabloda var, süpürge kozmetik ve devasa; kod tabanı zaten soneksiz Türkçe kuralını uyguluyor.
+- **AÇIK SORU (eski TECH-DEBT TD-21, 26 Temmuz 2026'da bulundu, 31 Temmuz'da buraya taşındı):** şablon gövdesindeki `detail` JSON anahtarı hedef kolon `name_en` ile hizalı değil — aynı şey için üçüncü bir ad. JSON anahtarı kolon adını takip mi etsin, yoksa şablon gövdesi ayrı bir sözleşme olarak `detail` demeye devam mı etsin? Hizalamak şablon gövdelerini yeniden yazmak demektir (veri göçü). Karara bağlanınca iş çıkarsa TECH-DEBT.md'ye borç olarak döner.
 
 -----
 

@@ -152,3 +152,11 @@ Bir departmanda dept rolu yoksa (yani o departmana atanmis dept kullanicisi bulu
 Bu runtime kontroludur, konfigurasyon degildir. Sistem fis submit edildiginde dept_id'ye gore profiles tablosunda aktif dept kullanicisi arar; bulamazsa dept adimini atlar.
 
 **Birden fazla dept kullanicisi:** Ayni departmanda birden fazla dept kullanicisi varsa, herhangi biri onaylayabilir (ilk gelen yapar). Faz 1 icin yeterli.
+
+---
+
+## SK-AUTH-10: Kişi FK'larının hedefi (KİLİTLİ — eski TECH-DEBT TD-3)
+
+Kişiyi gösteren FK'lar (`receipts.user_id`, `advances`, `exception_permits`, `approval_log`) belirli bir üyelik satırına değil doğrudan `auth.users(id)`'ye bakar. Üyelik bağlamı (`user_id + project_id`) FK ile değil RLS ile sağlanır.
+
+Bu bilinçli bir sadeleştirmedir ve karar 27 Mayıs 2026'da verilmiştir — bekleyen bir seçim yoktur. Geriye kalan tek şey gözden geçirme şerhidir: çok-projeli kullanımda üyelik bağlamının yalnız RLS'e emanet olması M2'de bir kez gözden geçirilir. 31 Temmuz 2026'da TECH-DEBT.md'den buraya taşındı (borç değil, verilmiş karar).

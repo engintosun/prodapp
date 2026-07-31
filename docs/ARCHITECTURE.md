@@ -41,6 +41,7 @@ Listede yoksa Faz 1'de yoktur:
 - Mobil native uygulama (PWA yeterli, Capacitor ile store ileride)
 - Super-admin / auditor rolü (ihtiyaç pilotta netleşir)
 - Şirketler arası veri paylaşımı (cross-company)
+- Mesai / fazla çalışma ücreti — günden güne değişen saat (biri 1 saat, biri 4 saat) × saatlik ücret; mevcut Birim modeli (gün/hafta/ay, sabit-tekrarlı) bunu temsil edemez, ayrı tasarım oturumu gerekir. (Eski TECH-DEBT TD-19; 31 Temmuz 2026'da buraya taşındı — borç değil, faz kapsamı kararı.)
 
 **Karar:** 22.05.2026 (güncelleme 2026-06: CFE+bütçe çıkarıldı) | **Gerekçe:** Açık "hayır" olmadan her şey örtük "belki" olur.
 

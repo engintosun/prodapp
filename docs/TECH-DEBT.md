@@ -1,7 +1,7 @@
 # KAAPA — Teknik Borç Takibi (TECH-DEBT)
 
-**Son güncelleme:** 20 Temmuz 2026
-**Kural:** Her borç bir milestone'a bağlı. "Bir gün düzeltiriz" yok. **Bütçe sınırı yalnız "Açık Borç" kovasını sayar** (kod/şema ile kapatılacak gerçek borç). "Karar Bekleyen" kalemler milestone'da karara bağlanacak yapısal seçimlerdir, borç sayılmaz. Açık Borç 5'i aşarsa yeni özellik durur.
+**Son güncelleme:** 31 Temmuz 2026
+**Kural:** Bu dosya borç durumunun TEK otoritesidir; sayı başka hiçbir dosyada taşınmaz (Engin kararı 2026-07-31). TD numarası YALNIZ borç demektir — tek tablo, tek sayaç. Her borç bir milestone veya tura bağlı; "bir gün düzeltiriz" yok. **Sınır 10: Açık Borç 10'u aşarsa yeni özellik durur.** Karara bağlanacak yapısal seçimler, yapılmamış özellikler ve zaten verilmiş kararlar bu dosyaya GİRMEZ — kendi karar dosyalarına yazılır (CLAUDE.md "Karar nereye yazılır" yol haritası).
 
 -----
 
@@ -15,19 +15,9 @@
 |TD-13|Alt navigasyon (Masa/Donem/Rapor/Davet/Butce/Tanimlar, 6 sekme) Muhasebe ve Butce ekranlarina siziyor; tasarima gore yalniz harcama-saha yuzeyinde olmali. Kaynak bulundu: kod hatasi degil, bilincli stub — sekmeler dilimlerde kayitli/gecici eklendi, EV/NAV masasi hic kurulmadi; cozum nav tasariminin kendisi.|src/app (rota/layout tarafi, henuz tespit edilmedi)|EV/NAV masasi (IS-SIRASI backlog) kurulmadan tespit gecikti; ekran goruntusuyle 2026-07-13'te dogrulandi|KABUK milestone|14 Temmuz 2026|
 |TD-22|Denetci ekraninda iki yerde ciplak `zIndex: 200` var (satir 199 ve 279); katman sirasi tokens.css'te TEK yerde yasamali kurali ile celisiyor. 2026-07-28'de kurulan katman doktrini (TASARIM-KARARLARI bolum 9) bunu yasakliyor, ancak dosya o dilimin kapsami disindaydi.|`src/app/reviewer/reviewer-screen.tsx`|Zemin dilimi yalnizca butce yuzeylerini kapsiyordu; kapsam disina cikip dokunmak DUR kuralina aykiri olurdu|Denetci ekranina sira geldiginde|28 Temmuz 2026|
 |TD-23|Bilesen testi altyapisi yok: jsdom ve Testing Library kurulu degil, bes test dosyasinin hepsi saf mantik (bordro, CFE, budget-service, klavye cekirdegi, format). Kullanici eylemi ile sistem sonucu arasindaki katman TAMAMEN testsiz: hangi kosulda ne gorunur, tus ve odak davranisi, eylemin hangi servisi HANGI ARGUMANLA cagirdigi (serbest kalemin Fatura/gun ile dogmasi gibi - yanlis varsayilan sessizce yasal yuk hesabini degistirir), eylemden sonra ekranin hali, hata yolu. Kapsam DISI: renk/hizalama/bosluk gibi gorsel iddialar (UI turunda cururler) ve saf fonksiyonlarin zaten test edilen hesaplari.|`src/` bilesen katmani (vitest var, jsdom + Testing Library yok)|Erken donemde dogru siraydi: para hesaplanan yer test edildi, cizim katmani surekli sekil degistiriyordu (secici gecen hafta hucreden odaya tasindi), yazilacak testlerin cogu calistirilmadan silinirdi. Esigi geciren sey davranis kurallarinin birikmesi oldu (K1-K13, D3b-2d, kaydirma, odadaki Enter istisnasi) - artik tek tarayici turunda bastan sona dogrulanamiyor ve son turlarda kacan hatalarin hepsi bu katmandaydi.|D3c bitiminde (Engin karari 2026-07-31: "3 dilim bitsin sonraki is ona bakariz")|2026-07-31|
-
------
-
-## Karar Bekleyen (milestone'a bağlı yapısal seçim — bütçeye sayılmaz)
-
-|#|Ne|Nerede|Neden kabul edildi|Karar hedefi|Tarih|
-|-|--|------|------------------|-----------|-----|
-|TD-2|Uyelik yasam dongusu alanlari (`membership_status archived_readonly` dali, `access_until`, `revoked_at`, `projects.status/closed_at/closed_by`) SEKIL olarak var; davranis (cascade, export penceresi, otomatik gecis) YOK|`profiles`, `projects`|M1 kapsam disinda|M2|27 Mayis 2026|
-|TD-3|Person isaret eden FK'lar (`receipts.user_id` vb.) `auth.users(id)`'ye bakar, belirli uyelik satirina degil; uyelik baglami (`user_id+project_id`) RLS ile saglanir|`receipts`, `advances`, `exception_permits`, `approval_log`|Bilinçli sadelestirme|M2 gozden gecirme|27 Mayis 2026|
-|TD-6|In-app produksiyon proje adi iki yerde tutuluyor (`projects.name` + `company_settings.project_name`); hangisi SSOT secilecek karar verilmedi|`projects`, `company_settings`|Onboarding/marka ekrani henuz yok|M3.5 marka ekrani|29 Mayis 2026|
-|TD-8|`departments.chief_id` kullanılmıyor — `fn_route_receipt` dept şef sorusunu `profiles` tablosundaki aktif `role=dept` kaydının varlığı üzerinden yanıtlıyor; `departments.chief_id` hiç okunmuyor|`departments`|2026-06-09 onboarding 5-katman tasarımında tespit edildi; ya kolon kaldırılır ya da açık atama yoluna kavuşturulur|M3 — EKRAN-MUHASEBE sef atama ekrani karari (kolon DROP mu acik atama mi)|09 Haziran 2026|
-|TD-19|Mesai/fazla çalışma ücreti (gerçekleşen bütçe) için kayıt yapısı yok — günden güne değişen saat (örn. biri 1 saat biri 4 saat mesai) × saatlik ücret, mevcut Birim (gün/hafta/ay, sabit-tekrarlı rakam) modeliyle temsil edilemez|Bütçe UI (Birim modeli) + gerçekleşen bütçe kaydı|TD-18 tasarım oturumunda gündeme geldi (Engin, 20 Temmuz 2026); sendika/meslek birliği standart günlük süre tanımlıysa saatlik→günlük çevrim mümkün ama günden güne değişen mesai için mevcut sabit-tekrarlı Birim modeli yetersiz|Ayrı tasarım oturumu gerekli|20 Temmuz 2026|
-|TD-21|Şablon gövdesindeki `detail` JSON anahtarı hedef kolon `name_en` ile hizalı değil; aynı şey için üçüncü bir ad. Hizalamak şablon gövdelerini yeniden yazmak demek (veri göçü).|budget_templates.body (cards[].items[].detail) + budget_items.name_en / item_library.name_en|D3-ARA'da description_en → name_en yeniden adlandırmasıyla birlikte bulundu (26 Temmuz 2026); JSON anahtarını da hizalamak bu dilimin kapsamı dışına taşırdı (veri göçü, ayrı karar gerektirir)|JSON anahtarı kolon adını takip etmeli mi, yoksa şablon gövdesi ayrı bir sözleşme olarak `detail` demeye devam mı etsin?|26 Temmuz 2026|
+|TD-2|Uyelik yasam dongusu alanlari (`membership_status archived_readonly` dali, `access_until`, `revoked_at`, `projects.status/closed_at/closed_by`) SEKIL olarak var; davranis (cascade, export penceresi, otomatik gecis) YOK. Karar zaten verilmis ve AUTH-KARARLARI SK-AUTH-8 sonunda yazili (M2'ye ertelendi); bekleyen sey karar degil is - sekli olup islevi olmayan alan ona bakan herkesi yaniltir.|`profiles`, `projects`|M1 kapsam disinda|Uyelik/arsiv dilimi (M2)|27 Mayis 2026|
+|TD-6|Proje adi iki yere yaziliyor. Yasayan kaynak projects.name; company_settings.project_name ise iki SQL fonksiyonunda YAZILIYOR (20260610120000 satir 123, 20260710120000 satir 199) ama src/ icinde hicbir yerde OKUNMUYOR - proje adi degisince sessizce ayrisir. Kod teyidi 31 Temmuz 2026.|`projects`, `company_settings`|Onboarding/marka ekrani henuz yok. Dosyadaki eski tarif (hangisi SSOT secilecek) bir UYGULAMA TAHMINIYDI; yarisan iki kaynak yok, gercek kazandi (CLAUDE.md Dokuman kazanir maddesi 3).|BORC-C|29 Mayis 2026|
+|TD-8|`departments.chief_id` kullanılmıyor — `fn_route_receipt` dept şef sorusunu `profiles` tablosundaki aktif `role=dept` kaydının varlığı üzerinden yanıtlıyor; `departments.chief_id` hiç okunmuyor. 31 Temmuz 2026 kod teyidi: chief_id yalniz baseline'da geciyor (kolon tanimi + FK kisiti), src/ icinde okuyan da yazan da yok - olu kolon.|`departments`|2026-06-09 onboarding 5-katman tasarımında tespit edildi; ya kolon kaldırılır ya da açık atama yoluna kavuşturulur|BORC-C|09 Haziran 2026|
 
 -----
 
@@ -51,13 +41,30 @@
 
 ## Bütçe Kontrolü
 
-- Açık Borç sayısı: 6 (TD-5, TD-10, TD-12, TD-13, TD-22, TD-23)
-- Karar Bekleyen: 6 (TD-2, TD-3, TD-6, TD-8, TD-19, TD-21) — bütçeye sayılmaz
-- **DURUM: 6/5 - SINIR ASILDI.** Sayac 28 Temmuz'dan beri bayatti (TD-22 hic sayilmamis), sinir fiilen o gun dolmustu. Borc kapatma turu gerekiyor; en ucuz aday TD-22 (denetci ekraninda iki ciplak zIndex -> tokens.css). BORC-A + BORC-B TAMAM. TD-14 kapandi (18 Temmuz 2026, KLV kapanis paketi) — TD-15/TD-16 ayni pakette acilip kapandi, hicbiri Acik Borc'a yansimadi. 19 Temmuz 2026: KLV manuel test turunda üç hata düzeltildi + TD-17 (hesaplama-seviyesi) ve TD-18 (Karar Bekleyen) açıldı, sınıra ulaşılmıştı (5/5). 20 Temmuz 2026: TD-17 kapandı (bordro motor mimarisine dokunulmadan servis-katmanı filtresiyle) — sınırın altına inildi. Aynı gün TD-18 de kapandı (asgari ücret alt sınır uyarısı + bölüm/sabit birim kaldırma); mesai/fazla-çalışma ihtiyacı TD-19 olarak Karar Bekleyen'e açıldı. 24 Temmuz 2026: TD-20 (name/description_en semantik takası + 'Sebep' hata metni) Karar Bekleyen'e açıldı — Açık Borç sayısı DEĞİŞMEDİ, 4/5. 26 Temmuz 2026: TD-20 KAPANDI (D3-ARA); aynı dilimde TD-21 (şablon gövdesi `detail` anahtarı ↔ `name_en` hizasızlığı) Karar Bekleyen'e açıldı — Açık Borç yine DEĞİŞMEDİ, Karar Bekleyen 5'ten 6'ya çıktı. 28 Temmuz 2026: TD-22 açıldı ama sayaç GÜNCELLENMEDİ (bu turda bulundu, 31 Temmuz 2026). 31 Temmuz 2026: TD-23 (bileşen testi altyapısı, D3c bitiminde ödenecek) Açık Borç'a eklendi; sayaç gerçeğe getirildi (TD-22 dahil edildi) ve sınır aşıldığı görüldü — hiçbir borç kapatılmadı/taşınmadı, karar Engin'in (2026-07-31).
+- **Açık Borç: 9 / 10** — TD-2, TD-5, TD-6, TD-8, TD-10, TD-12, TD-13, TD-22, TD-23.
+- **31 Temmuz 2026 yeniden düzenleme (Engin kararı).** "Karar Bekleyen" kovası KAPATILDI. Gerekçe: kova tek bir kurala uymuyordu, içinde üç ayrı cins şey vardı (ödenmemiş borç, yapılmamış özellik, zaten verilmiş karar) ve sayılmadığı için oraya konan borç görünmez oluyordu. Üç madde gerçek borçtu ve buraya alındı: TD-2 (şekli var işlevi yok), TD-6 ve TD-8 (ölü kolonlar, ikisi de 31 Temmuz'da kodda doğrulandı). Üçü borç değildi ve kendi karar dosyalarına taşındı: TD-3 → AUTH-KARARLARI SK-AUTH-10; TD-19 (mesai) → ARCHITECTURE 2.2 "Hayır" listesi; TD-21 → GLOSSARY alan adlandırma doktrini. Sınır 5'ten 10'a çıkarıldı (Engin kararı, aynı gün): gerçek sayı 6'dan 9'a çıktığı için değil, kovanın artık tek cins şey saydığı ve 5'in bu tanımla anlamsız kaldığı için.
+- **Tarihçe.** BORÇ-A + BORÇ-B tamam. TD-14/15/16 aynı pakette açılıp kapandı (18 Temmuz). TD-17 (20 Temmuz) servis-katmanı filtresiyle, TD-18 aynı gün kapandı. TD-20 (26 Temmuz) D3-ARA ile kapandı. TD-22 28 Temmuz'da açıldı ama sayaç güncellenmedi; bu bayatlık 31 Temmuz'da bulundu ve o gün TD-23 ile birlikte sayaç gerçeğe getirildi.
 
 -----
 
-## Bilgi Notu (karar bekleyen değil)
+## Ödeme merdiveni (Engin kararı 2026-07-31)
+
+Borç kendi başına tur açmaz; kuyrukta zaten duran işlere bağlanır ve zamanla azalır.
+
+| Ne zaman | Kapanan | Kalan |
+|----------|---------|-------|
+| bugün | — | 9 |
+| D3c bitince | TD-23 | 8 |
+| BORÇ-C turu | TD-5, TD-6, TD-8, TD-22 | 4 |
+| KABUK milestone | TD-10, TD-13 | 2 |
+| M4 pilot öncesi | TD-12 | 1 |
+| Üyelik/arşiv dilimi (M2) | TD-2 | 0 |
+
+BORÇ-C dördü de temizlik, tasarım kararı istemez: TD-5 sessiz catch → görünür hata; TD-22 iki çıplak zIndex → tokens.css; TD-6 ve TD-8 ölü kolonlar. ŞART: TD-6 ve TD-8 şemaya dokunur, Engin SQL onay kapısından geçer; TD-6'da kolonu düşürmek onu yazan iki fonksiyonu da elden geçirmek demektir.
+
+-----
+
+## Bilgi Notu (borç değil)
 
 - `supabase/SUPABASE-SCHEMA.sql` BAYAT: yeni 14 bütçe tablosu yalnız migration'da (`20260613115009_butce_modulu_temel.sql`). schema.sql artık göç sonrası yapıyı da göstermiyor (kart=departman, budget_item_periods yalnız migration'da: `20260614150000_butce_goc_kart_departman_kalem_donem.sql`). "Şemayı migration'dan oku" geçerli. İleride schema.sql emekli, `supabase/sql/full-rebuild.sql` tek kaynak yapılabilir.
 - fn_open_budget'ta departman BUL-VEYA-OLUŞTUR `ON CONFLICT (project_id, code) DO NOTHING` ile race-safe (iki muhasebeci aynı anda aynı kodu açarsa ikinci sessiz düşer). cost_object şema dilimi (2f72ecc) + fn_open_budget (13f8e4f) 5-katman disiplinli; max(item_code)+1 spec hatası yakalandı, item_code_seq monoton sayaç ile düzeltildi.
