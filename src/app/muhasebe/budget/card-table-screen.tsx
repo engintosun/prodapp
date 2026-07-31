@@ -92,6 +92,39 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     [adding, refetch, addToast, cardRef],
   )
 
+  // D3c-1: serbest kalem GUVENLI VARSAYILANLARLA dogar (Engin karari 2026-07-24): statu
+  // Fatura (sirket) - Bordro DEGIL, cunku yeni dogan satirin kendiliginden yasal yuk hesabina
+  // girmesi yanlis olur; birim gun (day). Kod (muhtelif blogu) ve library_item_id NULL sunucu
+  // tarafinda cozulur, buradan gonderilmez. Ekleme sonrasi akis kutuphane yolunun AYNISI:
+  // yazi alani temizlenir, oda kapanmaz, kaydirma ve 2 saniyelik cerceve isareti devralinir.
+  const onCreateFreeItem = useCallback(
+    async (name: string) => {
+      if (!cardRef.current || adding) return
+      try {
+        setAdding(true)
+        const newItemId = await addBudgetItem(cardRef.current.groupId, {
+          name,
+          paymentStatus: 'sirket',
+          unitCode: 'day',
+        })
+        setAddQuery('')
+        setAddHighlight(-1)
+        pendingScrollIdRef.current = newItemId
+        setJustAddedIds((prev) => [...prev, newItemId])
+        window.setTimeout(() => {
+          setJustAddedIds((prev) => prev.filter((id) => id !== newItemId))
+        }, 2000)
+        refetch({ silent: true })
+        addInputRef.current?.focus()
+      } catch (e) {
+        addToast(e instanceof Error ? e.message : 'Kalem eklenemedi', 'error')
+      } finally {
+        setAdding(false)
+      }
+    },
+    [adding, refetch, addToast, cardRef],
+  )
+
   const onAddQueryChange = useCallback((value: string) => {
     setAddQuery(value)
     // Yazmak vurgu OLUSTURMAZ (D3b-2d): suzulen listede de secim ok tusuyla baslar.
@@ -325,6 +358,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           onQueryChange={onAddQueryChange}
           onHighlightChange={setAddHighlight}
           onSelect={onSelectLibraryItem}
+          onCreateFree={onCreateFreeItem}
           onClose={onCloseAddPanel}
         />
       )}

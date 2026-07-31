@@ -11,6 +11,7 @@ interface AddItemPanelProps {
   onQueryChange: (value: string) => void
   onHighlightChange: (next: number) => void
   onSelect: (item: LibraryItem) => void
+  onCreateFree: (name: string) => void
   onClose: () => void
 }
 
@@ -25,9 +26,11 @@ export function AddItemPanel({
   onQueryChange,
   onHighlightChange,
   onSelect,
+  onCreateFree,
   onClose,
 }: AddItemPanelProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const createButtonRef = useRef<HTMLButtonElement>(null)
   const triggerElRef = useRef<Element | null>(null)
   const onCloseRef = useRef(onClose)
 
@@ -47,9 +50,18 @@ export function AddItemPanel({
   }, [inputRef])
 
   const hasHighlight = highlightIndex >= 0
+  const trimmedQuery = query.trim()
+  // D3c-1 (Engin karari 2026-07-31): serbest ekleme YALNIZ kart ici eslesme tukendiginde
+  // gorunur. Liste ile dugme ayni anda cizilmedigi icin kullanici hicbir anda
+  // "listeden mi secsem, dugmeye mi bassam" catalina dusmez.
+  const canCreateFree = options.length === 0 && trimmedQuery.length > 0
 
+  // Odak halkasi: yazi alani -> serbest ekleme dugmesi (gorunuyorsa) -> kapatma x -> yazi alani.
   const cycleFocus = () => {
-    if (document.activeElement === closeButtonRef.current) inputRef.current?.focus()
+    const active = document.activeElement
+    if (active === closeButtonRef.current) inputRef.current?.focus()
+    else if (active === createButtonRef.current) closeButtonRef.current?.focus()
+    else if (canCreateFree) createButtonRef.current?.focus()
     else closeButtonRef.current?.focus()
   }
 
@@ -75,6 +87,13 @@ export function AddItemPanel({
       } else {
         cycleFocus()
       }
+    } else if (e.key === 'Enter' && canCreateFree) {
+      // TEK ISTISNA (Engin karari 2026-07-31, gerekce): oda artik hucreye yapisik acilir liste
+      // degil, basligi ve kapatma x'i olan bagimsiz bir yuzey; insanlar boyle bir yuzeyi FORM
+      // olarak okur ve formun birincil eylemini Enter ile calistirir. Cekirdek vurgusuz Enter
+      // icin niyet URETMEZ (D3b-2d) ve o kural aynen durur: burada secilen bir SECENEK yoktur,
+      // kullanicinin kendi yazdigi metinle yeni kalem dogar. Tab hala YALNIZ odak tasir.
+      onCreateFree(trimmedQuery)
     }
   }
 
@@ -182,6 +201,49 @@ export function AddItemPanel({
               </li>
             ))}
           </ul>
+        )}
+
+        {canCreateFree && (
+          <div style={{ marginTop: 'var(--space-2)' }}>
+            <p
+              style={{
+                margin: 0,
+                marginBottom: 'var(--space-2)',
+                fontSize: 'var(--text-xs)',
+                color: 'var(--color-text-muted)',
+              }}
+            >
+              Bu kalem resmî kütüphanede yok. Serbest kalem olarak eklenecek: kartın sonundaki
+              Muhtelif bölümüne düşer, statü ve birim seçimi size ait olur, yasal yükler bu
+              seçime göre hesaplanır.
+            </p>
+            <button
+              ref={createButtonRef}
+              type="button"
+              // Yazi alaninin blur olmasini engeller (mousedown blur'dan ONCE gelir);
+              // secenek dugmeleriyle ayni desen.
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => onCreateFree(trimmedQuery)}
+              style={{
+                display: 'block',
+                width: '100%',
+                textAlign: 'left',
+                padding: 'var(--space-2)',
+                cursor: 'pointer',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-sm)',
+                background: 'var(--color-surface)',
+                color: 'var(--color-text)',
+              }}
+            >
+              <span style={{ display: 'block', fontSize: 'var(--text-sm)', fontWeight: 600 }}>
+                {trimmedQuery}
+              </span>
+              <span style={{ display: 'block', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>
+                serbest kalem olarak ekle
+              </span>
+            </button>
+          </div>
         )}
       </div>
     </>
