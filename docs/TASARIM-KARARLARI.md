@@ -91,3 +91,6 @@ Açıklama kolonu serbest-metinden kontrollü seçime döner; her kütüphane ka
 
 ## ✔ KARAR — input_mode/input_value mimarisi tamamen kaldırılıyor (2026-07-09)
 Bordro kalemi artık istisna değil, DILIM-2f'nin genel deseniyle çalışır — Birim Net dönemsel girilir (budget_item_periods.unit_net_override), Net Toplam/Brüt Toplam her zaman hesaplanan/salt-okunur gösterilir. Gerekçe: üç turluk UI denemesi (segmented-toggle → dropdown) hem görsel hem algısal yük getirdi, kazandırdığı nadir bir ihtiyaç için sık kullanılan ekrana kalıcı karmaşıklık ekliyordu — fayda/maliyet dengesi tutmadı. input_mode/input_value kolonları DILIM-3e-1'de veri-sayım raporu sonrası DROP edilir.
+
+## Ic maliyet tasarim gerekcesi olamaz (KARAR 2026-07-31, Engin)
+Ic is yuku ve veri hacmi, kullaniciya GORUNUR bir sonucu yoksa tasarim gerekcesi olarak kullanilamaz. Somut tetikleyici: D3c tasarim oturumunda serbest kalemin "kalici bir muhtelif kodu yakmasi" bir guvenlik gerekcesi gibi sunuldu; oysa bu bizim defterimizdeki bir maliyettir, kullanici bunu hic bilmez. Dogru soru "kaza olursa KULLANICI ne yasar" sorusudur. Ic maliyetin tasarima girebilecegi tek yer, kullaniciya gorunur hale geldigi yerdir (ornekte: silinen kodlar geri verilmedigi icin No kolonunda kod bosluklari olusmasi - kozmetik, karar tasiyacak agirlikta degil).
