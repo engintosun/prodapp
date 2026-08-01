@@ -14,6 +14,18 @@ export interface LibraryItem {
   aliases: string[]
 }
 
+function mapLibraryRow(r: Record<string, unknown>): LibraryItem {
+  return {
+    id: r.id as string,
+    catalogCode: r.catalog_code as string,
+    name: r.name as string,
+    nameEn: (r.name_en as string | null) ?? null,
+    defaultPaymentStatus: r.default_payment_status as string,
+    defaultUnitCode: r.default_unit_code as string,
+    aliases: (r.aliases as string[] | null) ?? [],
+  }
+}
+
 export async function fetchCardLibrary(cardCode: string): Promise<LibraryItem[]> {
   const prefix = cardCode.slice(0, 2)
   const { data, error } = await supabase
@@ -22,13 +34,17 @@ export async function fetchCardLibrary(cardCode: string): Promise<LibraryItem[]>
     .like('catalog_code', prefix + '%')
     .order('catalog_code')
   if (error) throw new Error(error.message)
-  return (data ?? []).map((r) => ({
-    id: r.id as string,
-    catalogCode: r.catalog_code as string,
-    name: r.name as string,
-    nameEn: (r.name_en as string | null) ?? null,
-    defaultPaymentStatus: r.default_payment_status as string,
-    defaultUnitCode: r.default_unit_code as string,
-    aliases: (r.aliases as string[] | null) ?? [],
-  }))
+  return (data ?? []).map(mapLibraryRow)
+}
+
+// D3c-3 (BUTCE-EKRAN-KARARLARI bolum 16): capraz-kart bilgisi tum kutuphaneyi gerektirir, kart
+// cizildikten SONRA arka planda inar. Kutuphane dolmaya baslayinca tek cekiste donen satir
+// sayisi sinirinin (Supabase varsayilan tavani) TEYIT EDILMESI gerekir, sayfalama ayri is.
+export async function fetchAllLibrary(): Promise<LibraryItem[]> {
+  const { data, error } = await supabase
+    .from('item_library')
+    .select('id, catalog_code, name, name_en, default_payment_status, default_unit_code, aliases')
+    .order('catalog_code')
+  if (error) throw new Error(error.message)
+  return (data ?? []).map(mapLibraryRow)
 }

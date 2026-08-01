@@ -29,6 +29,7 @@
 2. ~~Efekt&Dublor -> ayri kart mi~~ — KAPANDI (KART-KATALOGU.md §7.5): dogru-bolme (performans->Oyuncu 1600, arac->Transport, mekanik->Mekanik FX); tek 'Efekt & Dublor' karti YOK.
 3. Master listede isaretleme (S=sablon / X=sil / bos=kutuphane) yapilmadi
 4. Kart-basi temel kalem + Turkce: 1100/1300/1400/1500/1600 yapildi; kalan kartlar acik
+5. Her sablonun kutuphanesi ayri mi olacak; ayni kart kodunda tur bazli farkli kalem listesi gerekecek mi? (Engin notu 1 Agustos 2026; bugun tek kutuphane tablosu var, ayrim kart kod araligindan kendiliginden doguyor - pilot verisine bagli)
 
 ## 2026 yeni-nesil ihtiyaclar (kaynaklarda YOK, KAAPA eklemeli)
 Yapay zeka operatoru / AI workflow - virtual production / sanal set / LED volume - dijital teslim (sosyal versiyon, dikey/kare reformat, cok-platform) - DIT/data wrangler one cikarma - intimacy coordinator - surdurulebilirlik.

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseNumericDraft, effectiveWarning, bordroAllowedUnits, normalizeForSearch, matchLibraryItems, buildRoomOptions } from './format'
+import { parseNumericDraft, effectiveWarning, bordroAllowedUnits, normalizeForSearch, matchLibraryItems, buildRoomOptions, findCrossCardMatches } from './format'
 
 describe('parseNumericDraft (PARSE GUVENCESI, K10 revize + TD-16)', () => {
   it('duz rakam metnini sayiya cevirir', () => {
@@ -278,5 +278,46 @@ describe('buildRoomOptions (D3c-2 — AYIKLAMA KURALI + DEVRALMA)', () => {
     expect(byAlias.map((o) => o.name)).toEqual(['Koreograf'])
     const byFold = matchLibraryItems(options, 'isik')
     expect(byFold.map((o) => o.name)).toEqual(['Işık Ustası'])
+  })
+})
+
+describe('findCrossCardMatches (D3c-3 — TAM AD, YALNIZ resmi kutuphane, kart bu butcede sinirli)', () => {
+  const LIBRARY = [
+    { catalogCode: '1501', name: 'Yönetmen Kaşesi', aliases: [] },
+    { catalogCode: '2201', name: 'Işık Şefi', aliases: ['Gaffer'] },
+  ]
+  const CARDS = [
+    { cardCode: '1500', name: 'Yönetmen' },
+    { cardCode: '2200', name: 'Kamera' },
+  ]
+
+  it('baska kartta tam ad eslesmesi kart adini dondurur', () => {
+    expect(findCrossCardMatches('Işık Şefi', LIBRARY, '1500', CARDS)).toEqual(['Kamera'])
+  })
+
+  it('ayni karttaki eslesme dondurulmez', () => {
+    expect(findCrossCardMatches('Yönetmen Kaşesi', LIBRARY, '1500', CARDS)).toEqual([])
+  })
+
+  it('ICEREN eslesme dondurmez (kismi ad bos dizi)', () => {
+    expect(findCrossCardMatches('Şefi', LIBRARY, '1500', CARDS)).toEqual([])
+  })
+
+  it('kart bu butcede yoksa bos dizi', () => {
+    const cardsWithoutKamera = [{ cardCode: '1500', name: 'Yönetmen' }]
+    expect(findCrossCardMatches('Işık Şefi', LIBRARY, '1500', cardsWithoutKamera)).toEqual([])
+  })
+
+  it('es-ad uzerinden eslesme kart adini dondurur', () => {
+    expect(findCrossCardMatches('Gaffer', LIBRARY, '1500', CARDS)).toEqual(['Kamera'])
+  })
+
+  it('Turkce-duyarsiz eslesme (I/i, s/s) calisir', () => {
+    expect(findCrossCardMatches('ISIK SEFI', LIBRARY, '1500', CARDS)).toEqual(['Kamera'])
+  })
+
+  it('bos sorgu bos dizi', () => {
+    expect(findCrossCardMatches('', LIBRARY, '1500', CARDS)).toEqual([])
+    expect(findCrossCardMatches('   ', LIBRARY, '1500', CARDS)).toEqual([])
   })
 })

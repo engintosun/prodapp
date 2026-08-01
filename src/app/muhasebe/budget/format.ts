@@ -209,3 +209,35 @@ export function buildRoomOptions(
 
   return [...libraryOptions, ...cardOptions]
 }
+
+// D3c-3 (BUTCE-EKRAN-KARARLARI bolum 16 + 202): odada yazilan ad, BU BUTCEDEKI baska bir kartin
+// kutuphanesinde TAM AD ile (Turkce-duyarsiz) varsa o kartin adini dondurur. TAM AD tercihi
+// (Engin tereddutlu kabul, 1 Agustos 2026): bu satirin isi arama degil, mukerrer kalemden
+// dondurmek - ICEREN kullanilirsa kismi metin eslesmeleri gurultu uretir. Arama YALNIZ bu
+// butcede duran kartlarla sinirlidir (cards parametresi) - sablonda olmayan kartin adi yoktur
+// ve kullanicinin gidebilecegi bir yer de yoktur, o durumda mesaj hic cikmaz.
+export function findCrossCardMatches(
+  query: string,
+  library: { catalogCode: string; name: string; aliases: string[] }[],
+  currentCardCode: string,
+  cards: { cardCode: string; name: string }[],
+): string[] {
+  const q = normalizeForSearch(query.trim())
+  if (q === '') return []
+
+  const currentPrefix = currentCardCode.slice(0, 2)
+  const matchesPrefix = (prefix: string) =>
+    library.some(
+      (it) =>
+        it.catalogCode.slice(0, 2) === prefix &&
+        (normalizeForSearch(it.name) === q || it.aliases.some((a) => normalizeForSearch(a) === q)),
+    )
+
+  const result: string[] = []
+  for (const c of cards) {
+    const prefix = c.cardCode.slice(0, 2)
+    if (prefix === currentPrefix) continue
+    if (matchesPrefix(prefix)) result.push(c.name)
+  }
+  return result
+}

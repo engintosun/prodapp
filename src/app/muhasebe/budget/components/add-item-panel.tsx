@@ -11,6 +11,7 @@ interface AddItemPanelProps {
   onQueryChange: (value: string) => void
   onHighlightChange: (next: number) => void
   onSelect: (item: RoomOption) => void
+  crossCardNames: string[]
   onCreateFree: (name: string) => void
   onClose: () => void
 }
@@ -26,6 +27,7 @@ export function AddItemPanel({
   onQueryChange,
   onHighlightChange,
   onSelect,
+  crossCardNames,
   onCreateFree,
   onClose,
 }: AddItemPanelProps) {
@@ -217,6 +219,36 @@ export function AddItemPanel({
               Muhtelif bölümüne düşer, statü ve birim seçimi size ait olur, yasal yükler bu
               seçime göre hesaplanır.
             </p>
+            {crossCardNames.length > 0 && (
+              // D3c-3: gorunurluk islevsel oldugu icin simdilik belirgin; renk/ton UI turunda
+              // kesinlesir (UX once, UI sonra). Yalniz mevcut token'lar kullanilir.
+              <div
+                style={{
+                  marginBottom: 'var(--space-2)',
+                  borderLeft: '2px solid var(--color-border)',
+                  paddingLeft: 'var(--space-2)',
+                  fontSize: 'var(--text-xs)',
+                  color: 'var(--color-text)',
+                }}
+              >
+                {crossCardNames.length === 1 ? (
+                  <span>
+                    Bu ad <strong style={{ fontWeight: 600 }}>{crossCardNames[0]}</strong> kartının kütüphanesinde var.
+                  </span>
+                ) : (
+                  <span>
+                    Bu ad{' '}
+                    {crossCardNames.map((name, i) => (
+                      <span key={name}>
+                        {i > 0 && ', '}
+                        <strong style={{ fontWeight: 600 }}>{name}</strong>
+                      </span>
+                    ))}{' '}
+                    kartlarının kütüphanesinde var.
+                  </span>
+                )}
+              </div>
+            )}
             <button
               ref={createButtonRef}
               type="button"

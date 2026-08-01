@@ -123,6 +123,28 @@ export async function getOrOpenBudget(): Promise<string> {
   return opened as string
 }
 
+export interface BudgetCardRef {
+  cardCode: string
+  name: string
+}
+
+// D3c-3: capraz-kart bilgisi kartin ADINI gosterir, numarasini ASLA; adlar bu butcenin kendi
+// kartlarindan okunur (BUTCE-EKRAN-KARARLARI bolum 16, kod gorunmez kurali).
+export async function fetchBudgetCards(budgetId: string): Promise<BudgetCardRef[]> {
+  const { data, error } = await supabase
+    .from('expense_groups')
+    .select('card_code, name')
+    .eq('budget_id', budgetId)
+    .order('sort_order')
+  if (error) throw new Error(error.message)
+  return (data ?? [])
+    .filter((r) => r.card_code !== null)
+    .map((r) => ({
+      cardCode: r.card_code as string,
+      name: r.name as string,
+    }))
+}
+
 // Butcenin bir kartini (cardId verilirse o karti, verilmezse ilk kart - sort_order) + etaplarini +
 // kalemlerini getir. X etap-basina: periodQty[stageId]. Birim label ayri raftan map'lenir.
 export async function getCard(budgetId: string, cardId?: string): Promise<CardView | null> {

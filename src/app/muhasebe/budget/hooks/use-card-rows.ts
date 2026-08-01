@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { getOrOpenBudget, getCard, loadUnits } from '../../../../shared/supabase/budget-service'
-import type { BudgetItemRow, CardView, StageRow, UnitRow } from '../../../../shared/supabase/budget-service'
+import { getOrOpenBudget, getCard, loadUnits, fetchBudgetCards } from '../../../../shared/supabase/budget-service'
+import type { BudgetItemRow, CardView, StageRow, UnitRow, BudgetCardRef } from '../../../../shared/supabase/budget-service'
 import { fetchMinimumWageThresholds } from '../../../../shared/supabase/payroll-read'
 import type { MinimumWageThresholds } from '../../../../shared/supabase/payroll-read'
-import { fetchCardLibrary } from '../../../../shared/supabase/library-service'
+import { fetchCardLibrary, fetchAllLibrary } from '../../../../shared/supabase/library-service'
 import type { LibraryItem } from '../../../../shared/supabase/library-service'
 import { useToast } from '../../../../shared/components/toast'
 
@@ -18,6 +18,10 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
   // bolum 16), filtreleme istemci tarafinda (format.matchLibraryItems). Bu dilimde HENUZ HICBIR
   // YERDE KULLANILMIYOR - autocomplete dikisi D3b-2b'de.
   const [library, setLibrary] = useState<LibraryItem[]>([])
+  // D3c-3: capraz-kart bilgisini besleyen ikincil veri - tum kutuphane + butcenin kart listesi.
+  // Kart cizildikten SONRA arka planda inar (bolum 16), kalem eklemeyi hic etkilemez.
+  const [allLibrary, setAllLibrary] = useState<LibraryItem[]>([])
+  const [budgetCards, setBudgetCards] = useState<BudgetCardRef[]>([])
   const [loading, setLoading] = useState(true)
   // Sessiz yenileme (D3b-2f): kalem ekleme/silme sonrasi tablo sokulup yeniden cizilmesin diye
   // bu turda loading YUKSELTILMEZ. Bayrak effect basinda okunup HEMEN sifirlanir; art arda iki
@@ -134,6 +138,41 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
     }
   }, [card?.cardCode, addToast])
 
+  // D3c-3: bunlar ikincil bir BILGI satirini besler, kalem eklemeyi hic etkilemez - asgari ucret
+  // esikleri (fetchMinimumWageThresholds) ile ayni desen, sessiz catch degil bilincli ve
+  // yorumlanmis istisna.
+  useEffect(() => {
+    if (!card?.budgetId) return
+    let cancelled = false
+    void (async () => {
+      try {
+        const lib = await fetchAllLibrary()
+        if (!cancelled) setAllLibrary(lib)
+      } catch (e) {
+        console.warn('Tum kutuphane yuklenemedi:', e instanceof Error ? e.message : e)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [card?.budgetId])
+
+  useEffect(() => {
+    if (!card?.budgetId) return
+    let cancelled = false
+    void (async () => {
+      try {
+        const cardsList = await fetchBudgetCards(card.budgetId)
+        if (!cancelled) setBudgetCards(cardsList)
+      } catch (e) {
+        console.warn('Butce kart listesi yuklenemedi:', e instanceof Error ? e.message : e)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [card?.budgetId])
+
   const patchRow = useCallback((id: string, patch: Partial<BudgetItemRow>) => {
     setRows((rs) => rs.map((r) => (r.id === id ? { ...r, ...patch } : r)))
   }, [])
@@ -149,6 +188,8 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
     stages,
     units,
     library,
+    allLibrary,
+    budgetCards,
     unitLabelById,
     loading,
     error,

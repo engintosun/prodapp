@@ -5,7 +5,7 @@ import { ErrorMessage } from '../../../shared/components/error-message'
 import { useCardRows } from './hooks/use-card-rows'
 import { useEditBuffers } from './hooks/use-edit-buffers'
 import { useGridNavigation } from './hooks/use-grid-navigation'
-import { isMultiPeriod, fmt, matchLibraryItems, buildRoomOptions } from './format'
+import { isMultiPeriod, fmt, matchLibraryItems, buildRoomOptions, findCrossCardMatches } from './format'
 import type { RoomOption } from './format'
 import { addBudgetItem, softDeleteBudgetItem } from '../../../shared/supabase/budget-service'
 import { useToast } from '../../../shared/components/toast'
@@ -25,6 +25,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     stages,
     units,
     library,
+    allLibrary,
+    budgetCards,
     loading,
     error,
     refetch,
@@ -86,6 +88,14 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
       addQuery,
     )
   }, [library, rows, units, addQuery])
+
+  // D3c-3: capraz-kart bilgisi - yazilan ad bu butcedeki BASKA bir kartin kutuphanesinde TAM AD
+  // ile varsa o kartin adi bilgi olarak cikar (BUTCE-EKRAN-KARARLARI bolum 16 + 202).
+  const cardCode = card?.cardCode
+  const crossCardNames = useMemo(() => {
+    if (!cardCode) return []
+    return findCrossCardMatches(addQuery, allLibrary, cardCode, budgetCards)
+  }, [addQuery, allLibrary, cardCode, budgetCards])
 
   const onSelectLibraryItem = useCallback(
     async (o: RoomOption) => {
@@ -389,6 +399,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           onQueryChange={onAddQueryChange}
           onHighlightChange={setAddHighlight}
           onSelect={onSelectLibraryItem}
+          crossCardNames={crossCardNames}
           onCreateFree={onCreateFreeItem}
           onClose={onCloseAddPanel}
         />
