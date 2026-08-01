@@ -8,6 +8,17 @@
 -- Yeni parametre (p_existing_code) argument-listesini degistirdigi icin Postgres bunu
 -- AYRI bir overload olarak gorur (5-arg eski surum silinmez, sadece kullanilmaz kalir);
 -- eski imzaya verilen grant yeni imza icin gecerli olmadigindan grant'lar tekrarlanir.
+--
+-- DUZELTME (Engin karari 2026-08-01, Opus sandbox bulgusu): lpad(v_seq::text, 2, '0')
+-- ifadesi iki haneden UZUN sayiyi KESIYORDU (lpad('100',2,'0') = '10') - 100. serbest
+-- kalemden itibaren her kalem daha once kullanilmis bir kodu aliyordu. Bu hata D2-d'den
+-- (23 Temmuz 2026) beri koddaydi, D3c-2'nin getirdigi degil; ama D3c-2 oda listesini koda
+-- gore tekledigi icin sonucu agirlastiriyordu (cakisan kalem odada hic gorunmez, once dogan
+-- kalemin adi/statusu/birimi kazanirdi). Ayni migrationda kapatildi: lpad artik KESMEZ
+-- (greatest(2, length(...)) ile taban 2 hane, uzun sayi oldugu gibi yazilir), ucuncu yol
+-- kod denetimi de "tam iki hane" yerine "en az iki hane" kabul eder. Bedel: 99'u asan
+-- kartta muhtelif blogunun kendi ici siralamasi metin sirasina duser (...10,100,101,11,12...)
+-- - kart ici, yalniz muhtelif blogunda, kabul edilmistir (BUTCE-SEMA-KARARLARI M).
 
 create or replace function public.fn_add_budget_item(
   p_group_id       uuid,
@@ -87,10 +98,10 @@ begin
       -- serbest mod: yeni muhtelif alt-kod, sayac ARTAR
       update expense_groups set misc_code_seq = misc_code_seq + 1
        where id = p_group_id returning misc_code_seq into v_seq;
-      v_code := substr(v_card_code, 1, 2) || '98-' || lpad(v_seq::text, 2, '0');
+      v_code := substr(v_card_code, 1, 2) || '98-' || lpad(v_seq::text, greatest(2, length(v_seq::text)), '0');
     else
       -- D3c-2: mevcut serbest kalem - AYNI KOD ile ikinci satir, sayac ARTMAZ
-      if p_existing_code !~ ('^' || substr(v_card_code, 1, 2) || '98-[0-9]{2}$') then
+      if p_existing_code !~ ('^' || substr(v_card_code, 1, 2) || '98-[0-9]{2,}$') then
         raise exception 'Mevcut kod bu kartin muhtelif blogundan degil: % (kart %)', p_existing_code, v_card_code;
       end if;
       perform 1 from budget_items bi
