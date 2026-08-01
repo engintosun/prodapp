@@ -1,16 +1,16 @@
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import type { RefObject } from 'react'
 import { resolveKeyAction } from '../hooks/grid-navigation-core'
-import type { LibraryItem } from '../../../../shared/supabase/library-service'
+import type { RoomOption } from '../format'
 
 interface AddItemPanelProps {
   query: string
-  options: LibraryItem[]
+  options: RoomOption[]
   highlightIndex: number
   inputRef: RefObject<HTMLInputElement | null>
   onQueryChange: (value: string) => void
   onHighlightChange: (next: number) => void
-  onSelect: (item: LibraryItem) => void
+  onSelect: (item: RoomOption) => void
   onCreateFree: (name: string) => void
   onClose: () => void
 }
@@ -176,7 +176,7 @@ export function AddItemPanel({
             }}
           >
             {options.map((o, i) => (
-              <li key={o.id} role="option" aria-selected={i === highlightIndex}>
+              <li key={o.key} role="option" aria-selected={i === highlightIndex}>
                 <button
                   type="button"
                   tabIndex={-1}

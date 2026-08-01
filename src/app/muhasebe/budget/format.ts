@@ -145,3 +145,67 @@ export function matchLibraryItems<T extends { name: string; aliases: string[] }>
       it.aliases.some((a) => normalizeForSearch(a).includes(q)),
   )
 }
+
+// D3c-2 (BUTCE-EKRAN-KARARLARI bolum 16 AYIKLAMA KURALI + DEVRALMA): oda listesi artik
+// kutuphane + kartin MEVCUT serbest kalemlerinden kurulur. SAF fonksiyon: DOM/servis bilmez.
+export interface RoomOption {
+  key: string
+  name: string
+  aliases: string[]
+  source: 'library' | 'card'
+  catalogCode: string
+  paymentStatus: string
+  unitCode: string
+}
+
+export function buildRoomOptions(
+  library: { id: string; catalogCode: string; name: string; aliases: string[]; defaultPaymentStatus: string; defaultUnitCode: string }[],
+  rows: { catalogCode: string | null; libraryItemId: string | null; name: string; paymentStatusCode: string; unitCode: string; sortNo: number }[],
+): RoomOption[] {
+  const libraryOptions: RoomOption[] = library
+    .slice()
+    .sort((a, b) => a.catalogCode.localeCompare(b.catalogCode))
+    .map((it) => ({
+      key: it.catalogCode,
+      name: it.name,
+      aliases: it.aliases,
+      source: 'library',
+      catalogCode: it.catalogCode,
+      paymentStatus: it.defaultPaymentStatus,
+      unitCode: it.defaultUnitCode,
+    }))
+
+  // AYIKLAMA KURALI: libraryItemId dolu satirlar ATLANIR (karsiligi kutuphane adiyla zaten
+  // listede var, "gorunen ad kanonik" karari geregi). DEVRALMA: ayni kodda birden fazla serbest
+  // satir varsa ILK DOGAN (sortNo en kucuk) esas alinir.
+  const firstByCode = new Map<string, { name: string; paymentStatus: string; unitCode: string; sortNo: number }>()
+  for (const r of rows) {
+    if (r.libraryItemId !== null) continue
+    if (r.catalogCode === null) continue
+    // Statu veya birim kodu cozulemeyen satir listeye HIC GIRMEZ (sunucuda "Birim bulunamadi"
+    // gibi belirsiz bir hataya dusmek yerine, secenek zaten hic gorunmez).
+    if (!r.paymentStatusCode || !r.unitCode) continue
+    const existing = firstByCode.get(r.catalogCode)
+    if (!existing || r.sortNo < existing.sortNo) {
+      firstByCode.set(r.catalogCode, {
+        name: r.name,
+        paymentStatus: r.paymentStatusCode,
+        unitCode: r.unitCode,
+        sortNo: r.sortNo,
+      })
+    }
+  }
+  const cardOptions: RoomOption[] = Array.from(firstByCode.entries())
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([code, v]) => ({
+      key: code,
+      name: v.name,
+      aliases: [],
+      source: 'card',
+      catalogCode: code,
+      paymentStatus: v.paymentStatus,
+      unitCode: v.unitCode,
+    }))
+
+  return [...libraryOptions, ...cardOptions]
+}

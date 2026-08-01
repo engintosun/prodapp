@@ -469,12 +469,17 @@ export async function copyLastPeriodToMain(itemId: string, stageId: string): Pro
   if (eu) throw new Error(eu.message)
 }
 
-// D2 fn_add_budget_item sarmalayicisi (BUTCE-SEMA-KARARLARI L + M/D2-d).
-// Kutuphane modu: yalniz catalogCode; serbest mod: name + paymentStatus + unitCode (ucu birden).
-// Iki modun karisimi tip duzeyinde imkansizdir; sunucu tarafi ayrica exception ile korur.
+// D2 fn_add_budget_item sarmalayicisi (BUTCE-SEMA-KARARLARI L + M/D2-d + D3c-2 ucuncu yol).
+// Kutuphane modu: yalniz catalogCode. Serbest mod (yeni): name + paymentStatus + unitCode.
+// Mevcut-kod modu (D3c-2): existingCode + name + paymentStatus + unitCode - kartin MEVCUT
+// serbest kalemi ikinci kez secildiginde AYNI kodla ikinci satir doger, misc_code_seq ARTMAZ.
+// Ucu de tip duzeyinde ayrik; sunucu tarafi ayrica exception ile korur.
 export async function addBudgetItem(
   groupId: string,
-  opts: { catalogCode: string } | { name: string; paymentStatus: string; unitCode: string }
+  opts:
+    | { catalogCode: string }
+    | { name: string; paymentStatus: string; unitCode: string }
+    | { existingCode: string; name: string; paymentStatus: string; unitCode: string }
 ): Promise<string> {
   const { data, error } = await supabase.rpc('fn_add_budget_item', {
     p_group_id: groupId,
@@ -482,6 +487,7 @@ export async function addBudgetItem(
     p_name: 'catalogCode' in opts ? null : opts.name,
     p_payment_status: 'catalogCode' in opts ? null : opts.paymentStatus,
     p_unit_code: 'catalogCode' in opts ? null : opts.unitCode,
+    p_existing_code: 'existingCode' in opts ? opts.existingCode : null,
   })
   if (error) throw new Error(error.message)
   return data as unknown as string

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseNumericDraft, effectiveWarning, bordroAllowedUnits, normalizeForSearch, matchLibraryItems } from './format'
+import { parseNumericDraft, effectiveWarning, bordroAllowedUnits, normalizeForSearch, matchLibraryItems, buildRoomOptions } from './format'
 
 describe('parseNumericDraft (PARSE GUVENCESI, K10 revize + TD-16)', () => {
   it('duz rakam metnini sayiya cevirir', () => {
@@ -194,5 +194,89 @@ describe('matchLibraryItems', () => {
   it('tek harf a -> iceren tum kayitlar (minimum uzunluk sarti yok)', () => {
     const r = matchLibraryItems(FIXTURE, 'a')
     expect(r.map((i) => i.name)).toEqual(['Yönetmen Özel Asistanı', 'Işık Şefi', 'Koreograf'])
+  })
+})
+
+describe('buildRoomOptions (D3c-2 — AYIKLAMA KURALI + DEVRALMA)', () => {
+  const LIBRARY = [
+    { id: 'l1', catalogCode: '1501', name: 'Yönetmen Kaşesi', aliases: [], defaultPaymentStatus: 'sirket', defaultUnitCode: 'day' },
+    { id: 'l2', catalogCode: '1502', name: 'Koreograf', aliases: ['Coreographer'], defaultPaymentStatus: 'bordro', defaultUnitCode: 'day' },
+  ]
+
+  it('kutuphane satirlari listeye oldugu gibi girer', () => {
+    const r = buildRoomOptions(LIBRARY, [])
+    expect(r.map((o) => ({ key: o.key, source: o.source, name: o.name }))).toEqual([
+      { key: '1501', source: 'library', name: 'Yönetmen Kaşesi' },
+      { key: '1502', source: 'library', name: 'Koreograf' },
+    ])
+  })
+
+  it('libraryItemId dolu kart satiri listeye GIRMEZ (ikizlenme yok)', () => {
+    const rows = [
+      { catalogCode: '1501', libraryItemId: 'l1', name: 'Yönetmen Kaşesi', paymentStatusCode: 'sirket', unitCode: 'day', sortNo: 10 },
+    ]
+    const r = buildRoomOptions(LIBRARY, rows)
+    expect(r).toHaveLength(2)
+    expect(r.every((o) => o.source === 'library')).toBe(true)
+  })
+
+  it('serbest kalem listeye girer, statu ve birimi kendi satirindan gelir', () => {
+    const rows = [
+      { catalogCode: '1598-01', libraryItemId: null, name: 'Drone Operatoru', paymentStatusCode: 'bordro', unitCode: 'week', sortNo: 5 },
+    ]
+    const r = buildRoomOptions(LIBRARY, rows)
+    const card = r.find((o) => o.source === 'card')
+    expect(card).toEqual({
+      key: '1598-01',
+      name: 'Drone Operatoru',
+      aliases: [],
+      source: 'card',
+      catalogCode: '1598-01',
+      paymentStatus: 'bordro',
+      unitCode: 'week',
+    })
+  })
+
+  it('ayni kodda iki serbest satir varsa TEK secenek doner, devralinan statu/birim sortNo kucuk olandan gelir', () => {
+    const rows = [
+      { catalogCode: '1598-01', libraryItemId: null, name: 'Drone Operatoru', paymentStatusCode: 'bordro', unitCode: 'week', sortNo: 20 },
+      { catalogCode: '1598-01', libraryItemId: null, name: 'Drone Operatoru - Ali', paymentStatusCode: 'sirket', unitCode: 'day', sortNo: 5 },
+    ]
+    const r = buildRoomOptions(LIBRARY, rows)
+    const cardOptions = r.filter((o) => o.source === 'card')
+    expect(cardOptions).toHaveLength(1)
+    expect(cardOptions[0].paymentStatus).toBe('sirket')
+    expect(cardOptions[0].unitCode).toBe('day')
+    expect(cardOptions[0].name).toBe('Drone Operatoru - Ali')
+  })
+
+  it('catalogCode null serbest satir atlanir', () => {
+    const rows = [
+      { catalogCode: null, libraryItemId: null, name: 'Hayalet Satir', paymentStatusCode: 'sirket', unitCode: 'day', sortNo: 1 },
+    ]
+    const r = buildRoomOptions(LIBRARY, rows)
+    expect(r.some((o) => o.name === 'Hayalet Satir')).toBe(false)
+  })
+
+  it('statu veya birim kodu cozulemeyen (bos string) serbest satir listeye HIC GIRMEZ', () => {
+    const rowsNoStatus = [
+      { catalogCode: '1598-01', libraryItemId: null, name: 'Eksik Statu', paymentStatusCode: '', unitCode: 'day', sortNo: 1 },
+    ]
+    const rowsNoUnit = [
+      { catalogCode: '1598-02', libraryItemId: null, name: 'Eksik Birim', paymentStatusCode: 'sirket', unitCode: '', sortNo: 1 },
+    ]
+    expect(buildRoomOptions(LIBRARY, rowsNoStatus).some((o) => o.name === 'Eksik Statu')).toBe(false)
+    expect(buildRoomOptions(LIBRARY, rowsNoUnit).some((o) => o.name === 'Eksik Birim')).toBe(false)
+  })
+
+  it('matchLibraryItems RoomOption uzerinde calisir - es-ad ve Turkce-duyarsiz eslesme bozulmaz', () => {
+    const rows = [
+      { catalogCode: '1598-01', libraryItemId: null, name: 'Işık Ustası', paymentStatusCode: 'sirket', unitCode: 'day', sortNo: 1 },
+    ]
+    const options = buildRoomOptions(LIBRARY, rows)
+    const byAlias = matchLibraryItems(options, 'coreographer')
+    expect(byAlias.map((o) => o.name)).toEqual(['Koreograf'])
+    const byFold = matchLibraryItems(options, 'isik')
+    expect(byFold.map((o) => o.name)).toEqual(['Işık Ustası'])
   })
 })

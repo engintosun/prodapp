@@ -5,9 +5,9 @@ import { ErrorMessage } from '../../../shared/components/error-message'
 import { useCardRows } from './hooks/use-card-rows'
 import { useEditBuffers } from './hooks/use-edit-buffers'
 import { useGridNavigation } from './hooks/use-grid-navigation'
-import { isMultiPeriod, fmt, matchLibraryItems } from './format'
+import { isMultiPeriod, fmt, matchLibraryItems, buildRoomOptions } from './format'
+import type { RoomOption } from './format'
 import { addBudgetItem, softDeleteBudgetItem } from '../../../shared/supabase/budget-service'
-import type { LibraryItem } from '../../../shared/supabase/library-service'
 import { useToast } from '../../../shared/components/toast'
 import { thStyle, thNum, colWidths, tableMinWidth } from './components/table-styles'
 import { ItemRow } from './components/item-row'
@@ -62,16 +62,47 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   const [justAddedIds, setJustAddedIds] = useState<string[]>([])
   const pendingScrollIdRef = useRef<string | null>(null)
 
-  // Sorgu bos iken TUM kart kutuphanesi doner (Engin karari 2026-07-24: liste odakta gorunur,
-  // ilk tusta degil - kullanici once bakar, isterse yazarak daraltir).
-  const addOptions = useMemo(() => matchLibraryItems(library, addQuery), [library, addQuery])
+  // D3c-2: oda listesi artik kutuphane + kartin MEVCUT serbest kalemlerinden kurulur
+  // (AYIKLAMA KURALI: kutuphaneden dogmus satirlar ikinci kez GIRMEZ). Sorgu bos iken TUMU
+  // doner (Engin karari 2026-07-24: liste odakta gorunur, ilk tusta degil).
+  const addOptions = useMemo(() => {
+    // units GERCEK state'tir (ref degil) - degisince useMemo yeniden hesaplar.
+    const unitCodeById = new Map(units.map((u) => [u.id, u.code]))
+    return matchLibraryItems(
+      buildRoomOptions(
+        library,
+        rows.map((r) => ({
+          catalogCode: r.catalogCode,
+          libraryItemId: r.libraryItemId,
+          name: r.name,
+          // D2-e: ayni catalogCode icindeki satirlar arasinda item_code sirasi sort_order
+          // sirasiyla AYNIdir (order by catalog_code, item_code) - "ilk dogan" tie-break budur;
+          // sort_order'in kendisi rows'a hic tasinmiyor.
+          sortNo: r.itemCode,
+          paymentStatusCode: r.paymentStatus ?? '',
+          unitCode: unitCodeById.get(r.unitId) ?? '',
+        })),
+      ),
+      addQuery,
+    )
+  }, [library, rows, units, addQuery])
 
   const onSelectLibraryItem = useCallback(
-    async (item: LibraryItem) => {
+    async (o: RoomOption) => {
       if (!cardRef.current || adding) return
       try {
         setAdding(true)
-        const newItemId = await addBudgetItem(cardRef.current.groupId, { catalogCode: item.catalogCode })
+        // D3c-2: kutuphane secenegi bugunku davranisin AYNISI; kart secenegi (kartin mevcut
+        // serbest kalemi) AYNI kodla + ilk satirin statu/birimini DEVRALARAK ikinci satir doger.
+        const newItemId =
+          o.source === 'library'
+            ? await addBudgetItem(cardRef.current.groupId, { catalogCode: o.catalogCode })
+            : await addBudgetItem(cardRef.current.groupId, {
+                existingCode: o.catalogCode,
+                name: o.name,
+                paymentStatus: o.paymentStatus,
+                unitCode: o.unitCode,
+              })
         setAddQuery('')
         setAddHighlight(-1)
         pendingScrollIdRef.current = newItemId
