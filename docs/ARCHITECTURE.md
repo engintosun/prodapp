@@ -136,8 +136,12 @@ Oklar tek yönlü: Orkestrasyon → herkesi çağırabilir. UI → sadece orkest
 ### 3.5 Test Edilebilirlik
 
 - Saf fonksiyonlar birim test edilir (Vitest).
-- Entegrasyon testi: manuel checklist ile uçtan uca senaryolar.
-- Test yazılacak katman: iş mantığı. Yazılmayacak: veri erişim, UI, orkestrasyon (manuel).
+- Ekran davranışı bileşen testi ile ölçülür (jsdom + Testing Library, TD-23 kararı 02.08.2026): hangi koşulda ne görünür, hangi koşulda ekran susar, tuş ve odak davranışı, eylemin hangi servisi hangi argümanla çağırdığı, eylem sonrası ekranın hali.
+- Bileşen testi kapsam dışı: renk, hizalama, boşluk gibi görsel iddialar (UI turunda değişir, testte çürür).
+- jsdom GENEL ortam değildir: saf fonksiyon testleri node ortamında kalır (saflık sınırı, bkz. 3.2); ekran testi dosyası ortamı kendi başında açar.
+- Manuel tarayıcı turu ölmedi, yeri daraldı: görsel duruş, okunurluk, platform farkı ve canlı veriyle ilk görüş insanda kalır.
+- Test yazılacak katman: iş mantığı + ekran davranışı. Yazılmayacak: veri erişim (Supabase çağrısının kendisi), orkestrasyon.
+- REVİZYON 02.08.2026 (TD-23): bu bölümün 22.05.2026 hâli ekran katmanının test edilmeyeceğini söylüyordu; davranış kuralları biriktikçe tek tarayıcı turunda baştan sona doğrulama imkânsızlaştı ve son turlarda kaçan hataların hepsi bu katmandaydı.
 - Yeni iş mantığı fonksiyonu → testi aynı commit'te. "Sonra yazılır" yok.
 
 **Karar tarihi:** 22.05.2026 | **Gerekçe:** Saf fonksiyonların test edilebilirliği en büyük avantajı — kullanılmalı.
