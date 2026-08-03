@@ -1,0 +1,112 @@
+# KAAPA Rakip Analizi — Yapim Yonetimi Yazilimlari (Urun / Bilgi Mimarisi)
+
+**Tarih:** 4 Agustos 2026
+**Amac:** Rakip yazilimlarin bilgi mimarisi, kabuk/gezinme yapisi, yetki modeli ve butce yaklasimi; KAAPA icin alinacak ve kacinilacak desenler.
+**Kapsam notu:** Bu dosya URUN ve EKRAN mimarisi eksenidir. Harcama/OCR ekseni ayri dosyada: docs/RAKIP-ANALIZI-OCR.md.
+**Yontem:** Kaynak kodlar kapali. Inceleme kod okuma degil DAVRANIS ve VERI MODELI incelemesidir: deneme surumu, ekran goruntusu turu, yardim metinleri.
+**Statu:** Bu dosya BULGU tutar, KARAR tutmaz. Buradan dogan kararlar kendi ev dosyalarina yazilir (TASARIM-KARARLARI, BUTCE-EKRAN-KARARLARI, EKRAN-MUHASEBE, IS-SIRASI).
+
+---
+
+## 1. YAMDU
+
+**Kaynak:** app.yamdu.com, ucretsiz deneme hesabi, bos proje (Feature movie) + Yamdu demo projesi ekranlari. 126 ekran goruntusu, 2-3 Agustos 2026.
+
+### 1.1 Kabuk: uc katman, tek ust cubuk
+- Uc ayri dunya var: KULLANICI ayarlari (ray yok, duz liste), SIRKET (ornekte "Oropa"), PROJE.
+- Ust cubuk uc dunyada da AYNI ve sabit: My Calendar · Projects (acilir) · Sirket adi (acilir) · bildirim · avatar.
+- Sirket ve proje dunyalarinin her birinin KENDI sol rayi var; rayin tepesinde cikis dugmesi duruyor ("Exit company" / "Exit project").
+- Dunya degistirmek kabugu degistirmiyor, yalniz sol rayin icerigini degistiriyor.
+- Proje degistirme ust cubuktaki Projects menusunden: son kullanilan projeler + tum projeler + yeni proje.
+- Sirket menusu (sirket dunyasinin kisayolu): Access rights, Address Book, Company Files, Company Tasks, Company Calendar, Production Calendar, Payroll Library, Actor/Location/Costume/Prop Database, Projects, Project Templates, Subscriptions, Settings.
+
+### 1.2 Gezinme uc kademeli
+- 1. kademe SOL RAY = modul. Gruplu ve gruplar acilir-kapanir: GENERAL · BREAKDOWNS & MORE · PLANNING · DEPARTMENT SPECIFIC · POST PRODUCTION · MORE. Yaklasik 30 durak tek listede; gruplama olmadan tasinmaz.
+- 2. kademe UST SEKME = modulun bolumleri (ornek: Crew > Crew list / Access rights / External contacts / Recruitment / Departments / Units).
+- 3. kademe ALT SEKME = bolumun kirilimi (ornek: Production design elements > All / Constructions / Set dressings / Props / Graphics / Vehicles).
+- Bazi modullerde 4. kademeye cikiyor (Travel > Accommodation > Accommodation / Vendors).
+- Ray tumden daraltilabiliyor; daralinca yerinde dikey ikon seridi kaliyor.
+- Ekmek kirintisi ust sekmenin ustunde duruyor (Crew > Crew list).
+
+### 1.3 Menuyu kullanici kendisi duzenliyor
+- MORE grubunun altinda "Edit menu" duragi var. Her modul icin uc secenek: yildiz = birinci seviyede gorun, uc nokta = More altina in, goz = bu bolumde yalniz okuma yetkim varsa More altina in.
+- Ayar metni "for all your projects" diyor: tercih KULLANICIYA ait, projeye degil.
+
+### 1.4 Tanimlar TEK yerde degil, IKI katmanda
+- Module ozgu tanimlar modulun KENDI "Settings" sekmesinde yasiyor: Environment types (DAY-EXT/DAY-INT/NIGHT-EXT/NIGHT-INT, renkleriyle), Breakdown mode (senaryolu / senaryosuz calisma), Production stages (Development, Preproduction, Production, Picturelock, Financing, Postproduction, Sound, Distribution, Marketing — siralanabilir), uretim tasarimi kategorileri, takvim kategorileri, butcede Tools > Fringes / Groups / Globals.
+- Projeler arasi ortak tanimlar SIRKET katmaninda: Payroll Library, Actor/Location/Costume/Prop Database, Project Templates.
+- KAAPA notu: bu, "tek ortak Tanimlar alani" fikrine KARSI bir emsaldir. Rakip, ekran-ayari ile kurum-kutuphanesini bilincli olarak ayirmis.
+
+### 1.5 Yetki modeli uc seviyeli ve her zaman yuzeyin ICINDE
+- Yuzey seviyesi: her ekranin sag ustunde kilit + avatar + sayi rozeti. Tiklaninca "Access rights: <ekran adi>" modali aciliyor; filtre No access / Read / Write, kisi listesi departmana gore gruplu, satirda Admin etiketi.
+- Alan-grubu seviyesi: kisi kartinda bloklarin basinda ayri kilit ve aciklama ("yalniz 'sensitive crew information' yetkisi olanlar gorur", "yalniz 'eating habits' yetkisi olanlar gorur"). Beden olculeri, ehliyet, beslenme kisitlari bu sekilde ayri korunuyor.
+- Kisi seviyesi ozeti: Crew > Access rights sekmesinde kisi basina "Files & Documents x16 · Sensitive information x10 · Company database x5" sayaclari ve "Project access until" (SURELI erisim).
+- Sirket seviyesinde ayrica alan-alan ikon seridi (her alan icin kalem/goz rozeti).
+- Pozisyona gore ON DOLU yetki: kullanici projeye eklendiginde pozisyonuna gore otomatik okuma/yazma aliyor, sonradan degistirilebiliyor.
+- Destek erisimi: proje ayarlarindan Yamdu destegine 24 saatlik gecici admin yetkisi verilebiliyor, istenirse erken kaldirilabiliyor.
+
+### 1.6 Butce modulu (Budgeting)
+- Rayda PLANNING grubunda TEK durak; ayri bir dunya degil.
+- Ekranda kalici uyari: ozellik surekli yayilimda ve "yalniz basit butceler" icin dusunulmus.
+- Senaryo modeli: Create budget scenario > ad + para birimi (uzun liste, TRY dahil) + Type: Estimate / Actual + Status: Draft / In progress / Final / Locked + "baska bir senaryoyu sablon olarak kullan".
+- Senaryo ici: solda Grand Total + kategori agaci, ortada Top sheet tablosu (Account · Name · Subtotal · Fringes total · Total), ust seritte Renumber · Search · Export · Add · Tools · Comments · yetki rozetleri.
+- Bos butcede uc yol: Add category · Import Showbiz Budgeting UBX · Import Movie Magic Budgeting XML. Ikisinde de "Only structure" / "Structure and details" secimi ve "XML Advanced olarak disari al, basit XML fringe ve grup atamalarini tasimaz" uyarisi. Ithal edilen tutarlar senaryonun secili para biriminde gosteriliyor.
+- Tools uc sekme: Fringes · Groups · Globals. Fringes ayrica disaridan ithal edilebiliyor.
+- Detay satirinda ayri pencerede acma ikonu.
+- KAAPA karsiliklari: Status=Locked ~ MUHUR; Fringes ~ yasal yuk kovasi; Globals ~ oran katalogu / dinamik deger; senaryo ~ butce versiyonu; Account agaci ~ kart/kalem kodu.
+
+### 1.7 Ayni butce kalibi baska eksende tekrar ediyor
+- Sustainability modulunde CO2e butcesi ayni desende: Account · Name of activity · CO2e · Status (Approved / Omit / In review) · Country · Type; ust seritte CO2e toplami, aktivite sayisi, kullanilan hesaplayici profili (KlimAktiv).
+- Yani "butce" urunde tek module ait bir ekran degil, tekrar eden bir KALIP.
+
+### 1.8 Finansman ayri modul (Financing plans)
+- Finansman ortaklari kart kart: rol (Producer/Capital resources), Status (negotiation / approved), Planned share % · Confirmed share % · Planned amount · Confirmed amount.
+- Altta Needed amount / Planned total / Confirmed total ve tek cumlelik ozet ("planin yuzde 40'i guvence altinda") + Analysis bolumu.
+- Plan nesnesinin kendi Access rights bloku var: "Editable by" avatar seridi, "Readable by" ayri satir.
+
+### 1.9 Time cards ve onay zinciri
+- Uc sekme: Personal time cards (kilitli) · Daily time cards (kilitli) · My time cards. Kilit ikonu sekme adinin yaninda, yetkiye baglilik gorunur.
+- Satirda gun tipi, Work status (Off / Work (W) / Prep / Wrap / Travel / Hold / Vacation / Sick / Idle / Rehearsal / Fitting), dort asamali nokta zinciri (Approval progress) ve Status (Draft).
+- Haftalik toplu serit: hafta sonu tarihi, gonderilen gun sayisi, onaylanan gun sayisi, calisilan saat, fazla mesai/gece saati ve "haftanin kalan gunlerini onayla" dugmesi.
+- Urun tanitiminda zincirin tam hali gorunuyor: kullanici gonderir > departman onayi > yapim onayi > muhasebe dogrulamasi ve kilitleme > odendi isaretleme; her adimda yorum ve gecmis.
+
+### 1.10 Dosyalar, dagitim, ekip
+- Files & Documents "oda" mantiginda: yapi proje turune gore OTOMATIK doguyor (Script & Development, Sent Call Sheets, Contracts...), kullanici kendi odasini da kurabiliyor. Odalar ic ice (Contracts > Cast / Crew / Insurance / Locations / Rights / Overall financing / Production design / Misc).
+- Her dosya ve oda kendi yuzeyinde: Mark (yildiz), Item seen by, Access rights, Links, My created tasks, Comments.
+- Distribution: File distribution · Announcements (Sent / Draft) · Mailing lists · Templates. Sablonlar duyuru, dosya paylasimi, cagri kagidi ve seyahat icin ORTAK.
+- Crew: Crew list · Access rights · External contacts · Recruitment · Departments · Units. Departman ayni zamanda bildirim hedefi (yorumda @departman etiketleyince herkese bildirim). External contact = projeye erisimi olmayan ama listede gorunebilen kisi. Kisi karti sekmeleri: General · Contract · Staff form · Time Tracking & Payroll · Note · Notifications.
+
+### 1.11 Proje ayarlari
+- Sekmeler: Settings · Payroll · Episodic features · Export · Emails · Subscription · Support.
+- Settings icinde "Sections": projede hangi modullerin AKTIF olacagi secilir. Ayrica proje adi, proje rengi (paletten), proje logosu, proje para birimi, calisma takvimi.
+- Export sekmesi PDF ustbilgisi ve filigran ayarlarini tutuyor; Emails sekmesi gonderen adi ve e-posta ustundeki logoyu.
+
+### 1.12 Bos durum ve ogretme deseni
+- Her modulun bos hali ayni kalipta: tek cumlelik deger onermesi (buyuk punto) + TEK birincil dugme + altinda o modulun DOLU halinin gercek ekran goruntusu.
+- Ilk girislerde adim adim balonlu tur (1/8, 1/4, 1/3 sayaclariyla), "hayir tesekkurler, biliyorum" cikisiyla.
+- Dashboard'da kapatilabilir "Where to start?" kartlari (Script / Shooting scheduling / Production calendar), altinda My tasks · Marked by me · What's going on? akisi.
+
+### 1.13 KAAPA icin cikarimlar (gozlem, karar DEGIL)
+- Sol ray + gruplu basliklar + daraltma: CARD-DESK kararimizi disaridan dogruluyor.
+- Ikinci kademe UST SEKME: bugun muhasebe ve butce ekranlarina sizmis alt navigasyonun aradigi cozum bu kademedir.
+- "Sections" ayari: bizim "modul acik mi bayragi" acik kaleminin emsali; evi proje ayarlari.
+- Tanimlarin iki katmanli olmasi: "tek ortak Tanimlar" egilimimize karsi emsal; ekran-ayari ile kurum-kutuphanesi ayrilmis.
+- Yetkinin yuzey icinde ve alan-grubu seviyesinde olmasi: bizim rol/RLS modelimiz bugun daha kaba; kisisel veri (KVKK) tarafinda dogrudan ise yariyor.
+- Sureli proje erisimi ve destege gecici admin: bizde hic dusunulmemis iki desen.
+- Butce onlarda acikca zayif ve kendileri de soyluyor; KAAPA'nin farklilasma alani tam burasi.
+
+### 1.14 Bu turda GORULMEYENLER (sonraki tura)
+- Ikinci kullanici ile gercek yetki davranisi (Read/Write ile ekranlarin daralmasi).
+- Butcede kalem ekleme, detay satiri, Fringes/Globals'in bir kaleme baglanmasi.
+- Senaryonun Locked haline getirilmesi ve kilitli ekranin davranisi.
+- Time card gonderme ve onay adimlarinin fiilen calistirilmasi.
+- Sections ile modul kapatmanin raya etkisi.
+- Payroll ve Episodic features sekmelerinin icerigi.
+- Mobil gorunum.
+- Sirket katmanindaki Payroll Library ve veri tabanlarinin icerigi.
+
+---
+
+## 2. DIGER RAKIPLER
+
+Henuz bu eksende incelenmedi. Parcali onceki bulgular: 14 Haziran 2026 ekran-hissi turu (Movie Magic Budgeting, Saturation, YNAB), hesap plani ve maliyet nesnesi taramalari (docs/butce/KART-GEREKCELERI.md), erisim modeli taramasi ve kalem-ekleme sektor emsali (docs/butce/BUTCE-EKRAN-KARARLARI.md bolum 16).
