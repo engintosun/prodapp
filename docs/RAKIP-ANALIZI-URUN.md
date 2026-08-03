@@ -109,4 +109,33 @@
 
 ## 2. DIGER RAKIPLER
 
-Henuz bu eksende incelenmedi. Parcali onceki bulgular: 14 Haziran 2026 ekran-hissi turu (Movie Magic Budgeting, Saturation, YNAB), hesap plani ve maliyet nesnesi taramalari (docs/butce/KART-GEREKCELERI.md), erisim modeli taramasi ve kalem-ekleme sektor emsali (docs/butce/BUTCE-EKRAN-KARARLARI.md bolum 16).
+Bu eksende (bilgi mimarisi / kabuk / gezinme) baska rakip henuz incelenmedi. Ama KAAPA'nin aylardir biriken rakip bulgulari VARDIR; hepsi karar dosyalarinin icinde, KARARIN GEREKCESI olarak yasar.
+
+**Tasima yapilmadi (karar, 4 Agustos 2026, Engin):** bu bulgular serbest arastirma notu degil, alinmis kararlarin dayanagidir; yerlerinden cikarilirsa kararlar gerekcesiz kalir, kopyalanirsa iki kaynak olur ve biri bayatlar. Bu bolum TASIMA degil ADRES tutar. Yeni bulgu bir kararla birlikte dogduysa yine kendi karar dosyasina yazilir, buraya yalnizca adresi eklenir.
+
+### 2.1 Nerede ne var
+
+- **docs/RAKIP-ANALIZI-OCR.md** (15 Mayis 2026, 261 satir) — harcama/OCR ekseni: global ve yerel masraf otomasyonu firmalari, OCR dogruluk oranlari, confidence yaklasimlari, onay akislari, KAAPA icin cikarimlar. Urun/ekran mimarisi ICERMEZ.
+
+- **docs/butce/KART-GEREKCELERI.md** — kart yapisinin neden-defteri; en yogun rakip icerigi burada:
+  - Koster / MMB SuperBudget omurgasi: hesap plani iskeleti (1100-6400) buradan alindi.
+  - Kutuphane kaynak listesi: 4.746 kalem, 18+ kaynak (AICP 2023, Movie Magic, Eurimages, AFI, California Film Commission, 15 adet Saturation.io exportu).
+  - ATL/BTL sinirinin konvansiyon oldugu tartismasi (Koster'in kendi metnine dayanir).
+  - Figuranin Oyuncu departmani altinda kumelenmesi karari: gerekce "Saturation ve MMB de ayri ust-hesap yapmaz".
+  - cost_object karari: emsal "MMB Set / Saturation Tag", endustri standardi; kart sinirini asan maliyetler icin transversal eksen.
+
+- **docs/butce/BUTCE-EKRAN-KARARLARI.md bolum 16** — butce ekrani kararlarinin gerekce hatti:
+  - M2 (butce erisimi rol degil ayri yetki ekseni): sektor taramasina dayanir — Saturation erisim modeli, MMB/MMS izin seviyeleri, Hot Budget dosya-paylasimi.
+  - Elle siralamanin (surukle-birak) bilincli kapali olmasi: "MMB'de de yok, sektor alisik".
+  - Kalem adinin serbest olmasi: melez MMB modeli (satir once bos dogar, sonra adlandirilir) degerlendirildi ve reddedildi.
+  - Hizli ekleme odasi deseni: 30 Temmuz 2026 taramasi ayni desenin Showbiz'de zaten var oldugunu gosterdi (yuzey karari kendi basimiza alinmisti, tarama sonradan dogruladi).
+
+- **docs/butce/BUTCE-ARASTIRMA-DURUM.md** — kalem/sablon arastirmasinin sayisal tarafi: 18 kaynagin parse sonuclari (MMB template 457 kalem / 42 hesap, Eurimages 462, AICP 326, AFI 229), ekip+ekipman kuralinin MMB ve Eurimages emsali, uzun kuyrugun kaynaklara yayili gercek dagilimi.
+
+- **docs/butce/KART-KATALOGU.md · BUTCE-SEMA-KARARLARI.md · BUTCE-UI-MIMARISI.md** — tek tuk emsal atiflari (ornegin Saturation globals deseni). Icerikleri bu turda ayrica okunmadi, ihtiyac aninda aranir.
+
+- **docs/TASARIM-KARARLARI.md · docs/ARCHITECTURE.md** — kendi bulgulari yok, yalnizca RAKIP-ANALIZI-OCR.md'ye atif yapar.
+
+### 2.2 Kaydi olmayan tur (uyari)
+
+14 Haziran 2026 tarihli "ekran-hissi turu" (Movie Magic Budgeting, Saturation, YNAB — ekranlarin nasil hissettirdigi) CURRENT.md'de YAPILDI diye anilir, ama iceriginin kaydi hicbir dosyada yoktur; arsiv dosyalari dahil arandi, yalniz veri ve katalog tarafindaki bulgular hayatta kalmis. Tur sohbette kalmis ve kaybolmustur. Sonuc: o turun bulgularina "zaten bakmistik" diye guvenilmez, gerekiyorsa yeniden kosulur ve bu dosyaya yazilir.
