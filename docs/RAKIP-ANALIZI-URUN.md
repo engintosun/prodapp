@@ -102,8 +102,17 @@
 - Time card gonderme ve onay adimlarinin fiilen calistirilmasi.
 - Sections ile modul kapatmanin raya etkisi.
 - Payroll ve Episodic features sekmelerinin icerigi.
-- Mobil gorunum.
 - Sirket katmanindaki Payroll Library ve veri tabanlarinin icerigi.
+
+### 1.15 Mobil gorunum (iPhone/Safari, 4 Agustos 2026)
+
+- **Alt sekme cubugu YOK.** Yamdu telefonda ayri bir mobil navigasyon kurmuyor; ayni sol ray CEKMECE olarak yasiyor. Sol ustte hamburger (uc cizgi), tiklaninca ray soldan kayarak geliyor, ekranin yaklasik yuzde 70'ini kapliyor, arkasi karariyor.
+- Cekmecenin ici masaustuyle BIREBIR ayni: tepede "Exit project" + proje kimligi (logo + ad + "Feature movie (cinema)"), altinda Dashboard, sonra GENERAL grubu (Crew, Time cards, Files & Documents, Distribution, Tasks, Calendar, Project settings) ve devami. Durak kirpilmasi, mobile ozel kisaltilmis menu YOK.
+- **Ust cubuk korunuyor, sariliyor:** bildirim ve avatar ust satirda, My Calendar · Projects · Sirket adi bir alt satirda. Projects menusu masaustuyle ayni (son kullanilan proje + tumu + yeni proje).
+- **Sirket menusu mobilde IKI KOLONLU grid'e donuyor** ve basliklaniyor: GENERAL · PLANNING · DATABASES · ADMINISTRATIVE. Masaustunde tek uzun dikey listeydi. Kazanc gruplama, kayip okunabilirlik: etiketler kesiliyor (Access r... / Compan... / Project T... / Prop Dat...). DERS: dar ekranda iki kolon etiket kirpiyor; tek kolon + grup basligi daha guvenli.
+- **Icerik tek kolona iniyor, duzen degismiyor.** Dashboard kartlari (My tasks, My created tasks, What's going on?) alt alta diziliyor; kart ici duzen ve metinler masaustuyle ayni. "Creat..." gibi dugme etiketleri burada da kirpiliyor.
+- Proje disi ev ekrani telefonda da kisisel pano: "For me" basligi, deneme suresi uyarisi, abonelik karti, "Last used Projects" ve altinda sirket menusu grid'i. Dunya secim ekrani YOK.
+- **KAAPA notu:** Bu bulgu, muhasebe/butce tarafinin telefonda cekmece rayla calisabildigini gosterir; ayri bir mobil bilgi mimarisi kurmaya gerek yoktur. KAAPA'nin alt navigasyonu SAHA yuzeyine aittir (Engin karari, tekrar teyit 4 Agustos 2026) ve muhasebede yoktur; Yamdu'nun mobil turu bu karari degistiren bir sey soylemez, cunku Yamdu'nun mobil kullanicisi ofis kullanicisidir, saha kullanicisi degil.
 
 ---
 
