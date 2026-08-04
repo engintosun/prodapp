@@ -11,6 +11,7 @@ Her oturum bu dosyayla başlar. Yalın tutulur (<120 satır); detay ayrı dosyal
 KALICILIK KURALI gereği her karar CURRENT.md'ye VE kendi özel-ev dosyasına yazılır. Ev adresleri:
 - Bir ekranın davranışı (ne görünür, ne olur) → o ekranın kararlar dosyası (bütçe: docs/butce/BUTCE-EKRAN-KARARLARI.md)
 - Ekranlar-arası ortak ilke (renk, katman sırası, odak görünümü, etkileşim) → docs/TASARIM-KARARLARI.md
+- Uygulama kabuğu (dört bölge, sol ray, üst bağlam, sağ referans, modül kapıları, adres şeması) → docs/KABUK-KARARLARI.md
 - Veri yapısı (tablo, kolon, fonksiyon) → docs/butce/BUTCE-SEMA-KARARLARI.md
 - Kodun nerede duracağı → docs/butce/BUTCE-UI-MIMARISI.md
 - Terim ve adlandırma → docs/GLOSSARY.md
