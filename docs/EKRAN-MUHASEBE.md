@@ -12,6 +12,8 @@ Avatar · proje adı · "Muhasebe · Tüm Departmanlar" · tema · bildirim · *
 ## 2. Tab bar (7 tab, rozetli)
 Dashboard / Bekleyen (n) / Şüpheli (n) / Raporlar / Kiralama (n) / Avanslar / Mesaj
 
+**GEÇERSİZ (Engin kararı 2026-08-02):** Bu yedi sekmelik tab bar tarifi CARD-DESK kilitlenmeden önce, telefon alışkanlığıyla yazılmıştı. Muhasebenin uygulama-seviyesi gezinmesi SOL RAYDIR; sekme yalnız modül İÇİ ikinci kademe olarak kalır. Rayın durakları, ilk ekran ve Tanımların yeri KABUK milestone içinde kararlaşır (CURRENT.md Sıradaki iş 5).
+
 ## 3. Dönem yönetimi şeridi (dashboard üstü)
 "Dönem #X — Açık/Kapalı" + "+ Yeni Dönem" + "Dönem Kapat" + dönem pill seçiciler.
 
