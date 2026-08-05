@@ -3,8 +3,10 @@
 // ekran ekran, Engin kararıyla ayrı bir turda yapılacak; bugün yalnız envanter çıkarılıyor.
 // Denetim C (evsiz açık karar) bilgi-only: CURRENT.md Açık kalanlar maddelerine "ev:" yazımı
 // ayrı bir turda yapılacak; bugün yalnız envanter çıkarılıyor.
-// Denetim E: hash kapanış commit'i atılınca zorunlu olarak bir commit geride kalır (CURRENT.md
-// yazma anında henüz commitlenmemiştir), bu yüzden HEAD ile birlikte ebeveyn (HEAD~1) de kabul edilir.
+// Denetim E referansı HEAD DEĞİL, CURRENT.md'nin KENDİ son commit'idir: Durum satırı yazıldığı anda
+// o anki son commit'i kaydeder, ARDINDAN CURRENT.md commit'lenir — kayıtlı hash her zaman
+// "CURRENT.md'ye dokunan son commit'in ebeveyni"dir. Referans HEAD olsaydı, CURRENT.md yazıldıktan
+// sonra oturumda kaç commit atıldığı (4 Ağustos'ta sekiz) değişken olduğundan yanlış alarm doğardı.
 
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -37,6 +39,15 @@ function run(cmd) {
     return execSync(cmd, { cwd: ROOT, encoding: 'utf8' });
   } catch {
     return '';
+  }
+}
+
+function commandSucceeds(cmd) {
+  try {
+    execSync(cmd, { cwd: ROOT, stdio: 'ignore' });
+    return true;
+  } catch {
+    return false;
   }
 }
 
@@ -244,20 +255,26 @@ for (const rel of srcFiles) {
       warn('E', 'Durum satırı HEAD hash\'i taşımıyor');
     } else {
       const found = hashMatch[1].toLowerCase();
-      const headShort = run('git rev-parse --short HEAD').trim().toLowerCase();
-      // HEAD~1 kullanılır, HEAD^ DEĞİL: Windows'ta cmd.exe satır sonundaki '^' karakterini
-      // yutuyor (HEAD^ sessizce HEAD'e dönüşüyor), HEAD~1 kabuk-bağımsız aynı ebeveyni verir.
-      const parentShort = run('git rev-parse --short HEAD~1').trim().toLowerCase();
-      const candidates = [headShort, parentShort].filter(Boolean);
-      const matches = candidates.some((c) => {
-        const len = Math.min(c.length, found.length);
-        return len > 0 && c.slice(0, len) === found.slice(0, len);
-      });
-      if (!matches) {
-        warn(
-          'E',
-          `CURRENT.md Durum HEAD hash uyuşmuyor — beklenen HEAD=${headShort || '?'} veya HEAD~1=${parentShort || '?'}, bulunan=${found}`
-        );
+      // Referans CURRENT.md'ye dokunan SON commit'tir (curCommit), HEAD DEĞİL — bkz. dosya başı yorum.
+      const curCommitFull = run('git log -1 --format=%H -- CURRENT.md').trim();
+      if (curCommitFull) {
+        // '~1' kullanılır, '^' KULLANILMAZ: Windows'ta cmd.exe satır sonundaki '^' karakterini
+        // yutuyor (HEAD^ sessizce HEAD'e dönüşüyor), '~1' kabuk-bağımsız aynı ebeveyni verir.
+        const curShort = run(`git rev-parse --short ${curCommitFull}`).trim().toLowerCase();
+        const curParentShort = run(`git rev-parse --short ${curCommitFull}~1`).trim().toLowerCase();
+        const candidates = [curShort, curParentShort].filter(Boolean);
+        const matches = candidates.some((c) => {
+          const len = Math.min(c.length, found.length);
+          return len > 0 && c.slice(0, len) === found.slice(0, len);
+        });
+        if (!matches) {
+          warn(
+            'E',
+            `CURRENT.md Durum hash uyuşmuyor — beklenen CURRENT.md'nin son commiti=${curShort || '?'} veya onun ebeveyni=${curParentShort || '?'}, bulunan=${found}`
+          );
+        } else if (!commandSucceeds(`git merge-base --is-ancestor ${found} HEAD`)) {
+          warn('E', `Durum satırındaki hash (${found}) HEAD'in atası değil`);
+        }
       }
     }
   }
