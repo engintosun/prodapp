@@ -4,7 +4,7 @@
 // Denetim C (evsiz açık karar) bilgi-only: CURRENT.md Açık kalanlar maddelerine "ev:" yazımı
 // ayrı bir turda yapılacak; bugün yalnız envanter çıkarılıyor.
 // Denetim E: hash kapanış commit'i atılınca zorunlu olarak bir commit geride kalır (CURRENT.md
-// yazma anında henüz commitlenmemiştir), bu yüzden HEAD ile birlikte ebeveyn (HEAD^) de kabul edilir.
+// yazma anında henüz commitlenmemiştir), bu yüzden HEAD ile birlikte ebeveyn (HEAD~1) de kabul edilir.
 
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -245,7 +245,9 @@ for (const rel of srcFiles) {
     } else {
       const found = hashMatch[1].toLowerCase();
       const headShort = run('git rev-parse --short HEAD').trim().toLowerCase();
-      const parentShort = run('git rev-parse --short HEAD^').trim().toLowerCase();
+      // HEAD~1 kullanılır, HEAD^ DEĞİL: Windows'ta cmd.exe satır sonundaki '^' karakterini
+      // yutuyor (HEAD^ sessizce HEAD'e dönüşüyor), HEAD~1 kabuk-bağımsız aynı ebeveyni verir.
+      const parentShort = run('git rev-parse --short HEAD~1').trim().toLowerCase();
       const candidates = [headShort, parentShort].filter(Boolean);
       const matches = candidates.some((c) => {
         const len = Math.min(c.length, found.length);
@@ -254,7 +256,7 @@ for (const rel of srcFiles) {
       if (!matches) {
         warn(
           'E',
-          `CURRENT.md Durum HEAD hash uyuşmuyor — beklenen HEAD=${headShort || '?'} veya HEAD^=${parentShort || '?'}, bulunan=${found}`
+          `CURRENT.md Durum HEAD hash uyuşmuyor — beklenen HEAD=${headShort || '?'} veya HEAD~1=${parentShort || '?'}, bulunan=${found}`
         );
       }
     }
