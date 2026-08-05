@@ -1,3 +1,4 @@
+// BOY: tek iş = grid hücrelerinin edit buffer'ı + EditApi (İ8: yalnız kendi sahip olduğu buffers/patchRow state'ine dokunan tüm commit handler'ları), sebep = 500+ — bölünme planı docs/butce/BUTCE-UI-MIMARISI.md §8'de kayıtlı, bölme ayrı turda yapılır.
 import { useMemo, useCallback, useState, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 import {

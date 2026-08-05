@@ -1,5 +1,7 @@
 # IS-KURALLARI.md
 
+**Son güncelleme:** 10 Haziran 2026
+
 Ekranlardan ve yetkiden bağımsız iş mantığı. Birden çok ekranı etkileyen kurallar burada tek evde tutulur (etki analizi için). Ekran dosyaları bu kuralları KOPYALAMAZ, sadece referans verir.
 
 > Kapsam: onay zinciri, status geçişleri, reddet, split, dönem ve kapama, kategori sistemi, limitler, kiralama, avans, hot cost, vergi türleri, dijital imza, anomali motoru, şirket kuralları. Anomali motoru (§13) bu dosyanın bir bölümüdür — ayrı dosya değildir.

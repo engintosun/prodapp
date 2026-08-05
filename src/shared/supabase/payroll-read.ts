@@ -1,3 +1,4 @@
+// BOY: tek iş = bordro türetme bloğu (saf hesap: computeBordroFields + Supabase-okuyan orkestrasyon: buildPayrollRates/deriveBordroFields bir arada), sebep = 500+ — bölünme planı docs/butce/BUTCE-UI-MIMARISI.md §8'de kayıtlı, bölme ayrı turda yapılır.
 import Decimal from 'decimal.js'
 import { supabase } from './client'
 import { resolvePayrollItem, deriveMinimumWageExemptionSeries, deriveStampDutyExemption } from '../cfe'

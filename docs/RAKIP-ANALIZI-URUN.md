@@ -1,6 +1,7 @@
 # KAAPA Rakip Analizi — Yapim Yonetimi Yazilimlari (Urun / Bilgi Mimarisi)
 
 **Tarih:** 4 Agustos 2026
+**Son güncelleme:** 4 Ağustos 2026
 **Amac:** Rakip yazilimlarin bilgi mimarisi, kabuk/gezinme yapisi, yetki modeli ve butce yaklasimi; KAAPA icin alinacak ve kacinilacak desenler.
 **Kapsam notu:** Bu dosya URUN ve EKRAN mimarisi eksenidir. Harcama/OCR ekseni ayri dosyada: docs/RAKIP-ANALIZI-OCR.md.
 **Yontem:** Kaynak kodlar kapali. Inceleme kod okuma degil DAVRANIS ve VERI MODELI incelemesidir: deneme surumu, ekran goruntusu turu, yardim metinleri.

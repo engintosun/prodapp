@@ -1,3 +1,4 @@
+// BOY: tek iş = kart tablosunun kalem satırı bileşeni (12 kolonluk KİLİTLİ kolon setinin tek satırlık render'ı + bordro/genel ayrımı + dönem-satırı açılımı), sebep = kolon seti kilitli tek bir kontrat; satır render'ı bölünürse kolon hizası iki dosyada ayrı ayrı korunmak zorunda kalır.
 import { memo } from 'react'
 import { netToplamDonemli, brutToplamDonemli, kisiyeBanka } from '../../../../shared/cfe'
 import type { Yuk } from '../../../../shared/cfe'

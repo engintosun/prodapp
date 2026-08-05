@@ -1,10 +1,12 @@
 # KAAPA — CLAUDE.md
 
+**Son güncelleme:** 5 Ağustos 2026
+
 Her oturum bu dosyayla başlar. Yalın tutulur (<120 satır); detay ayrı dosyalarda, ihtiyaç anında okunur. Kayıt sinyali boğmaz: az, net, güncel.
 
 ## Oturum protokolü
 - **Açılış:** CURRENT.md oku → 4-5 satırlık durum raporu → Engin onaylamadan iş başlamaz. Durum raporu ayrıca BAYATLIK TARAMASI içerir: o oturumda çalışılacak konunun kendi karar dosyası ile CURRENT.md birbirini tutuyor mu, tek satırla söylenir (genel tarama değil, yalnız o günkü konu). Durum raporunda hicbir is CIPLAK sunulmaz: onerilen her isin yaninda NEYE BAGLI oldugu ve NEYI BLOKE ETTIGI yazilir; taranmadiysa "taranmadi" denir. Menu sunmadan (hangisinden baslayalim demeden) once bagimlilik taranir. Onceki oturumda alinan kararlar CURRENT.md Milestone gunlugunun son kaydinda GOZDEN GECIRILECEK KARARLAR basligiyla duruyorsa, durum raporunda madde madde sunulur ve Engin onaylamadan is baslamaz. Tam-dosya / tüm-tarihçe okuması YOK. Okuma TEYİTLİ olmalı: bir araç içerik yerine boş/URL dönerse bu "okundu" değil DUR sinyalidir; gerçek içerik görülmeden "okundu" denmez (raw.githubusercontent güvenilmez → tarball/curl kullan). Git kimliği (user.name/user.email) her fresh clone'da kontrol edilir, tanımlı değilse --local olarak Claude <noreply@anthropic.com> ile ayarlanır — hangi bilgisayar olduğu önemli değil, bu soru bir daha sorulmaz.
-- **Kapanış:** CURRENT.md'yi baştan YAZ (ekleme değil): milestone · son commit · sıradaki 1-3 iş · açık kararlar. Tarihçe git log'da yaşar. **Diyet (zorunlu):** Milestone günlüğünde son 10 kayıt kalır; daha eskiler tek paragraflık "buraya kadar ne kuruldu" özetine iner. Özete inen kaydın taşıdığı kararın özel-ev dosyasında karşılığı yoksa, budamadan ÖNCE oraya taşınır (KALICILIK KURALI). Dosya tavanı 120 satır — aşılıyorsa önce özet paragrafı sıkıştırılır, mühürlü/kilitli kararlar budanmaz.
+- **Kapanış:** CURRENT.md'yi baştan YAZ (ekleme değil): milestone · son commit · sıradaki 1-3 iş · açık kararlar. Tarihçe git log'da yaşar. Kapanışta `npm run doc-check` çalıştırılır, çıktısı kapanış promptuna girer; betik uyarır, build'i kırmaz. **Diyet (zorunlu):** Milestone günlüğünde son 10 kayıt kalır; daha eskiler tek paragraflık "buraya kadar ne kuruldu" özetine iner. Özete inen kaydın taşıdığı kararın özel-ev dosyasında karşılığı yoksa, budamadan ÖNCE oraya taşınır (KALICILIK KURALI). Dosya tavanı 120 satır — aşılıyorsa önce özet paragrafı sıkıştırılır, mühürlü/kilitli kararlar budanmaz.
 - **Okuma zorunluluğu (Engin kararı 2026-07-31):** CLAUDE.md, CURRENT.md ve işe konu olan dosyalar OKUNUR; maliyetli olması mazeret değildir. Bir tabloya veya listeye kayıt eklenecekse tablonun TAMAMI ve varsa sayaç/özet satırları okunur — boş numara aramak okumak DEĞİLDİR. Grep dosyayı veya satırı BULMAK içindir, içeriği anlamak için yetersizdir. Yukarıdaki "tam-dosya okuması YOK" kuralı İLGİSİZ dosyalar içindir; dokunulacak dosyanın dokunulacak bölümü her zaman baştan sona okunur. Token bütçesi gereksiz iş yapmamak ve loopa girmemek içindir, okumamak için DEĞİL. OKUNANLAR satırı SOHBETTE, prompt bloğunun hemen üstünde yazılır — bloğun İÇİNE girmez, çünkü Sonnet'e hitap etmez; denetim Engin'dedir: hangi dosya, hangi satır aralığı. Tetikleyici: 31 Temmuz 2026, TECH-DEBT.md'ye kayıt eklenirken yalnız boş TD numarası arandı, tablo ve sayaç satırları okunmadı; sayacın 28 Temmuz'dan beri bayat olduğu ve borç sınırının fiilen dolduğu ancak Sonnet çalışmanın ortasındayken ortaya çıktı.
 
 ## Karar nereye yazılır (yol haritası)
@@ -17,7 +19,7 @@ KALICILIK KURALI gereği her karar CURRENT.md'ye VE kendi özel-ev dosyasına ya
 - Terim ve adlandırma → docs/GLOSSARY.md
 - Hesap ve iş kuralı → docs/IS-KURALLARI.md
 - Bilerek bırakılan borç → docs/TECH-DEBT.md
-- Sıra ve öncelik → docs/IS-SIRASI.md
+- Sıradaki iş → CURRENT.md · Tamamlananlar ve uzun vadeli backlog → docs/IS-SIRASI.md
 Emin olunamayan durumda dosya listesine BAKILIR, tahmin edilmez.
 
 ## Proje kimliği
@@ -82,7 +84,7 @@ Dil: chat Türkçe; kod İngilizce (değişken/fonksiyon/dosya/commit/yorum); do
 
 ## Context routing
 - Mimari → docs/ARCHITECTURE.md · Auth/rol/RLS → docs/AUTH-KARARLARI.md (canlı RLS tanımı baseline'da) · Şema → supabase/migrations/ TÜMÜ (baseline = BAYAT taban; güncel şema = baseline + sonraki tüm göçler; şema ararken göçleri kronolojik oku, yalnız baseline'a güvenme)
-- İş kuralı/onay/dönem/avans → docs/IS-KURALLARI.md · Ekran → docs/EKRAN-{SAHA,DEPT,MUHASEBE}.md + TASARIM-KARARLARI.md · İsim → GLOSSARY.md · Sıra → IS-SIRASI.md
+- İş kuralı/onay/dönem/avans → docs/IS-KURALLARI.md · Ekran → docs/EKRAN-{SAHA,DEPT,MUHASEBE}.md + TASARIM-KARARLARI.md · İsim → GLOSSARY.md · Sıradaki iş → CURRENT.md · Tamamlananlar/backlog → IS-SIRASI.md
 - Bütçe kart/kalem domain → docs/butce/ (KART-KATALOGU = kart/kalem katalog+motor · KART-GEREKCELERI = neden/eğitim · BUTCE-ARASTIRMA-DURUM = şablon/kalem araştırması). Bütçe şema/teknik (B-serisi · köprü · KDV · percent_lines) → TASARIM-KARARLARI + baseline.
 - Not: eski supabase/SUPABASE-{SCHEMA,RLS,FUNCTIONS}.sql ve full-rebuild.sql artık docs/archive/'te (bayat, tarihsel referans). Canlı şema/RLS/fonksiyon/trigger/grant tek kaynağı baseline'dır.
 - Eşleşme yoksa → ARCHITECTURE.md oku, sonra sor.

@@ -1,3 +1,4 @@
+// BOY: tek iş = KLV klavye navigasyon çekirdeği (hücre odak/tab/enter/arrow state makinesi, DOM'suz saf fonksiyon), sebep = state makinesi tek parça kalmalı; bölünürse K1-K13 kontratının geçişleri iki dosya arasında senkron tutulmak zorunda kalır.
 // I7 klavye motoru saf cekirdek. DOM'suz: hook bu dosyayi DOM'a baglar (use-grid-navigation).
 // Geometri disaridan gelir (GridShape) - registry tutulmaz, cagiran taraf her dispatch'te
 // gecerli geometriyi verir.

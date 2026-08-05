@@ -1,5 +1,7 @@
 # KAAPA — VERGİ MEVZUATI (Sektörel Referans)
 
+**Son güncelleme:** 14 Temmuz 2026
+
 *Bütçe modülünün vergi mantığının (ödeme-statüsü → KDV / stopaj / net-brüt) TEK KAYNAĞI. Türk film/TV/reklam/belgesel yapımında ödeme türlerinin vergisel davranışı. KART-KATALOGU §4.8 (ödeme-statüsü boyutu) ve §4.9 (çift-fringe guard) ile birlikte okunur.*
 
 *Oluşturma: 23 Haziran 2026. Durum: oranlar web-doğrulandı (aşağıda kaynak+tarih). **TASLAK uyarısı:** mevzuat sık değişir; her oran "kaynak-tarihli, mali müşavire doğrulatın" ilkesiyle tutulur (Compliance Guard — kanonik metin: PERSONEL-MEVZUATI.md §0; KAAPA teşhis/uyarı verir, kesin vergi tavsiyesi vermez).*

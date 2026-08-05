@@ -1,7 +1,7 @@
 # KAAPA — Mimari Kararlar Dokümanı
 
-**Son güncelleme:** 14 Temmuz 2026
-**Durum:** M1 (temel altyapı + auth) kapandı. M2 (çekirdek döngü) aktif — DILIM-2/DILIM-3 (bordro motoru) tamam, R-serisi ekran refaktörü (R1-R3) tamam, KLV (klavye motoru, K1-K8) tamam, MÜHÜR-1/2 (bütçe mühürleme çekirdeği + servis okuma çatalı) tamam. Sıradaki: MÜHÜR-3a/3b (versiyon UI). Detay: CURRENT.md.
+**Son güncelleme:** 5 Ağustos 2026
+**Durum:** M1 (temel altyapı + auth) kapandı. M2 (çekirdek döngü) aktif — DILIM-2/DILIM-3 (bordro motoru) tamam, R-serisi ekran refaktörü (R1-R3) tamam, KLV (klavye motoru, K1-K13) tamam, MÜHÜR-1/2 (bütçe mühürleme çekirdeği + servis okuma çatalı) tamam. Sıradaki: KABUK (uygulama kabuğu); MÜHÜR-3a/3b KABUK sonrasına alındı (Engin kararı, 4 Ağustos 2026). Detay: CURRENT.md.
 
 -----
 
@@ -25,6 +25,12 @@ Listede yoksa Faz 1'de yoktur:
 - PDF ve Excel export
 - Mesajlaşma (onay sürecine bağlı bildirimler)
 - Çoklu proje desteği (login'de proje seçimi, veri izolasyonu)
+- Bütçe oluşturma ve kart/kalem masası
+- CFE hesap çekirdeği
+- Bordro motoru
+- Mühürleme/versiyonlama
+
+*(Not, 5 Ağustos 2026 doküman denetimi: bu dört madde 2.2 kapsam-dışı listesinden çıkarılmıştı ama 2.1'e hiç eklenmemişti; bu denetimde bulundu.)*
 
 **Karar tarihi:** 22.05.2026 | **Gerekçe:** Belirsiz kapsamın v8'deki scope creep'i tekrarlamaması.
 
@@ -175,12 +181,16 @@ Oklar tek yönlü: Orkestrasyon → herkesi çağırabilir. UI → sadece orkest
 
 - Rol bazlı dizin yapısı: ekranlar `app/{rol}/` (saha, muhasebe, reviewer, onboarding, auth, layout); paylaşılan kod `shared/` (özellik bazlı değil)
 - Her dosya tek sorumluluk
-- Dosya başına max 300 satır (1.5 ile tutarlı)
+- Dosya başına 300 satır HEDEFTİR, sınır değildir; aşılabilir. Aşan dosya ilk 6 satırında `// BOY: tek iş = ..., sebep = ...` biçiminde tek satır gerekçe taşır. Test dosyaları kuraldan TAMAMEN MUAFTIR — test dosyası yapı değil listedir, bölmek bilgiyi azaltmaz, iki yere baktırır. Gerekçesiz aşım doc-check uyarısıdır (`npm run doc-check`, Denetim D).
+- 500 satırı aşan dosyada gerekçe yetmez: dosya adı satır sayısıyla birlikte docs/butce/BUTCE-UI-MIMARISI.md'ye ("Boy aşımı — bölünme bekleyenler") kaydedilir; bölünme planı AYRI bir turda yapılır, bölme o an yapılmaz.
+- Boy aşımı TEKNİK BORÇ DEĞİLDİR: TECH-DEBT.md'ye girmez, borç sayacını değiştirmez — TECH-DEBT kendi kuralı gereği yapısal seçimler kendi karar dosyasına yazılır.
 - Ekran dosyaları `app/{rol}/*-screen.tsx`; Supabase çağrıları `shared/supabase/*-service.ts`'de toplanır; hesap motoru `shared/cfe/`; ortak bileşenler `shared/components/`; domain tipleri `shared/types/domain.ts`
 - Paylaşılan kod: shared/ — "iki yerden çağrılıyor" testi geçmeli
 - utils.js, helpers.js, misc.js yasak
 
 **Karar tarihi:** 22.05.2026 (güncelleme 2026-06-22: kod rol-bazlı evrildi — `app/{rol}` ekranları + `shared/` servisleri; özellik-bazlı plan terk, boş `features` dizini silindi, TD-7 kapandı). | **Gerekçe:** Ekran rol'e göre netleşir; ortak servis/motor tek `shared/` altında, tekrar yok.
+
+**REVİZYON 5 Ağustos 2026 (Engin kararı — ESKİ kural "Dosya başına max 300 satır (1.5 ile tutarlı)" idi, SINIR olarak uygulanıyordu):** 300 satır artık HEDEFTİR, sınır değildir; büyüyen bir dosyayı erken bölmek bazen okunabilirliği azaltıyordu, özellikle test dosyalarında (test dosyası yapı değil listedir). Gerekçeli aşım kabul, gerekçesiz aşım doc-check uyarısı; 500+ dosyalar BUTCE-UI-MIMARISI.md'ye ayrıca kayda geçer, TECH-DEBT'e girmez.
 
 ### 4.3 Drift Dedektörü
 
@@ -252,6 +262,9 @@ src/
   app/                   — rol-bazlı ekranlar
     saha/                — fiş giriş, düzeltme, ana
     muhasebe/            — muhasebe ekranları (onay, davet, bütçe)
+      budget/            — bütçe kart/kalem masası ekranları
+        components/      — kart tablosu bileşenleri (item-row, add-item-panel, sheet'ler)
+        hooks/           — grid navigasyon + edit buffer hook'ları
     reviewer/            — denetmen
     onboarding/          — müşteri kurulum
     auth/                — login, auth guard
@@ -262,6 +275,7 @@ src/
     components/          — ortak UI bileşenleri
     types/domain.ts      — TypeScript domain tipleri
     utils/               — ortak yardımcılar
+  styles/                — tokens.css (tasarım token'ları: renk, z-katman, odak çerçevesi)
 ```
 
 4.2 kurallarının somut uygulaması.

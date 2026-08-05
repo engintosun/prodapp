@@ -1,3 +1,4 @@
+// BOY: tek iş = bordro hesap motoru (net<->brüt dönüşüm, SGK/işsizlik/gelir vergisi/damga vergisi hesabı + tip tanımları tek yerde), sebep = motor matematiği parçalanırsa ara adımların doğruluğu tek dosyada denetlenemez, PERSONEL-MEVZUATI doktrinine karşı tek yerden test edilir.
 import Decimal from 'decimal.js'
 
 export interface PayrollLegs {

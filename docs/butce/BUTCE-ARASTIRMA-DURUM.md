@@ -1,4 +1,7 @@
 # KAAPA Butce Sablon & Kalem Arastirmasi - DURUM
+
+**Son güncelleme:** 1 Ağustos 2026
+
 > Arastirma durumu. KART 1100/1300/1400/1500/1600 KILITLENDI -> docs/butce/KART-KATALOGU.md (tek kaynak). Asagisi: kapanan oneriler isaretli + kalan acik arastirma.
 
 ## Yapilan

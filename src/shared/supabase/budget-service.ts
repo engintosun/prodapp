@@ -1,3 +1,4 @@
+// BOY: tek iş = bütçe açılış + kart okuma + kalem yazma servis çağrıları (tek Supabase servis dosyası), sebep = 500+ — bölünme planı docs/butce/BUTCE-UI-MIMARISI.md §8'de kayıtlı, bölme ayrı turda yapılır.
 import { supabase } from './client'
 
 export interface StageRow {

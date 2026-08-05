@@ -1,7 +1,10 @@
 # KAAPA — BÜTÇE KART KATALOĞU ve KALEM MEKANİZMASI
+
+**Son güncelleme:** 22 Temmuz 2026
+
 *Kalıcı domain kataloğu. Bütçe modülünün kart/kalem yapısının ve kalem davranış motorunun TEK KAYNAĞI. Koster damıtımından ve oturum kararlarından damıtıldı. TASARIM-KARARLARI.md'den referanslanır.*
 *Oluşturma: 19 Haziran 2026. Güncelleme: 20 Haziran 2026 (KART 1600 OYUNCU + §4.10 cost_object 4. eksen). Önceki: 19 Haziran (KART 1400/1500 + §4.8/§4.9/§5.1/§6).*
-*Durum: KART 1100, 1300, 1400, 1500, 1600 KİLİTLİ; sıradaki = bütçe runtime dikey-dilimi (sonra 1700).*
+*Durum: KART 1100, 1300, 1400, 1500, 1600 KİLİTLİ; runtime dikey-dilimi (DILIM-3 bordro motoru + genel-desen sökümü) TAMAMLANDI. Sıradaki = KÜTÜPHANE TOHUMU (bkz. CURRENT.md Sıradaki iş #1), sonra 1700.*
 
 ---
 

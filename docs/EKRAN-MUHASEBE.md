@@ -1,5 +1,7 @@
 # EKRAN-MUHASEBE.md
 
+**Son güncelleme:** 5 Ağustos 2026
+
 Muhasebe rolü ekranları. Dayanıklı katman kayıtlı, kararsız katman açık slot.
 
 > **Muhasebe sekmesi kart-merkezli çalışma masası olacak.** Her konu (bekleyen, şüpheli, avans, kiralama) kartlardan oluşur; kartlar bir masaya serilir, içinde çalışılır; kartlar bildirimlere ve önceliklere göre otomatik sıralanır (yukarı/aşağı). Bu, aşağıdaki içerikten İLERİ bir sunum geliştirmesidir ve AÇIK SLOT'tur — Engin ayrıntılandıracak. Aşağıdaki yapı bilgi/akış katmanıdır; sunumun kart-masaya nasıl döküleceği ayrı tasarlanacak.
@@ -35,7 +37,9 @@ acc_pending fiş kartları. Detay: tüm confidence verileri her zaman görünür
 - **Personel:** kişi satırı (avatar + isim + dept·rol + tutar + progress), "DETAY İÇİN TIKLA" → kişi detayı
 - **Dönem:** dönem karşılaştırma çoklu-seçici (Dönem #2/#1/#0) + GENEL ÖZET tablo (Dönem / Bütçe / Toplam / Onaylı / Red / %Onay) + BÜTÇE KULLANIM ORANI barlar (aşım kırmızı, %100+ gösterir)
 
-## 8. Kiralama tab
+## 8. Kiralama tab [FAZ 2]
+Taslak tariftir, uygulanmadı; şema yok, kod yok, ARCHITECTURE 2.1 Faz 1 listesinde yer almaz; iş kuralları docs/IS-KURALLARI.md §9'da ve bir maddesi (dönem-kapanış istisnası) hâlâ teyit bekliyor (5 Ağustos 2026 araştırması).
+
 3 stat (Aktif Toplam / Olası Ceza / Gecikmiş n) + DEPARTMAN ÖZETİ tablo (departman + aktif sayı (n geç) + toplam ₺ + gecikme cezası ⚠ kırmızı) + GECİKMİŞ KİRALAMALAR listesi (ekipman + kategori·kişi·dept + tarih aralığı·₺/gün + "n gün geç" + ceza hesabı detayı). Muhasebe tüm departmanların kiralamasını görür.
 
 ## 9. Avanslar tab

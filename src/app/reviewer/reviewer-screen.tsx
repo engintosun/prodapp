@@ -1,3 +1,4 @@
+// BOY: tek iş = denetmen (reviewer) ekranı (bekleyen fiş listesi + düzeltme iste + onayla/reddet akışı, red sebepleri dahil), sebep = tek rolün tek ekranı; düzeltme/red/onay geçişleri birbirine bağlı state akışı, ayrı dosyalara bölünürse takip edilemez.
 import { useState, useEffect, useCallback } from 'react'
 import type { CSSProperties } from 'react'
 import type { Receipt, UserRole } from '../../shared/types/domain'

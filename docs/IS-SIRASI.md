@@ -1,5 +1,7 @@
 # KAAPA — İŞ SIRASI
 
+**Son güncelleme:** 5 Ağustos 2026
+
 BU DOSYA SIRADAKI İŞİ TUTMAZ. Tek kaynak: CURRENT.md "Sıradaki iş" bölümü. Burada yalnız (a) TAMAMLANAN iş referansı ve (b) UZUN VADELİ backlog (yakında başlamayacak, tarihsiz fikirler) yaşar. Bitenler silinmez (referans için kalır); tarihçe ayrıca git log'da.
 Aktif milestone: M2 — Çekirdek Döngü.
 
@@ -18,7 +20,10 @@ Bu bölüm kasıtlı boş bırakılmıştır. "Sıradaki iş" için CURRENT.md'y
 
 ## Backlog (uzun vadeli, tarihsiz — CURRENT.md'nin "Sıradaki iş"ine henüz girmedi)
 - Diğer kartlar (1100/1300/1400/1600) — 1500 modeli üzerinden geçilir.
-- KABUK milestone'una taşındı (CURRENT.md Sıradaki iş #4): EV/ana ekran + navigasyon (card-desk) + bütçe rayı + iki davet kapısının yerlerinin kararlaştırılması (M1 yalnız yüzey aidiyetini mühürledi; fiziksel yer — sol ray/üst ray/kart üstü/sağ panel — açık, Engin kararı) + G6 görsel tasarım (renk/tipografi/ikonografi/dark-light; tokens.css placeholder bekliyor) + TD-13/TD-10 kapanışı + şablon-tipi ("ne bütçesi: film/reklam/dizi") yer tutucusu + açılış tutorial'ı (Engin vizyonu 2026-07-15, ekranlar son halini almadan yazılmaz).
+- G6 görsel tasarım (renk/tipografi/ikonografi/tema; tokens.css placeholder bekliyor) — KABUK'tan AYRI turdur (bkz. docs/TASARIM-KARARLARI.md §3, iki tema eşitliği kararı).
+- Şablon-tipi ("ne bütçesi: film/reklam/dizi") yer tutucusu.
+- Açılış tutorial'ı (Engin vizyonu 2026-07-15, ekranlar son halini almadan yazılmaz).
+(Aktif KABUK tanımı ve iş sırası artık burada YAŞAMAZ: docs/KABUK-KARARLARI.md + CURRENT.md Sıradaki iş.)
 - C5 Dönem ekranı (kapama + grace).
 - Rapor/Export (PDF/Excel) — icmal PDF + EFC + dış format (Bakanlık/AICP) + amort/bölüm payı.
 - Avans akışı (avans→bütçe çift-sayım + B10).

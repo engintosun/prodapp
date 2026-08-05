@@ -1,5 +1,7 @@
 # EKRAN-SAHA.md
 
+**Son güncelleme:** 2 Haziran 2026
+
 Saha rolü ekranları. Dayanıklı katman (akış, alan, yerleşim, mantık) kayıtlıdır. Kararsız katman (renk, kozmetik) açık slot olarak işaretlidir.
 
 > **Saha arayüzü jeneriktir.** Öğelerin KONUMLARI sabittir. Sadece kozmetik (renk, şekil) geliştirilecek. Kart-merkezli çalışma masası mantığı saha'da UYGULANMAZ — saha kendi aksiyon-merkezli akışında kalır.

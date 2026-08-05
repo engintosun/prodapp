@@ -1,5 +1,7 @@
 # KAAPA — Tasarım Kararları (Ekranlar-Arası Ortak İlkeler)
 
+**Son güncelleme:** 5 Ağustos 2026
+
 **Kapsam:** Bu dosya YALNIZCA tüm ekranlarda ortak geçerli görsel ve etkileşim ilkelerini tutar. Ekran-spesifik içerik (alan/akış/yerleşim) → docs/EKRAN-SAHA|DEPT|MUHASEBE.md. İş mantığı (onay/dönem/avans/reddet/anomali/hot cost) → docs/IS-KURALLARI.md. Görev sırası → docs/IS-SIRASI.md.
 
 ---
@@ -16,7 +18,7 @@
 - **Saha:** kart-merkezli DEĞİL. Aksiyon-merkezli kendi akışı (FİŞ TARA odaklı). **Saha arayüzü jeneriktir:** öğelerin konumları sabit, yalnızca kozmetik (renk/şekil) geliştirilir.
 
 ## 3. Tema ve görsel kimlik (ilke kayıtlı, değerler G6'da)
-- **Dark-mode öncelikli** (set ortamı), light mode da bulunur. Tema tercihi kullanıcı bazlı.
+- **İki tema EŞİTTİR** (Engin kararı, 5 Ağustos 2026 — ESKİ ifade "Dark-mode öncelikli (set ortamı), light mode da bulunur" idi, kaldırıldı): koyu ve açık temadan hiçbiri diğerine öncelikli değildir. Üç sonucu: (a) koyu temada işlev bozulması ertelenebilir kozmetik değildir — diğer bozukluklarla aynı öncelikte ele alınır; (b) tokens.css baştan iki değerli kurulur, sonradan koyu tema eklenmez; (c) G6 görsel turu iki temayı birlikte kapsar, biri sonra eklenmez. Tema tercihi kullanıcı bazlı.
 - **Renk paleti, accent kullanımı, tipografi, ikonografi, logo/favicon → G6 görsel tasarım oturumunda belirlenecek (AÇIK SLOT).**
 - tokens.css yapısı placeholder değerlerle kurulur; değerler G6'da swap edilir, yapı değişmez.
 

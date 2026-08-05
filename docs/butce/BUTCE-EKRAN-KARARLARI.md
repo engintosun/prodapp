@@ -1,5 +1,7 @@
 # KAAPA — BÜTÇE EKRAN & MODEL KARARLARI
 
+**Son güncelleme:** 5 Ağustos 2026
+
 ⚠ TERMİNOLOJİ: 2026-07-11 öncesi kayıtlarda Miktar=kişi/adet, Çarpan=süre okunur; sonrasında Miktar=süre, X=kişi/adet (bkz. GLOSSARY tarihçe).
 
 *Kalem bütçe ekranının davranış/etkileşim kararları ve bunları doğuran model gerekçeleri. Vergi/oran detayı `VERGI-MEVZUATI.md`'de; şema/RPC kararları `BUTCE-SEMA-KARARLARI.md`'de; bu dosya ikisinin arasındaki EKRAN + MODEL katmanı.*
@@ -63,6 +65,8 @@ KDV AYRI KOLON DEĞİL — Yasal Yük dökümüne indi (§7). Birim/Birim net/Mi
 
 **NEDEN:** Sahada anlaşma net üzerindendir; brütü sistem türetir. Tek "yük %" katsayısı yetmez: SGK ekleme, stopaj kesinti — iki farklı yön. Toplam = Brüt çünkü yapımcının cebinden çıkan odur. KDV standart halde geri alınır (maliyet değil). Ayrı kolon fikri (2026-06-25) DILIM-2f'de test edilince fazladan gürültü yarattı: KDV zaten Yasal Yük'ün cins-şelalesi içinde doğal yerini alıyor (stopaj/SGK dökümünün altında son satır). Ayrı kolon kaldırıldı; kavram Yasal Yük dökümünde yaşar. Detay: VERGI-MEVZUATI.md §1c.
 
+Kart-seviyesi toplam rakamı bu satır toplamlarından türer: bkz. §18.
+
 ## 4. Dönem seçimi ve kırılım
 
 **KARAR:** "Dönemler" hücresi boşsa **"+ Dönem seç"** tetikleyicisi gösterir (sütun BAŞLIĞI "Dönemler" kalır). Tıkla → açılan menüde **yalnız kalan dönemler** (prep/prod/post/Dönemsiz). Bir dönem seç → kırılıma **tek satır** eklenir (birim-net varsayılandan dolu, adet boş), gir. Tekrar tıkla → kalan dönemlerden seç → yeni satır. Satır sonunda **×** ile kaldır (dönem listeye geri döner).
@@ -80,6 +84,8 @@ KDV AYRI KOLON DEĞİL — Yasal Yük dökümüne indi (§7). Birim/Birim net/Mi
 **KARAR:** Transversal pano, tek bölüm / iki alt-grup: **SGK** (bordro işveren payı) + **Stopaj** (SMM/telif kaynak kesintisi). Kalemdeki yük buraya köprüyle yansır. **Genel toplama EKLENMEZ.** Bölüm notu: *"Bu listedeki tutarlar bütçeye kalemlerin brüt toplamı içinde dahildir; burada ikinci kez sayılmaz. Amaç devlete/SGK'ya ödenecek toplam yükümlülüğü tek bakışta göstermek."* Görünürlük: bölümü görmeye yetkili herkes.
 
 **NEDEN:** SGK ve stopaj **gerçek maliyettir** (yapımcı fiilen öder) → kalem brütünde TAM BİR KEZ sayılır → kart → genel toplam. Yasal Yükler aynı rakamın **başka bir merceğidir** (toplam yükümlülüğü + nakit/beyanname planı için), o yüzden tekrar eklenmez = çift sayma yok. "Hiç eklenmesin" de yanlış olurdu (gerçek maliyeti gizlerdi); doğrusu "tek yerde say (kalem brütü), pano bilgi versin". Toplam = brüt − net (tutarlılık kontrolü).
+
+Bu çift-sayma doktrini §18'deki kart toplamı tasarımını da MİRAS yoluyla bağlar: Yasal Yük kart toplamına ikinci kez eklenemez.
 
 ## 7. KDV
 
@@ -225,3 +231,17 @@ Sektör taraması (Saturation erişim modeli, MMB/MMS izin seviyeleri, Hot Budge
   - GEDİK B ikinci bulgu düzeltmesi (2026-07-24 tarayıcı turu): Not sheet'inde Kamu Notu'ndan Tab'la çıkışta odak sheet'ten kopup arkadaki grid hücresine dönüyordu (grid'in kendi odak-kurtarma efekti sebep oluyordu, bkz. KLV-K12); efekt artık yalnız odak GERÇEKTEN kaybolduğunda devreye giriyor.
 - İLİŞKİLİ AMA BU BÖLÜMÜN KONUSU DEĞİL: D3b'nin autocomplete dropdown kontratı (bölüm 16'nın KLV dikişi maddesi + şu ek: Enter VE Tab ikisi de seçer/oluşturur — ARIA combobox standardıyla aynı — **ancak YALNIZ ok tuşuyla bir seçenek vurgulanmışsa (REVİZE 2026-07-24, D3b-2d): vurgu yokken Tab hücreden çıkar, Enter yutulur, kalem doğmaz.** Vurgu odakta açılmayla ya da yazarak süzmeyle OLUŞMAZ, yalnız ok tuşuyla başlar; Esc listeyi kapatır, hücrede kalınır; BLUR (odak kaza sonucu başka yere giderse) ise SEÇMEZ/OLUŞTURMAZ — standarttan burada BİLİNÇLİ sapma, çünkü seçim = fn_add_budget_item çağrısı yani gerçek kayıt, kaza sonucu odak kaybı istemsiz kalem doğuramaz). Bu kontrat D3b'nin kendi spec'inde uygulanır.
 - Durum: GEDİK 0, A ve B TAMAMI UYGULANDI (2026-07-24). Bölüm 17 KAPALI; kalan yalnız Engin tarayıcı teyidi + macOS platform turu (cihaz bulununca).
+
+## 18. Kart toplamı
+
+**KARARLAŞAN (Engin, 27 Temmuz 2026):** Kartın içinde bir yerde kart-seviyesi toplam rakamı gösterilecek. Bugün YOK — satır bazında Net/Brüt toplam var (§3) ama kartı toplayan rakam hiç yok.
+
+**AÇIK:**
+- Hangi rakam (net / brüt / ikisi)
+- Nerede (tablo altı toplam satırı / kart başlığı / üst bağlam çubuğu)
+- Dönem kırılımı olacak mı
+- Kilitli bütçede davranış
+
+**MİRAS ALINAN SINIR:** §6'nın çift-sayma doktrini gereği Yasal Yük kart toplamına ikinci kez EKLENEMEZ (kalem brütünde tek bir kez sayılır, §3/§6). Bu tasarım turunda yeniden tartışılmaz.
+
+**AYRIM (docs/KABUK-KARARLARI.md bölüm 9 ile karıştırılmaz):** KABUK'taki KAPAK RAKAMI önerisi (K2, §19'un "RAKAM YOK" kuralının revizyonu) akrabadır ama AYNI DEĞİLDİR — kapak rakamı kart MASASINDAKİ kart kapaklarına bakar (hangi kart büyük, masaya bakarken yön bulma); bu bölüm AÇIK kartın İÇİNE bakar (o kartın kalemlerini toplayan rakam). K2 kabuğun kararıdır, burada yaşamaz; K2 kabul edilirse ikisi birlikte tasarlanır.

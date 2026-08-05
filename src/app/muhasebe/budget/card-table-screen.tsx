@@ -1,3 +1,4 @@
+// BOY: tek iş = kart tablosu ekranının orkestrasyonu (veri hook'ları + grid navigasyon + ekleme paneli + satır bileşenlerini birbirine bağlar), sebep = tek ekranın tüm kablolaması aynı yerde görülmeli; bölünürse durum parçalara dağılır, okunabilirlik artmaz.
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Loading } from '../../../shared/components/loading'
 import { EmptyState } from '../../../shared/components/empty-state'

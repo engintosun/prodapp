@@ -1,5 +1,7 @@
 # KAAPA — BÜTÇE UI KOD MİMARİSİ (İ-serisi)
 
+**Son güncelleme:** 5 Ağustos 2026
+
 *Bütçe modülü ekran KODUNUN yapı anayasası — bileşen/hook/servis düzeninin TEK KAYNAĞI. Davranış/etkileşim kararları: BUTCE-EKRAN-KARARLARI.md. Şema/teknik: BUTCE-SEMA-KARARLARI.md. Kart/kalem domain: KART-KATALOGU.md. Oluşturma: 12 Temmuz 2026 — monolit teşhisi + rakip taraması (MMB / Saturation / Hot Budget) + doktrin sentezi; karar Engin+Opus.*
 
 ## 0. Neden var
@@ -89,3 +91,10 @@ use-edit-buffers tüm yazmaları tek commit boğazından geçirir; Faz-2 offline
 
 ## 7. KUR-1 işareti
 Çok-para-birimi YERLEŞİMİ BUTCE-SEMA-KARARLARI.md KUR-1'de mühürlü: girilen birim+tutar SATIRDA (gelecek şema dilimi), kur KATALOGDA (mühür snapshot'ı kuru da dondurur), çevrim CFE'de, gösterim ViewMode/rapor katmanında. Bu dosyaya etkisi: para biçimleme yalnız format.ts üzerinden; satır bileşenine TL sembolü gömmek YASAK; fmt imzası ileride currency parametresine açılır.
+
+## 8. Boy aşımı — bölünme bekleyenler (5 Ağustos 2026)
+Bunlar BORÇ DEĞİLDİR, TECH-DEBT sayacı etkilenmez (ARCHITECTURE 4.2 REVİZYON 5 Ağustos 2026). Bölme ayrı bir turda ve ölçülerek yapılır, burada yalnız kayıt tutulur.
+
+- **src/app/muhasebe/budget/hooks/use-edit-buffers.ts (677 satır):** Bölünme fikri — EditApi'nin genel buffer/commit iskeleti (draft state, patchRow, savedRef eşleşmesi) ile alan-bazlı commit handler'ları (onTextChange/onNumChange/onPeriodChange/onPeriodNetChange/onPeriodRepeatChange/onStatusChange/onUnitChange/onPeriodUnitChange) ayrı dosyalara ayrılabilir; İ8 sınırı (EditApi yalnız kendi state'ine dokunur) bölünmeden sonra da aynen geçerli kalır.
+- **src/shared/supabase/payroll-read.ts (532 satır):** Bölünme fikri — saf bordro hesap bloğu (computeBordroFields/computeBordroFieldsResult + BordroDerivedFields/BordroPeriodRow tipleri, DB'ye dokunmaz) ile Supabase-okuyan orkestrasyon bloğu (buildPayrollRates/fetchMinimumWageThresholds/deriveBordroFields) katman ayrımı doktrinine (ARCHITECTURE 3.3) uygun şekilde iki dosyaya ayrılabilir.
+- **src/shared/supabase/budget-service.ts (525 satır):** Bölünme fikri — kart/açılış okuma tarafı (getOrOpenBudget/fetchBudgetCards/getCard/getFirstCard/loadUnits) ile kalem yazma tarafı (updateItemField/setItemPeriodNet/setItemPeriodQuantity/updateItemPeriodUnit/updateItemPeriodRepeat/copyMainToFirstPeriod/copyLastPeriodToMain/addBudgetItem/softDeleteBudgetItem) okuma/yazma eksenine göre iki servis dosyasına ayrılabilir.
