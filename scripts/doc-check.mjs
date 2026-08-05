@@ -3,6 +3,8 @@
 // ekran ekran, Engin kararıyla ayrı bir turda yapılacak; bugün yalnız envanter çıkarılıyor.
 // Denetim C (evsiz açık karar) bilgi-only: CURRENT.md Açık kalanlar maddelerine "ev:" yazımı
 // ayrı bir turda yapılacak; bugün yalnız envanter çıkarılıyor.
+// Denetim E: hash kapanış commit'i atılınca zorunlu olarak bir commit geride kalır (CURRENT.md
+// yazma anında henüz commitlenmemiştir), bu yüzden HEAD ile birlikte ebeveyn (HEAD^) de kabul edilir.
 
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -207,6 +209,55 @@ for (const rel of srcFiles) {
     info('D', msg);
   } else {
     warn('D', msg);
+  }
+}
+
+// ----- Denetim E: CURRENT.md "## Durum" HEAD hash tazeliği -----
+{
+  const abs = path.join(ROOT, 'CURRENT.md');
+  let content = '';
+  try {
+    content = fs.readFileSync(abs, 'utf8');
+  } catch {
+    content = '';
+  }
+  const lines = content.split(/\r?\n/);
+  let inDurum = false;
+  let firstItem = null;
+  for (const line of lines) {
+    if (/^##\s+Durum\s*$/.test(line)) {
+      inDurum = true;
+      continue;
+    }
+    if (inDurum && /^##\s+/.test(line)) break;
+    if (!inDurum) continue;
+    if (line.startsWith('- ')) {
+      firstItem = line;
+      break;
+    }
+  }
+  if (!firstItem) {
+    warn('E', 'CURRENT.md "## Durum" bölümünde madde satırı bulunamadı');
+  } else {
+    const hashMatch = firstItem.match(/HEAD:\s*([0-9a-f]{7,12})/i);
+    if (!hashMatch) {
+      warn('E', 'Durum satırı HEAD hash\'i taşımıyor');
+    } else {
+      const found = hashMatch[1].toLowerCase();
+      const headShort = run('git rev-parse --short HEAD').trim().toLowerCase();
+      const parentShort = run('git rev-parse --short HEAD^').trim().toLowerCase();
+      const candidates = [headShort, parentShort].filter(Boolean);
+      const matches = candidates.some((c) => {
+        const len = Math.min(c.length, found.length);
+        return len > 0 && c.slice(0, len) === found.slice(0, len);
+      });
+      if (!matches) {
+        warn(
+          'E',
+          `CURRENT.md Durum HEAD hash uyuşmuyor — beklenen HEAD=${headShort || '?'} veya HEAD^=${parentShort || '?'}, bulunan=${found}`
+        );
+      }
+    }
   }
 }
 
