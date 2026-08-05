@@ -1,6 +1,6 @@
 # KAAPA — KABUK KARARLARI
 
-**Son güncelleme:** 5 Ağustos 2026
+**Son güncelleme:** 6 Ağustos 2026
 
 *Uygulama kabuğunun (Application Shell) TEK KAYNAĞI. Oluşturma: 4 Ağustos 2026, KABUK tasarım oturumu (Engin + Opus, doküman-only). Girdiler: Engin'in Application Shell metni + KAAPA çalışma masası mockup'ı + Yamdu rakip turu (RAKIP-ANALIZI-URUN) + kilitli ekran kararları (EKRAN-MUHASEBE §18/§19, BUTCE-UI-MIMARISI İ4).*
 
@@ -50,6 +50,8 @@ Tezin dört sonucu:
 ---
 
 ## 3. SOL RAY
+
+> REVİZYON (6 Ağustos 2026): bu bölümdeki "rayda rozet/sayaç yok" kararı değişmiştir; ray canlıdır, rozet ve renk taşır. Gerekçe ve tam kural bölüm 12.2'dedir.
 
 **ENGİN KARARI (2 Ağustos, 4 Ağustos'ta pekişti):** Muhasebenin uygulama-seviyesi gezinmesi SOL RAYDIR. EKRAN-MUHASEBE bölüm 2'deki yedi sekmelik tab bar tarifi GEÇERSİZDİR. Sekme yalnız modül İÇİ ikinci kademe olarak kalır.
 
@@ -135,6 +137,8 @@ Bu üçü varsa Tab Manager yarın kabuğa eklenir, ekranlara dokunulmaz. Sprint
 
 ## 9. KART KAPAK RAKAMI — §19 REVİZYON ÖNERİSİ
 
+> KARARA BAĞLANDI (6 Ağustos 2026): kartın yüzeyinde brüt-net kart toplamı bulunur; kart/katalog numarası görünmez. Ayrıntı bölüm 12.3'tedir. Brüt ve netten birinin düşürülmesi açık kalmıştır.
+
 **ENGİN ONAYINA SUNULU (K2).** Bu, mühürlü bir kararın bilinçli revizyonudur.
 
 **Bugünkü kilitli kural (§19, 12 Haziran 2026):** Kart masasında kartlar sadedir — *"işaret + isim; RAKAM YOK — rakam icmalin işi"*.
@@ -173,13 +177,79 @@ Ray içeriği koda gömülmez, bildirimsel bir tanımdan gelir — ileride Yamdu
 
 ---
 
-## 12. AÇIK KALANLAR
+## 12. AYRINTI TURU KARARLARI (6 Ağustos 2026)
 
-- **K1 (tasarım tezi) ve K2 (kapak rakamı) Engin onayı bekliyor.** Kabul/itiraz alınmadı.
-- **Bölüm 4/5/6/8/10/11'deki "ONAYA SUNULU" maddeler** 4 Ağustos oturumunda önerildi, madde madde onaylanmadı.
-- **Boş masa / öğretme deseni:** Yamdu turunda bulgu olarak yazıldı (1.12), bizim boş durumlarımız YOK. İlk kez giren muhasebeci masada ne görür — tasarlanmadı.
-- **Yoğunluk davranışı:** ferahlık beş satırla kolaydır; sekiz yüz fişle, kırk kartla zordur. Masa metaforu yoğunlukla ilk kez orada boğuşacak; yoğunluk davranışları tasarlanmadı.
-- **Alt-navın kaynağı** (ortak layout mı, sayfa-bazlı mı) kod tarafında hâlâ incelenmedi — sprint keşfinin ilk adımı.
-- **İki davet kapısının fiziksel yeri** (M1 yalnız yüzey aidiyetini mühürledi) — sol ray / üst bağlam / kart üstü / sağ panel seçimi bu turda yapılacaktı, YAPILMADI.
-- **G6 görsel kimlik** (renk paleti, tipografi, işaret seti) ayrı tur.
-- **TD-13 ve TD-10** fiili kapanışı bu milestone'a bağlı.
+Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki kararı DEĞİŞTİRİR; değişenler açıkça işaretlidir.
+
+### 12.1 Ray içeriği
+- Muhasebe rayı: Dashboard · Bekleyen · Şüpheli · Avanslar · Raporlar — ayraç — Tanımlar
+- "Harcamalar" durağı YOKTUR. Mockup'ta görünmesi hataydı; v8'de de yoktu.
+- Kiralama Faz 2'dir, rayda yer almaz.
+- Mesajlar rayda DEĞİL, üst şeritte sağdadır.
+- Bütçe rayı: Genel Bütçe · Bütçe Girişi · Raporlar · Gerçekleşen — ayraç — Tanımlar
+- TANIMLAR = MODÜLÜN KENDİ TANIMLARI. İki rayda birden görünmesinin sebebi budur: bütçe tanımları ile muhasebe tanımları ayrı şeylerdir, ortak bir "ayarlar" ekranı değildir. Her modülün Tanımlar içeriği kendi turunda kararlaşır. Dönem (hesap dönemi) ve departman Tanımlar'a AİT DEĞİLDİR — dönem muhasebenin, departman proje yapısının konusudur; yerleri ayrıca karara bağlanacaktır.
+
+### 12.2 Sol ray — görünüm ve durum
+- Zemin sıcak kâğıt tonundadır. Renkli klasör simgeleri raydan VE kartlardan kaldırılmıştır.
+- Durum rengi TEK TONLUDUR: iş yoksa normal görünüm, iş varsa durak yumuşak kırmızı alır (koyu/kıpkırmızı değil). Rozette sayı görünür.
+- REVİZYON — 4 Ağustos 2026 kararı DEĞİŞTİ. Eski karar: "Rayda rozet/sayaç YOK — rozet rayı iş kuyruğuna çevirir." Yeni karar: ray canlıdır, rozet ve renk taşır. Gerekçe: o karar bütçe masasının sükûneti ("rakam icmalin işidir") ilkesinden türetilmişti; muhasebe rayında iş yükünün görünmesi UX konusudur, bütçe ilkesiyle ilgisi yoktur. İki alan ayrılmıştır.
+- SAYAÇ VAR OLANI DEĞİL BAKILMAMIŞI SAYAR. Sıfırlanabilir olmayan hiçbir şey sayılmaz. Aksi hâlde durak (örn. Avanslar) sürekli renkli kalır, renk anlamını yitirir. "Bakılmamış"ın tanımı her durağın kendi ekranı tasarlanırken yapılır.
+- Sayaç taşıyanlar: iş/veri bekleyen duraklar + Tanımlar (oran/mevzuat değişikliği kaçmasın diye). Dashboard ve Raporlar sayaç TAŞIMAZ.
+- Aktif durak KOYU MÜREKKEP TONUNDADIR: zemin rengi almaz, yazısı koyulaşır ve kalınlaşır, sol kenarında ince mürekkep çizgisi belirir. Kural: RENK = DURUM, KOYULUK = KONUM. Aktif durak yeşil değildir.
+- Aktif durak kırmızısını BIRAKMAZ — bir durağa girmek oradaki işi bitirmez.
+- Tazeleme: ekran açılışında ve durağa her girişte. Canlı/sürekli bağlantı YOK.
+- Tanımlar rayın en dibindedir, ayraçtan sonra. Daraltma düğmesi rayın ÜSTÜNDEDİR; basınca ray tamamen kapanır (kısmi daralma yok, simge olmadığı için daralmış rayın gösterecek şeyi yoktur).
+- Ray seyrek durur, satırlar nefes alır. Duraklar/çerçeve/kartlar çevresinde çok hafif gölge.
+- Rayın tepesinde modül adı KALIR — rayın başlığıdır, üstteki modül anahtarının tekrarı değildir.
+- Puanlama motoru (yaş × tutar × tip) SONRAKİ DÖNEMLERİN İŞİDİR. Bugün kurulmaz: kalibre edecek gerçek veri yoktur ve adet ≠ önem olduğu için adede göre boyanan çok tonlu skala kullanıcıyı yanlış durağa çağırır. Ray dışarıdan durak başına SAYI + AĞIRLIK alır; bugün ağırlık ikilidir (0 / işaretli), motor gelince aynı yerden gerçek puan gelir ve kabuk değişmez.
+
+### 12.3 Kart masası
+- Masa TEK AKIŞTIR. Etap/dönem başlığı YOKTUR — kartlar dönemle dizilmez; dönem kalem seviyesinde yaşar.
+- Kart kapağında: kart adı + brüt-net kart toplamı. Kart veya katalog NUMARASI hiçbir yerde görünmez (BUTCE-SEMA-KARARLARI ve BUTCE-EKRAN-KARARLARI'ndaki kayıtlı kural aynen geçerlidir).
+- REVİZYON — bölüm 9 (K2) karara bağlandı: kartın yüzeyinde toplam BULUNUR. Böylece EKRAN-MUHASEBE §19'daki "işaret + isim; RAKAM YOK" ifadesi kart kapağı için geçersizdir. Brüt ve netten birinin düşürülüp düşürülmeyeceği AÇIK KALMIŞTIR.
+- Karta tıklanınca kart masayı kaplar. Dönüş iki yoldan: üst ince şeritteki "‹ Kart adı" ve sol raydaki durak. Esc BAĞLANMAZ (Esc hücrede eski değeri geri getirir, KLV).
+- Kartlar ilk açılışta kod sırasında gelir; kullanıcı istediği kartı istediği yere taşıyabilir. Diziliş KİŞİYE ÖZELDİR — davetli kendi görebildiği kartları kendi düzeninde görür, başkasının masasını etkilemez.
+- Masadaki diziliş GENEL BÜTÇE'Yİ ETKİLEMEZ. İcmal sırası sabittir ve kod sırasındadır; ATL/BTL ayrımı kod prefiksinde yaşadığı için icmalin sabit sırası o ayrımı korur. Masa çalışma alanıdır, sunum yüzeyi değildir.
+- Sonradan eklenen kart EN SONA düşer.
+- "İlk düzene dön" düğmesi masanın üst sağındadır ve YALNIZ masa taşınmışsa görünür. (İsim geçici.)
+- MÜHÜR MASANIN DİZİLİŞİNİ DONDURMAZ. Mühür bütçeyi dondurur; kimin kartı nerede duruyor sunumun parçası değildir.
+- Kart sayısı artınca kart küçülmez; masa aşağı uzar ve kaydırılır.
+- Kart ekleme: masanın EN SONUNDA, diğer kartlarla AYNI biçimde duran bir ekleme kartı. Basınca ortada seçim odası açılır (kalem eklemedeki düzenin aynısı), katalogdan masada olmayan kartlar listelenir, seçilen kart masada doğar. SERBEST (katalog dışı, kullanıcının adlandırdığı) KART FAZ 1'DE YOKTUR. Serbest kalem/kart değerlendirmesi tüm kartlar ve kalemler hazırlandıktan sonra yapılacaktır. Ekleme kartı, işlem gerçekten çalışır olmadan çizilmez.
+- Bütçe sonu yüzdeleri şeridi (Öngörülmeyen %, Şirket Kârı %) masada DEĞİL, Genel Bütçe icmalindedir.
+
+### 12.4 Üst bağlam
+- KABUK HER MODÜLDE BİREBİR AYNIDIR. Modüle göre değişen yalnız iki şeydir: rayın durakları ve ince şeridin içeriği. Bölge sırası, yükseklik ve yerleşim değişmez; modül geçişinde ekran zıplamaz.
+- Üst şerit sırası: modül anahtarı · proje · (boşluk) · arama · bildirim · mesajlar · kullanıcı. Arama ve bildirimin YERİ AYRILMIŞTIR, öğe henüz ÇİZİLMEZ — basınca hiçbir şey yapmayan kutu konmaz; geldikleri gün kendi yerlerine oturur ve kabuk yeniden düzenlenmez.
+- İKİ ARAMA İKİ AYRI İŞTİR ve asla aynı yerde durmaz: kabuk araması (uygulamada bir şey bul) üst şerittedir; liste süzme (şu anki listeyi filtrele) ekrana aittir ve her ekranda AYNI YERDE, tablonun üstünde solda durur.
+- İnce şerit KALIR (tek filmde bütçe tarafında bugün boş görünse de) — ileriye altyapı, modüller arası geçişte zıplama olmaması için.
+- İnce şeritte yol yazısı ("Bütçe / Bütçe Girişi") YOKTUR: sol ray zaten konumu gösterir ve aynı kelime üç kez tekrarlanır.
+- SÜRÜM PİLİ YOKTUR. Kartlar mühürlenmez, kartın sürümü olmaz; sürüm ve mühür Genel Bütçe'nin kavramıdır. Mühürlü bütçenin tam listesi zaten salt-okunur görünür, kart masasını çağırmak anlamsızdır. (İcmalde bölüm başlığına tıklanınca o bölümün kart görünümünün ayrı blok olarak açılması ayrı bir konudur, icmal turunda ele alınır.)
+- "Bölüm" pili YALNIZ dizide görünür; tek film ve reklamda hiç yoktur.
+- Muhasebe tarafında ince şeritte dönem seçici bulunur. Kapalı bir döneme geçildiğinde şerit bunu AÇIKÇA söyler (yanlışlıkla kapalı döneme kayıt girilmemesi için). Kapalı döneme erişim istisnadır: late_entry / reopen izinleri, süreli ve gerekçelidir (IS-KURALLARI).
+- KAYDETME DURUMU: ince şeridin sağ ucunda küçük, gri, sessiz bir yazı — yazarken "kaydediliyor", olunca "kaydedildi HH:MM" (öylece kalır), olmazsa "kaydedilemedi" kırmızı ve kalıcı. Gerekçe: kayıt düğmesi olmayan bir ekranda kullanıcının işinin yerine ulaştığını görmesi gerekir; bugün yalnız hata anına çalışan uyarı balonu ve çevrimdışı şeridi vardır, olumlu işaret yoktur. Post-it alanları da bu işareti kullanır, ayrı kaydet düğmesi olmaz.
+- YÜKLEME MASANIN İÇİNDE olur; kabuk (ray, şeritler) asla kaybolmaz. Her ekran kendi yükleme biçimini icat etmez.
+
+### 12.5 Sağ referans paneli
+- Panelde ÜÇ POST-İT ALANI vardır: (1) kişisel not — yalnız sahibinin gördüğü karalama alanı; (2) genel not — bütçeye ait, yazanı ve zamanı taşır, davetliler görür; (3) üçüncü alan — görevi HENÜZ ATANMAMIŞTIR, yeri ayrılmıştır.
+- Sayı SABİT ÜÇTÜR. Dördüncü kutu ihtiyacı doğarsa panel tasarımı yeniden açılır; ekran kendi kendine kutu eklemez.
+- İçeriği olmayan kutu boş çerçeve olarak çizilmez. Üçü de boşsa panel zaten kapalıdır.
+- PANEL İŞ YAPTIRMAZ AMA NOT TUTAR: içine düğme, form, onaylanacak öğe girmez; yazı yazılan kâğıt girer. Panel ikinci bir çalışma alanına dönmez.
+- Varsayılan kapalıdır, kulakçıkla açılır. Açılınca MASA DARALIR — panel masanın üstüne binmez, çünkü panelin işi karta bakarken yanında durmaktır.
+- Mockup'taki MÜHÜR kutusu düşmüştür (bkz. 12.4).
+
+## 13. AÇIK KALANLAR
+
+- Tanımlar'ın modül modül içeriği (bütçe tanımları / muhasebe tanımları ayrı ayrı)
+- Dönem yönetiminin yeri (hesap dönemi — muhasebeye ait, Tanımlar'a değil)
+- Departman, kategori, kullanıcı yönetimi ve bütçe limitlerinin yeri
+- Marka/şirket ayarlarının yeri (v8'de üst seviyede ayrı pencereydi)
+- "Gerçekleşen" ekranının hangi modülde yaşayacağı (muhasebe ile bütçe aynı veriye iki dilden bakıyor)
+- Kart kapağında brüt ve netten biri düşecek mi
+- Kart açıkken kabuğun davranışı (ray, panel, klavyeyle kesintisiz yazma)
+- Boş masa / ilk giriş durumları
+- Modüller arası geçişte masa neyi hatırlar (Bütçe'den Muhasebe'ye geçip dönünce aynı kartta mı)
+- Ray kapalıyken yeni iş doğduğunda haberin nasıl ulaşacağı
+- Rayın duraklarının yetkiye göre değişip değişmeyeceği (davetli yalnız görebildiği durakları mı görür)
+- Yapım dönemleri listesi (Geliştirme · Ön Hazırlık · Çekim · Post Prodüksiyon · Dağıtım ve Yayın + Finansman + Kapanış/Tasfiye) — ayrı etapta ele alınacak
+- Bölüm 1 (K1 tez) ve bölüm 4/5/6/8/10/11'deki ONAYA SUNULU maddeler hâlâ onay bekliyor
+- Renk paleti ve tonların kendisi (G6)

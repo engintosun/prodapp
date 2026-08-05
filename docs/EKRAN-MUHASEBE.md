@@ -1,6 +1,6 @@
 # EKRAN-MUHASEBE.md
 
-**Son güncelleme:** 5 Ağustos 2026
+**Son güncelleme:** 6 Ağustos 2026
 
 Muhasebe rolü ekranları. Dayanıklı katman kayıtlı, kararsız katman açık slot.
 
@@ -14,7 +14,7 @@ Avatar · proje adı · "Muhasebe · Tüm Departmanlar" · tema · bildirim · *
 ## 2. Tab bar (7 tab, rozetli)
 Dashboard / Bekleyen (n) / Şüpheli (n) / Raporlar / Kiralama (n) / Avanslar / Mesaj
 
-**GEÇERSİZ (Engin kararı 2026-08-02):** Bu yedi sekmelik tab bar tarifi CARD-DESK kilitlenmeden önce, telefon alışkanlığıyla yazılmıştı. Muhasebenin uygulama-seviyesi gezinmesi SOL RAYDIR; sekme yalnız modül İÇİ ikinci kademe olarak kalır. Rayın durakları, ilk ekran ve Tanımların yeri KABUK milestone içinde kararlaşır (CURRENT.md Sıradaki iş 5).
+**GEÇERSİZ (Engin kararı 2026-08-02):** Bu yedi sekmelik tab bar tarifi CARD-DESK kilitlenmeden önce, telefon alışkanlığıyla yazılmıştı. Muhasebenin uygulama-seviyesi gezinmesi SOL RAYDIR; sekme yalnız modül İÇİ ikinci kademe olarak kalır. Rayın durakları, ilk ekran ve Tanımların yeri KABUK milestone içinde kararlaşır (CURRENT.md Sıradaki iş 5). Rayın durakları 6 Ağustos 2026'da kararlaştı: Dashboard · Bekleyen · Şüpheli · Avanslar · Raporlar — ayraç — Tanımlar; Mesajlar üst şeritte sağda, Kiralama Faz 2, "Harcamalar" diye bir durak yok (bkz. KABUK-KARARLARI.md bölüm 12.1).
 
 ## 3. Dönem yönetimi şeridi (dashboard üstü)
 "Dönem #X — Açık/Kapalı" + "+ Yeni Dönem" + "Dönem Kapat" + dönem pill seçiciler.
@@ -82,7 +82,7 @@ Ray (yukarıdan aşağı): ① Genel bütçe ② Bütçe girişi ③ Raporlar �
 
 **Ekran 1 — Genel bütçe (salt okunur icmal):** Üstte görünüm düğmesi: Orijinal | Yürüyen | Gerçekleşen. Tablo: etap satırları (Öngörülen/Gerçekleşen/Fark kolonları); etaba tıklayınca altında harcama grubu satırları açılır. Dipte hesap zinciri (B12): Maliyet toplamı → Öngörülmeyen % → Toplam maliyet → Şirket kârı % (gizlenebilir işaretli) → Genel toplam. Mobil-tam.
 
-**Ekran 2 — Bütçe girişi (kart masası):** Etap başlıkları altında sade kartlar (işaret + isim; RAKAM YOK — rakam icmalin işi). Her etap sonunda "+ Kart ekle". Dipte bütçe sonu yüzdeleri satırı (öngörülmeyen + şirket kârı burada düzenlenir). Dizide üst bağlam çubuğunda bütçe seçici (Sezon / Bölüm 1..n). Masaüstü-önerilir.
+**Ekran 2 — Bütçe girişi (kart masası):** Etap başlıkları altında sade kartlar (işaret + isim; RAKAM YOK — rakam icmalin işi). [REVİZYON 6 Ağustos 2026: kart KAPAĞINDA brüt-net kart toplamı gösterilir; kart/katalog numarası gösterilmez. Bkz. KABUK-KARARLARI.md 12.3.] Her etap sonunda "+ Kart ekle". Dipte bütçe sonu yüzdeleri satırı (öngörülmeyen + şirket kârı burada düzenlenir). Dizide üst bağlam çubuğunda bütçe seçici (Sezon / Bölüm 1..n). Masaüstü-önerilir.
 
 **Ekran 3 — Kalem tablosu (kart açılınca masayı kaplar):** Başlık: ← Etap · Grup adı. Kolonlar (2026-07-11 güncellendi, detay BUTCE-EKRAN-KARARLARI): Kod · Açıklama · Statü · Dönemler · Birim · Birim net · Miktar · X · Yasal Yük · Net toplam · Brüt toplam. Açıklama + fark açıklaması satır detayında. Şablondan gelen boş kalemler soluk, 0, toplama girmez. Son satır "+ Kalem ekle". Altta toplam şeridi: Net · Brüt · Gerçekleşen · Fark. Enter/Tab akışı. Masaüstü-önerilir.
 
