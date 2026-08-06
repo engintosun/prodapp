@@ -42,6 +42,12 @@ Listede yoksa Faz 1'de yoktur:
 - Envanter yönetimi
 - Departman iş akışı modülleri (sanat, kostüm, prodüksiyon)
 - Çoklu dil desteği / lokalizasyon altyapısı
+
+  *Ne ertelendi (kayıt, 6 Ağustos 2026): Hedef diller — Türkçe native, İngilizce
+  zorunlu; sonrasında Avrupa dilleri, Arapça, Rusça, Çince, Hintçe. Dil seçim
+  ekranı ve rol başına dil tercihi (v8'de tasarlanmıştı). Film/TV uluslararası
+  çalışan bir sektör; dil İLERİDE KESİN gelecek. Çözüm yönü kolon değil çeviri
+  tablosu (bkz. GLOSSARY). Faz 1'de yapılmayacak kararı değişmedi.*
 - Üçüncü parti entegratör (muhasebe yazılımı, ERP)
 - Anomali motoru (istatistiksel katman — kural bazlı tespit VAR, istatistiksel YOK)
 - Mobil native uygulama (PWA yeterli, Capacitor ile store ileride)
@@ -94,6 +100,19 @@ Milestone bazlı ilerleme (tarih yok, sıralama var):
 Gecikme sinyali: aynı milestone'da 3 session üst üste somut ilerleme yoksa dur, teşhis et.
 
 **Karar tarihi:** 22.05.2026 | **Gerekçe:** Gerçekçi olmayan tarih yerine ilerleme bazlı takip.
+
+### 2.6 POY Ekosistem Kökü
+
+KAAPA, POY (Prodüksiyon Otomasyon Yazılımı) ekosisteminin ilk modülü olarak
+tasarlandı (kök: v8 ARCHITECTURE bölüm 7). Planlanan kardeş modüller: Senaryo &
+Storyboard · Cast & Crew · Lokasyon & Set · Post-Prodüksiyon Bütçesi · Call
+Sheet & Çekim Takvimi.
+
+"Mimari çok-modüle göre kurulur" kararı bu köke dayanır. Faz 1'de yalnız iki
+kapı açılır (Muhasebe, Bütçe); mimari daha fazlasını taşıyabilecek şekilde
+kurulur, bugün fazlası takılmaz.
+
+**Karar tarihi:** 06.08.2026 | **Gerekçe:** POY köküne dayanmayan bir kabuk kararı, tek modüllük bir uygulama gibi tasarlanır ve kardeş modüller geldiğinde yeniden yapılanma gerektirir.
 
 -----
 

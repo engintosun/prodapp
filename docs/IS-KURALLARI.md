@@ -28,6 +28,25 @@ Saha fişi doğrudan submitted olarak girer (taslak yok) → saha'nın departman
 ## 2. Fiş status değerleri (8)
 submitted · dept_pending · dept_approved · dept_rejected · acc_pending · acc_approved · acc_rejected · split
 
+### Durum geçiş tablosu
+
+| Kaynak durum | Eylem | Rol | Hedef durum | Nerede uygulanıyor |
+|---|---|---|---|---|
+| (yeni kayıt) | Fiş girişi, departmanda aktif şef VAR | saha | dept_pending | trigger (`fn_route_receipt`, BEFORE INSERT) |
+| (yeni kayıt) | Fiş girişi, departmanda aktif şef YOK | saha | acc_pending | trigger (`fn_route_receipt`, BEFORE INSERT) |
+| (yeni kayıt) | Fiş girişi (dept kendi fişini girer, kendi onayı atlanır) | dept | acc_pending | trigger (`fn_route_receipt`, BEFORE INSERT) |
+| dept_pending | Onayla | dept | dept_approved | servis (`fn_review_receipt` RPC, `approveReceipt`) |
+| dept_pending | Reddet | dept | dept_rejected | servis (`fn_review_receipt` RPC, `rejectReceipt`) |
+| dept_approved / acc_pending | Onayla | muhasebe | acc_approved | servis (`fn_review_receipt` RPC, `approveReceipt`) |
+| dept_approved / acc_pending | Reddet | muhasebe | acc_rejected | servis (`fn_review_receipt` RPC, `rejectReceipt`) |
+| dept_pending (kendi departmanı) veya herhangi bir durum | Düzeltme iste | dept / muhasebe | (durum DEĞİŞMEZ — `correction_requested=true` bayrağı set edilir) | servis (`requestCorrection`) + RLS (`receipts_update`) |
+| herhangi bir durum (correction_requested=true) | Düzeltmeyi gönder | saha (fişin sahibi) | submitted | trigger (`fn_receipt_correction_discipline`, BEFORE UPDATE) |
+| dept_rejected / acc_rejected | Tekrar giriş izni (orijinal donar, yeni fiş `parent_receipt_id` ile doğar) | muhasebe | TURETILEMEDI — kaynak bulunamadı (`parent_receipt_id` akışını kuran kod yok, yalnız kolon tanımı var) | — |
+| dept_pending / acc_pending | Kısmi onay (split) | dept (½) / muhasebe (Split) | TURETILEMEDI — kaynak bulunamadı (`split` yalnız `receipts_status_check` ve `approval_log_action_check` kısıtlarında bir değer olarak duruyor, geçişi kuran trigger/servis/RPC yok) | — |
+| dept_pending / acc_pending | Pasif onay (7 gün) / kapanış anında bekleyenler | sistem | TURETILEMEDI — kaynak bulunamadı (`auto_approved` yalnız `approval_log_action_check` kısıtında bir değer olarak duruyor, tetikleyen kod yok) | — |
+
+Geçişleri client SET ETMEZ; DB trigger belirler.
+
 ## 3. Reddet ve düzeltme iste
 
 ### Reddet
@@ -96,6 +115,8 @@ Dept (½ Kısmi Onay) ve muhasebe (Split) yapabilir. split_amount belirlenir, fi
 - Departman payları toplamı proje toplamına eşit olmak ZORUNDA DEĞİL — fark = dağıtılmamış pay + departman-dışı kalemler (reklam/PR/gösterim/öngörülmeyen). Zengin modülde isimli satır olur.
 - GÖRÜNÜRLÜK: bütçeyi her seviyede yalnız muhasebe görür ve yazar. Şef/saha bütçe görmez; şefin baktığı avans defteridir.
 - Eşik uyarıları (sarı ≥%80 · kırmızı ≥%100) zengin bütçe modülüyle gelir → AÇIK SLOT. Tam limit değerleri şirket kuralı (§14) → AÇIK SLOT.
+
+**Bütçe/avans aşımı — eylem (Engin kararı, 6 Ağustos 2026):** Aşan giriş ENGELLENMEZ. Kayıt alınır, "izin bekliyor" durumunda tutulur; muhasebe ve harcayan kişi uyarılır. Gerekçe: saha fişi zaten olmuş bir harcamanın belgesidir; girişi durdurmak harcamayı geri almaz, kaydı sistem dışına iter. Kontrol kaybolmasın diye kayıt kaybedilmez.
 
 ## 8. Ulaşım limitleri (form + anomali)
 - Şehiriçi: km başı üst limit (örn 15₺/km). Şehirdışı: daha yüksek (örn 25₺/km).
