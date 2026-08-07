@@ -225,16 +225,15 @@ Oklar tek yönlü: Orkestrasyon → herkesi çağırabilir. UI → sadece orkest
 - Teknik borç kabul edilir, gizlenmez.
 - Kayıt: TECH-DEBT.md — ne, nerede, neden, ne zaman ödenmeli
 - Her borç bir milestone'a bağlı. "Bir gün düzeltiriz" yok.
-- 5'ten fazla açık borç birikirse → yeni özellik durup borç ödenir
+- 10'dan fazla açık borç birikirse → yeni özellik durup borç ödenir. Sınır 31 Temmuz 2026'da Engin kararıyla 5'ten 10'a çıkarıldı; sınırın ve açık borç sayısının TEK otoritesi docs/TECH-DEBT.md'dir, bu dosyada sayı taşınmaz.
 - Borç bütçesi aşılırsa: düşür, ertele (gerekçeyle), veya parçala
 
 **Karar tarihi:** 22.05.2026 | **Gerekçe:** v8'de fark edilmeden biriken teknik borç sistemi çökertti.
 
 ### 4.5 Döküman-Kod Senkronizasyonu
 
-- Kod dokümana aykırıysa → doküman doğru, kod düzeltilir
-- Önce doküman güncellenir, sonra kod. Tersi yasak.
-- Yaşayan dokümanlar: ARCHITECTURE.md, GLOSSARY.md, TECH-DEBT.md, TASARIM-KARARLARI.md, AUTH-KARARLARI.md
+- Kod dokümana aykırıysa → DUR ve söyle, sessizce taraf tutma. Doküman bir KARARI tarif ediyorsa doküman kazanır, kod düzeltilir; doküman kararın UYGULAMA TAHMİNİNİ tarif ediyorsa gerçek kazanır ve doküman düzeltilir. (REVİZE 2026-07-30, Engin kararı — tam metin ve emsal: CLAUDE.md "Doküman kazanır — mutlak DEĞİL".)
+- Yaşayan dokümanların TAM listesi CLAUDE.md "Karar nereye yazılır (yol haritası)" bölümündedir; burada tekrarlanmaz (liste burada tutulunca bayatlıyordu — KABUK-KARARLARI, IS-KURALLARI, IS-SIRASI ve docs/butce/ dosyaları hiç eklenmemişti).
 - Drift dedektörü session sonunda senkron kontrolü yapar
 - Ölü doküman yasağı — kimse okumuyorsa silinir veya arşivlenir
 

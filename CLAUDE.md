@@ -87,7 +87,7 @@ Dil: chat Türkçe; kod İngilizce (değişken/fonksiyon/dosya/commit/yorum); do
 ## Context routing
 - Mimari → docs/ARCHITECTURE.md · Auth/rol/RLS → docs/AUTH-KARARLARI.md (canlı RLS tanımı baseline'da) · Şema → supabase/migrations/ TÜMÜ (baseline = BAYAT taban; güncel şema = baseline + sonraki tüm göçler; şema ararken göçleri kronolojik oku, yalnız baseline'a güvenme)
 - İş kuralı/onay/dönem/avans → docs/IS-KURALLARI.md · Ekran → docs/EKRAN-{SAHA,DEPT,MUHASEBE}.md + TASARIM-KARARLARI.md · İsim → GLOSSARY.md · Sıradaki iş → CURRENT.md · Tamamlananlar/backlog → IS-SIRASI.md
-- Bütçe kart/kalem domain → docs/butce/ (KART-KATALOGU = kart/kalem katalog+motor · KART-GEREKCELERI = neden/eğitim · BUTCE-ARASTIRMA-DURUM = şablon/kalem araştırması). Bütçe şema/teknik (B-serisi · köprü · KDV · percent_lines) → TASARIM-KARARLARI + baseline.
+- Bütçe kart/kalem domain → docs/butce/ (KART-KATALOGU = kart/kalem katalog+motor · KART-GEREKCELERI = neden/eğitim · BUTCE-ARASTIRMA-DURUM = şablon/kalem araştırması). Bütçe şema/teknik (B-serisi · köprü · KDV · percent_lines) → BUTCE-SEMA-KARARLARI + baseline. Bütçe ekran davranışı → BUTCE-EKRAN-KARARLARI · bütçe kod yapısı → BUTCE-UI-MIMARISI · uygulama kabuğu → KABUK-KARARLARI.
 - Not: eski supabase/SUPABASE-{SCHEMA,RLS,FUNCTIONS}.sql ve full-rebuild.sql artık docs/archive/'te (bayat, tarihsel referans). Canlı şema/RLS/fonksiyon/trigger/grant tek kaynağı baseline'dır.
 - Eşleşme yoksa → ARCHITECTURE.md oku, sonra sor.
 
