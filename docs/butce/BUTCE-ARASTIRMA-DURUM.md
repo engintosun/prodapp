@@ -41,7 +41,7 @@ Yapay zeka operatoru / AI workflow - virtual production / sanal set / LED volume
 Kartlari kilitle -> master listede isaretle (S/X) -> kart-basi kalem + Turkce -> 2026 kalemleri ekle -> seed migration (S=yalin sablon, bos=kutuphane; provenance korunur) -> produksiyona ozel template'ler (film -> dizi=film+bolum -> reklam=AICP -> belgesel -> dijital).
 
 ## Faz 1 bekleyen (kod)
-Gorev sirasi tek kaynak: docs/IS-SIRASI.md. (fn_open_budget KILITLENDI 06-21: department_code->id + is_undated cozuldu; fn_lock_budget CANLI (MÜHÜR-1); siradaki / fn_match_receipt / kart-masasi UI.)
+Gorev sirasi tek kaynak: docs/IS-SIRASI.md. (fn_open_budget KILITLENDI 06-21: department_code->id + is_undated cozuldu; fn_lock_budget CANLI (MÜHÜR-1); siradaki fn_match_receipt / kart-masasi UI.)
 
 ## Onceki yanlis iddialarin duzeltmesi
 - MMB = 457 kalem (lean degil; Eurimages 462 ile ayni kapsam). Daha once "269" yanlisti.
