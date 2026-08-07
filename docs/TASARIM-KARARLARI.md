@@ -36,6 +36,12 @@
 ## 6. Görsel tasarım işleri (G6 — açık)
 Her ekranın görsel tasarımı (renk, kozmetik, dark tema, doku, logo/favicon) commit'ten önce G6 oturumunda belirlenir. Ekran dosyalarındaki "AÇIK SLOT" notları bu oturumda doldurulur.
 
+## 7. Referanslar
+- Rakip OCR analizi: docs/RAKIP-ANALIZI-OCR.md
+- Domain terimleri: docs/GLOSSARY.md
+
+---
+
 ## 8. Bütçe modülü (2026-06-12 — kilitli)
 Şema/teknik karar kaydı (B-serisi): docs/butce/BUTCE-SEMA-KARARLARI.md. Ekran tarifleri: docs/EKRAN-MUHASEBE.md §19. Kalıcı UX ilkeleri:
 1. 10 dakika kuralı — eğitimsiz muhasebeci 10 dakikada ilk grubu doldurur; kurs gerektiren her şey tasarım hatası.
@@ -62,12 +68,6 @@ Ekranlar-arası ortak ilke — bütçeye özel değildir, her ekran için geçer
 - **Odak göstergesi:** klavyeyle üstünde durulan her durağın çevresinde ince, vurgu renginde çerçeve belirir. Görünüm (renk, kalınlık, köşe) TEK yerde tanımlanır; G6/UI turunda değiştirildiğinde bütün duraklarda birlikte değişir. Vurgu rengi projenin genel vurgu rengidir — değiştirilirse o rengin göründüğü her yer birlikte değişir.
 - **Fare ile klavye ayrımı (tarayıcı teyidi 2026-07-28, Engin: "böyle kalsın"):** kural `:focus-visible` üzerinden işler. Sonuç olarak yazı hücreleri ve seçim hücreleri (Statü, Dönemler, Birim) fareyle tıklandığında da çerçeveyi gösterir; düğmeler (Not, Yasal Yük, satır silme x) yalnızca klavyeyle gelindiğinde gösterir. Bu tarayıcının kendi ayrımıdır, KABUL EDİLDİ ve tutarsızlık SAYILMAZ — ileride "düzeltilmesi gereken fark" diye ele alınmaz. Her durakta fareyle de çerçeve istenirse `:focus-visible` yerine `:focus` kullanılır; bu ayrı bir karardır ve alınmadı. Odak çerçevesinin görünümünü (`--focus-ring` / `--focus-ring-offset`) artık ikinci bir tüketici de kullanır — yeni eklenen kalemin 2 saniyelik hücre işareti (2026-07-31); görünüm yine TEK yerde tanımlıdır, iki sebep aynı token'ları çağırır.
 
-## 7. Referanslar
-- Rakip OCR analizi: docs/RAKIP-ANALIZI-OCR.md
-- Domain terimleri: docs/GLOSSARY.md
-
----
-
 ## TAŞINAN İÇERİĞİN HARİTASI (navigasyon — bu dosyada artık yok)
 Bu dosyada eskiden karışık duran ekran/iş/auth detayları doğru evlerine taşındı:
 - Giriş akışı · saha ana ekran · OCR sonuç ekranı · dönem ekranı → **docs/EKRAN-SAHA.md**
@@ -85,13 +85,14 @@ TEK KAYNAK: docs/butce/KART-KATALOGU.md — etap ekseni · kart=departman ("kull
 ## Kapandı — KART 1500 isim onarımı (2026-07-09 açıldı, 21 Temmuz 2026 kapandı)
 Şablon aslından sapma incelendi; onarım gereksiz çıktı.
 
-## Açık kapı — Kalem Kütüphanesi/Kalibrasyon (gelecek DILIM) (2026-07-09)
+## Kapandı — Kalem Kütüphanesi/Kalibrasyon (2026-07-09 açıldı, D3b/D3c ile kapandı)
+**KAPANIŞ NOTU (7 Ağustos 2026): bu kapının tahmini GERÇEKLEŞMEDİ — Açıklama kolonu serbest metin olarak KALDI, autocomplete Ad kolonuna gitti (D3-ARA/D3-UI). Kütüphane mimarisinin güncel evi: docs/butce/BUTCE-EKRAN-KARARLARI.md bölüm 16. Aşağıdaki metin tarihsel kayıttır.**
 Açıklama kolonu serbest-metinden kontrollü seçime döner; her kütüphane kaydı kendi hesap parametrelerini taşır (statü, yük seti, bordro uygunluğu); yeni kalemler MMB koduna göre otomatik sıralanır. Ön koşul: 1500-serisi için içerik/küratörlük — Engin işi, kod bundan sonra başlar. Bordro'dan bağımsız, ayrı DILIM.
 
-## Açık kapı — Brüt/toplam üzerinden anlaşma girişi (iptal edildi) (2026-07-09)
+## İPTAL — Brüt/toplam üzerinden anlaşma girişi (2026-07-09)
 4-alan giriş mimarisi sökülüyor. Geçici/manuel yol: kullanıcı neti girer, Brüt Toplam'ı izler, anlaşılan brüte oturana kadar neti ayarlar. İleride gerçek ihtiyaç ölçülürse (Zirve tipi "tahakkuk şekli" — kişi/kalem bazında bir kez seçilen sabit alan, canlı seçici DEĞİL) geri gelebilir; şimdi kurulmuyor.
 
-## ✔ KARAR — input_mode/input_value mimarisi tamamen kaldırılıyor (2026-07-09)
+## ✔ YAPILDI — input_mode/input_value mimarisi kaldırıldı (karar 2026-07-09, uygulama DILIM-3e ile tamamlandı)
 Bordro kalemi artık istisna değil, DILIM-2f'nin genel deseniyle çalışır — Birim Net dönemsel girilir (budget_item_periods.unit_net_override), Net Toplam/Brüt Toplam her zaman hesaplanan/salt-okunur gösterilir. Gerekçe: üç turluk UI denemesi (segmented-toggle → dropdown) hem görsel hem algısal yük getirdi, kazandırdığı nadir bir ihtiyaç için sık kullanılan ekrana kalıcı karmaşıklık ekliyordu — fayda/maliyet dengesi tutmadı. input_mode/input_value kolonları DILIM-3e-1'de veri-sayım raporu sonrası DROP edilir.
 
 ## Ic maliyet tasarim gerekcesi olamaz (KARAR 2026-07-31, Engin)

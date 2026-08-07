@@ -181,6 +181,7 @@ Ray içeriği koda gömülmez, bildirimsel bir tanımdan gelir — ileride Yamdu
 Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki kararı DEĞİŞTİRİR; değişenler açıkça işaretlidir.
 
 ### 12.1 Ray içeriği
+- OTORİTE NOTU: aşağıdaki iki ray listesi bölüm 3'teki tabloyla da gösterilir; ikisi BİRLİKTE güncellenir. (7 Ağustos 2026: bu eşleme yapılmadığı için bölüm 3 bir süre "Harcamalar" durağını taşımaya devam etmişti.)
 - Muhasebe rayı: Dashboard · Bekleyen · Şüpheli · Avanslar · Raporlar — ayraç — Tanımlar
 - "Harcamalar" durağı YOKTUR. Mockup'ta görünmesi hataydı; v8'de de yoktu.
 - Kiralama Faz 2'dir, rayda yer almaz.
@@ -213,7 +214,7 @@ Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki
 - "İlk düzene dön" düğmesi masanın üst sağındadır ve YALNIZ masa taşınmışsa görünür. (İsim geçici.)
 - MÜHÜR MASANIN DİZİLİŞİNİ DONDURMAZ. Mühür bütçeyi dondurur; kimin kartı nerede duruyor sunumun parçası değildir.
 - Kart sayısı artınca kart küçülmez; masa aşağı uzar ve kaydırılır.
-- Kart ekleme: masanın EN SONUNDA, diğer kartlarla AYNI biçimde duran bir ekleme kartı. Basınca ortada seçim odası açılır (kalem eklemedeki düzenin aynısı), katalogdan masada olmayan kartlar listelenir, seçilen kart masada doğar. SERBEST (katalog dışı, kullanıcının adlandırdığı) KART FAZ 1'DE YOKTUR. Serbest kalem/kart değerlendirmesi tüm kartlar ve kalemler hazırlandıktan sonra yapılacaktır. Ekleme kartı, işlem gerçekten çalışır olmadan çizilmez.
+- Kart ekleme: masanın EN SONUNDA, diğer kartlarla AYNI biçimde duran bir ekleme kartı. Basınca ortada seçim odası açılır (kalem eklemedeki düzenin aynısı), katalogdan masada olmayan kartlar listelenir, seçilen kart masada doğar. SERBEST (katalog dışı, kullanıcının adlandırdığı) KART FAZ 1'DE YOKTUR. Serbest KART değerlendirmesi tüm kartlar ve kalemler hazırlandıktan sonra yapılacaktır. Serbest KALEM bu kapsamda DEĞİLDİR — D3c ile yapıldı ve canlıdır (1 Ağustos 2026). Ekleme kartı, işlem gerçekten çalışır olmadan çizilmez.
 - Bütçe sonu yüzdeleri şeridi (Öngörülmeyen %, Şirket Kârı %) masada DEĞİL, Genel Bütçe icmalindedir.
 
 ### 12.4 Üst bağlam

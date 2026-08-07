@@ -50,7 +50,7 @@
 
 - **Dönem:** Bütçenin zaman dilimi; çağrı kâğıdına bağlı çekim bloklarıyla hizalı, tarih sınırlı. Varsayılan 3 (Hazırlık/Çekim/Post), inceltilebilir.
 - **Etap:** Dönemle aynı eksen. Beş etap sektörün isim standardıdır, zorunlu liste DEĞİLDİR; canlı varsayılan 3 dönemdir (bkz. Dönem). Beş etap: Geliştirme · Yapım Öncesi · Yapım · Yapım Sonrası · Dağıtım ve Teslimat. Kodda: `stage`.
-- **Faz:** Dönemin kaba hali; ayrı yapı değil.
+- **Faz:** KAAPA'nın YAZILIM geliştirme aşaması (Faz 1 = MVP kapsamı, Faz 2 = sonrası). Bütçe dönemiyle ve muhasebe dönemiyle İLGİSİ YOKTUR — o ikisi için bkz. Dönem ve Etap. (Engin düzeltmesi, 7 Ağustos 2026: eski "dönemin kaba hali" tanımı YANLIŞTI; dosyalarda geçen "Faz 1/Faz 2" her zaman bu yazılım anlamındadır.)
 - **Ne zaman (kalem):** Kalemin bağlı olduğu dönem(ler). İki eksen — ait-dönem ve nakit-dönem.
 - **Ait-olduğu-dönem:** Kalemin bütçede karşı geldiği dönem (maliyet/karşılaştırma kapısı).
 - **Nakdin-çıktığı-dönem:** Paranın fiilen çıktığı/gerektiği dönem (nakit akışı kapısı).
@@ -88,7 +88,7 @@
 - **Katalog kodu:** MMB-uyumlu kanonik kalem kodu; kütüphanede doğar, yerleşimi ve kart aidiyetini belirler. item_code (iç kimlik) ile karıştırılmaz.
 - **Serbest kalem:** kütüphane dışından kullanıcı girişiyle doğan kalem; kütüphane referansı NULL, kodu muhtelif kuyruğundan.
 - **Muhtelif kuyruğu:** kartın x698 hesabı; serbest kalemlerin kod aldığı ve kartın sonunda blok oluşturduğu bölge.
-- **Mini istasyon:** serbest kalem eklerken araya giren zorunlu statü+birim seçim adımı.
+- **Mini istasyon:** serbest kalem eklerken araya giren zorunlu statü+birim seçim adımı. **İPTAL EDİLDİ (2026-07-24)** — yerini hızlı ekleme odası aldı (docs/butce/BUTCE-EKRAN-KARARLARI.md bölüm 16). Terim tarihsel kayıttır, yeni tasarımda kullanılmaz.
 - **DB adlari (D1, 2026-07-23):** kutuphane tablosu = item_library; kanonik kod = budget_items.catalog_code (NOT NULL); kutuphane referansi = budget_items.library_item_id (NULL = serbest kalem).
 - **DB adlari (D2, 2026-07-23):** kart kodu = expense_groups.card_code (NOT NULL); muhtelif sayaci = expense_groups.misc_code_seq; tek-kalem ekleme = fn_add_budget_item (kutuphane/serbest iki mod).
 

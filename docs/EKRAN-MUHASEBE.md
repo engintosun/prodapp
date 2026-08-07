@@ -52,7 +52,7 @@ Sohbet listesi (ortak mesajlaşma kuralları).
 Yeni dönem aç (period_number, name, 3 deadline: saha/dept/acc). Durum: open → partially_closed → closing → closed → permanently_closed. Departman bazlı kapatma durumu izleme. Muhasebe seviyesi kapatma onayı. Zorla kapama (override_reason zorunlu). Tekrar açma (reopen_reason zorunlu). Kural dondurma: kapanınca rules_snapshot JSONB'ye yazılır. Deadline aşımı bildirimi. (Kademeli kapanış kuralı bkz. IS-KURALLARI.md.)
 
 ## 12. Departman yönetimi
-Oluştur · düzenle · şef ata (chief_id) · liste.
+Oluştur · düzenle · şef ata · liste. NOT: şef ataması `departments.chief_id` ile DEĞİL, kişinin aktif dept rolü üzerinden çalışır (docs/AUTH-KARARLARI.md SK-AUTH-9); chief_id kolonu hiç okunmuyor, ölü kolon olarak TD-8'de kayıtlı.
 
 ## 13. Kategori yönetimi
 Genel kategori (expense_categories, project bazlı) · sistem kategorileri (is_system, silinemez) · departman alt kategorisi (dept_subcategories).
@@ -84,7 +84,7 @@ Ray (yukarıdan aşağı): ① Genel bütçe ② Bütçe girişi ③ Raporlar �
 
 **Ekran 2 — Bütçe girişi (kart masası):** Etap başlıkları altında sade kartlar (işaret + isim; RAKAM YOK — rakam icmalin işi). [REVİZYON 6 Ağustos 2026: kart KAPAĞINDA brüt-net kart toplamı gösterilir; kart/katalog numarası gösterilmez. Bkz. KABUK-KARARLARI.md 12.3.] Her etap sonunda "+ Kart ekle". Dipte bütçe sonu yüzdeleri satırı (öngörülmeyen + şirket kârı burada düzenlenir). Dizide üst bağlam çubuğunda bütçe seçici (Sezon / Bölüm 1..n). Masaüstü-önerilir.
 
-**Ekran 3 — Kalem tablosu (kart açılınca masayı kaplar):** Başlık: ← Etap · Grup adı. Kolonlar (2026-07-11 güncellendi, detay BUTCE-EKRAN-KARARLARI): Kod · Açıklama · Statü · Dönemler · Birim · Birim net · Miktar · X · Yasal Yük · Net toplam · Brüt toplam. Açıklama + fark açıklaması satır detayında. Şablondan gelen boş kalemler soluk, 0, toplama girmez. Son satır "+ Kalem ekle". Altta toplam şeridi: Net · Brüt · Gerçekleşen · Fark. Enter/Tab akışı. Masaüstü-önerilir.
+**Ekran 3 — Kalem tablosu (kart açılınca masayı kaplar):** Başlık: ← Etap · Grup adı. Kolon seti (12, KİLİTLİ — tam liste ve gerekçe: docs/butce/BUTCE-EKRAN-KARARLARI.md bölüm 1). Burada tekrarlanmaz: eski 11'li liste bayatlamıştı ve ilk kolonu "Kod" gösteriyordu, oysa katalog kodu ekranın hiçbir yerinde görünmez. Açıklama + fark açıklaması satır detayında. Şablondan gelen boş kalemler soluk, 0, toplama girmez. Son satır "+ Kalem ekle". Altta toplam şeridi: Net · Brüt · Gerçekleşen · Fark. Enter/Tab akışı. Masaüstü-önerilir.
 
 Görsel tasarım (renk/tip/işaret seti) ayrı turda — bu tarifler tel kafestir.
 
