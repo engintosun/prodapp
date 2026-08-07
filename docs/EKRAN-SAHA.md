@@ -19,7 +19,7 @@ Mail + şifre → (çoklu proje varsa) proje seçimi → ana ekran. Tek projeli 
 - Uzun basış YOK (karar 2026-06: alttaki Galeri + Belgesiz görünür butonları submenu'yü gereksiz kıldı; görünür buton > gizli uzun-bas)
 - İlk açılışta bir kez pulse animasyonu (oturum-bazlı; tab değişiminde tekrar oynamaz)
 **Disk altı hızlı butonlar:** Galeri · Belgesiz (kameranın yanında iki giriş yolu; her zaman görünür)
-**Scroll altı:** bütçe widget (harcanan/kalan/bütçe + progress) · kategori limit barları · son girilen 3 fiş (yatay) · avans/harcanan özeti
+**Scroll altı:** harcama limiti widget'ı (harcanan/kalan/limit + progress; BÜTÇE MODÜLÜ DEĞİL — bkz. IS-KURALLARI bölüm 7) · kategori limit barları · son girilen 3 fiş (yatay) · avans/harcanan özeti
 - Above-the-fold'da yalnızca disk + hızlı butonlar; özet bilgi scroll altında
 - Reddedilenler scroll altında GÖSTERİLMEZ (bildirim + dönem filtresinden görülür)
 **Alt floating nav (4 tab):** Ana / Dönem / Ara / Mesajlar

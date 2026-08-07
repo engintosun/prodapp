@@ -113,7 +113,7 @@ Dept (½ Kısmi Onay) ve muhasebe (Split) yapabilir. split_amount belirlenir, fi
 ## 7. Bütçe ve limitler
 - Bütçe PROJEYE aittir: proje toplamı (project_budgets) + departman payları (project_dept_budgets). Dönem tabloları (period_budgets, dept_budgets) projenin zaman dilimleridir; sahip projedir.
 - Departman payları toplamı proje toplamına eşit olmak ZORUNDA DEĞİL — fark = dağıtılmamış pay + departman-dışı kalemler (reklam/PR/gösterim/öngörülmeyen). Zengin modülde isimli satır olur.
-- GÖRÜNÜRLÜK: bütçeyi her seviyede yalnız muhasebe görür ve yazar. Şef/saha bütçe görmez; şefin baktığı avans defteridir.
+- GÖRÜNÜRLÜK: BÜTÇE MODÜLÜNÜ (kart/kalem) şef ve saha HİÇ görmez — bütçe modülünde erişim rolle değil, muhasebenin kart-bazlı yetkilendirmesiyle verilir (docs/butce/BUTCE-EKRAN-KARARLARI.md bölüm 15, M1/M2). Bu bölümdeki project_budgets / dept_budgets HARCAMA tarafının limit göstergesidir, bütçe modülü değildir; şefin baktığı avans defteri ve kendi departmanının limitidir. İki dünyanın "bütçe" kelimesini paylaşması adlandırma çakışmasıdır, aynı şey DEĞİLDİR.
 - Eşik uyarıları (sarı ≥%80 · kırmızı ≥%100) zengin bütçe modülüyle gelir → AÇIK SLOT. Tam limit değerleri şirket kuralı (§14) → AÇIK SLOT.
 
 **Bütçe/avans aşımı — eylem (Engin kararı, 6 Ağustos 2026):** Aşan giriş ENGELLENMEZ. Kayıt alınır, "izin bekliyor" durumunda tutulur; muhasebe ve harcayan kişi uyarılır. Gerekçe: saha fişi zaten olmuş bir harcamanın belgesidir; girişi durdurmak harcamayı geri almaz, kaydı sistem dışına iter. Kontrol kaybolmasın diye kayıt kaybedilmez.

@@ -16,7 +16,8 @@ Avatar (tıklayınca dept profil) · proje adı · "Dept. Sorumlusu · {departma
 **Tab bar (6 tab, rozetli):** Bekleyen (n) / Ekip / Avanslar (n) / Kiralama (n) / Geçmiş / Mesajlar
 **Alt bar (sabit):** Fiş Tara + Belgesiz — **dept fiş girebilir.**
 
-## 3. Bütçe kartı (ekranların üstünde)
+## 3. Harcama limiti kartı (ekranların üstünde)
+*Adlandırma notu (7 Ağustos 2026): bu kart HARCAMA tarafının limit göstergesidir (project_budgets / dept_budgets), BÜTÇE MODÜLÜ (kart/kalem) DEĞİLDİR — şef bütçe modülünü görmez (IS-KURALLARI bölüm 7). Eşik uyarıları henüz AÇIK SLOT, çizilmedi.*
 Toplam tutar + durum rozeti (ok/uyarı/aşım) + progress bar + 3 stat (onaylanan/bekleyen/red).
 **Limit aşımı hâli:** "Limit Aşıldı!" kırmızı rozet + kırmızı banner ("Dönem bütçesi tamamen tükendi — muhasebe ile iletişime geçin") + kırmızı dolu bar + Kalan ₺0 kırmızı.
 **Kategori limitleri:** 8 kategori (Yakıt/Yiyecek/Ekipman/Sanat/Ulaşım/Konaklama/Kiralama/Diğer), her biri renk dot + progress + yüzde + "harcanan / limit".

@@ -141,9 +141,7 @@ Kolon seti (KILITLI, 12; D3-ARA 26 Temmuz 2026 revizyonu — Aciklama kolonu ayr
 - Pasif onay (7 gun): v8'in bes mekanizmasindan biri, auto_approved approval_log_action_check'te deger olarak var, tetikleyen kod YOK.
 - Tekrar giris: parent_receipt_id kolonu var, akisi kuran kod YOK.
 
-**G grubu — dogrulanmadi:**
-- IS-SIRASI.md tazeligi okunarak teyit edilmedi.
-- Butce/bordro/MUHUR karar dosyalarinin bayatligi taranmadi (6 Agustos'ta konu KABUK'tu, dar tarama yapildi).
+**G grubu — KAPANDI (7 Agustos 2026):** IS-SIRASI.md okunarak teyit edildi (temiz — dosya kendi kapsamini dogru tarif ediyor, sirayi tutmadigini kendisi soyluyor); butce/bordro/MUHUR karar dosyalarinin tamami kirlilik envanteri ve dort sinifli celiski taramasinda okundu.
 
 ## Korunan onceki kararlar
 - CARD-DESK LAYOUT (kilitli): daralabilir sol ray + ust baglam + orta masa + sag referans.
