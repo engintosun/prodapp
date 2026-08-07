@@ -1,6 +1,6 @@
 # IS-KURALLARI.md
 
-**Son güncelleme:** 10 Haziran 2026
+**Son güncelleme:** 6 Ağustos 2026
 
 Ekranlardan ve yetkiden bağımsız iş mantığı. Birden çok ekranı etkileyen kurallar burada tek evde tutulur (etki analizi için). Ekran dosyaları bu kuralları KOPYALAMAZ, sadece referans verir.
 

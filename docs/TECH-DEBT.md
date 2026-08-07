@@ -1,6 +1,6 @@
 # KAAPA — Teknik Borç Takibi (TECH-DEBT)
 
-**Son güncelleme:** 2 Ağustos 2026
+**Son güncelleme:** 6 Ağustos 2026
 **Kural:** Bu dosya borç durumunun TEK otoritesidir; sayı başka hiçbir dosyada taşınmaz (Engin kararı 2026-07-31). TD numarası YALNIZ borç demektir — tek tablo, tek sayaç. Her borç bir milestone veya tura bağlı; "bir gün düzeltiriz" yok. **Sınır 10: Açık Borç 10'u aşarsa yeni özellik durur.** Karara bağlanacak yapısal seçimler, yapılmamış özellikler ve zaten verilmiş kararlar bu dosyaya GİRMEZ — kendi karar dosyalarına yazılır (CLAUDE.md "Karar nereye yazılır" yol haritası).
 
 -----
@@ -59,6 +59,8 @@ Borç kendi başına tur açmaz; kuyrukta zaten duran işlere bağlanır ve zama
 | KABUK milestone | TD-10, TD-13 | 2 |
 | M4 pilot öncesi | TD-12 | 1 |
 | Üyelik/arşiv dilimi (M2) | TD-2 | 0 |
+
+*TD-24 merdiven dışıdır — takvime değil, rol ayrımının çöktüğü senaryoya bağlıdır (bkz. Açık Borç tablosu).*
 
 BORÇ-C dördü de temizlik, tasarım kararı istemez: TD-5 sessiz catch → görünür hata; TD-22 iki çıplak zIndex → tokens.css; TD-6 ve TD-8 ölü kolonlar. ŞART: TD-6 ve TD-8 şemaya dokunur, Engin SQL onay kapısından geçer; TD-6'da kolonu düşürmek onu yazan iki fonksiyonu da elden geçirmek demektir.
 

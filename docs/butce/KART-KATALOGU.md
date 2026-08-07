@@ -235,7 +235,6 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 - 1405 kâr-şişirme denetimi (1403 emek + 1405 kâr toplamı fon normunu aşarsa bayrak) — fringe/compliance motoruna bağlı.
 - Kur farkı / çok-para-birimi (Türk bağlamı birincil).
 - Stunt doğa-bölmesi: performans 1600'de KİLİTLİ (§7.5); araç→Transport, mekanik→Mekanik FX o kartlara gelince. "Sanat" çok-kart bölünmesi, walkie yuvası — ilgili kartlara gelince.
-- cost_object şema (DDL ayrı dilim): budget_cost_objects tablosu (bütçe-bazlı, muhasebe-only) + budget_items.cost_object_id nullable + restrict-silme + B19/updated_at + baseline snapshot kapsamı. Konsept §4.10.
 
 ## 9. UI/EKRAN PARK (bütçe ekran tasarımına gelince)
 - Bento Grid görünümü: maskeli kartların asma kilit/flu gösterimi; ağaçta gizleme vs flu seçimi.

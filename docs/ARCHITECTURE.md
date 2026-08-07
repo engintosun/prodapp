@@ -1,6 +1,6 @@
 # KAAPA — Mimari Kararlar Dokümanı
 
-**Son güncelleme:** 5 Ağustos 2026
+**Son güncelleme:** 6 Ağustos 2026
 **Durum:** M1 (temel altyapı + auth) kapandı. M2 (çekirdek döngü) aktif — DILIM-2/DILIM-3 (bordro motoru) tamam, R-serisi ekran refaktörü (R1-R3) tamam, KLV (klavye motoru, K1-K13) tamam, MÜHÜR-1/2 (bütçe mühürleme çekirdeği + servis okuma çatalı) tamam. Sıradaki: KABUK (uygulama kabuğu); MÜHÜR-3a/3b KABUK sonrasına alındı (Engin kararı, 4 Ağustos 2026). Detay: CURRENT.md.
 
 -----
