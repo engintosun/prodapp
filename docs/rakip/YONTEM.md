@@ -152,7 +152,7 @@ Bulgular tasinmaz, adresleri burada tutulur:
 
 - docs/RAKIP-ANALIZI-URUN.md — Yamdu turu (urun ekseni)
 - docs/RAKIP-ANALIZI-OCR.md — 12 firma (7 global + 5 TR), OCR/confidence ekseni
-- docs/butce/KART-GEREKCELERI.md — MMB / Saturation / Showbiz / Hot Budget kart ve kalem yapisi
+- docs/butce/KART-GEREKCELERI.md — MMB / Saturation kart ve kalem yapisi, cost_object karsilastirmasi
 - docs/butce/BUTCE-ARASTIRMA-DURUM.md — rakip taramasi notlari
-- docs/butce/KART-KATALOGU.md — hesap plani karsilastirmasi
-- docs/butce/BUTCE-SEMA-KARARLARI.md — cost_object / tag karsilastirmasi
+- docs/butce/KART-KATALOGU.md — hesap plani karsilastirmasi, cost_object / Saturation Tag karsilastirmasi
+- docs/butce/BUTCE-EKRAN-KARARLARI.md bolum 16 — Showbiz / MMB / Hot Budget satir-ekleme deseni karsilastirmasi

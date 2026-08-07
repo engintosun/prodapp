@@ -41,7 +41,8 @@ Başlık "Harcama Detayı (Dept.)" + fiş thumbnail (lightbox) + alanlar (satıc
 ## 7. Avanslar tab
 3 stat (Bekleyen/Ödendi/Toplam) + "Yeni Avans Talebi" + "Dışa Aktar". "SAHA ONAY BEKLEYEN (n)" altında kart: avatar + isim + "tarihli talep" + gerekçe + **"Onayla → Muhasebe" (yeşil)** / Reddet. Dept onaylayınca avans muhasebeye gider.
 
-## 8. Kiralama tab
+## 8. Kiralama tab [FAZ 2]
+Taslak tariftir, uygulanmadı (bkz. EKRAN-MUHASEBE.md §8).
 "GECİKMİŞ (n)" kırmızı başlık. Kart: ekipman + "kategori · kişi" + "başlangıç → bitiş · ₺/gün" + "n gün gecikmiş" kırmızı rozet + ceza satırı ("⚠ Gecikme: n gün × ₺X = ₺Y olası ceza") + "✓ İade Edildi" durum. Ceza formülü: gün × günlük ücret (bkz. IS-KURALLARI.md).
 
 ## 9. Geçmiş tab

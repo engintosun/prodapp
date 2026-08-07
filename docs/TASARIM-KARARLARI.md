@@ -82,8 +82,8 @@ Giriş yapısı + altı arayüz ilkesi + açık tasarım notları → docs/butce
 ## Bütçe kart mimarisi (kart/kalem yapısı)
 TEK KAYNAK: docs/butce/KART-KATALOGU.md — etap ekseni · kart=departman ("kullanan sahiplenir") · kalem davranış motoru (üç bağ + alias) · kilitli kartlar 1100-1600 · cost_object (4. eksen) · Compliance Guard. Gerekçe/eğitim: docs/butce/KART-GEREKCELERI.md.
 
-## Açık iş — KART 1500 isim onarımı (2026-07-09)
-Kalem açıklamaları şablon aslından (supabase/migrations/20260623120000_seed_sistem_sablon_film_1500.sql) sapmış olabilir. Onarım iki adımlı: (1) salt-okunur fark raporu (item_code eşliğinde, hangi film/proje), (2) Engin onayıyla düzeltme. Kapsam netleşmeden yapılmaz.
+## Kapandı — KART 1500 isim onarımı (2026-07-09 açıldı, 21 Temmuz 2026 kapandı)
+Şablon aslından sapma incelendi; onarım gereksiz çıktı.
 
 ## Açık kapı — Kalem Kütüphanesi/Kalibrasyon (gelecek DILIM) (2026-07-09)
 Açıklama kolonu serbest-metinden kontrollü seçime döner; her kütüphane kaydı kendi hesap parametrelerini taşır (statü, yük seti, bordro uygunluğu); yeni kalemler MMB koduna göre otomatik sıralanır. Ön koşul: 1500-serisi için içerik/küratörlük — Engin işi, kod bundan sonra başlar. Bordro'dan bağımsız, ayrı DILIM.

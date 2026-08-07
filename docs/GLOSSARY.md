@@ -49,7 +49,7 @@
 ### Bütçe - dönem/nakit terimleri (2026-06-13)
 
 - **Dönem:** Bütçenin zaman dilimi; çağrı kâğıdına bağlı çekim bloklarıyla hizalı, tarih sınırlı. Varsayılan 3 (Hazırlık/Çekim/Post), inceltilebilir.
-- **Etap:** Dönemle eş anlamlı (aynı eksen); bütçede zaman/ödeme etiketi. Beş etap: Geliştirme · Yapım Öncesi · Yapım · Yapım Sonrası · Dağıtım ve Teslimat. Kodda: `stage`.
+- **Etap:** Dönemle aynı eksen. Beş etap sektörün isim standardıdır, zorunlu liste DEĞİLDİR; canlı varsayılan 3 dönemdir (bkz. Dönem). Beş etap: Geliştirme · Yapım Öncesi · Yapım · Yapım Sonrası · Dağıtım ve Teslimat. Kodda: `stage`.
 - **Faz:** Dönemin kaba hali; ayrı yapı değil.
 - **Ne zaman (kalem):** Kalemin bağlı olduğu dönem(ler). İki eksen — ait-dönem ve nakit-dönem.
 - **Ait-olduğu-dönem:** Kalemin bütçede karşı geldiği dönem (maliyet/karşılaştırma kapısı).
