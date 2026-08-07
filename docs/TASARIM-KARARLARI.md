@@ -40,8 +40,6 @@ Her ekranın görsel tasarımı (renk, kozmetik, dark tema, doku, logo/favicon) 
 - Rakip OCR analizi: docs/RAKIP-ANALIZI-OCR.md
 - Domain terimleri: docs/GLOSSARY.md
 
----
-
 ## 8. Bütçe modülü (2026-06-12 — kilitli)
 Şema/teknik karar kaydı (B-serisi): docs/butce/BUTCE-SEMA-KARARLARI.md. Ekran tarifleri: docs/EKRAN-MUHASEBE.md §19. Kalıcı UX ilkeleri:
 1. 10 dakika kuralı — eğitimsiz muhasebeci 10 dakikada ilk grubu doldurur; kurs gerektiren her şey tasarım hatası.
@@ -67,6 +65,8 @@ Ekranlar-arası ortak ilke — bütçeye özel değildir, her ekran için geçer
 - Bir yüzeyin İÇİNDEKİ açılır liste kendi yığın bağlamında kalır; global sayı yarışı yoktur.
 - **Odak göstergesi:** klavyeyle üstünde durulan her durağın çevresinde ince, vurgu renginde çerçeve belirir. Görünüm (renk, kalınlık, köşe) TEK yerde tanımlanır; G6/UI turunda değiştirildiğinde bütün duraklarda birlikte değişir. Vurgu rengi projenin genel vurgu rengidir — değiştirilirse o rengin göründüğü her yer birlikte değişir.
 - **Fare ile klavye ayrımı (tarayıcı teyidi 2026-07-28, Engin: "böyle kalsın"):** kural `:focus-visible` üzerinden işler. Sonuç olarak yazı hücreleri ve seçim hücreleri (Statü, Dönemler, Birim) fareyle tıklandığında da çerçeveyi gösterir; düğmeler (Not, Yasal Yük, satır silme x) yalnızca klavyeyle gelindiğinde gösterir. Bu tarayıcının kendi ayrımıdır, KABUL EDİLDİ ve tutarsızlık SAYILMAZ — ileride "düzeltilmesi gereken fark" diye ele alınmaz. Her durakta fareyle de çerçeve istenirse `:focus-visible` yerine `:focus` kullanılır; bu ayrı bir karardır ve alınmadı. Odak çerçevesinin görünümünü (`--focus-ring` / `--focus-ring-offset`) artık ikinci bir tüketici de kullanır — yeni eklenen kalemin 2 saniyelik hücre işareti (2026-07-31); görünüm yine TEK yerde tanımlıdır, iki sebep aynı token'ları çağırır.
+
+---
 
 ## TAŞINAN İÇERİĞİN HARİTASI (navigasyon — bu dosyada artık yok)
 Bu dosyada eskiden karışık duran ekran/iş/auth detayları doğru evlerine taşındı:
