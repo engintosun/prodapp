@@ -139,10 +139,10 @@ G6 notu (görsel tasarım oturumuna park, KABUK kapsamı): 1. **KAAPA renk/font 
 - `budget_items.stopaj_rate` — **CANLI** (null=miras, override için)
 - `budget_items.vat_deductible` — **CANLI**
 - `budget_item_periods.unit_net_override` — **CANLI** (dönem-başına farklı ücret)
-- `burden_components.kind` (additive/deduction) — **DILIM-2a** (henüz yok)
+- `burden_components.kind` (additive/deduction) — CANLI (DILIM-2a tamamlandı)
 - Net/Brüt CFE'den türetilir (saklanmaz): `brutStopaj(net, oran)` **CANLI**; cinse göre dallanma DILIM-2c
 - "Yasal Yükler" = transversal okuma (SGK + stopaj köprü, agregat) — DILIM-2d
-- Beyan/fiili/elden ayrımı = **fringe motoru (DILIM-3)**, bu dilimde değil
+- Beyan/fiili/elden ayrımı = bordro motoru/CFE (DILIM-3) — CANLI
 
 ## 14. Not mimarisi (Ic Not + Kamu Notu) -- YAPILDI 2026-07-02
 

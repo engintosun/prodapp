@@ -77,7 +77,7 @@ Bütçe "Toplam" = **BRÜT** (yapımcı maliyeti). Üç eksen **birleştirilmez*
 | `konaklama` | — | Net = maliyet | %10 havuz | Binmez |
 | `bordro` | Artan tarife (motor) | MOTOR (PERSONEL-MEVZUATI) | — | **Biner** |
 
-**Yük kovası mimarisi (karar: "A reddedildi"):** Stopaj kovadan ÇIKARILMAZ. `item_burdens` kalır; içerik statüye göre dolar (bordro→SGK+işsizlik, smm→stopaj20 bileşeni, telif→stopaj17 bileşeni, kira→stopaj20 bileşeni, fatura/konaklama→boş). Her yük bileşeni **cins** taşır (`burden_components.kind`): `additive` (SGK) veya `deduction` (stopaj). CFE cinse göre hesaplar. *DILIM-2a şema eki: cins alanı + statü→bileşen eşlemesi + rate_catalog oranlar.*
+**Yük kovası mimarisi (karar: "A reddedildi"):** Stopaj kovadan ÇIKARILMAZ. `item_burdens` kalır; içerik statüye göre dolar (bordro→SGK+işsizlik, smm→stopaj20 bileşeni, telif→stopaj17 bileşeni, kira→stopaj20 bileşeni, fatura/konaklama→boş). Her yük bileşeni **cins** taşır (`burden_components.kind`): `additive` (SGK) veya `deduction` (stopaj). CFE cinse göre hesaplar. *DILIM-2a CANLI: cins alanı + statü→bileşen eşlemesi + rate_catalog oranlar kuruldu.*
 
 ---
 
@@ -155,7 +155,7 @@ Sinema/TV/reklam sektöründe tetiklenen başlıca kalemler (KDV Genel Uygulama 
 
 ---
 
-## 5. KAAPA'ya BAĞLANIŞ (sonraki şema dilimi — henüz kurulmadı)
+## 5. KAAPA'ya BAĞLANIŞ (kısmen CANLI — durum her alanın yanında)
 
 Bu belge, kurulacak şema+CFE kolonlarının gerekçesidir. **Önerilen** alanlar (şema diliminde ratifiye edilecek):
 

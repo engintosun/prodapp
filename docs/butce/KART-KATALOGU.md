@@ -68,7 +68,7 @@ Kart=yer, etap=zaman, üst-grup=görsel kart-kümesi'ne EK dördüncü eksen: co
 - **Oto-etiket:** içsel-cross-cut kütüphane kalemleri kanonik öneri-cost_object taşır (Dublör Koordinatörü / Stunt rig → "Stunt"); eklenince oto-yapışır (bul-veya-oluştur). Bağlama-bağlı kalem (bu sefer stunt'a giden düz kamyon) → opsiyonel dropdown. Çoğu satır boş. **Rutin akışta sıfır zorunlu iş.** (Oto-etiket kütüphane katmanına bağlı; o resmîleşene kadar manuel dropdown.)
 - **Gerçekleşen miras:** receipts.budget_item_id + direct_payments.budget_item_id ZATEN var → fiş kaleme eşleşince cost_object'i miras alır; öngörülen + gerçekleşen tek etiketle dilimlenir, yeni alan yok.
 - **Düşük-bahis:** etiket unutulursa bütçe BOZULMAZ — satır kendi kartında doğru durur; sadece opsiyonel cross-cut rollup eksik kalır. Kart toplamları (gerçek bütçe) etiketten bağımsız HER ZAMAN doğru.
-- **Şema PARK (DDL ayrı dilim, §8):** budget_cost_objects (bütçe-bazlı, muhasebe-only) + budget_items.cost_object_id nullable + restrict-silme (kullanımdaki iş silinemez) + B19 iz/updated_at kapsamı + baseline snapshot kapsamı (CFE serializer). Breakdown = gelecek modül (kapı-açık; cost_object'i otomatik besler).
+- **Şema CANLI (20260620120000, 21 Haziran 2026):** budget_cost_objects (bütçe-bazlı, muhasebe-only) + budget_items.cost_object_id nullable + restrict-silme (kullanımdaki iş silinemez) + B19 iz/updated_at kapsamı + baseline snapshot kapsamı (CFE serializer). Breakdown = gelecek modül (kapı-açık; cost_object'i otomatik besler).
 
 ## 5. ÇOKLU ÇALIŞMA / YETKİ
 - Kart-bazlı departman admini: her karta admin atanır; admin yalnız kendi kartını görür/yazar.
@@ -230,13 +230,13 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 ## 8. AÇIK / PARK (ilgili bölümlere gelince)
 - Recoupable + iade/depozito şema/CFE detayı.
 - percent_lines (Completion Bond/Contingency/Overhead/Insurance — dışlamalı, satır-bazlı farklı baz). 1404/1405 percent_line adayı; motor buraya gelince açılır.
-- Fringe motoru (% + cutoff/SGK tavanı + biçim + risk) — §4.8 ödeme-statüsü boyutuna bağlı; loan-out fringe yönlendirmesi burada hesaplanır.
+- ~~Fringe motoru~~ — KAPANDI: "fringe motoru" KİMLİĞİ K2 ile emeklidir (2026-07-03, docs/butce/PERSONEL-MEVZUATI.md §1); motorun kendisi CFE olarak YAPILDI (DILIM-3, bordro-çözücü canlı). Loan-out fringe yönlendirmesi §4.8 ödeme-statüsü boyutunda yaşar.
 - compliance_rules veri tablosu (şablon/kalem/sınır%/kaynak-tarih) — Compliance Guard'ın veri kaynağı; koda gömülmez, kaynak-tarihli, "doğrulayın" notlu.
-- 1405 kâr-şişirme denetimi (1403 emek + 1405 kâr toplamı fon normunu aşarsa bayrak) — fringe/compliance motoruna bağlı.
+- 1405 kâr-şişirme denetimi (1403 emek + 1405 kâr toplamı fon normunu aşarsa bayrak) — uygunluk katmanına bağlı (PCCE tartışması; girdi: PERSONEL-MEVZUATI G defteri).
 - Kur farkı / çok-para-birimi (Türk bağlamı birincil).
 - Stunt doğa-bölmesi: performans 1600'de KİLİTLİ (§7.5); araç→Transport, mekanik→Mekanik FX o kartlara gelince. "Sanat" çok-kart bölünmesi, walkie yuvası — ilgili kartlara gelince.
 
 ## 9. UI/EKRAN PARK (bütçe ekran tasarımına gelince)
 - Bento Grid görünümü: maskeli kartların asma kilit/flu gösterimi; ağaçta gizleme vs flu seçimi.
 - Privacy Toggle arayüzü (yapımcının satır-seviyesi açma/kapama kontrolü).
-- "ne zaman" etkileşimi (tap → dönem+tutar atama) ve nakit matrisi yüzeyi — EKRAN-*.md dosyalarına.
+- "ne zaman" etkileşimi (tap → dönem+tutar atama) — EKRAN-*.md dosyalarına. NOT: nakit matrisi yüzeyi KARARA BAĞLANDI (docs/butce/BUTCE-EKRAN-KARARLARI.md bölüm 0.A — "tam görünüm = nakit matrisi"), bu listeden düştü.

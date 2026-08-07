@@ -46,7 +46,7 @@ Kolon seti (KILITLI, 12; D3-ARA 26 Temmuz 2026 revizyonu — Aciklama kolonu ayr
 - GIRIS: kart=departman; faz=donemin kaba hali; giris=sakin liste + dokun-isaretle; tam gorunum=nakit matrisi.
 - GOC CANLI: budget_item_periods koprusu. "En az bir donem" + "donem tarihli" MUHURDE (K7: normal Kaydet ASLA tarih istemez; tarih yalniz Muhur/harcama gecisinde).
 - SEMA B1-B20: hesaplanan deger saklanmaz (B18) - degisiklik izi (B19) - kasa/raf dokunulmazlik (B16/B17) - RLS yalniz muhasebe - standart oranlar veri/cetvel+snapshot (B20).
-- PAKETLEME: Model A. cost_object: PARK.
+- PAKETLEME: Model A. cost_object: şema CANLI (20260620120000); UI/rollup yüzeyi henüz yok.
 
 **TEYİT: MÜHÜR-3a SONRASI TARAYICI TESTİNE BAĞLANDI (Engin kararı 2026-07-15):** 2026-07-10 tarihli MİMARİ UYARI (şirket-profili sonradan değişirse mühürlü bütçenin sessizce oynaması riski) kod düzeyinde kapalı: oran değerleri budget_rate_snapshot ile, senaryo seçimi budget_versions.sgk_component_code ile donuyor; kalıcı round-trip testleri mevcut (MUHUR-2 test seti). Nihai davranış teyidi MÜHÜR-3a bitince şu tarayıcı testiyle yapılır: mühürlü bütçesi olan projede şirket profilinden Girişim Belgesi kutusunu değiştir → mühürlü versiyonun bordro rakamları KIPIRDAMAMALI, açık bütçeninki değişmeli. İkisi de tutarsa bu madde Kapananlar'a taşınır; tutmazsa dilim açılır.
 
