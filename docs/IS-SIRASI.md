@@ -36,6 +36,7 @@ Bu bölüm kasıtlı boş bırakılmıştır. "Sıradaki iş" için CURRENT.md'y
 - Kart içerik grafikleri (2026-07-21, Engin notu — kart masası ekranı)
 - Autocomplete "diğer kartlarda ara" genişletmesi: başka kartın kalemini isim/varsayılanlarıyla kopyalar, kodu bu kartın muhtelif kuyruğundan verir (2026-07-21, park kararı — Faz 1 dışı)
 - Serbest kalem mini istasyonunda bulanık/yakın eşleşme önerisi: "bunu mu demek istediniz: X?" (2026-07-21, park kararı — Faz 1 dışı; içeren-eşleşme çoğu durumu zaten karşılıyor)
+- Etap adlandırma revizyonu (Engin, 5 Ağustos 2026, ertelendi): mevcut Beş Etap yerine önerilen genişletilmiş isimlendirme — Geliştirme · Ön Hazırlık · Çekim · Post Prodüksiyon · Dağıtım ve Yayın, + tartışmaya açık iki ek: Finansman, Kapanış/Tasfiye. GLOSSARY'nin güncel isim standardına dokunmadan, ayrı bir oturumda ele alınacak.
 
 ## Borçlar
 Tüm teknik borçlar tek kaynak: docs/TECH-DEBT.md.
