@@ -63,16 +63,15 @@ Tezin dört sonucu:
 
 **Hedef ray içerikleri:**
 
-| Muhasebe (7 satır) | Bütçe (5 satır) |
+| Muhasebe (6 satır) | Bütçe (5 satır) |
 |---|---|
-| Dashboard · Bekleyen · Şüpheli · Avanslar · Harcamalar · Raporlar | Genel Bütçe · Bütçe Girişi · Raporlar · Gerçekleşen |
+| Dashboard · Bekleyen · Şüpheli · Avanslar · Raporlar | Genel Bütçe · Bütçe Girişi · Raporlar · Gerçekleşen |
 | — ayraç — | — ayraç — |
 | Tanımlar | Tanımlar |
 
 Bugünkü "Davet" ekranı hedefte **Kullanıcı** durağının içidir (EKRAN-MUHASEBE §15 zaten öyle tarif eder).
 
 **ENGİN KARARI — REDDEDİLENLER:**
-- **Rayda rozet/sayaç YOK.** Gerekçe: rozet rayı iş kuyruğuna çevirir, bütün bekleyen işleri kalıcı olarak göz ucuna asar; "rakam icmalin işidir" ilkesine aykırıdır. (Mockup'ta rozet vardı, bağlayıcı değildir. Yamdu'da da yoktur.)
 - **Kalıcı ikon şeridi (VS Code deseni) YOK.** 4 Ağustos'ta Opus önerdi, aynı oturumda GERİ ÇEKTİ: iki kapı için kalıcı ikon koridoru ihtiyaçtan önce kurulmuş mekanizmadır ve çizimi Yamdu'ya benzeten sebeplerden biriydi. Modül geçişi üst bağlamda tek sade öğedir; ikon şeridi ancak modül sayısı büyüyünce doğar (virtualization gibi, kapısı açık tutulur).
 - **Düz alt alta liste YOK.** Ray ferah yerleşir: nefes alan satır aralığı, tanınabilir işaretler.
 
@@ -90,7 +89,7 @@ Bugünkü "Davet" ekranı hedefte **Kullanıcı** durağının içidir (EKRAN-MU
 
 ## 5. ÜST BAĞLAM
 
-**ENGİN ONAYINA SUNULU.** Uygulama seviyesindeki öğeler burada yaşar: modül anahtarı · proje seçici · genel arama · bildirim · kullanıcı menüsü. Hiçbiri bir modüle ait değildir.
+**ENGİN ONAYINA SUNULU.** Üst bağlamın güncel iki-şerit yapısı (üst şerit + ince şerit) ve içerikleri bölüm 12.4'tedir; bu bölümdeki maddeler onun üzerine kuruludur.
 
 **Proje bağlamı — KİLİTLİ giriş akışıyla birleşme (EKRAN-MUHASEBE §18, 2026-06-10):** İlk giriş proje seçim ekranından geçer (`can_create_projects` işaretli hesapta "Yeni proje aç" her zaman görünür; işaretsiz + üyeliksiz hesapta "Henüz bir projeye davet edilmediniz" + çıkış). Üst bağlamdaki seçici, içerideyken hızlı geçiş kapısıdır — akışın yerine geçmez.
 
@@ -139,7 +138,7 @@ Bu üçü varsa Tab Manager yarın kabuğa eklenir, ekranlara dokunulmaz. Sprint
 
 > KARARA BAĞLANDI (6 Ağustos 2026): kartın yüzeyinde brüt-net kart toplamı bulunur; kart/katalog numarası görünmez. Ayrıntı bölüm 12.3'tedir. Brüt ve netten birinin düşürülmesi açık kalmıştır.
 
-**ENGİN ONAYINA SUNULU (K2).** Bu, mühürlü bir kararın bilinçli revizyonudur.
+**KARARA BAĞLANDI (K2).** Brüt ve netten birinin düşürülüp düşürülmeyeceği AÇIK kalmıştır (bkz. üstteki blockquote).
 
 **Bugünkü kilitli kural (§19, 12 Haziran 2026):** Kart masasında kartlar sadedir — *"işaret + isim; RAKAM YOK — rakam icmalin işi"*.
 
