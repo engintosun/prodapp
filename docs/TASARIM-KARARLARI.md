@@ -1,13 +1,16 @@
 # KAAPA — Tasarım Kararları (Ekranlar-Arası Ortak İlkeler)
 
-**Son güncelleme:** 5 Ağustos 2026
+**Son güncelleme:** 8 Ağustos 2026
 
 **Kapsam:** Bu dosya YALNIZCA tüm ekranlarda ortak geçerli görsel ve etkileşim ilkelerini tutar. Ekran-spesifik içerik (alan/akış/yerleşim) → docs/EKRAN-SAHA|DEPT|MUHASEBE.md. İş mantığı (onay/dönem/avans/reddet/anomali/hot cost) → docs/IS-KURALLARI.md. Görev sırası → docs/IS-SIRASI.md.
 
 ---
 
 ## 1. Tasarım felsefesi
-- **Mobile-first.** Birincil kullanıcı sette: ayakta, tek elle, zaman baskısı, bazen karanlık ortam. Desktop responsive olarak açılır.
+- **Mobil öncelik yüzey bazlıdır** (Engin kararı, 8 Ağustos 2026 — eski "Mobile-first, desktop responsive açılır" ifadesi ortak ilke gibi okunuyordu, kaldırıldı):
+  - **Saha:** mobil-first. Birincil kullanıcı sette: ayakta, tek elle, zaman baskısı, bazen karanlık ortam. Alt şerit korunur.
+  - **Dept:** mobil ve masaüstü EŞİT.
+  - **Muhasebe + Bütçe:** mobil-first DEĞİL, masaüstü öncelikli. Telefonda çalışır; sınırları docs/KABUK-KARARLARI.md bölüm 14.
 - **Aksiyon öncelikli.** Her ekranda birincil eylem görsel merkezde; ikincil bilgi geri planda / scroll altında.
 - **Netlik > süs.** Anlaşılırlık her zaman önce gelir.
 - **Karmaşık iş, basit kullanım.** Uygulama karmaşık hesap/analiz yapar; ama kullanım, ayar, optimizasyon ve güncelleme kullanıcı-dostu ve basit kalır, uzmanlık gerektirmez. Kullanıcının zaman içinde değiştirmesi gereken veriler (örn. vergi oranları — Türkiye'de sık değişir) uygulama merkezine/geliştiriciye bağlı olmaz; kullanıcı kendi arayüzünden günceller.

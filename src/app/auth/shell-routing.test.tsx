@@ -1,0 +1,87 @@
+// @vitest-environment jsdom
+// KABUK sprint dilim 1: adres semasinin AuthenticatedShell icindeki cozumunu dogrular.
+// Ekranlarin kendisi (ReviewerScreen/CardTableScreen/SahaScreen) mock'lanir -
+// olculen sey HANGI ekranin acildigi ve rol/adres eslesmesi, ekranlarin kendi
+// Supabase davranisi degil (bu dosyada ag istegi atilmaz).
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { cleanup, render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
+import type { User } from '@supabase/supabase-js'
+import { ToastProvider } from '../../shared/components/toast'
+import type { UserRole } from '../../shared/types/domain'
+import { AuthenticatedShell } from './authenticated-shell'
+
+afterEach(cleanup)
+
+vi.mock('../../shared/supabase/client', () => ({
+  supabase: {
+    from: () => ({
+      select: () => ({
+        eq: () => ({
+          single: () => Promise.resolve({ data: { name: 'Test Proje' }, error: null }),
+        }),
+      }),
+    }),
+  },
+}))
+
+vi.mock('../../shared/supabase/invitation-service', () => ({
+  getDepartments: () => Promise.resolve([{ id: 'd1', name: 'Departman' }]),
+}))
+
+vi.mock('../../shared/supabase/onboarding-service', () => ({
+  hasOpenPeriod: () => Promise.resolve(true),
+}))
+
+vi.mock('../reviewer/reviewer-screen', () => ({
+  ReviewerScreen: ({ role }: { role: string }) => <div data-testid="reviewer-screen">{role}</div>,
+}))
+
+vi.mock('../muhasebe/budget/card-table-screen', () => ({
+  CardTableScreen: () => <div data-testid="card-table-screen">butce</div>,
+}))
+
+vi.mock('../saha/saha-screen', () => ({
+  SahaScreen: ({ activeKey }: { activeKey: string }) => <div data-testid="saha-screen">{activeKey}</div>,
+}))
+
+function renderShell(initialPath: string, role: UserRole) {
+  const user = {
+    id: 'user-1',
+    email: 'test@kaapa.dev',
+    app_metadata: { role, project_id: 'proj-1' },
+  } as unknown as User
+
+  render(
+    <MemoryRouter initialEntries={[initialPath]}>
+      <ToastProvider>
+        <AuthenticatedShell user={user} theme="dark" onToggleTheme={() => {}} />
+      </ToastProvider>
+    </MemoryRouter>,
+  )
+}
+
+describe('AuthenticatedShell — adres semasi (KABUK sprint dilim 1)', () => {
+  it('/muhasebe/bekleyen adresi ReviewerScreen acar (muhasebe rolu)', async () => {
+    renderShell('/muhasebe/bekleyen', 'muhasebe')
+    const el = await screen.findByTestId('reviewer-screen')
+    expect(el.textContent).toBe('muhasebe')
+  })
+
+  it('/butce adresi CardTableScreen acar', async () => {
+    renderShell('/butce', 'muhasebe')
+    await screen.findByTestId('card-table-screen')
+  })
+
+  it('tanimsiz adres sessiz kalmaz, acik karsilik doner', async () => {
+    renderShell('/hic-boyle-bir-adres-yok', 'saha')
+    const el = await screen.findByText('Adres bulunamadı')
+    expect(el).toBeTruthy()
+  })
+
+  it('rolune ait olmayan bilinen adrese giden kullanici kendi ilk duragina yonlendirilir', async () => {
+    renderShell('/muhasebe/bekleyen', 'saha')
+    const el = await screen.findByTestId('saha-screen')
+    expect(el.textContent).toBe('ana')
+  })
+})
