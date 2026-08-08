@@ -217,6 +217,7 @@ Oklar tek yönlü: Orkestrasyon → herkesi çağırabilir. UI → sadece orkest
 - Milestone review: tüm yapı gözden geçirilir — dosya sayısı, katman ihlali, teknik borç
 - Kırmızı bayrak: bir dosya 3 farklı session'da değiştiyse → bölünme tartışması
 - Sorumlu: Claude kontrol eder, Engin karar verir
+- **doc-check çalıştırma zamanı (8 Ağustos 2026):** Denetim A ve E commit tarihine/hash'ine bakar; ikisi de commit ATILDIKTAN SONRA doğru ölçer. Kapıda (commit öncesi) çalıştırılan doc-check bir adım geride ölçer ve o oturumda değiştirilen dosyaları TAZE görür. Kapı olarak çalıştırmak yine değerlidir (önce-sonra farkı görünür), ancak çıktısı ancak commit sonrası kesindir. Sayı raporlanacaksa commit sonrası ölçüm yazılır.
 
 **Karar tarihi:** 22.05.2026 | **Gerekçe:** Kurallar koyuldu, uygulandığını denetleyecek mekanizma lazım.
 

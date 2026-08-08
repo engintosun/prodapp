@@ -164,11 +164,12 @@ Bu bilinçli bir sadeleştirmedir ve karar 27 Mayıs 2026'da verilmiştir — be
 
 ---
 
-## SK-AUTH-11: Yapımcı rolü (ENGİN KARARI, 8 Ağustos 2026)
+## SK-AUTH-11: Yapımcı — Master/Owner katmanı (ENGİN KARARI, 8 Ağustos 2026)
 
-- Yapımcı, saha/dept/muhasebe yanına DÖRDÜNCÜ roldür. Ayrı ekran değildir; yetki ve izleme rolüdür.
+- Yapımcı MASTER/OWNER katmanıdır — harcama rolleriyle (saha/dept/muhasebe) aynı eksende DEĞİL, üstündedir. Harcama rol listesi ÜÇ olarak kalır (BUTCE-EKRAN-KARARLARI §15 M2 bozulmaz). Ayrı ekran değildir; sahiplik, görünürlük ve yetki katmanıdır. KART-KATALOGU §5.1'deki "Yapımcı/Denetmen (Master/Owner) = tam açık" sabitinin rol karşılığıdır.
 - GÖRÜNÜRLÜK: her şeyi görür, maskesiz. MUHASEBE DE TAM AÇIK KALIR — KART-KATALOGU §5.1 mühürlü kuralı BOZULMAZ (maske yalnız set rollerine karşıdır; "muhasebenin göremediği para = denetlenemeyen para").
 - MUHASEBE TARAFI: kayıt giremez. Onay zincirinde adımı yoktur.
 - BÜTÇE TARAFI: kayıt girer — bütçeyi çoğu zaman yapımcı yapar. Bütçede onay/red gerektiren konularda karar verir.
 - YAPIMCI ONAYI (yeni mekanizma): muhasebeyi aşan durumlarda (tutar büyüklüğü veya işlem şekli) muhasebe, sorumluluğu devretmek için yapımcı onayı İSTER. Onay işlemin yanına ilistirilir, bilgi olarak durur. Fişin statüsünü DEĞİŞTİRMEZ, zincire adım EKLEMEZ. Desen: `correction_requested` bayrağıyla aynı sınıf (durum sabit, bayrak eklenir).
 - BUGÜN KODDA YOK (yarın aranmasın diye yazıldı): `UserRole` tipinde yapımcı yok (saha/dept/muhasebe) · `ApproverRole` yalnız dept|muhasebe · yapımcı onayını tutacak kolon yok. Bu karar ŞEMA İŞİ doğurur, ayrı dilim.
+- İLİŞKİ: bütçe erişimi M2 gereği ayrı yetki eksenidir; Master/Owner o eksenin üstünde durur ve iki eksen birbirini geçersiz kılmaz.

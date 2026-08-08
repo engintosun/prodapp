@@ -168,6 +168,8 @@ Sektör taraması (Saturation erişim modeli, MMB/MMS izin seviyeleri, Hot Budge
 
 **M2 — Bütçe erişimi ROL değil ayrı YETKİ EKSENİdir.** Kişinin harcama zincirindeki rolü (saha/dept/muhasebe) olduğu gibi kalır; bütçe erişimi ayrı bir yetki tablosunda (kişi + kapsam) tutulur. İki kapsam: (a) bütçe-geneli editör, (b) kart-bazlı editör (KART-KATALOGU §5 kart-admin kavramının mekanizması). Mühürleme, versiyon açma, davet etme ve yetki yönetimi SAHİPTE (muhasebe) kalır — bütçe-geneli editör dahi bunları yapamaz (Saturation'ın proje-Admin/Editor çizgisiyle aynı). Gerekçe: tek-rol kısıtı uygulayıcı yapımcı gerçeğini taşıyamaz — aynı kişi sette hem dept şefi hem kart editörüdür; rol çoğaltma yolu bu senaryoda duvara toslar ve geri dönüşü migration ister.
 
+NOT (8 Ağustos 2026): buradaki üç-rol listesi HARCAMA ZİNCİRİ içindir. Master/Owner katmanı ayrıdır — bkz. AUTH-KARARLARI SK-AUTH-11.
+
 **M3 — Tek davet altyapısı.** Mevcut invitations mekanizması genişler (kabulde rol yerine/yanında bütçe-yetki satırı yazabilir); ikinci bir davet sistemi (ayrı tablo/akış) kurulmaz. Kişi zaten proje üyesiyse davet gerekmez, doğrudan yetki satırı eklenir.
 
 **İnşa zamanı:** Yetki tablosu dilimi (şema+RLS+servis+bütçe-rayında davet UI, 5 katman) kart çoğaltması + KABUK evresiyle gelir; tek kartla yetki tablosunun test edilecek gerçek senaryosu yoktur, erken kurmak boşa iştir. Bugün yalnız karar mühürlüdür.
