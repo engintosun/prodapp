@@ -161,3 +161,14 @@ Bu runtime kontroludur, konfigurasyon degildir. Sistem fis submit edildiginde de
 Kişiyi gösteren FK'lar (`receipts.user_id`, `advances`, `exception_permits`, `approval_log`) belirli bir üyelik satırına değil doğrudan `auth.users(id)`'ye bakar. Üyelik bağlamı (`user_id + project_id`) FK ile değil RLS ile sağlanır.
 
 Bu bilinçli bir sadeleştirmedir ve karar 27 Mayıs 2026'da verilmiştir — bekleyen bir seçim yoktur. Geriye kalan tek şey gözden geçirme şerhidir: çok-projeli kullanımda üyelik bağlamının yalnız RLS'e emanet olması M2'de bir kez gözden geçirilir. 31 Temmuz 2026'da TECH-DEBT.md'den buraya taşındı (borç değil, verilmiş karar).
+
+---
+
+## SK-AUTH-11: Yapımcı rolü (ENGİN KARARI, 8 Ağustos 2026)
+
+- Yapımcı, saha/dept/muhasebe yanına DÖRDÜNCÜ roldür. Ayrı ekran değildir; yetki ve izleme rolüdür.
+- GÖRÜNÜRLÜK: her şeyi görür, maskesiz. MUHASEBE DE TAM AÇIK KALIR — KART-KATALOGU §5.1 mühürlü kuralı BOZULMAZ (maske yalnız set rollerine karşıdır; "muhasebenin göremediği para = denetlenemeyen para").
+- MUHASEBE TARAFI: kayıt giremez. Onay zincirinde adımı yoktur.
+- BÜTÇE TARAFI: kayıt girer — bütçeyi çoğu zaman yapımcı yapar. Bütçede onay/red gerektiren konularda karar verir.
+- YAPIMCI ONAYI (yeni mekanizma): muhasebeyi aşan durumlarda (tutar büyüklüğü veya işlem şekli) muhasebe, sorumluluğu devretmek için yapımcı onayı İSTER. Onay işlemin yanına ilistirilir, bilgi olarak durur. Fişin statüsünü DEĞİŞTİRMEZ, zincire adım EKLEMEZ. Desen: `correction_requested` bayrağıyla aynı sınıf (durum sabit, bayrak eklenir).
+- BUGÜN KODDA YOK (yarın aranmasın diye yazıldı): `UserRole` tipinde yapımcı yok (saha/dept/muhasebe) · `ApproverRole` yalnız dept|muhasebe · yapımcı onayını tutacak kolon yok. Bu karar ŞEMA İŞİ doğurur, ayrı dilim.

@@ -12,7 +12,7 @@
 
 ## 1. TASARIM TEZİ
 
-**ENGİN ONAYINA SUNULU (K1).** Tez tek cümle: **rakipler ekran yapıyor, KAAPA masa yapmalı.**
+**ENGİN KARARI (8 Ağustos 2026) (K1).** Tez tek cümle: **rakipler ekran yapıyor, KAAPA masa yapmalı.**
 
 Gerekçe zinciri:
 - Rakip haritası boşluğu gösteriyor: MMB bir hesap makinesi (uzman ister, korkutur), Yamdu bir dosya dolabı (her çekmecesi dolu, kademeli, kalabalık), Wrapbook/GreenSlate bordro gişesi. Hiçbiri "yapım ofisinin kendisi" olmaya çalışmıyor.
@@ -81,7 +81,7 @@ Bugünkü "Davet" ekranı hedefte **Kullanıcı** durağının içidir (EKRAN-MU
 
 ## 4. MODÜL KAPILARI
 
-**ENGİN ONAYINA SUNULU.** Faz 1'de kabuk **iki kapı** taşır: **Muhasebe** ve **Bütçe**. Satın Alma / Kart & Banka / Arşiv (mockup'ta örnek olarak var) Faz 1 listesinde yoktur — **boş kapı konmaz**. Mimari çok-modüle göre kurulur, içerik bugünkü gerçeğe göre doldurulur.
+**ENGİN KARARI (8 Ağustos 2026).** Faz 1'de kabuk **iki kapı** taşır: **Muhasebe** ve **Bütçe**. Satın Alma / Kart & Banka / Arşiv (mockup'ta örnek olarak var) Faz 1 listesinde yoktur — **boş kapı konmaz**. Mimari çok-modüle göre kurulur, içerik bugünkü gerçeğe göre doldurulur.
 
 **Raporlar birinci seviyeye ÇIKMAZ:** kilitli yapıda modül-içidir (muhasebe §7, bütçe rayı ③). Modüller-üstü rapor merkezi ileride ihtiyaç doğarsa açılır.
 
@@ -89,13 +89,15 @@ Bugünkü "Davet" ekranı hedefte **Kullanıcı** durağının içidir (EKRAN-MU
 
 ## 5. ÜST BAĞLAM
 
-**ENGİN ONAYINA SUNULU.** Üst bağlamın güncel iki-şerit yapısı (üst şerit + ince şerit) ve içerikleri bölüm 12.4'tedir; bu bölümdeki maddeler onun üzerine kuruludur.
+**ENGİN KARARI (8 Ağustos 2026).** Üst bağlamın güncel iki-şerit yapısı (üst şerit + ince şerit) ve içerikleri bölüm 12.4'tedir; bu bölümdeki maddeler onun üzerine kuruludur.
 
 **Proje bağlamı — KİLİTLİ giriş akışıyla birleşme (EKRAN-MUHASEBE §18, 2026-06-10):** İlk giriş proje seçim ekranından geçer (`can_create_projects` işaretli hesapta "Yeni proje aç" her zaman görünür; işaretsiz + üyeliksiz hesapta "Henüz bir projeye davet edilmediniz" + çıkış). Üst bağlamdaki seçici, içerideyken hızlı geçiş kapısıdır — akışın yerine geçmez.
 
-**ENGİN ONAYINA SUNULU — kural:** **Proje değişimi TAM BAĞLAM SIFIRLAMASIDIR.** Gerekçe: veri izolasyonu ve `fn_open_budget` tek projeye bağlıdır; Faz 1'de yumuşatılmaz. (Mockup'ta proje bir tablo KOLONUDUR — çok-projeli masa ima eder; bu bağlayıcı değildir ve kilitli akışa aykırıdır. Proje bağlam olduğu için ekran tablolarında kolon olarak tekrar etmez.)
+**ENGİN KARARI (8 Ağustos 2026) — kural:** **Proje değişimi TAM BAĞLAM SIFIRLAMASIDIR.** Gerekçe: veri izolasyonu ve `fn_open_budget` tek projeye bağlıdır; Faz 1'de yumuşatılmaz. (Mockup'ta proje bir tablo KOLONUDUR — çok-projeli masa ima eder; bu bağlayıcı değildir ve kilitli akışa aykırıdır. Proje bağlam olduğu için ekran tablolarında kolon olarak tekrar etmez.) Projeler arası karşılaştırma raporlar modülünün konusudur, salt-okunur, Faz 1 kapsamında değildir. Şart: karşılaştırılan bütçelerin aynı katalogla kurulmuş olması; farklı kart yapısı/dönem geometrisi/tarife yılı karşılaştırmayı yanıltıcı kılar.
 
-**Dönem AYRIMI — ENGİN ONAYINA SUNULU:** İki ayrı şey vardır ve adları karıştırılmaz. **Dönem BAĞLAMI** ("şu an hangi dönemdeyim") üst bağlama aittir — İ4'ün bütçe seçicisini üst bağlama koyması gibi. **Dönem YÖNETİMİ** (aç/kapat/deadline, EKRAN-MUHASEBE §11) rayda bir ekrandır, Tanımlar içindedir. Ayrılmazsa ikisi tek ekrana sıkışır.
+**Dönem AYRIMI — ENGİN KARARI (8 Ağustos 2026):** İki ayrı şey vardır ve adları karıştırılmaz. **Dönem BAĞLAMI** ("şu an hangi dönemdeyim") üst bağlama aittir — İ4'ün bütçe seçicisini üst bağlama koyması gibi. **Dönem YÖNETİMİ** (aç/kapat/deadline, EKRAN-MUHASEBE §11) rayda bir ekrandır, yeri muhasebe modülü turunda kararlaşır (bkz. 12.1: dönem Tanımlar'a ait değildir). Ayrılmazsa ikisi tek ekrana sıkışır.
+
+**ÇELİŞKİ DÜZELTMESİ GEREKÇESİ (8 Ağustos 2026):** Bu maddenin eski metni "Tanımlar içindedir" diyordu; bölüm 12.1 ise aynı dosyada "Dönem (hesap dönemi) ve departman Tanımlar'a AİT DEĞİLDİR" diyor. İki cümle birbirini yalanlıyordu. Baş/yönetim ayrımının kendisi (dönem bağlamı üst bağlamda, dönem yönetimi rayda bir ekran) doğru ve korunuyor; yalnız o ekranın Tanımlar'ın içi mi yoksa kendi durağı mı olacağı henüz kararlaşmadı, bu yüzden "yeri muhasebe modülü turunda kararlaşır" ifadesi kondu.
 
 ---
 
@@ -103,7 +105,7 @@ Bugünkü "Davet" ekranı hedefte **Kullanıcı** durağının içidir (EKRAN-MU
 
 **KİLİTLİ (EKRAN-MUHASEBE §19 son satırı):** CARD-DESK sağ referans paneli = kaynak dosyaların bağlamsal özeti. **Varsayılan kapalıdır.**
 
-**ENGİN ONAYINA SUNULU — disiplin:** Panel **aktif ekranın** bağlamıdır, global akış değildir. Mockup'taki "bekleyen onaylar / son işlemler" içeriği Dashboard'ı çoğaltır; panel ikinci bir dashboard olursa aynı bilgi iki yerde senkron tutulmak zorunda kalır. Faz 1 kapsamı: panel iskeleti + boşken kapalı başlama davranışı + yalnız bütçe masasının özeti (kart gerekçesi, katalog, mühür durumu). Muhasebe içerikleri ekran ekran sonra dolar.
+**ENGİN KARARI (8 Ağustos 2026) — disiplin:** Panel **aktif ekranın** bağlamıdır, global akış değildir. Mockup'taki "bekleyen onaylar / son işlemler" içeriği Dashboard'ı çoğaltır; panel ikinci bir dashboard olursa aynı bilgi iki yerde senkron tutulmak zorunda kalır. Faz 1 kapsamı: panel iskeleti + boşken kapalı başlama davranışı + yalnız bütçe masasının özeti (kart gerekçesi, katalog, mühür durumu). Muhasebe içerikleri ekran ekran sonra dolar.
 
 ---
 
@@ -120,7 +122,7 @@ Bu sınır sprint komutuna yazılmazsa uygulayıcı saha diskini söker.
 
 ## 8. GELECEK-KORUMA (sekme/Workbench yerine)
 
-**ENGİN ONAYINA SUNULU.** Engin'in metni Workbench/Tab Manager için "ileride destekleyecek esneklikte kurulmalı" diyor. Opus itirazı: bu cümle bir uygulayıcıya verilirse **spekülatif altyapı** üretir (TabContext, keep-alive önbelleği, çoklu-kopya state). Gelecek-korumasının somut karşılığı üç maddedir ve biri zaten kilitli kuraldır:
+**ENGİN KARARI (8 Ağustos 2026).** Engin'in metni Workbench/Tab Manager için "ileride destekleyecek esneklikte kurulmalı" diyor. Opus itirazı: bu cümle bir uygulayıcıya verilirse **spekülatif altyapı** üretir (TabContext, keep-alive önbelleği, çoklu-kopya state). Gelecek-korumasının somut karşılığı üç maddedir ve biri zaten kilitli kuraldır:
 
 1. **Ekranlar parametrelerini dışarıdan alır** (İ4 — zaten kilitli).
 2. **Ekran durumu ekranın içinde veya adreste yaşar**, modül tekilinde değil.
@@ -164,13 +166,25 @@ Bu üçü varsa Tab Manager yarın kabuğa eklenir, ekranlara dokunulmaz. Sprint
 - Bugün CANLI olan altı ekran kabuğa taşınır: Dashboard · Dönem · Rapor · Davet · Bütçe · Tanımlar
 - Mevcut işlevsellik korunur, yeni özellik eklenmez
 
-**ENGİN ONAYINA SUNULU — sprint disiplini:** Ray **hedef yerleşimi** dokümanda tutar, **koda bugün var olanı** listeler. Aksi hâlde uygulayıcı henüz ayrışmamış duraklar (Şüpheli, Marka gibi) için boş ekran uydurur. Hangi durağın bugün ayrı ekranı olduğu, hangisinin sonra ayrışacağı sprint dokümanında tek tek eşlenir.
+**ENGİN KARARI (8 Ağustos 2026) — sprint disiplini:** Ray **hedef yerleşimi** dokümanda tutar, **koda bugün var olanı** listeler. Aksi hâlde uygulayıcı henüz ayrışmamış duraklar (Şüpheli, Marka gibi) için boş ekran uydurur. Hangi durağın bugün ayrı ekranı olduğu, hangisinin sonra ayrışacağı sprint dokümanında tek tek eşlenir.
+
+**Durak tablosu (8 Ağustos 2026, hedef/bugün ayrımının somut hâli):**
+
+| Durak | Durum | Neye bağlı |
+|---|---|---|
+| Dashboard | [ABSENT] | dönem yönetimi + limitler (period_budgets/dept_budgets: şema var, kod yok) |
+| Bekleyen | [ACTIVE] | reviewer-screen.tsx çalışıyor |
+| — kısmi onay / pasif onay / tekrar giriş | [SCHEMA_ONLY] | şemada değer var, tetikleyen kod yok |
+| Şüpheli | [ABSENT] | anomali motoru (IS-KURALLARI §13) — motor yok |
+| Avanslar | [ABSENT] | avans şeması yok |
+| Raporlar | [ABSENT] | dönem kapanışı + gerçekleşen verisi |
+| Tanımlar | [PARTIAL] | definitions-screen.tsx var, içi az |
 
 ---
 
 ## 11. ADLANDIRMA
 
-**ENGİN ONAYINA SUNULU.** Kod adları İngilizce: `AppShell`, `NavRail`, `TopBar`, `Workspace`, `ContextPanel`. Doküman dili mevcut Türkçe terimlerle devam eder: kabuk, sol ray, üst bağlam, çalışma masası / orta masa, sağ referans. Eşleme GLOSSARY.md'ye işlenir.
+**ENGİN KARARI (8 Ağustos 2026).** Kod adları İngilizce: `AppShell`, `NavRail`, `TopBar`, `Workspace`, `ContextPanel`. Doküman dili mevcut Türkçe terimlerle devam eder: kabuk, sol ray, üst bağlam, çalışma masası / orta masa, sağ referans. Eşleme GLOSSARY.md'ye işlenir.
 
 Ray içeriği koda gömülmez, bildirimsel bir tanımdan gelir — ileride Yamdu-vari kullanıcı düzenlemesine (RAKIP-ANALIZI-URUN 1.3) kapı açık kalır, bugün sabittir.
 
@@ -251,5 +265,28 @@ Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki
 - Ray kapalıyken yeni iş doğduğunda haberin nasıl ulaşacağı
 - Rayın duraklarının yetkiye göre değişip değişmeyeceği (davetli yalnız görebildiği durakları mı görür)
 - Yapım dönemleri listesi (Geliştirme · Ön Hazırlık · Çekim · Post Prodüksiyon · Dağıtım ve Yayın + Finansman + Kapanış/Tasfiye) — ayrı etapta ele alınacak
-- Bölüm 1 (K1 tez) ve bölüm 4/5/6/8/10/11'deki ONAYA SUNULU maddeler hâlâ onay bekliyor
 - Renk paleti ve tonların kendisi (G6)
+- Toplu onay telefonda mı (rakip deseni: tablette toplu, telefonda teker teker) — karara bağlanmadı.
+
+## 14. MOBİL DAVRANIŞ
+
+**ENGİN KARARI (8 Ağustos 2026).**
+
+- TEK KABUK. Ray telefonda gizlenir, bir düğmeyle kayarak açılır. Dept, muhasebe ve bütçe için aynı. Gerekçe: kaplanacak alan sorunu ekran değişince değişmez.
+- SAHA İSTİSNADIR: saha tasarımında ALT ŞERİT korunur, ray YOKTUR. (bottom-nav.tsx saha için KALIR; bölüm 2'nin alt-navigasyon kaldırma kararı muhasebe ve bütçe yüzeylerine aittir.)
+- Telefonda YAZILIR: fiş girişi (saha) · onay/red/düzeltme iste (dept, muhasebe) · yapımcı onayı · rapor süzme/filtre (kayıt değil sorgu).
+- Telefonda YALNIZ OKUNUR: bütçe kalem tablosu · Tanımlar · dönem kapatma.
+- Telefonda TAM ÇALIŞIR: Dashboard · Raporlar · Genel Bütçe icmali · kart kapakları.
+- Bütçe kalem tablosu notu: telefonda AÇILIR ve okunur, düzenlenmez. Dar ekranda kolon azaltma + satıra dokununca alttan tam döküm (mevcut bottom-sheet deseni) BÜTÇE EKRAN TURUNUN işidir, kabuk sprintinin değil. "Şimdilik" — telefonda işlem yapmanın yolu ileride ayrı tasarım turunda aranır, kapı kapalı değildir.
+- KLV DÜZELTMESİ: KLV klavyeyi ZORUNLU kılmaz. Mouse hiç kaldırılmadı; dokunmatik ekranda parmak mouse'un yerine geçer. Telefon kısıtının gerekçesi klavye yokluğu DEĞİL, dar ekranda yanlış hücreye dokunup kalıcı kaydı bozma riskidir.
+- Kabuk sprintinin ihtiyacı: ekranın "telefonda salt-okunur" bayrağını taşıyabilmesi.
+
+**RAKİP EMSALİ (8 Ağustos 2026 araştırması, kaynak: üretici pazarlama sayfaları — bağımsız doğrulama YOK):**
+- Yamdu (RAKIP-ANALIZI-URUN §1.15, gözlemlendi): telefonda alt şerit kurmuyor, aynı sol ray çekmece olarak açılıyor. KAAPA kararıyla uyumlu.
+- Saturation: tarayıcı tabanlı, telefonda/iPad'de gerçekleşen-bütçe BAKMA senaryosu.
+- Celtx: mobilde inceleme + hafif düzenleme; tam düzenleme bilgisayarda.
+- Movie Magic Budgeting: masaüstü uygulaması, mobil yok.
+- Wrapbook: mobil = gönder + onayla (puantaj, masraf, fiş), bütçe kurma yok.
+- Genel desen: telefon bakma ve onaylama yüzeyi, masaüstü kurma yüzeyi.
+
+Yapımcı rolü: AUTH-KARARLARI SK-AUTH-11.
