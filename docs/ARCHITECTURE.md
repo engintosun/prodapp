@@ -236,6 +236,7 @@ Oklar tek yönlü: Orkestrasyon → herkesi çağırabilir. UI → sadece orkest
 - Yaşayan dokümanların TAM listesi CLAUDE.md "Karar nereye yazılır (yol haritası)" bölümündedir; burada tekrarlanmaz (liste burada tutulunca bayatlıyordu — KABUK-KARARLARI, IS-KURALLARI, IS-SIRASI ve docs/butce/ dosyaları hiç eklenmemişti).
 - Drift dedektörü session sonunda senkron kontrolü yapar
 - Ölü doküman yasağı — kimse okumuyorsa silinir veya arşivlenir
+- **ERTELENMİŞ KARAR (8 Ağustos 2026, uygulanmadı, kayıt için):** "Son güncelleme" başlığı elle tutulan ikinci kopyadır, kalkacak. Tarih INDEX.md'de tek yerde "son doğrulama" olarak yaşayacak ve yalnız dosya baştan sona doğruluk gözüyle okunduğunda ilerleyecek, düzenlendiğinde değil. doc-check Denetim A bu tarihe göre yeniden yazılacak (dosya son doğrulamadan sonra değiştiyse uyarır).
 
 **Karar tarihi:** 22.05.2026 | **Gerekçe:** Doküman-kod uyumsuzluğu yanlış kararlara yol açar.
 

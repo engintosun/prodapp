@@ -140,8 +140,7 @@ Edge functions (`supabase/functions/`):
 `clear-claims/index.ts` (44) — çıkışta app_metadata claim'lerini temizler
 `set-claims/index.ts` (65) — proje seçiminde app_metadata'ya project_id/role/dept_id yazar
 
-Göçler (`supabase/migrations/`, baseline hariç, kronolojik):
-`supabase/migrations/` — 29 goc, kronolojik. baseline = BAYAT taban; guncel sema = baseline + sonraki tum gocler. Gocleri okurken kronolojik oku, yalniz baseline'a guvenme. Kararlari: docs/butce/BUTCE-SEMA-KARARLARI.md
+`supabase/migrations/` — 28 goc (baseline haric), kronolojik. baseline = BAYAT taban; guncel sema = baseline + sonraki tum gocler. Gocleri okurken kronolojik oku, yalniz baseline'a guvenme. Kararlari: docs/butce/BUTCE-SEMA-KARARLARI.md
 
 ### C seviyesi (BASİT)
 
@@ -153,7 +152,32 @@ Göçler (`supabase/migrations/`, baseline hariç, kronolojik):
 (dilim 2 — bu dilimde yazilmadi)
 
 ## 4. BAGIMLILIKLAR
-(dilim 2 — bu dilimde yazilmadi)
+
+Kaynak: src altındaki gerçek `import` satırları (grep ile doğrulandı, 8 Ağustos 2026). Kanıtı olmayan bağ yazılmadı.
+
+### (a) Kritik servisler
+
+`shared/supabase/client.ts` <- 15 dosya (kanıt: budget-service.ts, auth-service.ts, App.tsx)
+`shared/types/domain.ts` <- 11 dosya (kanıt: reviewer-screen.tsx, receipt-service.ts, authenticated-shell.tsx)
+`shared/supabase/budget-service.ts` <- 9 dosya (kanıt: card-table-screen.tsx, use-card-rows.ts, item-row.tsx)
+`shared/supabase/onboarding-service.ts` <- 5 dosya (kanıt: department-step.tsx, budget-step.tsx, authenticated-shell.tsx)
+`shared/supabase/invitation-service.ts` <- 4 dosya (kanıt: department-step.tsx, invite-screen.tsx, authenticated-shell.tsx)
+`shared/supabase/receipt-service.ts` <- 4 dosya (kanıt: reviewer-screen.tsx, receipt-entry-screen.tsx, saha-home-screen.tsx)
+`shared/supabase/payroll-read.ts` <- 4 dosya (kanıt: use-edit-buffers.ts, use-card-rows.ts, burden-sheet.tsx)
+
+### (b) Ortak bileşenler
+
+`shared/components/toast.tsx` (useToast) <- 15 dosya (kanıt: card-table-screen.tsx, saha-home-screen.tsx, App.tsx)
+`shared/components/empty-state.tsx` <- 4 dosya (kanıt: reviewer-screen.tsx, card-table-screen.tsx, authenticated-shell.tsx)
+`shared/components/loading.tsx` <- 3 dosya (kanıt: reviewer-screen.tsx, card-table-screen.tsx, authenticated-shell.tsx)
+`shared/cfe` (barrel: cfe.ts + payroll.ts) <- 5 dosya (kanıt: item-row.tsx, format.ts, payroll-read.ts)
+
+### (c) Tek yönlü kurallar
+
+Kaynak: docs/ARCHITECTURE.md bölüm 5.3-5.4 (rol-bazlı `app/{rol}` ekranları `shared/` servislerini çağırır, tersi değil) + CLAUDE.md Teknik kurallar (veri -> iş mantığı -> UI -> orkestrasyon). eslint'te bu katmanlaşmayı zorlayan özel bir rule (örn. import/no-restricted-paths) YOK — disiplin dokümanter.
+
+- `shared/` hiçbir dosyası `app/`dan import ETMEMELİ — grep doğrulandı: İHLAL YOK.
+- `shared/cfe/` (iş mantığı) `shared/supabase/`dan (veri) import ETMEMELİ — grep doğrulandı: İHLAL YOK.
 
 ## 5. VERI AKISLARI
 (dilim 2 — bu dilimde yazilmadi)
@@ -162,7 +186,33 @@ Göçler (`supabase/migrations/`, baseline hariç, kronolojik):
 (dilim 2 — bu dilimde yazilmadi)
 
 ## 7. DOKUMANTASYON HARITASI
-(dilim 2 — bu dilimde yazilmadi)
+
+`docs/butce/KART-KATALOGU.md` [MUHURLU] — Etap/Kart eksenleri · Kalem davranış motoru · Çoklu çalışma/yetki · Kilitli kartlar (7.1-7.5) · kod: migrations/…seed_sistem_sablon_film_1500.sql · library-service.ts
+`docs/butce/VERGI-MEVZUATI.md` [MUHURLU] — Ödeme statüsü→vergi davranışı · Stopaj · KDV/KDV tevkifatı · KAAPA'ya bağlanış · kod: shared/cfe/cfe.ts
+`docs/butce/PERSONEL-MEVZUATI.md` [MUHURLU] — Görev sınırı/statü cetveli · Motor doktrini (DILIM-3 mühürleri) · Personelin yasal gideri parametre envanteri · kod: shared/cfe/payroll.ts · shared/supabase/payroll-read.ts
+`docs/butce/BUTCE-SEMA-KARARLARI.md` [MUHURLU] — Bütçe göçü/köprü kararları · Şablon body FORMAT+KDV ayrıştırma · KUR-1 çok para birimi mührü · Satır-ekleme/Kalem Kütüphanesi · kod: supabase/migrations/** · shared/supabase/budget-service.ts
+`docs/AUTH-KARARLARI.md` [MUHURLU] — Onboarding/giriş akışı · Davet zinciri · Multi-project desteği · Üyelik yaşam döngüsü · kod: app/auth/** · auth-service.ts · invitation-service.ts · supabase/functions/**
+`docs/butce/KART-GEREKCELERI.md` [MUHURLU] — Çapraz-doğrulama yöntemi · KART 1100/1300/1400/1500/1600 gerekçeleri · Genel eğitim notları · kod: yok
+`docs/RAKIP-ANALIZI-URUN.md` [KAYNAK] — YAMDU · Diğer rakipler · kod: yok
+`docs/RAKIP-ANALIZI-OCR.md` [KAYNAK] — Global/Türkiye firmaları · Bağımsız benchmark verileri · Sektör yaklaşım modelleri · KAAPA çıkarımları/kararlar · kod: yok
+`docs/butce/BUTCE-ARASTIRMA-DURUM.md` [KAYNAK] — Yapılan/önerilen kart listesi · Açık kararlar · 2026 yeni-nesil ihtiyaçlar · Faz 1 bekleyen (kod) · kod: yok
+`docs/butce/KAAPA_damitim_Koster_TUM-BOLUMLER.md` [KAYNAK] — Koster hesap-bazlı prodüksiyon mantığı damıtımı (1100-6400) · KAAPA'ya bağlanış katmanı · kod: yok
+`docs/ORKESTRASYON.md` [AKAN] — Üç platform/GitHub tek kaynak · Deploy akışı (asimetrik) · Edge functions · Secret haritası · kod: supabase/functions/** + deploy zinciri
+`docs/butce/BUTCE-UI-MIMARISI.md` [AKAN] — Eksen zinciri · İlkeler (İ1-İ8) · Hedef dosya haritası · Boy aşımı bölünme bekleyenler · kod: src/app/muhasebe/budget/**
+`docs/TECH-DEBT.md` [AKAN] — Açık borç · Kapatılan borçlar · Bütçe kontrolü · Ödeme merdiveni · kod: yok
+`docs/rakip/YONTEM.md` [AKAN] — Kanıt seviyeleri · İki doktrin kuralı · Boyut ızgarası (42 boyut) · Adres haritası · kod: yok
+`docs/IS-SIRASI.md` [AKAN] — Yapıldı (referans) · Sırada · Backlog · Borçlar · kod: yok
+`docs/ARCHITECTURE.md` [AKAN] — Çalışma sözleşmesi · Vizyon kontrolü · Teknik felsefe · Entropi koruması/mimari yeniden yapılanma · kod: dizin yapısının tamamı (5.3)
+`docs/butce/BUTCE-EKRAN-KARARLARI.md` [AKAN] — Kalem satırı yapısı/statü · Net/Brüt/Yasal Yük · Not mimarisi · Satır ekleme+autocomplete+KLV · kod: budget/components/{item-row,period-row,add-item-panel}.tsx
+`docs/EKRAN-MUHASEBE.md` [AKAN] — Header/tab bar · Dashboard/Bekleyen/Şüpheli/Raporlar · Departman/kategori/kullanıcı yönetimi · Bütçe modülü ekranları (B-serisi) · kod: reviewer-screen.tsx · definitions-screen.tsx · invite-screen.tsx
+`docs/KABUK-KARARLARI.md` [AKAN] — Tasarım tezi · Dört bölge kabuk anatomisi · Sol ray/üst bağlam/sağ referans · Ayrıntı turu kararları · kod: layout/{app-header,bottom-nav}.tsx · authenticated-shell.tsx [PARTIAL] — sol ray ve sağ panel [ABSENT]
+`docs/GLOSSARY.md` [AKAN] — Ana terimler · Alan adlandırma doktrini · Tehlikeli Türkçe kökler · kod: shared/types/domain.ts
+`docs/TASARIM-KARARLARI.md` [AKAN] — Tasarım felsefesi · Kart-merkezli arayüz · Tema/görsel kimlik · Katman sırası/odak göstergesi · kod: styles/tokens.css · shared/theme.ts
+`docs/IS-KURALLARI.md` [AKAN] — Onay zinciri · Fiş status değerleri · Dönem/kapama · Anomali motoru · kod: receipt-service.ts · reviewer-screen.tsx · app/saha/**
+`docs/EKRAN-DEPT.md` [AKAN] — Header/üst yapı · Harcama limiti kartı · Bekleyen tab (onay duvarı) · İstisna izinleri · kod: yok [ABSENT] — dept ekranı yazılmadı
+`docs/EKRAN-SAHA.md` [AKAN] — Giriş akışı · Ana ekran/fiş giriş yolları · OCR sonuç formu · Dönem/arama/mesajlar · kod: app/saha/**
+`CLAUDE.md` [AKAN] — Oturum protokolü · Opus/Sonnet iş bölümü · Prompt zorunlulukları · Doğrulama/karar disiplini · kod: yok
+`CURRENT.md` [AKAN] — Milestone günlüğü · Durum (HEAD/test/build) · Sıradaki iş · Açık kalanlar · kod: yok
 
 ## 8. KRİTİK DOSYALAR
 
