@@ -149,3 +149,18 @@ Bu eksende (bilgi mimarisi / kabuk / gezinme) baska rakip henuz incelenmedi. Ama
 ### 2.2 Kaydi olmayan tur (uyari)
 
 14 Haziran 2026 tarihli "ekran-hissi turu" (Movie Magic Budgeting, Saturation, YNAB — ekranlarin nasil hissettirdigi) CURRENT.md'de YAPILDI diye anilir, ama iceriginin kaydi hicbir dosyada yoktur; arsiv dosyalari dahil arandi, yalniz veri ve katalog tarafindaki bulgular hayatta kalmis. Tur sohbette kalmis ve kaybolmustur. Sonuc: o turun bulgularina "zaten bakmistik" diye guvenilmez, gerekiyorsa yeniden kosulur ve bu dosyaya yazilir.
+
+## 3. MOBIL DESEN TARAMASI (8 Agustos 2026)
+
+KAYNAK UYARISI: asagidaki bulgular ureticilerin kendi pazarlama/karsilastirma sayfalarindan derlendi. Urunler uzerinde BAGIMSIZ GOZLEM YAPILMADI — Yamdu (§1.15) haric. Dogrulanmadan tek basina karar gerekcesi olarak kullanilmaz.
+
+- Saturation: tarayici tabanli, telefonda/iPad'de gerceklesen-butce BAKMA senaryosu.
+- Celtx: mobilde inceleme + hafif duzenleme; tam duzenleme bilgisayarda.
+- Movie Magic Budgeting: masaustu uygulamasi, mobil yok.
+- Wrapbook: mobil = gonder + onayla (puantaj, masraf, fis), butce kurma yok.
+- Yamdu: bkz. §1.15 (gozlemlendi — telefonda alt serit yok, sol ray cekmece olarak acilir).
+- Genel desen: telefon bakma ve onaylama yuzeyi, masaustu kurma yuzeyi.
+
+KAAPA notu: KABUK-KARARLARI bolum 14 (8 Agustos 2026) bu desenle uyumludur.
+
+§2.2 BAGLANTISI: MMB ve Saturation'a 14 Haziran 2026 "ekran-hissi turunda" daha once bakilmis, bulgular hicbir dosyaya yazilmadigi icin kaybolmustu (§2.2). Yukaridaki iki satir o kaybin kismi telafisidir — ayni urunlere ikinci kez bakildi. Ders: tarama bulgusu ayni oturumda bu dosyaya yazilmazsa yok sayilir.

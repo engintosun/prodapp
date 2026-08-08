@@ -281,12 +281,6 @@ Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki
 - KLV DÜZELTMESİ: KLV klavyeyi ZORUNLU kılmaz. Mouse hiç kaldırılmadı; dokunmatik ekranda parmak mouse'un yerine geçer. Telefon kısıtının gerekçesi klavye yokluğu DEĞİL, dar ekranda yanlış hücreye dokunup kalıcı kaydı bozma riskidir.
 - Kabuk sprintinin ihtiyacı: ekranın "telefonda salt-okunur" bayrağını taşıyabilmesi.
 
-**RAKİP EMSALİ (8 Ağustos 2026 araştırması, kaynak: üretici pazarlama sayfaları — bağımsız doğrulama YOK):**
-- Yamdu (RAKIP-ANALIZI-URUN §1.15, gözlemlendi): telefonda alt şerit kurmuyor, aynı sol ray çekmece olarak açılıyor. KAAPA kararıyla uyumlu.
-- Saturation: tarayıcı tabanlı, telefonda/iPad'de gerçekleşen-bütçe BAKMA senaryosu.
-- Celtx: mobilde inceleme + hafif düzenleme; tam düzenleme bilgisayarda.
-- Movie Magic Budgeting: masaüstü uygulaması, mobil yok.
-- Wrapbook: mobil = gönder + onayla (puantaj, masraf, fiş), bütçe kurma yok.
-- Genel desen: telefon bakma ve onaylama yüzeyi, masaüstü kurma yüzeyi.
+RAKİP EMSALİ: mobil desen bulguları için bkz. docs/RAKIP-ANALIZI-URUN.md bölüm 3 (Yamdu mobil turu: §1.15).
 
 Yapımcı rolü: AUTH-KARARLARI SK-AUTH-11.
