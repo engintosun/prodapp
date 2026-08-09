@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { CSSProperties } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import type { Theme } from '../../shared/theme'
 
 interface Props {
@@ -10,6 +10,9 @@ interface Props {
   onToggleTheme: () => void
   onSignOut: () => void
   onSwitchProject?: () => void
+  // Modul anahtari (KABUK-KARARLARI 12.4): en solda durur, yalniz muhasebe/butce
+  // yuzeylerinde gecirilir; saha/dept'te undefined kalir ve hic yer kaplamaz.
+  moduleSwitcher?: ReactNode
 }
 
 export function AppHeader({
@@ -20,6 +23,7 @@ export function AppHeader({
   onToggleTheme,
   onSignOut,
   onSwitchProject,
+  moduleSwitcher,
 }: Props) {
   const [open, setOpen] = useState(false)
   const initial = (userEmail[0] ?? '?').toUpperCase()
@@ -34,12 +38,79 @@ export function AppHeader({
       borderBottom: '1px solid var(--color-border)',
       padding: 'var(--space-3) var(--space-4)',
       display: 'flex',
-      justifyContent: 'space-between',
       alignItems: 'center',
       gap: 'var(--space-3)',
     }}>
 
-      {/* SOL: avatar + dropdown */}
+      {/* MODUL ANAHTARI — en solda, yalniz saglanmissa */}
+      {moduleSwitcher}
+
+      {/* PROJE */}
+      <span style={{
+        flexShrink: 1,
+        fontSize: 'var(--text-md)',
+        fontWeight: 'var(--weight-medium)',
+        color: 'var(--color-text)',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        maxWidth: '260px',
+      }}>
+        {displayName}
+        <span style={{
+          color: 'var(--color-text-muted)',
+          marginLeft: 'var(--space-1)',
+          fontSize: 'var(--text-xs)',
+        }}>▼</span>
+      </span>
+
+      {/* BOSLUK — arama ve mesajlar yeri bu dilimde yalniz ayrilir, oge cizilmez */}
+      <div style={{ flex: 1 }} />
+
+      {/* BILDIRIM */}
+      {/* TODO-SPEC: bildirimler M3 */}
+      <button
+        onClick={() => { /* TODO-SPEC: bildirimler M3 */ }}
+        aria-label="Bildirimler"
+        style={{
+          position: 'relative',
+          flexShrink: 0,
+          background: 'transparent',
+          border: 'none',
+          cursor: 'pointer',
+          color: 'var(--color-text-muted)',
+          minHeight: 'var(--touch-min)',
+          minWidth: 'var(--touch-min)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 0,
+        }}
+      >
+        <BellIcon />
+        {(notificationCount ?? 0) > 0 && (
+          <span style={{
+            position: 'absolute',
+            top: '6px',
+            right: '6px',
+            background: 'var(--color-danger)',
+            color: 'var(--color-primary-text)',
+            borderRadius: 'var(--radius-full)',
+            fontSize: 'var(--text-xs)',
+            fontWeight: 'var(--weight-bold)',
+            minWidth: '18px',
+            height: '18px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '0 4px',
+          }}>
+            {notificationCount}
+          </span>
+        )}
+      </button>
+
+      {/* KULLANICI: avatar + dropdown */}
       <div style={{ position: 'relative', flexShrink: 0 }}>
         {open && (
           <div
@@ -77,7 +148,7 @@ export function AppHeader({
           <div style={{
             position: 'absolute',
             top: 'calc(100% + 8px)',
-            left: 0,
+            right: 0,
             zIndex: 'var(--z-modal)' as unknown as number,
             background: 'var(--color-surface)',
             border: '1px solid var(--color-border)',
@@ -145,68 +216,6 @@ export function AppHeader({
           </div>
         )}
       </div>
-
-      {/* ORTA: proje adi */}
-      <span style={{
-        flex: 1,
-        textAlign: 'center',
-        fontSize: 'var(--text-md)',
-        fontWeight: 'var(--weight-medium)',
-        color: 'var(--color-text)',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-      }}>
-        {displayName}
-        <span style={{
-          color: 'var(--color-text-muted)',
-          marginLeft: 'var(--space-1)',
-          fontSize: 'var(--text-xs)',
-        }}>▼</span>
-      </span>
-
-      {/* SAG: bildirim zili */}
-      {/* TODO-SPEC: bildirimler M3 */}
-      <button
-        onClick={() => { /* TODO-SPEC: bildirimler M3 */ }}
-        aria-label="Bildirimler"
-        style={{
-          position: 'relative',
-          flexShrink: 0,
-          background: 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          color: 'var(--color-text-muted)',
-          minHeight: 'var(--touch-min)',
-          minWidth: 'var(--touch-min)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: 0,
-        }}
-      >
-        <BellIcon />
-        {(notificationCount ?? 0) > 0 && (
-          <span style={{
-            position: 'absolute',
-            top: '6px',
-            right: '6px',
-            background: 'var(--color-danger)',
-            color: 'var(--color-primary-text)',
-            borderRadius: 'var(--radius-full)',
-            fontSize: 'var(--text-xs)',
-            fontWeight: 'var(--weight-bold)',
-            minWidth: '18px',
-            height: '18px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '0 4px',
-          }}>
-            {notificationCount}
-          </span>
-        )}
-      </button>
     </header>
   )
 }

@@ -4,7 +4,7 @@
 // olculen sey HANGI ekranin acildigi ve rol/adres eslesmesi, ekranlarin kendi
 // Supabase davranisi degil (bu dosyada ag istegi atilmaz).
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import type { User } from '@supabase/supabase-js'
 import { ToastProvider } from '../../shared/components/toast'
@@ -83,5 +83,40 @@ describe('AuthenticatedShell — adres semasi (KABUK sprint dilim 1)', () => {
     renderShell('/muhasebe/bekleyen', 'saha')
     const el = await screen.findByTestId('saha-screen')
     expect(el.textContent).toBe('ana')
+  })
+})
+
+describe('AuthenticatedShell — kabuk iskeleti (KABUK sprint dilim 2)', () => {
+  it('muhasebe adresinde sol ray gorunur, alt serit (BottomNav) gorunmez', async () => {
+    renderShell('/muhasebe/bekleyen', 'muhasebe')
+    await screen.findByTestId('reviewer-screen')
+    expect(screen.getAllByRole('navigation')).toHaveLength(1)
+    expect(screen.getByRole('navigation', { name: /gezinmesi/i })).toBeTruthy()
+  })
+
+  it('saha rolunde alt serit gorunur, sol ray gorunmez', async () => {
+    renderShell('/saha/ana', 'saha')
+    await screen.findByTestId('saha-screen')
+    expect(screen.getAllByRole('navigation')).toHaveLength(1)
+    expect(screen.queryByRole('navigation', { name: /gezinmesi/i })).toBeNull()
+  })
+
+  it('modul anahtari butceye gecirince adres /butce olur, ray butce duraklarini gosterir', async () => {
+    renderShell('/muhasebe/bekleyen', 'muhasebe')
+    await screen.findByTestId('reviewer-screen')
+    fireEvent.click(screen.getByRole('link', { name: 'Bütçe' }))
+    await screen.findByTestId('card-table-screen')
+    expect(screen.getByRole('navigation', { name: 'Bütçe gezinmesi' })).toBeTruthy()
+    expect(screen.getByText('Bütçe Girişi')).toBeTruthy()
+    expect(screen.getByText('Tanımlar')).toBeTruthy()
+  })
+
+  it('ince serit her iki modulde de vardir, modul degisince kaybolmaz', async () => {
+    renderShell('/muhasebe/bekleyen', 'muhasebe')
+    await screen.findByTestId('reviewer-screen')
+    expect(screen.getByTestId('thin-context-strip')).toBeTruthy()
+    fireEvent.click(screen.getByRole('link', { name: 'Bütçe' }))
+    await screen.findByTestId('card-table-screen')
+    expect(screen.getByTestId('thin-context-strip')).toBeTruthy()
   })
 })

@@ -11,7 +11,9 @@ import { hasOpenPeriod } from '../../shared/supabase/onboarding-service'
 import { useToast } from '../../shared/components/toast'
 import { Loading } from '../../shared/components/loading'
 import { AppHeader } from '../layout/app-header'
-import { BottomNav, NAV_ITEMS } from '../layout/bottom-nav'
+import { AppShell } from '../layout/app-shell'
+import { BottomNav } from '../layout/bottom-nav'
+import type { ShellModule } from '../layout/nav-rail'
 import { OfflineBanner } from '../../shared/components/offline-banner'
 import { EmptyState } from '../../shared/components/empty-state'
 import { SahaScreen } from '../saha/saha-screen'
@@ -35,27 +37,36 @@ interface RouteEntry {
   key: string
   path: string
   kind: ScreenKind
+  label: string
 }
 
 const SAHA_KEYS = ['ana', 'donem', 'ara', 'mesajlar']
 
-// NAV_ITEMS anahtarlari (bottom-nav.tsx) DEGISMEZ; adres segmenti anahtardan farkli
-// olabilir ("masa" -> /muhasebe/bekleyen) veya modul kokunun disina cikabilir
-// ("butce" -> /butce, ust seviye). Eslesme burada, tek yerde tutulur.
+// Rol adres semasi tek yerde. Muhasebe rolu artik IKI modul tasir (muhasebe +
+// butce, KABUK-KARARLARI bolum 4); modul, /butce ile baslayip baslamamasina
+// gore pathname'den okunur (moduleForPath). Tanimlar dilim 2'de /muhasebe'den
+// /butce'ye tasindi (butce tanimlaridir) — /muhasebe/tanimlar adresi KALKTI.
 const DEPT_ROUTES: RouteEntry[] = [
-  { key: 'bekleyen', path: '/dept/bekleyen', kind: 'reviewer' },
-  { key: 'fisler', path: '/dept/fisler', kind: 'empty' },
-  { key: 'donem', path: '/dept/donem', kind: 'empty' },
+  { key: 'bekleyen', path: '/dept/bekleyen', kind: 'reviewer', label: 'Bekleyen' },
+  { key: 'fisler', path: '/dept/fisler', kind: 'empty', label: 'Fişler' },
+  { key: 'donem', path: '/dept/donem', kind: 'empty', label: 'Dönem' },
 ]
 
 const MUHASEBE_ROUTES: RouteEntry[] = [
-  { key: 'masa', path: '/muhasebe/bekleyen', kind: 'reviewer' },
-  { key: 'donem', path: '/muhasebe/donem', kind: 'empty' },
-  { key: 'rapor', path: '/muhasebe/rapor', kind: 'empty' },
-  { key: 'davet', path: '/muhasebe/davet', kind: 'invite' },
-  { key: 'butce', path: '/butce', kind: 'budget' },
-  { key: 'tanimlar', path: '/muhasebe/tanimlar', kind: 'definitions' },
+  { key: 'bekleyen', path: '/muhasebe/bekleyen', kind: 'reviewer', label: 'Bekleyen' },
+  { key: 'donem', path: '/muhasebe/donem', kind: 'empty', label: 'Dönem' },
+  { key: 'rapor', path: '/muhasebe/rapor', kind: 'empty', label: 'Rapor' },
+  { key: 'davet', path: '/muhasebe/davet', kind: 'invite', label: 'Davet' },
 ]
+
+const BUTCE_ROUTES: RouteEntry[] = [
+  { key: 'butce-girisi', path: '/butce', kind: 'budget', label: 'Bütçe Girişi' },
+  { key: 'tanimlar', path: '/butce/tanimlar', kind: 'definitions', label: 'Tanımlar' },
+]
+
+function moduleForPath(pathname: string): ShellModule {
+  return pathname.startsWith('/butce') ? 'butce' : 'muhasebe'
+}
 
 // Rol-bagimsiz: bu adres UYGULAMANIN herhangi bir yerinde tanimli mi (baska
 // bir rolun adresi olabilir). Bilinmiyorsa "Adres bulunamadi"; biliniyor ama
@@ -64,6 +75,7 @@ function isAnyKnownPath(pathname: string): boolean {
   if (SAHA_KEYS.some((k) => pathname === `/saha/${k}`)) return true
   if (DEPT_ROUTES.some((r) => r.path === pathname)) return true
   if (MUHASEBE_ROUTES.some((r) => r.path === pathname)) return true
+  if (BUTCE_ROUTES.some((r) => r.path === pathname)) return true
   return false
 }
 
@@ -75,8 +87,25 @@ function firstPathForRole(role: UserRole): string {
 
 function pathForKey(role: UserRole, key: string): string {
   if (role === 'saha') return `/saha/${key}`
-  const routes = role === 'dept' ? DEPT_ROUTES : MUHASEBE_ROUTES
-  return routes.find((r) => r.key === key)?.path ?? firstPathForRole(role)
+  return DEPT_ROUTES.find((r) => r.key === key)?.path ?? firstPathForRole(role)
+}
+
+function screenForMatch(
+  match: RouteEntry,
+  role: Extract<UserRole, 'dept' | 'muhasebe'>,
+  projectId: string | undefined,
+  userId: string,
+  searchParams: URLSearchParams,
+): ReactNode {
+  if (match.kind === 'reviewer') return <ReviewerScreen role={role} />
+  if (match.kind === 'invite') return <InviteScreen />
+  if (match.kind === 'definitions') return <DefinitionsScreen projectId={projectId as string} userId={userId} />
+  if (match.kind === 'budget') {
+    const budgetId = searchParams.get('budgetId') ?? undefined
+    const cardId = searchParams.get('cardId') ?? undefined
+    return <CardTableScreen budgetId={budgetId} cardId={cardId} />
+  }
+  return <EmptyState title={match.label} description="Bu ekran yakında (M2.3+)" />
 }
 
 export function AuthenticatedShell({ user, theme, onToggleTheme }: Props) {
@@ -160,10 +189,12 @@ export function AuthenticatedShell({ user, theme, onToggleTheme }: Props) {
     )
   }
 
-  // Rota cozumu tek yerde: adresten hangi ekranin acilacagi ve BottomNav'da hangi
-  // anahtarin vurgulanacagi burada okunur (ic ice ucli operator yerine).
+  // Rota cozumu tek yerde: adresten hangi ekranin acilacagi burada okunur (ic
+  // ice ucli operator yerine). Muhasebe rolu icin ayrica hangi MODULDE
+  // (muhasebe/butce) oldugumuz pathname'den okunur — AppShell/NavRail bunu kullanir.
   const pathname = location.pathname
-  let activeKey = NAV_ITEMS[role][0].key
+  let activeKey = ''
+  let activeModule: ShellModule = 'muhasebe'
   let content: ReactNode
 
   if (role === 'saha') {
@@ -176,30 +207,46 @@ export function AuthenticatedShell({ user, theme, onToggleTheme }: Props) {
     } else {
       content = <EmptyState title="Adres bulunamadı" description={pathname} />
     }
-  } else {
-    const routes = role === 'dept' ? DEPT_ROUTES : MUHASEBE_ROUTES
-    const match = routes.find((r) => r.path === pathname)
+  } else if (role === 'dept') {
+    const match = DEPT_ROUTES.find((r) => r.path === pathname)
     if (match) {
       activeKey = match.key
-      const label = NAV_ITEMS[role].find((i) => i.key === match.key)?.label ?? ''
-      if (match.kind === 'reviewer') {
-        content = <ReviewerScreen role={role} />
-      } else if (match.kind === 'invite') {
-        content = <InviteScreen />
-      } else if (match.kind === 'definitions') {
-        content = <DefinitionsScreen projectId={projectId as string} userId={user.id} />
-      } else if (match.kind === 'budget') {
-        const budgetId = searchParams.get('budgetId') ?? undefined
-        const cardId = searchParams.get('cardId') ?? undefined
-        content = <CardTableScreen budgetId={budgetId} cardId={cardId} />
-      } else {
-        content = <EmptyState title={label} description="Bu ekran yakında (M2.3+)" />
-      }
+      content = screenForMatch(match, role, projectId, user.id, searchParams)
     } else if (isAnyKnownPath(pathname)) {
       content = <Navigate to={firstPathForRole(role)} replace />
     } else {
       content = <EmptyState title="Adres bulunamadı" description={pathname} />
     }
+  } else {
+    activeModule = moduleForPath(pathname)
+    const routes = activeModule === 'butce' ? BUTCE_ROUTES : MUHASEBE_ROUTES
+    const match = routes.find((r) => r.path === pathname)
+    if (match) {
+      content = screenForMatch(match, role, projectId, user.id, searchParams)
+    } else if (isAnyKnownPath(pathname)) {
+      content = <Navigate to={firstPathForRole(role)} replace />
+    } else {
+      content = <EmptyState title="Adres bulunamadı" description={pathname} />
+    }
+  }
+
+  if (role === 'muhasebe') {
+    return (
+      <>
+        <OfflineBanner />
+        <AppShell
+          module={activeModule}
+          userEmail={user.email ?? ''}
+          projectName={projectName}
+          notificationCount={0}
+          theme={theme}
+          onToggleTheme={onToggleTheme}
+          onSignOut={handleSignOut}
+        >
+          {content}
+        </AppShell>
+      </>
+    )
   }
 
   return (
