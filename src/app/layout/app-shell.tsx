@@ -35,6 +35,7 @@ export function AppShell({
       <NavRail module={module} />
       <div style={columnStyle}>
         <AppHeader
+          layout="shell"
           userEmail={userEmail}
           projectName={projectName}
           notificationCount={notificationCount}
