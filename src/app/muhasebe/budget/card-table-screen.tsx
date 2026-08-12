@@ -394,7 +394,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           </tbody>
         </table>
       </div>
-      <div style={{ position: 'sticky', bottom: 0, background: 'var(--color-surface-1)', borderTop: '1px solid var(--color-border)' }}>
+      <div style={{ position: 'sticky', bottom: 0, background: 'var(--color-surface)', borderTop: '1px solid var(--color-border)' }}>
         <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: tableMinWidth, tableLayout: 'fixed' }}>
           <colgroup>
             <col style={{ width: colWidths.kod }} />

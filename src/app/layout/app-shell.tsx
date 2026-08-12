@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import type { Theme } from '../../shared/theme'
+import { useRailCollapsed } from '../../shared/rail-state'
 import { AppHeader } from './app-header'
 import { NavRail } from './nav-rail'
 import type { ShellModule } from './nav-rail'
@@ -30,9 +31,23 @@ export function AppShell({
   onSignOut,
   children,
 }: Props) {
+  const { collapsed, toggleRailCollapsed } = useRailCollapsed()
   return (
     <div style={shellStyle}>
-      <NavRail module={module} />
+      <div style={railColumnStyle}>
+        <div style={railToggleRowStyle}>
+          <button
+            type="button"
+            aria-expanded={!collapsed}
+            aria-label={collapsed ? 'Rayı aç' : 'Rayı kapat'}
+            onClick={toggleRailCollapsed}
+            style={railToggleButtonStyle}
+          >
+            {collapsed ? '»' : '«'}
+          </button>
+        </div>
+        {!collapsed && <NavRail module={module} />}
+      </div>
       <div style={columnStyle}>
         <AppHeader
           layout="shell"
@@ -75,6 +90,39 @@ const shellStyle: CSSProperties = {
   display: 'flex',
   height: '100dvh',
   overflow: 'hidden',
+}
+
+// Daraltma dugmesi rayin degil KABUGUN ogesidir (KABUK-KARARLARI 12.2): rayin
+// USTUNDE, kendi satirinda durur - ray kapaninca NavRail kaybolur ama bu satir
+// aynen kalir, dugme ekranda zipmaz, yalniz masanin acilan alani genisler.
+const railColumnStyle: CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+  flexShrink: 0,
+}
+
+const railToggleRowStyle: CSSProperties = {
+  flexShrink: 0,
+  display: 'flex',
+  alignItems: 'center',
+  padding: 'var(--space-2) var(--space-3)',
+}
+
+const railToggleButtonStyle: CSSProperties = {
+  flexShrink: 0,
+  background: 'transparent',
+  border: 'none',
+  cursor: 'pointer',
+  color: 'var(--color-text-muted)',
+  minHeight: 'var(--touch-min)',
+  minWidth: 'var(--touch-min)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: 0,
+  borderRadius: 'var(--radius-md)',
+  fontSize: 'var(--text-base)',
 }
 
 const columnStyle: CSSProperties = {

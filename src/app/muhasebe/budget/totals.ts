@@ -14,6 +14,8 @@ export interface RowTotals {
 
 export function rowTotals(item: BudgetItemRow, bordro: BordroSheetEntry | undefined): RowTotals {
   const isBordro = item.paymentStatus === 'bordro'
+  // Bordro: motor (deriveBordroFields) kaynak; genel additive/deduction CFE yolu (cfe.ts)
+  // ARTIK CAGRILMAZ (1a borcu - item_burdens skeleton bacaklari null rate tasir).
   const donemler = isBordro ? [] : buildDonemler(item)
   const yukler: Yuk[] = isBordro ? [] : item.burdens.map((b) => ({ ratePercent: b.rate, kind: b.kind }))
   const netToplam = isBordro ? (bordro?.data?.totalNet ?? 0) : netToplamDonemli(donemler)
