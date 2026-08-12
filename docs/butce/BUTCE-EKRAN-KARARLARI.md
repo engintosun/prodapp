@@ -1,6 +1,6 @@
 # KAAPA — BÜTÇE EKRAN & MODEL KARARLARI
 
-**Son güncelleme:** 5 Ağustos 2026
+**Son güncelleme:** 12 Ağustos 2026
 
 ⚠ TERMİNOLOJİ: 2026-07-11 öncesi kayıtlarda Miktar=kişi/adet, Çarpan=süre okunur; sonrasında Miktar=süre, X=kişi/adet (bkz. GLOSSARY tarihçe).
 
@@ -238,12 +238,20 @@ NOT (8 Ağustos 2026): buradaki üç-rol listesi HARCAMA ZİNCİRİ içindir. Ma
 
 **KARARLAŞAN (Engin, 27 Temmuz 2026):** Kartın içinde bir yerde kart-seviyesi toplam rakamı gösterilecek. Bugün YOK — satır bazında Net/Brüt toplam var (§3) ama kartı toplayan rakam hiç yok.
 
-**AÇIK:**
-- Hangi rakam (net / brüt / ikisi)
-- Nerede (tablo altı toplam satırı / kart başlığı / üst bağlam çubuğu)
-- Dönem kırılımı olacak mı
-- Kilitli bütçede davranış
+**KARARA BAĞLANDI (ENGİN KARARI, 12 Ağustos 2026):**
+- **YER:** Masanın ayağına sabitlenmiş şerit (`position: sticky`). Tablo şeridin altından kayar, şerit kıpırdamaz. Sebep: kalem eklerken toplamın hep görünür olması. İnce şeride KONMAZ — üst bağlam "neredeyim" bilgisidir, kart toplamı ekranın içeriğidir (İ4: ekran ≠ kabuk); ayrıca ince şerit kabuk genişliğindedir ve rakamlar kolon başlığını kaybeder.
+- **RAKAMLAR:** Net · Yasal Yük · Brüt, her biri kendi kolonunun altında hizalı. Üçü birlikte durunca toplam kendini açıklar (Net + Yasal Yük = Brüt). Sol uçta yalnız "Kart toplamı" etiketi; rakamlar ayrıca etiketlenmez, kolon başlığı zaten söyler. §6 çift-sayma sınırı korunur: Yasal Yük ikinci kez EKLENMEZ, yalnız gösterilir.
+- **GERÇEKLEŞEN ve FARK ŞERİTTE YOKTUR.** Karşılaştırma icmalin işidir (KABUK-KARARLARI 12.4: bütçe sonu yüzdeleri şeridi masada değil Genel Bütçe icmalindedir). İcmalde kart bazında ayrıntı istenirse orada çıkar.
+- **SEÇİCİ YOKTUR.** Şerit hesap yapmaz, ekranda duran satırları toplar. Süzme geldiğinde (KABUK-KARARLARI 12.4: liste süzme ekrana aittir, her ekranda tablonun üstünde solda) şerit kendiliğinden süzülmüş toplamı gösterir; ayrı bir seçici aynı kararı iki yerde tutmak olurdu.
+- **ŞART:** şerit süzülmüş bir toplam gösteriyorsa bunu açıkça söyler. Emsal: dönem seçicinin kapalı dönem uyarısı. Para tutan ekranda süzülmüş rakamın kart toplamı sanılması kabul edilemez.
+- **BANT SAYISI:** beş yatay bant kabul edildi (kalın şerit · ince şerit · kolon başlığı · [tablo] · toplam şeridi). Toplam şeridi ekranın yoğun yerine değil, zaten sınır olan alt kenara düşer.
+
+**AÇIK KALANLAR (12 Ağustos 2026):**
+- **FİLTRE / KIRILIM:** "bordrolular ne kadar, hazırlık ne kadar" ihtiyacı. Engin'in görüşü: bu, kart toplamı içinde çözülmeli. Bugünkü karar ise şeride seçici koymuyor ve süzmeyi ekranın kendi evine bırakıyor. BU İKİSİ ARASINDA ÇÖZÜLMEMİŞ BİR TANSİYON VARDIR ve filtre turu açıldığında bugünkü karar yeniden masaya gelecektir. (Dönem kırılımı ayrı madde değildir, bu maddenin parçasıdır.)
+- **MÜHÜRLÜ BÜTÇEDE ŞERİDİN DAVRANIŞI:** karara bağlanmadı, MÜHÜR-3 ile birlikte ele alınacak.
 
 **MİRAS ALINAN SINIR:** §6'nın çift-sayma doktrini gereği Yasal Yük kart toplamına ikinci kez EKLENEMEZ (kalem brütünde tek bir kez sayılır, §3/§6). Bu tasarım turunda yeniden tartışılmaz.
 
 **AYRIM (docs/KABUK-KARARLARI.md bölüm 9 ile karıştırılmaz):** KABUK'taki KAPAK RAKAMI önerisi (K2, §19'un "RAKAM YOK" kuralının revizyonu) akrabadır ama AYNI DEĞİLDİR — kapak rakamı kart MASASINDAKİ kart kapaklarına bakar (hangi kart büyük, masaya bakarken yön bulma); bu bölüm AÇIK kartın İÇİNE bakar (o kartın kalemlerini toplayan rakam). K2 kabuğun kararıdır, burada yaşamaz; K2 kabul edildi (6 Ağustos 2026, KABUK-KARARLARI §9) — bu bölümün tasarımı K2 ile birlikte HENÜZ yapılmadı.
+
+**UYGULAMA NOTU:** Yukarıdaki karar KART-TOPLAMI diliminde (12 Ağustos 2026 öncesi) zaten koda geçmişti — `src/app/muhasebe/budget/totals.ts` (saf `rowTotals`/`cardTotals`) ve `card-table-screen.tsx`teki sticky şerit. Bu bölüm o kararı geriye dönük kayda geçirir.

@@ -1,10 +1,12 @@
 # KAAPA — KABUK KARARLARI
 
-**Son güncelleme:** 6 Ağustos 2026
+**Son güncelleme:** 12 Ağustos 2026
 
 *Uygulama kabuğunun (Application Shell) TEK KAYNAĞI. Oluşturma: 4 Ağustos 2026, KABUK tasarım oturumu (Engin + Opus, doküman-only). Girdiler: Engin'in Application Shell metni + KAAPA çalışma masası mockup'ı + Yamdu rakip turu (RAKIP-ANALIZI-URUN) + kilitli ekran kararları (EKRAN-MUHASEBE §18/§19, BUTCE-UI-MIMARISI İ4).*
 
 **Bu dosya mevcut ekran kararlarını DEĞİŞTİRMEZ.** EKRAN-MUHASEBE ve BUTCE-EKRAN-KARARLARI'nda tanımlı ekranlar aynen korunur; buradaki iş o ekranları ortak bir kabuğa yerleştirmek ve aralarındaki gezinmeyi kurmaktır. Tek istisna bölüm 9'dur (kart kapak rakamı) ve o bilinçli bir revizyon önerisidir.
+
+**ENGİN KARARI (4 Ağustos 2026) — mockup'ın statüsü:** KAAPA çalışma masası mockup görseli KABUK turunun girdisidir ve TASARIM DİLİ örneğidir; içeriği, ray duraklarının isimleri ve kart aidiyeti BAĞLAYICI DEĞİLDİR. Bu dosyadaki maddeler mockup'ı değil alınan kararları yansıtır.
 
 **STATÜ OKUMASI:** Her maddenin başında durumu yazılıdır — `KİLİTLİ` (daha önce mühürlenmiş, burada yalnız tekrarlanıyor), `ENGİN ONAYINA SUNULU` (4 Ağustos oturumunda önerildi, kabul/itiraz ALINMADI), `ENGİN KARARI` (bu oturumda Engin söyledi), `AÇIK` (karara bağlanmadı).
 
@@ -73,6 +75,7 @@ Bugünkü "Davet" ekranı hedefte **Kullanıcı** durağının içidir (EKRAN-MU
 
 **ENGİN KARARI — REDDEDİLENLER:**
 - **Kalıcı ikon şeridi (VS Code deseni) YOK.** 4 Ağustos'ta Opus önerdi, aynı oturumda GERİ ÇEKTİ: iki kapı için kalıcı ikon koridoru ihtiyaçtan önce kurulmuş mekanizmadır ve çizimi Yamdu'ya benzeten sebeplerden biriydi. Modül geçişi üst bağlamda tek sade öğedir; ikon şeridi ancak modül sayısı büyüyünce doğar (virtualization gibi, kapısı açık tutulur).
+  - **NOT (ENGİN KARARI, 12 Ağustos 2026):** Bölüm 12.2'deki kapalı-ray ikon dönüşü bu reddi KAPSAMAZ. Reddedilen, ray AÇIKKEN yanında duran İKİNCİ, KALICI bir ikon koridoruydu. 12.2'de dönen yalnız rayın KAPALI hâlinin gösterimi — ray kapanınca duraklar tamamen kaybolmak yerine kendi ikonlarıyla görünüyor. Ret hâlâ yürürlüktedir.
 - **Düz alt alta liste YOK.** Ray ferah yerleşir: nefes alan satır aralığı, tanınabilir işaretler.
 
 **ENGİN KARARI — FERAHLIK YERLEŞİM İŞİDİR, KOZMETİK DEĞİLDİR.** G6 görsel kimlik turuna ertelenemez; kabuk kararlarının içindedir. Kuruluş gerekçesi bu: *"ekranda her an TEK kartın tablosu vardır"* (İ4/İ1), kart masasında kartlar sadedir, kart açılınca masayı kaplar. Masaya az şey gelir, bir anda bir iş yapılır.
@@ -106,6 +109,10 @@ Bugünkü "Davet" ekranı hedefte **Kullanıcı** durağının içidir (EKRAN-MU
 **KİLİTLİ (EKRAN-MUHASEBE §19 son satırı):** CARD-DESK sağ referans paneli = kaynak dosyaların bağlamsal özeti. **Varsayılan kapalıdır.**
 
 **ENGİN KARARI (8 Ağustos 2026) — disiplin:** Panel **aktif ekranın** bağlamıdır, global akış değildir. Mockup'taki "bekleyen onaylar / son işlemler" içeriği Dashboard'ı çoğaltır; panel ikinci bir dashboard olursa aynı bilgi iki yerde senkron tutulmak zorunda kalır. Faz 1 kapsamı: panel iskeleti + boşken kapalı başlama davranışı + yalnız bütçe masasının özeti (kart gerekçesi, katalog, mühür durumu). Muhasebe içerikleri ekran ekran sonra dolar.
+
+**ENGİN KARARI (12 Ağustos 2026) — bu sprintte çizilmez:** Sağ referans dört bölgeden biri olarak KİLİTLİ kalır, yeri ayrılır; ama ilk gerçek sakini doğana kadar öğe konmaz. Emsal: arama ve bildirim (bkz. 12.4) — "basınca hiçbir şey yapmayan kutu konmaz" kuralı sağ referans için de geçerlidir.
+
+**Gerekçe:** Bölge önce kilitlenmiş, içeriği sonra aranmıştır. 12.5'teki post-it'ler panelin SEBEBİ değil, boşluğunun ÇARESİYDİ. Panelin güçlü işi REFERANS'tır — muhasebede fişin kendisi ve bağlamı (`receipts.receipt_image_url` ve `invoice_file_url` şemada VAR ama reviewer ekranında çizilmiyor), bütçede kart gerekçesi + katalog. İlk sakin adayı budur; post-it'ler değil.
 
 ---
 
@@ -212,7 +219,10 @@ Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki
 - Aktif durak KOYU MÜREKKEP TONUNDADIR: zemin rengi almaz, yazısı koyulaşır ve kalınlaşır, sol kenarında ince mürekkep çizgisi belirir. Kural: RENK = DURUM, KOYULUK = KONUM. Aktif durak yeşil değildir.
 - Aktif durak kırmızısını BIRAKMAZ — bir durağa girmek oradaki işi bitirmez.
 - Tazeleme: ekran açılışında ve durağa her girişte. Canlı/sürekli bağlantı YOK.
-- Tanımlar rayın en dibindedir, ayraçtan sonra. Daraltma düğmesi rayın ÜSTÜNDEDİR; basınca ray tamamen kapanır (kısmi daralma yok, simge olmadığı için daralmış rayın gösterecek şeyi yoktur).
+- Tanımlar rayın en dibindedir, ayraçtan sonra.
+- REVİZYON (ENGİN KARARI, 12 Ağustos 2026) — Daraltma düğmesi RAYIN DEĞİL, KABUĞUN öğesidir. Eski madde "Daraltma düğmesi rayın ÜSTÜNDEDİR" diyordu; doğrusu ray sütununun SAĞ ÜST köşesidir — rayın masayla birleştiği kenarın en üstü. Ray kapanınca düğme AYNI EKRAN NOKTASINDA kalır (kapalı sütunun sağ üst köşesi), zıplamaz. Durum localStorage'da hatırlanır (emsal: `shared/theme.ts`'teki `useTheme` deseni).
+- KARAR DÖNÜŞÜ (ENGİN KARARI, 12 Ağustos 2026) — kapalı rayda duraklar İKONLA görünür ve tıklanabilir kalır. Bu maddenin eski hâlindeki "kısmi daralma yok, simge olmadığı için daralmış rayın gösterecek şeyi yoktur" gerekçesi DÜŞMÜŞTÜR — simge yapıldı. Gerekçe: canlı kullanımda bomboş bir kapalı ray kullanılamıyor. (Bu dönüş bölüm 3'ün "kalıcı ikon şeridi YOK" kararını KAPSAMAZ — bkz. bölüm 3 notu.)
+- İKON DİLİ (ENGİN KARARI, 12 Ağustos 2026): hepsi KÂĞITTIR — çizgili föy (içine yazılan form, Bütçe Girişi), sekmeli kart destesi (tanım/katalog, Tanımlar), ayağında kalın toplam çizgisi olan föy (Genel Bütçe), yırtık kenarlı fiş (Gerçekleşen), köşesi kıvrık föy (Raporlar). Tek renk, `currentColor`, elle yazılmış SVG; ikon kütüphanesi kurulmaz (emsal: `app-header.tsx` BellIcon). Tanımlar'da DİŞLİ KULLANILMAZ — dişli marka ayarlarınındır. Yeni durak eklendiğinde sorulacak soru: o durakta hangi kâğıt var.
 - Ray seyrek durur, satırlar nefes alır. Duraklar/çerçeve/kartlar çevresinde çok hafif gölge.
 - Rayın tepesinde modül adı KALIR — rayın başlığıdır, üstteki modül anahtarının tekrarı değildir.
 - Puanlama motoru (yaş × tutar × tip) SONRAKİ DÖNEMLERİN İŞİDİR. Bugün kurulmaz: kalibre edecek gerçek veri yoktur ve adet ≠ önem olduğu için adede göre boyanan çok tonlu skala kullanıcıyı yanlış durağa çağırır. Ray dışarıdan durak başına SAYI + AĞIRLIK alır; bugün ağırlık ikilidir (0 / işaretli), motor gelince aynı yerden gerçek puan gelir ve kabuk değişmez.
@@ -238,12 +248,15 @@ Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki
 - İnce şerit KALIR (tek filmde bütçe tarafında bugün boş görünse de) — ileriye altyapı, modüller arası geçişte zıplama olmaması için.
 - İnce şeritte yol yazısı ("Bütçe / Bütçe Girişi") YOKTUR: sol ray zaten konumu gösterir ve aynı kelime üç kez tekrarlanır.
 - SÜRÜM PİLİ YOKTUR. Kartlar mühürlenmez, kartın sürümü olmaz; sürüm ve mühür Genel Bütçe'nin kavramıdır. Mühürlü bütçenin tam listesi zaten salt-okunur görünür, kart masasını çağırmak anlamsızdır. (İcmalde bölüm başlığına tıklanınca o bölümün kart görünümünün ayrı blok olarak açılması ayrı bir konudur, icmal turunda ele alınır.)
-- "Bölüm" pili YALNIZ dizide görünür; tek film ve reklamda hiç yoktur.
+- REVİZYON (ENGİN KARARI, 12 Ağustos 2026) — "Bölüm" pili İNCE ŞERİDE AİT DEĞİLDİR, ekranın içindedir. Eski konum ima eden madde ("Bölüm" pili YALNIZ dizide görünür; tek film ve reklamda hiç yoktur) yanıltıcıydı. V-SEKMELERİ de aynı şekilde ekranın içindedir: icmaller yan yana dizilir, sekmeler onların ÜSTÜNDE durur. Tam yerleşim sırası geldiğinde kararlaşacak.
 - Muhasebe tarafında ince şeritte dönem seçici bulunur. Kapalı bir döneme geçildiğinde şerit bunu AÇIKÇA söyler (yanlışlıkla kapalı döneme kayıt girilmemesi için). Kapalı döneme erişim istisnadır: late_entry / reopen izinleri, süreli ve gerekçelidir (IS-KURALLARI).
-- KAYDETME DURUMU: ince şeridin sağ ucunda küçük, gri, sessiz bir yazı — yazarken "kaydediliyor", olunca "kaydedildi HH:MM" (öylece kalır), olmazsa "kaydedilemedi" kırmızı ve kalıcı. Gerekçe: kayıt düğmesi olmayan bir ekranda kullanıcının işinin yerine ulaştığını görmesi gerekir; bugün yalnız hata anına çalışan uyarı balonu ve çevrimdışı şeridi vardır, olumlu işaret yoktur. Post-it alanları da bu işareti kullanır, ayrı kaydet düğmesi olmaz.
+- DÜŞTÜ (ENGİN KARARI, 12 Ağustos 2026) — KAYDETME DURUMU maddesi kaldırıldı. Eski madde şöyleydi: *"İnce şeridin sağ ucunda küçük, gri, sessiz bir yazı — yazarken 'kaydediliyor', olunca 'kaydedildi HH:MM' (öylece kalır), olmazsa 'kaydedilemedi' kırmızı ve kalıcı."* Gerekçe: KAAPA belge değil DEFTER modelidir; her hücre kendi işlemidir, kaydedilmemiş bir bütçe hâli oluşmaz. Hata zaten yüksek sesle bildiriliyor (değer eski hâline döner + "Kaydedilemedi" uyarısı), dolayısıyla sessizlik zaten kaydedildi demektir. Ayrıca kalıcı bir "kaydedildi" yazısı bütçedeki TEK gerçek kayıt anını — icmalin mühürlenmesini — gölgeler.
 - YÜKLEME MASANIN İÇİNDE olur; kabuk (ray, şeritler) asla kaybolmaz. Her ekran kendi yükleme biçimini icat etmez.
+- SONUÇ (12 Ağustos 2026): yukarıdaki iki düzeltmeyle ince şeridin bilinen sakinleri şunlara iner: **"‹ Kart adı"** (bütçe, kart masayı kaplayınca) ve **dönem seçici** (muhasebe). Şerit bugün boş kalır, ileriye altyapı olarak durur.
 
 ### 12.5 Sağ referans paneli
+> ERTELENDİ (ENGİN KARARI, 12 Ağustos 2026): panelin kendisi bu sprintte çizilmiyor (bkz. bölüm 6). Aşağıdaki üç post-it kararı DÜŞMEDİ, ertelendi — panel gerçekten kurulduğunda buradan devam edilir. Ek not: genel not ve kişisel not kendi ŞEMASINI ister — bugün bütçe seviyesinde ayrı bir not tablosu YOKTUR, bugünkü notlar `budget_items.internal_note` / `public_note`, yani KALEM seviyesindedir. Bu notların bütçe mühürlenince donup donmayacağı da karara bağlanmamıştır.
+
 - Panelde ÜÇ POST-İT ALANI vardır: (1) kişisel not — yalnız sahibinin gördüğü karalama alanı; (2) genel not — bütçeye ait, yazanı ve zamanı taşır, davetliler görür; (3) üçüncü alan — görevi HENÜZ ATANMAMIŞTIR, yeri ayrılmıştır.
 - Sayı SABİT ÜÇTÜR. Dördüncü kutu ihtiyacı doğarsa panel tasarımı yeniden açılır; ekran kendi kendine kutu eklemez.
 - İçeriği olmayan kutu boş çerçeve olarak çizilmez. Üçü de boşsa panel zaten kapalıdır.

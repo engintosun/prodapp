@@ -1,6 +1,6 @@
 # EKRAN-MUHASEBE.md
 
-**Son güncelleme:** 6 Ağustos 2026
+**Son güncelleme:** 12 Ağustos 2026
 
 Muhasebe rolü ekranları. Dayanıklı katman kayıtlı, kararsız katman açık slot.
 
@@ -84,7 +84,7 @@ Ray (yukarıdan aşağı): ① Genel bütçe ② Bütçe girişi ③ Raporlar �
 
 **Ekran 2 — Bütçe girişi (kart masası):** Etap başlıkları altında sade kartlar (işaret + isim; RAKAM YOK — rakam icmalin işi). [REVİZYON 6 Ağustos 2026: kart KAPAĞINDA brüt-net kart toplamı gösterilir; kart/katalog numarası gösterilmez. Bkz. KABUK-KARARLARI.md 12.3.] Her etap sonunda "+ Kart ekle". Dipte bütçe sonu yüzdeleri satırı (öngörülmeyen + şirket kârı burada düzenlenir). Dizide üst bağlam çubuğunda bütçe seçici (Sezon / Bölüm 1..n). Masaüstü-önerilir.
 
-**Ekran 3 — Kalem tablosu (kart açılınca masayı kaplar):** Başlık: ← Etap · Grup adı. Kolon seti (12, KİLİTLİ — tam liste ve gerekçe: docs/butce/BUTCE-EKRAN-KARARLARI.md bölüm 1). Burada tekrarlanmaz: eski 11'li liste bayatlamıştı ve ilk kolonu "Kod" gösteriyordu, oysa katalog kodu ekranın hiçbir yerinde görünmez. Açıklama + fark açıklaması satır detayında. Şablondan gelen boş kalemler soluk, 0, toplama girmez. Son satır "+ Kalem ekle". Altta toplam şeridi: Net · Brüt · Gerçekleşen · Fark. Enter/Tab akışı. Masaüstü-önerilir.
+**Ekran 3 — Kalem tablosu (kart açılınca masayı kaplar):** Başlık: ← Etap · Grup adı. Kolon seti (12, KİLİTLİ — tam liste ve gerekçe: docs/butce/BUTCE-EKRAN-KARARLARI.md bölüm 1). Burada tekrarlanmaz: eski 11'li liste bayatlamıştı ve ilk kolonu "Kod" gösteriyordu, oysa katalog kodu ekranın hiçbir yerinde görünmez. Açıklama + fark açıklaması satır detayında. Şablondan gelen boş kalemler soluk, 0, toplama girmez. Son satır "+ Kalem ekle". Altta toplam şeridi: Net · Yasal Yük · Brüt (masanın ayağında sabit). Gerçekleşen ve Fark burada DEĞİL, Genel Bütçe icmalindedir. [Karar evi: docs/butce/BUTCE-EKRAN-KARARLARI.md bölüm 18.] Enter/Tab akışı. Masaüstü-önerilir.
 
 Görsel tasarım (renk/tip/işaret seti) ayrı turda — bu tarifler tel kafestir.
 

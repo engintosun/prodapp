@@ -216,9 +216,11 @@ export function AppHeader({
           {/* MODUL ANAHTARI — en solda, yalniz saglanmissa */}
           {moduleSwitcher}
           {project}
-          {/* BOSLUK — arama ve mesajlar yeri bu dilimde yalniz ayrilir, oge cizilmez */}
+          {/* BOSLUK — arama, bildirim ve mesajlar yeri bu dilimde yalniz ayrilir, oge
+              cizilmez (KABUK-KARARLARI 12.4: basinca hicbir sey yapmayan kutu konmaz).
+              Zil (bell) kabuk disi (classic) yerlesimde M3'e kadar kalmaya devam ediyor,
+              burada bilerek cizilmiyor. */}
           <div style={{ flex: 1 }} />
-          {bell}
           {userMenu}
         </>
       ) : (

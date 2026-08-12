@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react'
+import type { ComponentType, CSSProperties } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { BudgetEntryIcon, DefinitionsIcon } from './rail-icons'
 
@@ -8,6 +8,9 @@ interface RailStop {
   key: string
   label: string
   path: string
+  // Kapali rayda gosterilir. Yoksa etiketin ilk harfi duser (bkz RailStopLink) -
+  // muhasebenin dort duragi henuz kendi ikonunu almadi (TECH-DEBT).
+  icon?: ComponentType
 }
 
 interface RailModuleConfig {
@@ -30,8 +33,8 @@ const RAIL_CONFIG: Record<ShellModule, RailModuleConfig> = {
   },
   butce: {
     title: 'Bütçe',
-    stops: [{ key: 'butce-girisi', label: 'Bütçe Girişi', path: '/butce' }],
-    definitions: { key: 'tanimlar', label: 'Tanımlar', path: '/butce/tanimlar' },
+    stops: [{ key: 'butce-girisi', label: 'Bütçe Girişi', path: '/butce', icon: BudgetEntryIcon }],
+    definitions: { key: 'tanimlar', label: 'Tanımlar', path: '/butce/tanimlar', icon: DefinitionsIcon },
   },
 }
 
@@ -49,14 +52,14 @@ export function NavRail({ module, collapsed }: Props) {
       {!collapsed && <div style={titleStyle}>{config.title}</div>}
       <div style={stopsStyle}>
         {config.stops.map((stop) => (
-          <RailStopLink key={stop.key} stop={stop} active={pathname === stop.path} collapsed={collapsed} icon={<BudgetEntryIcon />} />
+          <RailStopLink key={stop.key} stop={stop} active={pathname === stop.path} collapsed={collapsed} />
         ))}
       </div>
       {config.definitions && (
         <>
           <div style={dividerStyle} />
           <div style={stopsStyle}>
-            <RailStopLink stop={config.definitions} active={pathname === config.definitions.path} collapsed={collapsed} icon={<DefinitionsIcon />} />
+            <RailStopLink stop={config.definitions} active={pathname === config.definitions.path} collapsed={collapsed} />
           </div>
         </>
       )}
@@ -64,7 +67,8 @@ export function NavRail({ module, collapsed }: Props) {
   )
 }
 
-function RailStopLink({ stop, active, collapsed, icon }: { stop: RailStop; active: boolean; collapsed: boolean; icon: ReactNode }) {
+function RailStopLink({ stop, active, collapsed }: { stop: RailStop; active: boolean; collapsed: boolean }) {
+  const Icon = stop.icon
   return (
     <Link
       to={stop.path}
@@ -77,7 +81,17 @@ function RailStopLink({ stop, active, collapsed, icon }: { stop: RailStop; activ
         ...(active ? activeStopStyle : {}),
       }}
     >
-      {collapsed ? icon : stop.label}
+      {collapsed ? (
+        Icon ? (
+          <Icon />
+        ) : (
+          <span style={collapsedLetterStyle} aria-hidden="true">
+            {stop.label.charAt(0)}
+          </span>
+        )
+      ) : (
+        stop.label
+      )}
     </Link>
   )
 }
@@ -134,6 +148,19 @@ const collapsedStopStyle: CSSProperties = {
   padding: 'var(--space-2)',
   minWidth: 'var(--touch-min)',
   lineHeight: 'normal',
+}
+
+// Ikonu olmayan durak (TECH-DEBT: muhasebenin dordu) kapali rayda ilk harfle
+// gorunur - ikonla ayni 20x20 kutuda, ayni hizada durur.
+const collapsedLetterStyle: CSSProperties = {
+  width: '20px',
+  height: '20px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontSize: 'var(--text-md)',
+  fontWeight: 'var(--weight-bold)',
+  lineHeight: '20px',
 }
 
 const activeStopStyle: CSSProperties = {
