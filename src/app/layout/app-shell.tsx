@@ -46,7 +46,7 @@ export function AppShell({
             {collapsed ? '»' : '«'}
           </button>
         </div>
-        {!collapsed && <NavRail module={module} />}
+        <NavRail module={module} collapsed={collapsed} />
       </div>
       <div style={columnStyle}>
         <AppHeader
@@ -93,8 +93,11 @@ const shellStyle: CSSProperties = {
 }
 
 // Daraltma dugmesi rayin degil KABUGUN ogesidir (KABUK-KARARLARI 12.2): rayin
-// USTUNDE, kendi satirinda durur - ray kapaninca NavRail kaybolur ama bu satir
-// aynen kalir, dugme ekranda zipmaz, yalniz masanin acilan alani genisler.
+// masayla BIRLESTIGI kenarin en ustunde durur (ray sutununun sag ust kosesi).
+// railToggleRowStyle genislikte NavRail ile ayni sutunu paylasir (align-items:
+// stretch varsayilani + NavRail'in kendi width'i), justifyContent flex-end ile
+// dugme her zaman o sutunun SAG kenarina yaslanir - ray daralinca sutun kendisi
+// daralir, dugme dikisi (rayin masayla birlestigi kenar) takip eder, zipmaz.
 const railColumnStyle: CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
@@ -106,6 +109,7 @@ const railToggleRowStyle: CSSProperties = {
   flexShrink: 0,
   display: 'flex',
   alignItems: 'center',
+  justifyContent: 'flex-end',
   padding: 'var(--space-2) var(--space-3)',
 }
 
@@ -122,7 +126,7 @@ const railToggleButtonStyle: CSSProperties = {
   justifyContent: 'center',
   padding: 0,
   borderRadius: 'var(--radius-md)',
-  fontSize: 'var(--text-base)',
+  fontSize: 'var(--text-xl)',
 }
 
 const columnStyle: CSSProperties = {

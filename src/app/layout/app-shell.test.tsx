@@ -3,7 +3,7 @@
 // localStorage kaliciligini dogrular. AppShell yalitilmis render edilir,
 // AppHeader/NavRail'in kendi ic davranisina dokunulmaz.
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { AppShell } from './app-shell'
 
@@ -77,5 +77,33 @@ describe('AppShell — sol ray daraltma dugmesi', () => {
     } finally {
       Object.defineProperty(window, 'localStorage', { configurable: true, value: original })
     }
+  })
+
+  it('ray kapaliyken durak linkleri DOM da durur ve aria-label ile durak adini tasir', () => {
+    renderShell()
+    fireEvent.click(screen.getByRole('button', { name: 'Rayı kapat' }))
+    const link = screen.getByRole('link', { name: 'Bekleyen' })
+    expect(link).toBeTruthy()
+    expect(link.getAttribute('aria-label')).toBe('Bekleyen')
+  })
+
+  it('ray kapaliyken modul adi basligi gorunmez', () => {
+    renderShell()
+    fireEvent.click(screen.getByRole('button', { name: 'Rayı kapat' }))
+    const nav = screen.getByRole('navigation', { name: 'Muhasebe gezinmesi' })
+    expect(within(nav).queryByText('Muhasebe')).toBeNull()
+  })
+
+  it('ray acikken durak adlari yaziyla gorunur', () => {
+    renderShell()
+    expect(screen.getByText('Bekleyen')).toBeTruthy()
+    expect(screen.getByText('Dönem')).toBeTruthy()
+  })
+
+  it('dugmenin aria-expanded degeri iki durumda da dogru', () => {
+    renderShell()
+    expect(screen.getByRole('button', { name: 'Rayı kapat' }).getAttribute('aria-expanded')).toBe('true')
+    fireEvent.click(screen.getByRole('button', { name: 'Rayı kapat' }))
+    expect(screen.getByRole('button', { name: 'Rayı aç' }).getAttribute('aria-expanded')).toBe('false')
   })
 })

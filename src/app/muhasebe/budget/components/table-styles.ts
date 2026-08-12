@@ -7,7 +7,7 @@ import type { CSSProperties } from 'react'
 // Ad kolonu kalan genisligi alir: colgroup'ta tek minWidth tanimli kolon odur
 // (bkz card-table-screen colgroup). Aciklama sabit genislikte, listenin icinde.
 export const colWidths = {
-  kod: 56,
+  kod: 40,
   statu: 128,
   donemler: 150,
   birim: 88,
