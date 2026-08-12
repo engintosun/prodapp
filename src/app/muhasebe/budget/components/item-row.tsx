@@ -1,10 +1,9 @@
 // BOY: tek iş = kart tablosunun kalem satırı bileşeni (12 kolonluk KİLİTLİ kolon setinin tek satırlık render'ı + bordro/genel ayrımı + dönem-satırı açılımı), sebep = kolon seti kilitli tek bir kontrat; satır render'ı bölünürse kolon hizası iki dosyada ayrı ayrı korunmak zorunda kalır.
 import { memo } from 'react'
-import { netToplamDonemli, brutToplamDonemli, kisiyeBanka } from '../../../../shared/cfe'
-import type { Yuk } from '../../../../shared/cfe'
 import type { BudgetItemRow, StageRow, UnitRow } from '../../../../shared/supabase/budget-service'
-import { fmt, itemHasNote, isMultiPeriod, buildDonemler, summarizeSame, fieldVal, repeatVal, bordroAllowedUnits } from '../format'
+import { fmt, itemHasNote, isMultiPeriod, summarizeSame, fieldVal, repeatVal, bordroAllowedUnits } from '../format'
 import type { ValueWarning } from '../format'
+import { rowTotals } from '../totals'
 import type { EditApi } from '../hooks/use-edit-buffers'
 import type { BordroSheetEntry } from './burden-sheet'
 import { tdStyle, selectTd, numStyle, cellInput, cellInputNum, cellInputEllipsis } from './table-styles'
@@ -53,15 +52,7 @@ export const ItemRow = memo(function ItemRow({
   const addedStageIds = Object.keys(it.periodQty)
   const isBordro = it.paymentStatus === 'bordro'
   const bd = bordro
-  // Bordro: motor (deriveBordroFields) kaynak; genel additive/deduction CFE yolu (cfe.ts)
-  // ARTIK CAGRILMAZ (1a borcu - item_burdens skeleton bacaklari null rate tasir).
-  const donemler = isBordro ? [] : buildDonemler(it)
-  const yukler: Yuk[] = isBordro ? [] : it.burdens.map((b) => ({ ratePercent: b.rate, kind: b.kind }))
-  const netToplam = isBordro ? (bd?.data?.totalNet ?? 0) : netToplamDonemli(donemler)
-  const brutYuk = isBordro ? 0 : brutToplamDonemli(donemler, yukler)
-  const kdvTl = isBordro ? 0 : kisiyeBanka(netToplam, brutYuk, it.vatRate).kdv
-  const brutToplam = isBordro ? (bd?.data?.totalGross ?? 0) : brutYuk + kdvTl
-  const yasalYukTl = brutToplam - netToplam
+  const { net: netToplam, yasalYuk: yasalYukTl, brut: brutToplam } = rowTotals(it, bordro)
   const periodKeys = new Set(addedStageIds)
   const addableStages = stages.filter((s) => !periodKeys.has(s.id))
   const addedStages = stages.filter((s) => periodKeys.has(s.id))

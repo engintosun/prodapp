@@ -8,9 +8,10 @@ import { useEditBuffers } from './hooks/use-edit-buffers'
 import { useGridNavigation } from './hooks/use-grid-navigation'
 import { isMultiPeriod, fmt, matchLibraryItems, buildRoomOptions, findCrossCardMatches } from './format'
 import type { RoomOption } from './format'
+import { cardTotals } from './totals'
 import { addBudgetItem, softDeleteBudgetItem } from '../../../shared/supabase/budget-service'
 import { useToast } from '../../../shared/components/toast'
-import { thStyle, thNum, colWidths, tableMinWidth } from './components/table-styles'
+import { thStyle, thNum, tdStyle, numStyle, colWidths, tableMinWidth } from './components/table-styles'
 import { ItemRow } from './components/item-row'
 import { PeriodRow } from './components/period-row'
 import { BurdenSheet } from './components/burden-sheet'
@@ -260,6 +261,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     setOpenStatusInfo(true)
   }, [])
 
+  const totals = useMemo(() => cardTotals(rows, bordroData), [rows, bordroData])
+
   if (loading) return <Loading label="Bütçe yükleniyor..." />
   if (error) return <ErrorMessage message={error} onRetry={refetch} />
   // D3b-2b: rows.length===0 erken donusu KALDIRILDI - kalemsiz kartta "+ kalem ekle" satirina
@@ -388,6 +391,34 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
               )
             })}
             <AddItemRow disabled={adding} onOpen={onOpenAddPanel} />
+          </tbody>
+        </table>
+      </div>
+      <div style={{ position: 'sticky', bottom: 0, background: 'var(--color-surface-1)', borderTop: '1px solid var(--color-border)' }}>
+        <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: tableMinWidth, tableLayout: 'fixed' }}>
+          <colgroup>
+            <col style={{ width: colWidths.kod }} />
+            <col style={{ minWidth: colWidths.adMin }} />
+            <col style={{ width: colWidths.aciklama }} />
+            <col style={{ width: colWidths.statu }} />
+            <col style={{ width: colWidths.donemler }} />
+            <col style={{ width: colWidths.birim }} />
+            <col style={{ width: colWidths.birimNet }} />
+            <col style={{ width: colWidths.miktar }} />
+            <col style={{ width: colWidths.x }} />
+            <col style={{ width: colWidths.yasalYuk }} />
+            <col style={{ width: colWidths.netToplam }} />
+            <col style={{ width: colWidths.brutToplam }} />
+          </colgroup>
+          <tbody>
+            <tr>
+              <td style={{ ...tdStyle, fontWeight: 600 }} colSpan={9}>
+                Kart toplamı
+              </td>
+              <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.yasalYuk)}</td>
+              <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.net)}</td>
+              <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.brut)}</td>
+            </tr>
           </tbody>
         </table>
       </div>
