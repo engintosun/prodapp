@@ -247,6 +247,9 @@ export const ItemRow = memo(function ItemRow({
           />
         )}
       </td>
+      <td style={{ ...numStyle, fontWeight: 600 }}>
+        <span title={isBordro && bd?.missingNet ? 'Birim Net bekleniyor' : undefined} style={isBordro ? { opacity: 0.55 } : undefined}>{isBordro && bd?.missingNet ? '—' : fmt(netToplam)}</span>
+      </td>
       <td style={numStyle}>
         {/* TD-14 ucuncu duzeltme (2026-07-18): uyari metni yalniz TEK-donemli kalemde (satirin
             kendisi = kalem) gosterilir; COK-donemli kalemde ust/ozet satir HER ZAMAN dogru
@@ -292,9 +295,6 @@ export const ItemRow = memo(function ItemRow({
         ) : (
           '—'
         )}
-      </td>
-      <td style={{ ...numStyle, fontWeight: 600 }}>
-        <span title={isBordro && bd?.missingNet ? 'Birim Net bekleniyor' : undefined} style={isBordro ? { opacity: 0.55 } : undefined}>{isBordro && bd?.missingNet ? '—' : fmt(netToplam)}</span>
       </td>
       <td style={{ ...numStyle, fontWeight: 600 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>

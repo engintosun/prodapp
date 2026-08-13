@@ -289,8 +289,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
             <col style={{ width: colWidths.birimNet }} />
             <col style={{ width: colWidths.miktar }} />
             <col style={{ width: colWidths.x }} />
-            <col style={{ width: colWidths.yasalYuk }} />
             <col style={{ width: colWidths.netToplam }} />
+            <col style={{ width: colWidths.yasalYuk }} />
             <col style={{ width: colWidths.brutToplam }} />
           </colgroup>
           <thead>
@@ -330,8 +330,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
               <th style={thNum}>Birim net</th>
               <th style={thNum}>Miktar</th>
               <th style={thNum}>X</th>
-              <th style={thNum}>Yasal Yük</th>
               <th style={thNum}>Net toplam</th>
+              <th style={thNum}>Yasal Yük</th>
               <th style={thNum}>Brut toplam</th>
             </tr>
           </thead>
@@ -410,8 +410,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
             <col style={{ width: colWidths.birimNet }} />
             <col style={{ width: colWidths.miktar }} />
             <col style={{ width: colWidths.x }} />
-            <col style={{ width: colWidths.yasalYuk }} />
             <col style={{ width: colWidths.netToplam }} />
+            <col style={{ width: colWidths.yasalYuk }} />
             <col style={{ width: colWidths.brutToplam }} />
           </colgroup>
           <tbody>
@@ -419,8 +419,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
               <td style={{ ...tdStyle, fontWeight: 600 }} colSpan={9}>
                 Kart toplamı
               </td>
-              <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.yasalYuk)}</td>
               <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.net)}</td>
+              <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.yasalYuk)}</td>
               <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.brut)}</td>
             </tr>
           </tbody>

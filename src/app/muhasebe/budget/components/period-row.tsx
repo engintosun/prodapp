@@ -124,6 +124,7 @@ export const PeriodRow = memo(function PeriodRow({
           onBlur={() => api.commitPeriod(it.id, s.id)}
         />
       </td>
+      <td style={periodRowNumStyle}>{fmt(donemNet)}</td>
       <td style={periodRowNumStyle}>
         {/* TD-14 ucuncu duzeltme (2026-07-18): cok-donemli kalemde uyari BU donem satirinda
             gosterilir (item-row.tsx ust/ozet satirinda ARTIK gosterilmiyor) - dogru yer sorunlu
@@ -164,7 +165,6 @@ export const PeriodRow = memo(function PeriodRow({
           '—'
         )}
       </td>
-      <td style={periodRowNumStyle}>{fmt(donemNet)}</td>
       <td style={periodRowNumStyle}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
           <span>{fmt(donemBrut)}</span>
