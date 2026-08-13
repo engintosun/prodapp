@@ -394,7 +394,11 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           </tbody>
         </table>
       </div>
-      <div style={{ position: 'sticky', bottom: 0, background: 'var(--color-surface)', borderTop: '1px solid var(--color-border)' }}>
+      {/* Serit zemini tablo kadar genis olmali: sarmalayici blok eleman oldugu icin
+          varsayilan genisligi GORUNUR alan kadardir, tablo ise minWidth ile 1358px'e
+          uzuyordu; aradaki fark boyasiz kalip alttaki satirlarin sizmasina yol aciyordu
+          (13.08.2026). TD-25'ten ayri kusur: orada token yanlisti, burada genislik. */}
+      <div style={{ position: 'sticky', bottom: 0, minWidth: tableMinWidth, background: 'var(--color-surface)', borderTop: '1px solid var(--color-border)' }}>
         <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: tableMinWidth, tableLayout: 'fixed' }}>
           <colgroup>
             <col style={{ width: colWidths.kod }} />
