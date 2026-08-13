@@ -1,22 +1,25 @@
 import type { CSSProperties } from 'react'
 
-// KLV-0: sabit kolon genislik semasi. En kotu durum icerige gore hesaplandi.
-// Tutar kolonlari (yasalYuk/netToplam/brutToplam): sahada yuz milyonlu tutarlar
-// gorulebilir -> "999.999.999,99" (14 karakter) + KUR-1 gelecekteki kur payi.
-// birimNet biraz daha dar (birim fiyat, toplam kadar buyumez).
+// KLV-0 / TD-27 (13 Agustos 2026): sabit kolon genislik semasi — OLCULMUS degerler.
+// Canli olcum (Segoe UI 14px): "999.999.999,99" = 92,1px · "Konaklama/Yemek" = 113,5px.
+// Hucre kutusu: td padding 8+8; input/select ayrica border 1+1 + padding 8+8; select oku ~18px.
+// Tutar kolonlari (yasalYuk/netToplam/brutToplam) 120 = olculen 108,1 + KUR-1 icin tek
+// isaretlik (TL/$/EUR) pay. Para birimi SATIR verisidir (KUR-1 madde 1), o yuzden pay birakildi.
+// statu 128 BILEREK yetersiz: gercek ihtiyac 166, kirpma kabul edildi (Engin karari 13.08.2026).
+// donemler 150: icerigi kullanicinin yazdigi etap adi, en kotu durum turetilemez.
 // Ad kolonu kalan genisligi alir: colgroup'ta tek minWidth tanimli kolon odur
 // (bkz card-table-screen colgroup). Aciklama sabit genislikte, listenin icinde.
 export const colWidths = {
   kod: 40,
   statu: 128,
   donemler: 150,
-  birim: 88,
-  birimNet: 130,
-  miktar: 76,
-  x: 68,
-  yasalYuk: 150,
-  netToplam: 150,
-  brutToplam: 150,
+  birim: 68,
+  birimNet: 116,
+  miktar: 78,
+  x: 58,
+  yasalYuk: 120,
+  netToplam: 120,
+  brutToplam: 120,
   adMin: 220,
   aciklama: 220,
 } as const
