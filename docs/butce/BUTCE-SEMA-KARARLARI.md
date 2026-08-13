@@ -1,6 +1,6 @@
 # KAAPA — BÜTÇE MODÜLÜ ŞEMA & TEKNİK KARARLAR
 
-**Son güncelleme:** 1 Ağustos 2026
+**Son güncelleme:** 13 Ağustos 2026
 
 ⚠ TERMİNOLOJİ: 2026-07-11 öncesi kayıtlarda Miktar=kişi/adet, Çarpan=süre okunur; sonrasında Miktar=süre, X=kişi/adet (bkz. GLOSSARY tarihçe).
 
@@ -88,6 +88,15 @@ Dört parça, dört ev:
 4. Gösterim birimi = ViewMode / rapor katmanı (icmalde tek birim). Emsal: Saturation faz-başına para birimi; MMB currency aracı.
 Refaktöre etkisi (R1'den itibaren): para biçimleme format.ts'te merkezî; satır bileşenlerine TL sembolü gömmek YASAK; fmt imzası ileride currency parametresine açılır.
 NEDEN: sahadaki gerçek senaryo — görüntü yönetmenine dolar, asistanlara TL ödenir, icmal tek para biriminde okunur. Eksen disiplini (veri → katalog → motor → görünüm) bozulmadan karşılanır.
+
+### KUR-1 EK (Engin kararı, 13 Ağustos 2026) — üç katman + bütçe kuru
+- ÜÇ KATMAN. Aynı ada sahip üç AYRI bilgi vardır, biri ötekinin adayı değildir: (1) GİRİLEN para birimi + tutar = SATIR (veri; KUR-1 madde 1 onaylandı). Testi: kartı değiştirsen, bütçeyi kopyalasan bile o anlaşma dolar kalır. (2) HESAP BİRİMİ + BÜTÇE KURU = BÜTÇE. Bunsuz genel toplam alınamaz; KUR-1'de EKSİK olan katman budur. (3) GÖSTERİM BİRİMİ = GÖRÜNÜM (KUR-1 madde 4 onaylandı). Testi: kapatıp açınca kaybolsa kimse bir şey kaybetmez.
+- KART DÜZEYİ VERİ DEĞİLDİR. Yurtdışı çekim bloğu tamamen euro ise kart yeni satırlara euro'yu önceden doldurabilir — bu yalnız VARSAYILAN, gerçek yine satırda kalır. Emsal: kalem kütüphanesindeki "varsayılan statü / varsayılan birim". Bugün gerekmiyor.
+- BÜTÇE KURU rate_catalog DESENİNDEN AYRILIR (KUR-1 madde 2'nin düzeltmesi). Gerekçe: tarihli cetvel MEVZUAT için doğrudur — stopaj yüzdesini yapımcı seçmez, devlet açıklar. Bütçe kuru ise YAPIMCININ kararıdır, genelde piyasa üzeri temkinli tutulur. Tarihli cetvel deseni aynı bütçenin mart kalemini başka, nisan kalemini başka kurla çevirir; bütçe kendi içinde tutarsızlaşır. Bütçe TEK kurla toplanır.
+- GİRİŞTE ÇEVRİLMEZ. Girilen tutar TL'ye çevrilip saklanırsa sözleşme rakamla değiştirilmiş olur: kur oynayınca o TL sessizce yanlışa döner, düzeltilirse bu sefer anlaşma değişmiş olur. Çevrim yalnız BAKARKEN yapılır; B18 gereği çevrilmiş toplam zaten saklanmaz, kuru değiştirip yeniden hesaplama bu sayede bedava gelir.
+- MÜHÜR: belge ile ölçüm ayrılır. Mühür girilen veriyi ve o günkü kuru dondurur — kuruma giden kâğıt odur, değişmez. Aynı mühürlü bütçeye "bugünün kuruyla" bakmak AYRI bir görünümdür, mühürlü rakama DOKUNMAZ. Taslakta kur serbestçe değişir.
+- DIŞ ÇIKTI TEK SATIR GENEL TOPLAM VEREMEZ. Dövizli bir bütçenin dışarıya verilen çıktısı (PDF vb.) kura bağlı kısmı AYRICA gösterir: döviz cinsinden tutarı, kullanılan kuru, o kalemin toplam içindeki payını. Gerekçe sahadan: yatırımcı tek rakam görüp onaylar, kur oynayınca fark istenir; riski hazırlayan bilir, onaylayan bilmez. Bu bir rapor süsü değil, bütçenin dürüstlük şartıdır. Kullanılan kur ve tarihi çıktının üzerinde görünür ("1 USD = X TL, GG.AA.YYYY bütçe kuru").
+- AÇIK KALAN, KARARA BAĞLANMADI: bütçe kuru ile FİİLİ ÖDEME kuru farklıdır; fiş gerçek günün kuruyla düşer, bütçe bütçe kuruyla durur, arada kur farkı oluşur. receipts.currency alanı şemada VAR ama bugün hep 'TRY' yazılıyor. Bütçe-fiili karşılaştırmasında bu farkın sapma mı sayılacağı yoksa ayrı satır mı olacağı hiçbir yerde yazılı değil. Ev: KUR dilimi.
 
 ## SATIR-EKLEME + KALEM KÜTÜPHANESİ (KİLİTLENDİ 2026-07-21, Opus tasarım oturumu)
 

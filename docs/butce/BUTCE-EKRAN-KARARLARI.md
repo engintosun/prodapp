@@ -1,6 +1,6 @@
 # KAAPA — BÜTÇE EKRAN & MODEL KARARLARI
 
-**Son güncelleme:** 12 Ağustos 2026
+**Son güncelleme:** 13 Ağustos 2026
 
 ⚠ TERMİNOLOJİ: 2026-07-11 öncesi kayıtlarda Miktar=kişi/adet, Çarpan=süre okunur; sonrasında Miktar=süre, X=kişi/adet (bkz. GLOSSARY tarihçe).
 
@@ -249,6 +249,7 @@ NOT (8 Ağustos 2026): buradaki üç-rol listesi HARCAMA ZİNCİRİ içindir. Ma
 **AÇIK KALANLAR (12 Ağustos 2026):**
 - **FİLTRE / KIRILIM:** "bordrolular ne kadar, hazırlık ne kadar" ihtiyacı. Engin'in görüşü: bu, kart toplamı içinde çözülmeli. Bugünkü karar ise şeride seçici koymuyor ve süzmeyi ekranın kendi evine bırakıyor. BU İKİSİ ARASINDA ÇÖZÜLMEMİŞ BİR TANSİYON VARDIR ve filtre turu açıldığında bugünkü karar yeniden masaya gelecektir. (Dönem kırılımı ayrı madde değildir, bu maddenin parçasıdır.)
 - **MÜHÜRLÜ BÜTÇEDE ŞERİDİN DAVRANIŞI:** karara bağlanmadı, MÜHÜR-3 ile birlikte ele alınacak.
+- **TABLO PENCEREDEN GENİŞ (13 Ağustos 2026 ölçüm turu).** Şeridin tasarımı doğrudur ve değişmez; sorun tablonun genişliğidir. Ölçüldü: tablo 1358px, kullanılabilir alan ~1169px, Net toplam 1246'da bitiyor. Sığdırma kaldıraçları tükendi (kolon daraltma, ray daraltma, çift-padding temizliği, font ölçüsü — 12px bile 60px getirip yetmiyor). §18'in ince şerit reddi bu turda YENİDEN DOĞRULANDI: "toplamı kart başlığının yanına al" önerisi aynı gerekçeye takıldı (rakamlar kolon başlığını kaybeder) ve GERİ ÇEKİLDİ. Kalan iki yol: donmuş sütun, ya da kolonu ızgaradan çıkarmak (12 kolonluk mühürlü set açılır). Bu madde filtre/kırılım gerilimiyle BİRLİKTE ele alınmalı. Ev: tablo genişlik turu (CURRENT.md sıradaki iş).
 
 **MİRAS ALINAN SINIR:** §6'nın çift-sayma doktrini gereği Yasal Yük kart toplamına ikinci kez EKLENEMEZ (kalem brütünde tek bir kez sayılır, §3/§6). Bu tasarım turunda yeniden tartışılmaz.
 
