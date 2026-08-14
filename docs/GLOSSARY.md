@@ -1,6 +1,6 @@
 # KAAPA — Domain Terimleri Sözlüğü (GLOSSARY)
 
-**Son güncelleme:** 31 Temmuz 2026
+**Son güncelleme:** 14 Ağustos 2026
 **Kural:** Her domain terimi tek İngilizce karşılık alır. Bir terim iki farklı kelimeyle temsil edilmez. Kodda sadece İngilizce karşılık kullanılır.
 
 -----
@@ -91,6 +91,14 @@
 - **Mini istasyon:** serbest kalem eklerken araya giren zorunlu statü+birim seçim adımı. **İPTAL EDİLDİ (2026-07-24)** — yerini hızlı ekleme odası aldı (docs/butce/BUTCE-EKRAN-KARARLARI.md bölüm 16). Terim tarihsel kayıttır, yeni tasarımda kullanılmaz.
 - **DB adlari (D1, 2026-07-23):** kutuphane tablosu = item_library; kanonik kod = budget_items.catalog_code (NOT NULL); kutuphane referansi = budget_items.library_item_id (NULL = serbest kalem).
 - **DB adlari (D2, 2026-07-23):** kart kodu = expense_groups.card_code (NOT NULL); muhtelif sayaci = expense_groups.misc_code_seq; tek-kalem ekleme = fn_add_budget_item (kutuphane/serbest iki mod).
+
+-----
+
+### Kart masası terimleri (14 Ağustos 2026)
+
+- **Katalog:** Olabilecek BÜTÜN kartların listesi. Projeden ve türden bağımsızdır. Kullanıcı doğrudan görmez.
+- **Şablon:** Bir yapım türüne (film / dizi / reklam / belgesel) göre hazırlanmış kart seti. Yeni bütçe açılırken seçilir.
+- **Masa:** Bu projede fiilen açılmış kartlar. Şablon ne getirdiyse odur; ekleme kartıyla büyür.
 
 -----
 

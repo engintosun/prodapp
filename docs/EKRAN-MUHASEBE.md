@@ -1,6 +1,6 @@
 # EKRAN-MUHASEBE.md
 
-**Son güncelleme:** 12 Ağustos 2026
+**Son güncelleme:** 14 Ağustos 2026
 
 Muhasebe rolü ekranları. Dayanıklı katman kayıtlı, kararsız katman açık slot.
 
@@ -82,7 +82,7 @@ Ray (yukarıdan aşağı): ① Genel bütçe ② Bütçe girişi ③ Raporlar �
 
 **Ekran 1 — Genel bütçe (salt okunur icmal):** Üstte görünüm düğmesi: Orijinal | Yürüyen | Gerçekleşen. Tablo: etap satırları (Öngörülen/Gerçekleşen/Fark kolonları); etaba tıklayınca altında harcama grubu satırları açılır. Dipte hesap zinciri (B12): Maliyet toplamı → Öngörülmeyen % → Toplam maliyet → Şirket kârı % (gizlenebilir işaretli) → Genel toplam. Mobil-tam.
 
-**Ekran 2 — Bütçe girişi (kart masası):** Etap başlıkları altında sade kartlar (işaret + isim; RAKAM YOK — rakam icmalin işi). [REVİZYON 6 Ağustos 2026: kart KAPAĞINDA brüt-net kart toplamı gösterilir; kart/katalog numarası gösterilmez. Bkz. KABUK-KARARLARI.md 12.3.] Her etap sonunda "+ Kart ekle". Dipte bütçe sonu yüzdeleri satırı (öngörülmeyen + şirket kârı burada düzenlenir). Dizide üst bağlam çubuğunda bütçe seçici (Sezon / Bölüm 1..n). Masaüstü-önerilir.
+**Ekran 2 — Kart masası:** Tek akış, etap/dönem başlığı yok. Kartlar ızgarada dizilir, çek-bırak ile taşınır, diziliş kişiye özeldir. Kapak: işaret + kart adı + tek rakam (net toplam); kart/katalog numarası görünmez. Şablonun bütün kartları masada serili gelir. Masanın en sonunda, diğer kartlarla aynı biçimde bir ekleme kartı durur. Bütçe sonu yüzdeleri (Öngörülmeyen %, Şirket Kârı %) masada DEĞİL, Genel Bütçe icmalindedir. (Düzeltme 14 Ağustos 2026, Engin — KABUK-KARARLARI 12.3 ile hizalandı.) [REVİZYON 6 Ağustos 2026, düzeltildi 14 Ağustos 2026: kart KAPAĞINDA tek rakam: net toplam gösterilir; kart/katalog numarası gösterilmez. Bkz. KABUK-KARARLARI.md 12.3.] Dizide üst bağlam çubuğunda bütçe seçici (Sezon / Bölüm 1..n). Masaüstü-önerilir.
 
 **Ekran 3 — Kalem tablosu (kart açılınca masayı kaplar):** Başlık: ← Etap · Grup adı. Kolon seti (12, KİLİTLİ — tam liste ve gerekçe: docs/butce/BUTCE-EKRAN-KARARLARI.md bölüm 1). Burada tekrarlanmaz: eski 11'li liste bayatlamıştı ve ilk kolonu "Kod" gösteriyordu, oysa katalog kodu ekranın hiçbir yerinde görünmez. Açıklama + fark açıklaması satır detayında. Şablondan gelen boş kalemler soluk, 0, toplama girmez. Son satır "+ Kalem ekle". Altta toplam şeridi: Net · Yasal Yük · Brüt (masanın ayağında sabit). Gerçekleşen ve Fark burada DEĞİL, Genel Bütçe icmalindedir. [Karar evi: docs/butce/BUTCE-EKRAN-KARARLARI.md bölüm 18.] Enter/Tab akışı. Masaüstü-önerilir.
 

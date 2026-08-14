@@ -147,15 +147,15 @@ Bu üçü varsa Tab Manager yarın kabuğa eklenir, ekranlara dokunulmaz. Sprint
 
 > KARARA BAĞLANDI (6 Ağustos 2026): kartın yüzeyinde brüt-net kart toplamı bulunur; kart/katalog numarası görünmez. Ayrıntı bölüm 12.3'tedir. Brüt ve netten birinin düşürülmesi açık kalmıştır.
 
-**KARARA BAĞLANDI (K2).** Brüt ve netten birinin düşürülüp düşürülmeyeceği AÇIK kalmıştır (bkz. üstteki blockquote).
-
 **Bugünkü kilitli kural (§19, 12 Haziran 2026):** Kart masasında kartlar sadedir — *"işaret + isim; RAKAM YOK — rakam icmalin işi"*.
 
 **Engin itirazı (4 Ağustos):** Her bütçe kartının üstünde özet rakam olmalı.
 
 **Teşhis:** İki AYRI ihtiyaç var ve kilitli karar ikisini "ya hep ya hiç" diye karşı karşıya koymuş. **Çalışırken sükûnet** (kilitli kararın koruduğu) ve **bakarken yön bulma** (yapımcı masaya baktığında ağırlığı görmek ister: hangi kart büyük, para nerede). İkincisi icmale sürgün edilmiş — sık yapılan bir iş için fazladan bir yol.
 
-**Öneri — KAPAK RAKAMI:** Her kartın üstünde **tek, sessiz rakam**: brüt toplam, küçük, soluk, köşede. Klasör kapağına kurşun kalemle yazılmış toplam gibi. Sadece o.
+**KARAR (14 Ağustos 2026, Engin):** Kapakta TEK rakam durur, o da NET toplamdır. Rakamın net olduğu kapakta BELİRTİLİR (nasıl belirtileceği çizim anında kararlaşır). Bölüm 9'un brüt önerisi düşmüştür.
+
+**KAPI AÇIK:** Koşullar değişirse brüt ve/veya yasal yük kapağa eklenebilir. Bugün girmez.
 
 **Kapsam dışı (bilinçli):** istatistik yok, progress bar yok, fark rengi yok, gerçekleşen yok. Gerekçe: fark ve gerçekleşen kartın üstüne çıkarsa masa rapora döner ve ferahlık ölür. O iş icmalin işidir. **Rakam kartta bilgidir; masada matematik yapılmaz.** Bir rakam sükûneti bozmaz, dört rakam bozar.
 
@@ -230,7 +230,7 @@ Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki
 
 ### 12.3 Kart masası
 - Masa TEK AKIŞTIR. Etap/dönem başlığı YOKTUR — kartlar dönemle dizilmez; dönem kalem seviyesinde yaşar.
-- Kart kapağında: kart adı + brüt-net kart toplamı. Kart veya katalog NUMARASI hiçbir yerde görünmez (BUTCE-SEMA-KARARLARI ve BUTCE-EKRAN-KARARLARI'ndaki kayıtlı kural aynen geçerlidir).
+- Kart kapağında: işaret + kart adı + tek rakam (net toplam). Kart veya katalog NUMARASI hiçbir yerde görünmez (BUTCE-SEMA-KARARLARI ve BUTCE-EKRAN-KARARLARI'ndaki kayıtlı kural aynen geçerlidir).
 - REVİZYON — bölüm 9 (K2) karara bağlandı: kartın yüzeyinde toplam BULUNUR. Böylece EKRAN-MUHASEBE §19'daki "işaret + isim; RAKAM YOK" ifadesi kart kapağı için geçersizdir. Brüt ve netten birinin düşürülüp düşürülmeyeceği AÇIK KALMIŞTIR.
 - Karta tıklanınca kart masayı kaplar. Dönüş iki yoldan: üst ince şeritteki "‹ Kart adı" ve sol raydaki durak. Esc BAĞLANMAZ (Esc hücrede eski değeri geri getirir, KLV).
 - Kartlar ilk açılışta kod sırasında gelir; kullanıcı istediği kartı istediği yere taşıyabilir. Diziliş KİŞİYE ÖZELDİR — davetli kendi görebildiği kartları kendi düzeninde görür, başkasının masasını etkilemez.
@@ -241,6 +241,22 @@ Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki
 - Kart sayısı artınca kart küçülmez; masa aşağı uzar ve kaydırılır.
 - Kart ekleme: masanın EN SONUNDA, diğer kartlarla AYNI biçimde duran bir ekleme kartı. Basınca ortada seçim odası açılır (kalem eklemedeki düzenin aynısı), katalogdan masada olmayan kartlar listelenir, seçilen kart masada doğar. SERBEST (katalog dışı, kullanıcının adlandırdığı) KART FAZ 1'DE YOKTUR. Serbest KART değerlendirmesi tüm kartlar ve kalemler hazırlandıktan sonra yapılacaktır. Serbest KALEM bu kapsamda DEĞİLDİR — D3c ile yapıldı ve canlıdır (1 Ağustos 2026). Ekleme kartı, işlem gerçekten çalışır olmadan çizilmez.
 - Bütçe sonu yüzdeleri şeridi (Öngörülmeyen %, Şirket Kârı %) masada DEĞİL, Genel Bütçe icmalindedir.
+
+**MASA — KARARLAR (14 Ağustos 2026, Engin)**
+- Masa TEK AKIŞTIR; etap/dönem başlığı YOKTUR. (Teyit.)
+- Diziliş IZGARA'dır. Sabit değildir: kartlar çek-bırak ile taşınır. Diziliş KİŞİYE ÖZELDİR.
+- Şablonun BÜTÜN kartları masaya serilir; çekirdek alt küme DEĞİL. Gerekçe: daha önce bütçe hazırlamamış kullanıcı neye ihtiyacı olduğunu bilmez, keşif sükûnetin önüne geçer. Bu, "masaya az şey gelir" ilkesiyle BİLİNÇLİ bir gerilimdir ve keşif lehine çözülmüştür.
+- Kapak öğeleri: İŞARET + KART ADI + TEK RAKAM (net). Başka öğe yoktur.
+- İşaret KART BAŞINADIR ve o kartın içeriğine uygundur.
+- TEK HESAP İKİ YÜZEY: Kapaktaki net, kart açılınca toplam şeridinde görünen netin AYNISIDIR. İkinci bir tanım yoktur. (Çapraz: BUTCE-EKRAN-KARARLARI bölüm 18.)
+- EKLEME KARTI — Faz 1 kapsamı: Yalnız BAŞKA ŞABLONLARDA bulunan kartı bu masaya çağırır. Serbest (katalog dışı, kullanıcının adlandırdığı) kart Faz 1'de YOKTUR; mevcut koşul aynen geçerlidir: "tüm kartlar ve kalemler hazırlandıktan sonra". Faz numarası VERİLMEZ, koşul geçerlidir.
+- SİLME: Kullanıcının masaya eklediği kartlar silinebilir. Şablondan doğan kart silinmez.
+- İCMAL SEÇİMİ: Kullanıcı hangi kartın icmale gireceğini belirler. İşaretsiz kart KAPSAM DIŞIDIR — parası genel toplama GİRMEZ.
+- KONTROL İCMALDE, İZ MASADA: İşaretleme Genel Bütçe icmalinde yapılır. Kapsam dışı kart masada soluk/işaretli görünür; kapağı yalan söylemez. Emsal: BUTCE-EKRAN-KARARLARI bölüm 18'in "süzülmüş toplamı açıkça söyle" şartı.
+- İKİ EKSEN KARIŞMAZ: İcmal seçimi = KAPSAM (toplama girer mi). Silme = VARLIK (masada durur mu). Ayrı şeylerdir, birbirinin yerine geçmez.
+- Masa, sol raydaki "Bütçe Girişi" durağının İÇİDİR. Rayda ayrı "kart masası" durağı yoktur.
+
+**ÇELİŞKİ KAPANIŞI (14 Ağustos 2026, Engin):** EKRAN-MUHASEBE bölüm 19 Ekran 2 ile üç çelişki KABUK lehine kapatılmıştır — tek akış, ekleme kartının yeri, bütçe sonu yüzdelerinin icmalde olması. EKRAN-MUHASEBE bu turda düzeltilmiştir.
 
 ### 12.4 Üst bağlam
 - KABUK HER MODÜLDE BİREBİR AYNIDIR. Modüle göre değişen yalnız iki şeydir: rayın durakları ve ince şeridin içeriği. Bölge sırası, yükseklik ve yerleşim değişmez; modül geçişinde ekran zıplamaz.
