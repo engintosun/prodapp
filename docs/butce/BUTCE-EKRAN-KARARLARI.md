@@ -1,6 +1,6 @@
 # KAAPA — BÜTÇE EKRAN & MODEL KARARLARI
 
-**Son güncelleme:** 13 Ağustos 2026
+**Son güncelleme:** 14 Ağustos 2026
 
 ⚠ TERMİNOLOJİ: 2026-07-11 öncesi kayıtlarda Miktar=kişi/adet, Çarpan=süre okunur; sonrasında Miktar=süre, X=kişi/adet (bkz. GLOSSARY tarihçe).
 
@@ -250,6 +250,8 @@ NOT (8 Ağustos 2026): buradaki üç-rol listesi HARCAMA ZİNCİRİ içindir. Ma
 - **FİLTRE / KIRILIM:** "bordrolular ne kadar, hazırlık ne kadar" ihtiyacı. Engin'in görüşü: bu, kart toplamı içinde çözülmeli. Bugünkü karar ise şeride seçici koymuyor ve süzmeyi ekranın kendi evine bırakıyor. BU İKİSİ ARASINDA ÇÖZÜLMEMİŞ BİR TANSİYON VARDIR ve filtre turu açıldığında bugünkü karar yeniden masaya gelecektir. (Dönem kırılımı ayrı madde değildir, bu maddenin parçasıdır.)
 - **MÜHÜRLÜ BÜTÇEDE ŞERİDİN DAVRANIŞI:** karara bağlanmadı, MÜHÜR-3 ile birlikte ele alınacak.
 - **TABLO PENCEREDEN GENİŞ (13 Ağustos 2026 ölçüm turu).** Şeridin tasarımı doğrudur ve değişmez; sorun tablonun genişliğidir. Ölçüldü: tablo 1358px, kullanılabilir alan ~1169px, Net toplam 1246'da bitiyor. Sığdırma kaldıraçları tükendi (kolon daraltma, ray daraltma, çift-padding temizliği, font ölçüsü — 12px bile 60px getirip yetmiyor). §18'in ince şerit reddi bu turda YENİDEN DOĞRULANDI: "toplamı kart başlığının yanına al" önerisi aynı gerekçeye takıldı (rakamlar kolon başlığını kaybeder) ve GERİ ÇEKİLDİ. Kalan iki yol: donmuş sütun, ya da kolonu ızgaradan çıkarmak (12 kolonluk mühürlü set açılır). Bu madde filtre/kırılım gerilimiyle BİRLİKTE ele alınmalı. Ev: tablo genişlik turu (CURRENT.md sıradaki iş).
+
+  **KAPANDI (Engin kararı, 14 Ağustos 2026 — KOLON TAKASI).** Çözüm iki yoldan biri değil, üçüncü bir yoldu: Yasal Yük ile Net toplam kolonları YER DEĞİŞTİRDİ. Yeni sıra: ... Miktar · X · **Net toplam · Yasal Yük · Brüt toplam**. Ölçüm: Net toplam artık 1246 yerine 1134'te bitiyor, kullanılabilir alan 1169 — sol ray AÇIKKEN bile 35px payla görünür; ray kapatmaya gerek yok. Kolon genişlikleri, punto, padding, kolon SAYISI değişmedi; 12 kolonluk mühürlü sete dokunulmadı. Donmuş sütun (a) ve kolonu ızgaradan çıkarmak (b) yollarının ikisi de KAPANDI: (b) tek başına hedefe varmıyordu (1358−112=1246, hedef 1169 — 77px açık kalıyordu ve kapatmak için Ad ya da Açıklama'yı, yani iki asgari genişlikli metin kolonundan birini götürmek gerekiyordu). Rakip turu bulgusu (14 Ağustos): Movie Magic detay ızgarası da sığdırmıyor, çiviliyor — Subtotal kolonunu sabitliyor ve gölgeyi YALNIZ kayarken gösteriyor; ama MMB TEK kolon çiviliyor ve ızgarasına 1235px ayırıyor (pencere 1799, sağ panel 540). Punto farkı YOK: MMB ızgarası ölçüldü, ~14px — bizimkiyle aynı. Fark pencere payında ve kolon sayısında. **YAN KAZANÇ:** yukarıdaki RAKAMLAR maddesi şeridin sırasını "Net · Yasal Yük · Brüt" diye yazıyordu ("Net + Yasal Yük = Brüt kendini açıklar" gerekçesiyle), kod ise Yasal Yük · Net · Brüt basıyordu — doküman ile kod arasındaki bu uyuşmazlık takasla KAPANDI, ikisi artık aynı sırada. **AÇIK KALAN:** filtre/kırılım gerilimi bu turda ele ALINMADI, aynen açık duruyor. Geniş ekran davranışı ayrı bir konudur ve TECH-DEBT TD-30'a yazıldı (artan boşluk tek kolona akıyor). Commit: 9f3c0f5.
 
 **MİRAS ALINAN SINIR:** §6'nın çift-sayma doktrini gereği Yasal Yük kart toplamına ikinci kez EKLENEMEZ (kalem brütünde tek bir kez sayılır, §3/§6). Bu tasarım turunda yeniden tartışılmaz.
 
