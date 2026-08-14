@@ -1,7 +1,7 @@
 # KAAPA Rakip Analizi — Yapim Yonetimi Yazilimlari (Urun / Bilgi Mimarisi)
 
 **Tarih:** 4 Agustos 2026
-**Son güncelleme:** 4 Ağustos 2026
+**Son güncelleme:** 14 Ağustos 2026
 **Amac:** Rakip yazilimlarin bilgi mimarisi, kabuk/gezinme yapisi, yetki modeli ve butce yaklasimi; KAAPA icin alinacak ve kacinilacak desenler.
 **Kapsam notu:** Bu dosya URUN ve EKRAN mimarisi eksenidir. Harcama/OCR ekseni ayri dosyada: docs/RAKIP-ANALIZI-OCR.md.
 **Yontem:** Kaynak kodlar kapali. Inceleme kod okuma degil DAVRANIS ve VERI MODELI incelemesidir: deneme surumu, ekran goruntusu turu, yardim metinleri.
@@ -148,7 +148,13 @@ Bu eksende (bilgi mimarisi / kabuk / gezinme) baska rakip henuz incelenmedi. Ama
 
 ### 2.2 Kaydi olmayan tur (uyari)
 
-14 Haziran 2026 tarihli "ekran-hissi turu" (Movie Magic Budgeting, Saturation, YNAB — ekranlarin nasil hissettirdigi) CURRENT.md'de YAPILDI diye anilir, ama iceriginin kaydi hicbir dosyada yoktur; arsiv dosyalari dahil arandi, yalniz veri ve katalog tarafindaki bulgular hayatta kalmis. Tur sohbette kalmis ve kaybolmustur. Sonuc: o turun bulgularina "zaten bakmistik" diye guvenilmez, gerekiyorsa yeniden kosulur ve bu dosyaya yazilir.
+EKRAN-HİSSİ TURU — BULUNDU (14 Haziran 2026; kayıt: claude.ai/chat/842c8657). Önceki not turun kaybolduğunu söylüyordu, yanlıştı. Turun bulguları:
+- Movie Magic Budgeting: sektör standardı. Açılışta anahat + satır satır hesaplar, kat kat detay. Ekran, doldurulacak bir tablo duvarıdır.
+- Saturation: bulut tabanlı, daha temiz; omurga aynı — satır tablosu, departmanlar alt alta, hepsi tek ekranda.
+- YNAB: hissin ödünç alındığı yer — kategori-önce, sade, kurs gerektirmeyen. Şerh: YNAB de aslında bir liste/tablodur.
+- Sonuç: yapı rakiplerden (departman/kategori), giriş hissi onlardan DEĞİL. Kart masasının en yakın akrabası bir bütçe yazılımı değil, telefon uygulamasının ana ekranıdır.
+- Kayda geçen takas: tablo duvarı ağır toplu girişte işe yarar; kart odak ve sakinlik verir ama "hepsi tek ekranda"yı feda eder. O gün "hızlı toplu ekleme kolaylığı bir köşede tutulmalı" diye not düşülmüştü — bu endişe D3b hızlı ekleme yüzeyiyle KARŞILANMIŞTIR.
+- Kapak rakamına etkisi: kart masası SIFIR rakamla doğmuştur (12 Haziran 2026 wireframe onayı: "sade kartlar — işaret + isim, rakam yok"). Tek rakama çıkış, 4 Ağustos itirazıyla verilmiş bir tavizdir; üçe çıkarmak top sheet'i masaya geri kurmak olurdu.
 
 ## 3. MOBIL DESEN TARAMASI (8 Agustos 2026)
 

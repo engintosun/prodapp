@@ -145,7 +145,7 @@ Bu üçü varsa Tab Manager yarın kabuğa eklenir, ekranlara dokunulmaz. Sprint
 
 ## 9. KART KAPAK RAKAMI — §19 REVİZYON ÖNERİSİ
 
-> KARARA BAĞLANDI (6 Ağustos 2026): kartın yüzeyinde brüt-net kart toplamı bulunur; kart/katalog numarası görünmez. Ayrıntı bölüm 12.3'tedir. Brüt ve netten birinin düşürülmesi açık kalmıştır.
+> KARARA BAĞLANDI (6 Ağustos 2026): kartın yüzeyinde toplam bulunur; kart/katalog numarası görünmez. Ayrıntı bölüm 12.3'tedir. REVİZE (14 Ağustos 2026): kapakta TEK rakam durur, o da NET toplamdır — aşağıdaki karara bakınız.
 
 **Bugünkü kilitli kural (§19, 12 Haziran 2026):** Kart masasında kartlar sadedir — *"işaret + isim; RAKAM YOK — rakam icmalin işi"*.
 
@@ -231,7 +231,7 @@ Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki
 ### 12.3 Kart masası
 - Masa TEK AKIŞTIR. Etap/dönem başlığı YOKTUR — kartlar dönemle dizilmez; dönem kalem seviyesinde yaşar.
 - Kart kapağında: işaret + kart adı + tek rakam (net toplam). Kart veya katalog NUMARASI hiçbir yerde görünmez (BUTCE-SEMA-KARARLARI ve BUTCE-EKRAN-KARARLARI'ndaki kayıtlı kural aynen geçerlidir).
-- REVİZYON — bölüm 9 (K2) karara bağlandı: kartın yüzeyinde toplam BULUNUR. Böylece EKRAN-MUHASEBE §19'daki "işaret + isim; RAKAM YOK" ifadesi kart kapağı için geçersizdir. Brüt ve netten birinin düşürülüp düşürülmeyeceği AÇIK KALMIŞTIR.
+- REVİZYON — bölüm 9 (K2) karara bağlandı: kartın yüzeyinde toplam BULUNUR. Böylece EKRAN-MUHASEBE §19'daki "işaret + isim; RAKAM YOK" ifadesi kart kapağı için geçersizdir. Kaç rakam duracağı 14 Ağustos 2026'da karara bağlanmıştır: tek rakam, net.
 - Karta tıklanınca kart masayı kaplar. Dönüş iki yoldan: üst ince şeritteki "‹ Kart adı" ve sol raydaki durak. Esc BAĞLANMAZ (Esc hücrede eski değeri geri getirir, KLV).
 - Kartlar ilk açılışta kod sırasında gelir; kullanıcı istediği kartı istediği yere taşıyabilir. Diziliş KİŞİYE ÖZELDİR — davetli kendi görebildiği kartları kendi düzeninde görür, başkasının masasını etkilemez.
 - Masadaki diziliş GENEL BÜTÇE'Yİ ETKİLEMEZ. İcmal sırası sabittir ve kod sırasındadır; ATL/BTL ayrımı kod prefiksinde yaşadığı için icmalin sabit sırası o ayrımı korur. Masa çalışma alanıdır, sunum yüzeyi değildir.
@@ -288,7 +288,6 @@ Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki
 - Departman, kategori, kullanıcı yönetimi ve bütçe limitlerinin yeri
 - Marka/şirket ayarlarının yeri (v8'de üst seviyede ayrı pencereydi)
 - "Gerçekleşen" ekranının hangi modülde yaşayacağı (muhasebe ile bütçe aynı veriye iki dilden bakıyor)
-- Kart kapağında brüt ve netten biri düşecek mi
 - Kart açıkken kabuğun davranışı (ray, panel, klavyeyle kesintisiz yazma)
 - Boş masa / ilk giriş durumları
 - Modüller arası geçişte masa neyi hatırlar (Bütçe'den Muhasebe'ye geçip dönünce aynı kartta mı)
