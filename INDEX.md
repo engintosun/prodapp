@@ -1,6 +1,6 @@
 # KAAPA — INDEX.md
 
-**Son guncelleme:** 14 Agustos 2026
+**Son guncelleme:** 15 Agustos 2026
 
 ## INDEX STATUS RULE
 
@@ -24,7 +24,7 @@ varsayim yapilmaz.
 - Stack: React 19.2.6 + TypeScript 6.0.2 + Vite 8.0.12 (PWA) · Supabase (PostgreSQL, AWS İstanbul, KVKK) · Vercel deploy.
 - Mimari katman ayrımı (ARCHITECTURE 5.2/5.3): veri (`shared/supabase/*-service.ts`, Supabase SDK doğrudan) → iş mantığı (saf fonksiyon, `shared/cfe/`) → UI (rol-bazlı `app/{rol}/` ekranları) → orkestrasyon (`*-screen.tsx`).
 - Dizin ilkesi: ekranlar role göre (`saha/dept/muhasebe/reviewer/onboarding/auth/layout`), ortak kod `shared/` altında (özellik-bazlı değil).
-- Ölçü: 73 kaynak dosya (`src/**/*.ts,tsx`) · 30 migration (baseline + 29 sonraki göç) · 3 edge function · 9 test dosyası, 278 test.
+- Ölçü: 74 kaynak dosya (`src/**/*.ts,tsx`) · 37 migration (baseline + 36 sonraki göç) · 3 edge function · 10 test dosyası, 286 test.
 - Canlı şema tek kaynağı `supabase/migrations/00000000000000_baseline.sql`: 39 tablo · 101 RLS policy · 25 trigger · 17 fonksiyon.
 
 ## 2. KOD HARİTASI
@@ -151,7 +151,7 @@ Edge functions (`supabase/functions/`):
 `clear-claims/index.ts` (44) — çıkışta app_metadata claim'lerini temizler
 `set-claims/index.ts` (65) — proje seçiminde app_metadata'ya project_id/role/dept_id yazar
 
-`supabase/migrations/` — 28 goc (baseline haric), kronolojik. baseline = BAYAT taban; guncel sema = baseline + sonraki tum gocler. Gocleri okurken kronolojik oku, yalniz baseline'a guvenme. Kararlari: docs/butce/BUTCE-SEMA-KARARLARI.md
+`supabase/migrations/` — 36 goc (baseline haric), kronolojik. baseline = BAYAT taban; guncel sema = baseline + sonraki tum gocler. Gocleri okurken kronolojik oku, yalniz baseline'a guvenme. Kararlari: docs/butce/BUTCE-SEMA-KARARLARI.md
 
 ### C seviyesi (BASİT)
 
@@ -206,7 +206,7 @@ Dokuman etiketleri:
 `docs/butce/KART-KATALOGU.md` [MUHURLU] — Etap/Kart eksenleri · Kalem davranış motoru · Çoklu çalışma/yetki · Kilitli kartlar (7.1-7.5) · kod: migrations/…seed_sistem_sablon_film_1500.sql · library-service.ts
 `docs/butce/VERGI-MEVZUATI.md` [MUHURLU] — Ödeme statüsü→vergi davranışı · Stopaj · KDV/KDV tevkifatı · KAAPA'ya bağlanış · kod: shared/cfe/cfe.ts
 `docs/butce/PERSONEL-MEVZUATI.md` [MUHURLU] — Görev sınırı/statü cetveli · Motor doktrini (DILIM-3 mühürleri) · Personelin yasal gideri parametre envanteri · kod: shared/cfe/payroll.ts · shared/supabase/payroll-read.ts
-`docs/butce/BUTCE-SEMA-KARARLARI.md` [MUHURLU cekirdek + AKAN ek] — Bütçe göçü/köprü kararları · Şablon body FORMAT+KDV ayrıştırma · KUR-1 çok para birimi mührü · Satır-ekleme/Kalem Kütüphanesi · kod: supabase/migrations/** · shared/supabase/budget-service.ts — B-serisi şema kararları ve kilitli vergi/yük modeli mühürlüdür; kart kataloğu ve şablon bölümleri akandır.
+`docs/butce/BUTCE-SEMA-KARARLARI.md` [MUHURLU cekirdek + AKAN ek] — Bütçe göçü/köprü kararları · Şablon body FORMAT+KDV ayrıştırma · KUR-1 çok para birimi mührü · Satır-ekleme/Kalem Kütüphanesi · RESMİ ÖDEME + GÖRSEL GRUP + TEK İMZA DOKTRİNİ (15 Ağustos 2026) · kod: supabase/migrations/** · shared/supabase/budget-service.ts — B-serisi şema kararları ve kilitli vergi/yük modeli mühürlüdür; kart kataloğu ve şablon bölümleri akandır.
 `docs/AUTH-KARARLARI.md` [MUHURLU] — Onboarding/giriş akışı · Davet zinciri · Multi-project desteği · Üyelik yaşam döngüsü · kod: app/auth/** · auth-service.ts · invitation-service.ts · supabase/functions/**
 `docs/butce/KART-GEREKCELERI.md` [MUHURLU] — Çapraz-doğrulama yöntemi · KART 1100/1300/1400/1500/1600 gerekçeleri · Genel eğitim notları · kod: yok
 `docs/RAKIP-ANALIZI-URUN.md` [KAYNAK] — YAMDU · Diğer rakipler · kod: yok
@@ -248,13 +248,14 @@ Kaynak: docs/butce/BUTCE-UI-MIMARISI.md bölüm 2 (İ1-İ8) + bölüm 8, docs/AR
 
 ## 9. TEST HARİTASI
 
-Test sayıları `npm test` çıktısından okundu (15 Ağustos 2026), toplam 278/278 geçti.
+Test sayıları `npm test` çıktısından okundu (15 Ağustos 2026), toplam 286/286 geçti.
 
 - `src/shared/cfe/cfe.test.ts` — CFE motorunu (net/brüt/KDV/kova) korur — 28 test
 - `src/shared/cfe/payroll.test.ts` — Bordro motorunu (payroll.ts) korur — 27 test
-- `src/shared/supabase/budget-service.test.ts` — budget-service.ts servis fonksiyonlarını korur (kartNetToplamlari dahil) — 30 test
+- `src/shared/supabase/budget-service.test.ts` — budget-service.ts servis fonksiyonlarını korur (kartNetToplamlari + updateItemField payment_status VALID + addBudgetItem RPC yolları dahil) — 35 test
+- `src/shared/supabase/library-service.test.ts` — Kalem Kütüphanesi okumasını korur (fetchCardLibrary başlık satırlarını eler, fetchAllLibrary isGroup ile birlikte tam liste döner) — 2 test
 - `src/app/muhasebe/budget/hooks/grid-navigation-core.test.ts` — İ7 klavye çekirdeğini (resolveKeyAction/reduceGrid) korur — 108 test
-- `src/app/muhasebe/budget/format.test.ts` — format.ts saf fonksiyonlarını korur — 53 test
+- `src/app/muhasebe/budget/format.test.ts` — format.ts saf fonksiyonlarını korur (findCrossCardMatches'in başlık-satırı istisnası dahil) — 54 test
 - `src/app/muhasebe/budget/components/add-item-panel.test.tsx` — kalem ekleme paneli davranışını korur — 4 test
 - `src/app/muhasebe/budget/totals.test.ts` — satır/kart toplamı saf fonksiyonlarını (rowTotals/cardTotals) korur — 8 test
 - `src/app/auth/shell-routing.test.tsx` — rol/adres eşlemesini ve kabuk-klasik dal ayrımını korur (muhasebe adresinde alt şerit görünmez; /butce cardId'li ve cardId'siz dalları) — 11 test
