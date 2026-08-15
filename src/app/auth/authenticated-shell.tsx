@@ -20,6 +20,7 @@ import { SahaScreen } from '../saha/saha-screen'
 import { ReviewerScreen } from '../reviewer/reviewer-screen'
 import { InviteScreen } from '../muhasebe/invite-screen'
 import { CardTableScreen } from '../muhasebe/budget/card-table-screen'
+import { CardDeskScreen } from '../muhasebe/budget/card-desk-screen'
 import { DefinitionsScreen } from '../muhasebe/definitions-screen'
 import { OnboardingFlow } from '../onboarding/onboarding-flow'
 
@@ -103,6 +104,10 @@ function screenForMatch(
   if (match.kind === 'budget') {
     const budgetId = searchParams.get('budgetId') ?? undefined
     const cardId = searchParams.get('cardId') ?? undefined
+    // KABUK-KARARLARI 12.3: masa sol raydaki Butce Girisi duraginin ICIDIR, ayri durak yoktur.
+    // Adreste cardId yoksa masa acilir, varsa o kart. cardId UUID oldugu icin kart NUMARASI
+    // adres cubuguna da dusmez.
+    if (!cardId) return <CardDeskScreen budgetId={budgetId} />
     return <CardTableScreen budgetId={budgetId} cardId={cardId} />
   }
   return <EmptyState title={match.label} description="Bu ekran yakında (M2.3+)" />

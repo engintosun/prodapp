@@ -41,6 +41,10 @@ vi.mock('../muhasebe/budget/card-table-screen', () => ({
   CardTableScreen: () => <div data-testid="card-table-screen">butce</div>,
 }))
 
+vi.mock('../muhasebe/budget/card-desk-screen', () => ({
+  CardDeskScreen: () => <div data-testid="card-desk-screen">masa</div>,
+}))
+
 vi.mock('../saha/saha-screen', () => ({
   SahaScreen: ({ activeKey }: { activeKey: string }) => <div data-testid="saha-screen">{activeKey}</div>,
 }))
@@ -68,8 +72,13 @@ describe('AuthenticatedShell — adres semasi (KABUK sprint dilim 1)', () => {
     expect(el.textContent).toBe('muhasebe')
   })
 
-  it('/butce adresi CardTableScreen acar', async () => {
+  it('/butce adresi cardId yokken masayi acar (KABUK-KARARLARI 12.3)', async () => {
     renderShell('/butce', 'muhasebe')
+    await screen.findByTestId('card-desk-screen')
+  })
+
+  it('/butce adresi cardId varken o karti acar', async () => {
+    renderShell('/butce?cardId=11111111-2222-3333-4444-555555555555', 'muhasebe')
     await screen.findByTestId('card-table-screen')
   })
 
@@ -105,7 +114,7 @@ describe('AuthenticatedShell — kabuk iskeleti (KABUK sprint dilim 2)', () => {
     renderShell('/muhasebe/bekleyen', 'muhasebe')
     await screen.findByTestId('reviewer-screen')
     fireEvent.click(screen.getByRole('link', { name: 'Bütçe' }))
-    await screen.findByTestId('card-table-screen')
+    await screen.findByTestId('card-desk-screen')
     expect(screen.getByRole('navigation', { name: 'Bütçe gezinmesi' })).toBeTruthy()
     expect(screen.getByText('Bütçe Girişi')).toBeTruthy()
     expect(screen.getByText('Tanımlar')).toBeTruthy()
@@ -116,7 +125,7 @@ describe('AuthenticatedShell — kabuk iskeleti (KABUK sprint dilim 2)', () => {
     await screen.findByTestId('reviewer-screen')
     expect(screen.getByTestId('thin-context-strip')).toBeTruthy()
     fireEvent.click(screen.getByRole('link', { name: 'Bütçe' }))
-    await screen.findByTestId('card-table-screen')
+    await screen.findByTestId('card-desk-screen')
     expect(screen.getByTestId('thin-context-strip')).toBeTruthy()
   })
 })

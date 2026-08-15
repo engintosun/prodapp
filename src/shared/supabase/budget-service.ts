@@ -1,5 +1,7 @@
 // BOY: tek iş = bütçe açılış + kart okuma + kalem yazma servis çağrıları (tek Supabase servis dosyası), sebep = 500+ — bölünme planı docs/butce/BUTCE-UI-MIMARISI.md §8'de kayıtlı, bölme ayrı turda yapılır.
 import { supabase } from './client'
+import { netToplamDonemli } from '../cfe'
+import type { DonemKalemi } from '../cfe'
 
 export interface StageRow {
   id: string
@@ -125,8 +127,27 @@ export async function getOrOpenBudget(): Promise<string> {
 }
 
 export interface BudgetCardRef {
+  id: string
   cardCode: string
   name: string
+}
+
+export interface KartKalemNet {
+  cardId: string
+  donemler: DonemKalemi[]
+}
+
+// MASA KAPAK RAKAMI (Engin karari 15 Agustos 2026): net = birim net x miktar x X, kalem
+// kalem hesaplanir ve kartina gore toplanir. Bordro motoru CAGRILMAZ - motorun net ciktisi
+// da ayni carpima iner, gun/ay iskeleti yalniz YASAL YUK icin gereklidir. Hesap
+// netToplamDonemli uzerinden gider, ikinci bir tanim yoktur (KABUK-KARARLARI 12.3
+// TEK HESAP IKI YUZEY).
+export function kartNetToplamlari(kalemler: KartKalemNet[]): Record<string, number> {
+  const out: Record<string, number> = {}
+  for (const k of kalemler) {
+    out[k.cardId] = (out[k.cardId] ?? 0) + netToplamDonemli(k.donemler)
+  }
+  return out
 }
 
 // D3c-3: capraz-kart bilgisi kartin ADINI gosterir, numarasini ASLA; adlar bu butcenin kendi
@@ -134,16 +155,68 @@ export interface BudgetCardRef {
 export async function fetchBudgetCards(budgetId: string): Promise<BudgetCardRef[]> {
   const { data, error } = await supabase
     .from('expense_groups')
-    .select('card_code, name')
+    .select('id, card_code, name')
     .eq('budget_id', budgetId)
-    .order('sort_order')
+    .order('card_code')
   if (error) throw new Error(error.message)
   return (data ?? [])
     .filter((r) => r.card_code !== null)
     .map((r) => ({
+      id: r.id as string,
       cardCode: r.card_code as string,
       name: r.name as string,
     }))
+}
+
+// Masadaki her kartin net toplami. Iki sorgu: kalemler + donemler (kart basina sorgu YOK).
+// Donem sayisi 1'den buyukse donem bazli hesaplanir, degilse kalemin kendi degerleri
+// kullanilir — format.ts buildDonemler ile ayni kural.
+export async function fetchCardNetTotals(budgetId: string): Promise<Record<string, number>> {
+  const { data: items, error: ei } = await supabase
+    .from('budget_items')
+    .select('id, group_id, unit_net, multiplier, repeat')
+    .eq('budget_id', budgetId)
+    .eq('is_active', true)
+  if (ei) throw new Error(ei.message)
+  const rows = items ?? []
+  if (rows.length === 0) return {}
+
+  const { data: periods, error: ep } = await supabase
+    .from('budget_item_periods')
+    .select('item_id, quantity, unit_net_override, repeat_override')
+    .eq('budget_id', budgetId)
+  if (ep) throw new Error(ep.message)
+
+  const periodByItem: Record<
+    string,
+    { quantity: number; netOverride: number | null; repeatOverride: number | null }[]
+  > = {}
+  for (const p of periods ?? []) {
+    const k = p.item_id as string
+    ;(periodByItem[k] ??= []).push({
+      quantity: Number(p.quantity),
+      netOverride: p.unit_net_override === null ? null : Number(p.unit_net_override),
+      repeatOverride: p.repeat_override === null ? null : Number(p.repeat_override),
+    })
+  }
+
+  const kalemler: KartKalemNet[] = rows.map((it) => {
+    const unitNet = Number(it.unit_net)
+    const multiplier = Number(it.multiplier)
+    const repeat = Number(it.repeat)
+    const ps = periodByItem[it.id as string] ?? []
+    const donemler: DonemKalemi[] =
+      ps.length > 1
+        ? ps.map((p) => ({
+            net: p.netOverride ?? unitNet,
+            qty: p.quantity,
+            carpan: p.repeatOverride ?? repeat,
+          }))
+        : [{ net: unitNet, qty: multiplier, carpan: repeat }]
+    return { cardId: it.group_id as string, donemler }
+  })
+
+  return kartNetToplamlari(kalemler)
 }
 
 // Butcenin bir kartini (cardId verilirse o karti, verilmezse ilk kart - sort_order) + etaplarini +
