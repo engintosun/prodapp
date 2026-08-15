@@ -1,6 +1,6 @@
 # KAAPA — KABUK KARARLARI
 
-**Son güncelleme:** 14 Ağustos 2026
+**Son güncelleme:** 15 Ağustos 2026
 
 *Uygulama kabuğunun (Application Shell) TEK KAYNAĞI. Oluşturma: 4 Ağustos 2026, KABUK tasarım oturumu (Engin + Opus, doküman-only). Girdiler: Engin'in Application Shell metni + KAAPA çalışma masası mockup'ı + Yamdu rakip turu (RAKIP-ANALIZI-URUN) + kilitli ekran kararları (EKRAN-MUHASEBE §18/§19, BUTCE-UI-MIMARISI İ4).*
 
@@ -249,6 +249,10 @@ Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki
 - Kapak öğeleri: İŞARET + KART ADI + TEK RAKAM (net). Başka öğe yoktur.
 - İşaret KART BAŞINADIR ve o kartın içeriğine uygundur.
 - TEK HESAP İKİ YÜZEY: Kapaktaki net, kart açılınca toplam şeridinde görünen netin AYNISIDIR. İkinci bir tanım yoktur. (Çapraz: BUTCE-EKRAN-KARARLARI bölüm 18.)
+- KAPAK RAKAMININ HESABI (ENGİN KARARI, 15 Ağustos 2026): net = birim net x miktar x X. Kalem kalem hesaplanır, kartına göre toplanır. BORDRO MOTORU ÇAĞRILMAZ. Gerekçe kaynakta doğrulandı: motorun net çıktısı da aynı çarpıma iner (resolvePayrollMonth net olarak hedef netin yuvarlanmış halini döndürür); motorun gün/ay iskeleti ve iteratif brüt çözümü YALNIZ YASAL YÜK için gereklidir. Yasal yük ve brüt kapağa girmediği için o maliyet de girmez. Kod: budget-service.kartNetToplamlari (hesap netToplamDonemli üzerinden gider, ikinci tanım yok) + fetchCardNetTotals (iki sorgu: kalemler + dönemler, kart başına sorgu YOK).
+- MASA CANLI (15 Ağustos 2026, commit db8d5bd): /butce adresi cardId taşımıyorsa masa, taşıyorsa o kart açılır. cardId expense_groups.id (UUID) olduğu için kart NUMARASI adres çubuğuna da düşmez. Kartlar card_code sırasında gelir. Kod: app/muhasebe/budget/card-desk-screen.tsx + auth/authenticated-shell.tsx.
+- BU TURDA ÇİZİLMEYENLER (Engin kararı, 15 Ağustos 2026): işaret, kişiye özel diziliş (çek-bırak + ilk düzene dön), icmal seçimi / soluk kart. Üçünün de kararı yukarıda aynen geçerlidir; üçü de veri ister ve o veri bugün yoktur. Yazılacakları gün buradan devam edilir.
+- Karttan masaya dönüşün İKİNCİ yolu (ince şeritte "‹ Kart adı") bu turda YAPILMADI; ray ile dönüş çalışıyor. Ayrı turda ele alınacak — app-shell.tsx ve app-header.tsx dosyalarına dokunur.
 - EKLEME KARTI — Faz 1 kapsamı: Yalnız BAŞKA ŞABLONLARDA bulunan kartı bu masaya çağırır. Serbest (katalog dışı, kullanıcının adlandırdığı) kart Faz 1'de YOKTUR; mevcut koşul aynen geçerlidir: "tüm kartlar ve kalemler hazırlandıktan sonra". Faz numarası VERİLMEZ, koşul geçerlidir.
 - SİLME: Kullanıcının masaya eklediği kartlar silinebilir. Şablondan doğan kart silinmez.
 - İCMAL SEÇİMİ: Kullanıcı hangi kartın icmale gireceğini belirler. İşaretsiz kart KAPSAM DIŞIDIR — parası genel toplama GİRMEZ.
