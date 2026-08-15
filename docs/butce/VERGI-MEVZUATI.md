@@ -1,6 +1,6 @@
 # KAAPA — VERGİ MEVZUATI (Sektörel Referans)
 
-**Son güncelleme:** 14 Temmuz 2026
+**Son güncelleme:** 16 Ağustos 2026
 
 *Bütçe modülünün vergi mantığının (ödeme-statüsü → KDV / stopaj / net-brüt) TEK KAYNAĞI. Türk film/TV/reklam/belgesel yapımında ödeme türlerinin vergisel davranışı. KART-KATALOGU §4.8 (ödeme-statüsü boyutu) ve §4.9 (çift-fringe guard) ile birlikte okunur.*
 
@@ -12,7 +12,7 @@
 
 Bu dosya SAF VERGİ doktrinidir. Personelin yasal giderinin tamamı (iş hukuku + SGK + bordro + kişiye ödeme vergi mekaniği + sektörel rejimler) **docs/butce/PERSONEL-MEVZUATI.md**'ye taşındı — bordro-çözücünün ve G defterinin doktrin evi orasıdır.
 
-- **Statü cetveli:** `sirket`, `kira_sahis`, `konaklama` → doktrin evi BU DOSYA. `bordro`, `smm`, `telif_belgeli` → doktrin evi PERSONEL-MEVZUATI.md.
+- **Statü cetveli:** `sirket`, `kira_sahis`, `konaklama`, `resmi_odeme` → doktrin evi BU DOSYA. `bordro`, `smm`, `telif_belgeli` → doktrin evi PERSONEL-MEVZUATI.md.
 - **Kural:** bir statünün doktrini yalnız kendi evinde yazılır ve güncellenir; diğer dosya yalnız çapraz-referans/özet verir. Çelişkide mevzuat dosyaları diğer dokümanlara karşı kazanır; iki mevzuat dosyası arasında bu cetvel belirler.
 - **Bu dosyanın evi olan çapraz konular:** KDV rejimi ve nakit ilkesi (§3), vat_deductible (§3), KDV tevkifatı (§4).
 
@@ -75,7 +75,10 @@ Bütçe "Toplam" = **BRÜT** (yapımcı maliyeti). Üç eksen **birleştirilmez*
 | `kira_sahis` | %20 | Net / 0,80 | — | Binmez |
 | `sirket` (Ltd/AŞ faturası) | — | Net = maliyet | %20 havuz | Binmez |
 | `konaklama` | — | Net = maliyet | %10 havuz | Binmez |
+| `resmi_odeme` (noter/tapu/gümrük harcı, damga HARİÇ) | — | Net = maliyet | — | Binmez |
 | `bordro` | Artan tarife (motor) | MOTOR (PERSONEL-MEVZUATI) | — | **Biner** |
+
+**AYRILMA KURALI (`resmi_odeme`, DILIM 1100-A, 15 Ağustos 2026):** oranla başka bir satırdan türeyen resmî ödeme YÜK'tür (damga vergisi böyledir, `burden_components`'te kayıtlıdır); tutarı dışarıdan gelen, kendi başına duran resmî ödeme (noter harcı, tapu harcı, gümrük) KALEM'dir — bu statü onun içindir. `resmi_odeme` damgayı KAPSAMAZ. Şema karşılığı: `payment_status_defaults`'ta applies_sgk=false, default_vat_rate=0; `payment_status_burdens`'te SATIR YOK (boş kova = sıfır yük, sirket/konaklama emsali).
 
 **Yük kovası mimarisi (karar: "A reddedildi"):** Stopaj kovadan ÇIKARILMAZ. `item_burdens` kalır; içerik statüye göre dolar (bordro→SGK+işsizlik, smm→stopaj20 bileşeni, telif→stopaj17 bileşeni, kira→stopaj20 bileşeni, fatura/konaklama→boş). Her yük bileşeni **cins** taşır (`burden_components.kind`): `additive` (SGK) veya `deduction` (stopaj). CFE cinse göre hesaplar. *DILIM-2a CANLI: cins alanı + statü→bileşen eşlemesi + rate_catalog oranlar kuruldu.*
 
@@ -159,7 +162,7 @@ Sinema/TV/reklam sektöründe tetiklenen başlıca kalemler (KDV Genel Uygulama 
 
 Bu belge, kurulacak şema+CFE kolonlarının gerekçesidir. **Önerilen** alanlar (şema diliminde ratifiye edilecek):
 
-- `budget_items.payment_status` — enum: `bordro` / `smm` / `telif_belgeli` / `sirket` / `kira_sahis` / `konaklama` ... **Kaleme ekli; kütüphane/rol atomundan varsayılan gelir (§4.7), kalemde tıklanabilir hücreyle override edilir.** Statü değişince stopaj/fringe/KDV davranışı yeniden türetilir (örn. kamera asistanı varsayılan `bordro`→SGK biner; fatura kesiyorsa hücreden `smm`/`sirket`→fringe sıfırlanır).
+- `budget_items.payment_status` — enum: `bordro` / `smm` / `telif_belgeli` / `sirket` / `kira_sahis` / `konaklama` / `resmi_odeme` ... **Kaleme ekli; kütüphane/rol atomundan varsayılan gelir (§4.7), kalemde tıklanabilir hücreyle override edilir.** Statü değişince stopaj/fringe/KDV davranışı yeniden türetilir (örn. kamera asistanı varsayılan `bordro`→SGK biner; fatura kesiyorsa hücreden `smm`/`sirket`→fringe sıfırlanır).
 - `budget_items.vat_rate` — CANLI (%0/10/20). Vergi hücresi tıklanabilir.
 - `budget_items.stopaj_rate` — YENİ (statüden varsayılan; override için alan; B18 — oran girdi, tutar saklanmaz).
 - `budget_items.vat_deductible` — YENİ boolean (§3: KDV gerçek maliyet mi).
@@ -167,7 +170,7 @@ Bu belge, kurulacak şema+CFE kolonlarının gerekçesidir. **Önerilen** alanla
 - `tevkifat_orani` — OPSİYONEL / ileride (kamu-alıcı senaryosu; Faz 1'de muhtemelen yalnız Compliance Guard uyarısı, hesap değil).
 - **`fiili tutar` + `beyan edilen matrah` + `elden`** — beyan≠fiili ayrımı (§3.1). Eski fringe kimliğine parktı; kimlik K2 ile emekli, ev sahibi PCCE tartışması — şimdiki şema diliminde DEĞİL. SGK fringe beyan üstünden; elden = fiili−beyan, anomali bayraklı.
 
-**Çift-fringe guard (§4.9 zaten karar):** statü `smm`/`sirket`/`telif_belgeli`/`kira_sahis`/`konaklama` ise SGK fringe SIFIRLANIR (yük faturada/ayrı); yalnız `bordro`da fringe biner.
+**Çift-fringe guard (§4.9 zaten karar):** statü `smm`/`sirket`/`telif_belgeli`/`kira_sahis`/`konaklama`/`resmi_odeme` ise SGK fringe SIFIRLANIR (yük faturada/ayrı); yalnız `bordro`da fringe biner.
 
 `rate_catalog` = versiyonlu parametre DB'nin veri katmanı; `fn_open_budget` açılışta bütçeye snapshot'lar (B16 — açık yapım donmuş kopyasını korur). Mevzuat değişince tek yer güncellenir, açık yapımlar etkilenmez. Koda oran gömmek YASAK (B20). Katalog türetim zinciri ve satır türleri (oran/tutar/tarife): PERSONEL-MEVZUATI §1.
 

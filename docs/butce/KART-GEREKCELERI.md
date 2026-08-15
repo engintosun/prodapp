@@ -1,6 +1,6 @@
 # KAAPA — BÜTÇE KART GEREKÇELERİ ve EĞİTİM NOTLARI
 
-**Son güncelleme:** 20 Haziran 2026
+**Son güncelleme:** 16 Ağustos 2026
 
 *Bu dosya "NEDEN" dosyasıdır. KART-KATALOGU.md kuru kararı tutar (ne); burası muhakemeyi tutar (neden, sebep, sonuç, gerçek-set örneği, çift-sayım riski).*
 *Amaç: eğitim/onboarding — yeni muhasebeci/yapımcı KAAPA'nın kart mantığını buradan öğrenir. "1507 neden 2200'den ayrı?" sorusunun cevabı kararın kendisinde değil, burada.*
@@ -35,6 +35,12 @@ Plan modu = fon başvurusu/sunum için öngörülen rakam (Eurimages'a "gelişti
 
 ### Master Excel doğrulaması
 Story Rights / Options / Film Rights / Literary Rights kalemleri Master'da geliştirme-hakları kümesinde toplanıyor — 1101'i doğruluyor. "Story & Other Rights" sadece [1k] (tek kaynak) — yani zayıf, ayrı kart hak etmiyor; bu da **1200 absorbe** kararını doğruluyor (aşağıda).
+
+### Üç yeni atom (DILIM 1100-A, 15 Ağustos 2026, Engin kararı)
+Koster damıtımı KART-KATALOGU §7.1 ile karşılaştırıldı; damıtımda olup katalogda karşılığı olmayan üç kalem bulundu ve YALNIZ KÜTÜPHANEYE eklendi (şablona GİRMEDİ): 1105-06 Sekretarya/İdari Destek (Koster 1204 Secretaries — KAAPA'da 1408'e düşmüştü, o sonraki etap; geliştirmenin kendi idari desteği yoktu), 1107-04 Lokasyon Keşfi (damıtımın geliştirme tanımı lokasyon keşfini sayıyor; 1107-01 saha-KONU araştırmasıdır, mekân keşfi ayrı iştir), 1108-06 Araç Kiralama (Koster 1704 Car Rentals — 1108'de yalnız hava yolu vardı).
+
+### Damıtımın açık sorusu kapandı
+Damıtım "Development bir KART mı ETAP mı" diye sormuş ve HİBRİT önermişti (yaratıcı çekirdek kartta, yatay tekrarlar kendi kartlarının Geliştirme etabında), sonunda "Engin onayı bekliyor" yazıyordu. KART-KATALOGU §3 bunu TERS yönde karara bağlamış: tüm geliştirme 1100'de tutulur, dağıtılmaz — recoupment toplamı temiz okunsun diye. Damıtımdaki o satır BAYATTIR.
 
 ---
 

@@ -1,6 +1,6 @@
 # KAAPA — INDEX.md
 
-**Son guncelleme:** 15 Agustos 2026
+**Son guncelleme:** 16 Agustos 2026
 
 ## INDEX STATUS RULE
 
@@ -204,11 +204,11 @@ Dokuman etiketleri:
 [KAYNAK]   Ham malzeme; karar dosyasi degildir
 
 `docs/butce/KART-KATALOGU.md` [MUHURLU] — Etap/Kart eksenleri · Kalem davranış motoru · Çoklu çalışma/yetki · Kilitli kartlar (7.1-7.5) · kod: migrations/…seed_sistem_sablon_film_1500.sql · library-service.ts
-`docs/butce/VERGI-MEVZUATI.md` [MUHURLU] — Ödeme statüsü→vergi davranışı · Stopaj · KDV/KDV tevkifatı · KAAPA'ya bağlanış · kod: shared/cfe/cfe.ts
+`docs/butce/VERGI-MEVZUATI.md` [MUHURLU] — Ödeme statüsü→vergi davranışı (resmi_odeme dahil, yedinci statü) · Stopaj · KDV/KDV tevkifatı · KAAPA'ya bağlanış · kod: shared/cfe/cfe.ts
 `docs/butce/PERSONEL-MEVZUATI.md` [MUHURLU] — Görev sınırı/statü cetveli · Motor doktrini (DILIM-3 mühürleri) · Personelin yasal gideri parametre envanteri · kod: shared/cfe/payroll.ts · shared/supabase/payroll-read.ts
 `docs/butce/BUTCE-SEMA-KARARLARI.md` [MUHURLU cekirdek + AKAN ek] — Bütçe göçü/köprü kararları · Şablon body FORMAT+KDV ayrıştırma · KUR-1 çok para birimi mührü · Satır-ekleme/Kalem Kütüphanesi · RESMİ ÖDEME + GÖRSEL GRUP + TEK İMZA DOKTRİNİ (15 Ağustos 2026) · kod: supabase/migrations/** · shared/supabase/budget-service.ts — B-serisi şema kararları ve kilitli vergi/yük modeli mühürlüdür; kart kataloğu ve şablon bölümleri akandır.
 `docs/AUTH-KARARLARI.md` [MUHURLU] — Onboarding/giriş akışı · Davet zinciri · Multi-project desteği · Üyelik yaşam döngüsü · kod: app/auth/** · auth-service.ts · invitation-service.ts · supabase/functions/**
-`docs/butce/KART-GEREKCELERI.md` [MUHURLU] — Çapraz-doğrulama yöntemi · KART 1100/1300/1400/1500/1600 gerekçeleri · Genel eğitim notları · kod: yok
+`docs/butce/KART-GEREKCELERI.md` [MUHURLU] — Çapraz-doğrulama yöntemi · KART 1100/1300/1400/1500/1600 gerekçeleri · 1100 üç yeni atom gerekçesi + damıtımın açık sorusunun kapanması (15 Ağustos 2026) · Genel eğitim notları · kod: yok
 `docs/RAKIP-ANALIZI-URUN.md` [KAYNAK] — YAMDU · Diğer rakipler · kod: yok
 `docs/RAKIP-ANALIZI-OCR.md` [KAYNAK] — Global/Türkiye firmaları · Bağımsız benchmark verileri · Sektör yaklaşım modelleri · KAAPA çıkarımları/kararlar · kod: yok
 `docs/butce/BUTCE-ARASTIRMA-DURUM.md` [KAYNAK] — Yapılan/önerilen kart listesi · Açık kararlar · 2026 yeni-nesil ihtiyaçlar · Faz 1 bekleyen (kod) · kod: yok
@@ -222,7 +222,7 @@ Dokuman etiketleri:
 `docs/butce/BUTCE-EKRAN-KARARLARI.md` [AKAN] — Kalem satırı yapısı/statü · Net/Brüt/Yasal Yük · Not mimarisi · Satır ekleme+autocomplete+KLV · kod: budget/components/{item-row,period-row,add-item-panel}.tsx · budget/card-table-screen.tsx (§18 kart toplamı şeridi + tablo genişliği)
 `docs/EKRAN-MUHASEBE.md` [AKAN] — Header/tab bar · Dashboard/Bekleyen/Şüpheli/Raporlar · Departman/kategori/kullanıcı yönetimi · Bütçe modülü ekranları (B-serisi) · kod: reviewer-screen.tsx · definitions-screen.tsx · invite-screen.tsx
 `docs/KABUK-KARARLARI.md` [AKAN] — Tasarım tezi · Dört bölge kabuk anatomisi · Sol ray/üst bağlam/sağ referans · Ayrıntı turu kararları · kod: layout/{app-header,bottom-nav,app-shell,nav-rail,rail-icons}.tsx · authenticated-shell.tsx · shared/rail-state.ts [PARTIAL] — sol ray [ACTIVE] (KABUK sprinti, 8-12 Ağustos 2026), sağ referans paneli [ABSENT] (Engin kararı 11 Ağustos 2026: bu sprintte çizilmez, yeri ayrılı kalır), kart masası [PARTIAL] (15 Ağustos 2026, db8d5bd: ızgara + kapak (ad + net) + karta giriş CANLI; işaret, kişiye özel diziliş, icmal seçimi ve ince şerit dönüş yolu henüz çizilmedi)
-`docs/GLOSSARY.md` [AKAN] — Ana terimler · Alan adlandırma doktrini · Tehlikeli Türkçe kökler · Katalog/Şablon/Masa · kod: shared/types/domain.ts
+`docs/GLOSSARY.md` [AKAN] — Ana terimler (görsel grup/başlık satırı/alt-kod/harç-vergi dahil) · Alan adlandırma doktrini · Tehlikeli Türkçe kökler · Katalog/Şablon/Masa · kod: shared/types/domain.ts
 `docs/TASARIM-KARARLARI.md` [AKAN] — Tasarım felsefesi · Kart-merkezli arayüz · Tema/görsel kimlik · Katman sırası/odak göstergesi · kod: styles/tokens.css · shared/theme.ts
 `docs/IS-KURALLARI.md` [AKAN] — Onay zinciri · Fiş status değerleri · Dönem/kapama · Anomali motoru · kod: receipt-service.ts · reviewer-screen.tsx · app/saha/**
 `docs/EKRAN-DEPT.md` [AKAN] — Header/üst yapı · Harcama limiti kartı · Bekleyen tab (onay duvarı) · İstisna izinleri · kod: yok [ABSENT] — dept ekranı yazılmadı

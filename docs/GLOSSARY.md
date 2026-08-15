@@ -1,6 +1,6 @@
 # KAAPA — Domain Terimleri Sözlüğü (GLOSSARY)
 
-**Son güncelleme:** 14 Ağustos 2026
+**Son güncelleme:** 16 Ağustos 2026
 **Kural:** Her domain terimi tek İngilizce karşılık alır. Bir terim iki farklı kelimeyle temsil edilmez. Kodda sadece İngilizce karşılık kullanılır.
 
 -----
@@ -45,6 +45,10 @@
 |Maliyet nesnesi|cost_object|Kart sınırını aşan transversal iş/öğe etiketi (Stunt, VFX, "Oyuncu: Ahmet"). Bütçe-bazlı kontrollü liste; rollup için. 4. eksen (§4.10). Satır-başına tek (Faz 1)|
 |Dönemsiz etap|undated stage|fn_open_budget'ın yarattığı rezerve etap (is_undated=true); döneme bağlanmamış kalemler önce buraya düşer. Mühür tarih-zorlamasından muaf|
 |Kalem kodu sayacı|item_code_seq|budgets üzerinde monoton artan sayaç; kalıcı item_code üretir, geri dönmez (silinen kod tekrar verilmez)|
+|Görsel grup|—|Kartın içinde ad taşıyan ara başlık. Para TAŞIMAZ, veritabanında satırı YOKTUR, rakamı altındaki kalemlerden türer. Kart → görsel grup → kalem üç katman görünür ama para yalnız kalemde durur (2 para-seviyesi doktrini korunur)|
+|Başlık satırı|is_group|Görsel grubun kütüphanedeki karşılığı (item_library.is_group=true). Kalem DEĞİLDİR: ekleme listesinde görünmez, çapraz-kart taramasına girmez, fn_add_budget_item ile eklenemez|
+|Alt-kod|—|Atomun kendi katalog kodu, başlığın kodundan tire ile türer (1101-01). Grup üyeliği tire öncesi parçadan okunur. catalog_code METİNDİR; item_code değildir (item_code iç kimliktir, bütçe sayacından gelir)|
+|Harç/Vergi|resmi_odeme|Kamuya yapılan, kendi başına duran resmî ödeme statüsü. Stopaj yok, SGK yok, KDV yok — net = brüt. Doktrin evi VERGI-MEVZUATI.md|
 
 ### Bütçe - dönem/nakit terimleri (2026-06-13)
 
