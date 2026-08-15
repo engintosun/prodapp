@@ -1,6 +1,6 @@
 # KAAPA — BÜTÇE MODÜLÜ ŞEMA & TEKNİK KARARLAR
 
-**Son güncelleme:** 14 Ağustos 2026
+**Son güncelleme:** 15 Ağustos 2026
 
 ⚠ TERMİNOLOJİ: 2026-07-11 öncesi kayıtlarda Miktar=kişi/adet, Çarpan=süre okunur; sonrasında Miktar=süre, X=kişi/adet (bkz. GLOSSARY tarihçe).
 
@@ -145,3 +145,9 @@ NEDEN: sahadaki gerçek senaryo — görüntü yönetmenine dolar, asistanlara T
 - İKİ KATMAN, KART SEVİYESİNDE: Şablon kendi TÜRÜNÜN bütün kartlarını getirir. Katalog BÜTÜN TÜRLERİN kartlarını tutar. Ekleme kartının kaynağı ikisi arasındaki farktır: katalogun tamamı eksi bu şablonun kartları. Kalemlerdeki "şablon yalın / kütüphane geniş" deseninin kart karşılığıdır.
 - ŞABLON OLUŞTURMA KAPISI ŞEMADA ZATEN AÇIK: budget_templates.kind ∈ {system, company}; owner_project_id ile eşleşme kısıtı mevcut (system ⟺ owner_project_id IS NULL); production_type ∈ {film, dizi, reklam, belgesel}. Kullanıcının kendi şablonunu kurması MİMARİ YENİLİK DEĞİL, çizilmemiş bir YÜZEYDİR. ŞERH: sahiplik alanı owner_project_id, yani şablon şirkete değil PROJEYE bağlıdır — bugünkü hâliyle kullanıcının kurduğu şablon sonraki projede çıkmaz. Bu, şablon yüzeyinin turunda çözülecektir.
 - AÇIK KALANLAR (bu turda konuşuldu, karara bağlanmadı): kart kataloğunun evi (yeni global tablo mu, başka mı) · kartın kökeni alanı (şablondan mı, elle mi) · kart silme yolu · kullanıcı-başına kart sırası şeması (çek-bırak bunu şart koşuyor, bugün expense_groups.sort_order bütçe genelidir) · serbest kartın kod aralığı (kalemdeki NN98-01 muhtelif deseninin kart karşılığı) · silinen kartın içindeki kalemlerin akıbeti.
+
+## RESMİ ÖDEME + GÖRSEL GRUP + TEK İMZA DOKTRİNİ (DILIM 1100-A, KARAR 15 Ağustos 2026, Engin)
+- **AYRILMA KURALI:** oranla başka bir satırdan türeyen resmî ödeme YÜK'tür (damga vergisi böyledir, burden_components'te kayıtlıdır); tutarı dışarıdan gelen, kendi başına duran resmî ödeme KALEM'dir (noter harcı, tapu harcı, gümrük). resmi_odeme statüsü damgayı KAPSAMAZ.
+- **GÖRSEL GRUP:** başlık para taşımaz, veritabanında satırı yoktur, rakamı altındakilerden türer. 2 para-seviyesi doktrini korunur. Şema karşılığı: item_library.is_group boolean; true olan satır kalem ekleme listesinde görünmez, çapraz-kart taramasına girmez, fn_add_budget_item ile eklenemez. Grup üyeliği catalog_code'un tire öncesi parçasından türer (1101-01 → 1101).
+- **DİL KURALI:** kod/yorum ASCII; kullanıcıya görünen veri düzgün Türkçe.
+- **TEK İMZA DOKTRİNİ:** RPC fonksiyonu tek imza olarak yaşar. Parametre eklendiğinde eski imza AYNI migration'da drop edilir; overload bırakılmaz. Gerekçe: 1 Ağustos 2026'da fn_add_budget_item'a p_existing_code eklendi, 5 parametreli sürüm sessizce canlı kaldı — hatalı kod üretimi taşıyan, korumasız, grant'lı bir kopya olarak. İki overload ayrıca tuzaktır: her davranış değişikliğinde hangisinin canlı olduğu yeniden sorulmak zorunda. (fn_add_budget_item 5→6 parametre geçişinde uygulandı, bkz. migration 20260815150000.)

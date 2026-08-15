@@ -1,10 +1,10 @@
 # KAAPA — BÜTÇE KART KATALOĞU ve KALEM MEKANİZMASI
 
-**Son güncelleme:** 22 Temmuz 2026
+**Son güncelleme:** 15 Ağustos 2026
 
 *Kalıcı domain kataloğu. Bütçe modülünün kart/kalem yapısının ve kalem davranış motorunun TEK KAYNAĞI. Koster damıtımından ve oturum kararlarından damıtıldı. TASARIM-KARARLARI.md'den referanslanır.*
 *Oluşturma: 19 Haziran 2026. Güncelleme: 20 Haziran 2026 (KART 1600 OYUNCU + §4.10 cost_object 4. eksen). Önceki: 19 Haziran (KART 1400/1500 + §4.8/§4.9/§5.1/§6).*
-*Durum: KART 1100, 1300, 1400, 1500, 1600 KİLİTLİ; runtime dikey-dilimi (DILIM-3 bordro motoru + genel-desen sökümü) TAMAMLANDI. Sıradaki = KÜTÜPHANE TOHUMU (bkz. CURRENT.md Sıradaki iş #1), sonra 1700.*
+*Durum: KART 1100, 1300, 1400, 1500, 1600 KİLİTLİ; runtime dikey-dilimi (DILIM-3 bordro motoru + genel-desen sökümü) TAMAMLANDI. KÜTÜPHANE TOHUMU 1100 için KAPANDI (DILIM 1100-A, 15 Ağustos 2026, §7.1); 1300/1400/1600/1700 tohumu hâlâ sırada.*
 
 ---
 
@@ -24,7 +24,7 @@ Bir kaynağı günlük kim kullanıyorsa kalem onun kartına yazılır. Kostüm 
 ## 3. GELİŞTİRME — özel durum (recoupable)
 - Geliştirme etabının TEK kartı: "Proje Geliştirme ve Haklar".
 - Geliştirmeyi ayıran şey geri-ödeme (recoupable): greenlight'ta cepten harcanan kasadan/yatırımcıdan geri tahsil edilir; geliştirme orada biter.
-- Tüm geliştirme bu kartta tutulur (genel kartlara DAĞITILMAZ) — recoupment toplamı temiz okunsun diye. Yemek/ulaşım/konaklama = kart içinde tek toplu "Seyahat, Toplantı ve Ağırlama (Travel & Living)" satırı (salt-okunur; alt-döküm arkada). Gün/ay/adet kırılımı YOK; proje-bazlı paket.
+- Tüm geliştirme bu kartta tutulur (genel kartlara DAĞITILMAZ) — recoupment toplamı temiz okunsun diye. Yemek/ulaşım/konaklama artık 1108 altında ayrı atomlara bölünmüştür (Ulaşım-Uçak / Konaklama / Yemek-Ağırlama / Harcırah / Festival-Pazar Katılımı / Araç Kiralama — bkz. §7.1 kütüphane tohumu); gün/ay/adet kırılımı İSTEĞE BAĞLIDIR, paket (flat) birimi seçenek olarak kalır. REVİZE (DILIM 1100-A, 15 Ağustos 2026): önceki "tek toplu satır, kırılım YOK" kararı geçerliliğini yitirdi — kütüphane artık kırılımı destekliyor, kullanıcı ister tek paket kalemi ister ayrı atomlar ekler.
 - Plan + gerçekleşen ikisi de var; greenlight'ta otomatik "geri tahsil edilecek toplam: X TL" raporu.
 - Genel kural farkı: Geliştirme DIŞINDA ortak kalemler kendi genel kartlarında yaşar, etap etiketiyle ayrılır. Geliştirme recoupable olduğu için bilinçli istisna.
 
@@ -113,16 +113,63 @@ Compliance kuralları = VERİ (koda gömülmez): Şablon sınırları güncellen
 ## 7. KİLİTLİ KARTLAR
 
 ### 7.1 KART 1100 — PROJE GELİŞTİRME ve HAKLAR  [KİLİTLİ]
-Etap: Geliştirme · tüm kart RECOUPABLE · görünürlük: TAM MASKE 🔒 (set rollerine kapalı) · not alanı kalem-seviyesinde · 1108 salt-okunur toplam.
-- 1101 Hikâye-Senaryo-Haklar: recoupable · ödeme alt-kolonları · 0-bedel anomali bayrağı · opsiyon→Dağıtım sarkar. Alt: Hak Satın Alma (peşin/vadeli) / Opsiyon / Opsiyon Uzatması / Yazım-Taslaklar (v1-v4) / Danışman-Editör / Sinopsis-Treatment / Script Report-Reader Fee
-- 1102 Yapımcı (Producers Unit): recoupable · mahsup denetimi: 1401/1403 ile. Alt: Yapımcı geliştirme ücreti / Ortak-Yardımcı Yapımcı
-- 1103 Yönetmen (Directors Unit): recoupable · mahsup denetimi: 1501 ile. Alt: Yönetmen geliştirme/attach ücreti
-- 1104 Bütçe ve Dosya Hazırlama: recoupable. Alt: Bütçeleme / Sunum dosyası / Görsel-tasarım / Çeviri-tercüme / Teaser-Mood Video Kurgu ve Telifleri
-- 1105 Ofis Genel Giderleri: recoupable. Alt: Ofis kirası / Kırtasiye-sarf / İletişim / Kargo-kurye / Yazılım-abonelik
-- 1106 Hukuk ve Muhasebe: recoupable. Alt: Avukatlık-sözleşme / Clearance-izin / Mali müşavir / Fon raporlama-denetim / Noter ve Resmî Harçlar
-- 1107 Araştırma ve Danışmanlık: recoupable. Alt: Saha-konu araştırması / Uzman danışman / Arşiv-kaynak-telif
-- 1108 Seyahat-Konaklama-Yemek-Harcırah: recoupable · SALT-OKUNUR toplam. Alt: Ulaşım-uçak / Konaklama / Yemek-ağırlama / Harcırah / Festival-pazar katılımı
-- 1190 Muhtelif: recoupable. Alt: Banka-havale-kur / Beklenmedik küçük giderler
+Etap: Geliştirme · tüm kart RECOUPABLE · görünürlük: TAM MASKE 🔒 (set rollerine kapalı) · not alanı kalem-seviyesinde.
+
+**REVİZE (DILIM 1100-A, 15 Ağustos 2026):** Kütüphane tohumu 47 satır (9 başlık + 38 atom). Başlıklar (item_library.is_group=true) para taşımaz, kalem ekleme listesinde görünmez, çapraz-kart taramasına girmez, fn_add_budget_item ile eklenemez — rakamları altındaki atomlardan türer (2 para-seviyesi doktrini, bkz. BUTCE-SEMA-KARARLARI GÖRSEL GRUP). Şablona giren 15 çekirdek atom **S** ile, yalnız kütüphanede kalan 23 atom **K** ile işaretli.
+
+| Kod | Ad | İngilizce | Birim | Ödeme statüsü | S/K |
+|---|---|---|---|---|---|
+| **1101** | Hikâye, Senaryo, Haklar | Story & Screenplay | — | *(başlık)* | — |
+| 1101-01 | Hak Satın Alma | Story Rights Purchase | flat | telif_belgeli | S |
+| 1101-02 | Opsiyon | Story Option | flat | telif_belgeli | S |
+| 1101-03 | Opsiyon Uzatması | Option Extension | flat | telif_belgeli | K |
+| 1101-04 | Yazım-Taslaklar | Screenplay Drafts | flat | telif_belgeli | S |
+| 1101-05 | Danışman-Editör | Story Consultant / Editor | flat | smm | K |
+| 1101-06 | Sinopsis-Treatment | Synopsis & Treatment | flat | telif_belgeli | K |
+| 1101-07 | Script Report | Script Report / Reader Fee | flat | smm | K |
+| **1102** | Yapımcı | Producers Unit | — | *(başlık)* | — |
+| 1102-01 | Yapımcı Geliştirme Ücreti | Producer Development Fee | flat | smm | S |
+| 1102-02 | Ortak / Yardımcı Yapımcı | Co-Producer / Associate Producer | flat | smm | K |
+| **1103** | Yönetmen | Directors Unit | — | *(başlık)* | — |
+| 1103-01 | Yönetmen Geliştirme Ücreti | Director Development / Attachment Fee | flat | telif_belgeli | S |
+| **1104** | Bütçe ve Dosya Hazırlama | Budget & Pitch Package | — | *(başlık)* | — |
+| 1104-01 | Bütçeleme | Budget Preparation | flat | smm | S |
+| 1104-02 | Sunum Dosyası | Pitch Deck / Presentation Package | flat | smm | S |
+| 1104-03 | Görsel-Tasarım | Graphic Design | flat | smm | K |
+| 1104-04 | Çeviri-Tercüme | Translation | flat | smm | K |
+| 1104-05 | Teaser / Mood Video | Mood Reel / Sizzle Reel | flat | smm | K |
+| **1105** | Ofis Genel Giderleri | Development Office Overhead | — | *(başlık)* | — |
+| 1105-01 | Ofis Kirası | Office Rent | month | kira_sahis | S |
+| 1105-02 | Kırtasiye-Sarf | Office Supplies | month | sirket | S |
+| 1105-03 | İletişim | Communications | month | sirket | K |
+| 1105-04 | Kargo-Kurye | Shipping & Courier | month | sirket | K |
+| 1105-05 | Yazılım-Abonelik | Software Subscriptions | month | sirket | K |
+| 1105-06 | Sekretarya / İdari Destek | Secretarial / Administrative Support | month | bordro | K |
+| **1106** | Hukuk ve Muhasebe | Legal & Accounting | — | *(başlık)* | — |
+| 1106-01 | Avukatlık-Sözleşme | Legal Fees / Contracts | flat | smm | S |
+| 1106-02 | Clearance-İzin | Clearances & Permissions | flat | sirket | K |
+| 1106-03 | Mali Müşavir | Accounting Fees | month | smm | S |
+| 1106-04 | Fon Raporlama-Denetim | Fund Reporting & Audit | flat | smm | K |
+| 1106-05 | Noter ve Resmî Harçlar | Notary & Statutory Fees | flat | resmi_odeme | K |
+| **1107** | Araştırma ve Danışmanlık | Research & Consultancy | — | *(başlık)* | — |
+| 1107-01 | Saha-Konu Araştırması | Subject / Field Research | flat | smm | S |
+| 1107-02 | Uzman Danışman | Expert Consultant | day | smm | K |
+| 1107-03 | Arşiv-Kaynak-Telif | Archive & Source Licensing | flat | telif_belgeli | K |
+| 1107-04 | Lokasyon Keşfi | Location Scouting | day | sirket | K |
+| **1108** | Seyahat, Konaklama, Yemek, Harcırah | Travel, Accommodation & Living | — | *(başlık)* | — |
+| 1108-01 | Ulaşım-Uçak | Air Travel | flat | sirket | S |
+| 1108-02 | Konaklama | Hotels / Accommodation | day | konaklama | S |
+| 1108-03 | Yemek-Ağırlama | Catering & Hospitality | day | sirket | K |
+| 1108-04 | Harcırah | Per Diem | day | sirket | K |
+| 1108-05 | Festival-Pazar Katılımı | Festival & Market Attendance | flat | sirket | K |
+| 1108-06 | Araç Kiralama | Car Rentals | day | sirket | K |
+| **1190** | Muhtelif | Miscellaneous | — | *(başlık)* | — |
+| 1190-01 | Banka-Havale-Kur | Bank & Transfer Charges | flat | sirket | S |
+| 1190-02 | Beklenmedik Küçük Giderler | Sundry Expenses | flat | sirket | K |
+
+Provenance tüm satırlarda: Koster/MMB + KAAPA damıtım. resmi_odeme statüsü (1106-05) yalnız kendi başına duran, tutarı dışarıdan gelen resmî ödemeler içindir — oranla başka bir satırdan türeyen resmî ödeme (damga vergisi gibi) buna girmez, o zaten burden_components'te YÜK olarak kayıtlıdır (bkz. BUTCE-SEMA-KARARLARI AYRILMA KURALI).
+
+**DÜZELTME (DILIM 1100-A kapanışı, 15 Ağustos 2026):** ilk tohum altı atomu (1101-04, 1101-07, 1104-04, 1107-03, 1108-01, 1108-05) `piece` (adet) birimiyle yazmıştı; `piece` 1 Temmuz 2026'da bilinçli olarak kaldırılmış bir birimdi (Birim yalnız periyot cinsi taşır: gün/hafta/ay/bölüm/sabit; adet/kişi Miktar kolonunun konusu — migration 20260701090000). Yukarıdaki tablo ve canlı veri `flat`'e düzeltildi (migration 20260815190000); adet ihtiyacı Miktar/X koluyla karşılanır.
 
 ### 7.2 KART 1300 — SENARYO YAZIM & YASAL TEMİZLİK  [KİLİTLİ]
 Etap: Yapım Öncesi · RECOUPABLE DEĞİL · Geliştirme'ye bağı YOK (clearance dahil ayrı hesaplanır) · görünürlük: KISMİ MASKE 👁️ (1306 açılabilir; yazar kaşesi gizli).
@@ -224,6 +271,8 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 - Crowd AD (reji asistanı) → Prodüksiyon Ekibi / AD kartı (2100+). Ayrım: Kast Sorumlusu (3914) figüranı SEVK eder; Crowd AD sahneyi YÖNETİR (reji). 1500'de YOK (1500 yalnız 1505 yönetmen özel asistanı, set reji departmanından ayrı).
 
 **Stunt = doğa-bölmesi:** tek "Efekt & Dublör" kartı YOK. Performans→Oyuncu (bu kart), araç→Transport, mekanik→Mekanik FX. Üç kartın stunt satırları cost_object=Stunt taşır → CFE tek "Stunt toplam" (§4.10). Gerçekten etkilenen diğer kartlar: Transport, Mekanik FX (5300 değil — alias işaretçi).
+
+**1600/3900 KARARI (DILIM 1100-A, 15 Ağustos 2026, Engin):** 3900 kodları 16xx'e TAŞINMAZ — Grup 3/4'ün 39xx satırları (3901-3915) kendi aralığında kalır. Kartın kütüphanesi İKİ aralığı birden gösterir (15xx/16xx + 39xx, ikisi de KART 1600'e aittir — aidiyet kart koduna değil bu kartın tanımladığı ARALIKLAR kümesine bağlanır). Serbest kalem eklenirse 39xx kod alır (16xx değil). Sonuç: mevcut kod-aralığı doktrini (K-B) tek-aralık varsayımıyla yazılmıştı; library-service.ts'teki iki-hane (`catalogCode.slice(0,2)`) aidiyet kuralı ve fn_add_budget_item'daki `substr(p_catalog_code,1,2) = substr(v_card_code,1,2)` aralık denetimi 1600 turunda genişletilecek. BU DİLİMDE YAPILMADI, kayıt olarak düşer.
 
 **Kart-özel anomali:** çift-fringe guard (§4.9; loan-out'a fringe de mi yüklendi) · Crew Overlap (§4.9; aynı isim cast + set ekibinde maaş) · ÇOCUK-COMPLIANCE: minör/çocuk oyuncu var + set öğretmeni (1615) yok → bayrak (Compliance Guard §6, teşhis+uyarı). Looping çift-sayım: 1613 ↔ 5300 alias denetimi.
 
