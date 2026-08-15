@@ -218,7 +218,7 @@ export function buildRoomOptions(
 // ve kullanicinin gidebilecegi bir yer de yoktur, o durumda mesaj hic cikmaz.
 export function findCrossCardMatches(
   query: string,
-  library: { catalogCode: string; name: string; aliases: string[] }[],
+  library: { catalogCode: string; name: string; aliases: string[]; isGroup: boolean }[],
   currentCardCode: string,
   cards: { cardCode: string; name: string }[],
 ): string[] {
@@ -229,6 +229,7 @@ export function findCrossCardMatches(
   const matchesPrefix = (prefix: string) =>
     library.some(
       (it) =>
+        !it.isGroup &&
         it.catalogCode.slice(0, 2) === prefix &&
         (normalizeForSearch(it.name) === q || it.aliases.some((a) => normalizeForSearch(a) === q)),
     )

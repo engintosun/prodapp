@@ -364,7 +364,7 @@ export async function updateItemField(
     if (v === '') {
       payload = { payment_status: null }
     } else {
-      const VALID = ['bordro', 'smm', 'telif_belgeli', 'sirket', 'kira_sahis', 'konaklama'] as const
+      const VALID = ['bordro', 'smm', 'telif_belgeli', 'sirket', 'kira_sahis', 'konaklama', 'resmi_odeme'] as const
       if (!(VALID as readonly string[]).includes(v)) throw new Error('Geçersiz statü')
       payload = { payment_status: v }
     }

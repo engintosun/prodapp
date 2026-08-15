@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import {
   monthEquivalentNet,
   computeBordroFields,
@@ -10,7 +10,27 @@ import {
   type CatalogRateRow,
 } from './payroll-read'
 import type { PayrollLegs, PayrollRates, TaxBracket } from '../cfe'
-import { kartNetToplamlari, type KartKalemNet } from './budget-service'
+
+// DILIM 1100-A: updateItemField (payment_status VALID) ve addBudgetItem (RPC cagrisi)
+// gercek supabase agina cikmadan test edilebilsin diye ./client mock'lanir. Emsal:
+// src/app/auth/shell-routing.test.tsx ayni yontemi kullanir.
+let capturedRpcArgs: Record<string, unknown> | null = null
+
+vi.mock('./client', () => ({
+  supabase: {
+    from: () => ({
+      update: () => ({
+        eq: () => Promise.resolve({ error: null }),
+      }),
+    }),
+    rpc: (_fn: string, args: Record<string, unknown>) => {
+      capturedRpcArgs = args
+      return Promise.resolve({ data: 'item-id-1', error: null })
+    },
+  },
+}))
+
+import { kartNetToplamlari, type KartKalemNet, updateItemField, addBudgetItem } from './budget-service'
 
 const BRACKETS_2026: TaxBracket[] = [
   { floor: 0, ratePercent: 15, baseTax: 0 },
@@ -427,5 +447,61 @@ describe('budget-service — kartNetToplamlari: masa kapak rakami', () => {
 
   it('bos dizi -> bos nesne', () => {
     expect(kartNetToplamlari([])).toEqual({})
+  })
+})
+
+describe('updateItemField — payment_status VALID dizisi (DILIM 1100-A)', () => {
+  beforeEach(() => {
+    capturedRpcArgs = null
+  })
+
+  it('resmi_odeme artik gecerli bir statu, reddedilmez', async () => {
+    await expect(updateItemField('item-1', 'paymentStatus', 'resmi_odeme')).resolves.toBeUndefined()
+  })
+
+  it('bilinmeyen statu hala reddedilir', async () => {
+    await expect(updateItemField('item-1', 'paymentStatus', 'uydurma')).rejects.toThrow('Geçersiz statü')
+  })
+})
+
+describe('addBudgetItem — kutuphane/serbest/mevcut-kod yollari (tek imza sonrasi, DILIM 1100-A)', () => {
+  beforeEach(() => {
+    capturedRpcArgs = null
+  })
+
+  it('kutuphane modu: p_existing_code her zaman null gonderilir (6-parametreli imzaya duser)', async () => {
+    await addBudgetItem('group-1', { catalogCode: '1101-01' })
+    expect(capturedRpcArgs).toEqual({
+      p_group_id: 'group-1',
+      p_catalog_code: '1101-01',
+      p_name: null,
+      p_payment_status: null,
+      p_unit_code: null,
+      p_existing_code: null,
+    })
+  })
+
+  it('serbest mod: isim/statu/birim gonderilir, p_existing_code null', async () => {
+    await addBudgetItem('group-1', { name: 'Yeni Kalem', paymentStatus: 'sirket', unitCode: 'gun' })
+    expect(capturedRpcArgs).toEqual({
+      p_group_id: 'group-1',
+      p_catalog_code: null,
+      p_name: 'Yeni Kalem',
+      p_payment_status: 'sirket',
+      p_unit_code: 'gun',
+      p_existing_code: null,
+    })
+  })
+
+  it('mevcut-kod modu: p_existing_code doldurulur', async () => {
+    await addBudgetItem('group-1', { existingCode: '1198-01', name: 'Yeni Kalem', paymentStatus: 'sirket', unitCode: 'gun' })
+    expect(capturedRpcArgs).toEqual({
+      p_group_id: 'group-1',
+      p_catalog_code: null,
+      p_name: 'Yeni Kalem',
+      p_payment_status: 'sirket',
+      p_unit_code: 'gun',
+      p_existing_code: '1198-01',
+    })
   })
 })

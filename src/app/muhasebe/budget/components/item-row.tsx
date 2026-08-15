@@ -125,6 +125,7 @@ export const ItemRow = memo(function ItemRow({
           <option value="sirket">Fatura</option>
           <option value="kira_sahis">Kira</option>
           <option value="konaklama">Konaklama/Yemek</option>
+          <option value="resmi_odeme">Harç/Vergi</option>
         </select>
       </td>
       <td style={tdStyle}>

@@ -12,6 +12,7 @@ export interface LibraryItem {
   defaultPaymentStatus: string
   defaultUnitCode: string
   aliases: string[]
+  isGroup: boolean
 }
 
 function mapLibraryRow(r: Record<string, unknown>): LibraryItem {
@@ -23,18 +24,21 @@ function mapLibraryRow(r: Record<string, unknown>): LibraryItem {
     defaultPaymentStatus: r.default_payment_status as string,
     defaultUnitCode: r.default_unit_code as string,
     aliases: (r.aliases as string[] | null) ?? [],
+    isGroup: r.is_group as boolean,
   }
 }
 
+// Baslik satirlari (is_group) bir KALEM DEGILDIR: kalem ekleme listesinde gorunmez
+// (BUTCE-EKRAN-KARARLARI bolum 16, BUTCE-SEMA-KARARLARI GORSEL GRUP).
 export async function fetchCardLibrary(cardCode: string): Promise<LibraryItem[]> {
   const prefix = cardCode.slice(0, 2)
   const { data, error } = await supabase
     .from('item_library')
-    .select('id, catalog_code, name, name_en, default_payment_status, default_unit_code, aliases')
+    .select('id, catalog_code, name, name_en, default_payment_status, default_unit_code, aliases, is_group')
     .like('catalog_code', prefix + '%')
     .order('catalog_code')
   if (error) throw new Error(error.message)
-  return (data ?? []).map(mapLibraryRow)
+  return (data ?? []).map(mapLibraryRow).filter((it) => !it.isGroup)
 }
 
 // D3c-3 (BUTCE-EKRAN-KARARLARI bolum 16): capraz-kart bilgisi tum kutuphaneyi gerektirir, kart
@@ -43,7 +47,7 @@ export async function fetchCardLibrary(cardCode: string): Promise<LibraryItem[]>
 export async function fetchAllLibrary(): Promise<LibraryItem[]> {
   const { data, error } = await supabase
     .from('item_library')
-    .select('id, catalog_code, name, name_en, default_payment_status, default_unit_code, aliases')
+    .select('id, catalog_code, name, name_en, default_payment_status, default_unit_code, aliases, is_group')
     .order('catalog_code')
   if (error) throw new Error(error.message)
   return (data ?? []).map(mapLibraryRow)
