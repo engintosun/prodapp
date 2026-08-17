@@ -1,6 +1,6 @@
 # KAAPA — Domain Terimleri Sözlüğü (GLOSSARY)
 
-**Son güncelleme:** 16 Ağustos 2026
+**Son güncelleme:** 17 Ağustos 2026
 **Kural:** Her domain terimi tek İngilizce karşılık alır. Bir terim iki farklı kelimeyle temsil edilmez. Kodda sadece İngilizce karşılık kullanılır.
 
 -----
@@ -123,6 +123,14 @@
 3. **2026-07-11 (bu karar):** sektör hizasına dönüş — Miktar = süre, X = kişi/adet, Çarpan emekli. Sektör referansı: MMB Amt/X, Showbiz Qty/X, Hot Budget Time Units/No, Saturation quantity/multiplier.
 
 -----
+
+### Başlık / aidiyet terimleri (17 Ağustos 2026)
+
+- **Başlık:** kartın içinde ad taşıyan ara satır; altındaki kalemleri toplar, kendisi para taşımaz. Kodda `heading`. **ASIL TERİM BUDUR.** Ana Terimler tablosundaki "Görsel grup" aynı şeyin ilk adıdır, eş-ad olarak KORUNUR (mühürlü KART-GEREKCELERI o adı kullanır: "tek Oyuncu kartı, 4 görsel grup"); yeni yazılan metinde "Başlık" kullanılır.
+- **Aidiyet alanı:** `budget_items.heading_code` — METİN, başlığın katalog kodunu tutar, NULL = başlıksız. Karar evi: BUTCE-SEMA-KARARLARI.
+- **Başlıksız:** aidiyeti belirlenmemiş kalemlerin kartın dibinde toplandığı blok. DURUM adıdır, kategori adı değildir; kütüphanedeki 1190 Muhtelif ile KARIŞTIRILMAZ.
+- **YASAK — "grup" kökü bu kavram için kullanılmaz.** Kodda `group_id` zaten KART demektir (expense_groups). `group_code` gibi bir ad iki farklı şeyi yan yana neredeyse aynı adla anar; okuyan bunları aynı şeyin kimlik/kod hâli sanar. `group_id` alanının kendisi yeniden adlandırılmaz — ayrı ve büyük bir iştir.
+- **YASAK — "bölüm" kelimesi bu kavram için kullanılmaz.** Tehlikeli Kökler bölümündeki `bolum` kuralı aynen geçerlidir: "bölüm" yalnız dizi bölümüdür, bütçe içi kısım için Türkçe karşılık "etap"tır ve o da zaten dönem eksenine aittir. AÇIKLAMA: doküman metnindeki "bölüm 16" gibi BAŞVURU kullanımı bu kuralın dışındadır; kural bütçe/kart içi bir kısmı ADLANDIRMAK içindir.
 
 ## Alan adlandırma doktrini (KİLİTLENDİ 2026-07-26)
 
