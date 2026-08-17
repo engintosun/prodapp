@@ -1,6 +1,6 @@
 # KAAPA — İŞ SIRASI
 
-**Son güncelleme:** 5 Ağustos 2026
+**Son güncelleme:** 17 Ağustos 2026
 
 BU DOSYA SIRADAKI İŞİ TUTMAZ. Tek kaynak: CURRENT.md "Sıradaki iş" bölümü. Burada yalnız (a) TAMAMLANAN iş referansı ve (b) UZUN VADELİ backlog (yakında başlamayacak, tarihsiz fikirler) yaşar. Bitenler silinmez (referans için kalır); tarihçe ayrıca git log'da.
 Aktif milestone: M2 — Çekirdek Döngü.
@@ -20,6 +20,7 @@ Bu bölüm kasıtlı boş bırakılmıştır. "Sıradaki iş" için CURRENT.md'y
 
 ## Backlog (uzun vadeli, tarihsiz — CURRENT.md'nin "Sıradaki iş"ine henüz girmedi)
 - Diğer kartlar (1100/1300/1400/1600) — 1500 modeli üzerinden geçilir.
+- **DÜZELTME (17 Ağustos 2026, Engin):** yukarıdaki "1500 modeli üzerinden geçilir" cümlesi artık TÜM kartlar için geçerli DEĞİLDİR. 1500 ÇOĞU kartın modelidir; KART 1100 ve Oyuncu kartı (1600) kendi şekillerine sahiptir ve ikisi de 1500'den farklıdır. Somut fark: 1100'ün kodları iki seviyelidir (1101 başlık + 1101-01 atom, dokuz başlık), 1500'ünkiler düzdür (1501-1505, başlık satırı yok) — bu yüzden 1100 başlıklı çizilir, 1500 düz kalır. Model kart olmak "her kart aynı şekle girer" demek değildir.
 - G6 görsel tasarım (renk/tipografi/ikonografi/tema; tokens.css placeholder bekliyor) — KABUK'tan AYRI turdur (bkz. docs/TASARIM-KARARLARI.md §3, iki tema eşitliği kararı).
 - Şablon-tipi ("ne bütçesi: film/reklam/dizi") yer tutucusu.
 - Açılış tutorial'ı (Engin vizyonu 2026-07-15, ekranlar son halini almadan yazılmaz).
