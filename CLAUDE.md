@@ -1,6 +1,6 @@
 # KAAPA — CLAUDE.md
 
-**Son güncelleme:** 17 Ağustos 2026
+**Son güncelleme:** 18 Ağustos 2026
 
 Her oturum bu dosyayla başlar. Yalın tutulur (<120 satır); detay ayrı dosyalarda, ihtiyaç anında okunur. Kayıt sinyali boğmaz: az, net, güncel.
 

@@ -24,7 +24,7 @@ varsayim yapilmaz.
 - Stack: React 19.2.6 + TypeScript 6.0.2 + Vite 8.0.12 (PWA) · Supabase (PostgreSQL, AWS İstanbul, KVKK) · Vercel deploy.
 - Mimari katman ayrımı (ARCHITECTURE 5.2/5.3): veri (`shared/supabase/*-service.ts`, Supabase SDK doğrudan) → iş mantığı (saf fonksiyon, `shared/cfe/`) → UI (rol-bazlı `app/{rol}/` ekranları) → orkestrasyon (`*-screen.tsx`).
 - Dizin ilkesi: ekranlar role göre (`saha/dept/muhasebe/reviewer/onboarding/auth/layout`), ortak kod `shared/` altında (özellik-bazlı değil).
-- Ölçü: 74 kaynak dosya (`src/**/*.ts,tsx`) · 37 migration (baseline + 36 sonraki göç) · 3 edge function · 10 test dosyası, 286 test.
+- Ölçü: 75 kaynak dosya (`src/**/*.ts,tsx`) · 37 migration (baseline + 36 sonraki göç) · 3 edge function · 10 test dosyası, 296 test.
 - Canlı şema tek kaynağı `supabase/migrations/00000000000000_baseline.sql`: 39 tablo · 101 RLS policy · 25 trigger · 17 fonksiyon.
 
 ## 2. KOD HARİTASI
@@ -73,7 +73,7 @@ varsayim yapilmaz.
 -> Etkiler: authenticated-shell.tsx cardId yokken buradan render eder.
 -> Kritik: HAYIR — kararlarin evi KABUK-KARARLARI 12.3; ekran orada yazilani cizer.
 
-`src/app/muhasebe/budget/card-table-screen.tsx` (432)
+`src/app/muhasebe/budget/card-table-screen.tsx` (484)
 -> Görev: Kart tablosu ekranının orkestrasyonu — veri hook'ları + ekleme paneli + satır bileşenlerini birbirine bağlar.
 -> Kullanır: hooks/* (use-card-rows, use-edit-buffers, use-grid-navigation) + components/* + budget-service.ts.
 -> Etkiler: authenticated-shell.tsx (muhasebe "bütçe" sekmesi) buradan render eder.
@@ -121,12 +121,13 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/components/add-item-row.tsx` (60) — tablo altı "+ kalem ekle" düğme satırı
 `src/app/muhasebe/budget/components/bottom-sheet.tsx` (104) — ortak alt-sheet primitivi (backdrop+panel+odak tuzağı)
 `src/app/muhasebe/budget/components/burden-sheet.tsx` (108) — Yasal Yük dökümü sheet'i (bordro 6-bacak + basit statü)
+`src/app/muhasebe/budget/components/heading-row.tsx` (21) — başlık satırı: ad + üç rakam (Net/Yasal Yük/Brüt), data-grid-cell taşımaz
 `src/app/muhasebe/budget/components/note-sheet.tsx` (35) — İç Not / Kamu Notu düzenleme sheet'i
 `src/app/muhasebe/budget/components/period-row.tsx` (197) — çok-dönemli kalemin dönem alt-satırı render'ı
 `src/app/muhasebe/budget/components/status-info-sheet.tsx` (21) — statü rehberi metinleri
 `src/app/muhasebe/budget/components/table-styles.ts` (80) — kart tablosu kolon genişlikleri + hücre stilleri
-`src/app/muhasebe/budget/format.ts` (243) — fmt/parseNumericDraft + kütüphane arama saf fonksiyonları
-`src/app/muhasebe/budget/hooks/use-card-rows.ts` (206) — kart verisi yükleme (budgetId/cardId), ref senkronizasyonu
+`src/app/muhasebe/budget/format.ts` (303) — fmt/parseNumericDraft + kütüphane arama + başlık grubu saf fonksiyonları
+`src/app/muhasebe/budget/hooks/use-card-rows.ts` (213) — kart verisi yükleme (budgetId/cardId), ref senkronizasyonu
 `src/app/muhasebe/budget/hooks/use-grid-navigation.ts` (273) — İ7 motorunun DOM bağlayıcısı, tuş olaylarını çekirdeğe delege eder
 `src/app/muhasebe/budget/totals.ts` (40) — saf satır ve kart toplamı (rowTotals/cardTotals); item-row kendi hesabını yapmaz, buradan çağırır
 `src/app/muhasebe/definitions-screen.tsx` (116) — Tanımlar ekranı: rate_catalog referansı + şirket profili formu
@@ -141,7 +142,7 @@ varsayim yapilmaz.
 `src/shared/supabase/client.ts` (10) — tek Supabase client instance
 `src/shared/supabase/company-profile-service.ts` (85) — şirket profili okuma/güncelleme (proje sahibi satırı)
 `src/shared/supabase/invitation-service.ts` (52) — departman listesi + davet oluşturma
-`src/shared/supabase/library-service.ts` (50) — Kalem Kütüphanesi okuma (kart-bazlı + tüm kütüphane)
+`src/shared/supabase/library-service.ts` (64) — Kalem Kütüphanesi okuma (kart-bazlı + tüm kütüphane)
 `src/shared/supabase/onboarding-service.ts` (153) — departman/dönem/bütçe oluşturma, proje açma sarmalayıcı
 `src/shared/supabase/receipt-service.ts` (181) — fiş CRUD + onay/red/düzeltme RPC çağrıları
 `src/shared/theme.ts` (24) — dark/light tema state'i + localStorage kalıcılığı
@@ -219,7 +220,7 @@ Dokuman etiketleri:
 `docs/rakip/YONTEM.md` [AKAN] — Kanıt seviyeleri · İki doktrin kuralı · Boyut ızgarası (42 boyut) · Adres haritası · kod: yok
 `docs/IS-SIRASI.md` [AKAN] — Yapıldı (referans) · Sırada · Backlog · Borçlar · kod: yok
 `docs/ARCHITECTURE.md` [AKAN] — Çalışma sözleşmesi · Vizyon kontrolü · Teknik felsefe · Entropi koruması/mimari yeniden yapılanma · kod: dizin yapısının tamamı (5.3)
-`docs/butce/BUTCE-EKRAN-KARARLARI.md` [AKAN] — Kalem satırı yapısı/statü · Net/Brüt/Yasal Yük · Not mimarisi · Satır ekleme+autocomplete+KLV · kod: budget/components/{item-row,period-row,add-item-panel}.tsx · budget/card-table-screen.tsx (§18 kart toplamı şeridi + tablo genişliği)
+`docs/butce/BUTCE-EKRAN-KARARLARI.md` [AKAN] — Kalem satırı yapısı/statü · Net/Brüt/Yasal Yük · Not mimarisi · Satır ekleme+autocomplete+KLV · kod: budget/components/{item-row,period-row,add-item-panel}.tsx · budget/card-table-screen.tsx (§18 kart toplamı şeridi + tablo genişliği) · budget/components/heading-row.tsx (§19 başlık satırı)
 `docs/EKRAN-MUHASEBE.md` [AKAN] — Header/tab bar · Dashboard/Bekleyen/Şüpheli/Raporlar · Departman/kategori/kullanıcı yönetimi · Bütçe modülü ekranları (B-serisi) · kod: reviewer-screen.tsx · definitions-screen.tsx · invite-screen.tsx
 `docs/KABUK-KARARLARI.md` [AKAN] — Tasarım tezi · Dört bölge kabuk anatomisi · Sol ray/üst bağlam/sağ referans · Ayrıntı turu kararları · kod: layout/{app-header,bottom-nav,app-shell,nav-rail,rail-icons}.tsx · authenticated-shell.tsx · shared/rail-state.ts [PARTIAL] — sol ray [ACTIVE] (KABUK sprinti, 8-12 Ağustos 2026), sağ referans paneli [ABSENT] (Engin kararı 11 Ağustos 2026: bu sprintte çizilmez, yeri ayrılı kalır), kart masası [PARTIAL] (15 Ağustos 2026, db8d5bd: ızgara + kapak (ad + net) + karta giriş CANLI; işaret, kişiye özel diziliş, icmal seçimi ve ince şerit dönüş yolu henüz çizilmedi)
 `docs/GLOSSARY.md` [AKAN] — Ana terimler (görsel grup/başlık satırı/alt-kod/harç-vergi dahil) · Alan adlandırma doktrini · Tehlikeli Türkçe kökler · Katalog/Şablon/Masa · kod: shared/types/domain.ts
@@ -248,14 +249,14 @@ Kaynak: docs/butce/BUTCE-UI-MIMARISI.md bölüm 2 (İ1-İ8) + bölüm 8, docs/AR
 
 ## 9. TEST HARİTASI
 
-Test sayıları `npm test` çıktısından okundu (15 Ağustos 2026), toplam 286/286 geçti.
+Test sayıları `npm test` çıktısından okundu (18 Ağustos 2026), toplam 296/296 geçti.
 
 - `src/shared/cfe/cfe.test.ts` — CFE motorunu (net/brüt/KDV/kova) korur — 28 test
 - `src/shared/cfe/payroll.test.ts` — Bordro motorunu (payroll.ts) korur — 27 test
 - `src/shared/supabase/budget-service.test.ts` — budget-service.ts servis fonksiyonlarını korur (kartNetToplamlari + updateItemField payment_status VALID + addBudgetItem RPC yolları dahil) — 35 test
-- `src/shared/supabase/library-service.test.ts` — Kalem Kütüphanesi okumasını korur (fetchCardLibrary başlık satırlarını eler, fetchAllLibrary isGroup ile birlikte tam liste döner) — 2 test
+- `src/shared/supabase/library-service.test.ts` — Kalem Kütüphanesi okumasını korur (fetchCardLibrary kalemleri ve başlıkları AYRI listelerde döndürür, fetchAllLibrary isGroup ile birlikte tam liste döner) — 3 test
 - `src/app/muhasebe/budget/hooks/grid-navigation-core.test.ts` — İ7 klavye çekirdeğini (resolveKeyAction/reduceGrid) korur — 108 test
-- `src/app/muhasebe/budget/format.test.ts` — format.ts saf fonksiyonlarını korur (findCrossCardMatches'in başlık-satırı istisnası dahil) — 54 test
+- `src/app/muhasebe/budget/format.test.ts` — format.ts saf fonksiyonlarını korur (findCrossCardMatches'in başlık-satırı istisnası + headingKeyOf/groupRowsByHeading dahil) — 63 test
 - `src/app/muhasebe/budget/components/add-item-panel.test.tsx` — kalem ekleme paneli davranışını korur — 4 test
 - `src/app/muhasebe/budget/totals.test.ts` — satır/kart toplamı saf fonksiyonlarını (rowTotals/cardTotals) korur — 8 test
 - `src/app/auth/shell-routing.test.tsx` — rol/adres eşlemesini ve kabuk-klasik dal ayrımını korur (muhasebe adresinde alt şerit görünmez; /butce cardId'li ve cardId'siz dalları) — 11 test

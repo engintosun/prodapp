@@ -68,6 +68,7 @@ Bütçe → Versiyon (KL-1 V-sekmeleri) → Yüzey (ray: İcmal ① / Kart masas
         note-sheet.tsx             İç Not / Kamu Notu
         item-row.tsx               ana satır (R2)
         period-row.tsx             dönem alt-satırı (R2)
+        heading-row.tsx            başlık satırı: ad + üç rakam, KLV izgarasına girmez (1100-B)
         version-tabs.tsx           (MÜHÜR-3a)
         seal-controls.tsx          (MÜHÜR-3b)
       hooks/

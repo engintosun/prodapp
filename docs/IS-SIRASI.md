@@ -14,6 +14,7 @@ Aktif milestone: M2 — Çekirdek Döngü.
 ✅ MÜHÜR-1 (fn_lock_budget çekirdeği) + MÜHÜR-2 (servis okuma çatalı, sealed_at sabitleme)
 ✅ R-serisi ekran refaktörü: R1 (inert parçalar) · R2 (canlı çekirdek, use-card-rows/use-edit-buffers) · R3 (servis dikişi, payroll-read.ts + getCard)
 ✅ KLV — İ7 klavye motoru: KLV-0/1 (motor+sabit tablo) · KLV-K6 (görüntü/taslak ayrımı) · KLV-K7 (select hücre istisnası) · KLV-K8 (dikey gezinme semantik eşdeğerlik grubu)
+✅ KART 1100: 1100-A (resmi_odeme statüsü · is_group bayrağı · 47 kütüphane tohumu · şablon kartı · tek imza doktrini) · 1100-B (başlık çizimi, başlık başına üç rakam, Başlıksız bloğu, kalemi olmayan başlık çizilmez)
 
 ## Sırada (tek kaynak CURRENT.md)
 Bu bölüm kasıtlı boş bırakılmıştır. "Sıradaki iş" için CURRENT.md'ye bak.
