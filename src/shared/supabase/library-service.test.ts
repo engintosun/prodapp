@@ -41,10 +41,16 @@ vi.mock('./client', () => ({
 
 import { fetchCardLibrary, fetchAllLibrary } from './library-service'
 
-describe('fetchCardLibrary — baslik satirlari (is_group) sonuctan CIKARILIR', () => {
-  it('baslik satiri listede yok, atom kalir', async () => {
+describe('fetchCardLibrary — kalemler ve basliklar AYRI listelerde doner', () => {
+  it('items yalniz atomu tasir, headings yalniz basligi', async () => {
     const result = await fetchCardLibrary('1101')
-    expect(result.map((r) => r.catalogCode)).toEqual(['1101-01'])
+    expect(result.items.map((r) => r.catalogCode)).toEqual(['1101-01'])
+    expect(result.headings.map((r) => r.catalogCode)).toEqual(['1101'])
+  })
+
+  it('baslik adi cekimden gelir', async () => {
+    const result = await fetchCardLibrary('1101')
+    expect(result.headings[0].name).toBe('Hikâye, Senaryo, Haklar')
   })
 })
 

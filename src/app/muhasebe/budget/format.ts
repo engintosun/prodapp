@@ -242,3 +242,62 @@ export function findCrossCardMatches(
   }
   return result
 }
+
+// DILIM 1100-B (BUTCE-EKRAN-KARARLARI bolum 19): bir kalemin hangi basliga ait oldugu
+// TEK BU FONKSIYONDAN okunur. BUGUN cevap katalog kodunun tire oncesi parcasidir
+// (1101-04 -> 1101). Aidiyet dilimi gelince bu fonksiyonun ICI budget_items.heading_code
+// alanina doner; cagiranlarin hicbiri degismez. Tire yoksa (KART 1500: 1501, 1502...)
+// veya kod yoksa aidiyet YOKTUR -> null.
+export function headingKeyOf(it: { catalogCode: string | null }): string | null {
+  if (!it.catalogCode) return null
+  const dash = it.catalogCode.indexOf('-')
+  if (dash <= 0) return null
+  return it.catalogCode.slice(0, dash)
+}
+
+// heading === null ise o grup icin BASLIK SATIRI CIZILMEZ (kartin kutuphanesinde hic
+// baslik yok — KART 1500 duz liste, bolum 19). heading.key === null ise BASLIKSIZ
+// blogudur: baslik satiri cizilir, adi Basliksiz.
+export interface HeadingGroup {
+  heading: { key: string | null; name: string } | null
+  rows: BudgetItemRow[]
+}
+
+// SIRALAMA YAPILMAZ. rows zaten katalog kodu sirasinda gelir (fn_add_budget_item her
+// eklemede kartin tamamini catalog_code, item_code sirasina gore yeniden numaralar);
+// bu fonksiyon satirlarin SIRASINI DEGISTIRMEZ, yalniz gruplara boler. Kalemi olmayan
+// baslik CIZILMEZ (Engin karari 18 Agustos 2026: bolum 19 "kalem listesi basliklara gore
+// BOLUNUR" der, kalemi olmayan baslik bir bolme uretmez; silinen kalem kutuphaneden geri
+// cagrilabildigi icin kayip degildir). Basliksiz blogu EN SONA gelir ve yalniz doluysa cizilir.
+export function groupRowsByHeading(
+  rows: BudgetItemRow[],
+  headings: { catalogCode: string; name: string }[],
+): HeadingGroup[] {
+  if (headings.length === 0) {
+    return rows.length === 0 ? [] : [{ heading: null, rows }]
+  }
+  const known = new Set(headings.map((h) => h.catalogCode))
+  const byKey = new Map<string, BudgetItemRow[]>()
+  const orphans: BudgetItemRow[] = []
+  for (const r of rows) {
+    const key = headingKeyOf(r)
+    if (key !== null && known.has(key)) {
+      const bucket = byKey.get(key)
+      if (bucket) bucket.push(r)
+      else byKey.set(key, [r])
+    } else {
+      orphans.push(r)
+    }
+  }
+  const groups: HeadingGroup[] = []
+  for (const h of headings) {
+    const bucket = byKey.get(h.catalogCode)
+    if (bucket && bucket.length > 0) {
+      groups.push({ heading: { key: h.catalogCode, name: h.name }, rows: bucket })
+    }
+  }
+  if (orphans.length > 0) {
+    groups.push({ heading: { key: null, name: 'Başlıksız' }, rows: orphans })
+  }
+  return groups
+}

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { parseNumericDraft, effectiveWarning, bordroAllowedUnits, normalizeForSearch, matchLibraryItems, buildRoomOptions, findCrossCardMatches } from './format'
+import { parseNumericDraft, effectiveWarning, bordroAllowedUnits, normalizeForSearch, matchLibraryItems, buildRoomOptions, findCrossCardMatches, headingKeyOf, groupRowsByHeading } from './format'
+import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
 
 describe('parseNumericDraft (PARSE GUVENCESI, K10 revize + TD-16)', () => {
   it('duz rakam metnini sayiya cevirir', () => {
@@ -331,5 +332,81 @@ describe('findCrossCardMatches (D3c-3 — TAM AD, YALNIZ resmi kutuphane, kart b
       { cardCode: '1100', name: 'Proje Geliştirme ve Haklar' },
     ]
     expect(findCrossCardMatches('Hikâye, Senaryo, Haklar', libraryWithGroup, '1500', cardsWithGeliistirme)).toEqual([])
+  })
+})
+
+function makeRow(catalogCode: string): BudgetItemRow {
+  return { catalogCode } as unknown as BudgetItemRow
+}
+
+describe('headingKeyOf (DILIM 1100-B, BUTCE-EKRAN-KARARLARI bolum 19)', () => {
+  it('tireli kod -> tire oncesi parca', () => {
+    expect(headingKeyOf({ catalogCode: '1101-04' })).toBe('1101')
+  })
+
+  it('tiresiz kod (KART 1500) -> null', () => {
+    expect(headingKeyOf({ catalogCode: '1501' })).toBeNull()
+  })
+
+  it('kod null -> null', () => {
+    expect(headingKeyOf({ catalogCode: null })).toBeNull()
+  })
+})
+
+describe('groupRowsByHeading (DILIM 1100-B, BUTCE-EKRAN-KARARLARI bolum 19)', () => {
+  it('baslik listesi BOS: tek grup doner, heading null, satir sirasi korunur (KART 1500 duz liste)', () => {
+    const rows = [makeRow('1501'), makeRow('1503'), makeRow('1502')]
+    const groups = groupRowsByHeading(rows, [])
+    expect(groups).toHaveLength(1)
+    expect(groups[0].heading).toBeNull()
+    expect(groups[0].rows.map((r) => r.catalogCode)).toEqual(['1501', '1503', '1502'])
+  })
+
+  it('baslik listesi bos VE satir bos: bos dizi doner', () => {
+    expect(groupRowsByHeading([], [])).toEqual([])
+  })
+
+  it('kalemi olmayan baslik gruplara GIRMEZ', () => {
+    const rows = [makeRow('1101-01')]
+    const headings = [
+      { catalogCode: '1101', name: 'Hikâye, Senaryo, Haklar' },
+      { catalogCode: '1102', name: 'Yapımcılık' },
+    ]
+    const groups = groupRowsByHeading(rows, headings)
+    expect(groups).toHaveLength(1)
+    expect(groups[0].heading?.key).toBe('1101')
+  })
+
+  it('gruplar baslik listesinin sirasinda doner, grup icindeki satirlarin sirasi korunur', () => {
+    const rows = [makeRow('1102-02'), makeRow('1101-01'), makeRow('1101-02'), makeRow('1102-01')]
+    const headings = [
+      { catalogCode: '1101', name: 'Hikâye, Senaryo, Haklar' },
+      { catalogCode: '1102', name: 'Yapımcılık' },
+    ]
+    const groups = groupRowsByHeading(rows, headings)
+    expect(groups.map((g) => g.heading?.key)).toEqual(['1101', '1102'])
+    expect(groups[0].rows.map((r) => r.catalogCode)).toEqual(['1101-01', '1101-02'])
+    expect(groups[1].rows.map((r) => r.catalogCode)).toEqual(['1102-02', '1102-01'])
+  })
+
+  it('eslesmeyen kod EN SONDAKI Basliksiz grubuna duser, adi tam olarak Başlıksız', () => {
+    const rows = [makeRow('1101-01'), makeRow('1198-01')]
+    const headings = [{ catalogCode: '1101', name: 'Hikâye, Senaryo, Haklar' }]
+    const groups = groupRowsByHeading(rows, headings)
+    expect(groups).toHaveLength(2)
+    const last = groups[groups.length - 1]
+    expect(last.heading?.key).toBeNull()
+    expect(last.heading?.name).toBe('Başlıksız')
+    expect(last.rows.map((r) => r.catalogCode)).toEqual(['1198-01'])
+  })
+
+  it('her satir bir basliga esleiyorsa Basliksiz grubu HIC olusmaz', () => {
+    const rows = [makeRow('1101-01'), makeRow('1102-01')]
+    const headings = [
+      { catalogCode: '1101', name: 'Hikâye, Senaryo, Haklar' },
+      { catalogCode: '1102', name: 'Yapımcılık' },
+    ]
+    const groups = groupRowsByHeading(rows, headings)
+    expect(groups.some((g) => g.heading?.key === null)).toBe(false)
   })
 })

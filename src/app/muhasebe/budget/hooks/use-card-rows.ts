@@ -18,6 +18,9 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
   // bolum 16), filtreleme istemci tarafinda (format.matchLibraryItems). Bu dilimde HENUZ HICBIR
   // YERDE KULLANILMIYOR - autocomplete dikisi D3b-2b'de.
   const [library, setLibrary] = useState<LibraryItem[]>([])
+  // DILIM 1100-B: ayni cekimden gelen baslik satirlari (bolum 19). Ekrana cizilir,
+  // kalem ekleme listesine GIRMEZ.
+  const [headings, setHeadings] = useState<LibraryItem[]>([])
   // D3c-3: capraz-kart bilgisini besleyen ikincil veri - tum kutuphane + butcenin kart listesi.
   // Kart cizildikten SONRA arka planda inar (bolum 16), kalem eklemeyi hic etkilemez.
   const [allLibrary, setAllLibrary] = useState<LibraryItem[]>([])
@@ -128,7 +131,10 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
     void (async () => {
       try {
         const lib = await fetchCardLibrary(card.cardCode)
-        if (!cancelled) setLibrary(lib)
+        if (!cancelled) {
+          setLibrary(lib.items)
+          setHeadings(lib.headings)
+        }
       } catch (e) {
         if (!cancelled) addToast(e instanceof Error ? e.message : 'Kalem kütüphanesi yüklenemedi', 'error')
       }
@@ -188,6 +194,7 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
     stages,
     units,
     library,
+    headings,
     allLibrary,
     budgetCards,
     unitLabelById,

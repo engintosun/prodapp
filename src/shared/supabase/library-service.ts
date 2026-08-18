@@ -15,6 +15,11 @@ export interface LibraryItem {
   isGroup: boolean
 }
 
+export interface CardLibrary {
+  items: LibraryItem[]
+  headings: LibraryItem[]
+}
+
 function mapLibraryRow(r: Record<string, unknown>): LibraryItem {
   return {
     id: r.id as string,
@@ -29,8 +34,9 @@ function mapLibraryRow(r: Record<string, unknown>): LibraryItem {
 }
 
 // Baslik satirlari (is_group) bir KALEM DEGILDIR: kalem ekleme listesinde gorunmez
-// (BUTCE-EKRAN-KARARLARI bolum 16, BUTCE-SEMA-KARARLARI GORSEL GRUP).
-export async function fetchCardLibrary(cardCode: string): Promise<LibraryItem[]> {
+// (BUTCE-EKRAN-KARARLARI bolum 16, BUTCE-SEMA-KARARLARI GORSEL GRUP). Ayni cekimden
+// AYRI bir liste olarak da doner: baslik satirlarinin ekrana cizilmesi icin (bolum 19).
+export async function fetchCardLibrary(cardCode: string): Promise<CardLibrary> {
   const prefix = cardCode.slice(0, 2)
   const { data, error } = await supabase
     .from('item_library')
@@ -38,7 +44,11 @@ export async function fetchCardLibrary(cardCode: string): Promise<LibraryItem[]>
     .like('catalog_code', prefix + '%')
     .order('catalog_code')
   if (error) throw new Error(error.message)
-  return (data ?? []).map(mapLibraryRow).filter((it) => !it.isGroup)
+  const all = (data ?? []).map(mapLibraryRow)
+  return {
+    items: all.filter((it) => !it.isGroup),
+    headings: all.filter((it) => it.isGroup),
+  }
 }
 
 // D3c-3 (BUTCE-EKRAN-KARARLARI bolum 16): capraz-kart bilgisi tum kutuphaneyi gerektirir, kart
