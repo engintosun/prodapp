@@ -1,6 +1,5 @@
 # KAAPA — Mimari Kararlar Dokümanı
 
-**Son güncelleme:** 18 Ağustos 2026
 **Durum:** M1 (temel altyapı + auth) kapandı. M2 (çekirdek döngü) aktif — DILIM-2/DILIM-3 (bordro motoru) tamam, R-serisi ekran refaktörü (R1-R3) tamam, KLV (klavye motoru, K1-K13) tamam, MÜHÜR-1/2 (bütçe mühürleme çekirdeği + servis okuma çatalı) tamam. Sıradaki: KABUK (uygulama kabuğu); MÜHÜR-3a/3b KABUK sonrasına alındı (Engin kararı, 4 Ağustos 2026). Detay: CURRENT.md.
 
 -----
@@ -239,6 +238,7 @@ Oklar tek yönlü: Orkestrasyon → herkesi çağırabilir. UI → sadece orkest
 - Drift dedektörü session sonunda senkron kontrolü yapar
 - Ölü doküman yasağı — kimse okumuyorsa silinir veya arşivlenir
 - **ERTELENMİŞ KARAR (8 Ağustos 2026, uygulanmadı, kayıt için):** "Son güncelleme" başlığı elle tutulan ikinci kopyadır, kalkacak. Tarih INDEX.md'de tek yerde "son doğrulama" olarak yaşayacak ve yalnız dosya baştan sona doğruluk gözüyle okunduğunda ilerleyecek, düzenlendiğinde değil. doc-check Denetim A bu tarihe göre yeniden yazılacak (dosya son doğrulamadan sonra değiştiyse uyarır).
+- **UYGULANDI (18 Ağustos 2026, Engin kararı):** yukarıdaki ertelenmiş karar hayata geçti. 24 dokümandan `**Son güncelleme:**` başlığı kaldırıldı; tarih INDEX.md bölüm 7'de `(dogrulama: ...)` olarak TEK yerde yaşıyor ve dosya düzenlendiğinde İLERLEMİYOR — yalnız dosya baştan sona doğruluk gözüyle okunduğunda ilerliyor. Denetim A buna göre yeniden yazıldı ve BİLGİ-ONLY'ye çevrildi (uyarı değil envanter), çıktısı en bayattan en tazeye sıralanıyor. Gerekçe: yeni anlamıyla her düzenleme dokümanı "doğrulanmamış" yapar ve yeşile dönüş ancak gerçek bir okuma turuyla olur; sürekli kırmızı duran denetim okunmaz hale gelir ve o alışkanlık bağlayıcı denetimlere (D, E, F) bulaşır. Bölüm 7 artık KAYIT DEFTERİDİR: orada kayıtlı olmayan doküman Denetim A'da KIRMIZI verir. Tohumlama, her dosyanın silinen başlığındaki tarihle yapıldı — bugüne çekmek 24 dosya için yalan olurdu. TETİKLEYİCİ: 18 Ağustos 2026, tek günde iki kez başlık tarihi yüzünden durup fazladan commit atıldı; karar on gün boyunca uygulanmayı bekliyordu.
 
 **Karar tarihi:** 22.05.2026 | **Gerekçe:** Doküman-kod uyumsuzluğu yanlış kararlara yol açar.
 

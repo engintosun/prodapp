@@ -1,7 +1,6 @@
 # KAAPA Rakip Analizi — OCR Tabanlı Harcama Otomasyonu
 
 **Tarih:** 15 Mayıs 2026  
-**Son güncelleme:** 22 Haziran 2026  
 **Amaç:** OCR doğruluk oranları, confidence score yaklaşımları, onay akışları ve KAAPA için çıkarımlar  
 **Kaynak:** Web araştırması — vendor sayfaları, bağımsız benchmarklar, kullanıcı incelemeleri
 

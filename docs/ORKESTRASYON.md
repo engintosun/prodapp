@@ -1,7 +1,5 @@
 # KAAPA — ORKESTRASYON (GitHub → Supabase → Vercel) + Secret Haritası
 
-**Son güncelleme:** 22 Haziran 2026
-
 *Üç platformun nasıl bağlandığının + secret'ların nerede yaşadığının operasyonel referansı. Mimari karar: ARCHITECTURE.md §5.6 (bu dosya onun somut haritası).*
 
 ## 1. Üç platform — GitHub tek kaynak

@@ -1,7 +1,5 @@
 # KAAPA — PERSONEL MEVZUATI (Bordro-Çözücü ve G Defteri Doktrin Evi)
 
-**Son güncelleme:** 11 Temmuz 2026
-
 *Sürüm: v3.0 — 3 Temmuz 2026 (3. oturum). Çekirdek: "Personelin Yasal Gideri — Tam Parametre Envanteri" v2.1 (KİLİTLİ) + DILIM-3 K1–K11 mühürleri ve derin tasarım turu doktrinleri. Bu belge insan-okur doktrin belgesidir; veritabanı formatı değildir.*
 
 *İşaretler: ● önceden kilitli · ★ araştırmayla doğrulandı · ✔ KARAR kilitli karar · ✔ MÜHÜR (K#) DILIM-3 karar turu mührü (3 Temmuz 2026) · ⚠ uygunluk katmanına (G defteri) devredilen uyarı adayı.*

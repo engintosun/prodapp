@@ -1,7 +1,5 @@
 # KAAPA — BÜTÇE MODÜLÜ ŞEMA & TEKNİK KARARLAR
 
-**Son güncelleme:** 17 Ağustos 2026
-
 ⚠ TERMİNOLOJİ: 2026-07-11 öncesi kayıtlarda Miktar=kişi/adet, Çarpan=süre okunur; sonrasında Miktar=süre, X=kişi/adet (bkz. GLOSSARY tarihçe).
 
 *Bütçe modülünün veri modeli / şema / şablon formatı / KDV / RPC kararlarının TEK KAYNAĞI (B-serisi teknik kayıt). Arayüz/UX ilkeleri: docs/TASARIM-KARARLARI.md. Kart/kalem yapısı: docs/butce/KART-KATALOGU.md. Ekran tarifleri: docs/EKRAN-MUHASEBE.md §19.*

@@ -1,7 +1,5 @@
 # KAAPA — BÜTÇE KART GEREKÇELERİ ve EĞİTİM NOTLARI
 
-**Son güncelleme:** 16 Ağustos 2026
-
 *Bu dosya "NEDEN" dosyasıdır. KART-KATALOGU.md kuru kararı tutar (ne); burası muhakemeyi tutar (neden, sebep, sonuç, gerçek-set örneği, çift-sayım riski).*
 *Amaç: eğitim/onboarding — yeni muhasebeci/yapımcı KAAPA'nın kart mantığını buradan öğrenir. "1507 neden 2200'den ayrı?" sorusunun cevabı kararın kendisinde değil, burada.*
 *KART-KATALOGU.md ile çapraz: her kart KART-KATALOGU §7.x ile eşleşir. Oluşturma: 19 Haziran 2026. Kapsam: KART 1100, 1300, 1400, 1500, 1600.*

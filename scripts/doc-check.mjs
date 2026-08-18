@@ -67,24 +67,6 @@ function getFileLastRealCommitDate(relFile) {
   return null;
 }
 
-function parseHeaderDate(absFile) {
-  let content;
-  try {
-    content = fs.readFileSync(absFile, 'utf8');
-  } catch {
-    return null;
-  }
-  const head = content.split(/\r?\n/).slice(0, 14).join('\n');
-  const re = /Son\s+g[üu]ncelleme:\**\s*(\d{1,2})\s+([A-Za-zÇĞİIÖŞÜçğışöü]+)\s+(\d{4})/iu;
-  const m = head.match(re);
-  if (!m) return null;
-  const day = m[1].padStart(2, '0');
-  const monthNum = turkishMonthToNumber(m[2]);
-  if (!monthNum) return null;
-  const month = String(monthNum).padStart(2, '0');
-  return `${m[3]}-${month}-${day}`;
-}
-
 function walkMarkdown(dir, excludePrefixes, results) {
   let entries;
   try {
@@ -136,24 +118,56 @@ function warn(section, msg) {
   warnCount += 1;
 }
 
-// ----- Denetim A: başlık tazeliği -----
+// ----- Denetim A: dogrulama tazeligi (BILGI-ONLY) -----
+// ESKI HALI (18 Agustos 2026'ya kadar): her dokumanin kendi "Son guncelleme" basligi commit
+// tarihiyle karsilastirilirdi. Baslik 24 dosyada elle tutulan ikinci kopyaydi ve duzenlemeyi
+// unutmak KIRMIZI uretiyordu; 18 Agustos'ta tek gunde iki fazladan commit'e mal oldu.
+// YENI HALI (ARCHITECTURE 4.5 ertelenmis karari uygulandi): tarih INDEX.md bolum 7'de TEK yerde
+// yasar ve DUZENLENDIGINDE DEGIL, DOGRULANDIGINDA ilerler.
+// BILGI-ONLY (Engin karari 18 Agustos 2026): uyari degil envanterdir. Gerekce: yeni anlamiyla
+// bir dokuman her duzenlemede "dogrulanmamis" hale gelir ve yesile donmesi ancak gercek bir okuma
+// turuyla olur; surekli kirmizi duran bir denetim insani ona bakmamaya alistirir ve o aliskanlik
+// [F] gibi gercekten baglayici denetimlere de bulasir. Denetim B/C ile ayni desen.
+// SIRALAMA: en bayattan en tazeye. Listenin basi dogal bir is sirasidir.
+const REG_RE = /`([^`\n]+\.md)`\s*\[([^\]]+)\](?:\s*\(dogrulama:\s*(\d{1,2})\s+([A-Za-zÇĞİIÖŞÜçğışöü]+)\s+(\d{4})\))?/gu;
+const indexForReg = fs.readFileSync(path.join(ROOT, 'INDEX.md'), 'utf8');
+const section7 = indexForReg.split('## 7. DOKUMANTASYON HARITASI')[1]?.split('## 8.')[0] ?? '';
+const registry = new Map();
+let rm;
+while ((rm = REG_RE.exec(section7)) !== null) {
+  let verified = null;
+  if (rm[3]) {
+    const mn = turkishMonthToNumber(rm[4]);
+    if (mn) verified = `${rm[5]}-${String(mn).padStart(2, '0')}-${rm[3].padStart(2, '0')}`;
+  }
+  registry.set(rm[1], verified);
+}
+
 const docFiles = walkMarkdown('docs', ['docs/archive'], []);
 docFiles.push('CLAUDE.md', 'CURRENT.md');
 docFiles.sort();
 
+// Bolum 7 artik KAYIT DEFTERIDIR: orada olmayan dokuman gorunmezdir, bu KIRMIZI kalir.
 for (const rel of docFiles) {
-  const abs = path.join(ROOT, rel);
-  const headerDate = parseHeaderDate(abs);
-  if (!headerDate) {
-    info('A', `${rel} — tarihli başlık yok`);
+  if (!registry.has(rel)) warn('A', `${rel} — INDEX bolum 7'de KAYITLI DEGIL (dokuman haritasina eklenmeli)`);
+}
+
+const staleRows = [];
+for (const rel of docFiles) {
+  if (!registry.has(rel)) continue;
+  const verified = registry.get(rel);
+  const commitDate = getFileLastRealCommitDate(rel);
+  if (!verified) {
+    staleRows.push({ key: '0000-00-00', msg: `${rel} — dogrulama tarihi YOK` });
     continue;
   }
-  const commitDate = getFileLastRealCommitDate(rel);
   if (!commitDate) continue;
-  if (headerDate < commitDate) {
-    warn('A', `${rel} — başlık ${headerDate} diyor, son gerçek değişiklik ${commitDate}`);
+  if (verified < commitDate) {
+    staleRows.push({ key: verified, msg: `${rel} — dogrulama ${verified}, o tarihten sonra degisti (son degisiklik ${commitDate})` });
   }
 }
+staleRows.sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
+for (const r of staleRows) info('A', r.msg);
 
 // ----- Denetim B: faz işareti (bilgi-only) -----
 const FAZ_TAG_RE = /\[FAZ 1\]|\[FAZ 2\]|\[TASLAK\]/;

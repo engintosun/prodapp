@@ -1,7 +1,5 @@
 # KAAPA — KABUK KARARLARI
 
-**Son güncelleme:** 15 Ağustos 2026
-
 *Uygulama kabuğunun (Application Shell) TEK KAYNAĞI. Oluşturma: 4 Ağustos 2026, KABUK tasarım oturumu (Engin + Opus, doküman-only). Girdiler: Engin'in Application Shell metni + KAAPA çalışma masası mockup'ı + Yamdu rakip turu (RAKIP-ANALIZI-URUN) + kilitli ekran kararları (EKRAN-MUHASEBE §18/§19, BUTCE-UI-MIMARISI İ4).*
 
 **Bu dosya mevcut ekran kararlarını DEĞİŞTİRMEZ.** EKRAN-MUHASEBE ve BUTCE-EKRAN-KARARLARI'nda tanımlı ekranlar aynen korunur; buradaki iş o ekranları ortak bir kabuğa yerleştirmek ve aralarındaki gezinmeyi kurmaktır. Tek istisna bölüm 9'dur (kart kapak rakamı) ve o bilinçli bir revizyon önerisidir.

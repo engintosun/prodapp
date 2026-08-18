@@ -1,7 +1,5 @@
 # EKRAN-DEPT.md
 
-**Son güncelleme:** 22 Haziran 2026
-
 Dept (departman şefi) rolü ekranları. Dayanıklı katman kayıtlı, kararsız katman açık slot.
 
 > Kart-merkezli çalışma masası mantığı dept'te KISMEN uygulanabilir (muhasebe kadar değil). Detay açık slot.

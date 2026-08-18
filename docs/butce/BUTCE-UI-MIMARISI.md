@@ -1,7 +1,5 @@
 # KAAPA — BÜTÇE UI KOD MİMARİSİ (İ-serisi)
 
-**Son güncelleme:** 18 Ağustos 2026
-
 *Bütçe modülü ekran KODUNUN yapı anayasası — bileşen/hook/servis düzeninin TEK KAYNAĞI. Davranış/etkileşim kararları: BUTCE-EKRAN-KARARLARI.md. Şema/teknik: BUTCE-SEMA-KARARLARI.md. Kart/kalem domain: KART-KATALOGU.md. Oluşturma: 12 Temmuz 2026 — monolit teşhisi + rakip taraması (MMB / Saturation / Hot Budget) + doktrin sentezi; karar Engin+Opus.*
 
 ## 0. Neden var

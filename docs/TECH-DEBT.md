@@ -1,6 +1,5 @@
 # KAAPA — Teknik Borç Takibi (TECH-DEBT)
 
-**Son güncelleme:** 14 Ağustos 2026
 **Kural:** Bu dosya borç durumunun TEK otoritesidir; sayı başka hiçbir dosyada taşınmaz (Engin kararı 2026-07-31). TD numarası YALNIZ borç demektir — tek tablo, tek sayaç. Her borç bir milestone veya tura bağlı; "bir gün düzeltiriz" yok. **Sınır 15: Açık Borç 15'i aşarsa yeni özellik durur.** (Engin kararı 14 Ağustos 2026 — sınır 10'dan 15'e çıkarıldı. Gerekçe: sayaç 9'dan 14'e kod bozulduğu için değil, KABUK kapanış denetimi ilk kez tam çalıştığı için çıktı; daha iyi gören bir gözü cezalandıran sınır yanlış kalibredir. Emsal: 31 Temmuz'daki 5→10 yükseltmesi de sayı değil TANIM gerekçesiyle yapılmıştı.) Karara bağlanacak yapısal seçimler, yapılmamış özellikler ve zaten verilmiş kararlar bu dosyaya GİRMEZ — kendi karar dosyalarına yazılır (CLAUDE.md "Karar nereye yazılır" yol haritası).
 
 -----

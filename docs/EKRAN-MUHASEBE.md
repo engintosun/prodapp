@@ -1,7 +1,5 @@
 # EKRAN-MUHASEBE.md
 
-**Son güncelleme:** 14 Ağustos 2026
-
 Muhasebe rolü ekranları. Dayanıklı katman kayıtlı, kararsız katman açık slot.
 
 > **Muhasebe sekmesi kart-merkezli çalışma masası olacak.** Her konu (bekleyen, şüpheli, avans, kiralama) kartlardan oluşur; kartlar bir masaya serilir, içinde çalışılır; kartlar bildirimlere ve önceliklere göre otomatik sıralanır (yukarı/aşağı). Bu, aşağıdaki içerikten İLERİ bir sunum geliştirmesidir ve AÇIK SLOT'tur — Engin ayrıntılandıracak. Aşağıdaki yapı bilgi/akış katmanıdır; sunumun kart-masaya nasıl döküleceği ayrı tasarlanacak.

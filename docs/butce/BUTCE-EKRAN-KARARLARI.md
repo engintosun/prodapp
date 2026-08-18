@@ -1,7 +1,5 @@
 # KAAPA — BÜTÇE EKRAN & MODEL KARARLARI
 
-**Son güncelleme:** 18 Ağustos 2026
-
 ⚠ TERMİNOLOJİ: 2026-07-11 öncesi kayıtlarda Miktar=kişi/adet, Çarpan=süre okunur; sonrasında Miktar=süre, X=kişi/adet (bkz. GLOSSARY tarihçe).
 
 *Kalem bütçe ekranının davranış/etkileşim kararları ve bunları doğuran model gerekçeleri. Vergi/oran detayı `VERGI-MEVZUATI.md`'de; şema/RPC kararları `BUTCE-SEMA-KARARLARI.md`'de; bu dosya ikisinin arasındaki EKRAN + MODEL katmanı.*

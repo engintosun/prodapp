@@ -1,6 +1,5 @@
 # KAAPA — Supabase Auth Kararları
 **Tarih:** 21 Mayıs 2026
-**Son güncelleme:** 31 Temmuz 2026
 **Kapsam:** Onboarding, davet zinciri, multi-project, silme politikaları
 
 ---
