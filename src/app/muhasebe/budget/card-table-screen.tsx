@@ -6,7 +6,7 @@ import { ErrorMessage } from '../../../shared/components/error-message'
 import { useCardRows } from './hooks/use-card-rows'
 import { useEditBuffers } from './hooks/use-edit-buffers'
 import { useGridNavigation } from './hooks/use-grid-navigation'
-import { isMultiPeriod, fmt, matchLibraryItems, buildRoomOptions, findCrossCardMatches } from './format'
+import { isMultiPeriod, fmt, matchLibraryItems, buildRoomOptions, findCrossCardMatches, groupRowsByHeading } from './format'
 import type { RoomOption } from './format'
 import { cardTotals } from './totals'
 import { addBudgetItem, softDeleteBudgetItem } from '../../../shared/supabase/budget-service'
@@ -14,6 +14,7 @@ import { useToast } from '../../../shared/components/toast'
 import { thStyle, thNum, tdStyle, numStyle, colWidths, tableMinWidth } from './components/table-styles'
 import { ItemRow } from './components/item-row'
 import { PeriodRow } from './components/period-row'
+import { HeadingRow } from './components/heading-row'
 import { BurdenSheet } from './components/burden-sheet'
 import { StatusInfoSheet } from './components/status-info-sheet'
 import { NoteSheet } from './components/note-sheet'
@@ -27,6 +28,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     stages,
     units,
     library,
+    headings,
     allLibrary,
     budgetCards,
     loading,
@@ -262,6 +264,14 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   }, [])
 
   const totals = useMemo(() => cardTotals(rows, bordroData), [rows, bordroData])
+  const groups = useMemo(() => groupRowsByHeading(rows, headings), [rows, headings])
+  // DILIM 1100-B: No kolonu TEK sayac, CIZIM SIRASINDA artar; basliklar sayaci ETKILEMEZ
+  // (BUTCE-SEMA-KARARLARI satir 105). Immutable kurulum (react-hooks/immutability): render
+  // sirasinda sayac ARTTIRILMAZ, sira groups'tan duz-cekilip bir kere Map'e donusturulur.
+  const rowNoById = useMemo(
+    () => new Map(groups.flatMap((g) => g.rows).map((r, i) => [r.id, i + 1])),
+    [groups],
+  )
 
   if (loading) return <Loading label="Bütçe yükleniyor..." />
   if (error) return <ErrorMessage message={error} onRetry={refetch} />
@@ -336,60 +346,67 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
             </tr>
           </thead>
           <tbody>
-            {rows.map((it, idx) => {
-              const multi = isMultiPeriod(it)
-              const addedStageIds = Object.keys(it.periodQty)
-              const periodKeys = new Set(addedStageIds)
-              const addedStages = stages.filter((s) => periodKeys.has(s.id))
-              return (
-                <Fragment key={it.id}>
-                  <ItemRow
-                    item={it}
-                    rowNo={idx + 1}
-                    stages={stages}
-                    units={units}
-                    api={api}
-                    bordro={bordroData[it.id]}
-                    warning={itemWarnings[it.id] ?? null}
-                    onOpenBurden={onOpenBurden}
-                    onOpenNote={onOpenNote}
-                    onRemove={onRemoveItem}
-                    justAdded={justAddedIds.includes(it.id)}
-                    bufUnitNet={buffers[it.id + ':unitNet']}
-                    bufMultiplier={buffers[it.id + ':multiplier']}
-                    bufRepeat={buffers[it.id + ':repeat']}
-                    navUnitNet={isActiveEdit(it.id, 'unitNet') ? undefined : fmt(it.unitNet)}
-                    navMultiplier={isActiveEdit(it.id, 'multiplier') ? undefined : fmt(it.multiplier)}
-                    navRepeat={isActiveEdit(it.id, 'repeat') ? undefined : fmt(it.repeat)}
-                  />
-                  {multi &&
-                    addedStages.map((s) => {
-                      const periodRowId = `${it.id}:${s.id}`
-                      const netVal = it.periodNet[s.id] ?? it.unitNet
-                      const repeatVal = it.periodRepeat[s.id] ?? it.repeat
-                      const qtyVal = it.periodQty[s.id] ?? 0
-                      return (
-                        <PeriodRow
-                          key={periodRowId}
-                          item={it}
-                          stage={s}
-                          api={api}
-                          units={units}
-                          bordro={bordroData[it.id]}
-                          warning={periodWarnings[it.id + ':' + s.id] ?? null}
-                          onOpenBurden={onOpenBurden}
-                          bufQty={buffers[it.id + ':stage:' + s.id]}
-                          bufNet={buffers[it.id + ':pnet:' + s.id]}
-                          bufRepeat={buffers[it.id + ':prepeat:' + s.id]}
-                          navNet={isActiveEdit(periodRowId, 'periodNet') ? undefined : fmt(netVal)}
-                          navRepeat={isActiveEdit(periodRowId, 'periodRepeat') ? undefined : fmt(repeatVal)}
-                          navQty={isActiveEdit(periodRowId, 'periodQty') ? undefined : fmt(qtyVal)}
-                        />
-                      )
-                    })}
-                </Fragment>
-              )
-            })}
+            {groups.map((group, groupIdx) => (
+              <Fragment key={groupIdx}>
+                {group.heading !== null && (
+                  <HeadingRow name={group.heading.name} totals={cardTotals(group.rows, bordroData)} />
+                )}
+                {group.rows.map((it) => {
+                  const multi = isMultiPeriod(it)
+                  const addedStageIds = Object.keys(it.periodQty)
+                  const periodKeys = new Set(addedStageIds)
+                  const addedStages = stages.filter((s) => periodKeys.has(s.id))
+                  return (
+                    <Fragment key={it.id}>
+                      <ItemRow
+                        item={it}
+                        rowNo={rowNoById.get(it.id) ?? 0}
+                        stages={stages}
+                        units={units}
+                        api={api}
+                        bordro={bordroData[it.id]}
+                        warning={itemWarnings[it.id] ?? null}
+                        onOpenBurden={onOpenBurden}
+                        onOpenNote={onOpenNote}
+                        onRemove={onRemoveItem}
+                        justAdded={justAddedIds.includes(it.id)}
+                        bufUnitNet={buffers[it.id + ':unitNet']}
+                        bufMultiplier={buffers[it.id + ':multiplier']}
+                        bufRepeat={buffers[it.id + ':repeat']}
+                        navUnitNet={isActiveEdit(it.id, 'unitNet') ? undefined : fmt(it.unitNet)}
+                        navMultiplier={isActiveEdit(it.id, 'multiplier') ? undefined : fmt(it.multiplier)}
+                        navRepeat={isActiveEdit(it.id, 'repeat') ? undefined : fmt(it.repeat)}
+                      />
+                      {multi &&
+                        addedStages.map((s) => {
+                          const periodRowId = `${it.id}:${s.id}`
+                          const netVal = it.periodNet[s.id] ?? it.unitNet
+                          const repeatVal = it.periodRepeat[s.id] ?? it.repeat
+                          const qtyVal = it.periodQty[s.id] ?? 0
+                          return (
+                            <PeriodRow
+                              key={periodRowId}
+                              item={it}
+                              stage={s}
+                              api={api}
+                              units={units}
+                              bordro={bordroData[it.id]}
+                              warning={periodWarnings[it.id + ':' + s.id] ?? null}
+                              onOpenBurden={onOpenBurden}
+                              bufQty={buffers[it.id + ':stage:' + s.id]}
+                              bufNet={buffers[it.id + ':pnet:' + s.id]}
+                              bufRepeat={buffers[it.id + ':prepeat:' + s.id]}
+                              navNet={isActiveEdit(periodRowId, 'periodNet') ? undefined : fmt(netVal)}
+                              navRepeat={isActiveEdit(periodRowId, 'periodRepeat') ? undefined : fmt(repeatVal)}
+                              navQty={isActiveEdit(periodRowId, 'periodQty') ? undefined : fmt(qtyVal)}
+                            />
+                          )
+                        })}
+                    </Fragment>
+                  )
+                })}
+              </Fragment>
+            ))}
             <AddItemRow disabled={adding} onOpen={onOpenAddPanel} />
           </tbody>
         </table>
