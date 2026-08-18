@@ -37,7 +37,7 @@ varsayim yapilmaz.
 -> Etkiler: payroll-read.ts (buildPayrollRates/deriveBordroFields) -> use-edit-buffers.ts (refreshBordro) -> item-row.tsx/burden-sheet.tsx (bordro gösterimi).
 -> Kritik: EVET — PERSONEL-MEVZUATI doktrinine karşı tek doğrulama noktası; K5 kesin-çözüm algoritması burada.
 
-`src/shared/cfe/cfe.ts` (172)
+`src/shared/cfe/cfe.ts` (171)
 -> Görev: Genel CFE motoru — net/brüt dönüşüm, KDV ayrıştırma, dönem-bazlı satır toplamı, kova (additive/deduction) matematiği.
 -> Kullanır: decimal.js; dışarıdan çağrılan yok (saf).
 -> Etkiler: item-row.tsx/period-row.tsx/burden-sheet.tsx (netToplamDonemli/brutToplamDonemli/kisiyeBanka çağırır).
@@ -79,7 +79,7 @@ varsayim yapilmaz.
 -> Etkiler: authenticated-shell.tsx (muhasebe "bütçe" sekmesi) buradan render eder.
 -> Kritik: EVET — İ4 (Ekran ≠ kabuk) sınırı burada tutulur; budgetId/cardId/viewMode dışarıdan alınabilir kalmalı.
 
-`src/app/muhasebe/budget/components/item-row.tsx` (337)
+`src/app/muhasebe/budget/components/item-row.tsx` (329)
 -> Görev: Kart tablosunun kalem satırı — 12 kolonluk KİLİTLİ kolon setinin tek satırlık render'ı, bordro/genel ayrımı + dönem-satırı açılımı.
 -> Kullanır: shared/cfe (netToplamDonemli/brutToplamDonemli/kisiyeBanka) + format.ts + hooks/use-edit-buffers.ts (EditApi tipi).
 -> Etkiler: card-table-screen.tsx satır-başına bunu render eder.
@@ -91,7 +91,7 @@ varsayim yapilmaz.
 -> Etkiler: authenticated-shell.tsx (dept "bekleyen" + muhasebe "masa" sekmeleri) buradan render eder.
 -> Kritik: EVET — onay/red/düzeltme geçişleri birbirine bağlı tek state akışı, ayrılırsa takip edilemez.
 
-`src/shared/types/domain.ts` (90)
+`src/shared/types/domain.ts` (89)
 -> Görev: Paylaşılan TypeScript domain tipleri — UserRole/Receipt/Period/ApprovalLog/Department/Invitation.
 -> Kullanır: hiçbir modül (yalnız tip tanımları).
 -> Etkiler: receipt-service.ts, reviewer-screen.tsx, invitation-service.ts, saha ekranları dahil neredeyse tüm src/ bu tipleri import eder.
@@ -106,13 +106,13 @@ varsayim yapilmaz.
 ### B seviyesi (NORMAL)
 
 `src/App.tsx` (49) — auth durumuna göre login/signup/proje-seçim/kabuk yönlendirmesi
-`src/main.tsx` (10) — React kök giriş noktası, StrictMode + index.css import
-`src/app/auth/authenticated-shell.tsx` (139) — rol-bazlı kabuk: header+nav+ekran seçimi, kurulum durumu kontrolü
+`src/main.tsx` (13) — React kök giriş noktası, StrictMode + index.css import
+`src/app/auth/authenticated-shell.tsx` (275) — rol-bazlı kabuk: header+nav+ekran seçimi, kurulum durumu kontrolü
 `src/app/auth/create-project-page.tsx` (150) — yeni proje açma formu, fn_create_project çağırır
 `src/app/auth/login-page.tsx` (55) — email/şifre giriş formu
 `src/app/auth/project-selection-page.tsx` (156) — çoklu proje seçim ekranı + yeni proje açma girişi
 `src/app/auth/signup-page.tsx` (107) — davet token'ıyla hesap oluşturma (accept-invitation çağırır)
-`src/app/layout/app-header.tsx` (251) — üst şerit: avatar dropdown, proje adı, tema, çıkış, bildirim
+`src/app/layout/app-header.tsx` (296) — üst şerit: avatar dropdown, proje adı, tema, çıkış, bildirim
 `src/app/layout/app-shell.tsx` (181) — kabuk yerleşimi: sol ray + iki şeritli üst bağlam + kendi ekseninde kayan orta masa; ray daraltma düğmesini taşır
 `src/app/layout/bottom-nav.tsx` (76) — rol-bazlı alt navigasyon sekmeleri (NAV_ITEMS)
 `src/app/layout/nav-rail.tsx` (177) — sol ray: modül duraklarını çizer, açık/kapalı iki genişlik (168/68px), kapalıda ikon + ilk harf düşüşü
@@ -125,7 +125,7 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/components/note-sheet.tsx` (35) — İç Not / Kamu Notu düzenleme sheet'i
 `src/app/muhasebe/budget/components/period-row.tsx` (197) — çok-dönemli kalemin dönem alt-satırı render'ı
 `src/app/muhasebe/budget/components/status-info-sheet.tsx` (21) — statü rehberi metinleri
-`src/app/muhasebe/budget/components/table-styles.ts` (80) — kart tablosu kolon genişlikleri + hücre stilleri
+`src/app/muhasebe/budget/components/table-styles.ts` (85) — kart tablosu kolon genişlikleri + hücre stilleri
 `src/app/muhasebe/budget/format.ts` (303) — fmt/parseNumericDraft + kütüphane arama + başlık grubu saf fonksiyonları
 `src/app/muhasebe/budget/hooks/use-card-rows.ts` (213) — kart verisi yükleme (budgetId/cardId), ref senkronizasyonu
 `src/app/muhasebe/budget/hooks/use-grid-navigation.ts` (273) — İ7 motorunun DOM bağlayıcısı, tuş olaylarını çekirdeğe delege eder

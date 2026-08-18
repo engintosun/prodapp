@@ -1,6 +1,6 @@
 # KAAPA — Mimari Kararlar Dokümanı
 
-**Son güncelleme:** 6 Ağustos 2026
+**Son güncelleme:** 18 Ağustos 2026
 **Durum:** M1 (temel altyapı + auth) kapandı. M2 (çekirdek döngü) aktif — DILIM-2/DILIM-3 (bordro motoru) tamam, R-serisi ekran refaktörü (R1-R3) tamam, KLV (klavye motoru, K1-K13) tamam, MÜHÜR-1/2 (bütçe mühürleme çekirdeği + servis okuma çatalı) tamam. Sıradaki: KABUK (uygulama kabuğu); MÜHÜR-3a/3b KABUK sonrasına alındı (Engin kararı, 4 Ağustos 2026). Detay: CURRENT.md.
 
 -----
@@ -218,6 +218,7 @@ Oklar tek yönlü: Orkestrasyon → herkesi çağırabilir. UI → sadece orkest
 - Kırmızı bayrak: bir dosya 3 farklı session'da değiştiyse → bölünme tartışması
 - Sorumlu: Claude kontrol eder, Engin karar verir
 - **doc-check çalıştırma zamanı (8 Ağustos 2026):** Denetim A ve E commit tarihine/hash'ine bakar; ikisi de commit ATILDIKTAN SONRA doğru ölçer. Kapıda (commit öncesi) çalıştırılan doc-check bir adım geride ölçer ve o oturumda değiştirilen dosyaları TAZE görür. Kapı olarak çalıştırmak yine değerlidir (önce-sonra farkı görünür), ancak çıktısı ancak commit sonrası kesindir. Sayı raporlanacaksa commit sonrası ölçüm yazılır.
+- **Denetim F — INDEX satır sayısı doğruluğu (Engin kararı 18 Ağustos 2026):** INDEX.md bölüm 2'deki her `` `yol` (N) `` iddiası gerçek dosyayla karşılaştırılır; TAM EŞLEŞME beklenir, tolerans bandı YOKTUR. Denetim doğru sayıyı da yazdırır (`INDEX=139 GERÇEK=275`), böylece düzeltme ölçme işi değil kopyala-yapıştır olur. Sonuç: kod dosyasına dokunan her dilimin kapanışı INDEX'i güncellemek ZORUNDADIR — bu kastedilen maliyettir, yan etki değil. Tetikleyici: 18 Ağustos 2026, DILIM 1100-B kapanışından sonra INDEX baştan sona mekanik tarandı ve 56 satır sayısı iddiasından 7'si yanlış çıktı; en büyük sapma authenticated-shell.tsx (INDEX 139, gerçek 275 — dosya iki katına çıkmış ve 300 eşiğine dayanmışken INDEX onu hafif gösteriyordu). Küçük sapmaların (item-row.tsx 337→329) elenmesi tam olarak bu birikmenin yoludur, o yüzden tolerans reddedildi. SAYMA DÜZENİ ŞERHİ: F `wc -l` düzenini kullanır, D ise `split(/\r?\n/)` uzunluğunu — satır sonuyla biten dosyalarda D bir fazla sayar. İki düzen bilerek yan yana durur: INDEX'in sayıları tarihsel olarak `wc -l`, D'nin 300 eşiği ise kendi düzeninde kalibre.
 
 **Karar tarihi:** 22.05.2026 | **Gerekçe:** Kurallar koyuldu, uygulandığını denetleyecek mekanizma lazım.
 

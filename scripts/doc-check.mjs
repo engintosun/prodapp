@@ -280,6 +280,56 @@ for (const rel of srcFiles) {
   }
 }
 
+// ----- Denetim F: INDEX satir sayisi dogrulugu -----
+// INDEX.md bolum 2 her dosya icin `yol` (N) biciminde bir satir sayisi iddiasi tasir. Bu iddialar
+// elle yazildigi icin sessizce bayatliyordu: 18 Agustos 2026 taramasinda 56 iddiadan 7'si yanlisti
+// ve en buyuk sapma authenticated-shell.tsx idi (INDEX 139 diyordu, gercek 275). INDEX'in kendi
+// STATUS RULE'u "mevcut repository durumunu tanimlar" der; olculeri yanlissa o soz tutulmuyor demektir.
+// TAM ESLESME (Engin karari 18 Agustos 2026): tolerans bandi YOK. Gerekce: 8 satirlik kucuk sapmalar
+// elenirse birikerek 139->275 olur; doc-check kapanista kosuluyor, is sirasinda degil, o yuzden
+// "surekli kirmizi" maliyeti pratikte yoktur ([E] de ayni sekilde davranir).
+// SAYMA DUZENI — DIKKAT: bu denetim `wc -l` duzenini kullanir (satir sonu KARAKTERI sayar), Denetim D
+// ise content.split(/\r?\n/) uzunlugunu kullanir ve satir sonuyla biten dosyalarda BIR FAZLA verir
+// (ornek: format.ts, wc -l = 303, split = 304). INDEX'in sayilari tarihsel olarak wc -l duzenindedir;
+// F bu duzeni devralmak ZORUNDADIR, yoksa 56 iddianin hepsi birden yanlis gorunur. D'nin sayma
+// bicimine DOKUNULMAZ (esigi 300'dur, degistirmek esik davranisini kaydirir).
+const indexPath = path.join(ROOT, 'INDEX.md');
+let indexRaw = '';
+try {
+  indexRaw = fs.readFileSync(indexPath, 'utf8');
+} catch {
+  warn('F', 'INDEX.md okunamadi');
+}
+if (indexRaw) {
+  const claimRe = /`([^`\n]+?)`\s*\((\d+)\)/g;
+  let m;
+  while ((m = claimRe.exec(indexRaw)) !== null) {
+    const claimed = Number(m[2]);
+    const rel = m[1].trim();
+    // Edge function satirlari INDEX'te kisa yolla yazilir (ornek: accept-invitation/index.ts).
+    const candidates = [rel, path.posix.join('supabase/functions', rel)];
+    let found = null;
+    for (const c of candidates) {
+      const abs = path.join(ROOT, c);
+      if (fs.existsSync(abs) && fs.statSync(abs).isFile()) {
+        found = abs;
+        break;
+      }
+    }
+    if (!found) {
+      warn('F', `INDEX.md — ${rel} (${claimed}) — DOSYA BULUNAMADI (silinmis ya da yol yanlis)`);
+      continue;
+    }
+    const content = fs.readFileSync(found, 'utf8');
+    // wc -l duzeni: satir sonu karakteri say. Son satir sonuyla bitmiyorsa o son parca da bir satirdir.
+    const parts = content.split(/\r?\n/);
+    const real = parts[parts.length - 1] === '' ? parts.length - 1 : parts.length;
+    if (real !== claimed) {
+      warn('F', `INDEX.md — ${rel} — INDEX=${claimed} GERCEK=${real}`);
+    }
+  }
+}
+
 // ----- Rapor -----
 console.log('=== KAAPA doc-check ===');
 for (const l of warnLines) console.log(l);
