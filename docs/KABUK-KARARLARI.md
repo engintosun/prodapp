@@ -129,7 +129,7 @@ Bu sınır sprint komutuna yazılmazsa uygulayıcı saha diskini söker.
 
 **ENGİN KARARI (8 Ağustos 2026).** Engin'in metni Workbench/Tab Manager için "ileride destekleyecek esneklikte kurulmalı" diyor. Opus itirazı: bu cümle bir uygulayıcıya verilirse **spekülatif altyapı** üretir (TabContext, keep-alive önbelleği, çoklu-kopya state). Gelecek-korumasının somut karşılığı üç maddedir ve biri zaten kilitli kuraldır:
 
-1. **Ekranlar parametrelerini dışarıdan alır** (İ4 — zaten kilitli).
+1. **Ekranlar parametrelerini dışarıdan alır** (İ4 — zaten kilitli). **DÜZELTME (18 Ağustos 2026):** kodda 2/3 — viewMode prop olarak geçmiyor (6 Ağustos 2026 tespiti, CURRENT.md Bayat kayıtlar C grubu).
 2. **Ekran durumu ekranın içinde veya adreste yaşar**, modül tekilinde değil.
 3. **Her ekranın bir URL adresi vardır** (`/muhasebe/bekleyen`, `/butce/kalemler?kart=…`).
 
@@ -168,8 +168,10 @@ Bu üçü varsa Tab Manager yarın kabuğa eklenir, ekranlara dokunulmaz. Sprint
 **ENGİN KARARI:** İlk aşamada YENİ EKRAN GELİŞTİRİLMEZ. Yapılacak:
 - Mevcut alt navigasyon kaldırılır (muhasebe + bütçe yüzeylerinde; saha/dept hariç)
 - Kabuk kurulur (dört bölge + ray + üst bağlam + sağ referans iskeleti)
-- Bugün CANLI olan altı ekran kabuğa taşınır: Dashboard · Dönem · Rapor · Davet · Bütçe · Tanımlar
+- Bugün CANLI olan dört ekran kabuğa taşınır: Masa/Reviewer · Davet · Bütçe · Tanımlar
 - Mevcut işlevsellik korunur, yeni özellik eklenmez
+
+**DÜZELTME (18 Ağustos 2026):** bu satır 6 Ağustos 2026'da kodla tutmadığı tespit edilmiş, düzeltilmeden bekliyordu (CURRENT.md Bayat kayıtlar C grubu). Kaynak: kodda dört ekran canlı; Dönem ve Rapor EmptyState. DİLİM 2 sonrası durak dağılımı da değişti (muhasebe 4 durak + bütçe 2 durak, Tanımlar bütçeye taşındı) — bölüm 10'un durak tablosu bu tura göre YENİDEN OKUNMALIDIR, bu düzeltme yalnız ekran SAYISINI kapatır.
 
 **ENGİN KARARI (8 Ağustos 2026) — sprint disiplini:** Ray **hedef yerleşimi** dokümanda tutar, **koda bugün var olanı** listeler. Aksi hâlde uygulayıcı henüz ayrışmamış duraklar (Şüpheli, Marka gibi) için boş ekran uydurur. Hangi durağın bugün ayrı ekranı olduğu, hangisinin sonra ayrışacağı sprint dokümanında tek tek eşlenir.
 
