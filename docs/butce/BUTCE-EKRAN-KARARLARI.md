@@ -1,6 +1,6 @@
 # KAAPA — BÜTÇE EKRAN & MODEL KARARLARI
 
-**Son güncelleme:** 17 Ağustos 2026
+**Son güncelleme:** 18 Ağustos 2026
 
 ⚠ TERMİNOLOJİ: 2026-07-11 öncesi kayıtlarda Miktar=kişi/adet, Çarpan=süre okunur; sonrasında Miktar=süre, X=kişi/adet (bkz. GLOSSARY tarihçe).
 

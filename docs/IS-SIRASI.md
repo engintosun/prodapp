@@ -1,6 +1,6 @@
 # KAAPA — İŞ SIRASI
 
-**Son güncelleme:** 17 Ağustos 2026
+**Son güncelleme:** 18 Ağustos 2026
 
 BU DOSYA SIRADAKI İŞİ TUTMAZ. Tek kaynak: CURRENT.md "Sıradaki iş" bölümü. Burada yalnız (a) TAMAMLANAN iş referansı ve (b) UZUN VADELİ backlog (yakında başlamayacak, tarihsiz fikirler) yaşar. Bitenler silinmez (referans için kalır); tarihçe ayrıca git log'da.
 Aktif milestone: M2 — Çekirdek Döngü.
