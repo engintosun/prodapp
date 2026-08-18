@@ -49,6 +49,11 @@ Tezin dört sonucu:
 
 ---
 
+## 2A. ADRES ŞEMASI VE DURAK GERÇEKLİĞİ (8-9 Ağustos 2026 KABUK Dilim 1/2 kararları — CURRENT.md Milestone günlüğünden taşındı 18 Ağustos 2026)
+
+- **Adres şeması (Engin kararı):** ekran seçimi ADRESTEN okunur, bileşen state'inden değil. `/muhasebe/{bekleyen,donem,rapor,davet}` · `/butce` · `/butce/tanimlar` · `/saha/:key` · `/dept/bekleyen`. Rol ile adres uyuşmazsa kullanıcı kendi ilk durağına yönlendirilir. Tanımsız adreste "Adres bulunamadı" gösterilir — SESSİZ HATA YASAĞI: bilinmeyen adres boş ekrana ya da varsayılan ekrana düşmez. Tanımlar `/muhasebe/tanimlar`'dan `/butce/tanimlar`'a TAŞINDI (DefinitionsScreen bütçe tanımlarıdır), eski adres kaldırıldı. Uygulama: react-router-dom (kendi ince router'ımız tartışıldı, paket seçildi); SPA rewrite için vercel.json gerekir — yoksa canlıda sayfa yenilenince 404 döner (Dilim 1'de yaşandı).
+- **BOŞ DURAK UYDURULMAZ (Engin kararı, ilke):** ray yalnız KODDA BUGÜN VAR OLAN durağı taşır. Hedef akışta Dashboard vardır ama kodda yoktur, bu yüzden raya konmaz ve ilk açılış ekranı BEKLEYEN'dir. Dashboard yazıldığı gün ilk ekran olur. Aynı ilkenin ikinci uygulaması: basınca hiçbir şey yapmayan kutu konmaz (12 Ağustos'ta boş bildirim zili kabuk dalından bu gerekçeyle kaldırıldı, classic/saha dalına dokunulmadı — bölüm 12.4).
+
 ## 3. SOL RAY
 
 > REVİZYON (6 Ağustos 2026): bu bölümdeki "rayda rozet/sayaç yok" kararı değişmiştir; ray canlıdır, rozet ve renk taşır. Gerekçe ve tam kural bölüm 12.2'dedir.
