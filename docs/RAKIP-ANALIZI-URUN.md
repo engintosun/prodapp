@@ -52,6 +52,9 @@
 - Senaryo ici: solda Grand Total + kategori agaci, ortada Top sheet tablosu (Account · Name · Subtotal · Fringes total · Total), ust seritte Renumber · Search · Export · Add · Tools · Comments · yetki rozetleri.
 - Bos butcede uc yol: Add category · Import Showbiz Budgeting UBX · Import Movie Magic Budgeting XML. Ikisinde de "Only structure" / "Structure and details" secimi ve "XML Advanced olarak disari al, basit XML fringe ve grup atamalarini tasimaz" uyarisi. Ithal edilen tutarlar senaryonun secili para biriminde gosteriliyor.
 - Tools uc sekme: Fringes · Groups · Globals. Fringes ayrica disaridan ithal edilebiliyor.
+- Tools KALICI PANEL DEGIL, acilip kapanan MODAL — genislik yemeyen ucuncu desen
+  (Saturation'in sabit paneli ve MMB'nin civili kolonu disinda). 14 Agustos 2026 goruntu
+  turunde dogrulandi.
 - Detay satirinda ayri pencerede acma ikonu.
 - KAAPA karsiliklari: Status=Locked ~ MUHUR; Fringes ~ yasal yuk kovasi; Globals ~ oran katalogu / dinamik deger; senaryo ~ butce versiyonu; Account agaci ~ kart/kalem kodu.
 
