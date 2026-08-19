@@ -100,7 +100,7 @@ varsayim yapilmaz.
 `supabase/migrations/00000000000000_baseline.sql` (4293)
 -> Görev: Canlı PostgreSQL şeması tek kaynağı — 39 tablo, 101 RLS policy, 25 trigger, 17 fonksiyon (pg_dump çıktısı).
 -> Kullanır: hiçbiri (SQL dump); user_role()/project_id()/user_dept_id() auth.jwt() app_metadata okur.
--> Etkiler: tüm src/shared/supabase/*-service.ts + edge functions bu şemaya sorgu atar; güncel şema = baseline + sonraki 28 göç (kronolojik okunmalı).
+-> Etkiler: tüm src/shared/supabase/*-service.ts + edge functions bu şemaya sorgu atar; güncel şema = baseline + sonraki 37 göç (kronolojik okunmalı).
 -> Kritik: EVET — şema/RLS/grant değişikliği Engin onayı gerektirir (CLAUDE.md); tek başına bayat okunursa güncel şema YANLIŞ çıkar.
 
 ### B seviyesi (NORMAL)
@@ -153,7 +153,7 @@ Edge functions (`supabase/functions/`):
 `clear-claims/index.ts` (44) — çıkışta app_metadata claim'lerini temizler
 `set-claims/index.ts` (65) — proje seçiminde app_metadata'ya project_id/role/dept_id yazar
 
-`supabase/migrations/` — 36 goc (baseline haric), kronolojik. baseline = BAYAT taban; guncel sema = baseline + sonraki tum gocler. Gocleri okurken kronolojik oku, yalniz baseline'a guvenme. Kararlari: docs/butce/BUTCE-SEMA-KARARLARI.md
+`supabase/migrations/` — 37 goc (baseline haric), kronolojik. baseline = BAYAT taban; guncel sema = baseline + sonraki tum gocler. Gocleri okurken kronolojik oku, yalniz baseline'a guvenme. Kararlari: docs/butce/BUTCE-SEMA-KARARLARI.md
 
 ### C seviyesi (BASİT)
 
