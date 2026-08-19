@@ -64,6 +64,7 @@ export type EditableField =
   | 'unitId'
   | 'internalNote'
   | 'publicNote'
+  | 'headingCode'
 
 const FIELD_COL: Record<EditableField, string> = {
   internalNote: 'internal_note',
@@ -77,6 +78,7 @@ const FIELD_COL: Record<EditableField, string> = {
   vatRate: 'vat_rate',
   paymentStatus: 'payment_status',
   unitId: 'unit_id',
+  headingCode: 'heading_code',
 }
 
 async function getProjectId(): Promise<string> {
@@ -377,6 +379,9 @@ export async function updateItemField(
   } else if (field === 'internalNote' || field === 'publicNote') {
     const noteText = String(value).trim()
     payload = { [FIELD_COL[field]]: noteText === '' ? null : noteText }
+  } else if (field === 'headingCode') {
+    const v = String(value).trim()
+    payload = { heading_code: v === '' ? null : v }
   } else {
     const n = typeof value === 'number' ? value : Number(String(value).replace(',', '.'))
     if (!Number.isFinite(n)) throw new Error('Geçersiz sayı')

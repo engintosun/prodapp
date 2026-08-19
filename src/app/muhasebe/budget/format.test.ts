@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseNumericDraft, effectiveWarning, bordroAllowedUnits, normalizeForSearch, matchLibraryItems, buildRoomOptions, findCrossCardMatches, headingKeyOf, groupRowsByHeading } from './format'
+import { parseNumericDraft, effectiveWarning, bordroAllowedUnits, normalizeForSearch, matchLibraryItems, buildRoomOptions, findCrossCardMatches, headingKeyOf, groupRowsByHeading, canChangeHeading } from './format'
 import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
 
 describe('parseNumericDraft (PARSE GUVENCESI, K10 revize + TD-16)', () => {
@@ -423,5 +423,15 @@ describe('groupRowsByHeading (DILIM 1100-B, BUTCE-EKRAN-KARARLARI bolum 19)', ()
     const last = groups[groups.length - 1]
     expect(last.heading?.key).toBeNull()
     expect(last.heading?.name).toBe('Başlıksız')
+  })
+})
+
+describe('AIDIYET-2b-1 dugme gorunurlugu', () => {
+  it('libraryItemId null olan satir icin kosul true', () => {
+    expect(canChangeHeading({ libraryItemId: null })).toBe(true)
+  })
+
+  it('libraryItemId dolu olan satir icin kosul false', () => {
+    expect(canChangeHeading({ libraryItemId: 'lib-1' })).toBe(false)
   })
 })

@@ -18,6 +18,7 @@ import { HeadingRow } from './components/heading-row'
 import { BurdenSheet } from './components/burden-sheet'
 import { StatusInfoSheet } from './components/status-info-sheet'
 import { NoteSheet } from './components/note-sheet'
+import { HeadingSheet } from './components/heading-sheet'
 import { AddItemRow, ADD_ROW_ID } from './components/add-item-row'
 import { AddItemPanel } from './components/add-item-panel'
 
@@ -205,6 +206,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
 
   const [openBurden, setOpenBurden] = useState<{ itemId: string; stageId: string | null } | null>(null)
   const [openNoteItemId, setOpenNoteItemId] = useState<string | null>(null)
+  const [openHeadingItemId, setOpenHeadingItemId] = useState<string | null>(null)
   const [openStatusInfo, setOpenStatusInfo] = useState(false)
   const didInitialFocusRef = useRef(false)
 
@@ -231,6 +233,10 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
 
   const onOpenNote = useCallback((itemId: string) => {
     setOpenNoteItemId(itemId)
+  }, [])
+
+  const onOpenHeading = useCallback((itemId: string) => {
+    setOpenHeadingItemId(itemId)
   }, [])
 
   const onRemoveItem = useCallback(
@@ -368,6 +374,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                         warning={itemWarnings[it.id] ?? null}
                         onOpenBurden={onOpenBurden}
                         onOpenNote={onOpenNote}
+                        onOpenHeading={onOpenHeading}
                         onRemove={onRemoveItem}
                         justAdded={justAddedIds.includes(it.id)}
                         bufUnitNet={buffers[it.id + ':unitNet']}
@@ -476,6 +483,13 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         if (!item) return null
         return (
           <NoteSheet key={item.id} item={item} onCommit={api.commitNote} onClose={() => setOpenNoteItemId(null)} />
+        )
+      })()}
+      {openHeadingItemId !== null && (() => {
+        const item = rows.find((r) => r.id === openHeadingItemId)
+        if (!item) return null
+        return (
+          <HeadingSheet key={item.id} item={item} headings={headings} onCommit={api.commitNote} onClose={() => setOpenHeadingItemId(null)} />
         )
       })()}
       {openStatusInfo && <StatusInfoSheet onClose={() => setOpenStatusInfo(false)} />}

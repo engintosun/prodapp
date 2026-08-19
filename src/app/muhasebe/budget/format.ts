@@ -18,6 +18,14 @@ export function itemHasNote(it: BudgetItemRow): boolean {
   return Boolean((it.internalNote && it.internalNote.trim()) || (it.publicNote && it.publicNote.trim()))
 }
 
+// AIDIYET-2b-1 (BUTCE-EKRAN-KARARLARI bolum 19): baslik degistirme dugmesi YALNIZ elle
+// girilen (serbest) kalemlerde gorunur. Kutuphane kaleminde HIC CIZILMEZ - soluk/disabled
+// birakilmaz (Engin karari: ayni soluk hal not dugmesinde "bos ama yapilabilir" anlamina
+// geliyor, ikinci bir anlama gelmemeli).
+export function canChangeHeading(it: { libraryItemId: string | null }): boolean {
+  return it.libraryItemId === null
+}
+
 export function isMultiPeriod(it: BudgetItemRow): boolean {
   return Object.keys(it.periodQty).length > 1
 }
