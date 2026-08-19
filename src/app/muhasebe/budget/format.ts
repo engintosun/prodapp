@@ -243,16 +243,14 @@ export function findCrossCardMatches(
   return result
 }
 
-// DILIM 1100-B (BUTCE-EKRAN-KARARLARI bolum 19): bir kalemin hangi basliga ait oldugu
-// TEK BU FONKSIYONDAN okunur. BUGUN cevap katalog kodunun tire oncesi parcasidir
-// (1101-04 -> 1101). Aidiyet dilimi gelince bu fonksiyonun ICI budget_items.heading_code
-// alanina doner; cagiranlarin hicbiri degismez. Tire yoksa (KART 1500: 1501, 1502...)
-// veya kod yoksa aidiyet YOKTUR -> null.
-export function headingKeyOf(it: { catalogCode: string | null }): string | null {
-  if (!it.catalogCode) return null
-  const dash = it.catalogCode.indexOf('-')
-  if (dash <= 0) return null
-  return it.catalogCode.slice(0, dash)
+// DILIM 1100-B (BUTCE-EKRAN-KARARLARI bolum 19) + AIDIYET-2a: bir kalemin hangi basliga
+// ait oldugu TEK BU FONKSIYONDAN okunur. Cevap artik budget_items.heading_code alanidir;
+// kod ayristirma YOK. Aidiyet veri oldu, turetme degil - serbest bir kalem (1198-nn) da
+// bir basligin altinda durabilir, kutuphane kalemi de Basliksiz kalabilir. null = aidiyet
+// yok (KART 1500 gibi kutuphanesinde hic baslik satiri olmayan kartlar, ve kullanicinin
+// henuz baslik secmedigi serbest kalemler).
+export function headingKeyOf(it: { headingCode: string | null }): string | null {
+  return it.headingCode
 }
 
 // heading === null ise o grup icin BASLIK SATIRI CIZILMEZ (kartin kutuphanesinde hic

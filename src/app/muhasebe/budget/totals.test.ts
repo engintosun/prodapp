@@ -8,6 +8,7 @@ function makeItem(overrides: Partial<BudgetItemRow> = {}): BudgetItemRow {
     id: 'item-1',
     itemCode: 1,
     catalogCode: 'X.001',
+    headingCode: null,
     libraryItemId: null,
     name: 'Test kalem',
     nameEn: null,

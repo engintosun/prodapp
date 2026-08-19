@@ -335,27 +335,23 @@ describe('findCrossCardMatches (D3c-3 — TAM AD, YALNIZ resmi kutuphane, kart b
   })
 })
 
-function makeRow(catalogCode: string): BudgetItemRow {
-  return { catalogCode } as unknown as BudgetItemRow
+function makeRow(catalogCode: string, headingCode: string | null): BudgetItemRow {
+  return { catalogCode, headingCode } as unknown as BudgetItemRow
 }
 
 describe('headingKeyOf (DILIM 1100-B, BUTCE-EKRAN-KARARLARI bolum 19)', () => {
-  it('tireli kod -> tire oncesi parca', () => {
-    expect(headingKeyOf({ catalogCode: '1101-04' })).toBe('1101')
+  it('alan ne diyorsa onu doner', () => {
+    expect(headingKeyOf({ headingCode: '1101' })).toBe('1101')
   })
 
-  it('tiresiz kod (KART 1500) -> null', () => {
-    expect(headingKeyOf({ catalogCode: '1501' })).toBeNull()
-  })
-
-  it('kod null -> null', () => {
-    expect(headingKeyOf({ catalogCode: null })).toBeNull()
+  it('alan bos ise null', () => {
+    expect(headingKeyOf({ headingCode: null })).toBeNull()
   })
 })
 
 describe('groupRowsByHeading (DILIM 1100-B, BUTCE-EKRAN-KARARLARI bolum 19)', () => {
   it('baslik listesi BOS: tek grup doner, heading null, satir sirasi korunur (KART 1500 duz liste)', () => {
-    const rows = [makeRow('1501'), makeRow('1503'), makeRow('1502')]
+    const rows = [makeRow('1501', null), makeRow('1503', null), makeRow('1502', null)]
     const groups = groupRowsByHeading(rows, [])
     expect(groups).toHaveLength(1)
     expect(groups[0].heading).toBeNull()
@@ -367,7 +363,7 @@ describe('groupRowsByHeading (DILIM 1100-B, BUTCE-EKRAN-KARARLARI bolum 19)', ()
   })
 
   it('kalemi olmayan baslik gruplara GIRMEZ', () => {
-    const rows = [makeRow('1101-01')]
+    const rows = [makeRow('1101-01', '1101')]
     const headings = [
       { catalogCode: '1101', name: 'Hikâye, Senaryo, Haklar' },
       { catalogCode: '1102', name: 'Yapımcılık' },
@@ -378,7 +374,7 @@ describe('groupRowsByHeading (DILIM 1100-B, BUTCE-EKRAN-KARARLARI bolum 19)', ()
   })
 
   it('gruplar baslik listesinin sirasinda doner, grup icindeki satirlarin sirasi korunur', () => {
-    const rows = [makeRow('1102-02'), makeRow('1101-01'), makeRow('1101-02'), makeRow('1102-01')]
+    const rows = [makeRow('1102-02', '1102'), makeRow('1101-01', '1101'), makeRow('1101-02', '1101'), makeRow('1102-01', '1102')]
     const headings = [
       { catalogCode: '1101', name: 'Hikâye, Senaryo, Haklar' },
       { catalogCode: '1102', name: 'Yapımcılık' },
@@ -390,7 +386,7 @@ describe('groupRowsByHeading (DILIM 1100-B, BUTCE-EKRAN-KARARLARI bolum 19)', ()
   })
 
   it('eslesmeyen kod EN SONDAKI Basliksiz grubuna duser, adi tam olarak Başlıksız', () => {
-    const rows = [makeRow('1101-01'), makeRow('1198-01')]
+    const rows = [makeRow('1101-01', '1101'), makeRow('1198-01', null)]
     const headings = [{ catalogCode: '1101', name: 'Hikâye, Senaryo, Haklar' }]
     const groups = groupRowsByHeading(rows, headings)
     expect(groups).toHaveLength(2)
@@ -401,12 +397,31 @@ describe('groupRowsByHeading (DILIM 1100-B, BUTCE-EKRAN-KARARLARI bolum 19)', ()
   })
 
   it('her satir bir basliga esleiyorsa Basliksiz grubu HIC olusmaz', () => {
-    const rows = [makeRow('1101-01'), makeRow('1102-01')]
+    const rows = [makeRow('1101-01', '1101'), makeRow('1102-01', '1102')]
     const headings = [
       { catalogCode: '1101', name: 'Hikâye, Senaryo, Haklar' },
       { catalogCode: '1102', name: 'Yapımcılık' },
     ]
     const groups = groupRowsByHeading(rows, headings)
     expect(groups.some((g) => g.heading?.key === null)).toBe(false)
+  })
+
+  it('serbest kalem (1198-nn) bir basligin altinda durabilir', () => {
+    const rows = [makeRow('1101-01', '1101'), makeRow('1198-01', '1101')]
+    const headings = [{ catalogCode: '1101', name: 'Hikâye, Senaryo, Haklar' }]
+    const groups = groupRowsByHeading(rows, headings)
+    expect(groups).toHaveLength(1)
+    expect(groups[0].heading?.key).toBe('1101')
+    expect(groups[0].rows).toHaveLength(2)
+  })
+
+  it('kartta olmayan bir basliga isaret eden kalem Basliksiz grubuna duser', () => {
+    const rows = [makeRow('1101-01', '1101'), makeRow('1106-01', '1106')]
+    const headings = [{ catalogCode: '1101', name: 'Hikâye, Senaryo, Haklar' }]
+    const groups = groupRowsByHeading(rows, headings)
+    expect(groups).toHaveLength(2)
+    const last = groups[groups.length - 1]
+    expect(last.heading?.key).toBeNull()
+    expect(last.heading?.name).toBe('Başlıksız')
   })
 })

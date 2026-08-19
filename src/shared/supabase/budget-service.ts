@@ -21,6 +21,7 @@ export interface BudgetItemRow {
   id: string
   itemCode: number
   catalogCode: string
+  headingCode: string | null
   libraryItemId: string | null
   name: string
   nameEn: string | null
@@ -244,7 +245,7 @@ export async function getCard(budgetId: string, cardId?: string): Promise<CardVi
 
   const { data: items, error: ei } = await supabase
     .from('budget_items')
-    .select('id, item_code, catalog_code, library_item_id, name, name_en, description, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, public_note')
+    .select('id, item_code, catalog_code, heading_code, library_item_id, name, name_en, description, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, public_note')
     .eq('group_id', grp.id)
     .eq('is_active', true)
     .order('sort_order')
@@ -306,6 +307,7 @@ export async function getCard(budgetId: string, cardId?: string): Promise<CardVi
     id: i.id as string,
     itemCode: i.item_code as number,
     catalogCode: i.catalog_code as string,
+    headingCode: (i.heading_code as string | null) ?? null,
     libraryItemId: (i.library_item_id as string | null) ?? null,
     name: i.name as string,
     nameEn: (i.name_en as string | null) ?? null,
