@@ -160,6 +160,9 @@ Koster Cast'i 1600 (ATL), Atmosphere/figüranı 3900 (Production) AYRI tutar —
 ### Neden Figüran cast altında, ayrı kart değil?
 Master'da figüran ezici çoğunlukla Oyuncu departmanı altında kümeli. Türk yapımında figüran ayrı bir onay birimi değil — aynı yapım yönetimi tutar. Saturation/MMB de ayrı üst-hesap yapmaz (Set/Tag ile ayrılır, kart ile değil). Grup içinde kalır; görünürlük AÇIK (operasyonel), baş-kaşe GİZLİ.
 
+### Neden 1600 komisyon taşır, neden oran merkezi cetvele sabitlenmez?
+Türk piyasasında temsil komisyonu yapımcının giderdir (bazı ajanslarda komisyon oyuncudan alınır, o modelde bütçe gideri değildir); oran anlaşmaya göre değişir ve Rekabet Kurulu'nun 21.05.2026 tarihli kararı sonrası sektörce ortak belirlenemez — bu nedenle oran merkezi cetvele sabitlenemez, satırda yaşar. ABD kaynaklı hesap planında oyuncu-başına ajans komisyonu bulunmadığı için katalogda bu boşluk oluşmuştu.
+
 ### Stunt — neden doğa-bölmesi, neden tek "Efekt & Dublör" kartı YOK?
 Bir stunt = üç farklı maliyet doğası. Koster stunt'ı doğasına dağıtır, Master doğrular (Stunt Equipment→Grip, Coordinator→Oyuncu, Bits&Stunts→Lojistik). KAAPA: performans (koordinatör/oyuncu/dublör/aksiyon teknisyeni)→Oyuncu · araç→Transport · mekanik/rigging→Mekanik FX. Eski "Efekt & Dublör" tek-kartı çözüldü ("Dublör" performans Cast'e, "Efekt" mekanik Mekanik FX'e). "Kullanan sahiplenir"in stunt karşılığı: araç yeri Transport, çünkü o departmanın bütçe sorumluluğu; kategorisi değil kullanımı belirler. Toplamı geri-okumak için cost_object=Stunt (§4.10) — kart sınırını aşan tek "Stunt toplam".
 

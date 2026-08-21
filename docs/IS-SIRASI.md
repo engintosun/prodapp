@@ -18,7 +18,7 @@ Aktif milestone: M2 — Çekirdek Döngü.
 Bu bölüm kasıtlı boş bırakılmıştır. "Sıradaki iş" için CURRENT.md'ye bak.
 
 ## Backlog (uzun vadeli, tarihsiz — CURRENT.md'nin "Sıradaki iş"ine henüz girmedi)
-- Diğer kartlar (1100/1300/1400/1600) — 1500 modeli üzerinden geçilir.
+- Diğer kartlar (1300/1400/1600) — 1500 modeli üzerinden geçilir. (KART 1100 TAMAMLANDI, 21 Ağustos 2026'da çift kayıttan çıkarıldı — bkz. Yapıldı bölümü.)
 - **DÜZELTME (17 Ağustos 2026, Engin):** yukarıdaki "1500 modeli üzerinden geçilir" cümlesi artık TÜM kartlar için geçerli DEĞİLDİR. 1500 ÇOĞU kartın modelidir; KART 1100 ve Oyuncu kartı (1600) kendi şekillerine sahiptir ve ikisi de 1500'den farklıdır. Somut fark: 1100'ün kodları iki seviyelidir (1101 başlık + 1101-01 atom, dokuz başlık), 1500'ünkiler düzdür (1501-1505, başlık satırı yok) — bu yüzden 1100 başlıklı çizilir, 1500 düz kalır. Model kart olmak "her kart aynı şekle girer" demek değildir.
 - G6 görsel tasarım (renk/tipografi/ikonografi/tema; tokens.css placeholder bekliyor) — KABUK'tan AYRI turdur (bkz. docs/TASARIM-KARARLARI.md §3, iki tema eşitliği kararı).
 - Şablon-tipi ("ne bütçesi: film/reklam/dizi") yer tutucusu.
@@ -37,6 +37,7 @@ Bu bölüm kasıtlı boş bırakılmıştır. "Sıradaki iş" için CURRENT.md'y
 - Autocomplete "diğer kartlarda ara" genişletmesi: başka kartın kalemini isim/varsayılanlarıyla kopyalar, kodu bu kartın muhtelif kuyruğundan verir (2026-07-21, park kararı — Faz 1 dışı)
 - Serbest kalem mini istasyonunda bulanık/yakın eşleşme önerisi: "bunu mu demek istediniz: X?" (2026-07-21, park kararı — Faz 1 dışı; içeren-eşleşme çoğu durumu zaten karşılıyor)
 - Etap adlandırma revizyonu (Engin, 5 Ağustos 2026, ertelendi): mevcut Beş Etap yerine önerilen genişletilmiş isimlendirme — Geliştirme · Ön Hazırlık · Çekim · Post Prodüksiyon · Dağıtım ve Yayın, + tartışmaya açık iki ek: Finansman, Kapanış/Tasfiye. GLOSSARY'nin güncel isim standardına dokunmadan, ayrı bir oturumda ele alınacak.
+- MOTOR İŞİ — dört parça (21 Ağustos 2026, KART 1600 tasarımından çıktı): çok kademeli gruplama, çalışma anında başlık doğması, ikinci başlık anahtarı, oranla türetme. NOT: 1600 bu parçaların İLK kullanıcısıdır, TEK kullanıcısı değildir — 1300 ve 1400 aynı parçaları isteyecek.
 
 ### CURRENT.md'den taşındı (18 Ağustos 2026 diyeti — muhasebe modülü ve sonrası)
 

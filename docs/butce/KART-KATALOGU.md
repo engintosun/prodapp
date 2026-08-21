@@ -272,6 +272,8 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 
 **1600/3900 KARARI (DILIM 1100-A, 15 Ağustos 2026, Engin):** 3900 kodları 16xx'e TAŞINMAZ — Grup 3/4'ün 39xx satırları (3901-3915) kendi aralığında kalır. Kartın kütüphanesi İKİ aralığı birden gösterir (15xx/16xx + 39xx, ikisi de KART 1600'e aittir — aidiyet kart koduna değil bu kartın tanımladığı ARALIKLAR kümesine bağlanır). Serbest kalem eklenirse 39xx kod alır (16xx değil). Sonuç: mevcut kod-aralığı doktrini (K-B) tek-aralık varsayımıyla yazılmıştı; library-service.ts'teki iki-hane (`catalogCode.slice(0,2)`) aidiyet kuralı ve fn_add_budget_item'daki `substr(p_catalog_code,1,2) = substr(v_card_code,1,2)` aralık denetimi 1600 turunda genişletilecek. BU DİLİMDE YAPILMADI, kayıt olarak düşer.
 
+**KART 1600 ÜÇ KADEMELİ YAPI KARARI (21 Ağustos 2026, Engin):** Oyuncu satırı, temsilcisi varsa üç kademeli yapıya döner — kart grubu → oyuncu özet başlığı → alt kalemler (temsilci sayısı kadar). Başlık kademesi para taşımaz, altındaki alt kalemlerin toplamını gösterir; temsilcisiz oyuncu tek satır kalır, başlık doğmaz. Her alt kalem kendi ödeme statüsünü taşır (ajans faturası ≠ menajer SMM, farklı statüler tek satıra sığmaz). Detay: CURRENT.md "KART 1600 TASARIM KARARLARI" bölümü.
+
 **Kart-özel anomali:** çift-fringe guard (§4.9; loan-out'a fringe de mi yüklendi) · Crew Overlap (§4.9; aynı isim cast + set ekibinde maaş) · ÇOCUK-COMPLIANCE: minör/çocuk oyuncu var + set öğretmeni (1615) yok → bayrak (Compliance Guard §6, teşhis+uyarı). Looping çift-sayım: 1613 ↔ 5300 alias denetimi.
 
 ## 8. AÇIK / PARK (ilgili bölümlere gelince)

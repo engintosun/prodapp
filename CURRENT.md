@@ -44,6 +44,31 @@ Kolon seti (KILITLI, 12; D3-ARA 26 Temmuz 2026 revizyonu — Aciklama kolonu ayr
 - 1500 model tamam -> diger kartlar ayni modelden gecer.
 - Bordro kalemi artik istisna degil: herkesle AYNI kolon deseni (Birim Net TEK giris alani, Net toplam/Brut toplam hep salt-okunur/hesaplanan) — bkz. DILIM-3e C2. "Yasal Yuk" hucresi bir dugme; tikla acilan sheet'te donem-bazli/genel dokumu gosterir.
 
+## KART 1600 TASARIM KARARLARI (21 Agustos 2026)
+- Temsil komisyonu 1400'de değil oyuncunun kendi satırında yaşar; 1400'deki 1406 paketleme ücreti ayrı kalır.
+- Yapı üç kademeli: kart grubu -> oyuncu özet başlığı -> alt kalemler.
+- Başlık satırları para taşımaz, altındakilerin toplamını gösterir, toplama dahil edilmez (1100 doktrininin ikinci kullanımı).
+- Özet kademesinin Net hanesi altındakilerin toplamıdır; çift toplama yok.
+- Temsilcisiz oyuncu tek satır kalır, başlık doğmaz.
+- Temsilci varsa oyuncunun girdiği veri alt satıra iner; temsilci satırı oyuncu maliyet satırından beslenir.
+- Komisyon oranı temsilci satırında yaşar, seçilebilir; şablondan %20 varsayılan gelir, kullanıcı günceller.
+- Komisyonu oyuncudan alan ajans modelinde bütçede temsilci satırı OLUŞMAZ.
+- Alt kalem sayısı temsilci sayısı kadardır; "Temsilci Maliyetleri" tek satır değil bir kademedir (ajans fatura, menajer SMM - farklı statü tek satıra sığmaz).
+- Ad = rol ismi, Açıklama = oyuncunun gerçek ismi; kişi belli değilse Ad rol ismi olarak kalır.
+- Birim cetveline saat eklenecek.
+- Alt kalem numaralandırması 5.1 / 5.2 biçimindedir.
+- Temsilci eklendiği anda imleç yeni doğan temsilci satırının oran hücresine iner.
+- Temsilci silinince oyuncu tek satıra geri döner.
+- Türetilen hücre (temsilcinin Birim net'i) düzenlenemez; imleç uğramaz.
+- Oran uyarısı için mevcut Statü (?) / status-info-sheet deseni kullanılır, yeni yüzey açılmaz.
+
+### ACIK
+- Brüt toplam kolonunun adı.
+- Oyuncu başlığının katlanabilirliği.
+- vat_deductible'in Brüt toplam'ı etkileyip etkilemediği.
+- Ajans faturasının kaseyi kapsayıp kapsamadığı.
+- Özet kademesinin Türkçe adı.
+
 ## Butce — KILITLI kararlar (ozet; detay BUTCE-SEMA-KARARLARI.md)
 - GIRIS: kart=departman; faz=donemin kaba hali; giris=sakin liste + dokun-isaretle; tam gorunum=nakit matrisi.
 - GOC CANLI: budget_item_periods koprusu. "En az bir donem" + "donem tarihli" MUHURDE (K7: normal Kaydet ASLA tarih istemez; tarih yalniz Muhur/harcama gecisinde).
@@ -85,14 +110,14 @@ Kolon seti (KILITLI, 12; D3-ARA 26 Temmuz 2026 revizyonu — Aciklama kolonu ayr
 
 14. format.ts BOY SORUSU (doc-check'in tek kalan kirmizisi). Neye bagli: hicbir sey. Neyi bloke ediyor: hicbir sey. Dosya 303 satir, ARCHITECTURE 4.2 geregi ilk 6 satirda `// BOY: tek is = ..., sebep = ...` yorumu gerekiyor ama YOK. GERCEK SORU YORUM DEGIL: dosya bugun dort ayri is tasiyor (bicimleme/ayristirma: fmt/parseNumericDraft · satir turetmeleri: isMultiPeriod/buildDonemler/summarizeSame · kutuphane aramasi: normalizeForSearch/matchLibraryItems/buildRoomOptions/findCrossCardMatches · baslik gruplamasi: headingKeyOf/groupRowsByHeading). "Tek is" yazilamiyorsa dosya cekmeceye donuyor demektir. Aidiyet diliminde format.ts'e zaten dokunulacak; bolunme sorusu orada, el oradayken sorulur.
 
-15. KART 1100 BITIS TANIMI YOK — VE KART SIRASI (18 Agustos 2026'da fark edildi, Engin sordu: "1100 ile ilgili is yok mu hic"). Neye bagli: hicbir sey (aidiyet dilimi 19 Agustos 2026'da kapandi). Neyi bloke ediyor: 1300/1400/1600'un ne zaman ve hangi sirayla acilacagi. SORUN: KART 1100 su an AYNI ANDA iki listede duruyor — IS-SIRASI "Yapildi (referans)" bolumunde "KART 1100: 1100-A · 1100-B" yaziyor, ayni dosyanin Backlog bolumu ise hala "Diger kartlar (1100/1300/1400/1600) — 1500 modeli uzerinden gecilir" diyor. Ikisi birden dogru olamaz. UC AYRI SORU, hicbiri karara baglanmadi: (a) 1100 icin BITIS TANIMI nedir — 1500'un "MODEL kart, kolon seti KILITLI" gibi bir muhru var, 1100'un yok; aidiyet bitince "1100 tamam" mi denecek, baska ne kaliyor? (b) KUTUPHANE ile SABLON arasindaki fark — kutuphanede 47 kalem var, sablon 15'ini koyuyor; kalan 32 kullanicinin elle eklemesine mi birakiliyor, yoksa sablon buyuyecek mi? Bu karar Hatirlatma yuku madde 1 (KART GOZDEN GECIRME TURU: "alternatif ve eklenme ihtimali olan kalemlerin onceden planlanmasi") ile AYNI konudur, ikisi birlikte konusulur. (c) SIRADAKI KART hangisi — 1300/1400/1600 hicbir listede DILIM olarak acilmadi, yalniz Backlog'da tek satir; 17 Agustos duzeltmesi 1600'un (Oyuncu) kendi sekli oldugunu soyluyor, yani 1500 modeliyle gecilemez. Ayrica Acik kalanlar'da 1100-A'dan kalan bes kucuk madde var (huzur hakki statusu, telif KDV ikiligi, birim cetveli taramasi, fn_open_budget 'Donemsiz' ASCII, acilmis butcelerin ASCII satirlari) — bunlarin 1100'un bitis tanimina girip girmedigi de bu turda belirlenir.
+- KART BITIS TANIMI kavrami reddedildi: satir motoru kart tanimadigi icin "kart bitti" olculebilir degil; olculebilir olan siradaki kartin motordan ne istedigi.
+- Siradaki kart 1600 Oyuncu; kart acilmadan once temsil komisyonu yapisi karara baglanir.
 
 ## Acik kalanlar
-- Huzur hakki statusu — sirket ortagi/yapimci ucreti icin ayri status gerekebilir (DILIM 1100-A, 15 Agustos 2026)
-- Telif belgeli KDV ikiligi — cetvelde 0, ama yazar KDV mukellefiyse %20 faturali (DILIM 1100-A, 15 Agustos 2026)
-- BIRIM CETVELI ARTIK BES DEGERLI (gun/hafta/ay/bolum/sabit) — 'piece'/'person' 1 Temmuz 2026'da bilincli kaldirilmisti, adet/kisi Miktar/X kolonunun konusu; bu doktrin item_library'de kaynak/es-ad metninde ("adet", "kisi" gecen ad/aciklama) hala goze carpabilir, taranmadi (DILIM 1100-A, 15 Agustos 2026 bulgusu)
-- fn_open_budget icindeki 'Donemsiz' etap adi ASCII; duzeltmek fonksiyonu yeniden yaratmayi gerektiriyor, DILIM 1100-A'da yapilmadi
-- Zaten acilmis butcelerin budget_items satirlari eski ASCII adlari tasiyor; canli veri oldugu icin DILIM 1100-A'da dokunulmadi
+- Telif belgeli KDV ikiligi — cetvelde 0, ama yazar KDV mukellefiyse %20 faturali (DILIM 1100-A, 15 Agustos 2026) (ev: docs/butce/VERGI-MEVZUATI.md)
+- BIRIM CETVELI ARTIK BES DEGERLI (gun/hafta/ay/bolum/sabit) — 'piece'/'person' 1 Temmuz 2026'da bilincli kaldirilmisti, adet/kisi Miktar/X kolonunun konusu; bu doktrin item_library'de kaynak/es-ad metninde ("adet", "kisi" gecen ad/aciklama) hala goze carpabilir, taranmadi (DILIM 1100-A, 15 Agustos 2026 bulgusu) — IS, karar degil
+- fn_open_budget icindeki 'Donemsiz' etap adi ASCII; duzeltmek fonksiyonu yeniden yaratmayi gerektiriyor, DILIM 1100-A'da yapilmadi — IS, karar degil
+- Zaten acilmis butcelerin budget_items satirlari eski ASCII adlari tasiyor; canli veri oldugu icin DILIM 1100-A'da dokunulmadi — IS, karar degil
 - Kapak rakaminin KAYNAGI — mimari catal, cozulmedi (ev: KABUK-KARARLARI 12.3)
 - Kart katalogunun EVI — yeni global tablo mu, baska mi (ev: BUTCE-SEMA-KARARLARI)
 - Kartin KOKENI alani (sablondan mi elle mi) + silme yolu (ev: BUTCE-SEMA-KARARLARI)
