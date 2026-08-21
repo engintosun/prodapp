@@ -270,9 +270,22 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 
 **Stunt = doğa-bölmesi:** tek "Efekt & Dublör" kartı YOK. Performans→Oyuncu (bu kart), araç→Transport, mekanik→Mekanik FX. Üç kartın stunt satırları cost_object=Stunt taşır → CFE tek "Stunt toplam" (§4.10). Gerçekten etkilenen diğer kartlar: Transport, Mekanik FX (5300 değil — alias işaretçi).
 
-**1600/3900 KARARI (DILIM 1100-A, 15 Ağustos 2026, Engin):** 3900 kodları 16xx'e TAŞINMAZ — Grup 3/4'ün 39xx satırları (3901-3915) kendi aralığında kalır. Kartın kütüphanesi İKİ aralığı birden gösterir (15xx/16xx + 39xx, ikisi de KART 1600'e aittir — aidiyet kart koduna değil bu kartın tanımladığı ARALIKLAR kümesine bağlanır). Serbest kalem eklenirse 39xx kod alır (16xx değil). Sonuç: mevcut kod-aralığı doktrini (K-B) tek-aralık varsayımıyla yazılmıştı; library-service.ts'teki iki-hane (`catalogCode.slice(0,2)`) aidiyet kuralı ve fn_add_budget_item'daki `substr(p_catalog_code,1,2) = substr(v_card_code,1,2)` aralık denetimi 1600 turunda genişletilecek. BU DİLİMDE YAPILMADI, kayıt olarak düşer.
+**1600/3900 KARARI (DILIM 1100-A, 15 Ağustos 2026, Engin):** 3900 kodları 16xx'e TAŞINMAZ — Grup 3/4'ün 39xx satırları (3901-3915) kendi aralığında kalır. Kartın kütüphanesi İKİ aralığı birden gösterir (16xx + 39xx, iki köken bloğu; ikisi de KART 1600'e aittir — aidiyet kart koduna değil bu kartın tanımladığı ARALIKLAR kümesine bağlanır). Serbest kalem eklenirse 39xx kod alır (16xx değil). Sonuç: mevcut kod-aralığı doktrini (K-B) tek-aralık varsayımıyla yazılmıştı; library-service.ts'teki iki-hane (`catalogCode.slice(0,2)`) aidiyet kuralı ve fn_add_budget_item'daki `substr(p_catalog_code,1,2) = substr(v_card_code,1,2)` aralık denetimi 1600 turunda genişletilecek. BU DİLİMDE YAPILMADI, kayıt olarak düşer.
 
 **KART 1600 ÜÇ KADEMELİ YAPI KARARI (21 Ağustos 2026, Engin):** Oyuncu satırı, temsilcisi varsa üç kademeli yapıya döner — kart grubu → oyuncu özet başlığı → alt kalemler (temsilci sayısı kadar). Başlık kademesi para taşımaz, altındaki alt kalemlerin toplamını gösterir; temsilcisiz oyuncu tek satır kalır, başlık doğmaz. Her alt kalem kendi ödeme statüsünü taşır (ajans faturası ≠ menajer SMM, farklı statüler tek satıra sığmaz). Detay: CURRENT.md "KART 1600 TASARIM KARARLARI" bölümü.
+
+**KART 1600 TASARIM KARARLARI (22 Ağustos 2026):**
+- Menajerlik/temsil komisyonu 1400'de değil, oyuncunun kendi özeti altında yaşar. 1406 paketleme ücreti ayrı kalır.
+- Alt kalem sayısı temsilci sayısı kadardır. Ajans ile menajer AYRI ATOM GEREKTİRMEZ; fark statüde yaşar ve statü satır bazında seçilir. Tek bir "Temsilci Komisyonu" atomu yeterlidir.
+- Bu atom kataloga eklenecek (emsal: 1100'e üç yeni atom eklenmesi, gerekçesi KART-GEREKÇELERİ.md'ye yazılmıştı). Atom kalem ekleme listesinde GÖRÜNMEZ (is_group desenindeki gibi gizli), çünkü yalnızca türetme ile doğar.
+- Komisyon tabanı: oyuncunun TÜM satırlarının (kaşe, mesai, prova, tekrar telifi) çıplak net toplamıdır — tek kalemden değil. Komisyon satırının kendisi tabana dahil EDİLMEZ.
+- Komisyon oranı şablondan %20 varsayılan gelir, kullanıcı değiştirebilir. Rekabet Kurulu 21.05.2026 kararı oranı serbest bırakmıştır; piyasa %20 civarında yoğunlaşmıştır. %20 yalnızca kolaylık içindir, zorlama değildir.
+- Ajans faturası normal faturadır; komisyonun KDV'si yapımcının maliyetidir ve KDV kolonunda görünür.
+- Loan-out şirketi İSTİSNA DEĞİLDİR: statü satır bazında zaten seçilebilir.
+- Dönem varsayılanları (yalnızca şablon varsayılanı, yeni bir eksen değil): 1616 Prova → Yapım Öncesi, 1611 Mesai → Yapım, 1614 Tekrar Telifi → Yapım Sonrası. Temsilci satırı dönem seçmez (Dönemsiz).
+- Satırları bir arada tutan şey kod veya yazılan isim DEĞİL, ETİKETTİR. Mevcut budget_cost_objects tablosu bu iş için kullanılacak (göç yorumunda "Oyuncu: Ahmet" örneği zaten var). Alt-kod yolu (1601-1, 1601-2) REDDEDİLDİ: tire zaten grup üyeliği anlamında kullanılıyor (item_library.catalog_code açıklaması: üyelik tire öncesi parçadan türer).
+- Bilinen çatışma, henüz çözülmedi: budget_items tek bir cost_object taşıyor; Grup 2 için öngörülen otomatik "Stunt" etiketi ile kişi etiketi aynı alana sığmaz. cost_object'e kind (kişi / iş) ayrımı gerekiyor.
+- Birim cetveli yedi değerli olacak: gün / hafta / ay / bölüm / film / saat / sabit. ("film" eklenir, "bölüm" dizi için kalır, "saat" mesai için gerekli.)
 
 **Kart-özel anomali:** çift-fringe guard (§4.9; loan-out'a fringe de mi yüklendi) · Crew Overlap (§4.9; aynı isim cast + set ekibinde maaş) · ÇOCUK-COMPLIANCE: minör/çocuk oyuncu var + set öğretmeni (1615) yok → bayrak (Compliance Guard §6, teşhis+uyarı). Looping çift-sayım: 1613 ↔ 5300 alias denetimi.
 

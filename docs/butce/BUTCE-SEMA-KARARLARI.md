@@ -61,7 +61,7 @@ Paketleme: Model A — bütçe ile harcama tek kod tabanında paketlenebilir iki
 - AICP "pass-through hariç markup" = bidding/müşteri-fatura inceliği; KAAPA harcama-kontrol -> düz profit yeter. Gerekirse ileride dış-format/export. Çekirdek şemaya eklenmez.
 
 ### E. KDV ayrıştırma — Geniş yol (şema eki gelecek)
-- ÖNGÖRÜLEN taraf kilitçe NET (budget_items.unit_net = KDV'siz; KDV indirilebilir). Bütçe tarafında KDV Yasal Yük içinde ve Brüt toplam'a dahildir; kaynağı payment_status_burdens kovası değil, CFE'deki kişiyeBanka hesabı ve budget_items.vat_rate alanıdır (21 Ağustos 2026 — kod ile çelişiyordu, koda göre düzeltildi).
+- ÖNGÖRÜLEN taraf kilitçe NET (budget_items.unit_net = KDV'siz; KDV indirilebilir). KDV bugün de bütçe tarafında hesaplanıyor (`totals.ts`: brütToplam = brütYük + kdvTl), kaynağı payment_status_burdens kovası değil, CFE'deki kişiyeBanka hesabı ve budget_items.vat_rate alanıdır (21 Ağustos 2026 — kod ile çelişiyordu, koda göre düzeltildi). GÜNCELLEME (22 Ağustos 2026, NET/BRÜT DOKTRİNİ REVİZYONU): KDV artık Yasal Yük'ün İÇİNDE değil, kendi kolonunda çıkar — bkz. dosya sonundaki "NET/BRÜT DOKTRİNİ REVİZYONU" başlığı.
 - KARAR: budget_items'a vat_rate eklenir (uygulama dilimi). body'ye default_vat (kart) + opsiyonel vat (kalem); birim/paket mirası gibi.
 - Kullanıcı NET veya BRÜT (KDV dahil) girer; satır oranını bilir -> CFE kdvAyristir/brutBirim ile diğeri türetilir. B18 KIRILMAZ (oran girdi, tutar saklanmaz).
 - Kazanç: (a) nakit matrisi BRÜT-nakit; (b) karışık oran (20/10/1/muaf); (c) serbest-meslek makbuzu yük+KDV BİRLİKTE -> KDV ile yük AYRI eksen.
@@ -93,6 +93,7 @@ NEDEN: sahadaki gerçek senaryo — görüntü yönetmenine dolar, asistanlara T
 - BÜTÇE KURU rate_catalog DESENİNDEN AYRILIR (KUR-1 madde 2'nin düzeltmesi). Gerekçe: tarihli cetvel MEVZUAT için doğrudur — stopaj yüzdesini yapımcı seçmez, devlet açıklar. Bütçe kuru ise YAPIMCININ kararıdır, genelde piyasa üzeri temkinli tutulur. Tarihli cetvel deseni aynı bütçenin mart kalemini başka, nisan kalemini başka kurla çevirir; bütçe kendi içinde tutarsızlaşır. Bütçe TEK kurla toplanır.
 - GİRİŞTE ÇEVRİLMEZ. Girilen tutar TL'ye çevrilip saklanırsa sözleşme rakamla değiştirilmiş olur: kur oynayınca o TL sessizce yanlışa döner, düzeltilirse bu sefer anlaşma değişmiş olur. Çevrim yalnız BAKARKEN yapılır; B18 gereği çevrilmiş toplam zaten saklanmaz, kuru değiştirip yeniden hesaplama bu sayede bedava gelir.
 - MÜHÜR: belge ile ölçüm ayrılır. Mühür girilen veriyi ve o günkü kuru dondurur — kuruma giden kâğıt odur, değişmez. Aynı mühürlü bütçeye "bugünün kuruyla" bakmak AYRI bir görünümdür, mühürlü rakama DOKUNMAZ. Taslakta kur serbestçe değişir.
+- **UYGULAMA NOTU (22 Ağustos 2026 teyidi):** Bütçe tek para birimi üzerinden hesaplanır, sonra kur değiştirilerek farklı para biriminde okunabilir — bunun için kur seçici + kur hesaplayıcı gerekir. Günlük kur internetten (TCMB deseni) çekilir ama BİLGİ KAYNAĞIDIR; bütçe kurunu otomatik değiştirmez — bütçe kuru yapımcının elle onayladığı karardır.
 - DIŞ ÇIKTI TEK SATIR GENEL TOPLAM VEREMEZ. Dövizli bir bütçenin dışarıya verilen çıktısı (PDF vb.) kura bağlı kısmı AYRICA gösterir: döviz cinsinden tutarı, kullanılan kuru, o kalemin toplam içindeki payını. Gerekçe sahadan: yatırımcı tek rakam görüp onaylar, kur oynayınca fark istenir; riski hazırlayan bilir, onaylayan bilmez. Bu bir rapor süsü değil, bütçenin dürüstlük şartıdır. Kullanılan kur ve tarihi çıktının üzerinde görünür ("1 USD = X TL, GG.AA.YYYY bütçe kuru").
 - AÇIK KALAN, KARARA BAĞLANMADI: bütçe kuru ile FİİLİ ÖDEME kuru farklıdır; fiş gerçek günün kuruyla düşer, bütçe bütçe kuruyla durur, arada kur farkı oluşur. receipts.currency alanı şemada VAR ama bugün hep 'TRY' yazılıyor. Bütçe-fiili karşılaştırmasında bu farkın sapma mı sayılacağı yoksa ayrı satır mı olacağı hiçbir yerde yazılı değil. Ev: KUR dilimi.
 
@@ -107,6 +108,7 @@ NEDEN: sahadaki gerçek senaryo — görüntü yönetmenine dolar, asistanlara T
 ### I. Aidiyet = kod (K-B)
 - Kart aidiyeti ayrı alan DEĞİL, kodun aralığıdır (15xx → KART 1500). SSOT tek: kod.
 - Çok-karta uyan kavram her kart için o kartın aralığından ayrı kodla ayrı kütüphane kaydı olur (Stunt Vehicle → TRANSPORT örneğindeki mevcut ilke genelleşti).
+- **NOT (22 Ağustos 2026):** KART 1600 iki köken bloğunu birden taşıyor (16xx + 39xx). Bugünkü aidiyet denetimi TEK ARALIK varsayımıyla yazılmış: `library-service.ts`teki `fetchCardLibrary` içinde `catalog_code` LIKE ilk-iki-hane önekiyle çalışır, `fn_add_budget_item` içinde `substr(p_catalog_code,1,2) = substr(v_card_code,1,2)` karşılaştırması da aynı varsayımı taşır. 1600 turunda her ikisi de tek önek yerine aralık KÜMESİ okuyacak şekilde genişleyecek.
 
 ### J. Kütüphane tablosu şeması (K-C)
 - Kolonlar: katalog kodu (tekil) · isim · varsayılan statü · varsayılan birim · köken (Koster provenance) · eş adlar (autocomplete için, örn. Gaffer/Işık Şefi).
@@ -154,3 +156,11 @@ NEDEN: sahadaki gerçek senaryo — görüntü yönetmenine dolar, asistanlara T
 - **AÇIK ŞEMA SORUSU (21 Ağustos 2026, KART 1600 turundan):** heading_code tek kolondur, oysa KART 1600'ün üç kademeli yapısı (kart grubu → oyuncu özet başlığı → alt kalemler) iki kademe için iki ayrı anahtar gerektiriyor — bugünkü şema bunu karşılamıyor, karara bağlanmadı. Ayrıca oranla türetme (temsilci satırının komisyon oranından türeyen tutar) için alan yok; türetilen sayı TUTAR olarak SAKLANMAZ, ORAN olarak saklanır (B18 ile aynı ilke).
 - **DİL KURALI:** kod/yorum ASCII; kullanıcıya görünen veri düzgün Türkçe.
 - **TEK İMZA DOKTRİNİ:** RPC fonksiyonu tek imza olarak yaşar. Parametre eklendiğinde eski imza AYNI migration'da drop edilir; overload bırakılmaz. Gerekçe: 1 Ağustos 2026'da fn_add_budget_item'a p_existing_code eklendi, 5 parametreli sürüm sessizce canlı kaldı — hatalı kod üretimi taşıyan, korumasız, grant'lı bir kopya olarak. İki overload ayrıca tuzaktır: her davranış değişikliğinde hangisinin canlı olduğu yeniden sorulmak zorunda. (fn_add_budget_item 5→6 parametre geçişinde uygulandı, bkz. migration 20260815150000.)
+
+## NET/BRÜT DOKTRİNİ REVİZYONU (Engin kararı, 22 Ağustos 2026, TÜM kartlarda geçerli)
+- **AYRIM ÖLÇÜSÜ GERİ ALINABİLİRLİK.** KDV geri alınır, o yüzden maliyet değildir ve yalnız brütte yaşar. SGK, işsizlik primi ve stopaj yapımcının cebinden çıkar, geri alınamaz ve mahsup edilemez; brüt maaş / brüt vergili gibi görünseler de NET GİDERDİR.
+- Fon ve kurumların istediği "net bütçe" = KDV hariç toplam maliyet.
+- **KOLON ANLAMLARI:** Yasal Yük = saf yük (KDV çıkar). Net toplam = (birim net × miktar × X) + yasal yük. KDV kendi kolonu. Brüt toplam = Net toplam + KDV.
+- Brüt toplam rakamsal olarak DEĞİŞMİYOR; değişen şey Net toplam ile Yasal Yük kolonlarının anlamı.
+- Önceki "her nakit çıkışı, KDV dahil, maliyettir" gerekçesi GEÇERSİZ.
+- Not: bordrolu satırda KDV sıfır olduğu için Net toplam ile Brüt toplam aynı rakamı gösterir; bu beklenen davranıştır (Engin onayı, 22 Ağustos 2026).

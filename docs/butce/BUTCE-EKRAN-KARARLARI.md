@@ -280,3 +280,15 @@ NOT (8 Ağustos 2026): buradaki üç-rol listesi HARCAMA ZİNCİRİ içindir. Ma
 - **MÜHÜRLÜ BÜTÇEDE TAŞIMA YOKTUR** — mevcut kilit koruması yeterlidir, ama kullanıcıya sessiz kalınmaz: neden yapılamadığı yazılı olarak söylenir.
 - **ŞERH (kapatılmadı):** bu bölümün satır 205'teki bilgi notu metni hâlâ "kartın sonundaki Muhtelif bölümüne düşer" diyor. İki yönden düzeltilmesi gerekiyor (blok artık Başlıksız; ayrıca "bölüm" kelimesi GLOSSARY Tehlikeli Kökler kuralına takılıyor). Engin 17 Ağustos 2026'da bu notun revizyonunu ERTELEDİ (nota eklenecek başka bilgiler var, birlikte ele alınacak). Borç olarak burada durur.
 - **1600 İLE BAŞLIK KADEMESİ İKİYE ÇIKTI (21 Ağustos 2026, Engin):** yukarıdaki maddeler tek kademeli başlığı (kart grubu) tarif eder; KART 1600'de temsilcisi olan oyuncu için ikinci bir kademe doğar (kart grubu → oyuncu özet başlığı → alt kalemler). Her iki kademe de bu bölümün ilkelerine tabidir: para taşımaz, KLV ızgarasına girmez, kart toplamına dahil edilmez. Detay: CURRENT.md "KART 1600 TASARIM KARARLARI" bölümü.
+
+## 20. KART 1600 / Üç kademeli kart tasarımı (Engin kararları, 22 Ağustos 2026)
+- **KOLON SETİ 12'DEN 14'E ÇIKIYOR:** Statü'den sonra "Oran", Yasal Yük ile Brüt toplam arasına "KDV" eklenir. Brüt toplam kolon adı AYNEN kalıyor.
+- **ÜÇ KADEME:** grup başlığı → özet satırı → alt kalemler.
+  - **Grup başlığı:** numarası yok, kendi parası yok, altındakilerin toplamını gösterir, toplama girmez (1100'de kurulu doktrinin ikinci kullanımı, bkz. bölüm 19).
+  - **Özet satırı:** numarası VAR, adını kullanıcı yazar, parası çocuklarının toplamıdır. Kendi budget_items kaydı olan bir kalem DEĞİLDİR; başlık satırı deseniyle çizilir (data-grid-cell taşımaz, klavye ızgarasına girmez).
+  - Alt kalemlerde No hanesi BOŞ. 5.1 / 5.2 biçimi REDDEDİLDİ; mühürlü "kart-içi düz 1..N" numaralandırma doktrini korunuyor.
+- Temsilcisiz oyuncu tek satır kalır, özet doğmaz. Temsilci eklenince oyuncunun girdiği veri alt satıra iner, üst satır özete dönüşür ve ad hanesi boşalır; kullanıcı rol/karakter adını girer, boş bırakılırsa otomatik ad atanır.
+- **ÜÇGEN (katlama) olacak.** Katlanmış görünüm icmalin tohumudur: başrol başına tek satır. Üçgen 1600'e özel değildir; grup başlıkları diğer kartlarda da olduğu için yetenek tüm kartlara girer.
+- Temsilci satırında türetilen ve kilitli olan hücreler YALNIZ üç tanedir: dönemler, birim, birim net. Miktar ve X sabittir (1 × 1), çünkü ajans faturası tek kalemdir. Oran hücresi türetilmez, şablondan varsayılan gelir ve DÜZENLENEBİLİR.
+- Rakamın dökümü, o rakamın kendi hücresine basılarak açılır — bordrodaki Yasal Yük sheet deseninin genişlemesi. Net toplam hücresine basılınca çıplak net + yasal yük dökümü, komisyon satırında basılınca tabanı oluşturan satırların çıplak net toplamı ve oranı görünür. ÇIPLAK NET AYRI KOLON OLMAYACAK (Engin kararı): kolon her satırda her zaman gereken şey içindir, bu rakam değil.
+- Oran uyarısı için mevcut Statü (?) / status-info-sheet deseni kullanılır, yeni yüzey açılmaz.
