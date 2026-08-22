@@ -4,13 +4,13 @@ export interface ProfileWithProject {
   project_id: string
   role: string
   dept_id: string | null
-  projects: { name: string }
+  projects: { name: string; status: string }
 }
 
 export async function getOwnProfiles(): Promise<ProfileWithProject[]> {
   const { data, error } = await supabase
     .from('profiles')
-    .select('project_id, role, dept_id, projects(name)')
+    .select('project_id, role, dept_id, projects(name, status)')
     .eq('membership_status', 'active')
 
   if (error) throw new Error(error.message)
