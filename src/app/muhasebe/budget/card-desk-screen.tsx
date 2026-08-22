@@ -83,7 +83,7 @@ export function CardDeskScreen({ budgetId: paramBudgetId }: Props) {
             color: 'var(--color-text)',
           }}
         >
-          <span style={{ fontSize: 'var(--text-base)', fontWeight: 'var(--weight-medium)' }}>{c.name}</span>
+          <span style={{ fontSize: 'var(--text-md)', fontWeight: 'var(--weight-medium)' }}>{c.name}</span>
           <span style={{ fontSize: 'var(--text-lg)', color: 'var(--color-text-muted)' }}>{fmt(totals[c.id] ?? 0)}</span>
         </button>
       ))}

@@ -332,7 +332,7 @@ export const ItemRow = memo(function ItemRow({
               border: 'none',
               cursor: 'pointer',
               color: 'var(--color-text-muted)',
-              fontSize: 'var(--text-base)',
+              fontSize: 'var(--text-md)',
               padding: 0,
               lineHeight: 1,
             }}

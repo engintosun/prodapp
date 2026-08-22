@@ -22,4 +22,12 @@ for f in $(git diff --cached --name-only --diff-filter=ACM | grep '\.md$' || tru
     fail "$f icinde Turkce karaktere dusmemis metin var (TD-32 sinifi)"
   fi
 done
+
+defined=$(grep -ohE '^\s*--[a-zA-Z0-9-]+' src/styles/*.css 2>/dev/null | tr -d ' ' | sort -u)
+for f in $(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|tsx|css)$' || true); do
+  while IFS= read -r tok; do
+    [ -n "$tok" ] || continue
+    printf '%s' "$defined" | grep -qx -- "$tok" || fail "$f icinde tanimsiz CSS token: $tok (tanimli kume: src/styles/*.css)"
+  done < <(git show ":$f" 2>/dev/null | grep -oE 'var\(\s*--[a-zA-Z0-9-]+' | grep -oE '\-\-[a-zA-Z0-9-]+' | sort -u)
+done
 exit 0
