@@ -192,25 +192,27 @@ export function ProjectSelectionPage() {
                     {ROLE_LABELS[profile.role] ?? profile.role}
                   </div>
                 </div>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    openArchiveConfirm(profile)
-                  }}
-                  disabled={acting}
-                  style={{
-                    flexShrink: 0,
-                    background: 'none',
-                    border: 'none',
-                    color: '#666',
-                    textDecoration: 'underline',
-                    cursor: acting ? 'not-allowed' : 'pointer',
-                    padding: 0,
-                    fontSize: '13px',
-                  }}
-                >
-                  Arşivle
-                </button>
+                {profile.role === 'muhasebe' && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      openArchiveConfirm(profile)
+                    }}
+                    disabled={acting}
+                    style={{
+                      flexShrink: 0,
+                      background: 'none',
+                      border: 'none',
+                      color: '#666',
+                      textDecoration: 'underline',
+                      cursor: acting ? 'not-allowed' : 'pointer',
+                      padding: 0,
+                      fontSize: '13px',
+                    }}
+                  >
+                    Arşivle
+                  </button>
+                )}
               </div>
             ))}
           </>
@@ -240,38 +242,40 @@ export function ProjectSelectionPage() {
                     {ROLE_LABELS[profile.role] ?? profile.role}
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
-                  <button
-                    onClick={() => openRestoreConfirm(profile)}
-                    disabled={acting}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: '#666',
-                      textDecoration: 'underline',
-                      cursor: acting ? 'not-allowed' : 'pointer',
-                      padding: 0,
-                      fontSize: '13px',
-                    }}
-                  >
-                    Geri al
-                  </button>
-                  <button
-                    onClick={() => openDeleteConfirm(profile)}
-                    disabled={acting}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: 'red',
-                      textDecoration: 'underline',
-                      cursor: acting ? 'not-allowed' : 'pointer',
-                      padding: 0,
-                      fontSize: '13px',
-                    }}
-                  >
-                    Sil
-                  </button>
-                </div>
+                {profile.role === 'muhasebe' && (
+                  <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                    <button
+                      onClick={() => openRestoreConfirm(profile)}
+                      disabled={acting}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#666',
+                        textDecoration: 'underline',
+                        cursor: acting ? 'not-allowed' : 'pointer',
+                        padding: 0,
+                        fontSize: '13px',
+                      }}
+                    >
+                      Geri al
+                    </button>
+                    <button
+                      onClick={() => openDeleteConfirm(profile)}
+                      disabled={acting}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: 'red',
+                        textDecoration: 'underline',
+                        cursor: acting ? 'not-allowed' : 'pointer',
+                        padding: 0,
+                        fontSize: '13px',
+                      }}
+                    >
+                      Sil
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </>
