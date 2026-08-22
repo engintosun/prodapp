@@ -127,7 +127,7 @@ Hard delete log'u zorunludur (kim sildi, ne zaman, sebep).
 
 **Policy:** `projects_own_list` — `FOR SELECT`, claim gerektirmez.
 
-**Kural:** Kullanıcıya yalnızca (a) kendisi için `membership_status = 'active'` olan bir `profiles` kaydı bulunan ve (b) `status = 'active'` olan projeler döndürülür.
+**Kural:** Kullanıcıya yalnızca (a) kendisi için `membership_status = 'active'` olan bir `profiles` kaydı bulunan projeler döndürülür. SK-AUTH-12 ile KALDIRILAN eski (b) şıkkı birebir şudur: `status = 'active'` olan projeler döndürülür.
 
 **Gerekçe — KVKK cross-company izolasyon:** RLS kapalıyken oturum açmış her kullanıcı sistemdeki tüm şirketlerin proje adlarını okuyabiliyordu. `projects_own_list` bu sızıntıyı kapatır; kullanıcı yalnızca kendi üye olduğu projeleri görür.
 
@@ -172,3 +172,17 @@ Bu bilinçli bir sadeleştirmedir ve karar 27 Mayıs 2026'da verilmiştir — be
 - YAPIMCI ONAYI (yeni mekanizma): muhasebeyi aşan durumlarda (tutar büyüklüğü veya işlem şekli) muhasebe, sorumluluğu devretmek için yapımcı onayı İSTER. Onay işlemin yanına ilistirilir, bilgi olarak durur. Fişin statüsünü DEĞİŞTİRMEZ, zincire adım EKLEMEZ. Desen: `correction_requested` bayrağıyla aynı sınıf (durum sabit, bayrak eklenir).
 - BUGÜN KODDA YOK (yarın aranmasın diye yazıldı): `UserRole` tipinde yapımcı yok (saha/dept/muhasebe) · `ApproverRole` yalnız dept|muhasebe · yapımcı onayını tutacak kolon yok. Bu karar ŞEMA İŞİ doğurur, ayrı dilim.
 - İLİŞKİ: bütçe erişimi M2 gereği ayrı yetki eksenidir; Master/Owner o eksenin üstünde durur ve iki eksen birbirini geçersiz kılmaz.
+
+---
+
+## SK-AUTH-12: Proje Yaşam Döngüsü (ENGİN KARARI, 22 Ağustos 2026)
+
+- **SİL YOK, ARŞİV VAR.** Proje veri olarak yok edilmez; `active` ile `archived` arasında gider gelir. Dayanak sektör deseni (Kantata: içinde bütçe/fatura/harcama olan proje silinemez, yalnız arşivlenir; Flow Production Tracking: proje silme varsayılan kapalı). Dönem tarafındaki `reopened` mekanizması EMSAL DEĞİLDİR — o harcama doktrinine aittir (İKİ DOKTRİN KURALI, docs/rakip/YONTEM.md §3). Proje ikisinin de üstündeki kaptır ve kendi doktrinini kurar.
+- **ARŞİV GERİ ALINABİLİR.** Tek yönlü kapı değildir. Geri dönüşü olmayan bir "artık asla" kademesi YOKTUR; istenirse dördüncü bir hâl olarak ayrıca kararlaştırılır.
+- **ARŞİVİN İÇİNE GİRİLEMEZ.** Görülür, listelenir, ama açılmaz. Girmek için önce raftan indirmek gerekir. Gerekçe: girilebilseydi arşiv bir hâl değil sadece bir etiket olurdu ve "kapalı projeye fiş girilir mi" sorusu her ekranda yeniden doğardı. (Asana'da arşivli projenin salt-okunur OLMAMASI kullanıcıları şaşırtan noktadır; o tuzak bilinçle kapatıldı.)
+- **YETKİ:** muhasebe rolündeki herkes arşivler ve raftan indirir. Ayrı sahiplik kuralı konmadı. "Yalnız açan kişi" seçeneği REDDEDİLDİ: üyelik devre dışı bırakılabildiği için projeyi açan ayrıldığında proje sahipsiz kalırdı. Pin kod seçeneği de REDDEDİLDİ: davetle gelen ikinci muhasebeciyle zaten paylaşılacağı için tek kazancı gecikme olurdu. Bu madde SK-AUTH-11 (Yapımcı Master/Owner katmanı) canlıya girdiğinde YENİDEN AÇILIR — sahiplik aslında o katmanın işidir.
+- **GEREKÇE ZORUNLU**, her iki yönde de. Boş gerekçe fonksiyon tarafından reddedilir.
+- **İZ AYRI DEFTERDE:** `project_lifecycle_log`. Kolona yazma seçeneği REDDEDİLDİ — aynı proje ikinci kez arşivlenince ilk izin üstüne yazılırdı. Trigger YOKTUR ve gerekmez: tablo üzerinde client UPDATE policy olmadığı için tek giriş kapısı fonksiyondur. `projects.closed_at` ve `closed_by` kolonlarına DOKUNULMAZ; bugün ölü kolonlardır (TD adayı, açılmadı).
+- **SK-AUTH-7 KORUNDU:** arşivleme client policy ile değil SECURITY DEFINER fonksiyonla yapılır — `fn_create_project` deseninin aynısı. "INSERT/UPDATE/DELETE service_role ile" kuralı BOZULMADI.
+- **SİLME AYRI DİLİME BIRAKILDI (22 Ağustos 2026 ölçümü):** `projects(id)` hedefli 16 FK var ve HİÇBİRİNDE `ON DELETE CASCADE` yok; tüm şemada yalnız 5 cascade var, beşi de kalem seviyesinde. Proje açılır açılmaz `profiles` satırı doğduğu için hiçbir proje FK anlamında boş değildir. Silme, 16 tabloyu doğru sırayla söken bir yıkım zinciri demektir ve o zincirin ucunda KVKK/TTK gereği silinemeyen fiş/avans kayıtları vardır. KARAR: parası değmemiş proje (fiş yok + mühürlü versiyon yok + başka üye yok) silinebilir olacak, şartı veritabanı denetleyecek — ama bu KENDİ DİLİMİDİR. İyi haber: mühür koruması zaten kurulu, `budget_versions.budget_id` FK'sı `on delete restrict` taşıyor.
+- **YER:** aç / arşivle / raftan indir üçü de proje seçim ekranında yaşar; projenin içinde hiçbiri olmaz. Detay KABUK-KARARLARI.

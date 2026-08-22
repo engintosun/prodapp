@@ -322,3 +322,15 @@ Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki
 RAKİP EMSALİ: mobil desen bulguları için bkz. docs/RAKIP-ANALIZI-URUN.md bölüm 3 (Yamdu mobil turu: §1.15).
 
 Yapımcı rolü: AUTH-KARARLARI SK-AUTH-11.
+
+---
+
+## Proje yaşam döngüsünün yeri (ENGİN KARARI, 22 Ağustos 2026)
+
+**Proje BAĞLAMI** ("şu an hangi projedeyim") üst bağlama aittir. **Proje YÖNETİMİ** (aç / arşivle / raftan indir) proje seçim ekranında yaşar. Ayrılmazsa ikisi tek ekrana sıkışır — 8 Ağustos 2026 dönem kararının aynı kalıbı.
+
+- "Yeni proje aç" zaten seçim ekranındaydı; bu karar hiçbir şeyi taşımaz, iki kardeşini yanına koyar.
+- Arşivlenen proje aktif listeden düşer, ayrı bir Arşiv bölmesinde listelenir, içine girilemez.
+- Raftan indirme her zaman listeden yapılır — rakiplerde istisnasız böyledir (Asana "arşivlenmişleri göster", Webvizio ayrı sekme, Kantata ayrı sütun); mantık zaten zorlar, arşivlediğin projenin içinde değilsindir.
+- BEDELİ: bir projeyi arşivlemek için önce o projeden çıkmak gerekir. Asana içeriden arşivlemeye izin verir, KAAPA vermez. Karşılığında yaşam döngüsünün tek evi olur.
+- Üst bağlamdaki proje seçici yalnız geçiş kapısıdır ve bu dilimin KAPSAMI DIŞINDADIR (`authenticated-shell.tsx` bugün `onSwitchProject={undefined}` yolluyor, öyle kalır).
