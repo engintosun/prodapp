@@ -3,7 +3,7 @@ import { getOwnProfiles, setClaims, signOut } from '../../shared/supabase/auth-s
 import type { ProfileWithProject } from '../../shared/supabase/auth-service'
 import { supabase } from '../../shared/supabase/client'
 import { CreateProjectPage } from './create-project-page'
-import { archiveProject, restoreProject } from '../../shared/supabase/onboarding-service'
+import { archiveProject, restoreProject, deleteProject } from '../../shared/supabase/onboarding-service'
 import { ConfirmDialog } from '../../shared/components/confirm-dialog'
 
 const ROLE_LABELS: Record<string, string> = {
@@ -13,7 +13,7 @@ const ROLE_LABELS: Record<string, string> = {
 }
 
 interface ConfirmAction {
-  type: 'archive' | 'restore'
+  type: 'archive' | 'restore' | 'delete'
   projectId: string
   projectName: string
 }
@@ -90,6 +90,10 @@ export function ProjectSelectionPage() {
     setConfirmAction({ type: 'restore', projectId: profile.project_id, projectName: profile.projects.name })
   }
 
+  function openDeleteConfirm(profile: ProfileWithProject) {
+    setConfirmAction({ type: 'delete', projectId: profile.project_id, projectName: profile.projects.name })
+  }
+
   async function handleConfirmAction(reason: string) {
     if (!confirmAction) return
     const action = confirmAction
@@ -99,8 +103,10 @@ export function ProjectSelectionPage() {
     try {
       if (action.type === 'archive') {
         await archiveProject(action.projectId, reason)
-      } else {
+      } else if (action.type === 'restore') {
         await restoreProject(action.projectId, reason)
+      } else {
+        await deleteProject(action.projectId, reason)
       }
       await reloadProfiles()
     } catch (err: unknown) {
@@ -234,22 +240,38 @@ export function ProjectSelectionPage() {
                     {ROLE_LABELS[profile.role] ?? profile.role}
                   </div>
                 </div>
-                <button
-                  onClick={() => openRestoreConfirm(profile)}
-                  disabled={acting}
-                  style={{
-                    flexShrink: 0,
-                    background: 'none',
-                    border: 'none',
-                    color: '#666',
-                    textDecoration: 'underline',
-                    cursor: acting ? 'not-allowed' : 'pointer',
-                    padding: 0,
-                    fontSize: '13px',
-                  }}
-                >
-                  Geri al
-                </button>
+                <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                  <button
+                    onClick={() => openRestoreConfirm(profile)}
+                    disabled={acting}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#666',
+                      textDecoration: 'underline',
+                      cursor: acting ? 'not-allowed' : 'pointer',
+                      padding: 0,
+                      fontSize: '13px',
+                    }}
+                  >
+                    Geri al
+                  </button>
+                  <button
+                    onClick={() => openDeleteConfirm(profile)}
+                    disabled={acting}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'red',
+                      textDecoration: 'underline',
+                      cursor: acting ? 'not-allowed' : 'pointer',
+                      padding: 0,
+                      fontSize: '13px',
+                    }}
+                  >
+                    Sil
+                  </button>
+                </div>
               </div>
             ))}
           </>
@@ -281,17 +303,23 @@ export function ProjectSelectionPage() {
           confirmAction
             ? confirmAction.type === 'archive'
               ? `"${confirmAction.projectName}" projesini arşivle`
-              : `"${confirmAction.projectName}" projesini geri al`
+              : confirmAction.type === 'restore'
+                ? `"${confirmAction.projectName}" projesini geri al`
+                : `"${confirmAction.projectName}" projesini sil`
             : ''
         }
         message={
           confirmAction?.type === 'archive'
             ? 'Proje aktif listeden düşecek, Arşiv bölümünde durmaya devam edecek; istendiğinde geri alınabilecek.'
-            : undefined
+            : confirmAction?.type === 'delete'
+              ? 'Proje ve içindeki bütçe kalıcı olarak silinecek. Bu işlem geri alınamaz.'
+              : undefined
         }
         reasonLabel="Gerekçe"
-        confirmLabel={confirmAction?.type === 'archive' ? 'Arşivle' : 'Geri al'}
-        danger={confirmAction?.type === 'archive'}
+        confirmLabel={
+          confirmAction?.type === 'archive' ? 'Arşivle' : confirmAction?.type === 'restore' ? 'Geri al' : 'Sil'
+        }
+        danger={confirmAction?.type === 'archive' || confirmAction?.type === 'delete'}
         onConfirm={handleConfirmAction}
         onCancel={() => setConfirmAction(null)}
       />
