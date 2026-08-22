@@ -85,6 +85,22 @@ export async function createProject(
   return data as unknown as string
 }
 
+export async function archiveProject(projectId: string, reason: string): Promise<void> {
+  const { error } = await supabase.rpc('fn_archive_project', {
+    p_project_id: projectId,
+    p_reason: reason,
+  })
+  if (error) throw new Error(error.message)
+}
+
+export async function restoreProject(projectId: string, reason: string): Promise<void> {
+  const { error } = await supabase.rpc('fn_restore_project', {
+    p_project_id: projectId,
+    p_reason: reason,
+  })
+  if (error) throw new Error(error.message)
+}
+
 export async function setProjectBudget(
   projectId: string,
   totalBudget: number,

@@ -3,11 +3,19 @@ import { getOwnProfiles, setClaims, signOut } from '../../shared/supabase/auth-s
 import type { ProfileWithProject } from '../../shared/supabase/auth-service'
 import { supabase } from '../../shared/supabase/client'
 import { CreateProjectPage } from './create-project-page'
+import { archiveProject, restoreProject } from '../../shared/supabase/onboarding-service'
+import { ConfirmDialog } from '../../shared/components/confirm-dialog'
 
 const ROLE_LABELS: Record<string, string> = {
   saha: 'Saha',
   dept: 'Departman',
   muhasebe: 'Muhasebe',
+}
+
+interface ConfirmAction {
+  type: 'archive' | 'restore'
+  projectId: string
+  projectName: string
 }
 
 export function ProjectSelectionPage() {
@@ -18,6 +26,8 @@ export function ProjectSelectionPage() {
   const [selecting, setSelecting] = useState<string | null>(null)
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const [mode, setMode] = useState<'list' | 'create'>('list')
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null)
+  const [acting, setActing] = useState(false)
 
   useEffect(() => {
     async function init() {
@@ -32,7 +42,7 @@ export function ProjectSelectionPage() {
 
       try {
         const data = await getOwnProfiles()
-        if (data.length === 1 && !userCanCreate) {
+        if (data.length === 1 && !userCanCreate && data[0].projects.status === 'active') {
           await setClaims(data[0].project_id)
           // onAuthStateChange will pick up the new session — no state update needed
           return
@@ -46,6 +56,11 @@ export function ProjectSelectionPage() {
     }
     init()
   }, [])
+
+  async function reloadProfiles() {
+    const data = await getOwnProfiles()
+    setProfiles(data)
+  }
 
   async function handleSelect(projectId: string) {
     setSelecting(projectId)
@@ -67,11 +82,42 @@ export function ProjectSelectionPage() {
     }
   }
 
+  function openArchiveConfirm(profile: ProfileWithProject) {
+    setConfirmAction({ type: 'archive', projectId: profile.project_id, projectName: profile.projects.name })
+  }
+
+  function openRestoreConfirm(profile: ProfileWithProject) {
+    setConfirmAction({ type: 'restore', projectId: profile.project_id, projectName: profile.projects.name })
+  }
+
+  async function handleConfirmAction(reason: string) {
+    if (!confirmAction) return
+    const action = confirmAction
+    setConfirmAction(null)
+    setActing(true)
+    setError(null)
+    try {
+      if (action.type === 'archive') {
+        await archiveProject(action.projectId, reason)
+      } else {
+        await restoreProject(action.projectId, reason)
+      }
+      await reloadProfiles()
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Bir hata oluştu')
+    } finally {
+      setActing(false)
+    }
+  }
+
   if (loading) return null
 
   if (mode === 'create') {
     return <CreateProjectPage onBack={() => setMode('list')} />
   }
+
+  const activeProfiles = profiles.filter((p) => p.projects.status === 'active')
+  const archivedProfiles = profiles.filter((p) => p.projects.status !== 'active')
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
@@ -103,14 +149,21 @@ export function ProjectSelectionPage() {
           <p style={{ margin: 0, color: '#666' }}>Henüz projeniz yok. İlk projenizi açın.</p>
         )}
 
-        {profiles.length > 0 && (
+        {activeProfiles.length > 0 && (
           <>
             <p style={{ margin: 0, color: '#666' }}>Proje seçin</p>
-            {profiles.map((profile) => (
-              <button
+            {activeProfiles.map((profile) => (
+              <div
                 key={profile.project_id}
-                disabled={selecting !== null}
-                onClick={() => handleSelect(profile.project_id)}
+                role="button"
+                tabIndex={selecting !== null ? -1 : 0}
+                onClick={() => selecting === null && handleSelect(profile.project_id)}
+                onKeyDown={(e) => {
+                  if ((e.key === 'Enter' || e.key === ' ') && selecting === null) {
+                    e.preventDefault()
+                    handleSelect(profile.project_id)
+                  }
+                }}
                 onMouseEnter={() => setHoveredId(profile.project_id)}
                 onMouseLeave={() => setHoveredId(null)}
                 style={{
@@ -121,13 +174,83 @@ export function ProjectSelectionPage() {
                   textAlign: 'left',
                   background: hoveredId === profile.project_id ? '#f5f5f5' : '#fff',
                   opacity: selecting !== null && selecting !== profile.project_id ? 0.5 : 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '8px',
                 }}
               >
-                <div style={{ fontWeight: 600 }}>{profile.projects.name}</div>
-                <div style={{ fontSize: '13px', color: '#888', marginTop: '2px' }}>
-                  {ROLE_LABELS[profile.role] ?? profile.role}
+                <div>
+                  <div style={{ fontWeight: 600 }}>{profile.projects.name}</div>
+                  <div style={{ fontSize: '13px', color: '#888', marginTop: '2px' }}>
+                    {ROLE_LABELS[profile.role] ?? profile.role}
+                  </div>
                 </div>
-              </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    openArchiveConfirm(profile)
+                  }}
+                  disabled={acting}
+                  style={{
+                    flexShrink: 0,
+                    background: 'none',
+                    border: 'none',
+                    color: '#666',
+                    textDecoration: 'underline',
+                    cursor: acting ? 'not-allowed' : 'pointer',
+                    padding: 0,
+                    fontSize: '13px',
+                  }}
+                >
+                  Arşivle
+                </button>
+              </div>
+            ))}
+          </>
+        )}
+
+        {archivedProfiles.length > 0 && (
+          <>
+            <p style={{ margin: 0, color: '#666' }}>Arşiv</p>
+            {archivedProfiles.map((profile) => (
+              <div
+                key={profile.project_id}
+                style={{
+                  padding: '12px',
+                  border: '1px solid #eee',
+                  borderRadius: '8px',
+                  background: '#fafafa',
+                  opacity: 0.6,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '8px',
+                }}
+              >
+                <div>
+                  <div style={{ fontWeight: 600 }}>{profile.projects.name}</div>
+                  <div style={{ fontSize: '13px', color: '#888', marginTop: '2px' }}>
+                    {ROLE_LABELS[profile.role] ?? profile.role}
+                  </div>
+                </div>
+                <button
+                  onClick={() => openRestoreConfirm(profile)}
+                  disabled={acting}
+                  style={{
+                    flexShrink: 0,
+                    background: 'none',
+                    border: 'none',
+                    color: '#666',
+                    textDecoration: 'underline',
+                    cursor: acting ? 'not-allowed' : 'pointer',
+                    padding: 0,
+                    fontSize: '13px',
+                  }}
+                >
+                  Geri al
+                </button>
+              </div>
             ))}
           </>
         )}
@@ -151,6 +274,27 @@ export function ProjectSelectionPage() {
 
         {error && <p style={{ color: 'red', margin: 0 }}>{error}</p>}
       </div>
+
+      <ConfirmDialog
+        open={confirmAction !== null}
+        title={
+          confirmAction
+            ? confirmAction.type === 'archive'
+              ? `"${confirmAction.projectName}" projesini arşivle`
+              : `"${confirmAction.projectName}" projesini geri al`
+            : ''
+        }
+        message={
+          confirmAction?.type === 'archive'
+            ? 'Proje aktif listeden düşecek, Arşiv bölümünde durmaya devam edecek; istendiğinde geri alınabilecek.'
+            : undefined
+        }
+        reasonLabel="Gerekçe"
+        confirmLabel={confirmAction?.type === 'archive' ? 'Arşivle' : 'Geri al'}
+        danger={confirmAction?.type === 'archive'}
+        onConfirm={handleConfirmAction}
+        onCancel={() => setConfirmAction(null)}
+      />
     </div>
   )
 }
