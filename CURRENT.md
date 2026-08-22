@@ -21,27 +21,28 @@ M2 — Cekirdek Dongu. Butce: kavram + sema + DB temeli + goc CANLI; kart mimari
 - 14 Agustos 2026 (2. oturum) — MASA TASARIM TURU: kapak TEK rakam NET (net oldugu belirtilir; brut/yasal yuk kapisi acik) · izgara + cek-birak, dizilis kisiye ozel · sablonun BUTUN kartlari masaya serilir (kesif sukunetin onunde, bilincli) · isaret KART BASINA ve icerige uygun · icmal secimi = KAPSAM (isaretsiz kartin parasi genel toplama girmez), kontrol icmalde iz masada · silme yalniz kullanicinin ekledigi kartlarda, sablondan doganda yok · ekleme karti Faz 1'de yalniz BASKA SABLONDAKI karti cagirir; serbest kart 12.3 kosuluna bagli, aynen durur · ikinci kart 1600 OYUNCU · EKRAN-MUHASEBE Ekran 2'nin uc celiskisi KABUK lehine kapandi · GLOSSARY'ye katalog/sablon/masa · 14 Haziran ekran-hissi turu BULUNDU. Commit a1cbd26 + bu commit.
 - 2026-06-21..08-15 (özet, detay git log; DİYET 18 Ağustos 2026 uygulandı, 19 Ağustos 2026'da 14 Ağustos KOLON TAKASI+TD-6 katlandı): fn_open_budget + bütçe DB temeli + göç CANLI; vergi/yük modeli ve KART 1500 ekranı KİLİTLİ; DILIM-3 bordro motoru (şema → katalog seed → saf çözücü → UI kablolaması → 3e genel-desen sökümü) TAMAMEN KAPANDI; şirket profili şeması + fn_resolve_sgk_scenario CANLI; terminoloji devrimi (Miktar=süre, X=kişi/adet, Çarpan emekli) uygulandı; MÜHÜR-1 ve MÜHÜR-2 (versiyonlama + snapshot + mühürlü okuma çatalı) CANLI; R1/R2/R3 ekran+servis refaktörü ve KLV klavye motoru (K1-K13) kuruldu; BORÇ-A ve BORÇ-B teknik borç turları kapandı (TD-9/10/11/14/15/16/17/18 dahil); hızlı ekleme yüzeyi üç dilimde (zemin + yüzey + kaydırma) ve D3c serbest kalem üç dilimde tamamlandı; D3-ARA ile Açıklama kolonu şeması + name_en yeniden adlandırma + alan adlandırma doktrini KİLİTLENDİ; TD-23 ile bileşen testi altyapısı (jsdom + Testing Library) canlıya girdi. AĞUSTOS: 4 Ağustos KABUK tasarım oturumu docs/KABUK-KARARLARI.md'yi TEK KAYNAK olarak kurdu ve aynı gün Yamdu rakip turu docs/RAKIP-ANALIZI-URUN.md'yi doğurdu; 5 Ağustos doc-check mekanizması kuruldu (scripts/doc-check.mjs, Denetim A-E; Denetim E mutasyonla sınandı, referansının CURRENT.md'nin kendi son commit'i olduğu aynı gün düzeltildi, Windows'ta `HEAD^` yutulması bulundu ve `HEAD~1` kuralı CLAUDE.md'ye yazıldı) ve İKİ TEMA EŞİTTİR kararı ile dosya boyu 300-satır HEDEF revizyonu alındı; 6 Ağustos rakip analizi çerçevesi (docs/rakip/YONTEM.md, 42 boyut, dokuz grup) ve KABUK ayrıntı turu (KABUK-KARARLARI bölüm 12) yapıldı, aynı gün ERPNext hasadı değerlendirildi — audit trail alındı ve asıldı, maker-checker TD-24 olarak düştü, aylık dağıtım ve iki paralel muhasebe ağacı REDDEDİLDİ (gerekçe: KAAPA resmî muhasebe yapmaz) — ve İKİ DOKTRİN KURALI kondu (bütçe ve harcama ayrı doktrinlerdir, kendi içlerinde tutarlı olmaları yeterlidir); 7 Ağustos doküman temizliği oturumu on commit ile 31 dokümanın kirlilik envanterini çıkardı ve 19 bulgu düzeltildi; 8 Ağustos INDEX.md YARATILDI (bölüm 4/7 dahil) ve KABUK onay turunda dokuz madde Engin kararına çevrildi + AUTH-KARARLARI'na SK-AUTH-11 (Yapımcı = Master/Owner katmanı) girdi; 8-9 Ağustos KABUK sprinti Dilim 1/2 ile react-router + AppShell/NavRail canlıya girdi (adres şeması ve boş-durak ilkesi KABUK-KARARLARI 2A'da yaşar); 12 Ağustos KABUK sprinti KAPANDI (tag v0.4-kabuk) — KART-TOPLAMI toplam şeridi, ray daraltma ve RAY-2 ikonlu kapalı ray, TECH-DEBT'e beş yeni madde; 13 Ağustos tablo genişlik turu üç commit ile TD-27'yi kapattı (kolon genişlikleri ilk kez ÖLÇÜLEREK türetildi, çift-padding temizliği, toplam şeridi zemin hatası; 12px font turu ölçüldü ve ELENDİ — kararı BUTCE-EKRAN-KARARLARI'nda); 14 Ağustos KOLON TAKASI (9f3c0f5): Net toplam ile Yasal Yük kolonları yer değiştirdi, Net toplam sol ray açıkken de görüyor; aynı gün TD-6 kapandı (company_settings.project_name düşürüldü, migration 20260814120000 canlıya uygulandı), TD-30 açıldı, borç sınırı 10'dan 15'e çıktı ve ray otomatik daralması karara bağlanıp ertelendi; 15 Ağustos MASA KURULDU (db8d5bd): /butce kart masası, kapakta ad + net toplam, card_code sırasında ızgara; kapak rakamı bordro motoru çağırmadan iki sorguyla türetilir.
 
-## OPTIMIZASYON TURU (Engin karari 22 Agustos 2026)
+## OPTİMİZASYON TURU (Engin kararı 22 Ağustos 2026)
 
-Amac: calisma ortaminin sadelestirilmesi ve hizlandirilmasi. Tur boyunca urun isi durur.
+Amaç: çalışma ortamının sadeleştirilmesi ve hızlandırılması. Tur boyunca ürün işi durur.
 
-TABAN OLCUM (22 Agustos 2026, HEAD 1819316, repo olcumu):
-- Zorunlu acilis uclusu: 90.984 bayt (CLAUDE.md 22.302 + CURRENT.md 66.522 + INDEX bolum 4 2.160), yaklasik 30.300 jeton
-- Fiili acilis (INDEX bolum 7 dahil): 97.859 bayt, yaklasik 32.600 jeton
-- CLAUDE.md prompt toreni: 3.200 bayt
-- Acilista okunan dosya: dayatilan 3, fiilen 5
-- Dayatilan kapi 9, deterministik olan 0
+TABAN ÖLÇÜM (22 Ağustos 2026, HEAD 1819316, repo ölçümü):
+- Zorunlu açılış üçlüsü: 90.984 bayt (CLAUDE.md 22.302 + CURRENT.md 66.522 + INDEX bölüm 4 2.160), yaklaşık 30.300 jeton
+- Fiili açılış (INDEX bölüm 7 dahil): 97.859 bayt, yaklaşık 32.600 jeton
+- CLAUDE.md prompt töreni: 3.200 bayt
+- Açılışta okunan dosya: dayatılan 3, fiilen 5
+- Dayatılan kapı 9, deterministik olan 0
 
-DILIMLER:
-- D0 Emniyet: geri donus etiketi + taban olcum (bu kayit)
-- D1 Zemin: .claude/ repoya girer (settings, PreToolUse ve SessionStart hook, permission kapisi, CSS token ve olu alan denetimi, caba seviyeleri). TD-25, TD-33 ve TD-8 burada kapanir. Hook yanlis calisirsa kullanilacak acil kapi bu dilimde kanitla belirlenir.
-- D2 Suzgec ve sokum: CLAUDE.md satir satir tasnif, kisitlar rules/ altina, prosedurler skills/ altina, CLAUDE.md tavani ve sahipligi, borc tavaninin yeni sayisi
-- D3 Prompt sablonu + onay haritasi (hangi onay Engin'de kalir, hangisi kapiya gecer)
-- D4 Durum ve okuma: CURRENT.md daraltma, surec dersleri evi (budamadan ONCE acilir), INDEX bolum 2 betikle uretim, bayat dokuman kuyrugu, doc-check kaderi, auto-memory karari
-- D5 Kapanis sinamasi: yeni duzen gercek bir urun borcuyla sinanir (TD-26 veya TD-30), dort sayi ikinci kez olculur
-- D6 Sartname kod olsun: kolon seti tipe, vergi ve yuk teste, terim domain.ts icine
+DİLİMLER:
+- D0 Emniyet: geri dönüş etiketi + taban ölçüm (bu kayıt)
+- D1 Zemin (KAPANDI, [buraya bu commit'in kisa hash'ini yaz]): .claude/ repoya girdi. Hook kapıları koşmaz, damgayı doğrular (zaman aşımı açığı böyle kapandı: 36 sn'lik kapı zinciri hook içinde koşarsa çağrı denetimsiz geçerdi). Kapılar: dal main mi, sığ klon mu, damga var ve taze mi, .md metni ASCII'ye düşmüş mü, yeni dal açma, zorla push. supabase db push permissions kuralıyla onaya bağlandı. Acil kapı iki kademeli: önce .claude/settings.json içindeki hooks bloğu geçici kaldırılır (yalnız hook ölür, CLAUDE.md yaşar), Claude Code hiç açılmıyorsa claude --safe-mode YALNIZ teşhis için kullanılır, iş yapmak için değil.
+- D1b Kapı borçları: TD-25 (tanımsız CSS token denetimi), TD-33 ve TD-8 (ölü alan/kolon taraması) kapı zincirine eklenir. D1'den ayrıldı çünkü zemin kurmakla kod borcu kapatmak aynı commit'e sığmaz.
+- D2 Süzgeç ve söküm: CLAUDE.md satır satır tasnif, kısıtlar rules/ altına, prosedürler skills/ altına, CLAUDE.md tavanı ve sahipliği, borç tavanının yeni sayısı
+- D3 Prompt şablonu + onay haritası (hangi onay Engin'de kalır, hangisi kapıya geçer)
+- D4 Durum ve okuma: CURRENT.md daraltma, süreç dersleri evi (budamadan ÖNCE açılır), INDEX bölüm 2 betikle üretim, bayat doküman kuyruğu, doc-check kaderi, auto-memory kararı
+- D5 Kapanış sınaması: yeni düzen gerçek bir ürün borcuyla sınanır (TD-26 veya TD-30), dört sayı ikinci kez ölçülür
+- D6 Şartname kod olsun: kolon seti tipe, vergi ve yük teste, terim domain.ts içine
 
-SIRA: D0 > D1 > (D2, D3) > D4 > D5. D6 bagimsiz. D2 asla D1'den once gelmez; kontrol, yerine gececek mekanizma calisir gorulmeden kaldirilmaz.
+SIRA: D0 > D1 > (D2, D3) > D4 > D5. D6 bağımsız. D2 asla D1'den önce gelmez; kontrol, yerine geçecek mekanizma çalışır görülmeden kaldırılmaz.
 
 ## Durum
 - HEAD: 7e3d2d1 (22 Agustos 2026 — ROL SUZGECI). Denetim E geregi burada CURRENT.md'ye dokunan son commit'in EBEVEYNI yazar. PRATIK KURAL (7 Agustos 2026'da ogrenildi): kapanista buraya YAZMA ANINDAKI HEAD yazilir — cunku kapanis commiti CURRENT.md'ye dokunur ve "son commit" o olur, ebeveyni de yazma anindaki HEAD'idir. Bir onceki oturumun HEAD'ini yazmak bir kusak kaydirir ve Denetim E kirmizi kalir. Migration 20260822130000 CANLIDA (ON migration, Engin onayi iki asamada — bkz. Milestone). Bagimsiz dogrulama: item_library 47 satir, fn_add_budget_item TEK overload (6 parametreli, oid 20025), uc CHECK kisiti resmi_odeme'yi kabul ediyor, aktif sablon 2 kart (1100+1500), piece birimi item_library/sablon govdesinde SIFIR. Kod: 299/299 test, build gecer, eslint 0 hata (2 bilinen react-refresh uyarisi). KABUK SPRINTI KAPANDI, tag v0.4-kabuk. Originde tek dal: main.

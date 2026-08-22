@@ -27,3 +27,6 @@ dist-ssr
 # Supabase CLI temp
 supabase/.temp
 .env.local
+
+# Claude Code gate marker
+.claude/.gate-ok

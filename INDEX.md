@@ -231,7 +231,7 @@ Bu tarih burada TEK yerde yaşar; dosyaların kendi içinde "Son güncelleme" ba
 `docs/IS-KURALLARI.md` [AKAN] (dogrulama: 6 Ağustos 2026) — Onay zinciri · Fiş status değerleri · Dönem/kapama · Anomali motoru · kod: receipt-service.ts · reviewer-screen.tsx · app/saha/**
 `docs/EKRAN-DEPT.md` [AKAN] (dogrulama: 22 Haziran 2026) — Header/üst yapı · Harcama limiti kartı · Bekleyen tab (onay duvarı) · İstisna izinleri · kod: yok [ABSENT] — dept ekranı yazılmadı
 `docs/EKRAN-SAHA.md` [AKAN] (dogrulama: 2 Haziran 2026) — Giriş akışı · Ana ekran/fiş giriş yolları · OCR sonuç formu · Dönem/arama/mesajlar · kod: app/saha/**
-`CLAUDE.md` [AKAN] (dogrulama: 18 Ağustos 2026) — Oturum protokolü · Opus/Sonnet iş bölümü · Prompt zorunlulukları · Doğrulama/karar disiplini · kod: yok
+`CLAUDE.md` [AKAN] (dogrulama: 18 Ağustos 2026) — Oturum protokolü · Opus/Sonnet iş bölümü · Prompt zorunlulukları · Doğrulama/karar disiplini · kod: .claude/**
 `CURRENT.md` [AKAN] (dogrulama: 18 Ağustos 2026) — Milestone günlüğü · Durum (HEAD/test/build) · Sıradaki iş · Açık kalanlar · kod: yok
 
 ## 8. KRİTİK DOSYALAR
