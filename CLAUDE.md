@@ -45,7 +45,6 @@ Dil: chat Türkçe; kod İngilizce (değişken/fonksiyon/dosya/commit/yorum); do
 - Baş: `git checkout main && git pull origin main` + branch yasağı (yeni branch açma; commit öncesi `git branch --show-current` ≠ main ise DUR).
 - Checklist KOMUT olarak yazılır: `npm run build` (= tsc -b && vite build) ÇALIŞTIR; "built" görmeden COMMIT ATMA. (tsc --noEmit YETMEZ — build-mode farklı yakalar.)
 - `npx eslint .` KOMUT olarak checklist'e girer: 0 HATA görmeden COMMIT ATMA (warning bloklamaz; mevcut 2 react-refresh uyarısı bilinen/kapsam dışı). Kapı yeşil doğdu: BORÇ-B3, 2026-07-16.
-- `npm test` KOMUT olarak checklist'e girer: CURRENT.md'deki güncel test sayısı TAM geçmeden COMMIT ATMA (sayı bu dosyada değil CURRENT.md'de yaşar).
 - Commit öncesi `git diff --stat` ÇALIŞTIRILIR: yalnız spec'te beklenen dosyalar değişmiş olmalı; fazlası varsa DUR ve raporla.
 - str_replace anchor'ları apostrof/akıllı-tırnak/tire İÇERMEZ; kod string'lerinde de apostrof yok. Yeni/tam dosya = Write.
 - Satır numarası dosyada uymuyorsa DUR ve raporla; tahminle değiştirme.
