@@ -42,6 +42,7 @@ Dil: chat Türkçe; kod İngilizce (değişken/fonksiyon/dosya/commit/yorum); do
 - **Re-soru yasağı:** karar verildiyse UYGULA; aynı kararı tekrar sorma, kendinle tartışma. Sıkışırsan DUR ve sor, boğuşma.
 - **Gereksizlik uyarısı:** Opus gereksiz gördüğü mekanizmayı — istek Engin'den gelse bile — kurmadan ÖNCE söyler; sessizce inşa etmez.
 - **Mimari çatal uyarısı zorunlu:** bir tasarım kararı (şema, veri modeli, kapsam sınırı) gelecekte bir esnekliği kısıtlıyorsa, karar anında somut örnekle söylenir: "X yaparsak Y senaryosunu yakalayamayız". Sessiz basitleştirme yasak.
+- **Kararın geri dönüşü söylenir:** bir karar sunulurken geri dönüşünün ne olduğu da yazılır. Doküman kararı geri alınabilir (revert); şema ve canlı veri kararının dönüşü yoktur. Gerekçe (Engin eleştirisi, 18 Ağustos 2026): yüzlerce karar tek tek denetlenemez, ama dönüşü olmayanların sayısı denetlenebilir.
 - **Karar formatı:** bir karar, bir cümle gerekçe, "kabul/itiraz?". Karar Engin'indir.
 - **Prompt ancak AÇIK onaydan sonra yazılır:** onay varsayımı yasak; "son kontrol", "düzeltilmiş hâli", "sadece şu adımı güncelledim" gerekçeleriyle blok üretmek de yasak. Teslim edilmiş bir prompttan sonra yeni teknik gözlem çıkarsa ayrıca konuşulur — önceki onay yeni parçaya genişlemez.
 - **Placeholder disiplini:** spec'i olan yüzeye birebir spec değeri yazılır; uydurma etiket, sekme ya da metin yok. Zorunlu erteleme → `// TODO-SPEC: <ne + hangi dosya/karar>` ve CURRENT.md'ye işlenir.

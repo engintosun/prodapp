@@ -2,7 +2,7 @@
 
 Bu dosyanın tüketicisi Opus'tur. Açılışta okunmaz; yeni bir kusur çıktığında "bu sınıf daha önce oldu mu, kapıya bağlanabilir mi" diye bakılır.
 
-Kayıt anlatı değil SINIFTIR: ne oldu değil, hangi tür hata kaç kez tekrarladı ve bugün onu ne tutuyor. Olayların hikâyesi git log'da ve Milestone kayıtlarında yaşar.
+Kayıt anlatı değil SINIFTIR: ne oldu değil, hangi tür hata kaç kez tekrarladı ve bugün onu ne tutuyor. Olayların hikâyesi git log'da ve kararın kendi ev dosyasında yaşar.
 
 ## Kapıya bağlanmış sınıflar
 
@@ -27,6 +27,8 @@ Kayıt anlatı değil SINIFTIR: ne oldu değil, hangi tür hata kaç kez tekrarl
 **Düşürülen parça.** Bir iş "ayrı mesajda vereceğim" denip düşürüldüğünde geri gelmiyor: rol süzgeci düşürüldü ve Engin'in ekranında canlı kusur olarak kaldı (22 Ağustos); optimizasyon turunda TECH-DEBT sayımı ve iki plan maddesi aynı şekilde düştü, Engin sorunca geri kondu (22 Ağustos).
 
 **Doğrulanmamış varsayımı gerçek saymak.** "SQL'i Sonnet uygulamaz, parola Engin'de" denildi, CLAUDE.md tersini söylüyordu (19 Ağustos). Optimizasyon turunda bir bilgisayar adı kişi sanıldı ve beş tur boyunca onun üzerinden akıl yürütüldü, plana madde olarak girdi (22 Ağustos).
+
+**Ekran, fonksiyonun kapılarını bilmiyor.** Üç kez (22 Ağustos 2026): `closed` projeye Geri al düğmesi çizildi, saha rolüne Arşivle ve Sil çizildi. Üçünde de düğme basılıyor, fonksiyon reddediyor, kullanıcı hata alıyor. Kök: spec "her satıra düğme eklenir" diyor, "fonksiyonun kabul ettiği satırlara" demiyor. Kapısı yok; proje seçim ekranında hiç test de yok.
 
 ## Ters yönde bir kayıt
 

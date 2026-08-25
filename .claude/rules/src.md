@@ -6,6 +6,8 @@ paths:
 
 # Kod kuralları (src)
 
+> Yükleme etiketi `paths:` olarak yazılır. `globs:` yazımı D2a'da ÖLÇÜLDÜ (22 Ağustos 2026) ve kapsamı UYGULAMIYOR: kapsamı dışındaki oturumda da açılışta yükleniyor. Hata vermez, kapı yakalamaz — yeni kural dosyası açılırken bu satır okunsun.
+
 - SSOT Supabase. Client kopya; çakışmada Supabase kazanır.
 - Sessiz hata YASAK: throw ya da kullanıcıya bildirim. Boş catch / sessiz return yok.
 - Katman ayrımı: veri (Supabase) -> iş mantığı (saf fonksiyon) -> UI -> orkestrasyon.
