@@ -216,7 +216,8 @@ KALICILIK KURALI gereği her karar CURRENT.md'ye VE kendi özel ev dosyasına ya
 | Bilerek bırakılan borç | `docs/TECH-DEBT.md` |
 | Auth, rol, RLS | `docs/AUTH-KARARLARI.md` |
 | Sıradaki iş | `CURRENT.md` (tamamlananlar ve uzun vadeli backlog: `docs/IS-SIRASI.md`) |
-| Oturum açılış ve kapanış prosedürü | `docs/protokol/ACILIS.md`, `docs/protokol/KAPANIS.md` |
+| Oturum açılış ve kapanış prosedürü, prompt biçimi | `docs/protokol/ACILIS.md`, `KAPANIS.md`, `PROMPT.md` |
+| Tekrar eden kusur sınıfları ve dersleri | `docs/protokol/DERSLER.md` |
 
 Şema araştırılırken: güncel şema = baseline + sonraki TÜM göçler. Baseline bayat tabandır, göçler kronolojik okunur. Eski `supabase/SUPABASE-*.sql` ve `full-rebuild.sql` dosyaları `docs/archive/` altındadır, tarihsel referanstır.
 
