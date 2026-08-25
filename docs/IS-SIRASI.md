@@ -37,7 +37,7 @@ Bu bölüm kasıtlı boş bırakılmıştır. "Sıradaki iş" için CURRENT.md'y
 - Autocomplete "diğer kartlarda ara" genişletmesi: başka kartın kalemini isim/varsayılanlarıyla kopyalar, kodu bu kartın muhtelif kuyruğundan verir (2026-07-21, park kararı — Faz 1 dışı)
 - Serbest kalem mini istasyonunda bulanık/yakın eşleşme önerisi: "bunu mu demek istediniz: X?" (2026-07-21, park kararı — Faz 1 dışı; içeren-eşleşme çoğu durumu zaten karşılıyor)
 - Etap adlandırma revizyonu (Engin, 5 Ağustos 2026, ertelendi): mevcut Beş Etap yerine önerilen genişletilmiş isimlendirme — Geliştirme · Ön Hazırlık · Çekim · Post Prodüksiyon · Dağıtım ve Yayın, + tartışmaya açık iki ek: Finansman, Kapanış/Tasfiye. GLOSSARY'nin güncel isim standardına dokunmadan, ayrı bir oturumda ele alınacak.
-- MOTOR İŞİ — dört parça (21 Ağustos 2026, KART 1600 tasarımından çıktı): çok kademeli gruplama, çalışma anında başlık doğması, ikinci başlık anahtarı, oranla türetme. NOT: 1600 bu parçaların İLK kullanıcısıdır, TEK kullanıcısı değildir — 1300 ve 1400 aynı parçaları isteyecek.
+- MOTOR İŞİ — dört parça (21 Ağustos 2026, KART 1600 tasarımından çıktı): çok kademeli gruplama, çalışma anında başlık doğması, ikinci başlık anahtarı, oranla türetme. NOT: 1600 bu parçaların İLK kullanıcısıdır, TEK kullanıcısı değildir — 1300 ve 1400 aynı parçaları isteyecek. SIRA BAĞI (22 Ağustos 2026): KART 1600'ün VERİ yarısı (katalog, kütüphane, şablon tohumu) proje açma yoluna bağlıdır ve o iş bitmeden başlanamaz; MOTOR yarısı (çok kademeli gruplama, çalışma anında başlık doğması, ikinci başlık anahtarı, oranla türetme) hiçbir şeye bağlı değildir, oradan başlanabilir.
 
 ### CURRENT.md'den taşındı (18 Ağustos 2026 diyeti — muhasebe modülü ve sonrası)
 

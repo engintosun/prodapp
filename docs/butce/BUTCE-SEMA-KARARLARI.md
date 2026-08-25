@@ -164,3 +164,4 @@ NEDEN: sahadaki gerçek senaryo — görüntü yönetmenine dolar, asistanlara T
 - Brüt toplam rakamsal olarak DEĞİŞMİYOR; değişen şey Net toplam ile Yasal Yük kolonlarının anlamı.
 - Önceki "her nakit çıkışı, KDV dahil, maliyettir" gerekçesi GEÇERSİZ.
 - Not: bordrolu satırda KDV sıfır olduğu için Net toplam ile Brüt toplam aynı rakamı gösterir; bu beklenen davranıştır (Engin onayı, 22 Ağustos 2026).
+- **SIRA BAĞI (22 Ağustos 2026):** kolon setinin genişlemesi (12 kolondan 14'e; Oran ve KDV eklenmesi) MÜHÜR-3'ten ÖNCE inmelidir. Gerekçe B18: hesaplanmış değer saklanmaz, formül kodda yaşar. Mühürleme yüzeyi açıldıktan sonra kolon modeli değişirse mühürlenmiş tutanaktaki rakam ile ekranın gösterdiği rakam ayrışır ve fark geri alınamaz.
