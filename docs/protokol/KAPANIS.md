@@ -19,7 +19,8 @@ CURRENT.md "## Durum" bölümünün ilk satırı `HEAD: <kısa hash> (<tarih> �
 - CURRENT.md yalnız içinde bulunulan modülün işini ve kararını taşır. Başka modüle ait olan her şey docs/IS-SIRASI.md Backlog bölümüne gider, o modüle girildiğinde geri akar.
 - Kapanmış olduğu hâlde listede duran madde silinir; kaydı Milestone'da ve git log'da yaşar.
 - İş olmayan madde — ders, protokol, kural — kendi ev dosyasına taşınır, açık iş listesinde durmaz.
-- Milestone günlüğünde son on kayıt kalır; daha eskiler tek paragraflık özete iner.
+**Milestone damıtılır, sayılmaz (Engin kararı, 25 Ağustos 2026):** ölçüt kayıt SAYISI değil KONUDUR. Milestone günlüğünde yalnız aktif milestone tanımı ve başka evi olmayan konular kalır; oturum kayıtlarının taşıdığı "ne yapıldı" git log'a, kararlar ev dosyalarına, süreç dersleri `docs/protokol/DERSLER.md`ye gider. Önceki "son on kayıt kalır, daha eskiler özete iner" kuralı bu kararla DÜŞTÜ.
+- **DOKÜMAN DOĞRULAMASININ ZAMANI — KARARA BAĞLANMADI (18 Ağustos 2026):** Denetim A bilgi-only kuyruk üretiyor. Konuşulan ölçüt, kuyruğun tarihe göre değil MODÜLE göre okunması ve bir dokümanın ancak ait olduğu modülün işine girilirken doğrulanmasıydı. Konuşuldu, karara bağlanmadı, hiçbir dosyaya yazılmamıştı; evi burasıdır.
 - **KALICILIK KURALI, budama için de geçerlidir:** özete inen kaydın taşıdığı kararın özel ev dosyasında karşılığı yoksa, budamadan ÖNCE oraya taşınır. Evi hazır olmayan hiçbir madde budanmaz.
 - **Bilinen yanlış bekletilmez:** doğrulanmamış olmak ile bilinen yanlış olmak aynı şey değildir. Başka modüle ait madde beklemeye alınır; ama içeriği BİLİNEN YANLIŞ ise modül dışı olsa da aynı turda düzeltilir. (18 Ağustos 2026 diyeti: KABUK-KARARLARI kodda dört olan ekran sayısını altı yazıyordu, hemen düzeltildi.)
 - Mühürlü ve kilitli kararlar budanmaz.
