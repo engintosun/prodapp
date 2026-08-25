@@ -292,3 +292,12 @@ NOT (8 Ağustos 2026): buradaki üç-rol listesi HARCAMA ZİNCİRİ içindir. Ma
 - Temsilci satırında türetilen ve kilitli olan hücreler YALNIZ üç tanedir: dönemler, birim, birim net. Miktar ve X sabittir (1 × 1), çünkü ajans faturası tek kalemdir. Oran hücresi türetilmez, şablondan varsayılan gelir ve DÜZENLENEBİLİR.
 - Rakamın dökümü, o rakamın kendi hücresine basılarak açılır — bordrodaki Yasal Yük sheet deseninin genişlemesi. Net toplam hücresine basılınca çıplak net + yasal yük dökümü, komisyon satırında basılınca tabanı oluşturan satırların çıplak net toplamı ve oranı görünür. ÇIPLAK NET AYRI KOLON OLMAYACAK (Engin kararı): kolon her satırda her zaman gereken şey içindir, bu rakam değil.
 - Oran uyarısı için mevcut Statü (?) / status-info-sheet deseni kullanılır, yeni yüzey açılmaz.
+- **İMLEÇ:** temsilci eklendiği anda imleç, yeni doğan temsilci satırının Oran hücresine iner.
+- **TEMSİLCİ SİLİNİNCE** oyuncu tek satıra geri döner; özet kademesi kalkar, ad hanesi oyuncunun satırına döner.
+- **AÇIK ÇELİŞKİ (karara bağlanmadı):** Ad ile Açıklama hanelerinden hangisinin rol, hangisinin kişi olduğu iki ayrı kayıt taşıyor. 21 Ağustos 2026: Ad = rol ismi, Açıklama = oyuncunun gerçek ismi. 22 Ağustos 2026 (Engin notu): tersi, Ad = oyuncu ismi, Açıklama = rol/karakter. İkisi birden yazılamaz; buna bağlı olarak "temsilci satırında Ad = katalog atomu" kararı da askıdadır.
+
+## 21. AÇIK EKRAN SORULARI (karara bağlanmadı)
+
+Bu bölüm, ekran davranışına ait olup henüz karara bağlanmamış soruları tutar. Emsal: KART-KATALOGU.md bölüm 8 ve 9 aynı işi kart kataloğu için yapar.
+
+- **SIFIR-BEDEL UYARISI KALICI DEĞİL** (Opus bulgusu, 27 Temmuz 2026): `use-edit-buffers.ts` içinde `itemWarnings` ve `periodWarnings` haritaları `useState({})` ile BOŞ doğar ve yalnız commit noktalarında dolar. Uyarı veriden TÜRETİLMEZ, olay-anı durumudur. Sonuç: sıfır bedelli kalem ya da dönem kaydedilip kart yeniden yüklenince kırmızı uyarı KAYBOLUR, hücreye dokunulana kadar geri gelmez. TD-14'ün üçüncü düzeltmesindeki "sorunlu dönemin kendi satırında kalıcı kırmızı" niyetiyle çelişir. Mühürlemeye giden bütçede sessiz sıfır riski taşır. Teknik borç olarak açılıp açılmayacağı Engin kararına bağlıdır; açılmadı.
