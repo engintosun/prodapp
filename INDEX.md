@@ -200,6 +200,28 @@ Kaynak: docs/ARCHITECTURE.md bölüm 5.3-5.4 (rol-bazlı `app/{rol}` ekranları 
 
 ## 7. DOKUMANTASYON HARITASI
 
+### 7.0 Karar tipi -> ev dosyası
+
+KALICILIK KURALI gereği her karar CURRENT.md'ye VE kendi özel ev dosyasına yazılır.
+
+| Karar tipi | Ev |
+|---|---|
+| Bir ekranın davranışı (ne görünür, ne olur) | o ekranın kararlar dosyası; bütçe için `docs/butce/BUTCE-EKRAN-KARARLARI.md` |
+| Ekranlar arası ortak ilke (renk, katman sırası, odak, etkileşim) | `docs/TASARIM-KARARLARI.md` |
+| Uygulama kabuğu (dört bölge, sol ray, üst bağlam, modül kapıları, adres şeması) | `docs/KABUK-KARARLARI.md` |
+| Veri yapısı (tablo, kolon, fonksiyon) | `docs/butce/BUTCE-SEMA-KARARLARI.md` |
+| Kodun nerede duracağı | `docs/butce/BUTCE-UI-MIMARISI.md` |
+| Terim ve adlandırma | `docs/GLOSSARY.md` |
+| Hesap ve iş kuralı | `docs/IS-KURALLARI.md` |
+| Bilerek bırakılan borç | `docs/TECH-DEBT.md` |
+| Auth, rol, RLS | `docs/AUTH-KARARLARI.md` |
+| Sıradaki iş | `CURRENT.md` (tamamlananlar ve uzun vadeli backlog: `docs/IS-SIRASI.md`) |
+| Oturum açılış ve kapanış prosedürü | `docs/protokol/ACILIS.md`, `docs/protokol/KAPANIS.md` |
+
+Şema araştırılırken: güncel şema = baseline + sonraki TÜM göçler. Baseline bayat tabandır, göçler kronolojik okunur. Eski `supabase/SUPABASE-*.sql` ve `full-rebuild.sql` dosyaları `docs/archive/` altındadır, tarihsel referanstır.
+
+Eşleşme yoksa `docs/ARCHITECTURE.md` okunur, sonra sorulur. Emin olunamayan durumda dosya listesine BAKILIR, tahmin edilmez.
+
 Dokuman etiketleri:
 [MUHURLU]  Karara baglanmis, kapanmis dosya — yeni karar girmez
 [AKAN]     Yasayan dosya — her turda yeni karar eklenir
