@@ -107,13 +107,13 @@ varsayim yapilmaz.
 
 `src/App.tsx` (49) — auth durumuna göre login/signup/proje-seçim/kabuk yönlendirmesi
 `src/main.tsx` (13) — React kök giriş noktası, StrictMode + index.css import
-`src/app/auth/authenticated-shell.tsx` (275) — rol-bazlı kabuk: header+nav+ekran seçimi, kurulum durumu kontrolü
+`src/app/auth/authenticated-shell.tsx` (316) — rol-bazlı kabuk: header+nav+ekran seçimi, kurulum durumu kontrolü
 `src/app/auth/create-project-page.tsx` (150) — yeni proje açma formu, fn_create_project çağırır
 `src/app/auth/login-page.tsx` (55) — email/şifre giriş formu
 `src/app/auth/project-selection-page.tsx` (332) — çoklu proje seçim ekranı + yeni proje açma girişi
 `src/app/auth/signup-page.tsx` (107) — davet token'ıyla hesap oluşturma (accept-invitation çağırır)
-`src/app/layout/app-header.tsx` (296) — üst şerit: avatar dropdown, proje adı, tema, çıkış, bildirim
-`src/app/layout/app-shell.tsx` (181) — kabuk yerleşimi: sol ray + iki şeritli üst bağlam + kendi ekseninde kayan orta masa; ray daraltma düğmesini taşır
+`src/app/layout/app-header.tsx` (381) — üst şerit: avatar dropdown, proje adı, tema, çıkış, bildirim
+`src/app/layout/app-shell.tsx` (190) — kabuk yerleşimi: sol ray + iki şeritli üst bağlam + kendi ekseninde kayan orta masa; ray daraltma düğmesini taşır
 `src/app/layout/bottom-nav.tsx` (76) — rol-bazlı alt navigasyon sekmeleri (NAV_ITEMS)
 `src/app/layout/nav-rail.tsx` (177) — sol ray: modül duraklarını çizer, açık/kapalı iki genişlik (168/68px), kapalıda ikon + ilk harf düşüşü
 `src/app/layout/rail-icons.tsx` (46) — rayın elle yazılmış tek renkli SVG ikonları (currentColor; ikon kütüphanesi kurulmadı)
@@ -139,7 +139,7 @@ varsayim yapilmaz.
 `src/app/saha/saha-screen.tsx` (26) — saha alt-nav router (ana/dönem/ara/mesajlar)
 `src/shared/cfe/index.ts` (4) — cfe.ts + payroll.ts barrel export
 `src/shared/rail-state.ts` (30) — sol rayın açık/kapalı durumu + localStorage kalıcılığı (emsal: theme.ts)
-`src/shared/supabase/auth-service.ts` (55) — profil listesi, proje claim seçimi (set-claims), çıkış
+`src/shared/supabase/auth-service.ts` (67) — profil listesi, proje claim seçimi (set-claims), çıkış
 `src/shared/supabase/client.ts` (10) — tek Supabase client instance
 `src/shared/supabase/company-profile-service.ts` (85) — şirket profili okuma/güncelleme (proje sahibi satırı)
 `src/shared/supabase/invitation-service.ts` (52) — departman listesi + davet oluşturma

@@ -6,7 +6,7 @@ Bu dosyanın tüketicisi Opus'tur.
 
 1. Değişen ve etkilenen tüm dosyalar taranır, tek kapsamlı kapanış promptu hazırlanır. Hatırlatma beklenmez.
 2. CURRENT.md baştan YAZILIR (ekleme değil): milestone, son commit, sıradaki bir-üç iş, açık kararlar. Tarihçe git log'da yaşar.
-3. `npm run doc-check` çalıştırılır, çıktısı kapanış promptuna girer. Betik uyarır, build'i kırmaz.
+3. `npm run doc-check` çalıştırılır, çıktısı kapanış promptuna girer. Bu adımdan ÖNCE `node scripts/index-refresh.mjs` koşulur ve INDEX bölüm 2 satır sayıları tazelenir; koşulmazsa Denetim F her kod diliminden sonra bayat sayı bildirir. Betik çözemediği yolu sessizce atlamaz, durur. Betik uyarır, build'i kırmaz.
 
 ## HEAD satırı
 
