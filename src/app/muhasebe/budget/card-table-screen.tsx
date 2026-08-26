@@ -12,6 +12,7 @@ import { cardTotals } from './totals'
 import { addBudgetItem, softDeleteBudgetItem } from '../../../shared/supabase/budget-service'
 import { useToast } from '../../../shared/components/toast'
 import { thStyle, thNum, tdStyle, numStyle, colWidths, tableMinWidth } from './components/table-styles'
+import { BUDGET_COLUMNS } from './columns'
 import { ItemRow } from './components/item-row'
 import { PeriodRow } from './components/period-row'
 import { HeadingRow } from './components/heading-row'
@@ -311,44 +312,39 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           </colgroup>
           <thead>
             <tr>
-              <th style={thStyle}>No</th>
-              <th style={thStyle}>Ad</th>
-              <th style={thStyle}>Açıklama</th>
-              <th style={thStyle}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-                  Statü
-                  <button
-                    type="button"
-                    title="Statü rehberi"
-                    onClick={onOpenStatusInfo}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: 16,
-                      height: 16,
-                      borderRadius: '50%',
-                      border: '1px solid var(--color-text-muted)',
-                      background: 'transparent',
-                      color: 'var(--color-text-muted)',
-                      fontSize: 10,
-                      lineHeight: 1,
-                      padding: 0,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    ?
-                  </button>
-                </span>
-              </th>
-              <th style={thStyle}>Dönemler</th>
-              <th style={thStyle}>Birim</th>
-              <th style={thNum}>Birim net</th>
-              <th style={thNum}>Miktar</th>
-              <th style={thNum}>X</th>
-              <th style={thNum}>Net toplam</th>
-              <th style={thNum}>Yasal Yük</th>
-              <th style={thNum}>Brut toplam</th>
+              {BUDGET_COLUMNS.map((column) => (
+                <th key={column.key} style={column.align === 'num' ? thNum : thStyle}>
+                  {column.key === 'statu' ? (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+                      {column.label}
+                      <button
+                        type="button"
+                        title="Statü rehberi"
+                        onClick={onOpenStatusInfo}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: 16,
+                          height: 16,
+                          borderRadius: '50%',
+                          border: '1px solid var(--color-text-muted)',
+                          background: 'transparent',
+                          color: 'var(--color-text-muted)',
+                          fontSize: 10,
+                          lineHeight: 1,
+                          padding: 0,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        ?
+                      </button>
+                    </span>
+                  ) : (
+                    column.label
+                  )}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
