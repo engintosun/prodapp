@@ -10,13 +10,18 @@ import type { User } from '@supabase/supabase-js'
 import { ToastProvider } from '../../shared/components/toast'
 import type { UserRole } from '../../shared/types/domain'
 import { AuthenticatedShell } from './authenticated-shell'
-import { clearClaims } from '../../shared/supabase/auth-service'
+import { clearClaims, setClaims } from '../../shared/supabase/auth-service'
 
 afterEach(cleanup)
 
 vi.mock('../../shared/supabase/auth-service', () => ({
   signOut: vi.fn(() => Promise.resolve()),
   clearClaims: vi.fn(() => Promise.resolve()),
+  setClaims: vi.fn(() => Promise.resolve()),
+  getOwnProfiles: vi.fn(() => Promise.resolve([
+    { project_id: 'proj-1', role: 'muhasebe', dept_id: null, projects: { name: 'Test Proje', status: 'active' } },
+    { project_id: 'proj-2', role: 'muhasebe', dept_id: null, projects: { name: 'Diğer Proje', status: 'active' } },
+  ])),
 }))
 
 vi.mock('../../shared/supabase/client', () => ({
@@ -160,7 +165,7 @@ describe('AppHeader — layout siniri (11 Agustos 2026, EKRAN-SAHA satir 15 duze
     const children = Array.from(header!.children)
     const moduleSwitcher = children.find((c) => c.getAttribute('role') === 'group')
     expect(moduleSwitcher).toBeTruthy()
-    const projectEl = children.find((c) => c.getAttribute('aria-label') === 'Proje değiştir')
+    const projectEl = children.find((c) => c.querySelector('[aria-label="Proje menüsü"]'))
     expect(projectEl).toBeTruthy()
     const avatarButton = header!.querySelector('button:not([aria-label])')
     expect(avatarButton).toBeTruthy()
@@ -180,17 +185,46 @@ describe('AuthenticatedShell — proje adindan secim ekranina donus (dilim: proj
     expect(screen.queryByText('Adres bulunamadı')).toBeNull()
   })
 
-  it('kabuk yuzeyinde proje adi bir dugmedir ve tiklaninca onSwitchProject tetiklenir', async () => {
+  it('kabuk yuzeyinde proje adi bir dugmedir ve tiklaninca proje menusu acilir', async () => {
     renderShell('/muhasebe/bekleyen', 'muhasebe')
     await screen.findByTestId('reviewer-screen')
-    const button = await screen.findByRole('button', { name: 'Proje değiştir' })
+    const button = await screen.findByRole('button', { name: 'Proje menüsü' })
+    expect(button.getAttribute('aria-expanded')).toBe('false')
     fireEvent.click(button)
-    expect(vi.mocked(clearClaims)).toHaveBeenCalled()
+    expect(button.getAttribute('aria-expanded')).toBe('true')
   })
 
   it('saha rolunde proje adi dugme degildir', async () => {
     renderShell('/saha/ana', 'saha')
     await screen.findByTestId('saha-screen')
-    expect(screen.queryByRole('button', { name: 'Proje değiştir' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Proje menüsü' })).toBeNull()
+  })
+})
+
+describe('AppHeader — proje menusu (dilim: proje menusu)', () => {
+  it('proje adina tiklamak secim ekranina gitmez, bir menu acar', async () => {
+    renderShell('/muhasebe/bekleyen', 'muhasebe')
+    await screen.findByTestId('reviewer-screen')
+    fireEvent.click(await screen.findByRole('button', { name: 'Proje menüsü' }))
+    const item = await screen.findByRole('button', { name: 'Diğer Proje' })
+    expect(item).toBeTruthy()
+    expect(vi.mocked(clearClaims)).not.toHaveBeenCalled()
+    expect(vi.mocked(setClaims)).not.toHaveBeenCalled()
+  })
+
+  it('menudeki bir proje maddesine tiklamak setClaims i o projenin kimligiyle cagirir', async () => {
+    renderShell('/muhasebe/bekleyen', 'muhasebe')
+    await screen.findByTestId('reviewer-screen')
+    fireEvent.click(await screen.findByRole('button', { name: 'Proje menüsü' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Diğer Proje' }))
+    expect(vi.mocked(setClaims)).toHaveBeenCalledWith('proj-2')
+  })
+
+  it('menudeki Tum projeler maddesi onSwitchProject yolunu (clearClaims) cagirir', async () => {
+    renderShell('/muhasebe/bekleyen', 'muhasebe')
+    await screen.findByTestId('reviewer-screen')
+    fireEvent.click(await screen.findByRole('button', { name: 'Proje menüsü' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Tüm projeler…' }))
+    expect(vi.mocked(clearClaims)).toHaveBeenCalled()
   })
 })

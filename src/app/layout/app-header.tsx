@@ -10,6 +10,8 @@ interface Props {
   onToggleTheme: () => void
   onSignOut: () => void
   onSwitchProject?: () => void
+  projects?: { id: string; name: string }[]
+  onSelectProject?: (projectId: string) => void
   // Modul anahtari (KABUK-KARARLARI 12.4): en solda durur, yalniz muhasebe/butce
   // yuzeylerinde gecirilir; saha/dept'te undefined kalir ve hic yer kaplamaz.
   moduleSwitcher?: ReactNode
@@ -27,15 +29,23 @@ export function AppHeader({
   onToggleTheme,
   onSignOut,
   onSwitchProject,
+  projects = [],
+  onSelectProject,
   moduleSwitcher,
   layout = 'classic',
 }: Props) {
-  const [open, setOpen] = useState(false)
+  const [openMenu, setOpenMenu] = useState<'none' | 'project' | 'user'>('none')
   const initial = (userEmail[0] ?? '?').toUpperCase()
   const displayName = projectName.trim() || '…'
   const isShell = layout === 'shell'
 
   const projectStyle = isShell ? shellProjectStyle : classicProjectStyle
+  const projectWrapperStyle: CSSProperties = {
+    position: 'relative',
+    flexShrink: projectStyle.flexShrink,
+    flex: projectStyle.flex,
+    maxWidth: projectStyle.maxWidth,
+  }
   const projectCaret = (
     <span style={{
       color: 'var(--color-text-muted)',
@@ -44,23 +54,76 @@ export function AppHeader({
     }}>▼</span>
   )
   const project = onSwitchProject ? (
-    <button
-      type="button"
-      onClick={onSwitchProject}
-      aria-label="Proje değiştir"
-      style={{
-        ...projectStyle,
-        background: 'none',
-        border: 'none',
-        padding: 0,
-        font: 'inherit',
-        color: 'inherit',
-        cursor: 'pointer',
-      }}
-    >
-      {displayName}
-      {projectCaret}
-    </button>
+    <div style={projectWrapperStyle}>
+      {openMenu === 'project' && (
+        <div
+          onClick={() => setOpenMenu('none')}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 'var(--z-nav)' as unknown as number,
+          }}
+        />
+      )}
+
+      <button
+        type="button"
+        onClick={() => setOpenMenu((v) => (v === 'project' ? 'none' : 'project'))}
+        aria-haspopup="menu"
+        aria-expanded={openMenu === 'project'}
+        aria-label="Proje menüsü"
+        style={{
+          ...projectStyle,
+          background: 'none',
+          border: 'none',
+          padding: 0,
+          font: 'inherit',
+          color: 'inherit',
+          cursor: 'pointer',
+          display: 'block',
+          width: '100%',
+        }}
+      >
+        {displayName}
+        {projectCaret}
+      </button>
+
+      {openMenu === 'project' && (
+        <div style={{
+          position: 'absolute',
+          top: 'calc(100% + 8px)',
+          left: 0,
+          zIndex: 'var(--z-modal)' as unknown as number,
+          background: 'var(--color-surface)',
+          border: '1px solid var(--color-border)',
+          borderRadius: 'var(--radius-md)',
+          boxShadow: 'var(--shadow-md)',
+          minWidth: '220px',
+          overflow: 'hidden',
+        }}>
+          {projects.map((p) => (
+            <button
+              key={p.id}
+              onClick={() => { onSelectProject?.(p.id); setOpenMenu('none') }}
+              style={menuItemStyle}
+            >
+              {p.name}
+            </button>
+          ))}
+
+          {projects.length > 0 && (
+            <div style={{ borderTop: '1px solid var(--color-border)' }} />
+          )}
+
+          <button
+            onClick={() => { onSwitchProject(); setOpenMenu('none') }}
+            style={menuItemStyle}
+          >
+            Tüm projeler…
+          </button>
+        </div>
+      )}
+    </div>
   ) : (
     <span style={projectStyle}>
       {displayName}
@@ -114,9 +177,9 @@ export function AppHeader({
 
   const userMenu = (
     <div style={{ position: 'relative', flexShrink: 0 }}>
-      {open && (
+      {openMenu === 'user' && (
         <div
-          onClick={() => setOpen(false)}
+          onClick={() => setOpenMenu('none')}
           style={{
             position: 'fixed',
             inset: 0,
@@ -126,7 +189,7 @@ export function AppHeader({
       )}
 
       <button
-        onClick={() => setOpen(v => !v)}
+        onClick={() => setOpenMenu(v => (v === 'user' ? 'none' : 'user'))}
         style={{
           width: '36px',
           height: '36px',
@@ -146,7 +209,7 @@ export function AppHeader({
         {initial}
       </button>
 
-      {open && (
+      {openMenu === 'user' && (
         <div style={{
           position: 'absolute',
           top: 'calc(100% + 8px)',
@@ -173,7 +236,7 @@ export function AppHeader({
           {/* Profil */}
           {/* TODO-SPEC: profil ekrani EKRAN-SAHA §13 */}
           <button
-            onClick={() => setOpen(false)}
+            onClick={() => setOpenMenu('none')}
             style={menuItemStyle}
           >
             Profil
@@ -183,7 +246,7 @@ export function AppHeader({
           {/* Proje Degistir */}
           {/* TODO-SPEC: coklu proje switch mekanigi */}
           <button
-            onClick={() => { if (onSwitchProject) { onSwitchProject(); setOpen(false) } else { setOpen(false) } }}
+            onClick={() => { if (onSwitchProject) { onSwitchProject(); setOpenMenu('none') } else { setOpenMenu('none') } }}
             style={menuItemStyle}
           >
             Proje Değiştir
@@ -192,7 +255,7 @@ export function AppHeader({
 
           {/* Tema — islevsel */}
           <button
-            onClick={() => { onToggleTheme(); setOpen(false) }}
+            onClick={() => { onToggleTheme(); setOpenMenu('none') }}
             style={menuItemStyle}
           >
             {theme === 'dark' ? 'Açık tema' : 'Koyu tema'}
@@ -201,7 +264,7 @@ export function AppHeader({
           {/* Yardim */}
           {/* TODO-SPEC: yardim ekrani */}
           <button
-            onClick={() => setOpen(false)}
+            onClick={() => setOpenMenu('none')}
             style={menuItemStyle}
           >
             Yardım
@@ -210,7 +273,7 @@ export function AppHeader({
 
           {/* Cikis — islevsel */}
           <button
-            onClick={() => { onSignOut(); setOpen(false) }}
+            onClick={() => { onSignOut(); setOpenMenu('none') }}
             style={{ ...menuItemStyle, color: 'var(--color-danger)' }}
           >
             Çıkış Yap

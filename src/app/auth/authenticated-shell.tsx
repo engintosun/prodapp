@@ -4,7 +4,7 @@ import { useLocation, useNavigate, useSearchParams, Navigate } from 'react-route
 import type { User } from '@supabase/supabase-js'
 import type { Theme } from '../../shared/theme'
 import type { UserRole } from '../../shared/types/domain'
-import { signOut, clearClaims } from '../../shared/supabase/auth-service'
+import { signOut, clearClaims, getOwnProfiles, setClaims } from '../../shared/supabase/auth-service'
 import { supabase } from '../../shared/supabase/client'
 import { getDepartments } from '../../shared/supabase/invitation-service'
 import { hasOpenPeriod } from '../../shared/supabase/onboarding-service'
@@ -117,6 +117,7 @@ export function AuthenticatedShell({ user, theme, onToggleTheme }: Props) {
   const role = (user.app_metadata?.role as UserRole) ?? 'saha'
   const projectId = user.app_metadata?.project_id as string | undefined
   const [projectName, setProjectName] = useState('')
+  const [otherProjects, setOtherProjects] = useState<{ id: string; name: string }[]>([])
   const [setupState, setSetupState] = useState<SetupState>(role === 'muhasebe' ? 'checking' : 'none')
   const { addToast } = useToast()
   const location = useLocation()
@@ -140,6 +141,19 @@ export function AuthenticatedShell({ user, theme, onToggleTheme }: Props) {
         }
       })
   }, [projectId, addToast])
+
+  useEffect(() => {
+    getOwnProfiles()
+      .then((profiles) => {
+        const others = profiles
+          .filter((p) => p.projects.status === 'active' && p.project_id !== projectId)
+          .map((p) => ({ id: p.project_id, name: p.projects.name }))
+        setOtherProjects(others)
+      })
+      .catch((e) => {
+        console.error('Other projects fetch error:', e)
+      })
+  }, [projectId])
 
   useEffect(() => {
     if (role !== 'muhasebe' || !projectId) return
@@ -175,6 +189,15 @@ export function AuthenticatedShell({ user, theme, onToggleTheme }: Props) {
     navigate('/', { replace: true })
     try {
       await clearClaims()
+    } catch (_e) {
+      addToast('Proje değiştirilemedi, tekrar deneyin', 'error')
+    }
+  }
+
+  async function handleSelectProject(projectId: string) {
+    navigate('/', { replace: true })
+    try {
+      await setClaims(projectId)
     } catch (_e) {
       addToast('Proje değiştirilemedi, tekrar deneyin', 'error')
     }
@@ -263,6 +286,8 @@ export function AuthenticatedShell({ user, theme, onToggleTheme }: Props) {
           onToggleTheme={onToggleTheme}
           onSignOut={handleSignOut}
           onSwitchProject={handleSwitchProject}
+          projects={otherProjects}
+          onSelectProject={handleSelectProject}
         >
           {content}
         </AppShell>
