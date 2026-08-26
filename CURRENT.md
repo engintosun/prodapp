@@ -22,7 +22,7 @@ TABAN ÖLÇÜM (HEAD 1819316): açılış üçlüsü 90.984 bayt (~30.300 jeton)
 - **D2 Söküm** — KAPANDI: D2a kurallar (211a102), D2ara test sayacı (66a1b24), D2b protokoller ve karar-ev haritası (dc41613), D2c CLAUDE.md 22.199 → 8.194 bayt (d992231, tavan 10 KB).
 - **D3 Prompt şablonu + onay haritası** — AÇIK. Hangi onay Engin'de kalır, hangisi kapıya geçer; hiçbir yerde yazılı değil.
 - **D4a Ders evi** — KAPANDI (4d22995): `docs/protokol/DERSLER.md`, on sınıf (dördü kapıya bağlı, altısı açık).
-- **D4b Durum daraltma** — bu commit. DAMITMANIN TANIMI (Engin kararı, 25 Ağustos 2026): ölçüt kayıt SAYISI değil KONUDUR — Milestone'da yalnız aktif milestone tanımı ve başka evi olmayan konular kalır. Evler önce açıldı (735f4bb, 21ab18e, 9291a28), budama sonra yapıldı; KALICILIK KURALI gereği hiçbir madde evi hazır olmadan budanmadı.
+- **D4b Durum daraltma** — bu commit. DAMITMANIN TANIMI (Engin kararı, 25 Ağustos 2026): ölçüt kayıt SAYISI değil KONUDUR — Milestone'da yalnız aktif milestone tanımı ve başka evi olmayan konular kalır. Evler önce açıldı (735f4bb, 21ab18e, 9291a28), budama sonra yapıldı; KALICILIK KURALI gereği hiçbir madde evi hazır olmadan budanmadı. Beşinci parça (INDEX bölüm 2 betikle üretilir hale gelir) ayrı commit'te tamamlandı: `scripts/index-refresh.mjs` satır sayılarını gerçek dosyalardan tazeliyor, `--check` kipi bayatlığı sıfırdan farklı çıkışla bildiriyor. D4b KAPANDI.
 - **D5 Kapanış sınaması** — AÇIK. Yeni düzen gerçek bir ürün borcuyla sınanır (TD-26 ya da TD-30), dört sayı ikinci kez ölçülür. Geçmezse tur bitmemiştir.
 - **D6 Şartname kod olsun** — AÇIK, bağımsız. Kolon seti tipe, vergi ve yük teste, terim `domain.ts` içine.
 
@@ -30,7 +30,7 @@ SIRA: D0 > D1 > (D2, D3) > D4 > D5. D6 bağımsız. D2 asla D1'den önce gelmez;
 
 ## Durum
 
-- HEAD: 9291a28 (25 Ağustos 2026 — D4b budama). Denetim E gereği burada CURRENT.md'ye dokunan son commit'in EBEVEYNİ yazar; kapanışta YAZMA ANINDAKİ HEAD yazılır, çünkü kapanış commit'i CURRENT.md'ye dokunur ve "son commit" o olur.
+- HEAD: 80053fd (25 Ağustos 2026 — D4b budama). Denetim E gereği burada CURRENT.md'ye dokunan son commit'in EBEVEYNİ yazar; kapanışta YAZMA ANINDAKİ HEAD yazılır, çünkü kapanış commit'i CURRENT.md'ye dokunur ve "son commit" o olur.
 - Migration 20260822130000 CANLIDA. Kod: 299/299 test, build geçer, eslint 0 hata (2 bilinen react-refresh uyarısı). Originde tek dal: main.
 - ÇALIŞMA ORTAMI: yedi deterministik kapı kurulu (dal, sığ klon, damga varlığı, damga tazeliği, ASCII'ye düşmüş .md metni, tanımsız CSS token, test sayısı kaybı) ve `supabase db push` onaya bağlı. Ayarlar `.claude/settings.json`, kapılar `.claude/hooks/`.
 - KURULU/ÇALIŞIYOR: auth ve çok-proje · saha fiş girişi · yönlendirme/düzeltme · davet/rol · onay/red · proje, bütçe ve servisler · onboarding · bütçe DB temeli · `fn_open_budget` · CFE (28/28) · KART 1500 ekran TAM · KART 1100 başlıklı çizim · ödeme-statüsü şeması · yük kovası cinsi · Not kolonları · kart masası · proje arşiv/geri alma/silme.

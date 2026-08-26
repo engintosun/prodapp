@@ -110,7 +110,7 @@ varsayim yapilmaz.
 `src/app/auth/authenticated-shell.tsx` (275) — rol-bazlı kabuk: header+nav+ekran seçimi, kurulum durumu kontrolü
 `src/app/auth/create-project-page.tsx` (150) — yeni proje açma formu, fn_create_project çağırır
 `src/app/auth/login-page.tsx` (55) — email/şifre giriş formu
-`src/app/auth/project-selection-page.tsx` (156) — çoklu proje seçim ekranı + yeni proje açma girişi
+`src/app/auth/project-selection-page.tsx` (332) — çoklu proje seçim ekranı + yeni proje açma girişi
 `src/app/auth/signup-page.tsx` (107) — davet token'ıyla hesap oluşturma (accept-invitation çağırır)
 `src/app/layout/app-header.tsx` (296) — üst şerit: avatar dropdown, proje adı, tema, çıkış, bildirim
 `src/app/layout/app-shell.tsx` (181) — kabuk yerleşimi: sol ray + iki şeritli üst bağlam + kendi ekseninde kayan orta masa; ray daraltma düğmesini taşır
@@ -144,7 +144,7 @@ varsayim yapilmaz.
 `src/shared/supabase/company-profile-service.ts` (85) — şirket profili okuma/güncelleme (proje sahibi satırı)
 `src/shared/supabase/invitation-service.ts` (52) — departman listesi + davet oluşturma
 `src/shared/supabase/library-service.ts` (64) — Kalem Kütüphanesi okuma (kart-bazlı + tüm kütüphane)
-`src/shared/supabase/onboarding-service.ts` (153) — departman/dönem/bütçe oluşturma, proje açma sarmalayıcı
+`src/shared/supabase/onboarding-service.ts` (177) — departman/dönem/bütçe oluşturma, proje açma sarmalayıcı
 `src/shared/supabase/receipt-service.ts` (181) — fiş CRUD + onay/red/düzeltme RPC çağrıları
 `src/shared/theme.ts` (24) — dark/light tema state'i + localStorage kalıcılığı
 
@@ -153,11 +153,11 @@ Edge functions (`supabase/functions/`):
 `clear-claims/index.ts` (44) — çıkışta app_metadata claim'lerini temizler
 `set-claims/index.ts` (65) — proje seçiminde app_metadata'ya project_id/role/dept_id yazar
 
-`supabase/migrations/` — 37 goc (baseline haric), kronolojik. baseline = BAYAT taban; guncel sema = baseline + sonraki tum gocler. Gocleri okurken kronolojik oku, yalniz baseline'a guvenme. Kararlari: docs/butce/BUTCE-SEMA-KARARLARI.md
+`supabase/migrations/` — 37 göç (baseline hariç), kronolojik. baseline = BAYAT taban; guncel sema = baseline + sonraki tum gocler. Gocleri okurken kronolojik oku, yalniz baseline'a guvenme. Kararlari: docs/butce/BUTCE-SEMA-KARARLARI.md
 
 ### C seviyesi (BASİT)
 
-`src/shared/components/` — 8 dosya, 635 satır: ortak UI primitifleri (dialog/empty-state/error/loading/toast/offline-banner/şirket-profili-formu)
+`src/shared/components/` — 8 dosya, 687 satır: ortak UI primitifleri (dialog/empty-state/error/loading/toast/offline-banner/şirket-profili-formu)
 `src/app/onboarding/` — 5 dosya, 551 satır: kurulum sihirbazı adımları (şirket/departman/dönem/bütçe) + akış orkestrasyonu
 `src/styles/` + `src/index.css` — 2 dosya, 137 satır: tasarım token'ları (renk/spacing/z-katman) + global reset
 
@@ -255,7 +255,12 @@ Bu tarih burada TEK yerde yaşar; dosyaların kendi içinde "Son güncelleme" ba
 `docs/EKRAN-DEPT.md` [AKAN] (dogrulama: 22 Haziran 2026) — Header/üst yapı · Harcama limiti kartı · Bekleyen tab (onay duvarı) · İstisna izinleri · kod: yok [ABSENT] — dept ekranı yazılmadı
 `docs/EKRAN-SAHA.md` [AKAN] (dogrulama: 2 Haziran 2026) — Giriş akışı · Ana ekran/fiş giriş yolları · OCR sonuç formu · Dönem/arama/mesajlar · kod: app/saha/**
 `CLAUDE.md` [AKAN] (dogrulama: 18 Ağustos 2026) — Oturum protokolü · Opus/Sonnet iş bölümü · Prompt zorunlulukları · Doğrulama/karar disiplini · kod: .claude/**
-`CURRENT.md` [AKAN] (dogrulama: 18 Ağustos 2026) — Milestone günlüğü · Durum (HEAD/test/build) · Sıradaki iş · Açık kalanlar · kod: yok
+`CURRENT.md` [AKAN] (dogrulama: 18 Ağustos 2026) — Milestone özeti · Optimizasyon turu · Durum (HEAD/test/build) · Mühür durumu · Karar evleri işaretçisi · Sıradaki iş · kod: yok
+
+`docs/protokol/ACILIS.md` [AKAN] (dogrulama: 25 Ağustos 2026) — Oturum açılış protokolü · Taze klon zorunluluğu · Okuma sırası · Durum raporunun biçimi · kod: yok
+`docs/protokol/KAPANIS.md` [AKAN] (dogrulama: 25 Ağustos 2026) — Oturum kapanış protokolü · Diyet kuralı (Milestone damıtılır, sayılmaz) · KALICILIK KURALI · Doküman doğrulamasının zamanı · kod: yok
+`docs/protokol/DERSLER.md` [AKAN] (dogrulama: 25 Ağustos 2026) — Süreç dersleri sınıf olarak · Kapıya bağlanmış sınıflar · Kapısı olmayan sınıflar · kod: .claude/hooks/**
+`docs/protokol/PROMPT.md` [AKAN] — Sonnet prompt şablonu ve zorunlulukları · kod: yok
 
 ## 8. KRİTİK DOSYALAR
 
