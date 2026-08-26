@@ -156,7 +156,7 @@ export const ItemRow = memo(function ItemRow({
             data-cell-kind="select"
             style={cellInput}
             defaultValue={addedStages[0].id}
-            onBlur={(e) => {
+            onChange={(e) => {
               const sid = e.target.value
               if (sid !== addedStages[0].id) void api.onAddPeriod(it.id, sid)
             }}
@@ -178,7 +178,7 @@ export const ItemRow = memo(function ItemRow({
             style={cellInput}
             defaultValue=""
             disabled={allAdded}
-            onBlur={(e) => {
+            onChange={(e) => {
               const sid = e.target.value
               if (sid) void api.onAddPeriod(it.id, sid)
             }}
