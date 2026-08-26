@@ -30,6 +30,8 @@ Kayıt anlatı değil SINIFTIR: ne oldu değil, hangi tür hata kaç kez tekrarl
 
 **Ekran, fonksiyonun kapılarını bilmiyor.** Üç kez (22 Ağustos 2026): `closed` projeye Geri al düğmesi çizildi, saha rolüne Arşivle ve Sil çizildi. Üçünde de düğme basılıyor, fonksiyon reddediyor, kullanıcı hata alıyor. Kök: spec "her satıra düğme eklenir" diyor, "fonksiyonun kabul ettiği satırlara" demiyor. Kapısı yok; proje seçim ekranında hiç test de yok.
 
+**Bir işin TARİFİ, o iş bitmeden budanmaz.** 25 Ağustos 2026: D4b beş parçalıydı ve bu tarif yalnız CURRENT.md'de yazılıydı. Budama dört parçayı yaptı, tarifin kendisini sildi ve yerine "bu commit" yazdı; beşinci parça (INDEX bölüm 2 betikle üretilir) hiç konuşulmadan düştü ve durum otoritesi olan dosya D4b'yi kapanmış gösterdi. Yani budama kendi ölçütünü yok etti. Yakalayan şey bir kapı değil, tarifin git geçmişinden yeniden okunmasıydı. Kural: bir dilimin tarifi, o dilim KAPANDIĞI doğrulanmadan budanmaz; budanacaksa önce tarif başka bir dosyaya taşınır. Kapısı yok.
+
 ## Ters yönde bir kayıt
 
 Sonnet'in DUR'ları üç kez haklı çıktı ve üçünde de canlıyı korudu: canlıda olmayan tablo zincire konmak üzereydi, ölü bir fonksiyon overload'ı taban alınmıştı, zorunlu alan eklemek kapsam dışı bir testi kırıyordu. Sonnet'in RAPORU doğrulama değildir ama DUR'u sinyaldir; incelenmeden geçilmez.
