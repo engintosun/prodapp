@@ -260,7 +260,7 @@ Bu tarih burada TEK yerde yaşar; dosyaların kendi içinde "Son güncelleme" ba
 `docs/protokol/ACILIS.md` [AKAN] (dogrulama: 25 Ağustos 2026) — Oturum açılış protokolü · Taze klon zorunluluğu · Okuma sırası · Durum raporunun biçimi · kod: yok
 `docs/protokol/KAPANIS.md` [AKAN] (dogrulama: 25 Ağustos 2026) — Oturum kapanış protokolü · Diyet kuralı (Milestone damıtılır, sayılmaz) · KALICILIK KURALI · Doküman doğrulamasının zamanı · kod: yok
 `docs/protokol/DERSLER.md` [AKAN] (dogrulama: 25 Ağustos 2026) — Süreç dersleri sınıf olarak · Kapıya bağlanmış sınıflar · Kapısı olmayan sınıflar · kod: .claude/hooks/**
-`docs/protokol/PROMPT.md` [AKAN] — Sonnet prompt şablonu ve zorunlulukları · kod: yok
+`docs/protokol/PROMPT.md` [AKAN] (dogrulama: 25 Ağustos 2026) — Sonnet prompt şablonu ve zorunlulukları · kod: yok
 
 ## 8. KRİTİK DOSYALAR
 
