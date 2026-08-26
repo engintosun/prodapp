@@ -20,17 +20,17 @@ TABAN ÖLÇÜM (HEAD 1819316): açılış üçlüsü 90.984 bayt (~30.300 jeton)
 - **D0 Emniyet** — KAPANDI (79bff5e; geri dönüş etiketi `v0.4.1-tur-oncesi`).
 - **D1 Zemin** — KAPANDI (76a351c): `.claude/` repoya girdi. Hook kapıları koşmaz, içeriğe bağlı damgayı doğrular; 36 saniyelik kapı zinciri hook içinde koşsaydı zaman aşımında kapı sessizce açığa düşerdi. D1b (7f179f1): tanımsız CSS token kapısı, yalnız stage'lenmiş dosyalarda.
 - **D2 Söküm** — KAPANDI: D2a kurallar (211a102), D2ara test sayacı (66a1b24), D2b protokoller ve karar-ev haritası (dc41613), D2c CLAUDE.md 22.199 → 8.194 bayt (d992231, tavan 10 KB).
-- **D3 Prompt şablonu + onay haritası** — AÇIK. Hangi onay Engin'de kalır, hangisi kapıya geçer; hiçbir yerde yazılı değil.
+- **D3 Prompt şablonu + onay haritası** — KAPANDI (231461d). Hangi onay Engin'de kalır, hangisi kapıya geçer, `docs/protokol/PROMPT.md` içindeki onay haritasına yazıldı. Aynı dilim üç yazılmamış prompt zorunluluğunu da yazıya geçirdi ve kapı komutlarının spec'e kopyalanmasını yasakladı (`run-gates.sh` derleme, denetim ve testleri kendisi koşuyor; kopyalanınca hepsi iki kez koşuyordu).
 - **D4a Ders evi** — KAPANDI (4d22995): `docs/protokol/DERSLER.md`, on sınıf (dördü kapıya bağlı, altısı açık).
 - **D4b Durum daraltma** — bu commit. DAMITMANIN TANIMI (Engin kararı, 25 Ağustos 2026): ölçüt kayıt SAYISI değil KONUDUR — Milestone'da yalnız aktif milestone tanımı ve başka evi olmayan konular kalır. Evler önce açıldı (735f4bb, 21ab18e, 9291a28), budama sonra yapıldı; KALICILIK KURALI gereği hiçbir madde evi hazır olmadan budanmadı. Beşinci parça (INDEX bölüm 2 betikle üretilir hale gelir) ayrı commit'te tamamlandı: `scripts/index-refresh.mjs` satır sayılarını gerçek dosyalardan tazeliyor, `--check` kipi bayatlığı sıfırdan farklı çıkışla bildiriyor. D4b KAPANDI.
-- **D5 Kapanış sınaması** — AÇIK. Yeni düzen gerçek bir ürün borcuyla sınanır (TD-26 ya da TD-30), dört sayı ikinci kez ölçülür. Geçmezse tur bitmemiştir.
+- **D5 Kapanış sınaması** — KAPANDI (25 Ağustos 2026). Yeni düzen gerçek bir ürün borcuyla sınanır (TD-26 ya da TD-30), dört sayı ikinci kez ölçülür. Sınama teknik borçla değil GERÇEK ÜRÜN İŞİYLE yapıldı: proje dönüş yolu (a1b89e2) ve proje menüsü (6475588). İKİNCİ ÖLÇÜM (25 Ağustos 2026): açılış üçlüsü 90.984 → **19.598 bayt** (~30.300 jetondan ~6.500'e, %78,5 azalma) · CLAUDE.md 22.302 → 8.538 · CURRENT.md 66.522 → 8.880 · deterministik kapı 0 → 7. Gün boyunca 19 commit ve 23 dosya; hiçbiri yanlış dosyaya dokunmadı, hiçbiri dal açmadı, kapılar üç gerçek hatayı yakaladı (eslint `cause` kuralı, test sayısı, dosya listesi denetimi). TUR KAPANDI; geriye yalnız bağımsız olan D6 kaldı.
 - **D6 Şartname kod olsun** — AÇIK, bağımsız. Kolon seti tipe, vergi ve yük teste, terim `domain.ts` içine.
 
 SIRA: D0 > D1 > (D2, D3) > D4 > D5. D6 bağımsız. D2 asla D1'den önce gelmez; kontrol, yerine geçecek mekanizma çalışır görülmeden kaldırılmaz.
 
 ## Durum
 
-- HEAD: 80053fd (25 Ağustos 2026 — D4b budama). Denetim E gereği burada CURRENT.md'ye dokunan son commit'in EBEVEYNİ yazar; kapanışta YAZMA ANINDAKİ HEAD yazılır, çünkü kapanış commit'i CURRENT.md'ye dokunur ve "son commit" o olur.
+- HEAD: 6475588 (25 Ağustos 2026 — D4b budama). Denetim E gereği burada CURRENT.md'ye dokunan son commit'in EBEVEYNİ yazar; kapanışta YAZMA ANINDAKİ HEAD yazılır, çünkü kapanış commit'i CURRENT.md'ye dokunur ve "son commit" o olur.
 - Migration 20260822130000 CANLIDA. Kod: 299/299 test, build geçer, eslint 0 hata (2 bilinen react-refresh uyarısı). Originde tek dal: main.
 - ÇALIŞMA ORTAMI: yedi deterministik kapı kurulu (dal, sığ klon, damga varlığı, damga tazeliği, ASCII'ye düşmüş .md metni, tanımsız CSS token, test sayısı kaybı) ve `supabase db push` onaya bağlı. Ayarlar `.claude/settings.json`, kapılar `.claude/hooks/`.
 - KURULU/ÇALIŞIYOR: auth ve çok-proje · saha fiş girişi · yönlendirme/düzeltme · davet/rol · onay/red · proje, bütçe ve servisler · onboarding · bütçe DB temeli · `fn_open_budget` · CFE (28/28) · KART 1500 ekran TAM · KART 1100 başlıklı çizim · ödeme-statüsü şeması · yük kovası cinsi · Not kolonları · kart masası · proje arşiv/geri alma/silme.
@@ -56,7 +56,9 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 ## Sıradaki iş
 
 0. **DOKÜMAN TEMİZLEME TURU** — optimizasyon turu olarak açık, yukarıdaki bölüme bakınız. Turun altı başlığından CURRENT.md daraltması, CLAUDE.md sağlaması ve Anthropic dokümanlarının incelenmesi yapıldı; TECH-DEBT dar sayımı (muhasebe modülüne ait borçların sayım dışı kalması) HENÜZ YAPILMADI.
-1. **PROJE AÇMA YOLU** — uygulama içinden proje seçim ekranına dönüş yolu yok. Bayraklı kullanıcı ikinci projesini açabiliyor (`signOut` önce `clear-claims` çağırdığı için tekrar girişte seçim ekranına düşülüyor); bayrağın elle konması arıza değil SK-AUTH-1 kararıdır, prosedürü `BOOTSTRAP-MUSTERI.sql`. Gerçek eksik, üst bağlam seçicisidir. Neye bağlı: hiçbir şey. Neyi bloke ediyor: her şablon değişikliğinin gözle doğrulanması.
+1. **KART 1600 — MOTOR YARISI.** Dört parça: çok kademeli gruplama, çalışma anında başlık doğması, ikinci başlık anahtarı, oranla türetme. Neye bağlı: hiçbir şey; VERİ yarısından ayrı olarak bugün başlanabilir (sıra bağı `docs/IS-SIRASI.md` MOTOR İŞİ maddesinde). Neyi bloke ediyor: 1300 ve 1400 aynı parçaları isteyecek.
+
+BITEN (25 Ağustos 2026, a1b89e2 + 6475588) — **PROJE AÇMA YOLU**
 
 Uzun vadeli iş, backlog ve tamamlananlar: `docs/IS-SIRASI.md`.
 
