@@ -35,14 +35,36 @@ export function AppHeader({
   const displayName = projectName.trim() || '…'
   const isShell = layout === 'shell'
 
-  const project = (
-    <span style={isShell ? shellProjectStyle : classicProjectStyle}>
+  const projectStyle = isShell ? shellProjectStyle : classicProjectStyle
+  const projectCaret = (
+    <span style={{
+      color: 'var(--color-text-muted)',
+      marginLeft: 'var(--space-1)',
+      fontSize: 'var(--text-xs)',
+    }}>▼</span>
+  )
+  const project = onSwitchProject ? (
+    <button
+      type="button"
+      onClick={onSwitchProject}
+      aria-label="Proje değiştir"
+      style={{
+        ...projectStyle,
+        background: 'none',
+        border: 'none',
+        padding: 0,
+        font: 'inherit',
+        color: 'inherit',
+        cursor: 'pointer',
+      }}
+    >
       {displayName}
-      <span style={{
-        color: 'var(--color-text-muted)',
-        marginLeft: 'var(--space-1)',
-        fontSize: 'var(--text-xs)',
-      }}>▼</span>
+      {projectCaret}
+    </button>
+  ) : (
+    <span style={projectStyle}>
+      {displayName}
+      {projectCaret}
     </span>
   )
 

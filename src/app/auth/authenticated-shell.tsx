@@ -4,7 +4,7 @@ import { useLocation, useNavigate, useSearchParams, Navigate } from 'react-route
 import type { User } from '@supabase/supabase-js'
 import type { Theme } from '../../shared/theme'
 import type { UserRole } from '../../shared/types/domain'
-import { signOut } from '../../shared/supabase/auth-service'
+import { signOut, clearClaims } from '../../shared/supabase/auth-service'
 import { supabase } from '../../shared/supabase/client'
 import { getDepartments } from '../../shared/supabase/invitation-service'
 import { hasOpenPeriod } from '../../shared/supabase/onboarding-service'
@@ -171,6 +171,15 @@ export function AuthenticatedShell({ user, theme, onToggleTheme }: Props) {
     }
   }
 
+  async function handleSwitchProject() {
+    navigate('/', { replace: true })
+    try {
+      await clearClaims()
+    } catch (_e) {
+      addToast('Proje değiştirilemedi, tekrar deneyin', 'error')
+    }
+  }
+
   if (setupState === 'checking') {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100dvh' }}>
@@ -207,6 +216,8 @@ export function AuthenticatedShell({ user, theme, onToggleTheme }: Props) {
     if (sahaKey) {
       activeKey = sahaKey
       content = <SahaScreen activeKey={sahaKey} />
+    } else if (pathname === '/') {
+      content = <Navigate to={firstPathForRole(role)} replace />
     } else if (isAnyKnownPath(pathname)) {
       content = <Navigate to={firstPathForRole(role)} replace />
     } else {
@@ -217,6 +228,8 @@ export function AuthenticatedShell({ user, theme, onToggleTheme }: Props) {
     if (match) {
       activeKey = match.key
       content = screenForMatch(match, role, projectId, user.id, searchParams)
+    } else if (pathname === '/') {
+      content = <Navigate to={firstPathForRole(role)} replace />
     } else if (isAnyKnownPath(pathname)) {
       content = <Navigate to={firstPathForRole(role)} replace />
     } else {
@@ -228,6 +241,8 @@ export function AuthenticatedShell({ user, theme, onToggleTheme }: Props) {
     const match = routes.find((r) => r.path === pathname)
     if (match) {
       content = screenForMatch(match, role, projectId, user.id, searchParams)
+    } else if (pathname === '/') {
+      content = <Navigate to={firstPathForRole(role)} replace />
     } else if (isAnyKnownPath(pathname)) {
       content = <Navigate to={firstPathForRole(role)} replace />
     } else {
@@ -247,6 +262,7 @@ export function AuthenticatedShell({ user, theme, onToggleTheme }: Props) {
           theme={theme}
           onToggleTheme={onToggleTheme}
           onSignOut={handleSignOut}
+          onSwitchProject={handleSwitchProject}
         >
           {content}
         </AppShell>

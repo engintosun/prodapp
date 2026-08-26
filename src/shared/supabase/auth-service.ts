@@ -45,6 +45,18 @@ export async function setClaims(projectId: string): Promise<void> {
   if (refreshError) throw new Error('Oturum yenilenemedi: ' + refreshError.message)
 }
 
+export async function clearClaims(): Promise<void> {
+  try {
+    const { error } = await supabase.functions.invoke('clear-claims', { body: {} })
+    if (error) throw error
+  } catch (e) {
+    throw new Error('Proje bağlamı temizlenemedi, tekrar deneyin', { cause: e })
+  }
+
+  const { error: refreshError } = await supabase.auth.refreshSession()
+  if (refreshError) throw new Error('Oturum yenilenemedi: ' + refreshError.message)
+}
+
 export async function signOut(): Promise<void> {
   try {
     await supabase.functions.invoke('clear-claims', { body: {} })

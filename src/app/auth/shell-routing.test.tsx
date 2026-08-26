@@ -10,8 +10,14 @@ import type { User } from '@supabase/supabase-js'
 import { ToastProvider } from '../../shared/components/toast'
 import type { UserRole } from '../../shared/types/domain'
 import { AuthenticatedShell } from './authenticated-shell'
+import { clearClaims } from '../../shared/supabase/auth-service'
 
 afterEach(cleanup)
+
+vi.mock('../../shared/supabase/auth-service', () => ({
+  signOut: vi.fn(() => Promise.resolve()),
+  clearClaims: vi.fn(() => Promise.resolve()),
+}))
 
 vi.mock('../../shared/supabase/client', () => ({
   supabase: {
@@ -154,14 +160,37 @@ describe('AppHeader — layout siniri (11 Agustos 2026, EKRAN-SAHA satir 15 duze
     const children = Array.from(header!.children)
     const moduleSwitcher = children.find((c) => c.getAttribute('role') === 'group')
     expect(moduleSwitcher).toBeTruthy()
-    const projectSpan = children.find((c) => c.tagName === 'SPAN')
-    expect(projectSpan).toBeTruthy()
+    const projectEl = children.find((c) => c.getAttribute('aria-label') === 'Proje değiştir')
+    expect(projectEl).toBeTruthy()
     const avatarButton = header!.querySelector('button:not([aria-label])')
     expect(avatarButton).toBeTruthy()
     const moduleIndex = children.indexOf(moduleSwitcher!)
-    const projectIndex = children.indexOf(projectSpan!)
+    const projectIndex = children.indexOf(projectEl!)
     const avatarIndex = children.findIndex((c) => c.contains(avatarButton))
     expect(moduleIndex).toBeLessThan(projectIndex)
     expect(avatarIndex).toBe(children.length - 1)
+  })
+})
+
+describe('AuthenticatedShell — proje adindan secim ekranina donus (dilim: proje degistir)', () => {
+  it('kok adres (/) muhasebe rolunde kullanicinin ilk duragini acar, Adres bulunamadi gorunmez', async () => {
+    renderShell('/', 'muhasebe')
+    const el = await screen.findByTestId('reviewer-screen')
+    expect(el.textContent).toBe('muhasebe')
+    expect(screen.queryByText('Adres bulunamadı')).toBeNull()
+  })
+
+  it('kabuk yuzeyinde proje adi bir dugmedir ve tiklaninca onSwitchProject tetiklenir', async () => {
+    renderShell('/muhasebe/bekleyen', 'muhasebe')
+    await screen.findByTestId('reviewer-screen')
+    const button = await screen.findByRole('button', { name: 'Proje değiştir' })
+    fireEvent.click(button)
+    expect(vi.mocked(clearClaims)).toHaveBeenCalled()
+  })
+
+  it('saha rolunde proje adi dugme degildir', async () => {
+    renderShell('/saha/ana', 'saha')
+    await screen.findByTestId('saha-screen')
+    expect(screen.queryByRole('button', { name: 'Proje değiştir' })).toBeNull()
   })
 })

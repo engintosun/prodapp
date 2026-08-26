@@ -14,6 +14,7 @@ interface Props {
   theme: Theme
   onToggleTheme: () => void
   onSignOut: () => void
+  onSwitchProject?: () => void
   children: ReactNode
 }
 
@@ -29,6 +30,7 @@ export function AppShell({
   theme,
   onToggleTheme,
   onSignOut,
+  onSwitchProject,
   children,
 }: Props) {
   const { collapsed, toggleRailCollapsed } = useRailCollapsed()
@@ -57,6 +59,7 @@ export function AppShell({
           theme={theme}
           onToggleTheme={onToggleTheme}
           onSignOut={onSignOut}
+          onSwitchProject={onSwitchProject}
           moduleSwitcher={<ModuleSwitcher active={module} />}
         />
         {/* ince serit — her modulde durur, icerik sonraki tur (donem secici, kaydetme durumu) */}
