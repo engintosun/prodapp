@@ -2,12 +2,11 @@ import { describe, expect, it } from 'vitest'
 import { BUDGET_COLUMNS } from './columns'
 
 describe('BUDGET_COLUMNS', () => {
-  it('on iki kolon icerir ve etiketleri tam sirasiyla eslesir', () => {
+  it('on bir kolon icerir ve etiketleri tam sirasiyla eslesir', () => {
     const labels = BUDGET_COLUMNS.map((c) => c.label)
     expect(labels).toEqual([
       'No',
       'Ad',
-      'Açıklama',
       'Statü',
       'Dönemler',
       'Birim',

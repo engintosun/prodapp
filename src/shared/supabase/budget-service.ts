@@ -27,7 +27,6 @@ export interface BudgetItemRow {
   libraryItemId: string | null
   name: string
   nameEn: string | null
-  description: string | null
   unitNet: number
   unitId: string
   unitLabel: string
@@ -57,7 +56,6 @@ export interface CardView {
 export type EditableField =
   | 'name'
   | 'nameEn'
-  | 'description'
   | 'unitNet'
   | 'multiplier'
   | 'repeat'
@@ -73,7 +71,6 @@ const FIELD_COL: Record<EditableField, string> = {
   publicNote: 'public_note',
   name: 'name',
   nameEn: 'name_en',
-  description: 'description',
   unitNet: 'unit_net',
   multiplier: 'multiplier',
   repeat: 'repeat',
@@ -249,7 +246,7 @@ export async function getCard(budgetId: string, cardId?: string): Promise<CardVi
 
   const { data: items, error: ei } = await supabase
     .from('budget_items')
-    .select('id, item_code, catalog_code, heading_code, library_item_id, name, name_en, description, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, public_note')
+    .select('id, item_code, catalog_code, heading_code, library_item_id, name, name_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, public_note')
     .eq('group_id', grp.id)
     .eq('is_active', true)
     .order('sort_order')
@@ -315,7 +312,6 @@ export async function getCard(budgetId: string, cardId?: string): Promise<CardVi
     libraryItemId: (i.library_item_id as string | null) ?? null,
     name: i.name as string,
     nameEn: (i.name_en as string | null) ?? null,
-    description: (i.description as string | null) ?? null,
     unitNet: Number(i.unit_net),
     unitId: i.unit_id as string,
     unitLabel: unitLabel[i.unit_id as string] ?? '',
@@ -362,9 +358,6 @@ export async function updateItemField(
   } else if (field === 'nameEn') {
     const v = String(value).trim()
     payload = { name_en: v === '' ? null : v }
-  } else if (field === 'description') {
-    const v = String(value).trim()
-    payload = { description: v === '' ? null : v }
   } else if (field === 'paymentStatus') {
     const v = String(value)
     if (v === '') {

@@ -9,7 +9,6 @@ export interface BudgetColumn {
 export const BUDGET_COLUMNS: readonly BudgetColumn[] = [
   { key: 'kod', label: 'No', align: 'text' },
   { key: 'ad', label: 'Ad', align: 'text' },
-  { key: 'aciklama', label: 'Açıklama', align: 'text' },
   { key: 'statu', label: 'Statü', align: 'text' },
   { key: 'donemler', label: 'Dönemler', align: 'text' },
   { key: 'birim', label: 'Birim', align: 'text' },

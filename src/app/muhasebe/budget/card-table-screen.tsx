@@ -299,7 +299,6 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           <colgroup>
             <col style={{ width: colWidths.kod }} />
             <col style={{ minWidth: colWidths.adMin }} />
-            <col style={{ width: colWidths.aciklama }} />
             <col style={{ width: colWidths.statu }} />
             <col style={{ width: colWidths.donemler }} />
             <col style={{ width: colWidths.birim }} />
@@ -423,7 +422,6 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           <colgroup>
             <col style={{ width: colWidths.kod }} />
             <col style={{ minWidth: colWidths.adMin }} />
-            <col style={{ width: colWidths.aciklama }} />
             <col style={{ width: colWidths.statu }} />
             <col style={{ width: colWidths.donemler }} />
             <col style={{ width: colWidths.birim }} />
@@ -436,7 +434,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           </colgroup>
           <tbody>
             <tr>
-              <td style={{ ...tdStyle, fontWeight: 600 }} colSpan={9}>
+              <td style={{ ...tdStyle, fontWeight: 600 }} colSpan={8}>
                 Kart toplamı
               </td>
               <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.net)}</td>

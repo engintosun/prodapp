@@ -10,7 +10,7 @@ import type { CSSProperties } from 'react'
 // statu 128 BILEREK yetersiz: gercek ihtiyac 166, kirpma kabul edildi (Engin karari 13.08.2026).
 // donemler 150: icerigi kullanicinin yazdigi etap adi, en kotu durum turetilemez.
 // Ad kolonu kalan genisligi alir: colgroup'ta tek minWidth tanimli kolon odur
-// (bkz card-table-screen colgroup). Aciklama sabit genislikte, listenin icinde.
+// (bkz card-table-screen colgroup).
 export const colWidths = {
   kod: 32,
   statu: 128,
@@ -23,7 +23,6 @@ export const colWidths = {
   netToplam: 112,
   brutToplam: 112,
   adMin: 212,
-  aciklama: 212,
 } as const
 
 export const tableMinWidth =
@@ -37,8 +36,7 @@ export const tableMinWidth =
   colWidths.yasalYuk +
   colWidths.netToplam +
   colWidths.brutToplam +
-  colWidths.adMin +
-  colWidths.aciklama
+  colWidths.adMin
 
 export const thStyle: CSSProperties = {
   textAlign: 'left',
@@ -73,8 +71,7 @@ export const cellInputNum: CSSProperties = { ...cellInput, textAlign: 'right', f
 // TD-15 (2026-07-18): override'siz donem net hucresi kalemden MIRAS gosteriyorsa soluk -
 // elle girilmis override normal renkte kalir (Kalemden miras title ipucu degismedi).
 export const cellInputNumMuted: CSSProperties = { ...cellInputNum, color: 'var(--color-text-muted)' }
-// Ad input'u: kalan genisligi alir, tasarsa ellipsis (odaksizken). Yeni Aciklama
-// kolonu SABIT genislikte ama odaksizken ayni sekilde ellipsis gosterir (D3-UI).
+// Ad input'u: kalan genisligi alir, tasarsa ellipsis (odaksizken).
 export const cellInputEllipsis: CSSProperties = { ...cellInput, overflow: 'hidden', textOverflow: 'ellipsis' }
 export const periodRowStyle: CSSProperties = { ...tdStyle, background: 'var(--color-surface-2)' }
 export const periodRowNumStyle: CSSProperties = { ...numStyle, background: 'var(--color-surface-2)' }

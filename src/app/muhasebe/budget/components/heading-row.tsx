@@ -10,7 +10,7 @@ import type { RowTotals } from '../totals'
 export function HeadingRow({ name, totals }: { name: string; totals: RowTotals }) {
   return (
     <tr>
-      <td style={{ ...tdStyle, fontWeight: 600 }} colSpan={9}>
+      <td style={{ ...tdStyle, fontWeight: 600 }} colSpan={8}>
         {name}
       </td>
       <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.net)}</td>

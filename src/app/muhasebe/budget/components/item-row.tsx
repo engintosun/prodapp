@@ -1,4 +1,4 @@
-// BOY: tek iş = kart tablosunun kalem satırı bileşeni (12 kolonluk KİLİTLİ kolon setinin tek satırlık render'ı + bordro/genel ayrımı + dönem-satırı açılımı), sebep = kolon seti kilitli tek bir kontrat; satır render'ı bölünürse kolon hizası iki dosyada ayrı ayrı korunmak zorunda kalır.
+// BOY: tek iş = kart tablosunun kalem satırı bileşeni (11 kolonluk KİLİTLİ kolon setinin tek satırlık render'ı + bordro/genel ayrımı + dönem-satırı açılımı), sebep = kolon seti kilitli tek bir kontrat; satır render'ı bölünürse kolon hizası iki dosyada ayrı ayrı korunmak zorunda kalır.
 import { memo } from 'react'
 import { PAYMENT_STATUSES } from '../../../../shared/types/domain'
 import type { BudgetItemRow, StageRow, UnitRow } from '../../../../shared/supabase/budget-service'
@@ -115,17 +115,6 @@ export const ItemRow = memo(function ItemRow({
             </button>
           )}
         </div>
-      </td>
-      <td style={tdStyle}>
-        <input
-          data-grid-cell="true"
-          data-row-id={it.id}
-          data-col="description"
-          style={cellInputEllipsis}
-          value={it.description ?? ''}
-          onChange={(e) => api.onTextChange(it.id, 'description', e.target.value)}
-          onBlur={() => api.commitField(it.id, 'description')}
-        />
       </td>
       <td style={tdStyle}>
         <select
