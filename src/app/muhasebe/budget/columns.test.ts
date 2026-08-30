@@ -31,4 +31,14 @@ describe('BUDGET_COLUMNS', () => {
       expect(column.align).toBe(expected)
     }
   })
+
+  it('satir bilesenlerinin hucre sayisi kolon setiyle ayni olmali', () => {
+    const n = BUDGET_COLUMNS.length
+    // heading-row ve kart toplami seridi: colSpan + uc rakam hucresi
+    expect(8 + 3).toBe(n)
+    // add-item-row: iki hucre + colSpan
+    expect(2 + 9).toBe(n)
+    // period-row: uc bos hucre + sekiz icerik hucresi
+    expect(3 + 8).toBe(n)
+  })
 })
