@@ -23,6 +23,8 @@ export const colWidths = {
   netToplam: 112,
   brutToplam: 112,
   adMin: 212,
+  maliyet: 112,
+  kdv: 112,
 } as const
 
 export const tableMinWidth =
@@ -36,7 +38,9 @@ export const tableMinWidth =
   colWidths.yasalYuk +
   colWidths.netToplam +
   colWidths.brutToplam +
-  colWidths.adMin
+  colWidths.adMin +
+  colWidths.maliyet +
+  colWidths.kdv
 
 export const thStyle: CSSProperties = {
   textAlign: 'left',

@@ -1,4 +1,4 @@
-// BOY: tek iş = kart tablosunun kalem satırı bileşeni (11 kolonluk KİLİTLİ kolon setinin tek satırlık render'ı + bordro/genel ayrımı + dönem-satırı açılımı), sebep = kolon seti kilitli tek bir kontrat; satır render'ı bölünürse kolon hizası iki dosyada ayrı ayrı korunmak zorunda kalır.
+// BOY: tek iş = kart tablosunun kalem satırı bileşeni (13 kolonluk KİLİTLİ kolon setinin tek satırlık render'ı + bordro/genel ayrımı + dönem-satırı açılımı), sebep = kolon seti kilitli tek bir kontrat; satır render'ı bölünürse kolon hizası iki dosyada ayrı ayrı korunmak zorunda kalır.
 import { memo } from 'react'
 import { PAYMENT_STATUSES } from '../../../../shared/types/domain'
 import type { BudgetItemRow, StageRow, UnitRow } from '../../../../shared/supabase/budget-service'
@@ -55,7 +55,7 @@ export const ItemRow = memo(function ItemRow({
   const addedStageIds = Object.keys(it.periodQty)
   const isBordro = it.paymentStatus === 'bordro'
   const bd = bordro
-  const { net: netToplam, yasalYuk: yasalYukTl, brut: brutToplam } = rowTotals(it, bordro)
+  const { net: netToplam, yasalYuk: yasalYukTl, maliyet, kdv, brut: brutToplam } = rowTotals(it, bordro)
   const periodKeys = new Set(addedStageIds)
   const addableStages = stages.filter((s) => !periodKeys.has(s.id))
   const addedStages = stages.filter((s) => periodKeys.has(s.id))
@@ -279,7 +279,7 @@ export const ItemRow = memo(function ItemRow({
           <span style={{ color: 'var(--color-text-muted)', fontStyle: 'italic', fontSize: 'var(--text-xs)' }}>hesaplanıyor…</span>
         ) : isBordro && bd?.error ? (
           <span style={{ color: 'var(--color-danger, #c0392b)', fontSize: 'var(--text-xs)' }}>{bd.error}</span>
-        ) : brutToplam > netToplam ? (
+        ) : yasalYukTl > 0 ? (
           <button
             data-grid-cell="true"
             data-row-id={it.id}
@@ -303,6 +303,10 @@ export const ItemRow = memo(function ItemRow({
           '—'
         )}
       </td>
+      <td style={{ ...numStyle, fontWeight: 600 }}>
+        <span style={isBordro ? { opacity: 0.55 } : undefined}>{isBordro && bd?.missingNet ? '—' : fmt(maliyet)}</span>
+      </td>
+      <td style={numStyle}>{isBordro ? '—' : fmt(kdv)}</td>
       <td style={{ ...numStyle, fontWeight: 600 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
           <span title={isBordro && bd?.missingNet ? 'Birim Net bekleniyor' : undefined} style={isBordro ? { opacity: 0.55 } : undefined}>{isBordro && bd?.missingNet ? '—' : fmt(brutToplam)}</span>

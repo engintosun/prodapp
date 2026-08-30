@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { BUDGET_COLUMNS } from './columns'
 
 describe('BUDGET_COLUMNS', () => {
-  it('on bir kolon icerir ve etiketleri tam sirasiyla eslesir', () => {
+  it('on uc kolon icerir ve etiketleri tam sirasiyla eslesir', () => {
     const labels = BUDGET_COLUMNS.map((c) => c.label)
     expect(labels).toEqual([
       'No',
@@ -15,6 +15,8 @@ describe('BUDGET_COLUMNS', () => {
       'X',
       'Net toplam',
       'Yasal Yük',
+      'Maliyet',
+      'KDV',
       'Brüt toplam',
     ])
   })
@@ -25,7 +27,7 @@ describe('BUDGET_COLUMNS', () => {
   })
 
   it('sayisal kolonlar num, digerleri text hizalanir', () => {
-    const numLabels = ['Birim net', 'Miktar', 'X', 'Net toplam', 'Yasal Yük', 'Brüt toplam']
+    const numLabels = ['Birim net', 'Miktar', 'X', 'Net toplam', 'Yasal Yük', 'Maliyet', 'KDV', 'Brüt toplam']
     for (const column of BUDGET_COLUMNS) {
       const expected = numLabels.includes(column.label) ? 'num' : 'text'
       expect(column.align).toBe(expected)
@@ -34,11 +36,11 @@ describe('BUDGET_COLUMNS', () => {
 
   it('satir bilesenlerinin hucre sayisi kolon setiyle ayni olmali', () => {
     const n = BUDGET_COLUMNS.length
-    // heading-row ve kart toplami seridi: colSpan + uc rakam hucresi
-    expect(8 + 3).toBe(n)
+    // heading-row ve kart toplami seridi: colSpan + bes rakam hucresi
+    expect(8 + 5).toBe(n)
     // add-item-row: iki hucre + colSpan
-    expect(2 + 9).toBe(n)
-    // period-row: uc bos hucre + sekiz icerik hucresi
-    expect(3 + 8).toBe(n)
+    expect(2 + 11).toBe(n)
+    // period-row: uc bos hucre + on icerik hucresi
+    expect(3 + 10).toBe(n)
   })
 })

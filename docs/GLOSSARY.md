@@ -48,6 +48,7 @@
 |Başlık satırı|is_group|Görsel grubun kütüphanedeki karşılığı (item_library.is_group=true). Kalem DEĞİLDİR: ekleme listesinde görünmez, çapraz-kart taramasına girmez, fn_add_budget_item ile eklenemez|
 |Alt-kod|—|Atomun kendi katalog kodu, başlığın kodundan tire ile türer (1101-01). Grup üyeliği tire öncesi parçadan okunur. catalog_code METİNDİR; item_code değildir (item_code iç kimliktir, bütçe sayacından gelir)|
 |Harç/Vergi|resmi_odeme|Kamuya yapılan, kendi başına duran resmî ödeme statüsü. Stopaj yok, SGK yok, KDV yok — net = brüt. Doktrin evi VERGI-MEVZUATI.md|
+|Maliyet|maliyet|Kalem satırındaki kolon: Net toplam + Yasal Yük (KDV hariç ara toplam). **KARIŞTIRILMAZ:** "Maliyet nesnesi" (cost_object, yukarıda) ayrı bir kavramdır — aynı kök, iki farklı anlam. Doktrin evi BUTCE-SEMA-KARARLARI.md NET/BRÜT DOKTRİNİ REVİZYONU|
 
 ### Bütçe - dönem/nakit terimleri (2026-06-13)
 

@@ -56,8 +56,9 @@ export const PeriodRow = memo(function PeriodRow({
   const donemNet = isBordro ? (periodBd?.netTotal ?? 0) : netToplamDonemli([donemKalemi])
   const donemBrutYuk = isBordro ? 0 : brutToplamDonemli([donemKalemi], yukler)
   const donemKdv = isBordro ? 0 : kisiyeBanka(donemNet, donemBrutYuk, it.vatRate).kdv
-  const donemBrut = isBordro ? (periodBd?.grossTotal ?? 0) : donemBrutYuk + donemKdv
-  const donemYasalYuk = isBordro ? (periodBd?.legalBurden ?? 0) : donemBrut - donemNet
+  const donemMaliyet = isBordro ? (periodBd?.grossTotal ?? 0) : donemBrutYuk
+  const donemYasalYuk = isBordro ? (periodBd?.legalBurden ?? 0) : donemMaliyet - donemNet
+  const donemBrut = donemMaliyet + donemKdv
 
   return (
     <tr>
@@ -140,7 +141,7 @@ export const PeriodRow = memo(function PeriodRow({
                   ? 'X 0 olamaz'
                   : 'Miktar 0 olamaz'}
           </span>
-        ) : donemBrut > donemNet ? (
+        ) : donemYasalYuk > 0 ? (
           <button
             data-grid-cell="true"
             data-row-id={`${it.id}:${s.id}`}
@@ -164,6 +165,8 @@ export const PeriodRow = memo(function PeriodRow({
           '—'
         )}
       </td>
+      <td style={periodRowNumStyle}>{fmt(donemMaliyet)}</td>
+      <td style={periodRowNumStyle}>{isBordro ? '—' : fmt(donemKdv)}</td>
       <td style={periodRowNumStyle}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
           <span>{fmt(donemBrut)}</span>

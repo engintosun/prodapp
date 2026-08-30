@@ -17,5 +17,7 @@ export const BUDGET_COLUMNS: readonly BudgetColumn[] = [
   { key: 'x', label: 'X', align: 'num' },
   { key: 'netToplam', label: 'Net toplam', align: 'num' },
   { key: 'yasalYuk', label: 'Yasal Yük', align: 'num' },
+  { key: 'maliyet', label: 'Maliyet', align: 'num' },
+  { key: 'kdv', label: 'KDV', align: 'num' },
   { key: 'brutToplam', label: 'Brüt toplam', align: 'num' },
 ]

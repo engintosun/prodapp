@@ -9,6 +9,8 @@ import type { BordroSheetEntry } from './components/burden-sheet'
 export interface RowTotals {
   net: number
   yasalYuk: number
+  maliyet: number
+  kdv: number
   brut: number
 }
 
@@ -21,9 +23,10 @@ export function rowTotals(item: BudgetItemRow, bordro: BordroSheetEntry | undefi
   const netToplam = isBordro ? (bordro?.data?.totalNet ?? 0) : netToplamDonemli(donemler)
   const brutYuk = isBordro ? 0 : brutToplamDonemli(donemler, yukler)
   const kdvTl = isBordro ? 0 : kisiyeBanka(netToplam, brutYuk, item.vatRate).kdv
-  const brutToplam = isBordro ? (bordro?.data?.totalGross ?? 0) : brutYuk + kdvTl
-  const yasalYukTl = brutToplam - netToplam
-  return { net: netToplam, yasalYuk: yasalYukTl, brut: brutToplam }
+  const maliyet = isBordro ? (bordro?.data?.totalGross ?? 0) : brutYuk
+  const yasalYukTl = maliyet - netToplam
+  const brutToplam = maliyet + kdvTl
+  return { net: netToplam, yasalYuk: yasalYukTl, maliyet, kdv: kdvTl, brut: brutToplam }
 }
 
 export function cardTotals(
@@ -33,8 +36,14 @@ export function cardTotals(
   return rows.reduce<RowTotals>(
     (acc, it) => {
       const t = rowTotals(it, bordroData[it.id])
-      return { net: acc.net + t.net, yasalYuk: acc.yasalYuk + t.yasalYuk, brut: acc.brut + t.brut }
+      return {
+        net: acc.net + t.net,
+        yasalYuk: acc.yasalYuk + t.yasalYuk,
+        maliyet: acc.maliyet + t.maliyet,
+        kdv: acc.kdv + t.kdv,
+        brut: acc.brut + t.brut,
+      }
     },
-    { net: 0, yasalYuk: 0, brut: 0 },
+    { net: 0, yasalYuk: 0, maliyet: 0, kdv: 0, brut: 0 },
   )
 }

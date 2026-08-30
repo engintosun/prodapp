@@ -158,11 +158,14 @@ NEDEN: sahadaki gerçek senaryo — görüntü yönetmenine dolar, asistanlara T
 - **TEK İMZA DOKTRİNİ:** RPC fonksiyonu tek imza olarak yaşar. Parametre eklendiğinde eski imza AYNI migration'da drop edilir; overload bırakılmaz. Gerekçe: 1 Ağustos 2026'da fn_add_budget_item'a p_existing_code eklendi, 5 parametreli sürüm sessizce canlı kaldı — hatalı kod üretimi taşıyan, korumasız, grant'lı bir kopya olarak. İki overload ayrıca tuzaktır: her davranış değişikliğinde hangisinin canlı olduğu yeniden sorulmak zorunda. (fn_add_budget_item 5→6 parametre geçişinde uygulandı, bkz. migration 20260815150000.)
 
 ## NET/BRÜT DOKTRİNİ REVİZYONU (Engin kararı, 22 Ağustos 2026, TÜM kartlarda geçerli)
+
+**UYGULANDI (31 Ağustos 2026, bu commit):** Model koda indi, ama aşağıdaki KOLON ANLAMLARI maddesinin özgün 22 Ağustos taslağından bir noktada FARKLI uygulandı — gerçek kazanır, madde buna göre düzeltildi: "Net toplam" kolonunun anlamı DEĞİŞMEDİ (çıplak çarpım olarak kaldı); yasal yükü taşıyan ayrı bir **Maliyet** kolonu eklendi. Gerekçe: mevcut Net toplam kolonunun anlamını geriye dönük değiştirmek yerine ayrı bir Maliyet kolonu eklemek hem eski değeri korudu hem toplama zincirini (Net toplam → Yasal Yük → Maliyet → KDV → Brüt toplam) tek yönlü ve net bıraktı. Kolon seti 11'den 13'e çıktı; Oran bu sete DAHIL DEĞİLDİR, KART 1600'ün kendi hanesidir (bkz. BUTCE-EKRAN-KARARLARI.md §20).
+
 - **AYRIM ÖLÇÜSÜ GERİ ALINABİLİRLİK.** KDV geri alınır, o yüzden maliyet değildir ve yalnız brütte yaşar. SGK, işsizlik primi ve stopaj yapımcının cebinden çıkar, geri alınamaz ve mahsup edilemez; brüt maaş / brüt vergili gibi görünseler de NET GİDERDİR.
 - Fon ve kurumların istediği "net bütçe" = KDV hariç toplam maliyet.
-- **KOLON ANLAMLARI:** Yasal Yük = saf yük (KDV çıkar). Net toplam = (birim net × miktar × X) + yasal yük. KDV kendi kolonu. Brüt toplam = Net toplam + KDV.
-- Brüt toplam rakamsal olarak DEĞİŞMİYOR; değişen şey Net toplam ile Yasal Yük kolonlarının anlamı.
+- **KOLON ANLAMLARI (31 Ağustos 2026'da düzeltildi, yukarıdaki UYGULANDI notuna bkz.):** Net toplam = birim net × Miktar × X (çıplak çarpım, DEĞİŞMEDİ). Yasal Yük = saf yük (KDV artık içinde değil). Maliyet = Net toplam + Yasal Yük (YENİ kolon). KDV kendi kolonu. Brüt toplam = Maliyet + KDV.
+- Brüt toplam rakamsal olarak DEĞİŞMİYOR; değişen şey Yasal Yük kolonunun anlamı ve iki yeni kolon (Maliyet, KDV).
 - Önceki "her nakit çıkışı, KDV dahil, maliyettir" gerekçesi GEÇERSİZ.
-- Not: bordrolu satırda KDV sıfır olduğu için Net toplam ile Brüt toplam aynı rakamı gösterir; bu beklenen davranıştır (Engin onayı, 22 Ağustos 2026).
-- **SIRA BAĞI (22 Ağustos 2026):** kolon setinin genişlemesi (12 kolondan 14'e; Oran ve KDV eklenmesi) MÜHÜR-3'ten ÖNCE inmelidir. Gerekçe B18: hesaplanmış değer saklanmaz, formül kodda yaşar. Mühürleme yüzeyi açıldıktan sonra kolon modeli değişirse mühürlenmiş tutanaktaki rakam ile ekranın gösterdiği rakam ayrışır ve fark geri alınamaz.
+- Not: bordrolu satırda KDV sıfır olduğu için Maliyet ile Brüt toplam aynı rakamı gösterir; bu beklenen davranıştır (Engin onayı, 22 Ağustos 2026).
+- **SIRA BAĞI (22 Ağustos 2026):** kolon setinin genişlemesi (11 kolondan 13'e; Maliyet ve KDV eklenmesi) MÜHÜR-3'ten ÖNCE inmelidir. Gerekçe B18: hesaplanmış değer saklanmaz, formül kodda yaşar. Mühürleme yüzeyi açıldıktan sonra kolon modeli değişirse mühürlenmiş tutanaktaki rakam ile ekranın gösterdiği rakam ayrışır ve fark geri alınamaz.
 - **AÇIK, KARARA BAĞLANMADI (22 Ağustos 2026):** "Net toplam" kolonunun ADI. Model kilitli, ad açık — bordrolu satırda "net" yazan hücrenin değeri, muhasebe dilindeki brüt maaşı aşıyor. Değerlendirilecek adaylar: "Maliyet" ve fon dilindeki "net bütçe" tabiri.
