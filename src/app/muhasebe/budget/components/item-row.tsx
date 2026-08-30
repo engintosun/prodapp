@@ -1,5 +1,6 @@
 // BOY: tek iş = kart tablosunun kalem satırı bileşeni (12 kolonluk KİLİTLİ kolon setinin tek satırlık render'ı + bordro/genel ayrımı + dönem-satırı açılımı), sebep = kolon seti kilitli tek bir kontrat; satır render'ı bölünürse kolon hizası iki dosyada ayrı ayrı korunmak zorunda kalır.
 import { memo } from 'react'
+import { PAYMENT_STATUSES } from '../../../../shared/types/domain'
 import type { BudgetItemRow, StageRow, UnitRow } from '../../../../shared/supabase/budget-service'
 import { fmt, itemHasNote, canChangeHeading, isMultiPeriod, summarizeSame, fieldVal, repeatVal, bordroAllowedUnits } from '../format'
 import type { ValueWarning } from '../format'
@@ -137,13 +138,11 @@ export const ItemRow = memo(function ItemRow({
           onChange={(e) => api.onStatusChange(it.id, e.target.value)}
         >
           <option value="">Statü seç</option>
-          <option value="bordro">Bordro</option>
-          <option value="smm">SMM</option>
-          <option value="telif_belgeli">Telif</option>
-          <option value="sirket">Fatura</option>
-          <option value="kira_sahis">Kira</option>
-          <option value="konaklama">Konaklama/Yemek</option>
-          <option value="resmi_odeme">Harç/Vergi</option>
+          {PAYMENT_STATUSES.map((s) => (
+            <option key={s.code} value={s.code}>
+              {s.label}
+            </option>
+          ))}
         </select>
       </td>
       <td style={tdStyle}>

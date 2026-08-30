@@ -12,6 +12,7 @@ import {
   getItemBurdensAndVat,
 } from '../../../../shared/supabase/budget-service'
 import type { BudgetItemRow, CardView, EditableField, StageRow } from '../../../../shared/supabase/budget-service'
+import { isPaymentStatus } from '../../../../shared/types/domain'
 import { deriveBordroFields } from '../../../../shared/supabase/payroll-read'
 import type { MinimumWageThresholds } from '../../../../shared/supabase/payroll-read'
 import { useToast } from '../../../../shared/components/toast'
@@ -209,7 +210,7 @@ export function useEditBuffers({
     }
 
     async function onStatusChange(id: string, value: string) {
-      const newStatus = value === '' ? null : value
+      const newStatus = isPaymentStatus(value) ? value : null
       patchRow(id, { paymentStatus: newStatus })
       const saved = savedRef.current[id]
       if (saved && saved.paymentStatus === newStatus) return

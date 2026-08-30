@@ -1,7 +1,9 @@
 // BOY: tek iş = bütçe açılış + kart okuma + kalem yazma servis çağrıları (tek Supabase servis dosyası), sebep = 500+ — bölünme planı docs/butce/BUTCE-UI-MIMARISI.md §8'de kayıtlı, bölme ayrı turda yapılır.
 import { supabase } from './client'
 import { netToplamDonemli } from '../cfe'
-import type { DonemKalemi } from '../cfe'
+import type { DonemKalemi, YukCins } from '../cfe'
+import type { PaymentStatus } from '../types/domain'
+import { isPaymentStatus } from '../types/domain'
 
 export interface StageRow {
   id: string
@@ -33,12 +35,12 @@ export interface BudgetItemRow {
   repeat: number
   vatRate: number
   ratesPercent: number[]
-  burdens: { label: string; rate: number; kind: "additive" | "deduction" }[]
+  burdens: { label: string; rate: number; kind: YukCins }[]
   periodQty: Record<string, number>
   periodNet: Record<string, number | null>
   periodUnit: Record<string, string | null>
   periodRepeat: Record<string, number | null>
-  paymentStatus: string | null
+  paymentStatus: PaymentStatus | null
   internalNote: string | null
   publicNote: string | null
 }
@@ -261,7 +263,7 @@ export async function getCard(budgetId: string, cardId?: string): Promise<CardVi
   for (const u of units ?? []) unitLabel[u.id as string] = u.label as string
 
   const burdensByItem: Record<string, number[]> = {}
-  const burdenDetailByItem: Record<string, { label: string; rate: number; kind: "additive" | "deduction" }[]> = {}
+  const burdenDetailByItem: Record<string, { label: string; rate: number; kind: YukCins }[]> = {}
   const periodByItem: Record<string, Record<string, number>> = {}
   const periodNetByItem: Record<string, Record<string, number | null>> = {}
   const periodUnitByItem: Record<string, Record<string, string | null>> = {}
@@ -281,7 +283,7 @@ export async function getCard(budgetId: string, cardId?: string): Promise<CardVi
       if (rate === null) continue
       ;(burdensByItem[k] ??= []).push(rate)
       const bLabel = (b as { burden_components?: { label?: string; kind?: string } | null }).burden_components?.label ?? "Yük"
-      const bKind = (b as { burden_components?: { kind?: string } | null }).burden_components?.kind === "additive" ? "additive" : "deduction"
+      const bKind: YukCins = (b as { burden_components?: { kind?: string } | null }).burden_components?.kind === "additive" ? "additive" : "deduction"
       ;(burdenDetailByItem[k] ??= []).push({ label: bLabel, rate, kind: bKind })
     }
 
@@ -326,7 +328,7 @@ export async function getCard(budgetId: string, cardId?: string): Promise<CardVi
     periodNet: periodNetByItem[i.id as string] ?? {},
     periodUnit: periodUnitByItem[i.id as string] ?? {},
     periodRepeat: periodRepeatByItem[i.id as string] ?? {},
-    paymentStatus: typeof i.payment_status === 'string' ? i.payment_status : null,
+    paymentStatus: isPaymentStatus(i.payment_status) ? i.payment_status : null,
     internalNote: (i.internal_note as string | null) ?? null,
     publicNote: (i.public_note as string | null) ?? null,
   }))
@@ -368,8 +370,7 @@ export async function updateItemField(
     if (v === '') {
       payload = { payment_status: null }
     } else {
-      const VALID = ['bordro', 'smm', 'telif_belgeli', 'sirket', 'kira_sahis', 'konaklama', 'resmi_odeme'] as const
-      if (!(VALID as readonly string[]).includes(v)) throw new Error('Geçersiz statü')
+      if (!isPaymentStatus(v)) throw new Error('Geçersiz statü')
       payload = { payment_status: v }
     }
   } else if (field === 'unitId') {
@@ -419,7 +420,7 @@ export async function setItemPeriodNet(
 // Tek kalem icin kova + KDV okur (statu degisince canli tazeleme icin).
 export async function getItemBurdensAndVat(
   itemId: string,
-): Promise<{ burdens: { label: string; rate: number; kind: "additive" | "deduction" }[]; vatRate: number }> {
+): Promise<{ burdens: { label: string; rate: number; kind: YukCins }[]; vatRate: number }> {
   const { data: burdensData, error: eb } = await supabase
     .from('item_burdens')
     .select('rate_percent, burden_components(label, kind)')
@@ -434,7 +435,7 @@ export async function getItemBurdensAndVat(
   if (ei) throw new Error(ei.message)
   const burdens = (burdensData ?? []).map((b) => {
     const bLabel = (b as { burden_components?: { label?: string; kind?: string } | null }).burden_components?.label ?? "Yuk"
-    const bKind: "additive" | "deduction" =
+    const bKind: YukCins =
       (b as { burden_components?: { kind?: string } | null }).burden_components?.kind === "additive" ? "additive" : "deduction"
     return { label: bLabel, rate: Number(b.rate_percent), kind: bKind }
   })

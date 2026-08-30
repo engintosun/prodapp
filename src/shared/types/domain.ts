@@ -87,3 +87,20 @@ export interface Invitation {
   expires_at: string
   accepted_at: string | null
 }
+
+// kume tek kaynaktir, yeni statu buraya eklenir.
+export const PAYMENT_STATUSES = [
+  { code: 'bordro', label: 'Bordro', guide: 'Ücretli çalışan. Net ele geçen tutar girilir; SGK ve vergi yükleri üzerine biner, oranlar şirket tanımına ve güncel mevzuata göre hesaplanır.' },
+  { code: 'smm', label: 'SMM', guide: 'Serbest meslek makbuzu. Stopaj kesintisi içerir; KDV durumu kişinin mükellefiyetine göre değişir.' },
+  { code: 'telif_belgeli', label: 'Telif', guide: 'Senarist, yönetmen, besteci gibi eser sahipleri (oyunculuk DEĞİL). Stopaj kesintisi içerir.' },
+  { code: 'sirket', label: 'Fatura', guide: 'Şirketten alınan mal/hizmet. Stopaj yok; KDV genel oranda, kalem bazında değiştirilebilir.' },
+  { code: 'kira_sahis', label: 'Kira', guide: 'ŞAHISTAN kiralama (lokasyon, araç vb.). Stopaj var, KDV yok. Şirketten kiralama Fatura kalemine girer.' },
+  { code: 'konaklama', label: 'Konaklama/Yemek', guide: 'Otel, pansiyon, set catering, restoran. İndirimli KDV; stopaj ve SGK yükü yok.' },
+  { code: 'resmi_odeme', label: 'Harç/Vergi', guide: 'Kamuya yapılan resmî ödeme: noter, tapu, gümrük harcı. Stopaj yok, SGK yok, KDV yok; net ile brüt aynıdır. Damga vergisi buraya girmez, o bir yüktür ve sözleşme bedelinden oranla hesaplanır.' },
+] as const
+
+export type PaymentStatus = (typeof PAYMENT_STATUSES)[number]['code']
+
+export function isPaymentStatus(v: unknown): v is PaymentStatus {
+  return typeof v === 'string' && PAYMENT_STATUSES.some((s) => s.code === v)
+}
