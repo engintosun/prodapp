@@ -24,6 +24,7 @@ CURRENT.md "## Durum" bölümünün ilk satırı `HEAD: <kısa hash> (<tarih> �
 - **KALICILIK KURALI, budama için de geçerlidir:** özete inen kaydın taşıdığı kararın özel ev dosyasında karşılığı yoksa, budamadan ÖNCE oraya taşınır. Evi hazır olmayan hiçbir madde budanmaz.
 - **Bilinen yanlış bekletilmez:** doğrulanmamış olmak ile bilinen yanlış olmak aynı şey değildir. Başka modüle ait madde beklemeye alınır; ama içeriği BİLİNEN YANLIŞ ise modül dışı olsa da aynı turda düzeltilir. (18 Ağustos 2026 diyeti: KABUK-KARARLARI kodda dört olan ekran sayısını altı yazıyordu, hemen düzeltildi.)
 - Mühürlü ve kilitli kararlar budanmaz.
+- **Yeni açık soru CURRENT.md'ye yazılmaz:** önce evi bulunur (INDEX bölüm 7.0), karar o dosyada yaşar.
 
 ## Git komut sözdizimi
 

@@ -51,6 +51,7 @@ Dil: chat Türkçe; kod İngilizce (değişken/fonksiyon/dosya/commit/yorum); do
 - **Hedefe dayanarak kontrol kaldırılmaz:** var olan bir kontrol, henüz kurulmamış bir mekanizmaya dayanarak kaldırılamaz; yerine geçecek mekanizma ÇALIŞIR hâlde görülmeden eski kontrol durur. Dosyada "hedef" diye yazılmış hiçbir şey yürürlükteki bir kuralı iptal edemez.
 - **5-KATMAN KURALI:** her özellik, prompt yazılmadan ÖNCE beş katmanda birlikte tasarlanır: şema → RLS → trigger → servis → UI. Atlanan katman sonradan planlanmamış iş olarak patlar.
 - **KALICILIK KURALI:** bir sohbette mimari karar ya da plan üretildiğinde o karar AYNI sohbet içinde CURRENT.md'ye VE kendi özel ev dosyasına işlenir. Yalnız CURRENT.md'ye yazıp özel ev dosyasını atlamak yasaktır. "Kapanışta yaparız" ertelemesi yasaktır; bağlam dolunca kararı öldürür.
+- **Yama yok:** yanlış kod, RLS ya da veri yamanmaz; sökülür ve doğrusu konur.
 
 ## Faz 1 kapsamı
 Tam liste `docs/ARCHITECTURE.md` §2.1. Listede yoksa Faz 1'de yoktur.

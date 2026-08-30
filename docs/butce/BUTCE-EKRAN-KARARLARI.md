@@ -301,3 +301,7 @@ NOT (8 Ağustos 2026): buradaki üç-rol listesi HARCAMA ZİNCİRİ içindir. Ma
 Bu bölüm, ekran davranışına ait olup henüz karara bağlanmamış soruları tutar. Emsal: KART-KATALOGU.md bölüm 8 ve 9 aynı işi kart kataloğu için yapar.
 
 - **SIFIR-BEDEL UYARISI KALICI DEĞİL** (Opus bulgusu, 27 Temmuz 2026): `use-edit-buffers.ts` içinde `itemWarnings` ve `periodWarnings` haritaları `useState({})` ile BOŞ doğar ve yalnız commit noktalarında dolar. Uyarı veriden TÜRETİLMEZ, olay-anı durumudur. Sonuç: sıfır bedelli kalem ya da dönem kaydedilip kart yeniden yüklenince kırmızı uyarı KAYBOLUR, hücreye dokunulana kadar geri gelmez. TD-14'ün üçüncü düzeltmesindeki "sorunlu dönemin kendi satırında kalıcı kırmızı" niyetiyle çelişir. Mühürlemeye giden bütçede sessiz sıfır riski taşır. Teknik borç olarak açılıp açılmayacağı Engin kararına bağlıdır; açılmadı.
+
+## 22. Statü rehberi güncellemesi (30 Ağustos 2026)
+
+Statü kolon başlığındaki soru işareti alttan açılan rehberi gösterir. Rehber yedi statüyü de anlatır; Harç/Vergi maddesi 15 Ağustos'ta açılan statüde eksik kalmıştı, bu turda eklendi. Metin damga ayrımını SÖYLER: damga vergisi bu statüye girmez, çünkü sözleşme bedelinden oranla türer ve kendi satırına yazılırsa iki kez sayılır (ayrılma kuralı, VERGİ-MEVZUATI.md).

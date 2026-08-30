@@ -10,29 +10,13 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 
 - **21 Haziran – 25 Ağustos 2026 (özet; ayrıntı git log, kararlar ev dosyalarında).** Bütçe DB temeli ve `fn_open_budget` canlıya girdi; vergi/yük modeli ile KART 1500 ekranı kilitlendi. DILIM-3 bordro motoru beş dilimde tamamlandı (şema → katalog tohumu → saf çözücü → UI kablolaması → genel-desen sökümü); şirket profili şeması ve `fn_resolve_sgk_scenario` canlı. Terminoloji devrimi uygulandı. MÜHÜR-1 ve MÜHÜR-2 canlı, mühürleme yüzeyi MÜHÜR-3'e kaldı. R1/R2/R3 ekran refaktörü ve KLV klavye motoru kuruldu; BORÇ-A ve BORÇ-B turları kapandı. AĞUSTOS: KABUK tasarımı `docs/KABUK-KARARLARI.md`yi tek kaynak olarak kurdu, sprint 8-12 Ağustos'ta kapandı (tag v0.4-kabuk); doc-check (Denetim A-F) ve INDEX.md yaratıldı; tablo genişlik turu, kolon takası ve kart masası (db8d5bd) geldi. KART 1100 iki dilimde tamamlandı (1100-A statü/katalog/tohum, 1100-B başlık çizimi) ve aidiyet koddan çıkıp `budget_items.heading_code` alanına taşındı. Proje yaşam döngüsü (arşiv, geri alma, silme) tasarlandı ve canlıya girdi. NET/BRÜT doktrini revize edildi, KART 1600 üç kademeli tasarımı karara bağlandı. 25 Ağustos'ta optimizasyon turu açıldı.
 - Tarih notu: Milestone kayıtlarında "22 Ağustos (4. oturum)" diye geçen oturumun commit'leri 25 Ağustos tarihlidir; özet commit tarihine göre yazıldı.
-
-## OPTİMİZASYON TURU (Engin kararı, 22 Ağustos 2026 — tur boyunca ürün işi durur)
-
-Amaç: çalışma ortamının sadeleştirilmesi ve hızlandırılması. Kaynak: Anthropic bağlam mühendisliği rehberi (24 Temmuz 2026) ve yönlendirme rehberi (18 Haziran 2026).
-
-TABAN ÖLÇÜM (HEAD 1819316): açılış üçlüsü 90.984 bayt (~30.300 jeton) · CLAUDE.md 22.302 · CURRENT.md 66.522 · dayatılan kapı 9, deterministik olan 0.
-
-- **D0 Emniyet** — KAPANDI (79bff5e; geri dönüş etiketi `v0.4.1-tur-oncesi`).
-- **D1 Zemin** — KAPANDI (76a351c): `.claude/` repoya girdi. Hook kapıları koşmaz, içeriğe bağlı damgayı doğrular; 36 saniyelik kapı zinciri hook içinde koşsaydı zaman aşımında kapı sessizce açığa düşerdi. D1b (7f179f1): tanımsız CSS token kapısı, yalnız stage'lenmiş dosyalarda.
-- **D2 Söküm** — KAPANDI: D2a kurallar (211a102), D2ara test sayacı (66a1b24), D2b protokoller ve karar-ev haritası (dc41613), D2c CLAUDE.md 22.199 → 8.194 bayt (d992231, tavan 10 KB).
-- **D3 Prompt şablonu + onay haritası** — KAPANDI (231461d). Hangi onay Engin'de kalır, hangisi kapıya geçer, `docs/protokol/PROMPT.md` içindeki onay haritasına yazıldı. Aynı dilim üç yazılmamış prompt zorunluluğunu da yazıya geçirdi ve kapı komutlarının spec'e kopyalanmasını yasakladı (`run-gates.sh` derleme, denetim ve testleri kendisi koşuyor; kopyalanınca hepsi iki kez koşuyordu).
-- **D4a Ders evi** — KAPANDI (4d22995): `docs/protokol/DERSLER.md`, on sınıf (dördü kapıya bağlı, altısı açık).
-- **D4b Durum daraltma** — bu commit. DAMITMANIN TANIMI (Engin kararı, 25 Ağustos 2026): ölçüt kayıt SAYISI değil KONUDUR — Milestone'da yalnız aktif milestone tanımı ve başka evi olmayan konular kalır. Evler önce açıldı (735f4bb, 21ab18e, 9291a28), budama sonra yapıldı; KALICILIK KURALI gereği hiçbir madde evi hazır olmadan budanmadı. Beşinci parça (INDEX bölüm 2 betikle üretilir hale gelir) ayrı commit'te tamamlandı: `scripts/index-refresh.mjs` satır sayılarını gerçek dosyalardan tazeliyor, `--check` kipi bayatlığı sıfırdan farklı çıkışla bildiriyor. D4b KAPANDI.
-- **D5 Kapanış sınaması** — KAPANDI (25 Ağustos 2026). Yeni düzen gerçek bir ürün borcuyla sınanır (TD-26 ya da TD-30), dört sayı ikinci kez ölçülür. Sınama teknik borçla değil GERÇEK ÜRÜN İŞİYLE yapıldı: proje dönüş yolu (a1b89e2) ve proje menüsü (6475588). İKİNCİ ÖLÇÜM (25 Ağustos 2026): açılış üçlüsü 90.984 → **19.598 bayt** (~30.300 jetondan ~6.500'e, %78,5 azalma) · CLAUDE.md 22.302 → 8.538 · CURRENT.md 66.522 → 8.880 · deterministik kapı 0 → 7. Gün boyunca 19 commit ve 23 dosya; hiçbiri yanlış dosyaya dokunmadı, hiçbiri dal açmadı, kapılar üç gerçek hatayı yakaladı (eslint `cause` kuralı, test sayısı, dosya listesi denetimi). TUR NEREDEYSE KAPANDI. D6'nın birinci parçası da bu oturumda indi (c588ef9). TECH-DEBT dar sayımı 30 Ağustos 2026'da kapandı; geriye D6'nın kalan iki parçası kaldı.
-- **D6 Şartname kod olsun** — BİRİNCİ PARÇASI KAPANDI (c588ef9), kalanı açık. Kolon seti `src/app/muhasebe/budget/columns.ts` içinde tipli tek kaynak oldu ve üç testle kilitlendi; şartname ile kod ayrışırsa test kırılır. Kalan iki parça: vergi ve yük teste, vergi ve yük teste, terim `domain.ts` içine.
-
-SIRA: D0 > D1 > (D2, D3) > D4 > D5. D6 bağımsız. D2 asla D1'den önce gelmez; kontrol, yerine geçecek mekanizma çalışır görülmeden kaldırılmaz.
+- **OPTİMİZASYON TURU KAPANDI (30 Ağustos 2026).** Açılış üçlüsü 90.984 → 19.598 bayt (~30.300 jetondan ~6.500'e), deterministik kapı 0 → 7. Son parça D6 Şartname kod olsun: kolon seti columns.ts'e, terim domain.ts'e taşındı. D6'nın vergi-yük parçası YAPILMADAN kapandı — parça kuralın kodda olduğu varsayımıyla yazılmıştı; statü-yük cetveli veritabanında yaşıyor (payment_status_burdens) ve B20/B16 gereği orada kalması doğru. Cetveli bugün hiçbir test korumuyor; koruması, cetveli değiştiren göçün Engin onayından geçmesidir.
 
 ## Durum
 
-- HEAD: b5db8a0 (30 Ağustos 2026 — TD-36c bütçe migration'ı). Denetim E gereği burada CURRENT.md'ye dokunan son commit'in EBEVEYNİ yazar; kapanışta YAZMA ANINDAKİ HEAD yazılır, çünkü kapanış commit'i CURRENT.md'ye dokunur ve "son commit" o olur.
+- HEAD: 1ec93c8 (30 Ağustos 2026 — ödeme statüsü kümesi). Denetim E gereği burada CURRENT.md'ye dokunan son commit'in EBEVEYNİ yazar; kapanışta YAZMA ANINDAKİ HEAD yazılır, çünkü kapanış commit'i CURRENT.md'ye dokunur ve "son commit" o olur.
 - Migration 20260822130000, 20260830120000, 20260830130000, 20260830140000 CANLIDA. Kod: 308/308 test, build geçer, eslint 0 hata (2 bilinen react-refresh uyarısı). Originde tek dal: main.
-- 30 Ağustos 2026 oturumu, altı commit: bea9b42 (13 ekran metni Türkçeleştirildi), 66fb84a (dar sayım kararı yazıldı, TD-32 kapandı, TD-36 açıldı), a83be97 (tablo yerleşimi ve kural kapsamı düzeltildi), e8ba2ef + 097c715 + b5db8a0 (TD-36'nın üç migration dilimi, hepsi canlıya uygulandı). Türkçe karakter kapısı `.claude/hooks/gate.sh` içinde `.md` dosyalarından `src/**/*.ts(x)` dosyalarına genişletildi ve büyük/küçük harf körlüğü giderildi.
+- 30 Ağustos 2026'da İKİ oturum oldu. İlki altı commit (Türkçe metin, dar sayım kararı, TD-32 kapandı, TD-36 üç göçle kapandı) + kapanış 4ba1aec. İkincisi tek commit 1ec93c8: ödeme statüsü kümesi domain.ts'e taşındı, üç yüzey oradan besleniyor, yük cinsi YukCins tipine bağlandı, Statü rehberine Harç/Vergi maddesi eklendi.
 - ÇALIŞMA ORTAMI: yedi deterministik kapı kurulu (dal, sığ klon, damga varlığı, damga tazeliği, ASCII'ye düşmüş .md metni, tanımsız CSS token, test sayısı kaybı) ve `supabase db push` onaya bağlı. Ayarlar `.claude/settings.json`, kapılar `.claude/hooks/`.
 - KURULU/ÇALIŞIYOR: auth ve çok-proje · saha fiş girişi · yönlendirme/düzeltme · davet/rol · onay/red · proje, bütçe ve servisler · onboarding · bütçe DB temeli · `fn_open_budget` · CFE (28/28) · KART 1500 ekran TAM · KART 1100 başlıklı çizim · ödeme-statüsü şeması · yük kovası cinsi · Not kolonları · kart masası · proje arşiv/geri alma/silme.
 - BORDRO MOTORU uçtan uca kablolu: şema → servis (`deriveBordroFields`, dönem-bazlı `periodBreakdown`) → UI (genel dört-alan deseni, bordroya özel dal YOK). Motor ve kablolama 63/63 test ile korunuyor.
@@ -53,33 +37,11 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 - Bütçe şema kararları (B-serisi), NET/BRÜT doktrini, sıra bağları → `docs/butce/BUTCE-SEMA-KARARLARI.md`
 - Kabuk, sol ray, kart masası → `docs/KABUK-KARARLARI.md`
 - Kart mimarisi ve kilitli kartlar (1100, 1300, 1400, 1500, 1600) → `docs/butce/KART-KATALOGU.md`
+- Ödeme statüsü kümesi ve Statü rehberi → `docs/butce/BUTCE-UI-MIMARISI.md` + `docs/butce/BUTCE-EKRAN-KARARLARI.md`
 
 ## Sıradaki iş
 
-0. **KART 1100 DÖNEM SATIRI AÇILMIYOR — CANLI ARIZA (Engin, 25 Ağustos 2026).** Bildirilen belirti: 1100 kartında Dönemler hücresinden bir dönem seçildiğinde yeni dönem satırı açılmıyor, dönem girilemiyor. SEBEP ARAŞTIRILMADI; burada yalnız belirti kayıtlıdır, tanı konmadı. Neye bağlı: hiçbir şey. Neyi bloke ediyor: 1100 kartının çok dönemli kullanımı.
-
-0b. **NET/BRÜT DOKTRİNİ KODDA YOK.** Karar 22 Ağustos 2026'da alındı ve TÜM kartlar için geçerli (`docs/butce/BUTCE-SEMA-KARARLARI.md`): Yasal Yük = saf yük, Net toplam = çarpım + yasal yük, KDV kendi kolonunda, Brüt toplam = Net toplam + KDV. Canlı kod eski tanımı uyguluyor — `totals.ts` Net toplamı yalnız çarpımdan üretiyor, Yasal Yük hücresi yük ile KDV'yi birlikte gösteriyor, KDV kolonu yok. Bu, kolon setinin 12'den 14'e çıkması demektir ve SIRA BAĞI gereği MÜHÜR-3'ten ÖNCE inmelidir. Kolon seti artık tipli tek kaynakta olduğu için değişiklik korumalı yapılabilir.
-
-0c. **DOKÜMAN TEMİZLEME TURU** — optimizasyon turu olarak açık, yukarıdaki bölüme bakınız. Turun altı başlığından CURRENT.md daraltması, CLAUDE.md sağlaması ve Anthropic dokümanlarının incelenmesi yapıldı; TECH-DEBT dar sayımı 30 Ağustos 2026'da KAPANDI: sınır 15 kaldı, ölçüm dar sayımla yapılır, modüller toplanmaz. Karar docs/TECH-DEBT.md başlık paragrafında.
-1. **KART 1600 — MOTOR YARISI.** Dört parça: çok kademeli gruplama, çalışma anında başlık doğması, ikinci başlık anahtarı, oranla türetme. Neye bağlı: hiçbir şey; VERİ yarısından ayrı olarak bugün başlanabilir (sıra bağı `docs/IS-SIRASI.md` MOTOR İŞİ maddesinde). Neyi bloke ediyor: 1300 ve 1400 aynı parçaları isteyecek.
-
-BITEN (25 Ağustos 2026, a1b89e2 + 6475588) — **PROJE AÇMA YOLU**
+1. **NET/BRÜT DOKTRİNİ KODDA YOK.** Karar 22 Ağustos 2026'da alındı ve TÜM kartlar için geçerli (`docs/butce/BUTCE-SEMA-KARARLARI.md`): Yasal Yük = saf yük, Net toplam = çarpım + yasal yük, KDV kendi kolonunda, Brüt toplam = Net toplam + KDV. Canlı kod eski tanımı uyguluyor — `totals.ts` Net toplamı yalnız çarpımdan üretiyor, Yasal Yük hücresi yük ile KDV'yi birlikte gösteriyor, KDV kolonu yok. Bu, kolon setinin 12'den 14'e çıkması demektir ve SIRA BAĞI gereği MÜHÜR-3'ten ÖNCE inmelidir. Kolon seti artık tipli tek kaynakta olduğu için değişiklik korumalı yapılabilir.
+2. **KART 1600 — MOTOR YARISI.** Dört parça: çok kademeli gruplama, çalışma anında başlık doğması, ikinci başlık anahtarı, oranla türetme. Neye bağlı: hiçbir şey; VERİ yarısından ayrı olarak bugün başlanabilir (sıra bağı `docs/IS-SIRASI.md` MOTOR İŞİ maddesinde). Neyi bloke ediyor: 1300 ve 1400 aynı parçaları isteyecek.
 
 Uzun vadeli iş, backlog ve tamamlananlar: `docs/IS-SIRASI.md`.
-
-## Açık kalanlar
-
-Bu bölüm 25 Ağustos 2026'da D4b ile boşaltıldı. Her madde ya kendi ev dosyasına taşındı, ya `docs/IS-SIRASI.md` Backlog'una aktı, ya da evinde zaten yazılı olduğu için silindi. Yeni bir açık soru doğduğunda buraya yazılmaz: önce evi bulunur (INDEX bölüm 7.0), karar o dosyada yaşar.
-
-## Korunan önceki kararlar
-
-- CARD-DESK yerleşimi (kilitli): daralabilir sol ray + üst bağlam + orta masa + sağ referans.
-- İki değer yüzeyi eşittir: harcama operasyonu ve bütçe görünürlüğü. Anomali FİŞ-BAZLIDIR, ayrıdır.
-- Bütçeyi her seviyede YALNIZ muhasebe görür ve yazar.
-- Yama yok: çıkar-değiştir.
-
-## Referans (içerik tohumu)
-
-- Tür şablonları: REKLAM (AICP 11 kart), FİLM (Movie Magic ~30 kart), DİZİ (scope + episode_no). Türkçe sahadan.
-- Master kalem listesi: 4746 tekil (Oyuncu-Kast 197 kalem, 1600 için).
-- İki katman: şablon yalın, kütüphane autocomplete ile.

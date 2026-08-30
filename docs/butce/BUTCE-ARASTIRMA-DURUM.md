@@ -44,3 +44,7 @@ Gorev sirasi tek kaynak: docs/IS-SIRASI.md. (fn_open_budget KILITLENDI 06-21: de
 ## Onceki yanlis iddialarin duzeltmesi
 - MMB = 457 kalem (lean degil; Eurimages 462 ile ayni kapsam). Daha once "269" yanlisti.
 - Uzun kuyruk "cogu Disney" DEGIL: discovery 487, bet 415, bbc 379, Eurimages 371, disney 333, MMB 274... tum kaynaklara yayili gercek cesitlilik.
+
+## İçerik tohumu (CURRENT.md'den taşındı, 30 Ağustos 2026)
+
+Tür şablonları: REKLAM (AICP 11 kart), FİLM (Movie Magic ~30 kart), DİZİ (scope + episode_no), Türkçe sahadan. Master kalem listesi 4746 tekil (Oyuncu-Kast 197 kalem, 1600 için). İki katman: şablon yalın, kütüphane autocomplete ile.
