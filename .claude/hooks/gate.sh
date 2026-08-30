@@ -18,8 +18,23 @@ now=$({ git rev-parse HEAD; git diff --cached; } | sha256sum | cut -d' ' -f1)
 
 for f in $(git diff --cached --name-only --diff-filter=ACM | grep '\.md$' || true); do
   added=$(git diff --cached -U0 -- "$f" | grep '^+' | grep -v '^+++' || true)
-  if printf '%s' "$added" | grep -qE '\b(icin|calis|degis|gecis|yazil|olcum|karari|acilis|kapanis|dosyasi|uretim|sadelestir)\b'; then
+  if printf '%s' "$added" | grep -qiE '\b(icin|calis|degis|gecis|yazil|olcum|karari|acilis|kapanis|dosyasi|uretim|sadelestir)\b'; then
     fail "$f icinde Turkce karaktere dusmemis metin var (TD-32 sinifi)"
+  fi
+done
+
+# Kod tarafi (TD-32 sinifi, 30 Agustos 2026). Olcum: son 60 commit'te bu suzgecle
+# tek isabet cikti, o da TD-32'nin dogdugu satirdi (35a9bf2, title="Baslik").
+# -i ZORUNLU: ekranda gorunen metin buyuk harfle baslar (Baslik, Sifre, Olustur);
+# harf duyarli filtre tam da yakalamasi gereken satiri kacirir.
+# Kapsam disi: *.test.ts(x) test kurgusudur; src/shared/cfe/ motorun ic sart
+# hatalaridir. Ikisi de kullaniciya mesaj olarak cikmaz, kural geregi ASCII kalir.
+# Yorumla baslayan eklenen satirlar atlanir: kod yorumlari proje adeti geregi ASCII.
+# Liste SABITTIR: listede olmayan yeni kelimeyi yakalamaz, kural elle de uygulanir.
+for f in $(git diff --cached --name-only --diff-filter=ACM | grep -E '^src/.*\.(ts|tsx)$' | grep -vE '\.test\.(ts|tsx)$' | grep -v '^src/shared/cfe/' || true); do
+  added=$(git diff --cached -U0 -- "$f" | grep '^+' | grep -v '^+++' | grep -vE '^\+[[:space:]]*(//|\*|/\*)' || true)
+  if printf '%s' "$added" | grep -qiE '\b(baslik|sifre|olustur|bulunamadi|gecerli|eslesmiyor|katiliyor|sablon|yukleniyor|kaydedildi|silindi|gonderildi|secildi|muhurlu|yetkiniz|eklenemez|hesaplanamaz|duzenlenemez)\b'; then
+    fail "$f icinde Turkce karaktere dusmemis kullanici metni var (TD-32 sinifi): kullaniciya gorunen metin tam Turkce karakterli yazilir"
   fi
 done
 
