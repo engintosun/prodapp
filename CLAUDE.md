@@ -57,6 +57,6 @@ Tam liste `docs/ARCHITECTURE.md` §2.1. Listede yoksa Faz 1'de yoktur.
 
 ## Ortamlar / deploy
 Sonnet (Claude Code) Engin'in bilgisayarında terminalde çalışır; GitHub ve Supabase CLI girişleri tek seferlik yapıldı, tekrar giriş yok.
-- **Sonnet yapar:** kod, commit, push, edge deploy (`supabase functions deploy <ad>`), SQL/şema/RLS uygulama (`supabase db push`).
+- **Sonnet yapar:** kod, commit, push, edge deploy (`npx supabase functions deploy <ad>`), SQL/şema/RLS uygulama (`npx supabase db push`). Supabase CLI global kurulu DEĞİL ve package.json'da bağımlılık değil; `npx` her çağrıda indirir, sürüm sabitlenmemiştir (30 Ağustos 2026'da 2.116.0 geldi).
 - **Engin onayı:** SADECE şema, RLS ya da grant değişikliği UYGULANMADAN ÖNCE (canlı KVKK verisi güvenlik geçidi). Onay = SQL'i okuyup "kabul" demek; kopyala yapıştır yok, uygulamayı Sonnet yapar. Kod ve normal işler onay gerektirmez, salt okuma işlemler onay gerektirmez. Bu kapı `.claude/settings.json` içinde `ask` kuralı olarak da kuruludur.
 - **Vercel:** push'ta otomatik deploy, elle dokunma. **GitHub:** ortak hafıza.

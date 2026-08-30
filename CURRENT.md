@@ -30,8 +30,9 @@ SIRA: D0 > D1 > (D2, D3) > D4 > D5. D6 bağımsız. D2 asla D1'den önce gelmez;
 
 ## Durum
 
-- HEAD: bea9b42 (30 Ağustos 2026 — Türkçe karakter dilimi). Denetim E gereği burada CURRENT.md'ye dokunan son commit'in EBEVEYNİ yazar; kapanışta YAZMA ANINDAKİ HEAD yazılır, çünkü kapanış commit'i CURRENT.md'ye dokunur ve "son commit" o olur.
-- Migration 20260822130000 CANLIDA. Kod: 308/308 test, build geçer, eslint 0 hata (2 bilinen react-refresh uyarısı). Originde tek dal: main.
+- HEAD: b5db8a0 (30 Ağustos 2026 — TD-36c bütçe migration'ı). Denetim E gereği burada CURRENT.md'ye dokunan son commit'in EBEVEYNİ yazar; kapanışta YAZMA ANINDAKİ HEAD yazılır, çünkü kapanış commit'i CURRENT.md'ye dokunur ve "son commit" o olur.
+- Migration 20260822130000, 20260830120000, 20260830130000, 20260830140000 CANLIDA. Kod: 308/308 test, build geçer, eslint 0 hata (2 bilinen react-refresh uyarısı). Originde tek dal: main.
+- 30 Ağustos 2026 oturumu, altı commit: bea9b42 (13 ekran metni Türkçeleştirildi), 66fb84a (dar sayım kararı yazıldı, TD-32 kapandı, TD-36 açıldı), a83be97 (tablo yerleşimi ve kural kapsamı düzeltildi), e8ba2ef + 097c715 + b5db8a0 (TD-36'nın üç migration dilimi, hepsi canlıya uygulandı). Türkçe karakter kapısı `.claude/hooks/gate.sh` içinde `.md` dosyalarından `src/**/*.ts(x)` dosyalarına genişletildi ve büyük/küçük harf körlüğü giderildi.
 - ÇALIŞMA ORTAMI: yedi deterministik kapı kurulu (dal, sığ klon, damga varlığı, damga tazeliği, ASCII'ye düşmüş .md metni, tanımsız CSS token, test sayısı kaybı) ve `supabase db push` onaya bağlı. Ayarlar `.claude/settings.json`, kapılar `.claude/hooks/`.
 - KURULU/ÇALIŞIYOR: auth ve çok-proje · saha fiş girişi · yönlendirme/düzeltme · davet/rol · onay/red · proje, bütçe ve servisler · onboarding · bütçe DB temeli · `fn_open_budget` · CFE (28/28) · KART 1500 ekran TAM · KART 1100 başlıklı çizim · ödeme-statüsü şeması · yük kovası cinsi · Not kolonları · kart masası · proje arşiv/geri alma/silme.
 - BORDRO MOTORU uçtan uca kablolu: şema → servis (`deriveBordroFields`, dönem-bazlı `periodBreakdown`) → UI (genel dört-alan deseni, bordroya özel dal YOK). Motor ve kablolama 63/63 test ile korunuyor.
