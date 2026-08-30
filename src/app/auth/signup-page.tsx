@@ -18,15 +18,15 @@ export function SignupPage({ token }: SignupPageProps) {
     setError(null)
 
     if (!email.includes('@')) {
-      setError('Gecerli bir e-posta adresi girin.')
+      setError('Geçerli bir e-posta adresi girin.')
       return
     }
     if (password.length < 8) {
-      setError('Sifre en az 8 karakter olmali.')
+      setError('Şifre en az 8 karakter olmalı.')
       return
     }
     if (password !== confirm) {
-      setError('Sifreler eslesmiyor.')
+      setError('Şifreler eşleşmiyor.')
       return
     }
 
@@ -71,8 +71,8 @@ export function SignupPage({ token }: SignupPageProps) {
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '320px' }}>
         <h1 style={{ margin: 0 }}>KAAPA</h1>
-        <p style={{ margin: 0 }}>Hesabini Olustur</p>
-        <p style={{ margin: 0, fontSize: '14px', color: '#666' }}>Davetle katiliyorsun.</p>
+        <p style={{ margin: 0 }}>Hesabını Oluştur</p>
+        <p style={{ margin: 0, fontSize: '14px', color: '#666' }}>Davetle katılıyorsun.</p>
         <input
           type="email"
           placeholder="E-posta"
@@ -83,7 +83,7 @@ export function SignupPage({ token }: SignupPageProps) {
         />
         <input
           type="password"
-          placeholder="Sifre"
+          placeholder="Şifre"
           value={password}
           onChange={e => setPassword(e.target.value)}
           required
@@ -91,7 +91,7 @@ export function SignupPage({ token }: SignupPageProps) {
         />
         <input
           type="password"
-          placeholder="Sifre (tekrar)"
+          placeholder="Şifre (tekrar)"
           value={confirm}
           onChange={e => setConfirm(e.target.value)}
           required
@@ -99,7 +99,7 @@ export function SignupPage({ token }: SignupPageProps) {
         />
         {error && <p style={{ color: 'red', margin: 0 }}>{error}</p>}
         <button type="submit" disabled={loading} style={{ padding: '10px', fontSize: '16px', cursor: loading ? 'not-allowed' : 'pointer' }}>
-          {loading ? 'Olusturuluyor...' : 'Hesabi Olustur'}
+          {loading ? 'Oluşturuluyor...' : 'Hesabı Oluştur'}
         </button>
       </form>
     </div>

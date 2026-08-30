@@ -3,9 +3,9 @@ import type { Department, Invitation, UserRole } from '../types/domain'
 
 async function getIdentity(): Promise<{ projectId: string; invitedBy: string }> {
   const { data, error } = await supabase.auth.getUser()
-  if (error || !data.user) throw new Error('Oturum bulunamadi, tekrar giris yapin')
+  if (error || !data.user) throw new Error('Oturum bulunamadı, tekrar giriş yapın')
   const projectId = data.user.app_metadata?.project_id as string | undefined
-  if (!projectId) throw new Error('Aktif proje bulunamadi')
+  if (!projectId) throw new Error('Aktif proje bulunamadı')
   return { projectId, invitedBy: data.user.id }
 }
 

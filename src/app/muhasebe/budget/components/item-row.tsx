@@ -104,7 +104,7 @@ export const ItemRow = memo(function ItemRow({
               data-row-id={it.id}
               data-col="heading"
               data-cell-kind="button"
-              title="Baslik"
+              title="Başlık"
               onClick={() => onOpenHeading(it.id)}
               style={{ display: 'flex', alignItems: 'center', flexShrink: 0, background: 'transparent', border: 'none', cursor: 'pointer', padding: 'var(--space-1)', color: it.headingCode ? 'var(--color-primary)' : 'var(--color-text-muted)', opacity: it.headingCode ? 1 : 0.45 }}
             >

@@ -118,7 +118,7 @@ export async function getOrOpenBudget(): Promise<string> {
     .eq('is_active', true)
     .maybeSingle()
   if (e3) throw new Error(e3.message)
-  if (!tpl) throw new Error('Sistem sablonu bulunamadi (' + ptype + '/single)')
+  if (!tpl) throw new Error('Sistem şablonu bulunamadı (' + ptype + '/single)')
 
   const { data: opened, error: e4 } = await supabase.rpc('fn_open_budget', {
     p_project: projectId,
