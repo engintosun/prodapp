@@ -1,7 +1,6 @@
 // BOY: tek iş = bütçe açılış + kart okuma + kalem yazma servis çağrıları (tek Supabase servis dosyası), sebep = 500+ — bölünme planı docs/butce/BUTCE-UI-MIMARISI.md §8'de kayıtlı, bölme ayrı turda yapılır.
 import { supabase } from './client'
-import { netToplamDonemli } from '../cfe'
-import type { DonemKalemi, YukCins } from '../cfe'
+import type { YukCins } from '../cfe'
 import type { PaymentStatus } from '../types/domain'
 import { isPaymentStatus } from '../types/domain'
 
@@ -134,24 +133,6 @@ export interface BudgetCardRef {
   name: string
 }
 
-export interface KartKalemNet {
-  cardId: string
-  donemler: DonemKalemi[]
-}
-
-// MASA KAPAK RAKAMI (Engin karari 15 Agustos 2026): net = birim net x miktar x X, kalem
-// kalem hesaplanir ve kartina gore toplanir. Bordro motoru CAGRILMAZ - motorun net ciktisi
-// da ayni carpima iner, gun/ay iskeleti yalniz YASAL YUK icin gereklidir. Hesap
-// netToplamDonemli uzerinden gider, ikinci bir tanim yoktur (KABUK-KARARLARI 12.3
-// TEK HESAP IKI YUZEY).
-export function kartNetToplamlari(kalemler: KartKalemNet[]): Record<string, number> {
-  const out: Record<string, number> = {}
-  for (const k of kalemler) {
-    out[k.cardId] = (out[k.cardId] ?? 0) + netToplamDonemli(k.donemler)
-  }
-  return out
-}
-
 // D3c-3: capraz-kart bilgisi kartin ADINI gosterir, numarasini ASLA; adlar bu butcenin kendi
 // kartlarindan okunur (BUTCE-EKRAN-KARARLARI bolum 16, kod gorunmez kurali).
 export async function fetchBudgetCards(budgetId: string): Promise<BudgetCardRef[]> {
@@ -170,88 +151,11 @@ export async function fetchBudgetCards(budgetId: string): Promise<BudgetCardRef[
     }))
 }
 
-// Masadaki her kartin net toplami. Iki sorgu: kalemler + donemler (kart basina sorgu YOK).
-// Donem sayisi 1'den buyukse donem bazli hesaplanir, degilse kalemin kendi degerleri
-// kullanilir — format.ts buildDonemler ile ayni kural.
-export async function fetchCardNetTotals(budgetId: string): Promise<Record<string, number>> {
-  const { data: items, error: ei } = await supabase
-    .from('budget_items')
-    .select('id, group_id, unit_net, multiplier, repeat')
-    .eq('budget_id', budgetId)
-    .eq('is_active', true)
-  if (ei) throw new Error(ei.message)
-  const rows = items ?? []
-  if (rows.length === 0) return {}
-
-  const { data: periods, error: ep } = await supabase
-    .from('budget_item_periods')
-    .select('item_id, quantity, unit_net_override, repeat_override')
-    .eq('budget_id', budgetId)
-  if (ep) throw new Error(ep.message)
-
-  const periodByItem: Record<
-    string,
-    { quantity: number; netOverride: number | null; repeatOverride: number | null }[]
-  > = {}
-  for (const p of periods ?? []) {
-    const k = p.item_id as string
-    ;(periodByItem[k] ??= []).push({
-      quantity: Number(p.quantity),
-      netOverride: p.unit_net_override === null ? null : Number(p.unit_net_override),
-      repeatOverride: p.repeat_override === null ? null : Number(p.repeat_override),
-    })
-  }
-
-  const kalemler: KartKalemNet[] = rows.map((it) => {
-    const unitNet = Number(it.unit_net)
-    const multiplier = Number(it.multiplier)
-    const repeat = Number(it.repeat)
-    const ps = periodByItem[it.id as string] ?? []
-    const donemler: DonemKalemi[] =
-      ps.length > 1
-        ? ps.map((p) => ({
-            net: p.netOverride ?? unitNet,
-            qty: p.quantity,
-            carpan: p.repeatOverride ?? repeat,
-          }))
-        : [{ net: unitNet, qty: multiplier, carpan: repeat }]
-    return { cardId: it.group_id as string, donemler }
-  })
-
-  return kartNetToplamlari(kalemler)
-}
-
-// Butcenin bir kartini (cardId verilirse o karti, verilmezse ilk kart - sort_order) + etaplarini +
-// kalemlerini getir. X etap-basina: periodQty[stageId]. Birim label ayri raftan map'lenir.
-export async function getCard(budgetId: string, cardId?: string): Promise<CardView | null> {
-  const { data: stageData, error: es } = await supabase
-    .from('budget_stages')
-    .select('id, name, is_undated, sort_order')
-    .eq('budget_id', budgetId)
-    .order('sort_order')
-  if (es) throw new Error(es.message)
-  const stages: StageRow[] = (stageData ?? []).map((s) => ({
-    id: s.id as string,
-    name: s.name as string,
-    isUndated: s.is_undated as boolean,
-    sortOrder: s.sort_order as number,
-  }))
-
-  // D3b-2a: card_code kutuphane sorgusunun ANAHTARIDIR (aidiyet=kod doktrini, K-B). Kart ADI
-  // anahtar OLAMAZ - kullanici hucrede degistirmis olabilir; kod dogumdan beri sabittir.
-  const grpQuery = supabase.from('expense_groups').select('id, name, card_code').eq('budget_id', budgetId)
-  const { data: grp, error: eg } = await (cardId ? grpQuery.eq('id', cardId) : grpQuery.order('sort_order').limit(1)).maybeSingle()
-  if (eg) throw new Error(eg.message)
-  if (!grp) return null
-
-  const { data: items, error: ei } = await supabase
-    .from('budget_items')
-    .select('id, item_code, catalog_code, heading_code, library_item_id, name, name_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, public_note')
-    .eq('group_id', grp.id)
-    .eq('is_active', true)
-    .order('sort_order')
-  if (ei) throw new Error(ei.message)
-  const itemList = items ?? []
+// Ham budget_items satirlarini BudgetItemRow'a cevirir (units cekimi + yuk/donem gruplamasi +
+// alan eslemesi). Kart-ozel DEGIL, herhangi bir kalem listesi icin calisir - getCard (tek kart)
+// ve fetchBudgetItemRowsByCard (butcenin tamami, masa kapak rakami icin) AYNI eslemeyi kullanir,
+// ikinci bir tanim yoktur (KABUK-KARARLARI 12.3 TEK HESAP IKI YUZEY).
+export async function mapItemRows(itemList: readonly Record<string, unknown>[]): Promise<BudgetItemRow[]> {
   const itemIds = itemList.map((i) => i.id as string)
 
   const { data: units, error: eu } = await supabase.from('units').select('id, label')
@@ -304,7 +208,7 @@ export async function getCard(budgetId: string, cardId?: string): Promise<CardVi
     }
   }
 
-  const rows: BudgetItemRow[] = itemList.map((i) => ({
+  return itemList.map((i) => ({
     id: i.id as string,
     itemCode: i.item_code as number,
     catalogCode: i.catalog_code as string,
@@ -328,6 +232,68 @@ export async function getCard(budgetId: string, cardId?: string): Promise<CardVi
     internalNote: (i.internal_note as string | null) ?? null,
     publicNote: (i.public_note as string | null) ?? null,
   }))
+}
+
+// Butcenin TUM aktif kalemleri, kartina (group_id) gore gruplu. Masa kapak rakami bunu kullanir
+// (Engin karari 31 Agustos 2026): getCard'in tek-kart select'i + mapItemRows AYNEN, yalniz
+// budget_id genelinde. Suzgec fetchCardNetTotals'in (silindi) kullandigi suzgecin aynisidir.
+export async function fetchBudgetItemRowsByCard(
+  budgetId: string,
+): Promise<Record<string, BudgetItemRow[]>> {
+  const { data: items, error: ei } = await supabase
+    .from('budget_items')
+    .select(
+      'id, item_code, catalog_code, heading_code, library_item_id, name, name_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, public_note, group_id',
+    )
+    .eq('budget_id', budgetId)
+    .eq('is_active', true)
+  if (ei) throw new Error(ei.message)
+  const itemList = items ?? []
+  if (itemList.length === 0) return {}
+
+  const rows = await mapItemRows(itemList)
+
+  const byCard: Record<string, BudgetItemRow[]> = {}
+  itemList.forEach((raw, idx) => {
+    const cardId = raw.group_id as string
+    ;(byCard[cardId] ??= []).push(rows[idx])
+  })
+  return byCard
+}
+
+// Butcenin bir kartini (cardId verilirse o karti, verilmezse ilk kart - sort_order) + etaplarini +
+// kalemlerini getir. X etap-basina: periodQty[stageId]. Birim label ayri raftan map'lenir.
+export async function getCard(budgetId: string, cardId?: string): Promise<CardView | null> {
+  const { data: stageData, error: es } = await supabase
+    .from('budget_stages')
+    .select('id, name, is_undated, sort_order')
+    .eq('budget_id', budgetId)
+    .order('sort_order')
+  if (es) throw new Error(es.message)
+  const stages: StageRow[] = (stageData ?? []).map((s) => ({
+    id: s.id as string,
+    name: s.name as string,
+    isUndated: s.is_undated as boolean,
+    sortOrder: s.sort_order as number,
+  }))
+
+  // D3b-2a: card_code kutuphane sorgusunun ANAHTARIDIR (aidiyet=kod doktrini, K-B). Kart ADI
+  // anahtar OLAMAZ - kullanici hucrede degistirmis olabilir; kod dogumdan beri sabittir.
+  const grpQuery = supabase.from('expense_groups').select('id, name, card_code').eq('budget_id', budgetId)
+  const { data: grp, error: eg } = await (cardId ? grpQuery.eq('id', cardId) : grpQuery.order('sort_order').limit(1)).maybeSingle()
+  if (eg) throw new Error(eg.message)
+  if (!grp) return null
+
+  const { data: items, error: ei } = await supabase
+    .from('budget_items')
+    .select('id, item_code, catalog_code, heading_code, library_item_id, name, name_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, public_note')
+    .eq('group_id', grp.id)
+    .eq('is_active', true)
+    .order('sort_order')
+  if (ei) throw new Error(ei.message)
+  const itemList = items ?? []
+
+  const rows = await mapItemRows(itemList)
 
   return {
     budgetId,

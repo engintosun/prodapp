@@ -3,16 +3,20 @@ import { useNavigate } from 'react-router-dom'
 import { Loading } from '../../../shared/components/loading'
 import { EmptyState } from '../../../shared/components/empty-state'
 import { ErrorMessage } from '../../../shared/components/error-message'
-import { getOrOpenBudget, fetchBudgetCards, fetchCardNetTotals } from '../../../shared/supabase/budget-service'
-import type { BudgetCardRef } from '../../../shared/supabase/budget-service'
-import { fmt } from './format'
+import { getOrOpenBudget, fetchBudgetCards, fetchBudgetItemRowsByCard } from '../../../shared/supabase/budget-service'
+import type { BudgetCardRef, BudgetItemRow } from '../../../shared/supabase/budget-service'
+import { deriveBordroFieldsBatch } from '../../../shared/supabase/payroll-read'
+import { fmt, bordroReasonMessage } from './format'
+import { cardTotals } from './totals'
+import type { BordroSheetEntry } from './components/burden-sheet'
 
 interface Props {
   budgetId?: string
 }
 
 // KART MASASI — KABUK-KARARLARI 12.3. Tek akis (etap/donem basligi YOK), izgara dizilis,
-// kapakta KART ADI + TEK RAKAM (net). Kart veya katalog NUMARASI hicbir yerde gorunmez.
+// kapakta KART ADI + TEK RAKAM (Maliyet, 31 Agustos 2026'da net'ten degisti - bkz. asagidaki
+// yukleme akisi). Kart veya katalog NUMARASI hicbir yerde gorunmez.
 // Kart sayisi artinca kart KUCULMEZ, masa asagi uzar.
 // BU DILIMIN KAPSAMI DISINDA (Engin karari 15 Agustos 2026): isaret, kisiye ozel dizilis
 // (cek-birak + ilk duzene don), icmal secimi / soluk kart. Ucu de veri ister, bu turda yok.
@@ -32,10 +36,43 @@ export function CardDeskScreen({ budgetId: paramBudgetId }: Props) {
         setLoading(true)
         setError(null)
         const bid = paramBudgetId ?? (await getOrOpenBudget())
-        const [list, nets] = await Promise.all([fetchBudgetCards(bid), fetchCardNetTotals(bid)])
+        const [list, rowsByCard] = await Promise.all([fetchBudgetCards(bid), fetchBudgetItemRowsByCard(bid)])
         if (cancelled) return
+
+        // Kapaktaki rakam Maliyet'tir (Ara toplam + Yasal Yuk); kart tablosunun toplam seridiyle
+        // AYNI fonksiyondan (cardTotals) beslenir - ikinci tanim yok (KABUK-KARARLARI 12.3).
+        // Bordro motoru butce basina TEK dalgada cagrilir (deriveBordroFieldsBatch, perf dilimi
+        // 16ba2c6) - kalem basina degil, ag panelinde kalem sayisindan bagimsiz kalir.
+        const allRows: BudgetItemRow[] = Object.values(rowsByCard).flat()
+        const bordroItemIds = allRows.filter((r) => r.paymentStatus === 'bordro').map((r) => r.id)
+        const bordroData: Record<string, BordroSheetEntry> = {}
+        if (bordroItemIds.length > 0) {
+          // Masada kalem basina uyari CIKMAZ: motor bir kalemde hata verse bile masa cizilir,
+          // yalniz o kartin rakami eksik hesaplanir (use-edit-buffers.refreshBordroMany'deki
+          // reason esleme kurallariyla AYNI; masada toast yuzeyi zaten yok).
+          const results = await deriveBordroFieldsBatch(bordroItemIds)
+          for (const id of bordroItemIds) {
+            const res = results.get(id)
+            if (!res || !res.ok) {
+              const reason = res ? res.reason : 'unknown'
+              if (reason === 'invalid_net') {
+                bordroData[id] = { loading: false, data: null, error: null, missingNet: true }
+              } else {
+                bordroData[id] = { loading: false, data: null, error: bordroReasonMessage(reason) }
+              }
+            } else {
+              bordroData[id] = { loading: false, data: res.data, error: null }
+            }
+          }
+        }
+
+        const costs: Record<string, number> = {}
+        for (const card of list) {
+          costs[card.id] = cardTotals(rowsByCard[card.id] ?? [], bordroData).maliyet
+        }
+
         setCards(list)
-        setTotals(nets)
+        setTotals(costs)
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : 'Masa yuklenemedi')
       } finally {

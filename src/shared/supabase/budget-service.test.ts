@@ -30,7 +30,7 @@ vi.mock('./client', () => ({
   },
 }))
 
-import { kartNetToplamlari, type KartKalemNet, updateItemField, addBudgetItem } from './budget-service'
+import { updateItemField, addBudgetItem } from './budget-service'
 
 const BRACKETS_2026: TaxBracket[] = [
   { floor: 0, ratePercent: 15, baseTax: 0 },
@@ -418,35 +418,6 @@ describe('budget-service — TD-18: minimumWageNetThresholds', () => {
     expect(t.month).toBeCloseTo(28075.5, 2)
     expect(t.day).toBeCloseTo(935.85, 2)
     expect(t.week).toBeCloseTo(6550.95, 2)
-  })
-})
-
-describe('budget-service — kartNetToplamlari: masa kapak rakami', () => {
-  it('tek donemsiz kalem: net x qty x carpan', () => {
-    const kalemler: KartKalemNet[] = [
-      { cardId: 'c1', donemler: [{ net: 50000, qty: 2, carpan: 3 }] },
-    ]
-    expect(kartNetToplamlari(kalemler)).toEqual({ c1: 300000 })
-  })
-
-  it('ayni kartta iki kalem: toplamlari toplanir', () => {
-    const kalemler: KartKalemNet[] = [
-      { cardId: 'c1', donemler: [{ net: 50000, qty: 2, carpan: 3 }] },
-      { cardId: 'c1', donemler: [{ net: 10000, qty: 1, carpan: 1 }] },
-    ]
-    expect(kartNetToplamlari(kalemler)).toEqual({ c1: 310000 })
-  })
-
-  it('iki ayri kart: her cardId kendi toplamini alir, birbirine karismaz', () => {
-    const kalemler: KartKalemNet[] = [
-      { cardId: 'c1', donemler: [{ net: 50000, qty: 2, carpan: 3 }] },
-      { cardId: 'c2', donemler: [{ net: 10000, qty: 1, carpan: 1 }] },
-    ]
-    expect(kartNetToplamlari(kalemler)).toEqual({ c1: 300000, c2: 10000 })
-  })
-
-  it('bos dizi -> bos nesne', () => {
-    expect(kartNetToplamlari([])).toEqual({})
   })
 })
 

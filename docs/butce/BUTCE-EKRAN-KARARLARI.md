@@ -245,7 +245,7 @@ NOT (8 Ağustos 2026): buradaki üç-rol listesi HARCAMA ZİNCİRİ içindir. Ma
 
 **KARARLAŞAN (Engin, 27 Temmuz 2026):** Kartın içinde bir yerde kart-seviyesi toplam rakamı gösterilecek. Bugün YOK — satır bazında Ara toplam/Toplam var (§3) ama kartı toplayan rakam hiç yok.
 
-**ÇAPRAZ (15 Ağustos 2026):** Bu şeritteki NET, masa kapağındaki rakamla aynı sayıdır (KABUK-KARARLARI 12.3 TEK HESAP İKİ YÜZEY). Kapak hesabı ve neden bordro motorunun çağrılmadığı orada yazılıdır.
+**ÇAPRAZ (15 Ağustos 2026; 31 Ağustos 2026'da güncellendi):** Masa kapağındaki tek rakam bu şeritteki Maliyet ile AYNI fonksiyondan (totals.ts cardTotals) gelir (KABUK-KARARLARI 12.3 TEK HESAP İKİ YÜZEY).
 
 **KARARA BAĞLANDI (ENGİN KARARI, 12 Ağustos 2026):**
 - **YER:** Masanın ayağına sabitlenmiş şerit (`position: sticky`). Tablo şeridin altından kayar, şerit kıpırdamaz. Sebep: kalem eklerken toplamın hep görünür olması. İnce şeride KONMAZ — üst bağlam "neredeyim" bilgisidir, kart toplamı ekranın içeriğidir (İ4: ekran ≠ kabuk); ayrıca ince şerit kabuk genişliğindedir ve rakamlar kolon başlığını kaybeder.

@@ -241,8 +241,8 @@ Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki
 
 ### 12.3 Kart masası
 - Masa TEK AKIŞTIR. Etap/dönem başlığı YOKTUR — kartlar dönemle dizilmez; dönem kalem seviyesinde yaşar.
-- Kart kapağında: işaret + kart adı + tek rakam (net toplam). Kart veya katalog NUMARASI hiçbir yerde görünmez (BUTCE-SEMA-KARARLARI ve BUTCE-EKRAN-KARARLARI'ndaki kayıtlı kural aynen geçerlidir).
-- REVİZYON — bölüm 9 (K2) karara bağlandı: kartın yüzeyinde toplam BULUNUR. Böylece EKRAN-MUHASEBE §19'daki "işaret + isim; RAKAM YOK" ifadesi kart kapağı için geçersizdir. Kaç rakam duracağı 14 Ağustos 2026'da karara bağlanmıştır: tek rakam, net.
+- Kart kapağında: işaret + kart adı + tek rakam (Maliyet). Kart veya katalog NUMARASI hiçbir yerde görünmez (BUTCE-SEMA-KARARLARI ve BUTCE-EKRAN-KARARLARI'ndaki kayıtlı kural aynen geçerlidir).
+- REVİZYON — bölüm 9 (K2) karara bağlandı: kartın yüzeyinde toplam BULUNUR. Böylece EKRAN-MUHASEBE §19'daki "işaret + isim; RAKAM YOK" ifadesi kart kapağı için geçersizdir. Kaç rakam duracağı 14 Ağustos 2026'da karara bağlanmıştır: tek rakam, Maliyet.
 - Karta tıklanınca kart masayı kaplar. Dönüş iki yoldan: üst ince şeritteki "‹ Kart adı" ve sol raydaki durak. Esc BAĞLANMAZ (Esc hücrede eski değeri geri getirir, KLV).
 - Kartlar ilk açılışta kod sırasında gelir; kullanıcı istediği kartı istediği yere taşıyabilir. Diziliş KİŞİYE ÖZELDİR — davetli kendi görebildiği kartları kendi düzeninde görür, başkasının masasını etkilemez.
 - Masadaki diziliş GENEL BÜTÇE'Yİ ETKİLEMEZ. İcmal sırası sabittir ve kod sırasındadır; ATL/BTL ayrımı kod prefiksinde yaşadığı için icmalin sabit sırası o ayrımı korur. Masa çalışma alanıdır, sunum yüzeyi değildir.
@@ -257,10 +257,11 @@ Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki
 - Masa TEK AKIŞTIR; etap/dönem başlığı YOKTUR. (Teyit.)
 - Diziliş IZGARA'dır. Sabit değildir: kartlar çek-bırak ile taşınır. Diziliş KİŞİYE ÖZELDİR.
 - Şablonun BÜTÜN kartları masaya serilir; çekirdek alt küme DEĞİL. Gerekçe: daha önce bütçe hazırlamamış kullanıcı neye ihtiyacı olduğunu bilmez, keşif sükûnetin önüne geçer. Bu, "masaya az şey gelir" ilkesiyle BİLİNÇLİ bir gerilimdir ve keşif lehine çözülmüştür.
-- Kapak öğeleri: İŞARET + KART ADI + TEK RAKAM (net). Başka öğe yoktur.
+- Kapak öğeleri: İŞARET + KART ADI + TEK RAKAM (Maliyet). Başka öğe yoktur.
 - İşaret KART BAŞINADIR ve o kartın içeriğine uygundur.
-- TEK HESAP İKİ YÜZEY: Kapaktaki net, kart açılınca toplam şeridinde görünen netin AYNISIDIR. İkinci bir tanım yoktur. (Çapraz: BUTCE-EKRAN-KARARLARI bölüm 18.)
+- TEK HESAP İKİ YÜZEY: kapaktaki Maliyet, kart açılınca toplam şeridinde görünen Maliyet'in AYNISIDIR — artık aynı fonksiyondan (totals.ts cardTotals) gelir, ikinci tanım SİLİNDİ. (Çapraz: BUTCE-EKRAN-KARARLARI bölüm 18.)
 - KAPAK RAKAMININ HESABI (ENGİN KARARI, 15 Ağustos 2026): net = birim net x miktar x X. Kalem kalem hesaplanır, kartına göre toplanır. BORDRO MOTORU ÇAĞRILMAZ. Gerekçe kaynakta doğrulandı: motorun net çıktısı da aynı çarpıma iner (resolvePayrollMonth net olarak hedef netin yuvarlanmış halini döndürür); motorun gün/ay iskeleti ve iteratif brüt çözümü YALNIZ YASAL YÜK için gereklidir. Yasal yük ve brüt kapağa girmediği için o maliyet de girmez. Kod: budget-service.kartNetToplamlari (hesap netToplamDonemli üzerinden gider, ikinci tanım yok) + fetchCardNetTotals (iki sorgu: kalemler + dönemler, kart başına sorgu YOK).
+  ASILDI (Engin kararı, 31 Ağustos 2026): kapağa Maliyet gelince yasal yük de kapağa girmiş oldu, dolayısıyla "yasal yük kapağa girmediği için motor çağrılmaz" gerekçesi ortadan kalktı. Motor artık çağrılıyor ama kalem başına DEĞİL: deriveBordroFieldsBatch ile bütçe başına tek dalga (perf dilimi, 16ba2c6). kartNetToplamlari ve fetchCardNetTotals SİLİNDİ.
 - MASA CANLI (15 Ağustos 2026, commit db8d5bd): /butce adresi cardId taşımıyorsa masa, taşıyorsa o kart açılır. cardId expense_groups.id (UUID) olduğu için kart NUMARASI adres çubuğuna da düşmez. Kartlar card_code sırasında gelir. Kod: app/muhasebe/budget/card-desk-screen.tsx + auth/authenticated-shell.tsx.
 - BU TURDA ÇİZİLMEYENLER (Engin kararı, 15 Ağustos 2026): işaret, kişiye özel diziliş (çek-bırak + ilk düzene dön), icmal seçimi / soluk kart. Üçünün de kararı yukarıda aynen geçerlidir; üçü de veri ister ve o veri bugün yoktur. Yazılacakları gün buradan devam edilir.
 - Karttan masaya dönüşün İKİNCİ yolu (ince şeritte "‹ Kart adı") bu turda YAPILMADI; ray ile dönüş çalışıyor. Ayrı turda ele alınacak — app-shell.tsx ve app-header.tsx dosyalarına dokunur.
@@ -274,6 +275,7 @@ Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki
 **ÇELİŞKİ KAPANIŞI (14 Ağustos 2026, Engin):** EKRAN-MUHASEBE bölüm 19 Ekran 2 ile üç çelişki KABUK lehine kapatılmıştır — tek akış, ekleme kartının yeri, bütçe sonu yüzdelerinin icmalde olması. EKRAN-MUHASEBE bu turda düzeltilmiştir.
 
 - **AÇIK, KARARA BAĞLANMADI — KAPAK RAKAMININ KAYNAĞI:** kapakta duran net toplamın hangi yoldan doğacağı mimari çataldır. Bugün iki sorguyla türetiliyor ve bordro motoru çağrılmıyor (15 Ağustos 2026, db8d5bd); motoru çağıran yol ile çağırmayan yol arasındaki fark karara bağlanmadı.
+  KAPANDI (31 Ağustos 2026): kaynak, kart tablosunun kullandığı AYNI hesaptır (totals.ts cardTotals, mapItemRows ile beslenir). Ayrı/ucuz yol REDDEDİLDİ — iki tanımın büyümesi (kapak Maliyet'e geçince kapak da statüyü, KDV oranını, yük bileşenlerini, dönem override'larını bilmek zorunda kalırdı) bakım maliyetini haklı çıkarmadı; tek fonksiyon iki yüzeyi besliyor.
 - **AÇIK, KARARA BAĞLANMADI — KART ADININ DEĞİŞTİRİLMESİ:** kart adı bugün salt-okunurdur. Sonradan değiştirilebilmesi hiç konuşulmadı.
 
 ### 12.4 Üst bağlam
