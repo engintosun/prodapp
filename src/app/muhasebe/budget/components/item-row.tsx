@@ -55,7 +55,7 @@ export const ItemRow = memo(function ItemRow({
   const addedStageIds = Object.keys(it.periodQty)
   const isBordro = it.paymentStatus === 'bordro'
   const bd = bordro
-  const { net: netToplam, yasalYuk: yasalYukTl, maliyet, kdv, brut: brutToplam } = rowTotals(it, bordro)
+  const { net: araToplam, yasalYuk: yasalYukTl, maliyet, kdv, brut: brutToplam } = rowTotals(it, bordro)
   const periodKeys = new Set(addedStageIds)
   const addableStages = stages.filter((s) => !periodKeys.has(s.id))
   const addedStages = stages.filter((s) => periodKeys.has(s.id))
@@ -255,7 +255,7 @@ export const ItemRow = memo(function ItemRow({
         )}
       </td>
       <td style={{ ...numStyle, fontWeight: 600 }}>
-        <span title={isBordro && bd?.missingNet ? 'Birim Net bekleniyor' : undefined} style={isBordro ? { opacity: 0.55 } : undefined}>{isBordro && bd?.missingNet ? '—' : fmt(netToplam)}</span>
+        <span title={isBordro && bd?.missingNet ? 'Birim Net bekleniyor' : undefined} style={isBordro ? { opacity: 0.55 } : undefined}>{isBordro && bd?.missingNet ? '—' : fmt(araToplam)}</span>
       </td>
       <td style={numStyle}>
         {/* TD-14 ucuncu duzeltme (2026-07-18): uyari metni yalniz TEK-donemli kalemde (satirin

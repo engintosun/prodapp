@@ -49,6 +49,8 @@
 |Alt-kod|—|Atomun kendi katalog kodu, başlığın kodundan tire ile türer (1101-01). Grup üyeliği tire öncesi parçadan okunur. catalog_code METİNDİR; item_code değildir (item_code iç kimliktir, bütçe sayacından gelir)|
 |Harç/Vergi|resmi_odeme|Kamuya yapılan, kendi başına duran resmî ödeme statüsü. Stopaj yok, SGK yok, KDV yok — net = brüt. Doktrin evi VERGI-MEVZUATI.md|
 |Maliyet|maliyet|Kalem satırındaki kolon: Net toplam + Yasal Yük (KDV hariç ara toplam). **KARIŞTIRILMAZ:** "Maliyet nesnesi" (cost_object, yukarıda) ayrı bir kavramdır — aynı kök, iki farklı anlam. Doktrin evi BUTCE-SEMA-KARARLARI.md NET/BRÜT DOKTRİNİ REVİZYONU|
+|Ara toplam|araToplam|Kalem satırındaki kolon: birim net x Miktar x X (çıplak çarpım, yük ve KDV hariç). Eski adı "Net toplam"dı, 31 Ağustos 2026'da değişti|
+|Toplam|brutToplam|Kalem satırındaki son kolon: Maliyet + KDV. Eski adı "Brüt toplam"dı, 31 Ağustos 2026'da değişti. Kod adı BİLEREK `brutToplam` bırakıldı — rakam gerçekten brüttür, değişen yalnızca kullanıcıya tanıtılan ad|
 
 ### Bütçe - dönem/nakit terimleri (2026-06-13)
 
@@ -199,6 +201,10 @@ Bu kökler birden fazla anlama gelir. Kodda Türkçe kök KULLANILMAZ. Her bağl
 |carpan |kod alanı (`DonemKalemi.carpan`)|değişmez — sözleşme gereği hep süre eksenini taşır|
 
 Bulk replace YASAK — tarihli metinde (öncesi/sonrası) aynı kelime farklı okunur; bkz. K9-r2 tarihçe. Yaşayan metinde (yeni yazılan kod/UI/doküman) "miktar" eksen-adı olarak yalnız SÜRE anlamında, kişi/adet için "X" kullanılır; "çarpan" eksen-adı olarak KULLANILMAZ.
+
+### `net` (doktrin ve kod farkı — 2026-08-31)
+
+Doktrinde "net bütçe" = Maliyet kolonu (KDV hariç, yük dahil). Kodda "net" kökü hâlâ birkaç yerde yaşar: `netTotal` (bordro net toplamı), `unitNet` (birim net), `netToplamDonemli` (dönem çarpımı fonksiyonu). Ekranda ise "net" kelimesi ARTIK HİÇ GEÇMİYOR (kolon adı "Ara toplam" oldu, 31 Ağustos 2026). Toplu değiştirme YASAK — kod tarafındaki bu üç ad bilerek KORUNDU, yeniden adlandırma ayrı bir tur ister.
 
 **"defter"** terimi kod ve UI'da KULLANILMAZ (2026-06-12, B13).
 

@@ -5,7 +5,7 @@ import type { CSSProperties } from 'react'
 // Hucre kutusu: td padding 4+4 (13.08.2026 cift-padding temizligi; onceden 8+8);
 // input/select ayrica border 1+1 + padding 8+8; select oku ~18px. Pay dusurulurken
 // kolonlar ayni miktarda daraltildi, metin alani birebir korundu.
-// Tutar kolonlari (yasalYuk/netToplam/brutToplam) 112 = olculen 108,1 + KUR-1 icin tek
+// Tutar kolonlari (yasalYuk/araToplam/brutToplam) 112 = olculen 108,1 + KUR-1 icin tek
 // isaretlik (TL/$/EUR) pay. Para birimi SATIR verisidir (KUR-1 madde 1), o yuzden pay birakildi.
 // statu 128 BILEREK yetersiz: gercek ihtiyac 166, kirpma kabul edildi (Engin karari 13.08.2026).
 // donemler 150: icerigi kullanicinin yazdigi etap adi, en kotu durum turetilemez.
@@ -20,7 +20,7 @@ export const colWidths = {
   miktar: 70,
   x: 50,
   yasalYuk: 112,
-  netToplam: 112,
+  araToplam: 112,
   brutToplam: 112,
   adMin: 212,
   maliyet: 112,
@@ -36,7 +36,7 @@ export const tableMinWidth =
   colWidths.miktar +
   colWidths.x +
   colWidths.yasalYuk +
-  colWidths.netToplam +
+  colWidths.araToplam +
   colWidths.brutToplam +
   colWidths.adMin +
   colWidths.maliyet +

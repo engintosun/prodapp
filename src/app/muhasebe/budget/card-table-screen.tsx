@@ -305,7 +305,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
             <col style={{ width: colWidths.birimNet }} />
             <col style={{ width: colWidths.miktar }} />
             <col style={{ width: colWidths.x }} />
-            <col style={{ width: colWidths.netToplam }} />
+            <col style={{ width: colWidths.araToplam }} />
             <col style={{ width: colWidths.yasalYuk }} />
             <col style={{ width: colWidths.maliyet }} />
             <col style={{ width: colWidths.kdv }} />
@@ -430,7 +430,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
             <col style={{ width: colWidths.birimNet }} />
             <col style={{ width: colWidths.miktar }} />
             <col style={{ width: colWidths.x }} />
-            <col style={{ width: colWidths.netToplam }} />
+            <col style={{ width: colWidths.araToplam }} />
             <col style={{ width: colWidths.yasalYuk }} />
             <col style={{ width: colWidths.maliyet }} />
             <col style={{ width: colWidths.kdv }} />

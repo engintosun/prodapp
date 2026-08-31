@@ -62,7 +62,7 @@ Bütçe "Toplam" = **BRÜT** (yapımcı maliyeti). Üç eksen **birleştirilmez*
 |---|---|---|---|
 | **SGK / işveren** | Ekleme (additive): Brüt = Net × (1 + oran) | Yalnız bordro | Net × 1,2175 (varsayılan) |
 | **Stopaj** | Katsayı kesinti: Brüt = Net / (1 − oran) | SMM / Telif / Kira | Net/0,80 veya /0,83 veya /0,80 |
-| **KDV** | Ayrı havuz, geri alınabilir | Tüm faturalı | Geri alınabilir ilkesi: KDV maliyet DEĞİLDİR, Maliyet kolonuna girmez; yalnız Brüt toplamda ve kendi kolonunda yaşar (bkz. bölüm 3) |
+| **KDV** | Ayrı havuz, geri alınabilir | Tüm faturalı | Geri alınabilir ilkesi: KDV maliyet DEĞİLDİR, Maliyet kolonuna girmez; yalnız Toplamda ve kendi kolonunda yaşar (bkz. bölüm 3) |
 
 **Statü → Brüt katsayı tablosu (basit):**
 
@@ -95,7 +95,7 @@ Bütçe "Toplam" = **BRÜT** (yapımcı maliyeti). Üç eksen **birleştirilmez*
 
 ## 3. KDV — ne zaman gerçek maliyet, ne zaman değil (KRİTİK)
 
-**KAAPA Kararı (KİLİT, 2026-07-03, Engin; 31 Ağustos 2026'da NET/BRÜT DOKTRİNİ REVİZYONU ile düzeltildi):** KDV geri alınabildiği için maliyet DEĞİLDİR — Maliyet kolonuna GİRMEZ, yalnız Brüt toplamda ve kendi kolonunda yaşar. Bu ayrım fon/rapor görünümlerinde KDV'siz toplam türetmek ve finansman planında geri-dönüş bilgisini taşımak içindir. KDV'nin indirilip indirilmemesi bütçe hesabının konusu DEĞİLDİR — muhasebe/finansman dünyasının sonraki olayıdır. Ekran davranışı (2026-06-30: brüt = net + stopaj/SGK + KDV) bu ilkeyle hizalıdır. Fon sunumu: Eurimages giderleri KDV'siz ister (geri alınamayan hariç) — türetilmiş rapor görünümü, RAPORLAR fazı. Devreden KDV riski proje-düzeyi uyarıdır, kalem hesabına girmez.
+**KAAPA Kararı (KİLİT, 2026-07-03, Engin; 31 Ağustos 2026'da NET/BRÜT DOKTRİNİ REVİZYONU ile düzeltildi):** KDV geri alınabildiği için maliyet DEĞİLDİR — Maliyet kolonuna GİRMEZ, yalnız Toplamda ve kendi kolonunda yaşar. Bu ayrım fon/rapor görünümlerinde KDV'siz toplam türetmek ve finansman planında geri-dönüş bilgisini taşımak içindir. KDV'nin indirilip indirilmemesi bütçe hesabının konusu DEĞİLDİR — muhasebe/finansman dünyasının sonraki olayıdır. Ekran davranışı (2026-06-30: brüt = net + stopaj/SGK + KDV) bu ilkeyle hizalıdır. Fon sunumu: Eurimages giderleri KDV'siz ister (geri alınamayan hariç) — türetilmiş rapor görünümü, RAPORLAR fazı. Devreden KDV riski proje-düzeyi uyarıdır, kalem hesabına girmez.
 
 **KAAPA KARARI — vat_deductible'ın kaderi (2026-07-03, ikinci tur):** `budget_items.vat_deductible` alanı KORUNUR (Boolean, varsayılan true; mevcut alan, migration gerekmez); bütçe motoru bu alanı OKUMAZ — KDV her durumda toplamdadır. Alan iki türetilmiş fonksiyona girdi verir: (1) fon raporu: genel toplam eksi indirilebilir satırların KDV'si = KDV'siz proje raporu (CFE'den anlık türetim, saklanmaz; indirilemeyen satırların KDV'si raporda maliyet olarak kalır — Eurimages kuralıyla uyumlu); (2) nakit akış projeksiyonu: indirilebilir satırlardan biriken tutar İndirilecek KDV havuzu — geri dönüş çıktı KDV'sine bağlı MAHSUP olarak simüle edilir, nakden iade vaat edilmez; çıktı faturası yoksa devreden KDV olarak taşınır ve dönmeyen KDV uyarısı düşer. Not: binek araç kira/yakıt KDV'si kanunen indirilemez (KDVK 30/b) — ilgili satırda bayrak false olmalı; uygunluk uyarı adayı.
 

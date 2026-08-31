@@ -81,7 +81,7 @@ Bütçe → Versiyon (KL-1 V-sekmeleri) → Yüzey (ray: İcmal ① / Kart masas
 Gelecek yüzeyler (İcmal, kart masası, kabuk) bu klasöre kardeş ekran olarak gelir; şimdi açılmaz.
 
 ## 4. Bilinçli YAPILMIYOR
-State kütüphanesi yok (React state + SSOT Supabase yeter). Genel amaçlı DataGrid soyutlaması yok (13 kolon doktrinli ve sabittir — No/Ad/Statü/Dönemler/Birim/Birim net/Miktar/X/Net toplam/Yasal Yük/Maliyet/KDV/Brüt toplam; jenerik grid = erken soyutlama). Virtualization yok (ölçmeden kurulmaz; İ1 kapıyı açık tutar). Kart-config sistemi bugün kurulmaz (İ1). Context-provider ormanı yok (prop yeter; prop sızıntısı büyürse tek RowContext'e dönülür).
+State kütüphanesi yok (React state + SSOT Supabase yeter). Genel amaçlı DataGrid soyutlaması yok (13 kolon doktrinli ve sabittir — No/Ad/Statü/Dönemler/Birim/Birim net/Miktar/X/Ara toplam/Yasal Yük/Maliyet/KDV/Toplam; jenerik grid = erken soyutlama). Virtualization yok (ölçmeden kurulmaz; İ1 kapıyı açık tutar). Kart-config sistemi bugün kurulmaz (İ1). Context-provider ormanı yok (prop yeter; prop sızıntısı büyürse tek RowContext'e dönülür).
 
 ## 5. Uygulama sırası (R-serisi)
 R1 cansız parçalar (stiller + format + bottom-sheet + 3 sheet; mantık TAŞINIR, yeniden yazılmaz) → R2 canlı çekirdek (item-row / period-row / use-edit-buffers / use-card-rows + budgetId/cardId/viewMode parametreleri + ekranın budget/ klasörüne taşınması; İ1 saf-satır kuralları burada kurulur) → R3 servis dikişi (payroll-read.ts + getCard) → KLV klavye motoru (İ7) → MÜHÜR-3a (version-service + version-tabs + view-mode) → MÜHÜR-3b (readOnly inişi + seal-controls + Mühür eki rozeti + revizyon akışı). Her dilim davranış-sıfır ya da tek özellik; kapı = npm run build + tüm testler yeşil + Engin görsel turu.
