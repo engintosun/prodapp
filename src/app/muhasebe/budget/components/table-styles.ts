@@ -36,6 +36,7 @@ export const colWidths = {
   adMin: 212,
   maliyet: 112,
   kdv: 112,
+  sil: 28,
 } as const
 
 export const tableMinWidth =
@@ -51,7 +52,8 @@ export const tableMinWidth =
   colWidths.brutToplam +
   colWidths.adMin +
   colWidths.maliyet +
-  colWidths.kdv
+  colWidths.kdv +
+  colWidths.sil
 
 export const thStyle: CSSProperties = {
   textAlign: 'left',
@@ -71,6 +73,18 @@ export const tdStyle: CSSProperties = {
   borderBottom: '1px solid var(--color-border)',
 }
 export const numStyle: CSSProperties = { ...tdStyle, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }
+// SALT-OKUNUR OZET HIZASI (31 Agustos 2026, kolon hizasi turu): Birim / Birim net /
+// Miktar / X kolonlarinda hucre bazen bir denetim (yazi kutusu ya da acilir liste),
+// bazen duz ozet yazi tasir. Denetimin kendi ic payi kenarlik 1 + dolgu 8 = 9px.
+// Uc hal ayni hizada dursun diye hucre dolgusu YATAYDA sifirlanir ve duz yazi ayni
+// 9px payi kendisi tasir. 9 yeni bir deger DEGIL: donem satirlari (periodRowInputTd)
+// Temmuz 2026, statu ve birim select hucreleri 31 Agustos 2026 cift-dolgu turundan
+// beri oradadir. KURAL: bir kolon denetim ile duz yazi arasinda gidip geliyorsa
+// ikisinin yazi payi AYNI olmak zorundadir.
+const CONTROL_INSET = 9
+export const numFlushTd: CSSProperties = { ...numStyle, paddingLeft: 0, paddingRight: 0 }
+export const readOnlyNumTd: CSSProperties = { ...numStyle, paddingLeft: 0, paddingRight: CONTROL_INSET }
+export const readOnlyTextTd: CSSProperties = { ...tdStyle, paddingLeft: CONTROL_INSET, paddingRight: 0 }
 export const cellInput: CSSProperties = {
   width: '100%',
   boxSizing: 'border-box',
@@ -95,3 +109,20 @@ export const periodRowInputTd: CSSProperties = { ...periodRowNumStyle, padding: 
 // uygularsa cift-padding olusur (167d5c8'deki Net/Miktar/X deseniyle ayni kok neden).
 export const selectTd: CSSProperties = { ...tdStyle, padding: 0 }
 export const periodRowSelectTd: CSSProperties = { ...periodRowStyle, padding: 0 }
+// 14. hane (silme seridi): dugme hucrenin ortasinda durur; Toplam rakami ile arasindaki
+// bosluk iki hucrenin 4+4 dolgusundan gelir ve eski flex gap ile birebir aynidir (8px).
+// silButton iki yerde (item-row, period-row) birebir ayni oldugu icin tek yerde yasar.
+export const silTd: CSSProperties = { ...tdStyle, textAlign: 'center' }
+export const periodRowSilTd: CSSProperties = { ...periodRowStyle, textAlign: 'center' }
+export const silButton: CSSProperties = {
+  display: 'inline-flex',
+  width: 20,
+  justifyContent: 'center',
+  background: 'transparent',
+  border: 'none',
+  cursor: 'pointer',
+  color: 'var(--color-text-muted)',
+  fontSize: 'var(--text-md)',
+  padding: 0,
+  lineHeight: 1,
+}

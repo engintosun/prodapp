@@ -309,6 +309,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
             <col style={{ width: colWidths.maliyet }} />
             <col style={{ width: colWidths.kdv }} />
             <col style={{ width: colWidths.brutToplam }} />
+            <col style={{ width: colWidths.sil }} />
           </colgroup>
           <thead>
             <tr>
@@ -434,6 +435,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
             <col style={{ width: colWidths.maliyet }} />
             <col style={{ width: colWidths.kdv }} />
             <col style={{ width: colWidths.brutToplam }} />
+            <col style={{ width: colWidths.sil }} />
           </colgroup>
           <tbody>
             <tr>
@@ -445,6 +447,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
               <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.maliyet)}</td>
               <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.kdv)}</td>
               <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.brut)}</td>
+              <td style={tdStyle} />
             </tr>
           </tbody>
         </table>

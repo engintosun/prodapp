@@ -54,7 +54,7 @@ export const AddItemRow = memo(function AddItemRow({ disabled, onOpen }: AddItem
           kalem ekle
         </button>
       </td>
-      <td style={tdStyle} colSpan={11} />
+      <td style={tdStyle} colSpan={12} />
     </tr>
   )
 })

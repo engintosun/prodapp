@@ -1,4 +1,4 @@
-// BOY: tek iş = kart tablosunun kalem satırı bileşeni (13 kolonluk KİLİTLİ kolon setinin tek satırlık render'ı + bordro/genel ayrımı + dönem-satırı açılımı), sebep = kolon seti kilitli tek bir kontrat; satır render'ı bölünürse kolon hizası iki dosyada ayrı ayrı korunmak zorunda kalır.
+// BOY: tek iş = kart tablosunun kalem satırı bileşeni (14 kolonluk KİLİTLİ kolon setinin tek satırlık render'ı + bordro/genel ayrımı + dönem-satırı açılımı), sebep = kolon seti kilitli tek bir kontrat; satır render'ı bölünürse kolon hizası iki dosyada ayrı ayrı korunmak zorunda kalır.
 import { memo } from 'react'
 import { PAYMENT_STATUSES } from '../../../../shared/types/domain'
 import type { BudgetItemRow, StageRow, UnitRow } from '../../../../shared/supabase/budget-service'
@@ -7,7 +7,7 @@ import type { ValueWarning } from '../format'
 import { rowTotals } from '../totals'
 import type { EditApi } from '../hooks/use-edit-buffers'
 import type { BordroSheetEntry } from './burden-sheet'
-import { tdStyle, selectTd, numStyle, cellInput, cellInputNum, cellInputEllipsis } from './table-styles'
+import { tdStyle, selectTd, numStyle, numFlushTd, readOnlyNumTd, readOnlyTextTd, silTd, silButton, cellInput, cellInputNum, cellInputEllipsis } from './table-styles'
 
 interface ItemRowProps {
   item: BudgetItemRow
@@ -182,7 +182,7 @@ export const ItemRow = memo(function ItemRow({
           </select>
         )}
       </td>
-      <td style={multi ? tdStyle : selectTd}>
+      <td style={multi ? readOnlyTextTd : selectTd}>
         {multi ? (
           summaryUnitId !== null ? (units.find((u) => u.id === summaryUnitId)?.label ?? it.unitLabel) : '—'
         ) : (
@@ -203,7 +203,7 @@ export const ItemRow = memo(function ItemRow({
           </select>
         )}
       </td>
-      <td style={numStyle}>
+      <td style={multi ? readOnlyNumTd : numFlushTd}>
         {multi ? (
           summaryNet !== null ? fmt(summaryNet) : '—'
         ) : (
@@ -220,7 +220,7 @@ export const ItemRow = memo(function ItemRow({
           />
         )}
       </td>
-      <td style={numStyle}>
+      <td style={multi ? readOnlyNumTd : numFlushTd}>
         {multi ? (
           fmt(summaryRepeatSum ?? 0)
         ) : (
@@ -237,7 +237,7 @@ export const ItemRow = memo(function ItemRow({
           />
         )}
       </td>
-      <td style={numStyle}>
+      <td style={multi ? readOnlyNumTd : numFlushTd}>
         {multi ? (
           summaryQty !== null ? fmt(summaryQty) : '—'
         ) : (
@@ -308,31 +308,20 @@ export const ItemRow = memo(function ItemRow({
       </td>
       <td style={numStyle}>{isBordro ? '—' : fmt(kdv)}</td>
       <td style={{ ...numStyle, fontWeight: 600 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
-          <span title={isBordro && bd?.missingNet ? 'Birim Net bekleniyor' : undefined} style={isBordro ? { opacity: 0.55 } : undefined}>{isBordro && bd?.missingNet ? '—' : fmt(brutToplam)}</span>
-          <button
-            data-grid-cell="true"
-            data-row-id={item.id}
-            data-col="itemRemove"
-            data-cell-kind="button"
-            onClick={() => onRemove(item.id)}
-            style={{
-              display: 'inline-flex',
-              width: 20,
-              justifyContent: 'center',
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--color-text-muted)',
-              fontSize: 'var(--text-md)',
-              padding: 0,
-              lineHeight: 1,
-            }}
-            title="Kalemi sil"
-          >
-            ×
-          </button>
-        </div>
+        <span title={isBordro && bd?.missingNet ? 'Birim Net bekleniyor' : undefined} style={isBordro ? { opacity: 0.55 } : undefined}>{isBordro && bd?.missingNet ? '—' : fmt(brutToplam)}</span>
+      </td>
+      <td style={silTd}>
+        <button
+          data-grid-cell="true"
+          data-row-id={item.id}
+          data-col="itemRemove"
+          data-cell-kind="button"
+          onClick={() => onRemove(item.id)}
+          style={silButton}
+          title="Kalemi sil"
+        >
+          ×
+        </button>
       </td>
     </tr>
   )

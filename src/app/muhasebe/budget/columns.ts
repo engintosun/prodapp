@@ -20,4 +20,8 @@ export const BUDGET_COLUMNS: readonly BudgetColumn[] = [
   { key: 'maliyet', label: 'Maliyet', align: 'num' },
   { key: 'kdv', label: 'KDV', align: 'num' },
   { key: 'brutToplam', label: 'Toplam', align: 'num' },
+  // 14. hane: satir silme dugmesinin kendi seridi. Veri TASIMAZ, etiketi BOSTUR
+  // (sette zaten X adli bir kolon var: kac kisi/adet; silme isaretine de X demek
+  // o terimi ikinci anlama acardi). Genislik 28 = dugme 20 + hucre dolgusu 4+4.
+  { key: 'sil', label: '', align: 'text' },
 ]

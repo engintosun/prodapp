@@ -18,6 +18,7 @@ export function HeadingRow({ name, totals }: { name: string; totals: RowTotals }
       <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.maliyet)}</td>
       <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.kdv)}</td>
       <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.brut)}</td>
+      <td style={tdStyle} />
     </tr>
   )
 }

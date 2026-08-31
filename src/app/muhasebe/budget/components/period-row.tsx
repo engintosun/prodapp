@@ -6,7 +6,7 @@ import { fmt, periodVal, periodNetVal, periodRepeatVal, bordroAllowedUnits } fro
 import type { ValueWarning } from '../format'
 import type { EditApi } from '../hooks/use-edit-buffers'
 import type { BordroSheetEntry } from './burden-sheet'
-import { cellInput, cellInputNum, cellInputNumMuted, periodRowStyle, periodRowSelectTd, periodRowNumStyle, periodRowInputTd } from './table-styles'
+import { cellInput, cellInputNum, cellInputNumMuted, periodRowStyle, periodRowSelectTd, periodRowNumStyle, periodRowInputTd, periodRowSilTd, silButton } from './table-styles'
 
 interface PeriodRowProps {
   item: BudgetItemRow
@@ -167,32 +167,19 @@ export const PeriodRow = memo(function PeriodRow({
       </td>
       <td style={periodRowNumStyle}>{fmt(donemMaliyet)}</td>
       <td style={periodRowNumStyle}>{isBordro ? '—' : fmt(donemKdv)}</td>
-      <td style={periodRowNumStyle}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 'var(--space-2)' }}>
-          <span>{fmt(donemBrut)}</span>
-          <button
-            data-grid-cell="true"
-            data-row-id={`${it.id}:${s.id}`}
-            data-col="periodRemove"
-            data-cell-kind="button"
-            onClick={() => void api.onRemovePeriod(it.id, s.id)}
-            style={{
-              display: 'inline-flex',
-              width: 20,
-              justifyContent: 'center',
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--color-text-muted)',
-              fontSize: 'var(--text-md)',
-              padding: 0,
-              lineHeight: 1,
-            }}
-            title="Dönemi kaldır"
-          >
-            ×
-          </button>
-        </div>
+      <td style={periodRowNumStyle}>{fmt(donemBrut)}</td>
+      <td style={periodRowSilTd}>
+        <button
+          data-grid-cell="true"
+          data-row-id={`${it.id}:${s.id}`}
+          data-col="periodRemove"
+          data-cell-kind="button"
+          onClick={() => void api.onRemovePeriod(it.id, s.id)}
+          style={silButton}
+          title="Dönemi kaldır"
+        >
+          ×
+        </button>
       </td>
     </tr>
   )
