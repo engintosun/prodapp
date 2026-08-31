@@ -73,18 +73,25 @@ export const tdStyle: CSSProperties = {
   borderBottom: '1px solid var(--color-border)',
 }
 export const numStyle: CSSProperties = { ...tdStyle, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }
-// SALT-OKUNUR OZET HIZASI (31 Agustos 2026, kolon hizasi turu): Birim / Birim net /
-// Miktar / X kolonlarinda hucre bazen bir denetim (yazi kutusu ya da acilir liste),
-// bazen duz ozet yazi tasir. Denetimin kendi ic payi kenarlik 1 + dolgu 8 = 9px.
-// Uc hal ayni hizada dursun diye hucre dolgusu YATAYDA sifirlanir ve duz yazi ayni
-// 9px payi kendisi tasir. 9 yeni bir deger DEGIL: donem satirlari (periodRowInputTd)
-// Temmuz 2026, statu ve birim select hucreleri 31 Agustos 2026 cift-dolgu turundan
-// beri oradadir. KURAL: bir kolon denetim ile duz yazi arasinda gidip geliyorsa
-// ikisinin yazi payi AYNI olmak zorundadir.
-const CONTROL_INSET = 9
+// SALT-OKUNUR OZET HIZASI (31 Agustos 2026 kuruldu, 1 Eylul 2026 OLCULDU ve duzeltildi):
+// Birim / Birim net / Miktar / X / Donemler kolonlarinda hucre bazen bir denetim,
+// bazen duz ozet yazi tasir. KURAL: bir kolon denetim ile duz yazi arasinda gidip
+// geliyorsa ikisinin yazi payi AYNI olmak zorundadir; hucre dolgusu yatayda sifirlanir
+// ve duz yazi denetimin payini kendisi tasir.
+// DUZELTME: 31 Agustos turunda bu pay her denetim icin 9 (kenarlik 1 + dolgu 8)
+// varsayildi. Varsayim OLCULMEMISTI ve yanlis cikti. Pay denetimin TURUNE baglidir.
+// OLCUM (1 Eylul 2026, Windows + Chrome, gercek ekran goruntusu; ayni kelime once
+// kutunun icinde sonra duz yazi olarak karsilastirildi, harf payi boylece dustu):
+//   yazi kutusu (input)   = 9  -> kenarlik 1 + dolgu 8; tarayici ek pay EKLEMIYOR
+//   acilir liste (select) = 13 -> kenarlik 1 + dolgu 8 + tarayicinin liste icine
+//                                 kendi ekledigi yaklasik 4. Iki bagimsiz olcum:
+//                                 sabit 12,9 ve hafta 13,3.
+// MAC'TE DOGRULANMADI: 13 platforma bagli bir OLCUMDUR, 92,1 / 67,84 / 20 ile ayni sinif.
+const INPUT_INSET = 9
+const SELECT_INSET = 13
 export const numFlushTd: CSSProperties = { ...numStyle, paddingLeft: 0, paddingRight: 0 }
-export const readOnlyNumTd: CSSProperties = { ...numStyle, paddingLeft: 0, paddingRight: CONTROL_INSET }
-export const readOnlyTextTd: CSSProperties = { ...tdStyle, paddingLeft: CONTROL_INSET, paddingRight: 0 }
+export const readOnlyNumTd: CSSProperties = { ...numStyle, paddingLeft: 0, paddingRight: INPUT_INSET }
+export const readOnlyTextTd: CSSProperties = { ...tdStyle, paddingLeft: SELECT_INSET, paddingRight: 0 }
 export const cellInput: CSSProperties = {
   width: '100%',
   boxSizing: 'border-box',
@@ -109,6 +116,9 @@ export const periodRowInputTd: CSSProperties = { ...periodRowNumStyle, padding: 
 // uygularsa cift-padding olusur (167d5c8'deki Net/Miktar/X deseniyle ayni kok neden).
 export const selectTd: CSSProperties = { ...tdStyle, padding: 0 }
 export const periodRowSelectTd: CSSProperties = { ...periodRowStyle, padding: 0 }
+// Donem satirinin etap adi hucresi: ayni kolonun ana satirinda bir acilir liste var,
+// o yuzden duz yazi SELECT_INSET kadar iceriden baslar (bkz. SALT-OKUNUR OZET HIZASI).
+export const periodRowTextTd: CSSProperties = { ...periodRowStyle, paddingLeft: SELECT_INSET, paddingRight: 0 }
 // 14. hane (silme seridi): dugme hucrenin ortasinda durur; Toplam rakami ile arasindaki
 // bosluk iki hucrenin 4+4 dolgusundan gelir ve eski flex gap ile birebir aynidir (8px).
 // silButton iki yerde (item-row, period-row) birebir ayni oldugu icin tek yerde yasar.

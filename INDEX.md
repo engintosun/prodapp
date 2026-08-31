@@ -73,14 +73,14 @@ varsayim yapilmaz.
 -> Etkiler: authenticated-shell.tsx cardId yokken buradan render eder.
 -> Kritik: HAYIR — kararlarin evi KABUK-KARARLARI 12.3; ekran orada yazilani cizer.
 
-`src/app/muhasebe/budget/card-table-screen.tsx` (497)
+`src/app/muhasebe/budget/card-table-screen.tsx` (500)
 -> Görev: Kart tablosu ekranının orkestrasyonu — veri hook'ları + ekleme paneli + satır bileşenlerini birbirine bağlar.
 -> Kullanır: hooks/* (use-card-rows, use-edit-buffers, use-grid-navigation) + components/* + budget-service.ts.
 -> Etkiler: authenticated-shell.tsx (muhasebe "bütçe" sekmesi) buradan render eder.
--> Kritik: EVET — İ4 (Ekran ≠ kabuk) sınırı burada tutulur; budgetId/cardId/viewMode dışarıdan alınabilir kalmalı.
+-> Kritik: EVET — İ4 (Ekran ≠ kabuk) sınırı burada tutulur; budgetId/cardId/viewMode dışarıdan alınabilir kalmalı. 500+ satır (1 Eylül 2026), BUTCE-UI-MIMARISI bölüm 8 kayıtlı.
 
-`src/app/muhasebe/budget/components/item-row.tsx` (339)
--> Görev: Kart tablosunun kalem satırı — 12 kolonluk KİLİTLİ kolon setinin tek satırlık render'ı, bordro/genel ayrımı + dönem-satırı açılımı.
+`src/app/muhasebe/budget/components/item-row.tsx` (328)
+-> Görev: Kart tablosunun kalem satırı — 14 haneli (13 veri kolonu + etiketsiz silme hanesi) KİLİTLİ kolon setinin tek satırlık render'ı, bordro/genel ayrımı + dönem-satırı açılımı.
 -> Kullanır: shared/cfe (netToplamDonemli/brutToplamDonemli/kisiyeBanka) + format.ts + hooks/use-edit-buffers.ts (EditApi tipi).
 -> Etkiler: card-table-screen.tsx satır-başına bunu render eder.
 -> Kritik: EVET — İ1 (Tek tablo motoru, SAF SATIR) burada uygulanır: kart-özel dal YASAK, React.memo + inline closure yasağı.
@@ -121,12 +121,12 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/components/add-item-row.tsx` (60) — tablo altı "+ kalem ekle" düğme satırı
 `src/app/muhasebe/budget/components/bottom-sheet.tsx` (104) — ortak alt-sheet primitivi (backdrop+panel+odak tuzağı)
 `src/app/muhasebe/budget/components/burden-sheet.tsx` (108) — Yasal Yük dökümü sheet'i (bordro 6-bacak + basit statü)
-`src/app/muhasebe/budget/components/heading-row.tsx` (23) — başlık satırı: ad + üç rakam (Net/Yasal Yük/Brüt), data-grid-cell taşımaz
+`src/app/muhasebe/budget/components/heading-row.tsx` (24) — başlık satırı: ad + üç rakam (Net/Yasal Yük/Brüt), data-grid-cell taşımaz
 `src/app/muhasebe/budget/components/heading-sheet.tsx` (71) — başlık seçme tabakası (kartın başlıkları + Başlıksız)
 `src/app/muhasebe/budget/components/note-sheet.tsx` (35) — İç Not / Kamu Notu düzenleme sheet'i
-`src/app/muhasebe/budget/components/period-row.tsx` (199) — çok-dönemli kalemin dönem alt-satırı render'ı
+`src/app/muhasebe/budget/components/period-row.tsx` (186) — çok-dönemli kalemin dönem alt-satırı render'ı
 `src/app/muhasebe/budget/components/status-info-sheet.tsx` (15) — statü rehberi metinleri
-`src/app/muhasebe/budget/components/table-styles.ts` (97) — kart tablosu kolon genişlikleri + hücre stilleri
+`src/app/muhasebe/budget/components/table-styles.ts` (138) — kart tablosu kolon genişlikleri + hücre stilleri
 `src/app/muhasebe/budget/format.ts` (309) — fmt/parseNumericDraft + kütüphane arama + başlık grubu saf fonksiyonları
 `src/app/muhasebe/budget/hooks/use-card-rows.ts` (213) — kart verisi yükleme (budgetId/cardId), ref senkronizasyonu
 `src/app/muhasebe/budget/hooks/use-grid-navigation.ts` (269) — İ7 motorunun DOM bağlayıcısı, tuş olaylarını çekirdeğe delege eder
@@ -272,7 +272,7 @@ Kaynak: docs/butce/BUTCE-UI-MIMARISI.md bölüm 2 (İ1-İ8) + bölüm 8, docs/AR
 - `payroll-read.ts` — BUTCE-UI-MIMARISI bölüm 8: 500+ satır, bölünme fikri kayıtlı (saf hesap / Supabase-orkestrasyon ayrımı); İ5.
 - `use-edit-buffers.ts` — BUTCE-UI-MIMARISI bölüm 8: 500+ satır, bölünme fikri kayıtlı; İ8 sınırı (EditApi yalnız kendi state'ine dokunur) bölünmeden sonra da geçerli kalmalı.
 - `grid-navigation-core.ts` — İ7 + K10 ilke (c): yeni tuş davranışı ANCAK çekirdeğe satır eklenerek doğar, dağınık tuş-özel if YASAK.
-- `card-table-screen.tsx` — İ4 (Ekran ≠ kabuk): budgetId/cardId/viewMode dışarıdan alınabilir kalmalı; CARD-DESK kabuğu ayrı iş.
+- `card-table-screen.tsx` — İ4 (Ekran ≠ kabuk): budgetId/cardId/viewMode dışarıdan alınabilir kalmalı; CARD-DESK kabuğu ayrı iş; 500+ satır, BUTCE-UI-MIMARISI bölüm 8 bölünme fikri kayıtlı.
 - `item-row.tsx` — İ1 (Tek tablo motoru, SAF SATIR): kart-özel dal (if kart==1500) YASAK, memo + inline closure yasağı.
 - `reviewer-screen.tsx` — özel uyarı kayıtlı değil (bütçe modülü dışı); ARCHITECTURE 4.2: 300+ satır (330), kendi BOY gerekçesi var.
 - `domain.ts` — özel uyarı kayıtlı değil.

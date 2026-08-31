@@ -6,7 +6,7 @@ import { fmt, periodVal, periodNetVal, periodRepeatVal, bordroAllowedUnits } fro
 import type { ValueWarning } from '../format'
 import type { EditApi } from '../hooks/use-edit-buffers'
 import type { BordroSheetEntry } from './burden-sheet'
-import { cellInput, cellInputNum, cellInputNumMuted, periodRowStyle, periodRowSelectTd, periodRowNumStyle, periodRowInputTd, periodRowSilTd, silButton } from './table-styles'
+import { cellInput, cellInputNum, cellInputNumMuted, periodRowStyle, periodRowSelectTd, periodRowTextTd, periodRowNumStyle, periodRowInputTd, periodRowSilTd, silButton } from './table-styles'
 
 interface PeriodRowProps {
   item: BudgetItemRow
@@ -65,7 +65,7 @@ export const PeriodRow = memo(function PeriodRow({
       <td style={periodRowStyle} />
       <td style={periodRowStyle} />
       <td style={periodRowStyle} />
-      <td style={periodRowStyle}>{s.name}</td>
+      <td style={periodRowTextTd}>{s.name}</td>
       <td style={periodRowSelectTd}>
         <select
           data-grid-cell="true"

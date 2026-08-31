@@ -134,7 +134,7 @@ export const ItemRow = memo(function ItemRow({
           ))}
         </select>
       </td>
-      <td style={tdStyle}>
+      <td style={selectTd}>
         {!multi && addedStages.length === 1 ? (
           <select
             key={addedStages[0].id}
