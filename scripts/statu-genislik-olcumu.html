@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Statü kolonu genişlik ölçümü</title>
+<style>
+  body { margin: 24px; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  h1 { font-size: 18px; }
+  h2 { font-size: 15px; margin-top: 32px; }
+  table { border-collapse: collapse; margin-top: 8px; }
+  td, th { border: 1px solid #ccc; padding: 4px 10px; font-size: 13px; text-align: left; }
+  .sonuc { font-weight: 700; margin-top: 10px; }
+  .not { font-size: 13px; color: #555; margin-bottom: 24px; }
+  #selectHost { display: flex; gap: 24px; align-items: flex-start; margin-top: 8px; }
+  .selectLabel { font-size: 12px; color: #555; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+
+<p class="not">Bu dosya bir ölçüm aracıdır, uygulamaya dahil DEĞİLDİR; tarayıcıda açılır, çıkan rakamlar rapor edilir. AYNI DOSYA MAC'TE DE AÇILIR, çünkü B ölçümü platforma göre değişir.</p>
+
+<h1>Statü kolonu genişlik ölçümü</h1>
+
+<h2>Ölçüm A — etiket genişlikleri (canvas measureText)</h2>
+<table id="tabloA">
+  <thead><tr><th>Etiket</th><th>Genişlik (px)</th></tr></thead>
+  <tbody></tbody>
+</table>
+<div class="sonuc" id="sonucA"></div>
+
+<h2>Ölçüm B — gerçek select'in ihtiyacı</h2>
+<div id="selectHost">
+  <div>
+    <div class="selectLabel">normal (native ok işareti)</div>
+    <select id="selectNormal"></select>
+  </div>
+  <div>
+    <div class="selectLabel">appearance: none</div>
+    <select id="selectAppearanceNone" style="appearance: none; -webkit-appearance: none; -moz-appearance: none;"></select>
+  </div>
+</div>
+<div class="sonuc" id="sonucB1"></div>
+<div class="sonuc" id="sonucB2"></div>
+
+<h2>Ölçüm C — bugünkü durum</h2>
+<div id="sonucC"></div>
+
+<script>
+  // OLCUM A: PAYMENT_STATUSES domain.ts'ten elle kopyalandi, artı placeholder "Statü seç".
+  var etiketler = ['Statü seç', 'Bordro', 'SMM', 'Telif', 'Fatura', 'Kira', 'Konaklama', 'Yemek', 'Harç/Vergi'];
+
+  // index.css --font-sans ve tokens.css --text-sm (14px) degerleri birebir.
+  var fontSans = 'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+  var textSm = '14px';
+
+  var canvas = document.createElement('canvas');
+  var ctx = canvas.getContext('2d');
+  ctx.font = textSm + ' ' + fontSans;
+
+  var tabloABody = document.querySelector('#tabloA tbody');
+  var enGenisEtiket = null;
+  var enGenisPx = -1;
+  etiketler.forEach(function (etiket) {
+    var w = ctx.measureText(etiket).width;
+    var wRound = Math.round(w * 100) / 100;
+    var tr = document.createElement('tr');
+    var tdEtiket = document.createElement('td');
+    tdEtiket.textContent = etiket;
+    var tdGenislik = document.createElement('td');
+    tdGenislik.textContent = wRound.toFixed(2);
+    tr.appendChild(tdEtiket);
+    tr.appendChild(tdGenislik);
+    tabloABody.appendChild(tr);
+    if (wRound > enGenisPx) {
+      enGenisPx = wRound;
+      enGenisEtiket = etiket;
+    }
+  });
+  document.getElementById('sonucA').textContent = 'EN GENİŞ: ' + enGenisEtiket + ' = ' + enGenisPx.toFixed(2) + 'px';
+
+  // OLCUM B: gercek <select>, cellInput'un olcuye etki eden ozellikleri birebir.
+  var cellInputBaseCss =
+    'box-sizing: border-box;' +
+    'border: 1px solid #d8dce2;' +
+    'border-radius: 6px;' +
+    'padding: 4px 8px;' +
+    'font-size: ' + textSm + ';' +
+    'font-family: ' + fontSans + ';' +
+    'width: auto;';
+
+  function optionsEkle(select) {
+    etiketler.forEach(function (etiket, i) {
+      var opt = document.createElement('option');
+      opt.textContent = etiket;
+      if (i === 0) opt.value = '';
+      select.appendChild(opt);
+    });
+  }
+
+  var selectNormal = document.getElementById('selectNormal');
+  selectNormal.style.cssText = cellInputBaseCss;
+  optionsEkle(selectNormal);
+
+  var selectAppearanceNone = document.getElementById('selectAppearanceNone');
+  selectAppearanceNone.style.cssText = cellInputBaseCss + 'appearance: none; -webkit-appearance: none; -moz-appearance: none;';
+  optionsEkle(selectAppearanceNone);
+
+  var bB1 = null;
+  var bB2 = null;
+
+  function olcumBYap() {
+    bB1 = selectNormal.offsetWidth;
+    bB2 = selectAppearanceNone.offsetWidth;
+    document.getElementById('sonucB1').textContent = "SELECT'IN İHTİYACI: " + bB1 + 'px (border + padding + metin + ok, bu platformda)';
+    document.getElementById('sonucB2').textContent = 'APPEARANCE NONE İLE: ' + bB2 + 'px';
+    olcumCYap();
+  }
+
+  // OLCUM C: bugunku durum, dosyadan okunan gercek degerler.
+  function olcumCYap() {
+    var satir1 = 'colWidths.statu bugün = 128';
+    var satir2 = "statü hücresi <td> stili = tdStyle, yani yatay dolgu 4+4 = 8px; select'e kalan = 120px";
+    var fark = 128 - bB1;
+    var satir3 = 'BUGÜN KULLANILAN 128 - ÖLÇÜM B = ' + fark + 'px boş';
+    var host = document.getElementById('sonucC');
+    host.innerHTML = '';
+    [satir1, satir2].forEach(function (s) {
+      var p = document.createElement('div');
+      p.textContent = s;
+      host.appendChild(p);
+    });
+    var sonucP = document.createElement('div');
+    sonucP.className = 'sonuc';
+    sonucP.textContent = satir3;
+    host.appendChild(sonucP);
+  }
+
+  window.addEventListener('load', function () {
+    // font yuklenmesi/yerlesim icin bir sonraki frame'e birak.
+    requestAnimationFrame(function () {
+      requestAnimationFrame(olcumBYap);
+    });
+  });
+</script>
+
+</body>
+</html>
