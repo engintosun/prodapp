@@ -2,21 +2,29 @@ import type { CSSProperties } from 'react'
 
 // KLV-0 / TD-27 (13 Agustos 2026): sabit kolon genislik semasi — OLCULMUS degerler.
 // Canli olcum (Segoe UI 14px): "999.999.999,99" = 92,1px · "Konaklama/Yemek" = 113,5px.
-// BAYAT (31 Agustos 2026): "Konaklama/Yemek" etiketi kaldirildi, statu kumesinin en genis
-// etiketi degisti. statu genisligi (128) bu turda BILEREK DEGISTIRILMEDI; yeniden olcum ve
-// daraltma ayri bir turun isidir.
+// OLCUM (31 Agustos 2026, Windows + Chrome, gercek pencere; scripts/statu-genislik-olcumu.html):
+// en genis statu etiketi "Konaklama" = 67,84px; select'in toplam ihtiyaci = 105px
+// (kenarlik 2 + dolgu 16 + metin 67,84 + ok 19). statu 128'den 106'ya indirildi: bir piksel
+// pay yuvarlama icin. Statu hucresi ayni turda tdStyle'dan selectTd'ye gecti, boylece <td>
+// dolgusu (4+4) kalkti ve select tam 106'yi aliyor.
+// MAC'TE DOGRULANMADI. system-ui Windows'ta Segoe UI'a, Mac'te San Francisco'ya duser;
+// "Konaklama" orada farkli genislikte olabilir. Kirpma gorulurse bu deger yukari cekilir.
+// Ok isaretinin bedeli bu platformda 20px (appearance:none ile ayni select 85px istiyordu).
 // Hucre kutusu: td padding 4+4 (13.08.2026 cift-padding temizligi; onceden 8+8);
-// input/select ayrica border 1+1 + padding 8+8; select oku ~18px. Pay dusurulurken
+// input/select ayrica border 1+1 + padding 8+8; select oku OLCULDU: 20px (31 Agustos
+//     2026, Windows + Chrome). Pay dusurulurken
 // kolonlar ayni miktarda daraltildi, metin alani birebir korundu.
 // Tutar kolonlari (yasalYuk/araToplam/brutToplam) 112 = olculen 108,1 + KUR-1 icin tek
 // isaretlik (TL/$/EUR) pay. Para birimi SATIR verisidir (KUR-1 madde 1), o yuzden pay birakildi.
 // statu 128 BILEREK yetersiz: gercek ihtiyac 166, kirpma kabul edildi (Engin karari 13.08.2026).
+// DUZELTME (31 Agustos 2026): bu 166 rakami "Konaklama/Yemek" etiketi varken alinmisti;
+// etiket 31 Agustos'ta ikiye ayrilinca gecersiz kaldi, yerine yukaridaki OLCUM gecerlidir.
 // donemler 150: icerigi kullanicinin yazdigi etap adi, en kotu durum turetilemez.
 // Ad kolonu kalan genisligi alir: colgroup'ta tek minWidth tanimli kolon odur
 // (bkz card-table-screen colgroup).
 export const colWidths = {
   kod: 32,
-  statu: 128,
+  statu: 106,
   donemler: 142,
   birim: 68,
   birimNet: 108,

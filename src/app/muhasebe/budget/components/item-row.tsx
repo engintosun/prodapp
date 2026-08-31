@@ -116,7 +116,7 @@ export const ItemRow = memo(function ItemRow({
           )}
         </div>
       </td>
-      <td style={tdStyle}>
+      <td style={selectTd}>
         <select
           data-grid-cell="true"
           data-row-id={it.id}
