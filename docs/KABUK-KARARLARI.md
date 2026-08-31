@@ -152,7 +152,7 @@ Bu üçü varsa Tab Manager yarın kabuğa eklenir, ekranlara dokunulmaz. Sprint
 
 ## 9. KART KAPAK RAKAMI — §19 REVİZYON ÖNERİSİ
 
-> KARARA BAĞLANDI (6 Ağustos 2026): kartın yüzeyinde toplam bulunur; kart/katalog numarası görünmez. Ayrıntı bölüm 12.3'tedir. REVİZE (14 Ağustos 2026): kapakta TEK rakam durur, o da NET toplamdır — aşağıdaki karara bakınız.
+> KARARA BAĞLANDI (6 Ağustos 2026): kartın yüzeyinde toplam bulunur; kart/katalog numarası görünmez. Ayrıntı bölüm 12.3'tedir. REVİZE (14 Ağustos 2026): kapakta TEK rakam durur, o da NET toplamdır — aşağıdaki karara bakınız. DÜZELTME (31 Ağustos 2026): kapaktaki tek rakam MALIYET oldu (bkz. §12.3). TEK RAKAM kararı değişmedi, değişen hangi rakam olduğu.
 
 **Bugünkü kilitli kural (§19, 12 Haziran 2026):** Kart masasında kartlar sadedir — *"işaret + isim; RAKAM YOK — rakam icmalin işi"*.
 

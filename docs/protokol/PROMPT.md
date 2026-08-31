@@ -10,6 +10,10 @@ Bu dosyanın tüketicisi Opus'tur. Sonnet'e bakan kurallar CLAUDE.md'de kalır.
 - Spec `BRANCH YASAK: yeni dal açma.` satırını taşır, ve commit'ten hemen önce `git branch --show-current` ile aktif dal doğrulanır; çıktı `main` değilse durulur.
 - Her `str_replace` çapası için "dosyada TEK kez geçiyor olmalı, geçmiyorsa ya da birden fazla geçiyorsa DUR" şartı spec'e yazılır. Çapa apostrof, akıllı tırnak ya da tire İÇERMEZ (CLAUDE.md); dosya adında tire varsa o satır çapa yapılamaz, başka bir çapa seçilir.
 - **Kapı komutları spec'e KOPYALANMAZ.** `run-gates.sh` derlemeyi, denetlemeyi ve testleri kendisi koşar; spec'e ayrıca yazılırsa hepsi iki kez koşar. 25 Ağustos 2026'da yedi promptun yedisinde de bu oldu.
+- **BEKLENENLER bölümü her dilim için SIFIRDAN yazılır; önceki prompttan taşınmaz.** Taşınan satır dilime uymadığında spec kendi içinde çelişir (31 Ağustos 2026, docs/protokol/DERSLER.md "Spec içi çelişki").
+- **Test EKLEYEN ya da SİLEN dilimde `.claude/test-count` beklenen değişen-dosya listesine YAZILIR;** yazılmazsa kapı ile spec çarpışır.
+- **Şemaya değen dilimde ilgili tablonun TÜM göç geçmişi taranır** (`grep -rn "<tablo_adi>" supabase/migrations/`), yalnız tabloyu yaratan göç YETMEZ.
+- **str_replace çapası çoğaltılmış bir bloğun içinden alınmaz;** bloğu tekilleştiren dışarıdaki işaretten alınır.
 
 ## Onay haritası
 

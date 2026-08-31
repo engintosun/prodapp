@@ -12,7 +12,7 @@ import type { CSSProperties } from 'react'
 // Ok isaretinin bedeli bu platformda 20px (appearance:none ile ayni select 85px istiyordu).
 // Hucre kutusu: td padding 4+4 (13.08.2026 cift-padding temizligi; onceden 8+8);
 // input/select ayrica border 1+1 + padding 8+8; select oku OLCULDU: 20px (31 Agustos
-//     2026, Windows + Chrome). Pay dusurulurken
+// 2026, Windows + Chrome). Pay dusurulurken
 // kolonlar ayni miktarda daraltildi, metin alani birebir korundu.
 // Tutar kolonlari (yasalYuk/araToplam/brutToplam) 112 = olculen 108,1 + KUR-1 icin tek
 // isaretlik (TL/$/EUR) pay. Para birimi SATIR verisidir (KUR-1 madde 1), o yuzden pay birakildi.
