@@ -10,7 +10,7 @@
 
 Bu dosya SAF VERGİ doktrinidir. Personelin yasal giderinin tamamı (iş hukuku + SGK + bordro + kişiye ödeme vergi mekaniği + sektörel rejimler) **docs/butce/PERSONEL-MEVZUATI.md**'ye taşındı — bordro-çözücünün ve G defterinin doktrin evi orasıdır.
 
-- **Statü cetveli:** `sirket`, `kira_sahis`, `konaklama`, `resmi_odeme` → doktrin evi BU DOSYA. `bordro`, `smm`, `telif_belgeli` → doktrin evi PERSONEL-MEVZUATI.md.
+- **Statü cetveli:** `sirket`, `kira_sahis`, `konaklama`, `yemek`, `resmi_odeme` → doktrin evi BU DOSYA. `bordro`, `smm`, `telif_belgeli` → doktrin evi PERSONEL-MEVZUATI.md.
 - **Kural:** bir statünün doktrini yalnız kendi evinde yazılır ve güncellenir; diğer dosya yalnız çapraz-referans/özet verir. Çelişkide mevzuat dosyaları diğer dokümanlara karşı kazanır; iki mevzuat dosyası arasında bu cetvel belirler.
 - **Bu dosyanın evi olan çapraz konular:** KDV rejimi ve nakit ilkesi (§3), vat_deductible (§3), KDV tevkifatı (§4).
 
@@ -44,9 +44,10 @@ Statü, KART-KATALOGU §4.8'deki ödeme-statüsü boyutudur. Her işçilik/hizme
 | 2 | **Serbest meslek — şahıs** (SMM) | %20 | **%20** (GVK 94/2-b) | Brüt = Net / 0,80 | Binmez | Yük faturada; en yaygın şahıs ödemesi (doktrin: PERSONEL-MEVZUATI A) |
 | 3 | **Şirket faturası** (Ltd/AŞ) | %20 | **%0** | Brüt = Net (KDV ayrı) | Binmez | KDV indirilebilir (koşullu, §3) |
 | 4 | **Bordro** (kadrolu) | — (ücret KDV dışı) | Artan tarife (GVK 103) | (basit şişme YOK — ayrı motor) | **Biner** | İşveren SGK payı + damga; gerçek fringe. Motor: PERSONEL-MEVZUATI §1 + B |
-| 5 | **Konaklama / yemek** | %10 | %0 | Brüt = Net + %10 KDV | Binmez | Operasyonel gider |
-| 6 | **Ulaşım — yük taşıma** | %20 | %0 | Brüt = Net + KDV | Binmez | Alıcı kamuysa **2/10 KDV tevkifatı** (§4) |
-| 7 | **Şahıs mekan kirası** (GVK 94/5-a) | %0 | **%20** | Brüt = Net / 0,80 | Binmez | Stopajı kiracı keser; şahıs KDV mükellefi değil |
+| 5 | **Konaklama** (otel/pansiyon geceleme) | %10 | %0 | Brüt = Net + %10 KDV | Binmez | Operasyonel gider |
+| 6 | **Yemek** (restoran/lokanta/set catering) | %10 | %0 | Brüt = Net + %10 KDV | Binmez | Operasyonel gider |
+| 7 | **Ulaşım — yük taşıma** | %20 | %0 | Brüt = Net + KDV | Binmez | Alıcı kamuysa **2/10 KDV tevkifatı** (§4) |
+| 8 | **Şahıs mekan kirası** (GVK 94/5-a) | %0 | **%20** | Brüt = Net / 0,80 | Binmez | Stopajı kiracı keser; şahıs KDV mükellefi değil |
 
 **Şişme formülünün mantığı:** Stopaj brütten kesiliyorsa ve alacaklıya **net** garanti ediliyorsa: Brüt × (1 − stopaj) = Net → **Brüt = Net / (1 − stopaj)**. Örn. %17 → /0,83; %20 → /0,80. (Kaynak doğrulama: GVK 94/2-a telif %17; serbest meslek %20.)
 
@@ -73,8 +74,11 @@ Bütçe "Toplam" = **BRÜT** (yapımcı maliyeti). Üç eksen **birleştirilmez*
 | `kira_sahis` | %20 | Net / 0,80 | — | Binmez |
 | `sirket` (Ltd/AŞ faturası) | — | Net = maliyet | %20 havuz | Binmez |
 | `konaklama` | — | Net = maliyet | %10 havuz | Binmez |
+| `yemek` | — | Net = maliyet | %10 havuz | Binmez |
 | `resmi_odeme` (noter/tapu/gümrük harcı, damga HARİÇ) | — | Net = maliyet | — | Binmez |
 | `bordro` | Artan tarife (motor) | MOTOR (PERSONEL-MEVZUATI) | — | **Biner** |
+
+**AYRILMA (Engin kararı, 31 Ağustos 2026):** `konaklama` ve `yemek` VERGİ olarak birebir aynıdır (%10 KDV, stopaj yok, SGK yok, yük kovası boş); ayrım vergi ayrımı DEĞİL anlam ayrımıdır. Gerekçe: catering/yemek kalemi için "Konaklama" yazan bir statü seçmek kullanıcıyı yanıltıyordu ve birleşik etiket ("Konaklama/Yemek") statü kolonunun genişliğini tek başına belirliyordu. Bu, kümede aynı vergi rejimini paylaşan İLK statü çiftidir; "statü = vergi rejimi" deseni bu noktada bilerek gevşetilmiştir.
 
 **AYRILMA KURALI (`resmi_odeme`, DILIM 1100-A, 15 Ağustos 2026):** oranla başka bir satırdan türeyen resmî ödeme YÜK'tür (damga vergisi böyledir, `burden_components`'te kayıtlıdır); tutarı dışarıdan gelen, kendi başına duran resmî ödeme (noter harcı, tapu harcı, gümrük) KALEM'dir — bu statü onun içindir. `resmi_odeme` damgayı KAPSAMAZ. Şema karşılığı: `payment_status_defaults`'ta applies_sgk=false, default_vat_rate=0; `payment_status_burdens`'te SATIR YOK (boş kova = sıfır yük, sirket/konaklama emsali).
 

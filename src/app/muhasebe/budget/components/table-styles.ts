@@ -2,6 +2,9 @@ import type { CSSProperties } from 'react'
 
 // KLV-0 / TD-27 (13 Agustos 2026): sabit kolon genislik semasi — OLCULMUS degerler.
 // Canli olcum (Segoe UI 14px): "999.999.999,99" = 92,1px · "Konaklama/Yemek" = 113,5px.
+// BAYAT (31 Agustos 2026): "Konaklama/Yemek" etiketi kaldirildi, statu kumesinin en genis
+// etiketi degisti. statu genisligi (128) bu turda BILEREK DEGISTIRILMEDI; yeniden olcum ve
+// daraltma ayri bir turun isidir.
 // Hucre kutusu: td padding 4+4 (13.08.2026 cift-padding temizligi; onceden 8+8);
 // input/select ayrica border 1+1 + padding 8+8; select oku ~18px. Pay dusurulurken
 // kolonlar ayni miktarda daraltildi, metin alani birebir korundu.

@@ -95,7 +95,8 @@ export const PAYMENT_STATUSES = [
   { code: 'telif_belgeli', label: 'Telif', guide: 'Senarist, yönetmen, besteci gibi eser sahipleri (oyunculuk DEĞİL). Stopaj kesintisi içerir.' },
   { code: 'sirket', label: 'Fatura', guide: 'Şirketten alınan mal/hizmet. Stopaj yok; KDV genel oranda, kalem bazında değiştirilebilir.' },
   { code: 'kira_sahis', label: 'Kira', guide: 'ŞAHISTAN kiralama (lokasyon, araç vb.). Stopaj var, KDV yok. Şirketten kiralama Fatura kalemine girer.' },
-  { code: 'konaklama', label: 'Konaklama/Yemek', guide: 'Otel, pansiyon, set catering, restoran. İndirimli KDV; stopaj ve SGK yükü yok.' },
+  { code: 'konaklama', label: 'Konaklama', guide: 'Otel, pansiyon, geceleme. İndirimli KDV (%10); stopaj ve SGK yükü yok. Yeme-içme buraya girmez, ayrı statüsü var.' },
+  { code: 'yemek', label: 'Yemek', guide: 'Restoran, lokanta, set catering. Alkollü içecekler hariç. İndirimli KDV (%10); stopaj ve SGK yükü yok.' },
   { code: 'resmi_odeme', label: 'Harç/Vergi', guide: 'Kamuya yapılan resmî ödeme: noter, tapu, gümrük harcı. Stopaj yok, SGK yok, KDV yok; net ile brüt aynıdır. Damga vergisi buraya girmez, o bir yüktür ve sözleşme bedelinden oranla hesaplanır.' },
 ] as const
 

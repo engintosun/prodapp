@@ -51,6 +51,8 @@
 |Maliyet|maliyet|Kalem satırındaki kolon: Net toplam + Yasal Yük (KDV hariç ara toplam). **KARIŞTIRILMAZ:** "Maliyet nesnesi" (cost_object, yukarıda) ayrı bir kavramdır — aynı kök, iki farklı anlam. Doktrin evi BUTCE-SEMA-KARARLARI.md NET/BRÜT DOKTRİNİ REVİZYONU|
 |Ara toplam|araToplam|Kalem satırındaki kolon: birim net x Miktar x X (çıplak çarpım, yük ve KDV hariç). Eski adı "Net toplam"dı, 31 Ağustos 2026'da değişti|
 |Toplam|brutToplam|Kalem satırındaki son kolon: Maliyet + KDV. Eski adı "Brüt toplam"dı, 31 Ağustos 2026'da değişti. Kod adı BİLEREK `brutToplam` bırakıldı — rakam gerçekten brüttür, değişen yalnızca kullanıcıya tanıtılan ad|
+|Konaklama|konaklama|Ödeme statüsü: otel, pansiyon, geceleme. KDV %10, stopaj yok, SGK yok. 31 Ağustos 2026'ya kadar adı "Konaklama/Yemek"ti ve yemeği de kapsıyordu. Doktrin evi VERGI-MEVZUATI.md|
+|Yemek|yemek|Ödeme statüsü: restoran, lokanta, set catering (alkollü içecekler hariç). KDV %10, stopaj yok, SGK yok. 31 Ağustos 2026'da `konaklama`dan ayrıldı. Doktrin evi VERGI-MEVZUATI.md|
 
 ### Bütçe - dönem/nakit terimleri (2026-06-13)
 
