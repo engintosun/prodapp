@@ -435,74 +435,37 @@ export function computeBordroFieldsResult(
   }
 }
 
-// Bordro kalemi icin DB'den okuyup computeBordroFieldsResult'i cagirir. UI (budget-card-screen.tsx)
-// bu fonksiyonu try/catch ile sarar; motor hatasinda ham mesaj degil tipli reason kodu firlatilir
-// (ham hata sizintisi savunmasi, DILIM-3e-1). input_mode/input_value KULLANILMAZ - kaynak her zaman
-// unit_net (item veya donem override).
-export async function deriveBordroFields(itemId: string): Promise<BordroDerivedFields> {
-  // Ilk dalga: budget_items / budget_item_periods / units / item_burdens birbirinden bagimsiz -
-  // paralel baslatilir (perf, davranis ayni). Hata kontrolu asagida orijinal sirayla yapilir.
-  const [
-    { data: itemData, error: ei },
-    { data: periodRowsRaw, error: ep },
-    { data: unitRows, error: eu },
-    { data: burdenRows, error: eb },
-  ] = await Promise.all([
-    supabase
-      .from('budget_items')
-      .select('id, budget_id, unit_net, unit_id, multiplier, repeat, budgets(project_id, is_locked)')
-      .eq('id', itemId)
-      .single(),
-    supabase
-      .from('budget_item_periods')
-      .select('stage_id, quantity, repeat_override, unit_id_override, unit_net_override')
-      .eq('item_id', itemId),
-    supabase.from('units').select('id, code'),
-    supabase
-      .from('item_burdens')
-      .select('burden_components(code)')
-      .eq('item_id', itemId),
-  ])
-  if (ei) throw new Error(ei.message)
-  const projectId = (itemData as unknown as { budgets?: { project_id?: string } | null }).budgets?.project_id
-  const isLocked = (itemData as unknown as { budgets?: { is_locked?: boolean } | null }).budgets?.is_locked ?? false
-  if (ep) throw new Error(ep.message)
-  if (eu) throw new Error(eu.message)
-  if (eb) throw new Error(eb.message)
+// Montaj SAF fonksiyonu (DB'ye dokunmaz, dogrudan test edilir): ham DB satirlarini motorun
+// bekledigi sekle cevirir. Tekli ve toplu okuma yollarinin IKISI de bunu kullanir - tek montaj
+// kodu, iki cagiran.
+interface BordroItemRowInput {
+  unit_net: number
+  unit_id: string
+  multiplier: number
+  repeat: number
+}
 
-  const unitCodeById = new Map<string, string>((unitRows ?? []).map((u) => [u.id as string, u.code as string]))
+interface BordroPeriodRowInput {
+  stage_id: string | null
+  quantity: number
+  repeat_override: number | null
+  unit_id_override: string | null
+  unit_net_override: number | null
+}
 
-  const legCodes = new Set(
-    (burdenRows ?? [])
-      .map((r) => (r as { burden_components?: { code?: string } | null }).burden_components?.code)
-      .filter((c): c is string => !!c),
-  )
+export function assembleBordroInput(
+  itemRow: BordroItemRowInput,
+  periodRowsRaw: BordroPeriodRowInput[],
+  burdenCodes: string[],
+  unitCodeById: Map<string, string>,
+  stageById: Map<string, { startDate: string | null; isUndated: boolean; sortOrder: number }>,
+): { item: BordroItemFields; periodRows: BordroPeriodRow[]; legs: PayrollLegs } {
+  const legCodes = new Set(burdenCodes)
   const legs: PayrollLegs = {
     socialSecurityEmployee: legCodes.has('sgk_isci'),
     unemploymentEmployee: legCodes.has('issizlik_isci'),
     socialSecurityEmployer: legCodes.has('sgk_isveren'),
     unemploymentEmployer: legCodes.has('issizlik_isveren'),
-  }
-
-  const stageIds = (periodRowsRaw ?? []).map((p) => p.stage_id as string)
-  const stageById = new Map<string, { startDate: string | null; isUndated: boolean; sortOrder: number }>()
-
-  // Ikinci dalga: budget_stages (stageIds varsa) ile fetchPayrollRates yalniz ilk dalganin
-  // sonucuna (stageIds / projectId) bagimli - birbirinden bagimsiz, paralel baslatilir.
-  const [stagesResult, rates] = await Promise.all([
-    stageIds.length
-      ? supabase.from('budget_stages').select('id, start_date, is_undated, sort_order').in('id', stageIds)
-      : Promise.resolve({ data: [], error: null }),
-    isLocked ? fetchSealedPayrollRates(itemData.budget_id as string) : fetchPayrollRates(projectId),
-  ])
-  const { data: stageRows, error: es } = stagesResult
-  if (es) throw new Error(es.message)
-  for (const s of stageRows ?? []) {
-    stageById.set(s.id as string, {
-      startDate: (s.start_date as string | null) ?? null,
-      isUndated: s.is_undated as boolean,
-      sortOrder: s.sort_order as number,
-    })
   }
 
   const periodRows: BordroPeriodRow[] = (periodRowsRaw ?? []).map((p) => {
@@ -521,13 +484,143 @@ export async function deriveBordroFields(itemId: string): Promise<BordroDerivedF
   })
 
   const item: BordroItemFields = {
-    unitNet: Number(itemData.unit_net),
-    unitCode: unitCodeById.get(itemData.unit_id as string) ?? 'month',
-    multiplier: Number(itemData.multiplier),
-    repeat: Number(itemData.repeat),
+    unitNet: Number(itemRow.unit_net),
+    unitCode: unitCodeById.get(itemRow.unit_id) ?? 'month',
+    multiplier: Number(itemRow.multiplier),
+    repeat: Number(itemRow.repeat),
   }
 
-  const result = computeBordroFieldsResult(item, periodRows, legs, rates)
-  if (!result.ok) throw new Error(result.reason)
+  return { item, periodRows, legs }
+}
+
+// Kart acilirken TUM bordrolu kalemler icin TEK dalga cifti (perf dilimi): kalem basina ayri
+// cagri elli kalemde ~300 sorgu/~100 gidis-donus demekti; bu fonksiyon kalem sayisindan BAGIMSIZ
+// olarak alti sorguya iner. Matematik DEGISMEDI - her kalem yine assembleBordroInput +
+// computeBordroFieldsResult'tan gecer, yalniz DB okumasi kalem basina degil butce basina olur.
+export async function deriveBordroFieldsBatch(itemIds: string[]): Promise<Map<string, BordroDerivationResult>> {
+  const result = new Map<string, BordroDerivationResult>()
+  if (itemIds.length === 0) return result
+
+  // Ilk dalga: budget_items / budget_item_periods / units / item_burdens birbirinden bagimsiz -
+  // paralel baslatilir (perf, davranis ayni). Hata kontrolu asagida orijinal sirayla yapilir.
+  const [
+    { data: itemRows, error: ei },
+    { data: periodRowsRaw, error: ep },
+    { data: unitRows, error: eu },
+    { data: burdenRows, error: eb },
+  ] = await Promise.all([
+    supabase
+      .from('budget_items')
+      .select('id, budget_id, unit_net, unit_id, multiplier, repeat, budgets(project_id, is_locked)')
+      .in('id', itemIds),
+    supabase
+      .from('budget_item_periods')
+      .select('item_id, stage_id, quantity, repeat_override, unit_id_override, unit_net_override')
+      .in('item_id', itemIds),
+    supabase.from('units').select('id, code'),
+    supabase
+      .from('item_burdens')
+      .select('item_id, burden_components(code)')
+      .in('item_id', itemIds),
+  ])
+  if (ei) throw new Error(ei.message)
+  if (ep) throw new Error(ep.message)
+  if (eu) throw new Error(eu.message)
+  if (eb) throw new Error(eb.message)
+
+  const unitCodeById = new Map<string, string>((unitRows ?? []).map((u) => [u.id as string, u.code as string]))
+
+  // Tek-butce sozlesmesi: bu fonksiyon TEK bir butcenin kalemlerini bekler (kart acilisi hep tek
+  // kartin/butcenin kalemlerini gonderir). Birden fazla budget_id gelirse sessizce yanlis oran
+  // kullanmak yerine acikca DURULUR.
+  const budgetIds = new Set((itemRows ?? []).map((r) => r.budget_id as string))
+  if (budgetIds.size > 1) {
+    throw new Error('Payroll: deriveBordroFieldsBatch birden fazla butceden kalem aldi (tek-butce sozlesmesi ihlali)')
+  }
+  const firstItemRow = (itemRows ?? [])[0] as unknown as
+    | { budget_id?: string; budgets?: { project_id?: string; is_locked?: boolean } | null }
+    | undefined
+  const projectId = firstItemRow?.budgets?.project_id
+  const isLocked = firstItemRow?.budgets?.is_locked ?? false
+  const budgetId = firstItemRow?.budget_id
+
+  const stageIdSet = new Set<string>()
+  for (const p of periodRowsRaw ?? []) {
+    const sid = p.stage_id as string | null
+    if (sid) stageIdSet.add(sid)
+  }
+  const stageIds = [...stageIdSet]
+
+  // Ikinci dalga: budget_stages (stageIds varsa) ile oran cetveli yalniz ilk dalganin sonucuna
+  // (stageIds / isLocked / projectId / budgetId) bagimli - birbirinden bagimsiz, paralel baslatilir.
+  // ORANLAR BIR KEZ cekilir (butun kalemler ayni butceye ait).
+  const [stagesResult, rates] = await Promise.all([
+    stageIds.length
+      ? supabase.from('budget_stages').select('id, start_date, is_undated, sort_order').in('id', stageIds)
+      : Promise.resolve({ data: [], error: null }),
+    isLocked ? fetchSealedPayrollRates(budgetId as string) : fetchPayrollRates(projectId),
+  ])
+  const { data: stageRows, error: es } = stagesResult
+  if (es) throw new Error(es.message)
+  const stageById = new Map<string, { startDate: string | null; isUndated: boolean; sortOrder: number }>()
+  for (const s of stageRows ?? []) {
+    stageById.set(s.id as string, {
+      startDate: (s.start_date as string | null) ?? null,
+      isUndated: s.is_undated as boolean,
+      sortOrder: s.sort_order as number,
+    })
+  }
+
+  const periodRowsByItem = new Map<string, BordroPeriodRowInput[]>()
+  for (const p of periodRowsRaw ?? []) {
+    const itemId = p.item_id as string
+    const list = periodRowsByItem.get(itemId) ?? []
+    list.push(p as unknown as BordroPeriodRowInput)
+    periodRowsByItem.set(itemId, list)
+  }
+
+  const burdenCodesByItem = new Map<string, string[]>()
+  for (const r of burdenRows ?? []) {
+    const itemId = (r as { item_id?: string }).item_id as string
+    const code = (r as { burden_components?: { code?: string } | null }).burden_components?.code
+    if (!code) continue
+    const list = burdenCodesByItem.get(itemId) ?? []
+    list.push(code)
+    burdenCodesByItem.set(itemId, list)
+  }
+
+  const itemRowById = new Map<string, BordroItemRowInput>(
+    (itemRows ?? []).map((r) => [r.id as string, r as unknown as BordroItemRowInput]),
+  )
+
+  for (const itemId of itemIds) {
+    const itemRow = itemRowById.get(itemId)
+    if (!itemRow) {
+      result.set(itemId, { ok: false, reason: 'unknown' })
+      continue
+    }
+    const { item, periodRows, legs } = assembleBordroInput(
+      itemRow,
+      periodRowsByItem.get(itemId) ?? [],
+      burdenCodesByItem.get(itemId) ?? [],
+      unitCodeById,
+      stageById,
+    )
+    result.set(itemId, computeBordroFieldsResult(item, periodRows, legs, rates))
+  }
+
+  return result
+}
+
+// Bordro kalemi icin DB'den okuyup computeBordroFieldsResult'i cagirir. UI (budget-card-screen.tsx)
+// bu fonksiyonu try/catch ile sarar; motor hatasinda ham mesaj degil tipli reason kodu firlatilir
+// (ham hata sizintisi savunmasi, DILIM-3e-1). input_mode/input_value KULLANILMAZ - kaynak her zaman
+// unit_net (item veya donem override).
+// Toplu okumanin (deriveBordroFieldsBatch) ince sarmalayicisidir - iki fetch yolu YOK, tek yol
+// toplu surumdur (perf dilimi).
+export async function deriveBordroFields(itemId: string): Promise<BordroDerivedFields> {
+  const map = await deriveBordroFieldsBatch([itemId])
+  const result = map.get(itemId)
+  if (!result || !result.ok) throw new Error(result ? result.reason : 'unknown')
   return result.data
 }

@@ -45,7 +45,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     unitCodeByIdRef,
     minWageThresholdsRef,
   } = useCardRows({ budgetId, cardId })
-  const { buffers, bordroData, itemWarnings, periodWarnings, refreshBordro, api } = useEditBuffers({
+  const { buffers, bordroData, itemWarnings, periodWarnings, refreshBordroMany, api } = useEditBuffers({
     rowsRef,
     savedRef,
     cardRef,
@@ -212,13 +212,12 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   const didInitialFocusRef = useRef(false)
 
   useEffect(() => {
-    for (const it of rows) {
-      if (it.paymentStatus === 'bordro') void refreshBordro(it.id)
-    }
+    const bordroItemIds = rows.filter((it) => it.paymentStatus === 'bordro').map((it) => it.id)
+    void refreshBordroMany(bordroItemIds)
     // card degistiginde (fresh yukleme) bir kere calisir; rows her keystroke de degisir
     // ama bu efekt sadece card kimligine bagli oldugu icin edit sirasinda yeniden tetiklenmez (K5).
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [card, refreshBordro])
+  }, [card, refreshBordroMany])
 
   // D3b-2b: kosul rows.length'ten card'a tasindi - kalemi olmayan kartta da tablo (ve "+ kalem
   // ekle" satiri) cizilir, acilis odagi oraya duser.

@@ -13,8 +13,8 @@ import {
 } from '../../../../shared/supabase/budget-service'
 import type { BudgetItemRow, CardView, EditableField, StageRow } from '../../../../shared/supabase/budget-service'
 import { isPaymentStatus } from '../../../../shared/types/domain'
-import { deriveBordroFields } from '../../../../shared/supabase/payroll-read'
-import type { MinimumWageThresholds } from '../../../../shared/supabase/payroll-read'
+import { deriveBordroFields, deriveBordroFieldsBatch } from '../../../../shared/supabase/payroll-read'
+import type { MinimumWageThresholds, BordroDerivationResult } from '../../../../shared/supabase/payroll-read'
 import { useToast } from '../../../../shared/components/toast'
 import { bordroReasonMessage, parseNumericDraft, effectiveWarning } from '../format'
 import type { ValueWarning } from '../format'
@@ -163,6 +163,55 @@ export function useEditBuffers({
       setBordroData((b) => ({ ...b, [itemId]: { loading: false, data: null, error: message } }))
       addToast(message, 'error')
     }
+  }, [addToast])
+
+  // Kart acilisinda TUM bordrolu kalemleri TEK toplu okumayla tazeler (perf dilimi): tekli
+  // refreshBordro'nun DB tarafi degismedi, bu yalniz kart-acilisi cagri SEKLINI degistirir.
+  // TOAST KURALI (bu dilimde konuldu): kalem basina toast CIKMAZ, toplu tazelemede en fazla
+  // BIR toast gorunur - elli kalemde elli toast kullaniciyi bogardi.
+  const refreshBordroMany = useCallback(async (itemIds: string[]) => {
+    if (itemIds.length === 0) return
+    setBordroData((b) => {
+      const next = { ...b }
+      for (const id of itemIds) {
+        next[id] = { loading: true, data: next[id]?.data ?? null, error: null }
+      }
+      return next
+    })
+    let map: Map<string, BordroDerivationResult>
+    try {
+      map = await deriveBordroFieldsBatch(itemIds)
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Bordro hesaplanamadı'
+      setBordroData((b) => {
+        const next = { ...b }
+        for (const id of itemIds) next[id] = { loading: false, data: null, error: message }
+        return next
+      })
+      addToast(message, 'error')
+      return
+    }
+    const patch: Record<string, BordroSheetEntry> = {}
+    let toastMessage: string | null = null
+    for (const id of itemIds) {
+      const res = map.get(id)
+      if (!res || !res.ok) {
+        const reason = res ? res.reason : 'unknown'
+        // Taze bordro kaleminde Birim Net yoklugu HATA degil beklenen durumdur (karar 2026-07-15,
+        // refreshBordro ile AYNI kural): toast yok, satirda sessiz gosterge (missingNet).
+        if (reason === 'invalid_net') {
+          patch[id] = { loading: false, data: null, error: null, missingNet: true }
+        } else {
+          const message = bordroReasonMessage(reason)
+          patch[id] = { loading: false, data: null, error: message }
+          if (!toastMessage) toastMessage = message
+        }
+      } else {
+        patch[id] = { loading: false, data: res.data, error: null }
+      }
+    }
+    setBordroData((b) => ({ ...b, ...patch }))
+    if (toastMessage) addToast(toastMessage, 'error')
   }, [addToast])
 
   const api = useMemo<EditApi>(() => {
@@ -675,5 +724,5 @@ export function useEditBuffers({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  return { buffers, bordroData, itemWarnings, periodWarnings, refreshBordro, api }
+  return { buffers, bordroData, itemWarnings, periodWarnings, refreshBordro, refreshBordroMany, api }
 }
