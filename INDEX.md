@@ -127,7 +127,7 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/components/period-row.tsx` (186) — çok-dönemli kalemin dönem alt-satırı render'ı
 `src/app/muhasebe/budget/components/status-info-sheet.tsx` (15) — statü rehberi metinleri
 `src/app/muhasebe/budget/components/table-styles.ts` (138) — kart tablosu kolon genişlikleri + hücre stilleri
-`src/app/muhasebe/budget/format.ts` (309) — fmt/parseNumericDraft + kütüphane arama + başlık grubu saf fonksiyonları
+`src/app/muhasebe/budget/format.ts` (311) — fmt/parseNumericDraft + kütüphane arama + başlık grubu saf fonksiyonları
 `src/app/muhasebe/budget/hooks/use-card-rows.ts` (213) — kart verisi yükleme (budgetId/cardId), ref senkronizasyonu
 `src/app/muhasebe/budget/hooks/use-grid-navigation.ts` (269) — İ7 motorunun DOM bağlayıcısı, tuş olaylarını çekirdeğe delege eder
 `src/app/muhasebe/budget/totals.ts` (49) — saf satır ve kart toplamı (rowTotals/cardTotals); item-row kendi hesabını yapmaz, buradan çağırır
@@ -143,7 +143,7 @@ varsayim yapilmaz.
 `src/shared/supabase/client.ts` (10) — tek Supabase client instance
 `src/shared/supabase/company-profile-service.ts` (85) — şirket profili okuma/güncelleme (proje sahibi satırı)
 `src/shared/supabase/invitation-service.ts` (52) — departman listesi + davet oluşturma
-`src/shared/supabase/library-service.ts` (64) — Kalem Kütüphanesi okuma (kart-bazlı + tüm kütüphane)
+`src/shared/supabase/library-service.ts` (68) — Kalem Kütüphanesi okuma (kart-bazlı + tüm kütüphane)
 `src/shared/supabase/onboarding-service.ts` (177) — departman/dönem/bütçe oluşturma, proje açma sarmalayıcı
 `src/shared/supabase/receipt-service.ts` (181) — fiş CRUD + onay/red/düzeltme RPC çağrıları
 `src/shared/theme.ts` (24) — dark/light tema state'i + localStorage kalıcılığı
