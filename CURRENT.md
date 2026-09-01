@@ -42,6 +42,6 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 
 ## Sıradaki iş
 
-1. **KART 1600 — MOTOR YARISI.** Dört parça: çok kademeli gruplama, çalışma anında başlık doğması, ikinci başlık anahtarı, oranla türetme. Neye bağlı: hiçbir şey; VERİ yarısından ayrı olarak bugün başlanabilir (sıra bağı `docs/IS-SIRASI.md` MOTOR İŞİ maddesinde). Neyi bloke ediyor: 1300 ve 1400 aynı parçaları isteyecek.
+1. **KART 1600 — MOTOR YARISI, M2/M3.** M1 (şema: etiket cinsi, ikinci etiket bağı, türetme oranı hanesi) BİTTİ (1 Eylül 2026). Sırada M2 (iki kademeli gruplama + iki geçişli türetme, saf fonksiyon, ekranda değişiklik YOK) ve M3 (özet satırı çizimi, ad popup'ı, üçgen, kilitli üç hücre, Oran hanesi, kolon setinin kart-parametrik hale gelmesi; sandbox turu M3'ün önünde). Neye bağlı: hiçbir şey. Aralık genişlemesi (16xx + 39xx) ve 1600 katalog/şablon tohumu VERİ yarısıdır, proje açma yolundan sonra gelir.
 
 Uzun vadeli iş, backlog ve tamamlananlar: `docs/IS-SIRASI.md`.

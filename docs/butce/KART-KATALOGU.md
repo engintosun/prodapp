@@ -256,6 +256,7 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 - 1613 Looping (ADR) — Dublaj: oyuncunun post diyalog yeniden-seslendirme seansı. ÇAPRAZ: 5300 Post Ses alias — stüdyo/miksaj orada (5300 kendi satırı, sadece işaretçi; çift-sayım denetimi). [Ç]
 - 1615 Welfare Worker / Teacher — Set Öğretmeni / Refah Görevlisi: çocuk/minör oyuncuda ZORUNLU (compliance). cost_type=Hizmet. [Ç]
 - 1612 Musicians (cast) — Müzisyen (kadro): sahnede/kayıtta görünen müzisyenler. [K]
+- 1618 [K!] Temsilci Komisyonu — Agency / Management Commission: oyuncunun temsilcisine (ajans/menajer) ödenen komisyon; varsayılan statü Fatura, birim sabit, kalem ekleme listesinde görünmez. [K]
 - 3913 Extras Casting — Arkaplan Oyuncusu Castingi: figüran/kalabalık seçim ajansı. [K]
 - 3914 Crowd Controllers — Kast Sorumlusu: set figüran/kalabalık sevki (Türk saha terimi). [K]
 - 3910 Extras Wardrobe Allowance — Arkaplan Oyuncusu Kostüm Ödeneği: kendi kıyafetini getirmesi için ödenek. [K]
@@ -284,7 +285,7 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 - Loan-out şirketi İSTİSNA DEĞİLDİR: statü satır bazında zaten seçilebilir.
 - Dönem varsayılanları (yalnızca şablon varsayılanı, yeni bir eksen değil): 1616 Prova → Yapım Öncesi, 1611 Mesai → Yapım, 1614 Tekrar Telifi → Yapım Sonrası. Temsilci satırı dönem seçmez (Dönemsiz).
 - Satırları bir arada tutan şey kod veya yazılan isim DEĞİL, ETİKETTİR. Mevcut budget_cost_objects tablosu bu iş için kullanılacak (göç yorumunda "Oyuncu: Ahmet" örneği zaten var). Alt-kod yolu (1601-1, 1601-2) REDDEDİLDİ: tire zaten grup üyeliği anlamında kullanılıyor (item_library.catalog_code açıklaması: üyelik tire öncesi parçadan türer).
-- Bilinen çatışma, henüz çözülmedi: budget_items tek bir cost_object taşıyor; Grup 2 için öngörülen otomatik "Stunt" etiketi ile kişi etiketi aynı alana sığmaz. cost_object'e kind (kişi / iş) ayrımı gerekiyor.
+- ÇÖZÜLDÜ (1 Eylül 2026, KART 1600 M1): budget_items tek bir cost_object taşıyordu; Grup 2 için öngörülen otomatik "Stunt" etiketi ile kişi etiketi aynı alana sığmıyordu. Etikete kind (kişi/iş) kolonu eklendi, kaleme ikinci bağ (person_object_id) açıldı, cins denetimi trg_check_cost_object_kind tetiğiyle korunuyor.
 - Birim cetveli yedi değerli olacak: gün / hafta / ay / bölüm / film / saat / sabit. ("film" eklenir, "bölüm" dizi için kalır, "saat" mesai için gerekli.)
 
 **Kart-özel anomali:** çift-fringe guard (§4.9; loan-out'a fringe de mi yüklendi) · Crew Overlap (§4.9; aynı isim cast + set ekibinde maaş) · ÇOCUK-COMPLIANCE: minör/çocuk oyuncu var + set öğretmeni (1615) yok → bayrak (Compliance Guard §6, teşhis+uyarı). Looping çift-sayım: 1613 ↔ 5300 alias denetimi.

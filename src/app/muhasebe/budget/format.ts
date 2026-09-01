@@ -114,8 +114,10 @@ export function effectiveWarning(
 // tam gun ister). Bolum degisken sureli (sabit gun sayisi YOK) ve sabit sure kavrami hic tasimiyor -
 // ikisi de bordroda Birim secimine SUNULMAZ. Gecmis veri yok (sistem sifirdan kuruluyor), bu yuzden
 // "mevcut secili degeri koru" inceligine gerek YOK - kosulsuz filtre yeterli.
+// Film de sabit-kapsam birimidir, bolum ve sabit ile ayni sebeple bordroda sunulmaz; saat sure
+// birimidir, bordroda ACIK kalir.
 export function bordroAllowedUnits<T extends { code: string }>(units: T[]): T[] {
-  return units.filter((u) => u.code !== 'episode' && u.code !== 'flat')
+  return units.filter((u) => u.code !== 'episode' && u.code !== 'flat' && u.code !== 'film')
 }
 
 // D3b-2a — Kutuphane eslesmesi (BUTCE-EKRAN-KARARLARI bolum 16): Turkce-duyarsiz + ICEREN

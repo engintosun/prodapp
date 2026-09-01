@@ -34,7 +34,7 @@
 |Yük bileşeni |burden_component      |Stopaj/SGK/ajans gibi net-üstü yük           |
 |Doğrudan ödeme|direct_payment       |Muhasebenin fiş dışı gerçekleşen kaydı       |
 |Yüzde kalemi |percent_line          |Ara toplam üstüne % (öngörülmeyen, kâr)      |
-|Birim        |unit                  |gün/hafta/ay/bölüm/sabit (adet/kişi kaldırıldı — X'in konusu, DILIM-2f-fix2)|
+|Birim        |unit                  |gün/hafta/ay/bölüm/film/saat/sabit (adet/kişi kaldırıldı — X'in konusu, DILIM-2f-fix2; film/saat KART 1600 M1'de eklendi, 1 Eylül 2026). Bordro istisnası: bölüm, film ve sabit bordroda sunulmaz (TD-18, `bordroAllowedUnits`)|
 |Oran kataloğu|rate_catalog          |Merkezi vergi/yük oran kaynağı               |
 |Kasa (orijinal)|budget_baseline      |Kilit anında bütçenin donmuş fotoğrafı (koy-ve-bak)|
 |Şablon (raf)  |budget_template       |Rakamsız bütçe iskeleti; kurulumda fotokopilenir   |

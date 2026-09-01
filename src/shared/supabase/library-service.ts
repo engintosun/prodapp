@@ -13,6 +13,7 @@ export interface LibraryItem {
   defaultUnitCode: string
   aliases: string[]
   isGroup: boolean
+  isDerived: boolean
 }
 
 export interface CardLibrary {
@@ -30,23 +31,26 @@ function mapLibraryRow(r: Record<string, unknown>): LibraryItem {
     defaultUnitCode: r.default_unit_code as string,
     aliases: (r.aliases as string[] | null) ?? [],
     isGroup: r.is_group as boolean,
+    isDerived: r.is_derived as boolean,
   }
 }
 
 // Baslik satirlari (is_group) bir KALEM DEGILDIR: kalem ekleme listesinde gorunmez
 // (BUTCE-EKRAN-KARARLARI bolum 16, BUTCE-SEMA-KARARLARI GORSEL GRUP). Ayni cekimden
 // AYRI bir liste olarak da doner: baslik satirlarinin ekrana cizilmesi icin (bolum 19).
+// Turetilen atom (is_derived) da kalem ekleme listesinde gorunmez, sebebi farkli: baslik
+// kalem degildir, turetilen atom ise elle eklenmez.
 export async function fetchCardLibrary(cardCode: string): Promise<CardLibrary> {
   const prefix = cardCode.slice(0, 2)
   const { data, error } = await supabase
     .from('item_library')
-    .select('id, catalog_code, name, name_en, default_payment_status, default_unit_code, aliases, is_group')
+    .select('id, catalog_code, name, name_en, default_payment_status, default_unit_code, aliases, is_group, is_derived')
     .like('catalog_code', prefix + '%')
     .order('catalog_code')
   if (error) throw new Error(error.message)
   const all = (data ?? []).map(mapLibraryRow)
   return {
-    items: all.filter((it) => !it.isGroup),
+    items: all.filter((it) => !it.isGroup && !it.isDerived),
     headings: all.filter((it) => it.isGroup),
   }
 }
@@ -57,7 +61,7 @@ export async function fetchCardLibrary(cardCode: string): Promise<CardLibrary> {
 export async function fetchAllLibrary(): Promise<LibraryItem[]> {
   const { data, error } = await supabase
     .from('item_library')
-    .select('id, catalog_code, name, name_en, default_payment_status, default_unit_code, aliases, is_group')
+    .select('id, catalog_code, name, name_en, default_payment_status, default_unit_code, aliases, is_group, is_derived')
     .order('catalog_code')
   if (error) throw new Error(error.message)
   return (data ?? []).map(mapLibraryRow)
