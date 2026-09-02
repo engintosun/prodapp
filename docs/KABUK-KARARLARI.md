@@ -219,7 +219,7 @@ Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki
 - Bütçe rayı: Genel Bütçe · Bütçe Girişi · Raporlar · Gerçekleşen — ayraç — Tanımlar
 - TANIMLAR = MODÜLÜN KENDİ TANIMLARI. İki rayda birden görünmesinin sebebi budur: bütçe tanımları ile muhasebe tanımları ayrı şeylerdir, ortak bir "ayarlar" ekranı değildir. Her modülün Tanımlar içeriği kendi turunda kararlaşır. Dönem (hesap dönemi) ve departman Tanımlar'a AİT DEĞİLDİR — dönem muhasebenin, departman proje yapısının konusudur; yerleri ayrıca karara bağlanacaktır.
 
-**TANIM KATMANLARI (1 Eylül 2026, Engin kararı):**
+**TANIM KATMANLARI (1 Eylül 2026, ENGİN KARARI):**
 - ÜÇ KATMAN vardır: (1) şirket ayarı — mevzuat, SGK, şirket bilgisi; bir kez girilir, oran değişince güncellenir. (2) şirket kütüphanesi — oyuncu, mekân, kostüm, tedarikçi; proje değişince SİLİNMEZ, BİRİKİR. (3) projenin dökümü — hangi karakter var, kim oynuyor, hangi mekân; proje ile doğar ve biter.
 - TANIMLAR AYARDIR, DÖKÜM İÇERİKTİR. Döküm öğeleri Tanımlar'a GİRMEZ. Şirket ve mevzuat bilgileri Tanımlar'da KALIR, taşınmaz.
 - Bugün yeni yer AÇILMAZ. Oyuncular listesi KARTTAN açılır; yüzey GENEL yazılır (etiket düzenleyicisi), kart yalnızca bir kapıdır — böylece İ1'in kart-özel dal yasağı bozulmaz.

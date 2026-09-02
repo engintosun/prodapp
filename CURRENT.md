@@ -42,12 +42,13 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 
 ## Sıradaki iş
 
-1. **KART 1600 — MOTOR YARISI, M2/M3.** M1 (şema: etiket cinsi, ikinci etiket bağı, türetme oranı hanesi) BİTTİ (1 Eylül 2026). 1 Eylül 2026 tasarım turu KAPANDI, kararlar evlerine yazıldı (BUTCE-EKRAN-KARARLARI §20, KART-KATALOGU §7.5, KART-GEREKÇELERİ, BUTCE-SEMA-KARARLARI, KABUK-KARARLARI, IS-SIRASI, RAKIP-ANALIZI-URUN §2.3, GLOSSARY). Sırada M2 (iki kademeli gruplama + iki geçişli türetme, saf fonksiyon, ekranda değişiklik YOK) ve M3 (özet satırı çizimi, ad popup'ı, üçgen, kilitli üç hücre, Oran hanesi, kolon setinin kart-parametrik hale gelmesi; sandbox turu M3'ün önünde). Oyuncular listesi ve blok içi ekleme EKRAN işidir, M3'ten sonra. Neye bağlı: hiçbir şey. Şablon tohumu ve aralık genişlemesi (16xx + 39xx) VERİ yarısıdır, proje açma yolundan sonra gelir.
+1. **KART 1600 — MOTOR YARISI, M2/M3.** M1 (şema: etiket cinsi, ikinci etiket bağı, türetme oranı hanesi) BİTTİ (1 Eylül 2026). 1 Eylül 2026 tasarım turu KAPANDI, kararlar evlerine yazıldı (BUTCE-EKRAN-KARARLARI §20, KART-KATALOGU §7.5, KART-GEREKÇELERİ, BUTCE-SEMA-KARARLARI, KABUK-KARARLARI, IS-SIRASI, RAKIP-ANALIZI-URUN §2.3, GLOSSARY). Sırada M2 (iki kademeli gruplama + iki geçişli türetme, saf fonksiyon, ekranda değişiklik YOK) ve M3 (özet satırı çizimi, ad popup'ı, üçgen, kilitli üç hücre, oranın yeri (bkz. Açık kalanlar) ve o seçime bağlı olarak kolon setinin kart-parametrik hale gelip gelmeyeceği; sandbox turu M3'ün önünde). Oyuncular listesi ve blok içi ekleme EKRAN işidir, M3'ten sonra. Neye bağlı: hiçbir şey. Şablon tohumu ve aralık genişlemesi (16xx + 39xx) VERİ yarısıdır, proje açma yolundan sonra gelir.
 
 ## Açık kalanlar
 
 Bu bölüm KARAR DEĞİL, henüz karara bağlanmamış açık sorulardır (1 Eylül 2026 tasarım turu).
 
+- Oranın nerede yaşayacağı açık. Üç yol konuşuldu, hiçbiri karara bağlanmadı: (a) kendi kolonu (31 Ağustos kararı, kolon setini kart-parametrik yapar), (b) Miktar hanesi (MMB Subtotal Adjustment deseni; yeni kolon gerekmez ama "Miktar = SÜRE" mührünü kırar), (c) Birim net hücresinin İÇİ (hücreye basınca oran sorulur, hücrede sonuç görünür; yeni kolon da yok, mühür de kırılmaz, ama alan gizli kalır). M3'te karara bağlanacak.
 - M2 kuralının onayı bekliyor: oran yazılı + kişi etiketi var = hesaplanan satır.
 - Dublör listede yok ama ajansı olabilir; tik nerede duracak?
 - Ek Çekim atomunun katalog kodu atanmadı.
