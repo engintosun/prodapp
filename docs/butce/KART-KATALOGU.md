@@ -231,9 +231,11 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 - 1601 Stars / Principal Roles — Başrol Oyuncu: kaşe GİZLİ, normalde çoğul; sette olmasa da anlaşılan tutar ("on-hold"). cost_type=İşçilik. [Ç]
 - 1602 Supporting Cast — Yardımcı Oyuncu: loan-out şirketi olabilir (istisna). cost_type=İşçilik. [Ç]
 - 1603 Day Players — Günlük Oyuncu: ≤3 gün replikli küçük roller. cost_type=İşçilik. [Ç]
-- 1611 Overtime / Turnaround — Mesai: fazla mesai + yetersiz dinlenme telafisi. [K]
+- 1611 Overtime / Turnaround — Mesai: fazla mesai + yetersiz dinlenme telafisi. Şablona GİRMEZ, blok içi eklemeden gelir (1 Eylül 2026 kararı, bkz. aşağıda). [K]
 - 1616 Rehearsal — Prova: çekim öncesi prova ücreti. [K]
 - 1614 Second Run Residuals — Tekrar Telifi: yeniden yayın/gösterimden süregelen ödeme (ayrı maliyet doğası). [K]
+- Ek Çekim [K!] — Additional Photography: sözleşmede dahil sayılan ek çekim gün sayısı aşıldığında doğan satır; is_derived DEĞİL, şablona GİRMEZ, blok içi eklemeden gelir. Kod HENÜZ ATANMADI — kütüphane tohumu turunda Engin onayıyla atanacak. [K]
+- 1618 [K!] Temsilci Komisyonu — Agency / Management Commission: oyuncunun temsilcisine (ajans/menajer) ödenen komisyon; varsayılan statü Fatura, birim sabit, kalem ekleme listesinde görünmez. GRUP 4'TEN BURAYA TAŞINDI (1 Eylül 2026, Engin kararı): satır ekranda oyuncunun özeti altında çizilir; katalog grubunun çizim yerinden farklı olması aynı olguyu iki yerde iki türlü söylerdi. [K]
 
 **Grup 2 — Dublör** (stunt PERFORMANS · baz+stunt adjustment · cost_object=Stunt oto)
 - 1604 Stunt Coordinator — Dublör Koordinatörü: stunt'ı tasarlar/yönetir; uzmanlık (su/ateş/motor); başrolün dublörü olabilir. [Ç]
@@ -256,7 +258,6 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 - 1613 Looping (ADR) — Dublaj: oyuncunun post diyalog yeniden-seslendirme seansı. ÇAPRAZ: 5300 Post Ses alias — stüdyo/miksaj orada (5300 kendi satırı, sadece işaretçi; çift-sayım denetimi). [Ç]
 - 1615 Welfare Worker / Teacher — Set Öğretmeni / Refah Görevlisi: çocuk/minör oyuncuda ZORUNLU (compliance). cost_type=Hizmet. [Ç]
 - 1612 Musicians (cast) — Müzisyen (kadro): sahnede/kayıtta görünen müzisyenler. [K]
-- 1618 [K!] Temsilci Komisyonu — Agency / Management Commission: oyuncunun temsilcisine (ajans/menajer) ödenen komisyon; varsayılan statü Fatura, birim sabit, kalem ekleme listesinde görünmez. [K]
 - 3913 Extras Casting — Arkaplan Oyuncusu Castingi: figüran/kalabalık seçim ajansı. [K]
 - 3914 Crowd Controllers — Kast Sorumlusu: set figüran/kalabalık sevki (Türk saha terimi). [K]
 - 3910 Extras Wardrobe Allowance — Arkaplan Oyuncusu Kostüm Ödeneği: kendi kıyafetini getirmesi için ödenek. [K]
@@ -287,6 +288,8 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 - Satırları bir arada tutan şey kod veya yazılan isim DEĞİL, ETİKETTİR. Mevcut budget_cost_objects tablosu bu iş için kullanılacak (göç yorumunda "Oyuncu: Ahmet" örneği zaten var). Alt-kod yolu (1601-1, 1601-2) REDDEDİLDİ: tire zaten grup üyeliği anlamında kullanılıyor (item_library.catalog_code açıklaması: üyelik tire öncesi parçadan türer).
 - ÇÖZÜLDÜ (1 Eylül 2026, KART 1600 M1): budget_items tek bir cost_object taşıyordu; Grup 2 için öngörülen otomatik "Stunt" etiketi ile kişi etiketi aynı alana sığmıyordu. Etikete kind (kişi/iş) kolonu eklendi, kaleme ikinci bağ (person_object_id) açıldı, cins denetimi trg_check_cost_object_kind tetiğiyle korunuyor.
 - Birim cetveli yedi değerli olacak: gün / hafta / ay / bölüm / film / saat / sabit. ("film" eklenir, "bölüm" dizi için kalır, "saat" mesai için gerekli.)
+- MESAİ VE EK ÇEKİM ŞABLONDAN GELMEZ (1 Eylül 2026, Engin): ikisi de kartın şablonuna girmez, blok içi eklemeden doğar. 1611 Mesai zaten [K] işaretliydi; bu karar onu doğrular.
+- NOT (1 Eylül 2026): grupların başlığındaki "baz+ek" ifadesi bugün yalnız insanın okuduğu bir cümledir, VERİ DEĞİLDİR. Blok içi ekleme listesinin ek atomları süzebilmesi için bir hane gerekiyor; hangi hanede yaşayacağı AÇIK.
 
 **Kart-özel anomali:** çift-fringe guard (§4.9; loan-out'a fringe de mi yüklendi) · Crew Overlap (§4.9; aynı isim cast + set ekibinde maaş) · ÇOCUK-COMPLIANCE: minör/çocuk oyuncu var + set öğretmeni (1615) yok → bayrak (Compliance Guard §6, teşhis+uyarı). Looping çift-sayım: 1613 ↔ 5300 alias denetimi.
 

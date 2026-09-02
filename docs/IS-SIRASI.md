@@ -58,6 +58,7 @@ Bu bölüm kasıtlı boş bırakılmıştır. "Sıradaki iş" için CURRENT.md'y
 - Muhasebe oran teyitleri (amber): reklam tevkifati + 2026 oran + telif tavan.
 - Oran-yonetimi ekrani (Tanimlar > REFERANS icinde) ERTELENDI.
 - Model 1 (hesabi KAAPA acar) - Avans->butce cift sayim (B10) - Gorunen rol etiketi - Tedarikci hafizasi.
+- Tedarikçi hafızası kapsam genişlemesi (1 Eylül 2026): amacı genişler — şirket künyesi, kişi/iletişim, ücret ve ekipman bilgileri tutulacak. Ödeme yapılırken, ulaşım/nakliye planlanırken, sözleşme hazırlanırken ve iletişim kurulurken bu kartlardan beslenecek. Proje bittiğinde veri şirkette KALIR ve sonraki işlere veri sağlar. İleride gelmesi muhtemel eklentilerin (senaryo dökümü, departman bazlı iş takibi) zemini de budur.
 - "Modul acik mi" bayragi + faturalama/paket fiyat.
 - RAPORLAR fazi: icmal PDF - Bakanlik - AICP/export - EFC - cost_object rollup - Eurimages KDV'siz gorunum (vat_deductible + ayri KDV kolonu bunu bugunden besliyor). Ic dokum (bordro kendi raporu) 3e'de CANLI; dis kurumsal raporlar bu faz.
 - KAPI ACIK (Faz 1 yapmaz): taahhut - mesai - doviz - satir yorumu - DIZI (TV/Dijital): 6+ ay pencerede K9+K5 birlikte yeniden acilir (kohort-bazli cizgi adayi). Doktrin: PERSONEL-MEVZUATI §1 Dizi Kaydi.

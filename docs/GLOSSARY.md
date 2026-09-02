@@ -136,6 +136,11 @@
 - **YASAK — "grup" kökü bu kavram için kullanılmaz.** Kodda `group_id` zaten KART demektir (expense_groups). `group_code` gibi bir ad iki farklı şeyi yan yana neredeyse aynı adla anar; okuyan bunları aynı şeyin kimlik/kod hâli sanar. `group_id` alanının kendisi yeniden adlandırılmaz — ayrı ve büyük bir iştir.
 - **YASAK — "bölüm" kelimesi bu kavram için kullanılmaz.** Tehlikeli Kökler bölümündeki `bolum` kuralı aynen geçerlidir: "bölüm" yalnız dizi bölümüdür, bütçe içi kısım için Türkçe karşılık "etap"tır ve o da zaten dönem eksenine aittir. AÇIKLAMA: doküman metnindeki "bölüm 16" gibi BAŞVURU kullanımı bu kuralın dışındadır; kural bütçe/kart içi bir kısmı ADLANDIRMAK içindir.
 
+### Özet satırı ve Oyuncular listesi terimleri (1 Eylül 2026)
+
+- **Özet satırı:** bir kişi etiketinin altındaki kalemleri toplayan, numarası olan, parası çocuklarından gelen ara satır. SAKLANAN BİR KALEM DEĞİLDİR, etiketin GÖRÜNÜMÜDÜR. "Grup" kökü bu kavram için YASAK (Tehlikeli Kökler disiplinine tabidir); "Başlık" birinci kademenin adıdır, özet satırı ikinci kademedir (bkz. BUTCE-EKRAN-KARARLARI §20).
+- **Oyuncular listesi:** rol ile oyuncuyu eşleştiren, etiketlerin yüzü olan liste. Ayrı bir defter DEĞİLDİR (bkz. KABUK-KARARLARI TANIM KATMANLARI).
+
 ## Alan adlandırma doktrini (KİLİTLENDİ 2026-07-26)
 
 - Varsayılan içerik dili Türkçe, SONEK YOK: `name`, `description`, `internal_note`, `public_note`.

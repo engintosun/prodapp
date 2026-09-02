@@ -294,7 +294,7 @@ NOT (8 Ağustos 2026): buradaki üç-rol listesi HARCAMA ZİNCİRİ içindir. Ma
 - **1600 İLE BAŞLIK KADEMESİ İKİYE ÇIKTI (21 Ağustos 2026, Engin):** yukarıdaki maddeler tek kademeli başlığı (kart grubu) tarif eder; KART 1600'de temsilcisi olan oyuncu için ikinci bir kademe doğar (kart grubu → oyuncu özet başlığı → alt kalemler). Her iki kademe de bu bölümün ilkelerine tabidir: para taşımaz, KLV ızgarasına girmez, kart toplamına dahil edilmez. Detay: CURRENT.md "KART 1600 TASARIM KARARLARI" bölümü.
 
 ## 20. KART 1600 / Üç kademeli kart tasarımı (Engin kararları, 22 Ağustos 2026)
-- **TEMEL KOLON SETİ 13'TÜR (31 Ağustos 2026'da düzeltildi):** Maliyet ve KDV kolonları Yasal Yük ile Brüt toplam arasına genel sette zaten eklendi (bkz. §1, §3, §7). "Oran" kolonu genel sete GİRMEZ — KART 1600'ün kendi hanesidir (Engin kararı, 31 Ağustos 2026: kart yapıları ihtiyaca göre belirlenir, tek şablon dayatılmaz). Eski "kolon seti 12'den 14'e çıkıyor" ifadesi bu nedenle yanlıştı, düzeltildi. Brüt toplam kolon adı AYNEN kalıyor. NOT (31 Ağustos 2026): veri taşıyan kolon sayısı 13'tür; kolon setine aynı gün eklenen 14. hane silme düğmesinin şerididir, veri taşımaz ve etiketi boştur (bkz. bölüm 1, SİLME HANESİ).
+- **TEMEL KOLON SETİ 13'TÜR (31 Ağustos 2026'da düzeltildi):** Maliyet ve KDV kolonları Yasal Yük ile Brüt toplam arasına genel sette zaten eklendi (bkz. §1, §3, §7). "Oran" kolonu genel sete GİRMEZ — KART 1600'ün kendi hanesidir (Engin kararı, 31 Ağustos 2026: kart yapıları ihtiyaca göre belirlenir, tek şablon dayatılmaz). Eski "kolon seti 12'den 14'e çıkıyor" ifadesi bu nedenle yanlıştı, düzeltildi. BAYAT (1 Eylül 2026 düzeltmesi): Brüt toplam kolon adı AYNEN kalıyor ifadesi artık yanlıştır — kolonun adı 31 Ağustos 2026 tarihinde TOPLAM oldu (columns.ts içinde key brutToplam, etiket Toplam). NOT (31 Ağustos 2026): veri taşıyan kolon sayısı 13'tür; kolon setine aynı gün eklenen 14. hane silme düğmesinin şerididir, veri taşımaz ve etiketi boştur (bkz. bölüm 1, SİLME HANESİ).
 - **ÜÇ KADEME:** grup başlığı → özet satırı → alt kalemler.
   - **Grup başlığı:** numarası yok, kendi parası yok, altındakilerin toplamını gösterir, toplama girmez (1100'de kurulu doktrinin ikinci kullanımı, bkz. bölüm 19).
   - **Özet satırı:** numarası VAR, adını kullanıcı yazar, parası çocuklarının toplamıdır. Kendi budget_items kaydı olan bir kalem DEĞİLDİR; başlık satırı deseniyle çizilir (data-grid-cell taşımaz, klavye ızgarasına girmez).
@@ -302,11 +302,22 @@ NOT (8 Ağustos 2026): buradaki üç-rol listesi HARCAMA ZİNCİRİ içindir. Ma
 - Temsilcisiz oyuncu tek satır kalır, özet doğmaz. Temsilci eklenince oyuncunun girdiği veri alt satıra iner, üst satır özete dönüşür ve ad hanesi boşalır; kullanıcı rol/karakter adını girer, boş bırakılırsa otomatik ad atanır.
 - **ÜÇGEN (katlama) olacak.** Katlanmış görünüm icmalin tohumudur: başrol başına tek satır. Üçgen 1600'e özel değildir; grup başlıkları diğer kartlarda da olduğu için yetenek tüm kartlara girer.
 - Temsilci satırında türetilen ve kilitli olan hücreler YALNIZ üç tanedir: dönemler, birim, birim net. Miktar ve X sabittir (1 × 1), çünkü ajans faturası tek kalemdir. Oran hücresi türetilmez, şablondan varsayılan gelir ve DÜZENLENEBİLİR.
-- Rakamın dökümü, o rakamın kendi hücresine basılarak açılır — bordrodaki Yasal Yük sheet deseninin genişlemesi. Net toplam hücresine basılınca çıplak net + yasal yük dökümü, komisyon satırında basılınca tabanı oluşturan satırların çıplak net toplamı ve oranı görünür. ÇIPLAK NET AYRI KOLON OLMAYACAK (Engin kararı): kolon her satırda her zaman gereken şey içindir, bu rakam değil.
+- Rakamın dökümü, o rakamın kendi hücresine basılarak açılır — bordrodaki Yasal Yük sheet deseninin genişlemesi. Komisyon satırında basılınca tabanı oluşturan satırların çıplak net toplamı ve oranı görünür. KALDIRILDI (1 Eylül 2026): Net toplam hücresine basılınca açılan çıplak net + yasal yük dökümü — bu döküm artık gereksizdir, çünkü 31 Ağustos kolon düzenlemesinden sonra komisyonun tabanı ARA TOPLAM kolonunda zaten görünür durumdadır. ÇIPLAK NET AYRI KOLON OLMAYACAK (Engin kararı): kolon her satırda her zaman gereken şey içindir, bu rakam değil.
 - Oran uyarısı için mevcut Statü (?) / status-info-sheet deseni kullanılır, yeni yüzey açılmaz.
 - **İMLEÇ:** temsilci eklendiği anda imleç, yeni doğan temsilci satırının Oran hücresine iner.
 - **TEMSİLCİ SİLİNİNCE** oyuncu tek satıra geri döner; özet kademesi kalkar, ad hanesi oyuncunun satırına döner.
 - **KAPANDI (31 Ağustos 2026, Açıklama kolonu kalktığı için konusuz kaldı):** Ad ile Açıklama hanelerinden hangisinin rol, hangisinin kişi olduğu tartışması (21 Ağustos 2026: Ad = rol ismi, Açıklama = oyuncunun gerçek ismi; 22 Ağustos 2026 Engin notu: tersi, Ad = oyuncu ismi, Açıklama = rol/karakter) Açıklama kolonunun kaldırılmasıyla konusuz kaldı. Rol/karakter adının nereye yazılacağı (buna bağlı "temsilci satırında Ad = katalog atomu" kararı dahil) 1600 turunda ayrıca karara bağlanacak.
+
+**KART 1600 DAVRANIŞ KARARLARI (1 Eylül 2026):**
+- Özet satırı KENDİLİĞİNDEN belirir: bir kişi etiketinin satır sayısı ikiye çıktığında. Kimse yaratmaz, hiçbir satır dönüşmez, veri aşağı taşınmaz. Tek satırlı etiketin özeti olmaz.
+- Özet satırında rol adı ile oyuncu adı BİRLİKTE görünür; rakamlar alttaki kalem satırlarında girilir.
+- Özetin adı POPUP ile girilir. Bu yüzden özet satırı klavye ızgarasına girmez (paragraf 19'un başlık satırı deseni korunur). Boş bırakılırsa "Oyuncu 1" benzeri ad atanır.
+- İKİ AYRI EKLEME YERİ: kartın altındaki genel ekleme KARTA kalem ekler; bloğun içindeki ekleme O KİŞİYE kalem ekler ve kimin olduğunu SORMAZ (blok zaten söylüyor).
+- Listeden gelen oyuncu satırları genel ekleme listesinde GÖRÜNMEZ (aynı satırın iki yoldan eklenmesini önler).
+- Blok içi ekleme satırı, özet katlandığında gizlenir. Kutuya oyuncu dışı kalemler de yüklenebilir.
+- Aynı kalemden ikinci satır serbesttir (örneğin iki mesai satırı). AÇIK: iki satırın ekran sırasının neye göre sabitleneceği karara bağlanmadı.
+- SİLME KURALI (hem tik kaldırmada hem listeden isim silmede AYNI): dokunulmamış satır sessizce gider; dolu satır için onay sorulur ve silinecek satır ADIYLA söylenir.
+- Tik kaldırılınca oran şablon değerine döner; eski oran, ajans adı ve statü hatırlanmaz.
 
 ## 21. AÇIK EKRAN SORULARI (karara bağlanmadı)
 

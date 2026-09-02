@@ -15,7 +15,7 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 
 ## Durum
 
-- HEAD: 25ffa81 (1 Eylül 2026 — KART 1600 M1: etiket cinsi, ikinci etiket bağı, türetme oranı hanesi). Denetim E gereği burada CURRENT.md'ye dokunan son commit'in EBEVEYNİ yazar; kapanışta YAZMA ANINDAKİ HEAD yazılır, çünkü kapanış commit'i CURRENT.md'ye dokunur ve "son commit" o olur.
+- HEAD: f95a24f (1 Eylül 2026 — CURRENT.md durum hash ve INDEX.md satır sayıları KART 1600 M1 sonrasına güncellendi). Denetim E gereği burada CURRENT.md'ye dokunan son commit'in EBEVEYNİ yazar; kapanışta YAZMA ANINDAKİ HEAD yazılır, çünkü kapanış commit'i CURRENT.md'ye dokunur ve "son commit" o olur.
 - Migration 20260822130000, 20260830120000, 20260830130000, 20260830140000, 20260831120000, 20260831140000, 20260901130000 CANLIDA. Kod: 312/312 test (bugün 308 → 316 → 312; düşüşün sebebi silinen kartNetToplamlari'nin testleriydi, kapsam kaybı YOK — kart toplamı davranışı totals.test.ts'te cardTotals üzerinden hâlâ test ediliyor). Build geçer, eslint 0 hata (2 bilinen react-refresh uyarısı). Originde tek dal: main.
 - Bütçe kolon modeli bugünkü hâli: 13 veri kolonu + etiketsiz silme hanesi (dizi uzunluğu 14) — No · Ad · Statü · Dönemler · Birim · Birim net · Miktar · X · Ara toplam · Yasal Yük · Maliyet · KDV · Toplam. Ara toplam = çıplak çarpım, Yasal Yük = saf yük, Maliyet = Ara toplam + Yasal Yük, Toplam = Maliyet + KDV; tableMinWidth 1376, kullanılabilir alan ~1169 (fark DURUYOR, çözülmedi). Statü kümesi SEKİZ — `yemek` 31 Ağustos'ta `konaklama`dan ayrıldı, vergi rejimi ikisinde aynı, ayrım anlam ayrımı. Statü kolonu 106px'e indirildi (ölçüm: Windows + Chrome gerçek pencere; MAC'TE DOĞRULANMADI; ölçüm aracı `scripts/statu-genislik-olcumu.html`). Bordro motorunun DB okuması TOPLU (`deriveBordroFieldsBatch`); kart açılışında kalem başına değil bütçe başına altı sorgu; `deriveBordroFields` artık onun ince sarmalayıcısı, iki fetch yolu YOK. Kart kapağındaki rakam MALIYET ve kart tablosunun toplam şeridiyle AYNI fonksiyondan (totals.ts cardTotals) geliyor; `kartNetToplamlari` ve `fetchCardNetTotals` SİLİNDİ, ikinci tanım kalmadı. KOLON HİZASI: salt-okunur özet yazısının payı denetimin TÜRÜNDEN gelir — yazı kutusu 9px, açılır liste 13px (1 Eylül 2026 ölçümü, Windows + Chrome; MAC'TE DOĞRULANMADI). Birim ve Dönemler 13, Birim net / Miktar / X 9. Dönemler hücresi selectTd oldu, çift dolgu kalmadı.
 - ÇALIŞMA ORTAMI: yedi deterministik kapı kurulu (dal, sığ klon, damga varlığı, damga tazeliği, ASCII'ye düşmüş .md metni, tanımsız CSS token, test sayısı kaybı) ve `supabase db push` onaya bağlı. Ayarlar `.claude/settings.json`, kapılar `.claude/hooks/`.
@@ -42,6 +42,19 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 
 ## Sıradaki iş
 
-1. **KART 1600 — MOTOR YARISI, M2/M3.** M1 (şema: etiket cinsi, ikinci etiket bağı, türetme oranı hanesi) BİTTİ (1 Eylül 2026). Sırada M2 (iki kademeli gruplama + iki geçişli türetme, saf fonksiyon, ekranda değişiklik YOK) ve M3 (özet satırı çizimi, ad popup'ı, üçgen, kilitli üç hücre, Oran hanesi, kolon setinin kart-parametrik hale gelmesi; sandbox turu M3'ün önünde). Neye bağlı: hiçbir şey. Aralık genişlemesi (16xx + 39xx) ve 1600 katalog/şablon tohumu VERİ yarısıdır, proje açma yolundan sonra gelir.
+1. **KART 1600 — MOTOR YARISI, M2/M3.** M1 (şema: etiket cinsi, ikinci etiket bağı, türetme oranı hanesi) BİTTİ (1 Eylül 2026). 1 Eylül 2026 tasarım turu KAPANDI, kararlar evlerine yazıldı (BUTCE-EKRAN-KARARLARI §20, KART-KATALOGU §7.5, KART-GEREKÇELERİ, BUTCE-SEMA-KARARLARI, KABUK-KARARLARI, IS-SIRASI, RAKIP-ANALIZI-URUN §2.3, GLOSSARY). Sırada M2 (iki kademeli gruplama + iki geçişli türetme, saf fonksiyon, ekranda değişiklik YOK) ve M3 (özet satırı çizimi, ad popup'ı, üçgen, kilitli üç hücre, Oran hanesi, kolon setinin kart-parametrik hale gelmesi; sandbox turu M3'ün önünde). Oyuncular listesi ve blok içi ekleme EKRAN işidir, M3'ten sonra. Neye bağlı: hiçbir şey. Şablon tohumu ve aralık genişlemesi (16xx + 39xx) VERİ yarısıdır, proje açma yolundan sonra gelir.
+
+## Açık kalanlar
+
+Bu bölüm KARAR DEĞİL, henüz karara bağlanmamış açık sorulardır (1 Eylül 2026 tasarım turu).
+
+- M2 kuralının onayı bekliyor: oran yazılı + kişi etiketi var = hesaplanan satır.
+- Dublör listede yok ama ajansı olabilir; tik nerede duracak?
+- Ek Çekim atomunun katalog kodu atanmadı.
+- "baz+ek" ayrımının hangi hanede yaşayacağı.
+- Özet satırının numaralandırması (DOOD öneme göre numaralıyor, başrol 1; biz ne yapacağız?)
+- Aynı kalemden iki satırın ekran sırası neye göre sabitlenecek.
+- Şablonun listeye göre dönüşmesinin teknik yolu.
+- Kart aralık genişlemesi (16xx + 39xx) genel ekleme için hâlâ gerekli.
 
 Uzun vadeli iş, backlog ve tamamlananlar: `docs/IS-SIRASI.md`.

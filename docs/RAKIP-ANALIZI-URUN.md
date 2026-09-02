@@ -158,6 +158,18 @@ EKRAN-HİSSİ TURU — BULUNDU (14 Haziran 2026; kayıt: claude.ai/chat/842c8657
 - Kayda geçen takas: tablo duvarı ağır toplu girişte işe yarar; kart odak ve sakinlik verir ama "hepsi tek ekranda"yı feda eder. O gün "hızlı toplu ekleme kolaylığı bir köşede tutulmalı" diye not düşülmüştü — bu endişe D3b hızlı ekleme yüzeyiyle KARŞILANMIŞTIR.
 - Kapak rakamına etkisi: kart masası SIFIR rakamla doğmuştur (12 Haziran 2026 wireframe onayı: "sade kartlar — işaret + isim, rakam yok"). Tek rakama çıkış, 4 Ağustos itirazıyla verilmiş bir tavizdir; üçe çıkarmak top sheet'i masaya geri kurmak olurdu.
 
+### 2.3 Butce uygulamalarinda oyuncu listesi ve yuzde satiri (1 Eylul 2026 taramasi)
+
+- YUZDE SATIRI DORT UYGULAMADA DA VAR. MMB "Subtotal Adjustment": yeni satir varsayilan olarak Amt 1 ile gelir ve Rate o hesapta kendinden onceki satirlarin toplamina esittir; Rate duzenlenemez, yuzde Amt uzerinden verilir (mmb-docs.ep.com/Details/Details.html). Saturation: ajans ucretleri, markuplar ve kontenjans "herhangi bir ara toplamin yuzdesi" olarak uygulanir, formul bakimi gerekmez (saturation.io/budgeting, saturation.io/solutions/documentary). Showbiz: Accumulators araci (mekanigi DOGRULANMADI). Gorilla: yuzde fringe herhangi bir detay satirina iliskilendirilebilir. KAAPA notu: oranla turetme yaklasimi icat degil, sektorun dort ayri yerde ayni bicimde cozdugu seydir; Saturation ornegi birebir "ajans ucreti" diyor.
+
+- OYUNCU LISTESI HICBIR BUTCE UYGULAMASINDA YOK. Sektorun karsiligi DOOD (Day Out of Days): solda oyuncular, ustte cekim gunleri; her satir bir oyuncu (karakter ve onu oynayan kisi); satirlar hikayedeki oneme gore numaralanir, basrol bir numaradir; sozlesme tipine gore gruplanir (basrol, yardimci, gunluk). Sira: dokum -> cizelge -> DOOD -> butce; DOOD butcenin ON KOSULUDUR (en.wikipedia.org/wiki/Day_out_of_days_(filmmaking), sethero.com DOOD yazisi).
+
+- BUTCE UYGULAMALARINDA BUNUN YERINE KISI/TEDARIKCI DEFTERI VAR. Saturation Contacts: kisiler satir kalemleriyle iliskilendirilir, projede bir kisiler kolonu vardir, isim yazilip Enter ile eklenir, kisinin tanimli ucreti varsa satira otomatik dolar; kayit tipi Sirket'e cevrilince sirket alani ana ad olur. Defter WORKSPACE seviyesindedir, proje seviyesinde degil (support.saturation.io Contact Management). Showbiz'de Vendor Database ayni cinstendir.
+
+- YAMDU (bolum 1.4'un uzeri): yetenek veritabani sirket katmanindadir ve gelecek projelerde yeniden kullanilir; oyuncu role casting onerileriyle atanir. Yani "kim" sirket katmaninda, "hangi rolu oynuyor" proje katmanindadir.
+
+- KAAPA CIKARIMI: KAAPA ust dort katmani (dokum, cizelge, DOOD, casting) kurmuyor; bu yuzden rol adi ve temsilci bilgisinin tutulacagi baska yer yoktur. Oyuncular listesi bu boslugun en ince karsiligidir. Sirasinin sektorden farkli olmasi (bizde butce aninda soruluyor) Turkiye'de butcenin kilitli cizelgeden once yapilmasindan gelir; bilincli tercihtir.
+
 ## 3. MOBIL DESEN TARAMASI (8 Agustos 2026)
 
 KAYNAK UYARISI: asagidaki bulgular ureticilerin kendi pazarlama/karsilastirma sayfalarindan derlendi. Urunler uzerinde BAGIMSIZ GOZLEM YAPILMADI — Yamdu (§1.15) haric. Dogrulanmadan tek basina karar gerekcesi olarak kullanilmaz.

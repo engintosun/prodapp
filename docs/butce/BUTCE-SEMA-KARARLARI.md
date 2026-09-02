@@ -159,6 +159,12 @@ NEDEN: sahadaki gerçek senaryo — görüntü yönetmenine dolar, asistanlara T
   - Özet başlığı ÇEKİLMEZ, TÜRETİLİR: kişi etiketinin farklı değerlerinden doğar. Kütüphanede karşılığı yoktur ve olmayacaktır.
   - Oranla türetme için derive_rate hanesi açıldı. B18 aynen geçerli: tutar saklanmaz.
   - "NEDEN METİN, NEDEN FK DEĞİL" doktriniyle çelişmez: kişi etiketi bütçe-yerel bir kayıttır, yaşayan kütüphaneye değil bütçenin kendi kontrollü listesine bağlanır.
+- **ETİKETİN SINIRI (1 Eylül 2026):**
+  - Kişi etiketine ROL hanesi eklenecek (yalnız kind='kisi' olanlarda dolu). AÇIK: henüz yazılmadı.
+  - ETİKET İNCE KALIR: yalnız ad, cins, rol. Ücret, ekipman, iletişim bilgisi, şirket künyesi etikete YAZILMAZ — bunlar tedarikçi hafızasının işidir ve iki yerde yaşamamalıdır.
+  - Ajansın adı bugün satırda serbest metindir. Bu GEÇİCİ çözümdür; tedarikçi kütüphanesi geldiğinde satır kayda işaret edecek.
+  - EKSEN AYRIMI: bizim kind (kişi/iş) ayrımımız ile Saturation'ın kişi/şirket ayrımı AYNI EKSEN DEĞİLDİR. Bizimki "etiket bir kişiyi mi yoksa Stunt gibi bir iş kümesini mi gösteriyor" der; ötekisi "ödeme alan birey mi şirket mi" der. İkinci eksen kütüphane turunda ayrıca doğar, birincinin üstüne bindirilmez.
+  - Etiketin bütçe-bazlı KAPSAMI, tedarikçi hafızası geldiğinde yeniden konuşulacak. Yamdu ve Saturation kişiyi projenin üstünde tutuyor.
 - **DİL KURALI:** kod/yorum ASCII; kullanıcıya görünen veri düzgün Türkçe.
 - **TEK İMZA DOKTRİNİ:** RPC fonksiyonu tek imza olarak yaşar. Parametre eklendiğinde eski imza AYNI migration'da drop edilir; overload bırakılmaz. Gerekçe: 1 Ağustos 2026'da fn_add_budget_item'a p_existing_code eklendi, 5 parametreli sürüm sessizce canlı kaldı — hatalı kod üretimi taşıyan, korumasız, grant'lı bir kopya olarak. İki overload ayrıca tuzaktır: her davranış değişikliğinde hangisinin canlı olduğu yeniden sorulmak zorunda. (fn_add_budget_item 5→6 parametre geçişinde uygulandı, bkz. migration 20260815150000.)
 

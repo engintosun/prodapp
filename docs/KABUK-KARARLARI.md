@@ -219,6 +219,20 @@ Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki
 - Bütçe rayı: Genel Bütçe · Bütçe Girişi · Raporlar · Gerçekleşen — ayraç — Tanımlar
 - TANIMLAR = MODÜLÜN KENDİ TANIMLARI. İki rayda birden görünmesinin sebebi budur: bütçe tanımları ile muhasebe tanımları ayrı şeylerdir, ortak bir "ayarlar" ekranı değildir. Her modülün Tanımlar içeriği kendi turunda kararlaşır. Dönem (hesap dönemi) ve departman Tanımlar'a AİT DEĞİLDİR — dönem muhasebenin, departman proje yapısının konusudur; yerleri ayrıca karara bağlanacaktır.
 
+**TANIM KATMANLARI (1 Eylül 2026, Engin kararı):**
+- ÜÇ KATMAN vardır: (1) şirket ayarı — mevzuat, SGK, şirket bilgisi; bir kez girilir, oran değişince güncellenir. (2) şirket kütüphanesi — oyuncu, mekân, kostüm, tedarikçi; proje değişince SİLİNMEZ, BİRİKİR. (3) projenin dökümü — hangi karakter var, kim oynuyor, hangi mekân; proje ile doğar ve biter.
+- TANIMLAR AYARDIR, DÖKÜM İÇERİKTİR. Döküm öğeleri Tanımlar'a GİRMEZ. Şirket ve mevzuat bilgileri Tanımlar'da KALIR, taşınmaz.
+- Bugün yeni yer AÇILMAZ. Oyuncular listesi KARTTAN açılır; yüzey GENEL yazılır (etiket düzenleyicisi), kart yalnızca bir kapıdır — böylece İ1'in kart-özel dal yasağı bozulmaz.
+- İKİNCİ liste (mekân) doğduğu gün Döküm evi doğar ve iki liste birlikte taşınır; rayda yeri o gün konuşulur. Bugün tek gerçek sakin var, o yüzden ev kurulmaz.
+- GEÇİŞ KURALI: bugün liste tam düzenlenebilir; Döküm evi gelince düzenleme oraya taşınır, karttan açılan listede yalnızca ajans/menajer seçimi kalır.
+- LİSTE İNCE KALIR: rol, oyuncu, ajans tiki, menajer tiki. Vesikalık, müsaitlik, casting önerisi, puanlama GİRMEZ — bunlar casting modülünün işidir.
+- ROL serbest metin kalır. Yamdu'da rol senaryo dökümünden gelir; bizde senaryo dökümü KURULMUYOR (mühürlü karar), bu yüzden kullanıcı yazar. Bilinçli eksikliktir.
+- Listenin biçimi: Rol · Oyuncu · Ajans (tik) · Menajer (tik). Tik atılınca yanında ad hanesi açılır, kaldırılınca kapanır. Oran listede SORULMAZ, satırda yaşar.
+- Liste KAZANIR: şablon belirli sayıda oyuncu satırıyla gelir, listede az ya da çok isim girilirse şablon ona göre dönüşür. İsimler MEVCUT satırlara biner, yeni satır açmaz.
+- Liste ZORUNLU DEĞİLDİR: isim girilmezse şablon satırına doğrudan rakam girilir; etiketsiz, özetsiz, düz satır.
+- Listeye yalnız İSİMLİ roller girer: başrol, yardımcı oyuncu, günlük oyuncu. Figüran toplu girilir (genel ekleme yolundan), dublör de listeye GİRMEZ.
+- AÇIK: dublörün de ajansı olabilir; dublör listede olmadığına göre ajans tikinin nerede duracağı karara bağlanmadı.
+
 ### 12.2 Sol ray — görünüm ve durum
 - Zemin sıcak kâğıt tonundadır. Renkli klasör simgeleri raydan VE kartlardan kaldırılmıştır.
 - Durum rengi TEK TONLUDUR: iş yoksa normal görünüm, iş varsa durak yumuşak kırmızı alır (koyu/kıpkırmızı değil). Rozette sayı görünür.

@@ -184,6 +184,12 @@ Oyuncu-Kast 197 kalem. Çekirdek (kaynak-sayısı = kaç bütçede): Cast Direct
 ### 1618 Temsilci Komisyonu atomu (KART 1600 M1, 1 Eylül 2026, Engin kararı)
 Temsilci komisyonu yapımcının maliyetidir ve oyuncunun kendi özeti altında yaşar (1400'de değil). Tek atom yeter: ajans ile menajer farkı statüde yaşar (statü satır bazında seçilir), ayrı atom gerektirmez. Kod 1618 KAAPA-atamalıdır çünkü 1617 Koster'de Contractuals olarak doludur ve item_burdens'a gider.
 
+### Ek Çekim neden mesaiden ayrı atom (1 Eylül 2026, Engin kararı)
+Mesai saatlik telafidir, ek çekim tam gündür; sözleşmede belirli sayıda ek çekim ücrete dahildir ve satırın varlığı "dahil olan sayı aşıldı" demektir. Tek satıra bindirilirse bu sinyal kaybolur. Türkiye pratiği kuralsızdır, doğrusunu biz kurarız.
+
+### 1618'in grup değişikliği (1 Eylül 2026, Engin kararı)
+Komisyon hizmettir ama ekranda oyuncunun özeti altında yaşar; aidiyeti çizim yeriyle aynı tutuldu.
+
 ## GENEL EĞİTİM NOTLARI (tüm kartlara yayılan kavramlar)
 
 ### Kalem davranış motoru — neden "not alanı" sadece metin değil?
