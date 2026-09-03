@@ -378,6 +378,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                         bufMultiplier={buffers[it.id + ':multiplier']}
                         bufRepeat={buffers[it.id + ':repeat']}
                         navUnitNet={isActiveEdit(it.id, 'unitNet') ? undefined : fmt(it.unitNet)}
+                        navDeriveRate={isActiveEdit(it.id, 'deriveRate') ? undefined : 'Oran %' + fmt(it.deriveRate ?? 0)}
                         navMultiplier={isActiveEdit(it.id, 'multiplier') ? undefined : fmt(it.multiplier)}
                         navRepeat={isActiveEdit(it.id, 'repeat') ? undefined : fmt(it.repeat)}
                       />

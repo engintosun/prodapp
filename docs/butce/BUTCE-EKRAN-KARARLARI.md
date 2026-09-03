@@ -325,6 +325,7 @@ NOT (8 Ağustos 2026): buradaki üç-rol listesi HARCAMA ZİNCİRİ içindir. Ma
 - Kolon seti 13'te KALIR; kart-parametrik kolon seti sorusu bu kararla düşer. Emsal: başlık satırı (heading-row) ilk sekiz haneyi zaten birleştiriyor, satırın kolon geometrisinden çıkması yeni bir şey değil.
 - Reddedilen üç yol ve gerekçeleri: (a) orana ayrı kolon açmak — kolon setini kart-parametrik yapar ve yeni kolon 40 kartın hepsinde açılıp yalnız 1600'de dolar; (b) oranı Miktar hanesine yazmak — hane satıra göre anlam değiştirir, ayrıca ya motorun çarpımına ya klavye sözleşmesine istisna sokar; (c) oranı Birim net hücresinin içine saklamak — oran ekranda görünmez ve kilitli hücre düzenlenebilir olmak zorunda kalır.
 - BEDELİ (bilerek kabul edildi): birleşik hücre klavye motorunda yeni bir durak ister (data-col, K8 dikey gezinme grubu). Ayrıca komisyonun tabanı bu satırda görünmez; taban, dökümü açan hücre basımıyla okunur.
+- **UYGULANDI (M3a-1):** birleşik hücre `data-col="deriveRate"` ile çizildi ve K8 dikey gezinme grubunda `unitNet` ile aynı kovaya kondu; Miktar ve X kolonlarından inen gezinme komisyon satırını atlar. Oran `budget_items.derive_rate` hanesine yazılır, 0 ile 100 arasında olmak zorundadır. Türetilen tutarın ekrana bağlanması bu dilimin DIŞINDA bırakıldı: taban kişi etiketinden doğuyor, kişi etiketi için henüz yazma yolu yok.
 
 ## 21. AÇIK EKRAN SORULARI (karara bağlanmadı)
 

@@ -23,7 +23,7 @@ import type { BordroSheetEntry } from '../components/burden-sheet'
 // commitField'in PARSE GUVENCESI dalinda (K10 revize + TD-16, 2026-07-18) hangi alanlar
 // sayisal - yalniz bunlar buffer'dan parse edilip garanti altina alinir; 'name' gibi metin
 // alanlari bu denetimden gecmez.
-const NUMERIC_EDITABLE_FIELDS = new Set<EditableField>(['unitNet', 'multiplier', 'repeat', 'vatRate'])
+const NUMERIC_EDITABLE_FIELDS = new Set<EditableField>(['unitNet', 'multiplier', 'repeat', 'vatRate', 'deriveRate'])
 
 // EditApi SINIRI (Engin karari 2026-07-27): api yalniz useEditBuffers'in SAHIP OLDUGU state'e
 // dokunur, yani buffers + patchRow. refetch veya card-table-screen useState'i gerektiren is
@@ -33,7 +33,7 @@ const NUMERIC_EDITABLE_FIELDS = new Set<EditableField>(['unitNet', 'multiplier',
 // (karti refetch eder).
 export type EditApi = {
   onTextChange: (id: string, field: 'name', value: string) => void
-  onNumChange: (id: string, field: 'unitNet' | 'multiplier' | 'vatRate', raw: string) => void
+  onNumChange: (id: string, field: 'unitNet' | 'multiplier' | 'vatRate' | 'deriveRate', raw: string) => void
   onPeriodChange: (id: string, stageId: string, raw: string) => void
   onPeriodNetChange: (itemId: string, stageId: string, raw: string) => void
   onPeriodRepeatChange: (itemId: string, stageId: string, raw: string) => void
@@ -226,7 +226,7 @@ export function useEditBuffers({
       patchRow(id, { [field]: value } as Partial<BudgetItemRow>)
     }
 
-    function onNumChange(id: string, field: 'unitNet' | 'multiplier' | 'vatRate', raw: string) {
+    function onNumChange(id: string, field: 'unitNet' | 'multiplier' | 'vatRate' | 'deriveRate', raw: string) {
       setBuf(id + ':' + field, raw)
       const n = Number(raw.replace(',', '.'))
       patchRow(id, { [field]: Number.isFinite(n) ? n : 0 } as Partial<BudgetItemRow>)

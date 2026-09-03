@@ -254,7 +254,7 @@ describe('setDraft', () => {
 // tablosuyla ayni (bkz. use-grid-navigation.ts COLUMN_EQUIVALENCE_GROUPS).
 const KAAPA_GROUPS: ColumnEquivalenceGroups = [
   ['name'],
-  ['unitNet', 'periodNet'],
+  ['unitNet', 'periodNet', 'deriveRate'],
   ['repeat', 'periodRepeat'],
   ['multiplier', 'periodQty'],
 ]
@@ -321,6 +321,25 @@ describe('dikey gezinme - kolon esdegerlik grubu (KLV-K8)', () => {
     const r = reduceGrid(editAt('item-1', 'unitNet', '500'), { type: 'enter', value: 'unused' }, grid, KAAPA_GROUPS)
     expect(r.commit).toEqual({ cellId: { rowId: 'item-1', col: 'unitNet' }, value: '500' })
     expect(r.state.active).toEqual({ rowId: 'period-1', col: 'periodNet' })
+  })
+
+  it('unitNet den asagi inildiginde, altindaki satirda unitNet YOK ama deriveRate VARSA imlec deriveRate hucresine durur', () => {
+    const grid: GridShape = [
+      { rowId: 'item-1', cols: ['name', 'unitNet', 'repeat', 'multiplier'] },
+      { rowId: 'item-2-komisyon', cols: ['name', 'deriveRate'] },
+    ]
+    const r = reduceGrid(navAt('item-1', 'unitNet'), { type: 'arrow', dir: 'down' }, grid, KAAPA_GROUPS)
+    expect(r.state.active).toEqual({ rowId: 'item-2-komisyon', col: 'deriveRate' })
+  })
+
+  it('repeat (Miktar) hucresinden asagi inildiginde yalnizca deriveRate tasiyan satir ATLANIR', () => {
+    const grid: GridShape = [
+      { rowId: 'item-1', cols: ['name', 'unitNet', 'repeat', 'multiplier'] },
+      { rowId: 'item-2-komisyon', cols: ['name', 'deriveRate'] },
+      { rowId: 'item-3', cols: ['name', 'unitNet', 'repeat', 'multiplier'] },
+    ]
+    const r = reduceGrid(navAt('item-1', 'repeat'), { type: 'arrow', dir: 'down' }, grid, KAAPA_GROUPS)
+    expect(r.state.active).toEqual({ rowId: 'item-3', col: 'repeat' })
   })
 })
 

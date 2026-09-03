@@ -28,6 +28,7 @@ interface ItemRowProps {
   navUnitNet: string | undefined
   navMultiplier: string | undefined
   navRepeat: string | undefined
+  navDeriveRate: string | undefined
 }
 
 export const ItemRow = memo(function ItemRow({
@@ -49,8 +50,10 @@ export const ItemRow = memo(function ItemRow({
   navUnitNet,
   navMultiplier,
   navRepeat,
+  navDeriveRate,
 }: ItemRowProps) {
   const it = item
+  const isCommission = it.deriveRate !== null
   const multi = isMultiPeriod(it)
   const addedStageIds = Object.keys(it.periodQty)
   const isBordro = it.paymentStatus === 'bordro'
@@ -182,78 +185,96 @@ export const ItemRow = memo(function ItemRow({
           </select>
         )}
       </td>
-      <td style={multi ? readOnlyTextTd : selectTd}>
-        {multi ? (
-          summaryUnitId !== null ? (units.find((u) => u.id === summaryUnitId)?.label ?? it.unitLabel) : '—'
-        ) : (
-          <select
-            data-grid-cell="true"
-            data-row-id={it.id}
-            data-col="unit"
-            data-cell-kind="select"
-            style={cellInput}
-            value={it.unitId}
-            onChange={(e) => void api.onUnitChange(it.id, e.target.value)}
-          >
-            {(isBordro ? bordroAllowedUnits(units) : units).map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.label}
-              </option>
-            ))}
-          </select>
-        )}
-      </td>
-      <td style={multi ? readOnlyNumTd : numFlushTd}>
-        {multi ? (
-          summaryNet !== null ? fmt(summaryNet) : '—'
-        ) : (
+      {isCommission ? (
+        <td colSpan={4} style={numFlushTd}>
           <input
             data-grid-cell="true"
             data-row-id={it.id}
-            data-col="unitNet"
+            data-col="deriveRate"
             style={cellInputNum}
             type="text"
             inputMode="decimal"
-            value={navUnitNet ?? fieldVal(bufUnitNet, it.unitNet)}
-            onChange={(e) => api.onNumChange(it.id, 'unitNet', e.target.value)}
-            onBlur={() => api.commitField(it.id, 'unitNet')}
+            value={navDeriveRate ?? fieldVal(undefined, it.deriveRate ?? 0)}
+            onChange={(e) => api.onNumChange(it.id, 'deriveRate', e.target.value)}
+            onBlur={() => api.commitField(it.id, 'deriveRate')}
           />
-        )}
-      </td>
-      <td style={multi ? readOnlyNumTd : numFlushTd}>
-        {multi ? (
-          fmt(summaryRepeatSum ?? 0)
-        ) : (
-          <input
-            data-grid-cell="true"
-            data-row-id={it.id}
-            data-col="repeat"
-            style={cellInputNum}
-            type="text"
-            inputMode="decimal"
-            value={navRepeat ?? repeatVal(bufRepeat, it.repeat)}
-            onChange={(e) => api.onRepeatChange(it.id, e.target.value)}
-            onBlur={() => api.commitRepeat(it.id)}
-          />
-        )}
-      </td>
-      <td style={multi ? readOnlyNumTd : numFlushTd}>
-        {multi ? (
-          summaryQty !== null ? fmt(summaryQty) : '—'
-        ) : (
-          <input
-            data-grid-cell="true"
-            data-row-id={it.id}
-            data-col="multiplier"
-            style={cellInputNum}
-            type="text"
-            inputMode="decimal"
-            value={navMultiplier ?? fieldVal(bufMultiplier, it.multiplier)}
-            onChange={(e) => api.onNumChange(it.id, 'multiplier', e.target.value)}
-            onBlur={() => api.commitField(it.id, 'multiplier')}
-          />
-        )}
-      </td>
+        </td>
+      ) : (
+        <>
+          <td style={multi ? readOnlyTextTd : selectTd}>
+            {multi ? (
+              summaryUnitId !== null ? (units.find((u) => u.id === summaryUnitId)?.label ?? it.unitLabel) : '—'
+            ) : (
+              <select
+                data-grid-cell="true"
+                data-row-id={it.id}
+                data-col="unit"
+                data-cell-kind="select"
+                style={cellInput}
+                value={it.unitId}
+                onChange={(e) => void api.onUnitChange(it.id, e.target.value)}
+              >
+                {(isBordro ? bordroAllowedUnits(units) : units).map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.label}
+                  </option>
+                ))}
+              </select>
+            )}
+          </td>
+          <td style={multi ? readOnlyNumTd : numFlushTd}>
+            {multi ? (
+              summaryNet !== null ? fmt(summaryNet) : '—'
+            ) : (
+              <input
+                data-grid-cell="true"
+                data-row-id={it.id}
+                data-col="unitNet"
+                style={cellInputNum}
+                type="text"
+                inputMode="decimal"
+                value={navUnitNet ?? fieldVal(bufUnitNet, it.unitNet)}
+                onChange={(e) => api.onNumChange(it.id, 'unitNet', e.target.value)}
+                onBlur={() => api.commitField(it.id, 'unitNet')}
+              />
+            )}
+          </td>
+          <td style={multi ? readOnlyNumTd : numFlushTd}>
+            {multi ? (
+              fmt(summaryRepeatSum ?? 0)
+            ) : (
+              <input
+                data-grid-cell="true"
+                data-row-id={it.id}
+                data-col="repeat"
+                style={cellInputNum}
+                type="text"
+                inputMode="decimal"
+                value={navRepeat ?? repeatVal(bufRepeat, it.repeat)}
+                onChange={(e) => api.onRepeatChange(it.id, e.target.value)}
+                onBlur={() => api.commitRepeat(it.id)}
+              />
+            )}
+          </td>
+          <td style={multi ? readOnlyNumTd : numFlushTd}>
+            {multi ? (
+              summaryQty !== null ? fmt(summaryQty) : '—'
+            ) : (
+              <input
+                data-grid-cell="true"
+                data-row-id={it.id}
+                data-col="multiplier"
+                style={cellInputNum}
+                type="text"
+                inputMode="decimal"
+                value={navMultiplier ?? fieldVal(bufMultiplier, it.multiplier)}
+                onChange={(e) => api.onNumChange(it.id, 'multiplier', e.target.value)}
+                onBlur={() => api.commitField(it.id, 'multiplier')}
+              />
+            )}
+          </td>
+        </>
+      )}
       <td style={{ ...numStyle, fontWeight: 600 }}>
         <span title={isBordro && bd?.missingNet ? 'Birim Net bekleniyor' : undefined} style={isBordro ? { opacity: 0.55 } : undefined}>{isBordro && bd?.missingNet ? '—' : fmt(araToplam)}</span>
       </td>
