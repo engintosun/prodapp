@@ -16,7 +16,7 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 
 ## Durum
 
-- HEAD: cdb9829 (3 Eylül 2026 — KART 1600 M2 motoru ve M3 tasarım turu). Denetim E gereği burada CURRENT.md'ye dokunan son commit'in EBEVEYNİ yazar; kapanışta YAZMA ANINDAKİ HEAD yazılır, çünkü kapanış commit'i CURRENT.md'ye dokunur ve "son commit" o olur.
+- HEAD: bcb8b3f (3 Eylül 2026 — KART 1600 M3 tasarım kapanışı). Denetim E gereği burada CURRENT.md'ye dokunan son commit'in EBEVEYNİ yazar; kapanışta YAZMA ANINDAKİ HEAD yazılır, çünkü kapanış commit'i CURRENT.md'ye dokunur ve "son commit" o olur.
 - Migration 20260822130000, 20260830120000, 20260830130000, 20260830140000, 20260831120000, 20260831140000, 20260901130000 CANLIDA. Kod: 322/322 test (2 Eylül 2026 KART 1600 M2 dilimi 10 test ekledi). Build geçer, eslint 0 hata (2 bilinen react-refresh uyarısı). Originde tek dal: main.
 - Bütçe kolon modeli bugünkü hâli: 13 veri kolonu + etiketsiz silme hanesi (dizi uzunluğu 14) — No · Ad · Statü · Dönemler · Birim · Birim net · Miktar · X · Ara toplam · Yasal Yük · Maliyet · KDV · Toplam. Ara toplam = çıplak çarpım, Yasal Yük = saf yük, Maliyet = Ara toplam + Yasal Yük, Toplam = Maliyet + KDV; tableMinWidth 1376, kullanılabilir alan ~1169 (fark DURUYOR, çözülmedi). Statü kümesi SEKİZ — `yemek` 31 Ağustos'ta `konaklama`dan ayrıldı, vergi rejimi ikisinde aynı, ayrım anlam ayrımı. Statü kolonu 106px'e indirildi (ölçüm: Windows + Chrome gerçek pencere; MAC'TE DOĞRULANMADI; ölçüm aracı `scripts/statu-genislik-olcumu.html`). Bordro motorunun DB okuması TOPLU (`deriveBordroFieldsBatch`); kart açılışında kalem başına değil bütçe başına altı sorgu; `deriveBordroFields` artık onun ince sarmalayıcısı, iki fetch yolu YOK. Kart kapağındaki rakam MALIYET ve kart tablosunun toplam şeridiyle AYNI fonksiyondan (totals.ts cardTotals) geliyor; `kartNetToplamlari` ve `fetchCardNetTotals` SİLİNDİ, ikinci tanım kalmadı. KOLON HİZASI: salt-okunur özet yazısının payı denetimin TÜRÜNDEN gelir — yazı kutusu 9px, açılır liste 13px (1 Eylül 2026 ölçümü, Windows + Chrome; MAC'TE DOĞRULANMADI). Birim ve Dönemler 13, Birim net / Miktar / X 9. Dönemler hücresi selectTd oldu, çift dolgu kalmadı.
 - ÇALIŞMA ORTAMI: yedi deterministik kapı kurulu (dal, sığ klon, damga varlığı, damga tazeliği, ASCII'ye düşmüş .md metni, tanımsız CSS token, test sayısı kaybı) ve `supabase db push` onaya bağlı. Ayarlar `.claude/settings.json`, kapılar `.claude/hooks/`.
@@ -47,7 +47,7 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 
 ## Açık kalanlar
 
-Bu bölüm KARAR DEĞİL, henüz karara bağlanmamış açık sorulardır (1 Eylül 2026 tasarım turu).
+Bu bölüm KARAR DEĞİL, henüz karara bağlanmamış açık sorulardır (1 ve 3 Eylül 2026 tasarım turları).
 
 - Ek Çekim atomunun katalog kodu atanmadı.
 - "baz+ek" ayrımının hangi hanede yaşayacağı.
@@ -55,5 +55,7 @@ Bu bölüm KARAR DEĞİL, henüz karara bağlanmamış açık sorulardır (1 Eyl
 - Aynı kalemden iki satırın ekran sırası neye göre sabitlenecek.
 - Şablonun listeye göre dönüşmesinin teknik yolu.
 - Kart aralık genişlemesi (16xx + 39xx) genel ekleme için hâlâ gerekli.
+- Oyuncular listesinin Görev hanesinde dublör seçilince satır nereden doğacak (üç yol konuşulmadı: atomlar şablona alınır / mesai ile ek çekim gibi blok içi eklemeden gelir / liste satırı doğurur).
+- Dublör koordinatörü ve benzeri dublör işlerine sahada verilen toplu bütçenin kart karşılığı.
 
 Uzun vadeli iş, backlog ve tamamlananlar: `docs/IS-SIRASI.md`.
