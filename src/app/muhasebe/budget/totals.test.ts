@@ -27,6 +27,8 @@ function makeItem(overrides: Partial<BudgetItemRow> = {}): BudgetItemRow {
     paymentStatus: 'sirket',
     internalNote: null,
     publicNote: null,
+    personObjectId: null,
+    deriveRate: null,
     ...overrides,
   }
 }

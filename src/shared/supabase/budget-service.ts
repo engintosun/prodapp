@@ -41,6 +41,8 @@ export interface BudgetItemRow {
   paymentStatus: PaymentStatus | null
   internalNote: string | null
   publicNote: string | null
+  personObjectId: string | null
+  deriveRate: number | null
 }
 
 export interface CardView {
@@ -231,6 +233,9 @@ export async function mapItemRows(itemList: readonly Record<string, unknown>[]):
     paymentStatus: isPaymentStatus(i.payment_status) ? i.payment_status : null,
     internalNote: (i.internal_note as string | null) ?? null,
     publicNote: (i.public_note as string | null) ?? null,
+    personObjectId: (i.person_object_id as string | null) ?? null,
+    deriveRate:
+      i.derive_rate !== null && i.derive_rate !== undefined ? Number(i.derive_rate) : null,
   }))
 }
 
@@ -243,7 +248,7 @@ export async function fetchBudgetItemRowsByCard(
   const { data: items, error: ei } = await supabase
     .from('budget_items')
     .select(
-      'id, item_code, catalog_code, heading_code, library_item_id, name, name_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, public_note, group_id',
+      'id, item_code, catalog_code, heading_code, library_item_id, name, name_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, person_object_id, derive_rate, public_note, group_id',
     )
     .eq('budget_id', budgetId)
     .eq('is_active', true)
@@ -286,7 +291,7 @@ export async function getCard(budgetId: string, cardId?: string): Promise<CardVi
 
   const { data: items, error: ei } = await supabase
     .from('budget_items')
-    .select('id, item_code, catalog_code, heading_code, library_item_id, name, name_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, public_note')
+    .select('id, item_code, catalog_code, heading_code, library_item_id, name, name_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, person_object_id, derive_rate, public_note')
     .eq('group_id', grp.id)
     .eq('is_active', true)
     .order('sort_order')

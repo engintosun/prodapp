@@ -299,13 +299,13 @@ NOT (8 Ağustos 2026): buradaki üç-rol listesi HARCAMA ZİNCİRİ içindir. Ma
   - **Grup başlığı:** numarası yok, kendi parası yok, altındakilerin toplamını gösterir, toplama girmez (1100'de kurulu doktrinin ikinci kullanımı, bkz. bölüm 19).
   - **Özet satırı:** numarası VAR, adını kullanıcı yazar, parası çocuklarının toplamıdır. Kendi budget_items kaydı olan bir kalem DEĞİLDİR; başlık satırı deseniyle çizilir (data-grid-cell taşımaz, klavye ızgarasına girmez).
   - Alt kalemlerde No hanesi BOŞ. 5.1 / 5.2 biçimi REDDEDİLDİ; mühürlü "kart-içi düz 1..N" numaralandırma doktrini korunuyor.
-- Temsilcisiz oyuncu tek satır kalır, özet doğmaz. Temsilci eklenince oyuncunun girdiği veri alt satıra iner, üst satır özete dönüşür ve ad hanesi boşalır; kullanıcı rol/karakter adını girer, boş bırakılırsa otomatik ad atanır.
+- Temsilcisiz oyuncu tek satır kalır, özet doğmaz. **BAYAT (2 Eylül 2026, KART 1600 M2 kuralı): bu maddenin devamındaki dönüşüm modeli geçersizdir.** Geçersiz kılan: 1 Eylül 2026 davranış kararı — özet satırı kişi etiketinin satır sayısı ikiye çıktığında kendiliğinden belirir, hiçbir satır dönüşmez ve veri aşağı taşınmaz. Cümlenin ilk yarısı (temsilcisiz oyuncu tek satır kalır) ve rol adının popup ile girilmesi geçerlidir. Temsilci eklenince oyuncunun girdiği veri alt satıra iner, üst satır özete dönüşür ve ad hanesi boşalır; kullanıcı rol/karakter adını girer, boş bırakılırsa otomatik ad atanır.
 - **ÜÇGEN (katlama) olacak.** Katlanmış görünüm icmalin tohumudur: başrol başına tek satır. Üçgen 1600'e özel değildir; grup başlıkları diğer kartlarda da olduğu için yetenek tüm kartlara girer.
 - Temsilci satırında türetilen ve kilitli olan hücreler YALNIZ üç tanedir: dönemler, birim, birim net. Miktar ve X sabittir (1 × 1), çünkü ajans faturası tek kalemdir. Oran hücresi türetilmez, şablondan varsayılan gelir ve DÜZENLENEBİLİR.
 - Rakamın dökümü, o rakamın kendi hücresine basılarak açılır — bordrodaki Yasal Yük sheet deseninin genişlemesi. Komisyon satırında basılınca tabanı oluşturan satırların çıplak net toplamı ve oranı görünür. KALDIRILDI (1 Eylül 2026): Net toplam hücresine basılınca açılan çıplak net + yasal yük dökümü — bu döküm artık gereksizdir, çünkü 31 Ağustos kolon düzenlemesinden sonra komisyonun tabanı ARA TOPLAM kolonunda zaten görünür durumdadır. ÇIPLAK NET AYRI KOLON OLMAYACAK (Engin kararı): kolon her satırda her zaman gereken şey içindir, bu rakam değil.
 - Oran uyarısı için mevcut Statü (?) / status-info-sheet deseni kullanılır, yeni yüzey açılmaz.
-- **İMLEÇ:** temsilci eklendiği anda imleç, yeni doğan temsilci satırının Oran hücresine iner.
-- **TEMSİLCİ SİLİNİNCE** oyuncu tek satıra geri döner; özet kademesi kalkar, ad hanesi oyuncunun satırına döner.
+- **İMLEÇ:** temsilci eklendiği anda imleç, yeni doğan temsilci satırının Oran hücresine iner. **ASKIDA (2 Eylül 2026):** bu cümle oranın kendi kolonu olduğunu varsayar; oranın nerede yaşayacağı 2 Eylül 2026 itibarıyla açık sorudur (kendi kolonu / Miktar hanesi / Birim net hücresinin içi). İmlecin ineceği hane, oranın yeri M3 turunda karara bağlanınca yazılır.
+- **TEMSİLCİ SİLİNİNCE** oyuncu tek satıra geri döner; özet kademesi kalkar, ad hanesi oyuncunun satırına döner. **BAYAT (2 Eylül 2026, KART 1600 M2 kuralı):** ad hanesinin geri dönmesi dönüşüm modelinden gelir ve geçersizdir. Geçersiz kılan aynı 1 Eylül kararıdır: özet kademesi yalnızca kişi etiketinin satır sayısı bire düştüğü için kalkar, satırlar yerinde kalır.
 - **KAPANDI (31 Ağustos 2026, Açıklama kolonu kalktığı için konusuz kaldı):** Ad ile Açıklama hanelerinden hangisinin rol, hangisinin kişi olduğu tartışması (21 Ağustos 2026: Ad = rol ismi, Açıklama = oyuncunun gerçek ismi; 22 Ağustos 2026 Engin notu: tersi, Ad = oyuncu ismi, Açıklama = rol/karakter) Açıklama kolonunun kaldırılmasıyla konusuz kaldı. Rol/karakter adının nereye yazılacağı (buna bağlı "temsilci satırında Ad = katalog atomu" kararı dahil) 1600 turunda ayrıca karara bağlanacak.
 
 **KART 1600 DAVRANIŞ KARARLARI (1 Eylül 2026):**
@@ -318,6 +318,7 @@ NOT (8 Ağustos 2026): buradaki üç-rol listesi HARCAMA ZİNCİRİ içindir. Ma
 - Aynı kalemden ikinci satır serbesttir (örneğin iki mesai satırı). AÇIK: iki satırın ekran sırasının neye göre sabitleneceği karara bağlanmadı.
 - SİLME KURALI (hem tik kaldırmada hem listeden isim silmede AYNI): dokunulmamış satır sessizce gider; dolu satır için onay sorulur ve silinecek satır ADIYLA söylenir.
 - Tik kaldırılınca oran şablon değerine döner; eski oran, ajans adı ve statü hatırlanmaz.
+- Satırın varlığı akışı da söyler (2 Eylül 2026): tik varsa komisyonu yapımcı üstlenir ve satır doğar; komisyon oyuncunun kendi kazancından kesiliyorsa tik konmaz, satır hiç doğmaz.
 
 ## 21. AÇIK EKRAN SORULARI (karara bağlanmadı)
 
