@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { groupByPerson, derivedUnitNets } from './person-groups'
+import { groupByPerson, derivedUnitNets, buildRenderRows } from './person-groups'
 import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
 
 function makeItem(overrides: Partial<BudgetItemRow> = {}): BudgetItemRow {
@@ -116,5 +116,62 @@ describe('derivedUnitNets', () => {
       makeItem({ id: 'komisyon', personObjectId: 'p1', deriveRate: 33.33 }),
     ]
     expect(derivedUnitNets(rows, { kase: 1001 })).toEqual({ komisyon: 333.63 })
+  })
+})
+
+describe('buildRenderRows', () => {
+  it('ozetlenmeyen satirlar sirayla, hepsi underSummary:false', () => {
+    const rows = [makeItem({ id: 'a' }), makeItem({ id: 'b' })]
+    const out = buildRenderRows(rows, new Set())
+    expect(out).toEqual([
+      { kind: 'item', row: rows[0], underSummary: false },
+      { kind: 'item', row: rows[1], underSummary: false },
+    ])
+  })
+
+  it('iki satirli ozetlenen kisi: ilk satirin onune summary girer, iki satir da underSummary:true', () => {
+    const rows = [
+      makeItem({ id: 'a', personObjectId: 'p1' }),
+      makeItem({ id: 'b', personObjectId: 'p1' }),
+    ]
+    const out = buildRenderRows(rows, new Set(['p1']))
+    expect(out).toEqual([
+      { kind: 'summary', personObjectId: 'p1', rows: [rows[0], rows[1]] },
+      { kind: 'item', row: rows[0], underSummary: true },
+      { kind: 'item', row: rows[1], underSummary: true },
+    ])
+  })
+
+  it('ozetlenen kisinin satirlari arasina baska kisinin satiri girse bile ozet BIR kez uretilir', () => {
+    const rows = [
+      makeItem({ id: 'a', personObjectId: 'p1' }),
+      makeItem({ id: 'x' }),
+      makeItem({ id: 'b', personObjectId: 'p1' }),
+    ]
+    const out = buildRenderRows(rows, new Set(['p1']))
+    expect(out).toEqual([
+      { kind: 'summary', personObjectId: 'p1', rows: [rows[0], rows[2]] },
+      { kind: 'item', row: rows[0], underSummary: true },
+      { kind: 'item', row: rows[1], underSummary: false },
+      { kind: 'item', row: rows[2], underSummary: true },
+    ])
+  })
+
+  it('iki farkli ozetlenen kisi: iki ayri summary, her biri kendi ilk satirinin onunde', () => {
+    const rows = [
+      makeItem({ id: 'a', personObjectId: 'p1' }),
+      makeItem({ id: 'b', personObjectId: 'p1' }),
+      makeItem({ id: 'c', personObjectId: 'p2' }),
+      makeItem({ id: 'd', personObjectId: 'p2' }),
+    ]
+    const out = buildRenderRows(rows, new Set(['p1', 'p2']))
+    expect(out).toEqual([
+      { kind: 'summary', personObjectId: 'p1', rows: [rows[0], rows[1]] },
+      { kind: 'item', row: rows[0], underSummary: true },
+      { kind: 'item', row: rows[1], underSummary: true },
+      { kind: 'summary', personObjectId: 'p2', rows: [rows[2], rows[3]] },
+      { kind: 'item', row: rows[2], underSummary: true },
+      { kind: 'item', row: rows[3], underSummary: true },
+    ])
   })
 })

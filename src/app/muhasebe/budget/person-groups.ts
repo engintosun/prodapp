@@ -60,3 +60,33 @@ export function derivedUnitNets(
   }
   return out
 }
+
+export type RenderRow =
+  | { kind: 'summary'; personObjectId: string; rows: BudgetItemRow[] }
+  | { kind: 'item'; row: BudgetItemRow; underSummary: boolean }
+
+// Ucuncu gecis: bir baslik grubunun satirlarini, cizilecek sirayla, ozet satirlariyla birlikte
+// duz bir listeye cevirir. Ozetlenen kisinin ILK satirina gelindiginde once summary uretilir;
+// o kisinin TUM satirlari (ekran sirasiyla) hem summary.rows'ta hem underSummary:true item
+// olarak yerinde kalir - veri asagi tasinmaz, hicbir satir donusmez.
+export function buildRenderRows(
+  groupRows: readonly BudgetItemRow[],
+  summaryPersonIds: ReadonlySet<string>,
+): RenderRow[] {
+  const out: RenderRow[] = []
+  const summarized = new Set<string>()
+  for (const row of groupRows) {
+    const key = row.personObjectId
+    if (key && summaryPersonIds.has(key)) {
+      if (!summarized.has(key)) {
+        summarized.add(key)
+        const rows = groupRows.filter((r) => r.personObjectId === key)
+        out.push({ kind: 'summary', personObjectId: key, rows })
+      }
+      out.push({ kind: 'item', row, underSummary: true })
+    } else {
+      out.push({ kind: 'item', row, underSummary: false })
+    }
+  }
+  return out
+}

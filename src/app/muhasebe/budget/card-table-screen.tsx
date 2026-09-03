@@ -16,6 +16,8 @@ import { BUDGET_COLUMNS } from './columns'
 import { ItemRow } from './components/item-row'
 import { PeriodRow } from './components/period-row'
 import { HeadingRow } from './components/heading-row'
+import { SummaryRow } from './components/summary-row'
+import { groupByPerson, buildRenderRows } from './person-groups'
 import { BurdenSheet } from './components/burden-sheet'
 import { StatusInfoSheet } from './components/status-info-sheet'
 import { NoteSheet } from './components/note-sheet'
@@ -271,13 +273,54 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
 
   const totals = useMemo(() => cardTotals(rows, bordroData), [rows, bordroData])
   const groups = useMemo(() => groupRowsByHeading(rows, headings), [rows, headings])
-  // DILIM 1100-B: No kolonu TEK sayac, CIZIM SIRASINDA artar; basliklar sayaci ETKILEMEZ
-  // (BUTCE-SEMA-KARARLARI satir 105). Immutable kurulum (react-hooks/immutability): render
-  // sirasinda sayac ARTTIRILMAZ, sira groups'tan duz-cekilip bir kere Map'e donusturulur.
-  const rowNoById = useMemo(
-    () => new Map(groups.flatMap((g) => g.rows).map((r, i) => [r.id, i + 1])),
-    [groups],
+
+  // KART 1600 M3a-2: baslik ve ozet satirlarinin katlama durumu. Oturum icinde React state
+  // olarak yasar (kalici saklama YOK - kapsam disi). Anahtar: baslik 'h:'+key, ozet 'p:'+personId.
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
+  const toggleCollapsed = useCallback((key: string) => {
+    setCollapsed((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }, [])
+
+  // KART 1600 M3a-2: kartin TUM satirlari uzerinden bir kez gruplanir, ozeti dogacak kisiler
+  // (hasSummary=true) bir Set'te toplanir - bu Set kart genelindedir, her baslik grubuna
+  // buildRenderRows'a AYNI Set gecirilir.
+  const summaryPersonIds = useMemo(
+    () => new Set(groupByPerson(rows).filter((g) => g.hasSummary).map((g) => g.personObjectId)),
+    [rows],
   )
+  const groupRenderRows = useMemo(
+    () => groups.map((g) => buildRenderRows(g.rows, summaryPersonIds)),
+    [groups, summaryPersonIds],
+  )
+
+  // DILIM 1100-B + KART 1600 M3a-2: No kolonu TEK sayac, CIZIM SIRASINDA artar; basliklar
+  // sayaci ETKILEMEZ (BUTCE-SEMA-KARARLARI satir 105). Ozet satiri numara ALIR, ozetlenen
+  // alt kalemler numara ALMAZ. Katlama numaralandirmayi ETKILEMEZ - gizli satir da numarasini
+  // korur, cunku sayim groupRenderRows'un TAMAMI uzerinden yapilir (collapsed'a bagli degil).
+  // Immutable kurulum (react-hooks/immutability): render sirasinda sayac ARTTIRILMAZ, sira bir
+  // kere gezilip Map'lere donusturulur.
+  const { itemRowNoById, summaryRowNoByPerson } = useMemo(() => {
+    const itemMap = new Map<string, number>()
+    const summaryMap = new Map<string, number>()
+    let n = 0
+    for (const renderRows of groupRenderRows) {
+      for (const rr of renderRows) {
+        if (rr.kind === 'summary') {
+          n += 1
+          summaryMap.set(rr.personObjectId, n)
+        } else if (!rr.underSummary) {
+          n += 1
+          itemMap.set(rr.row.id, n)
+        }
+      }
+    }
+    return { itemRowNoById: itemMap, summaryRowNoByPerson: summaryMap }
+  }, [groupRenderRows])
 
   if (loading) return <Loading label="Bütçe yükleniyor..." />
   if (error) return <ErrorMessage message={error} onRetry={refetch} />
@@ -349,70 +392,96 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
             </tr>
           </thead>
           <tbody>
-            {groups.map((group, groupIdx) => (
-              <Fragment key={groupIdx}>
-                {group.heading !== null && (
-                  <HeadingRow name={group.heading.name} totals={cardTotals(group.rows, bordroData)} />
-                )}
-                {group.rows.map((it) => {
-                  const multi = isMultiPeriod(it)
-                  const addedStageIds = Object.keys(it.periodQty)
-                  const periodKeys = new Set(addedStageIds)
-                  const addedStages = stages.filter((s) => periodKeys.has(s.id))
-                  return (
-                    <Fragment key={it.id}>
-                      <ItemRow
-                        item={it}
-                        rowNo={rowNoById.get(it.id) ?? 0}
-                        bufDeriveRate={buffers[it.id + ':deriveRate']}
-                        stages={stages}
-                        units={units}
-                        api={api}
-                        bordro={bordroData[it.id]}
-                        warning={itemWarnings[it.id] ?? null}
-                        onOpenBurden={onOpenBurden}
-                        onOpenNote={onOpenNote}
-                        onOpenHeading={onOpenHeading}
-                        onRemove={onRemoveItem}
-                        justAdded={justAddedIds.includes(it.id)}
-                        bufUnitNet={buffers[it.id + ':unitNet']}
-                        bufMultiplier={buffers[it.id + ':multiplier']}
-                        bufRepeat={buffers[it.id + ':repeat']}
-                        navUnitNet={isActiveEdit(it.id, 'unitNet') ? undefined : fmt(it.unitNet)}
-                        navDeriveRate={isActiveEdit(it.id, 'deriveRate') ? undefined : 'Oran %' + fmt(it.deriveRate ?? 0)}
-                        navMultiplier={isActiveEdit(it.id, 'multiplier') ? undefined : fmt(it.multiplier)}
-                        navRepeat={isActiveEdit(it.id, 'repeat') ? undefined : fmt(it.repeat)}
-                      />
-                      {multi &&
-                        addedStages.map((s) => {
-                          const periodRowId = `${it.id}:${s.id}`
-                          const netVal = it.periodNet[s.id] ?? it.unitNet
-                          const repeatVal = it.periodRepeat[s.id] ?? it.repeat
-                          const qtyVal = it.periodQty[s.id] ?? 0
-                          return (
-                            <PeriodRow
-                              key={periodRowId}
-                              item={it}
-                              stage={s}
-                              api={api}
-                              units={units}
-                              bordro={bordroData[it.id]}
-                              warning={periodWarnings[it.id + ':' + s.id] ?? null}
-                              onOpenBurden={onOpenBurden}
-                              bufQty={buffers[it.id + ':stage:' + s.id]}
-                              bufNet={buffers[it.id + ':pnet:' + s.id]}
-                              bufRepeat={buffers[it.id + ':prepeat:' + s.id]}
-                              navNet={isActiveEdit(periodRowId, 'periodNet') ? undefined : fmt(netVal)}
-                              navRepeat={isActiveEdit(periodRowId, 'periodRepeat') ? undefined : fmt(repeatVal)}
-                              navQty={isActiveEdit(periodRowId, 'periodQty') ? undefined : fmt(qtyVal)}
-                            />
-                          )
-                        })}
-                    </Fragment>
-                  )
-                })}
-              </Fragment>
-            ))}
+            {groups.map((group, groupIdx) => {
+              const headingKey = 'h:' + (group.heading?.key ?? 'basliksiz')
+              const headingCollapsed = group.heading !== null && collapsed.has(headingKey)
+              return (
+                <Fragment key={groupIdx}>
+                  {group.heading !== null && (
+                    <HeadingRow
+                      name={group.heading.name}
+                      totals={cardTotals(group.rows, bordroData)}
+                      collapsed={headingCollapsed}
+                      onToggle={() => toggleCollapsed(headingKey)}
+                    />
+                  )}
+                  {!headingCollapsed &&
+                    groupRenderRows[groupIdx].map((rr) => {
+                      if (rr.kind === 'summary') {
+                        const summaryKey = 'p:' + rr.personObjectId
+                        return (
+                          <SummaryRow
+                            key={summaryKey}
+                            rowNo={summaryRowNoByPerson.get(rr.personObjectId) ?? 0}
+                            totals={cardTotals(rr.rows, bordroData)}
+                            collapsed={collapsed.has(summaryKey)}
+                            onToggle={() => toggleCollapsed(summaryKey)}
+                          />
+                        )
+                      }
+                      const it = rr.row
+                      if (rr.underSummary && it.personObjectId && collapsed.has('p:' + it.personObjectId)) {
+                        return null
+                      }
+                      const multi = isMultiPeriod(it)
+                      const addedStageIds = Object.keys(it.periodQty)
+                      const periodKeys = new Set(addedStageIds)
+                      const addedStages = stages.filter((s) => periodKeys.has(s.id))
+                      return (
+                        <Fragment key={it.id}>
+                          <ItemRow
+                            item={it}
+                            rowNo={rr.underSummary ? null : (itemRowNoById.get(it.id) ?? 0)}
+                            bufDeriveRate={buffers[it.id + ':deriveRate']}
+                            stages={stages}
+                            units={units}
+                            api={api}
+                            bordro={bordroData[it.id]}
+                            warning={itemWarnings[it.id] ?? null}
+                            onOpenBurden={onOpenBurden}
+                            onOpenNote={onOpenNote}
+                            onOpenHeading={onOpenHeading}
+                            onRemove={onRemoveItem}
+                            justAdded={justAddedIds.includes(it.id)}
+                            bufUnitNet={buffers[it.id + ':unitNet']}
+                            bufMultiplier={buffers[it.id + ':multiplier']}
+                            bufRepeat={buffers[it.id + ':repeat']}
+                            navUnitNet={isActiveEdit(it.id, 'unitNet') ? undefined : fmt(it.unitNet)}
+                            navDeriveRate={isActiveEdit(it.id, 'deriveRate') ? undefined : 'Oran %' + fmt(it.deriveRate ?? 0)}
+                            navMultiplier={isActiveEdit(it.id, 'multiplier') ? undefined : fmt(it.multiplier)}
+                            navRepeat={isActiveEdit(it.id, 'repeat') ? undefined : fmt(it.repeat)}
+                          />
+                          {multi &&
+                            addedStages.map((s) => {
+                              const periodRowId = `${it.id}:${s.id}`
+                              const netVal = it.periodNet[s.id] ?? it.unitNet
+                              const repeatVal = it.periodRepeat[s.id] ?? it.repeat
+                              const qtyVal = it.periodQty[s.id] ?? 0
+                              return (
+                                <PeriodRow
+                                  key={periodRowId}
+                                  item={it}
+                                  stage={s}
+                                  api={api}
+                                  units={units}
+                                  bordro={bordroData[it.id]}
+                                  warning={periodWarnings[it.id + ':' + s.id] ?? null}
+                                  onOpenBurden={onOpenBurden}
+                                  bufQty={buffers[it.id + ':stage:' + s.id]}
+                                  bufNet={buffers[it.id + ':pnet:' + s.id]}
+                                  bufRepeat={buffers[it.id + ':prepeat:' + s.id]}
+                                  navNet={isActiveEdit(periodRowId, 'periodNet') ? undefined : fmt(netVal)}
+                                  navRepeat={isActiveEdit(periodRowId, 'periodRepeat') ? undefined : fmt(repeatVal)}
+                                  navQty={isActiveEdit(periodRowId, 'periodQty') ? undefined : fmt(qtyVal)}
+                                />
+                              )
+                            })}
+                        </Fragment>
+                      )
+                    })}
+                </Fragment>
+              )
+            })}
             <AddItemRow disabled={adding} onOpen={onOpenAddPanel} />
           </tbody>
         </table>

@@ -11,7 +11,7 @@ import { tdStyle, selectTd, numStyle, numFlushTd, readOnlyNumTd, readOnlyTextTd,
 
 interface ItemRowProps {
   item: BudgetItemRow
-  rowNo: number
+  rowNo: number | null
   stages: StageRow[]
   units: UnitRow[]
   api: EditApi
@@ -75,7 +75,7 @@ export const ItemRow = memo(function ItemRow({
 
   return (
     <tr data-item-id={it.id} data-just-added={justAdded ? 'true' : undefined}>
-      <td style={tdStyle}>{rowNo}</td>
+      <td style={tdStyle}>{rowNo ?? ''}</td>
       <td style={tdStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
           <input

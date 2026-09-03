@@ -2,30 +2,31 @@ import { fmt } from '../format'
 import { tdStyle, numStyle } from './table-styles'
 import type { RowTotals } from '../totals'
 
-// DILIM 1100-B (BUTCE-EKRAN-KARARLARI bolum 19): baslik satiri para TASIMAZ, budget_items'ta
-// karsiligi YOKTUR; altindaki kalemlerin toplamini bes rakam olarak gosterir (Net / Yasal Yuk /
-// Maliyet / KDV / Brut) — bolum 18 kart toplami seridinin ayni deseni, ikinci bir toplam tanimi dogmaz.
-// Hucreler data-grid-cell TASIMAZ: satir KLV izgarasina girmez, imlec ustune ugramaz.
-// Gorsel ton (renk/zemin) BU TURUN KONUSU DEGIL — ayri UI turuna birakildi.
-export function HeadingRow({
-  name,
+// KART 1600 M3a-2 (BUTCE-EKRAN-KARARLARI bolum 20, satir 300/301/303): ozet satiri kendi
+// budget_items kaydi TASIMAZ, ayni kisi etiketini tasiyan alt kalemlerin toplamini bes rakam
+// olarak gosterir - heading-row.tsx ile AYNI desen (bolum 19). Fark: No hanesi ayri durur (ozet
+// numara ALIR), Ad hucresi bu dilimde BOSTUR (isim popup'i M3b'nin isi, kapsam disi).
+// Hucreler data-grid-cell TASIMAZ: satir KLV izgarasina girmez.
+export function SummaryRow({
+  rowNo,
   totals,
   collapsed,
   onToggle,
 }: {
-  name: string
+  rowNo: number
   totals: RowTotals
   collapsed: boolean
   onToggle: () => void
 }) {
   return (
     <tr>
-      <td style={{ ...tdStyle, fontWeight: 600 }} colSpan={8}>
+      <td style={tdStyle}>{rowNo}</td>
+      <td style={{ ...tdStyle, fontWeight: 600 }} colSpan={7}>
         <button
           type="button"
           onClick={onToggle}
           aria-expanded={!collapsed}
-          title={collapsed ? 'Grubu aç' : 'Grubu kapat'}
+          title={collapsed ? 'Özeti aç' : 'Özeti kapat'}
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -33,7 +34,6 @@ export function HeadingRow({
             border: 'none',
             cursor: 'pointer',
             padding: 'var(--space-1)',
-            marginRight: 'var(--space-1)',
             color: 'var(--color-text-muted)',
             fontSize: 'var(--text-xs)',
             lineHeight: 1,
@@ -41,7 +41,6 @@ export function HeadingRow({
         >
           {collapsed ? '▶' : '▼'}
         </button>
-        {name}
       </td>
       <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.net)}</td>
       <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.yasalYuk)}</td>
