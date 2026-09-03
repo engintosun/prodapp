@@ -224,14 +224,15 @@ Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki
 - TANIMLAR AYARDIR, DÖKÜM İÇERİKTİR. Döküm öğeleri Tanımlar'a GİRMEZ. Şirket ve mevzuat bilgileri Tanımlar'da KALIR, taşınmaz.
 - Bugün yeni yer AÇILMAZ. Oyuncular listesi KARTTAN açılır; yüzey GENEL yazılır (etiket düzenleyicisi), kart yalnızca bir kapıdır — böylece İ1'in kart-özel dal yasağı bozulmaz.
 - İKİNCİ liste (mekân) doğduğu gün Döküm evi doğar ve iki liste birlikte taşınır; rayda yeri o gün konuşulur. Bugün tek gerçek sakin var, o yüzden ev kurulmaz.
-- GEÇİŞ KURALI: bugün liste tam düzenlenebilir; Döküm evi gelince düzenleme oraya taşınır, karttan açılan listede yalnızca ajans/menajer seçimi kalır.
+- GEÇİŞ KURALI: bugün liste tam düzenlenebilir ve kapısı KARTTIR; bu geçicidir. Döküm evi kurulup bütçe rayında yerini aldığında (3 Eylül 2026 kararı) oyuncular listesine girişler oradan yapılır; karttan açılan liste SALT OKUNUR olur, yalnızca ajans ve menajer tikleri karttan işaretlenebilir kalır.
 - LİSTE İNCE KALIR: rol, oyuncu, ajans tiki, menajer tiki. Vesikalık, müsaitlik, casting önerisi, puanlama GİRMEZ — bunlar casting modülünün işidir.
 - ROL serbest metin kalır. Yamdu'da rol senaryo dökümünden gelir; bizde senaryo dökümü KURULMUYOR (mühürlü karar), bu yüzden kullanıcı yazar. Bilinçli eksikliktir.
-- Listenin biçimi: Rol · Oyuncu · Ajans (tik) · Menajer (tik). Tik atılınca yanında ad hanesi açılır, kaldırılınca kapanır. Oran listede SORULMAZ, satırda yaşar.
+- Listenin biçimi (REVİZE 3 Eylül 2026, Engin kararı): Rol · Oyuncu · **Görev** · Ajans (tik) · Menajer (tik). Tik atılınca yanında ad hanesi açılır, kaldırılınca kapanır. Oran listede SORULMAZ, satırda yaşar.
+- **GÖREV HANESİ (3 Eylül 2026):** Rol hanesi karakter adını taşır (serbest metin); Görev hanesi kişinin ne olduğunu söyler ve değerleri katalog atomlarıdır (başrol, yardımcı oyuncu, günlük oyuncu, dublör, dublör koordinatörü ve diğerleri). Kart yerleşimi bu haneden okunur. GEREKÇE: KAAPA kimin dublör kimin oyuncu olduğunu serbest metinden ayırt edemez; ayrıca ileride Excel ya da başka bir biçimden içe aktarma yapıldığında ayrımı taşıyacak tek hane budur.
 - Liste KAZANIR: şablon belirli sayıda oyuncu satırıyla gelir, listede az ya da çok isim girilirse şablon ona göre dönüşür. İsimler MEVCUT satırlara biner, yeni satır açmaz.
 - Liste ZORUNLU DEĞİLDİR: isim girilmezse şablon satırına doğrudan rakam girilir; etiketsiz, özetsiz, düz satır.
-- Listeye yalnız İSİMLİ roller girer: başrol, yardımcı oyuncu, günlük oyuncu. Figüran toplu girilir (genel ekleme yolundan), dublör de listeye GİRMEZ.
-- AÇIK: dublörün de ajansı olabilir; dublör listede olmadığına göre ajans tikinin nerede duracağı karara bağlanmadı.
+- Listeye yalnız İSİMLİ roller girer: başrol, yardımcı oyuncu, günlük oyuncu. Figüran toplu girilir (genel ekleme yolundan). **BAYAT (3 Eylül 2026): "dublör de listeye GİRMEZ" cümlesi geçersizdir** — dublör listeye GİRER. Geçersiz kılan gerekçe: dublörün de ajansı ya da menajeri olabilir; listede olmazsa ajans tikini tutacak ikinci bir liste ya da ayrı bir yöntem icat etmek gerekirdi. Görev hanesi dublörü oyuncudan ayırır, o yüzden ikinci listeye de kolon değişikliğine de gerek kalmaz.
+- KAPANDI (3 Eylül 2026): dublörün ajans/menajer tiki, listedeki kendi satırında durur — dublör artık listeye girdiği için ayrı bir yer gerekmiyor.
 
 ### 12.2 Sol ray — görünüm ve durum
 - Zemin sıcak kâğıt tonundadır. Renkli klasör simgeleri raydan VE kartlardan kaldırılmıştır.

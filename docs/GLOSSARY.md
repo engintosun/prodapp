@@ -139,6 +139,7 @@
 ### Özet satırı ve Oyuncular listesi terimleri (1 Eylül 2026)
 
 - **Özet satırı:** bir kişi etiketinin altındaki kalemleri toplayan, numarası olan, parası çocuklarından gelen ara satır. SAKLANAN BİR KALEM DEĞİLDİR, etiketin GÖRÜNÜMÜDÜR. "Grup" kökü bu kavram için YASAK (Tehlikeli Kökler disiplinine tabidir); "Başlık" birinci kademenin adıdır, özet satırı ikinci kademedir (bkz. BUTCE-EKRAN-KARARLARI §20).
+- **Görev:** Oyuncular listesindeki hane; kişinin ne olduğunu söyler (başrol, yardımcı oyuncu, günlük oyuncu, dublör, dublör koordinatörü) ve değerleri katalog atomlarıdır. ROL ile karıştırılmaz: Rol karakterin adıdır, Görev kişinin işidir. Kart yerleşimi Görev hanesinden okunur (3 Eylül 2026).
 - **Oyuncular listesi:** rol ile oyuncuyu eşleştiren, etiketlerin yüzü olan liste. Ayrı bir defter DEĞİLDİR (bkz. KABUK-KARARLARI TANIM KATMANLARI).
 
 ## Alan adlandırma doktrini (KİLİTLENDİ 2026-07-26)

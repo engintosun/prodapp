@@ -290,6 +290,8 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 - Birim cetveli yedi değerli olacak: gün / hafta / ay / bölüm / film / saat / sabit. ("film" eklenir, "bölüm" dizi için kalır, "saat" mesai için gerekli.)
 - MESAİ VE EK ÇEKİM ŞABLONDAN GELMEZ (1 Eylül 2026, Engin): ikisi de kartın şablonuna girmez, blok içi eklemeden doğar. 1611 Mesai zaten [K] işaretliydi; bu karar onu doğrular.
 - NOT (1 Eylül 2026): grupların başlığındaki "baz+ek" ifadesi bugün yalnız insanın okuduğu bir cümledir, VERİ DEĞİLDİR. Blok içi ekleme listesinin ek atomları süzebilmesi için bir hane gerekiyor; hangi hanede yaşayacağı AÇIK.
+- AÇIK (3 Eylül 2026): Oyuncular listesinin Görev hanesinde dublör seçildiğinde satır nereden doğacak? Dublör atomlarından 1606, 1607 ve 1608 [K] işaretlidir, yani çekirdek şablonda karşılıkları yoktur; listenin bugünkü kuralı ise "isimler MEVCUT satırlara biner, yeni satır açmaz" der. Üç yol konuşulmadan duruyor: atomlar şablona alınır / mesai ile ek çekim gibi blok içi eklemeden gelir / liste satırı doğurur.
+- PARK (3 Eylül 2026): dublör koordinatörü ve benzeri dublör işlerine sahada bazen toplu bütçe veriliyor; bunun kart karşılığı konuşulmadı.
 
 **Kart-özel anomali:** çift-fringe guard (§4.9; loan-out'a fringe de mi yüklendi) · Crew Overlap (§4.9; aynı isim cast + set ekibinde maaş) · ÇOCUK-COMPLIANCE: minör/çocuk oyuncu var + set öğretmeni (1615) yok → bayrak (Compliance Guard §6, teşhis+uyarı). Looping çift-sayım: 1613 ↔ 5300 alias denetimi.
 
