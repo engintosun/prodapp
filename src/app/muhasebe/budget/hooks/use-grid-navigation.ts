@@ -25,6 +25,7 @@ export type GridCol = 'name' | 'unitNet' | 'repeat' | 'multiplier' | 'deriveRate
 const COLUMN_EQUIVALENCE_GROUPS: ColumnEquivalenceGroups = [
   ['name'],
   ['note'],
+  ['person'],
   ['status'],
   ['periods'],
   ['unit', 'periodUnit'],

@@ -10,6 +10,8 @@ import { isMultiPeriod, fmt, matchLibraryItems, buildRoomOptions, findCrossCardM
 import type { RoomOption } from './format'
 import { cardTotals } from './totals'
 import { addBudgetItem, softDeleteBudgetItem } from '../../../shared/supabase/budget-service'
+import { fetchPersonLabels, createPersonLabel, updatePersonLabel, fetchDutyOptions } from '../../../shared/supabase/person-label-service'
+import type { PersonLabel, PersonLabelPatch, DutyOption } from '../../../shared/supabase/person-label-service'
 import { useToast } from '../../../shared/components/toast'
 import { thStyle, thNum, tdStyle, numStyle, colWidths, tableMinWidth } from './components/table-styles'
 import { BUDGET_COLUMNS } from './columns'
@@ -22,6 +24,8 @@ import { BurdenSheet } from './components/burden-sheet'
 import { StatusInfoSheet } from './components/status-info-sheet'
 import { NoteSheet } from './components/note-sheet'
 import { HeadingSheet } from './components/heading-sheet'
+import { PersonListSheet } from './components/person-list-sheet'
+import { PersonPickSheet } from './components/person-pick-sheet'
 import { AddItemRow, ADD_ROW_ID } from './components/add-item-row'
 import { AddItemPanel } from './components/add-item-panel'
 
@@ -211,7 +215,61 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   const [openNoteItemId, setOpenNoteItemId] = useState<string | null>(null)
   const [openHeadingItemId, setOpenHeadingItemId] = useState<string | null>(null)
   const [openStatusInfo, setOpenStatusInfo] = useState(false)
+  const [personListOpen, setPersonListOpen] = useState(false)
+  const [openPersonItemId, setOpenPersonItemId] = useState<string | null>(null)
+  const [personLabels, setPersonLabels] = useState<PersonLabel[]>([])
+  const [dutyOptions, setDutyOptions] = useState<DutyOption[]>([])
   const didInitialFocusRef = useRef(false)
+
+  // KART 1600 M3b-2: Oyuncular listesi (kisi etiketleri) + Gorev secenekleri. Yuzey GENEL
+  // yazilir (KABUK-KARARLARI 12.1 TANIM KATMANLARI): kart yalnizca kapidir, kart-ozel dal YOK.
+  const cardBudgetId = card?.budgetId
+  // setPersonLabels efekt icinden SENKRON cagrilmaz (set-state-in-effect kok cozumu, emsal:
+  // reviewer-screen.tsx load()): .then/.catch zinciri kullanilir, useEffect gövdesi promise'i
+  // baslatir ama sonucunu senkron beklemez.
+  const refreshPersonLabels = useCallback(() => {
+    if (!cardBudgetId) return
+    fetchPersonLabels(cardBudgetId)
+      .then(setPersonLabels)
+      .catch((e) => addToast(e instanceof Error ? e.message : 'Kişi listesi alınamadı', 'error'))
+  }, [cardBudgetId, addToast])
+
+  useEffect(() => {
+    refreshPersonLabels()
+  }, [refreshPersonLabels])
+
+  useEffect(() => {
+    fetchDutyOptions()
+      .then(setDutyOptions)
+      .catch((e) => addToast(e instanceof Error ? e.message : 'Görev listesi alınamadı', 'error'))
+  }, [addToast])
+
+  const onCreatePersonLabel = useCallback(async (): Promise<string | null> => {
+    if (!cardBudgetId) return null
+    try {
+      const created = await createPersonLabel(cardBudgetId, 'Yeni Oyuncu')
+      refreshPersonLabels()
+      return created.id
+    } catch (e) {
+      addToast(e instanceof Error ? e.message : 'Kişi eklenemedi', 'error')
+      return null
+    }
+  }, [cardBudgetId, addToast, refreshPersonLabels])
+
+  const onUpdatePersonLabel = useCallback(
+    async (id: string, patch: PersonLabelPatch) => {
+      try {
+        await updatePersonLabel(id, patch)
+        refreshPersonLabels()
+      } catch (e) {
+        addToast(e instanceof Error ? e.message : 'Kişi kaydedilemedi', 'error')
+      }
+    },
+    [addToast, refreshPersonLabels],
+  )
+
+  const onOpenPersonList = useCallback(() => setPersonListOpen(true), [])
+  const onOpenPerson = useCallback((itemId: string) => setOpenPersonItemId(itemId), [])
 
   useEffect(() => {
     const bordroItemIds = rows.filter((it) => it.paymentStatus === 'bordro').map((it) => it.id)
@@ -333,9 +391,27 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
       <h2 style={{ fontSize: 'var(--text-lg)', color: 'var(--color-text)', margin: '0 0 var(--space-1)' }}>
         {card.cardName}
       </h2>
-      <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', margin: '0 0 var(--space-4)' }}>
-        Dönem eklemek için Dönemler hücresinden seç; her dönem için X (adet) gir. Hücreden çıkınca otomatik kaydeder.
-      </p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-3)', margin: '0 0 var(--space-4)' }}>
+        <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', margin: 0 }}>
+          Dönem eklemek için Dönemler hücresinden seç; her dönem için X (adet) gir. Hücreden çıkınca otomatik kaydeder.
+        </p>
+        <button
+          type="button"
+          onClick={onOpenPersonList}
+          style={{
+            flexShrink: 0,
+            background: 'transparent',
+            border: '1px solid var(--color-border)',
+            borderRadius: 'var(--radius-sm)',
+            padding: 'var(--space-1) var(--space-2)',
+            fontSize: 'var(--text-xs)',
+            color: 'var(--color-text)',
+            cursor: 'pointer',
+          }}
+        >
+          Oyuncular listesi
+        </button>
+      </div>
       <div ref={containerRef} onKeyDown={handleKeyDown} onFocus={handleFocus} onPaste={handlePaste} onDrop={handleDrop} onDragOver={handleDragOver}>
         <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: tableMinWidth, tableLayout: 'fixed' }}>
           <colgroup>
@@ -441,6 +517,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                             onOpenBurden={onOpenBurden}
                             onOpenNote={onOpenNote}
                             onOpenHeading={onOpenHeading}
+                            onOpenPerson={onOpenPerson}
                             onRemove={onRemoveItem}
                             justAdded={justAddedIds.includes(it.id)}
                             bufUnitNet={buffers[it.id + ':unitNet']}
@@ -566,6 +643,22 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         )
       })()}
       {openStatusInfo && <StatusInfoSheet onClose={() => setOpenStatusInfo(false)} />}
+      {personListOpen && (
+        <PersonListSheet
+          labels={personLabels}
+          dutyOptions={dutyOptions}
+          onUpdate={onUpdatePersonLabel}
+          onCreate={onCreatePersonLabel}
+          onClose={() => setPersonListOpen(false)}
+        />
+      )}
+      {openPersonItemId !== null && (() => {
+        const item = rows.find((r) => r.id === openPersonItemId)
+        if (!item) return null
+        return (
+          <PersonPickSheet key={item.id} item={item} labels={personLabels} onCommit={api.commitNote} onClose={() => setOpenPersonItemId(null)} />
+        )
+      })()}
     </div>
   )
 }

@@ -20,6 +20,7 @@ interface ItemRowProps {
   onOpenBurden: (itemId: string, stageId: string | null) => void
   onOpenNote: (itemId: string) => void
   onOpenHeading: (itemId: string) => void
+  onOpenPerson: (itemId: string) => void
   onRemove: (itemId: string) => void
   justAdded: boolean
   bufUnitNet: string | undefined
@@ -43,6 +44,7 @@ export const ItemRow = memo(function ItemRow({
   onOpenBurden,
   onOpenNote,
   onOpenHeading,
+  onOpenPerson,
   onRemove,
   justAdded,
   bufUnitNet,
@@ -119,6 +121,21 @@ export const ItemRow = memo(function ItemRow({
               </svg>
             </button>
           )}
+          <button
+            type="button"
+            data-grid-cell="true"
+            data-row-id={it.id}
+            data-col="person"
+            data-cell-kind="button"
+            title="Kişi"
+            onClick={() => onOpenPerson(it.id)}
+            style={{ display: 'flex', alignItems: 'center', flexShrink: 0, background: 'transparent', border: 'none', cursor: 'pointer', padding: 'var(--space-1)', color: it.personObjectId ? 'var(--color-primary)' : 'var(--color-text-muted)', opacity: it.personObjectId ? 1 : 0.45 }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 21v-1a8 8 0 0 1 16 0v1" />
+            </svg>
+          </button>
         </div>
       </td>
       <td style={selectTd}>
