@@ -364,6 +364,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                       <ItemRow
                         item={it}
                         rowNo={rowNoById.get(it.id) ?? 0}
+                        bufDeriveRate={buffers[it.id + ':deriveRate']}
                         stages={stages}
                         units={units}
                         api={api}

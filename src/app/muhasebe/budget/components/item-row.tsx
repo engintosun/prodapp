@@ -28,6 +28,7 @@ interface ItemRowProps {
   navUnitNet: string | undefined
   navMultiplier: string | undefined
   navRepeat: string | undefined
+  bufDeriveRate: string | undefined
   navDeriveRate: string | undefined
 }
 
@@ -50,6 +51,7 @@ export const ItemRow = memo(function ItemRow({
   navUnitNet,
   navMultiplier,
   navRepeat,
+  bufDeriveRate,
   navDeriveRate,
 }: ItemRowProps) {
   const it = item
@@ -194,7 +196,7 @@ export const ItemRow = memo(function ItemRow({
             style={cellInputNum}
             type="text"
             inputMode="decimal"
-            value={navDeriveRate ?? fieldVal(undefined, it.deriveRate ?? 0)}
+            value={navDeriveRate ?? fieldVal(bufDeriveRate, it.deriveRate ?? 0)}
             onChange={(e) => api.onNumChange(it.id, 'deriveRate', e.target.value)}
             onBlur={() => api.commitField(it.id, 'deriveRate')}
           />
