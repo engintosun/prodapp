@@ -67,6 +67,7 @@ export type EditableField =
   | 'publicNote'
   | 'headingCode'
   | 'deriveRate'
+  | 'personObjectId'
 
 const FIELD_COL: Record<EditableField, string> = {
   internalNote: 'internal_note',
@@ -81,6 +82,7 @@ const FIELD_COL: Record<EditableField, string> = {
   unitId: 'unit_id',
   headingCode: 'heading_code',
   deriveRate: 'derive_rate',
+  personObjectId: 'person_object_id',
 }
 
 async function getProjectId(): Promise<string> {
@@ -359,6 +361,9 @@ export async function updateItemField(
       if (n < 0 || n > 100) throw new Error('Oran 0 ile 100 arasında olmalı')
       payload = { derive_rate: n }
     }
+  } else if (field === 'personObjectId') {
+    const v = String(value).trim()
+    payload = { person_object_id: v === '' ? null : v }
   } else {
     const n = typeof value === 'number' ? value : Number(String(value).replace(',', '.'))
     if (!Number.isFinite(n)) throw new Error('Geçersiz sayı')
