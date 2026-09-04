@@ -87,17 +87,15 @@ export interface DutyOption {
   name: string
 }
 
-// Gorev listesi VERIDEN gelir, kodda gomulmez: 1601-1617 araligi KART 1600 Grup 1/2/4 kisi
-// atomlaridir (1618 Temsilci Komisyonu haric - o komisyon satirinin kendi atomu, gorev degil).
-// Bugun bu araliktan tohumlu atom YOK (kutuphane resmilesmedi), liste bos doner - DOGRU davranis.
+// Gorev listesi VERIDEN gelir, kodda gomulmez: item_library.is_duty bayragi kart
+// acilisinda gorev listesine girecek atomlari isaretler. Kodda gomulu aralik YOK -
+// is_duty=true olan satir zaten baslik (is_group) ya da turetilen (is_derived) olamaz,
+// bayrak tek basina yeterli.
 export async function fetchDutyOptions(): Promise<DutyOption[]> {
   const { data, error } = await supabase
     .from('item_library')
     .select('catalog_code, name')
-    .gte('catalog_code', '1601')
-    .lte('catalog_code', '1617')
-    .eq('is_group', false)
-    .eq('is_derived', false)
+    .eq('is_duty', true)
     .order('catalog_code')
   if (error) throw new Error(error.message)
   return (data ?? []).map((r) => ({

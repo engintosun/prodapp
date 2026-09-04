@@ -231,7 +231,7 @@ Dokuman etiketleri:
 `(dogrulama: TARIH)` — dosyanin EN SON baştan sona doğruluk gözüyle okunduğu tarih. Dosya düzenlendiğinde İLERLEMEZ; yalnız biri oturup okuduğunda ilerler.
 Bu tarih burada TEK yerde yaşar; dosyaların kendi içinde "Son güncelleme" başlığı YOKTUR (ARCHITECTURE 4.5, 18 Ağustos 2026).
 
-`docs/butce/KART-KATALOGU.md` [MUHURLU] (dogrulama: 15 Ağustos 2026) — Etap/Kart eksenleri · Kalem davranış motoru · Çoklu çalışma/yetki · Kilitli kartlar (7.1-7.5) · kod: migrations/…seed_sistem_sablon_film_1500.sql · library-service.ts
+`docs/butce/KART-KATALOGU.md` [MUHURLU] (dogrulama: 5 Eylül 2026) — Etap/Kart eksenleri · Kalem davranış motoru · Çoklu çalışma/yetki · Kilitli kartlar (7.1-7.5) · kod: migrations/…seed_sistem_sablon_film_1500.sql · library-service.ts
 `docs/butce/VERGI-MEVZUATI.md` [MUHURLU] (dogrulama: 16 Ağustos 2026) — Ödeme statüsü→vergi davranışı (resmi_odeme dahil, yedinci statü) · Stopaj · KDV/KDV tevkifatı · KAAPA'ya bağlanış · kod: shared/cfe/cfe.ts
 `docs/butce/PERSONEL-MEVZUATI.md` [MUHURLU] (dogrulama: 11 Temmuz 2026) — Görev sınırı/statü cetveli · Motor doktrini (DILIM-3 mühürleri) · Personelin yasal gideri parametre envanteri · kod: shared/cfe/payroll.ts · shared/supabase/payroll-read.ts
 `docs/butce/BUTCE-SEMA-KARARLARI.md` [MUHURLU cekirdek + AKAN ek] (dogrulama: 19 Ağustos 2026) — Bütçe göçü/köprü kararları · Şablon body FORMAT+KDV ayrıştırma · KUR-1 çok para birimi mührü · Satır-ekleme/Kalem Kütüphanesi · RESMİ ÖDEME + GÖRSEL GRUP + TEK İMZA DOKTRİNİ (15 Ağustos 2026) · kod: supabase/migrations/** · shared/supabase/budget-service.ts — B-serisi şema kararları ve kilitli vergi/yük modeli mühürlüdür; kart kataloğu ve şablon bölümleri akandır.

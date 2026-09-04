@@ -2,7 +2,7 @@
 
 *Kalıcı domain kataloğu. Bütçe modülünün kart/kalem yapısının ve kalem davranış motorunun TEK KAYNAĞI. Koster damıtımından ve oturum kararlarından damıtıldı. TASARIM-KARARLARI.md'den referanslanır.*
 *Oluşturma: 19 Haziran 2026. Güncelleme: 20 Haziran 2026 (KART 1600 OYUNCU + §4.10 cost_object 4. eksen). Önceki: 19 Haziran (KART 1400/1500 + §4.8/§4.9/§5.1/§6).*
-*Durum: KART 1100, 1300, 1400, 1500, 1600 KİLİTLİ; runtime dikey-dilimi (DILIM-3 bordro motoru + genel-desen sökümü) TAMAMLANDI. KÜTÜPHANE TOHUMU 1100 için KAPANDI (DILIM 1100-A, 15 Ağustos 2026, §7.1); 1300/1400/1600/1700 tohumu hâlâ sırada.*
+*Durum: KART 1100, 1300, 1400, 1500, 1600 KİLİTLİ; runtime dikey-dilimi (DILIM-3 bordro motoru + genel-desen sökümü) TAMAMLANDI. KÜTÜPHANE TOHUMU 1100 için KAPANDI (DILIM 1100-A, 15 Ağustos 2026, §7.1); 1600 için KAPANDI (KART 1600 M2, 5 Eylül 2026, §7.5 — 4 başlık + 28 atom, heading_id ile); 1300/1400/1700 tohumu hâlâ sırada.*
 
 ---
 
@@ -227,21 +227,29 @@ Kart-özel anomali kuralları: çift-fringe guard (1501/kreatifler Loan-Out) · 
 *Üst-grup: OYUNCU · Etap: Yapım (casting Yapım Öncesi'ne sarkar) · Recoupable DEĞİL · Görünürlük: KISMİ MASKE (baş-kaşe satırları set rollerine gizli/çoğul, gerisi açık) · DB'de muhasebe tam · anomali aktif.*
 Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi — gerekçe GEREKCELERI). Kod = Koster köken (provenance); KAAPA item_code ayrı (#0001); [K!] = KAAPA atadı (Koster numarasız); kesin katalog kodu kütüphane resmîleşince (karar 2026-07-21: iki-kod doktrini kilitlendi — item_code kimlik olarak kalır, MMB-uyumlu katalog kodu kanonik alan olarak doğar, aidiyet=kod aralığı, çok-kart=ayrı kod, serbest kalem x698 muhtelif alt-kodu; detay BUTCE-SEMA-KARARLARI §H–L). cost_object=Stunt etiketi içsel-stunt kalemlerde oto (§4.10). [Ç]=çekirdek şablon · [K]=kütüphane.
 
+**Dört başlık (KART 1600 M2, 5 Eylül 2026, Engin kararı):** Aidiyet artık kutuphanede VERİDİR (`item_library.heading_id`), koddan türetilmez — Kast Operasyonu başlığı hem 16xx hem 39xx atom taşıdığı için tire-öncesi parçadan türetme bu kartta prensip olarak çalışmaz (bkz. BUTCE-SEMA-KARARLARI, DEĞİŞMEZLER md.2). Dört başlık kodu KAAPA yapısal koddur, Koster kodu değildir (provenance=KAAPA), tire biçimi 1100'ün tire-sonrası atom deseninin TERSİDİR (burada başlık tire taşır, atomlar düz dört haneli kalır):
+- 1600-01 Ana Kast — Principal Cast
+- 1600-02 Dublör — Stunts
+- 1600-03 Arkaplan — Background
+- 1600-04 Kast Operasyonu — Casting Operations
+
+**Görev listesi (19 atom, `is_duty=true`):** 1601, 1602, 1603 (Ana Kast) · 1604, 1606, 1607, 1608 (Dublör) · 3901, 3902, 3903, 3904, 3916, 3917 (Arkaplan) · 1605, 1609, 1612, 1613, 1615, 3914 (Kast Operasyonu). Kodda gömülü aralık YOK; `fetchDutyOptions` tek koşulla okur (`is_duty=true`). Görev OLMAYAN 9 atom: 1611, 1614, 1616, 1618 (Ana Kast) · 1610, 1619, 1620, 3910, 3913 (Kast Operasyonu).
+
 **Grup 1 — Ana Kast** (ödeme-statüsü §4.8; baz+ek; "on-hold" paket kaşe)
 - 1601 Stars / Principal Roles — Başrol Oyuncu: kaşe GİZLİ, normalde çoğul; sette olmasa da anlaşılan tutar ("on-hold"). cost_type=İşçilik. Statü: smm (sözleşmeli oyuncu kendi faturasını keser). [Ç]
 - 1602 Supporting Cast — Yardımcı Oyuncu: loan-out şirketi olabilir (istisna). cost_type=İşçilik. Statü: smm (sözleşmeli oyuncu kendi faturasını keser). [Ç]
 - 1603 Day Players — Günlük Oyuncu: ≤3 gün replikli küçük roller. cost_type=İşçilik. Statü: bordro. [Ç]
-- 1611 Overtime — Mesai: fazla mesai. Turnaround (yetersiz dinlenme telafisi) AYRI kavramdır ve bu atomdan çıkarıldı — bkz. aşağıdaki Turnaround notu. Şablona GİRMEZ, blok içi eklemeden gelir (1 Eylül 2026 kararı, bkz. aşağıda). [K]
-- 1616 Rehearsal — Prova: çekim öncesi prova ücreti. [K]
-- 1614 Residuals — Tekrar Telifi: yeniden yayın/gösterimden süregelen ödeme (ayrı maliyet doğası). [K]
+- 1611 Overtime — Mesai: fazla mesai. Turnaround (yetersiz dinlenme telafisi) AYRI kavramdır ve bu atomdan çıkarıldı — bkz. aşağıdaki Turnaround notu. Statü: bordro. Şablona GİRMEZ, blok içi eklemeden gelir (1 Eylül 2026 kararı, bkz. aşağıda). [K]
+- 1616 Rehearsal — Prova: çekim öncesi prova ücreti. Statü: bordro. [K]
+- 1614 Residuals — Tekrar Telifi: yeniden yayın/gösterimden süregelen ödeme (ayrı maliyet doğası). Statü: telif_belgeli. [K]
 - 1618 [K!] Temsilci Komisyonu — Agency / Management Commission: oyuncunun temsilcisine (ajans/menajer) ödenen komisyon; varsayılan statü Fatura, birim sabit, kalem ekleme listesinde görünmez. GRUP 4'TEN BURAYA TAŞINDI (1 Eylül 2026, Engin kararı): satır ekranda oyuncunun özeti altında çizilir; katalog grubunun çizim yerinden farklı olması aynı olguyu iki yerde iki türlü söylerdi. [K]
 
 **Grup 2 — Dublör** (stunt PERFORMANS · baz+stunt adjustment · cost_object=Stunt oto)
-- 1604 Stunt Coordinator — Dublör Koordinatörü: stunt'ı tasarlar/yönetir; uzmanlık (su/ateş/motor); başrolün dublörü olabilir. [Ç]
-- 1606 Stunt Performers — Stunt Oyuncusu: genel stunt rolleri (düşen/dövüşen figürler). [Ç]
-- 1607 Stunt Doubles — Dublör: belirli oyuncuya benzetilip onun yerine tehlikeli çekime giren. [K]
-- 1608 Stunt Utility — Aksiyon Teknisyeni: belirli double olmayan, genel amaçlı ek stunt iş gücü. [K]
-- Grup 2'nin ödeme statüleri HENÜZ ONAYLANMADI (4 Eylül 2026); bugünkü hâli Opus tahminidir, Engin teyidi bekliyor.
+- 1604 Stunt Coordinator — Dublör Koordinatörü: stunt'ı tasarlar/yönetir; uzmanlık (su/ateş/motor); başrolün dublörü olabilir. Statü: smm. [Ç]
+- 1606 Stunt Performers — Stunt Oyuncusu: genel stunt rolleri (düşen/dövüşen figürler). Statü: bordro. [Ç]
+- 1607 Stunt Doubles — Dublör: belirli oyuncuya benzetilip onun yerine tehlikeli çekime giren. Statü: bordro. [K]
+- 1608 Stunt Utility — Aksiyon Teknisyeni: belirli double olmayan, genel amaçlı ek stunt iş gücü. Statü: bordro. [K]
+- Grup 2'nin ödeme statüleri ONAYLANDI (5 Eylül 2026, Engin'in saha bilgisi) — 4 Eylül 2026'daki "HENÜZ ONAYLANMADI" notu bu maddeyle kapanmıştır.
 
 **Grup 3 — Arkaplan Oyuncusu** (Background Actors · sadece kişiler · AÇIK · baz+premium)
 - 3901 General Extras / Background — Genel Arkaplan Oyuncusu: repliksiz, sahneye hayat veren kalabalık. Statü: sirket (figüranı ajans temin ediyor, ajans kendi 4/a'lisini hizmet olarak veriyor, yapımcı ayrıca sigortalı bildirimi yapmıyor). [Ç]
@@ -252,18 +260,18 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 - 3916 [K!] Dancers — Dansçı: koreografili sahne dansçıları. Statü: smm. [K]
 
 **Grup 4 — Kast Operasyonu** (hizmet/destek, talent değil)
-- 1605 [K!] Casting Director — Cast Direktörü: oyuncuları seçen/yöneten kişi. cost_type=Hizmet. [Ç]
-- 1609 [K!] Casting Assistant — Cast Asistanı. [Ç]
-- 1610 Screen Tests — Deneme Çekimi: seçme sürecindeki deneme çekimi gideri (Koster kökeni, damıtım satır 691). [Ç]
-- 1619 [K!] Casting Expenses — Cast Gideri: seçme sürecinin deneme çekimi dışındaki giderleri (1610'dan ayrıldı, 4 Eylül 2026 — bkz. aşağıdaki 1610/1619 AYRIMI). [Ç]
+- 1605 [K!] Casting Director — Cast Direktörü: oyuncuları seçen/yöneten kişi. cost_type=Hizmet. Statü: smm. [Ç]
+- 1609 [K!] Casting Assistant — Cast Asistanı. Statü: bordro. [Ç]
+- 1610 Screen Tests — Deneme Çekimi: seçme sürecindeki deneme çekimi gideri (Koster kökeni, damıtım satır 691). Statü: sirket. [Ç]
+- 1619 [K!] Casting Expenses — Cast Gideri: seçme sürecinin deneme çekimi dışındaki giderleri (1610'dan ayrıldı, 4 Eylül 2026 — bkz. aşağıdaki 1610/1619 AYRIMI). Statü: sirket. [Ç]
 - 1613 ADR / Looping — Dublaj: oyuncunun post diyalog yeniden-seslendirme seansı. Statü: smm (performans ücreti). ÇAPRAZ: 5300 Post Ses alias — stüdyo/miksaj orada (5300 kendi satırı, sadece işaretçi; çift-sayım denetimi). [Ç]
-- ADR Buyout [K!] — ADR Hak Devri: ADR/dublaj seansındaki performansın hak devri bedeli, 1613'ten ayrı satır. Statü: telif_belgeli (hak devri). Kod HENÜZ ATANMADI (kütüphane tohumu turunda atanacak); şablon/kütüphane sınıflandırması AÇIK.
-- 1615 Set Teacher — Set Öğretmeni / Refah Görevlisi: çocuk/minör oyuncuda ZORUNLU (compliance). cost_type=Hizmet. [Ç]
-- 1612 Cast Musicians — Müzisyen (kadro): sahnede/kayıtta görünen müzisyenler. [K]
-- 3913 Extras Casting — Arkaplan Oyuncusu Castingi: figüran/kalabalık seçim ajansı. [K]
-- 3914 Crowd Controllers — Kast Sorumlusu: set figüran/kalabalık sevki (Türk saha terimi). [K]
-- 3910 Extras Wardrobe Allowance — Arkaplan Oyuncusu Kostüm Ödeneği: kendi kıyafetini getirmesi için ödenek. [K]
-- 3915 Payroll Service — Bordro Hizmeti: figüran/oyuncu bordrosu dış hizmeti. [K]
+- 1620 [K!] ADR Buyout — ADR Hak Devri: ADR/dublaj seansındaki performansın hak devri bedeli, 1613'ten ayrı satır. Statü: telif_belgeli (hak devri).
+- 1615 Set Teacher — Set Öğretmeni / Refah Görevlisi: çocuk/minör oyuncuda ZORUNLU (compliance). cost_type=Hizmet. Statü: smm. [Ç]
+- 1612 Cast Musicians — Müzisyen (kadro): sahnede/kayıtta görünen müzisyenler. Statü: smm. [K]
+- 3913 Extras Casting — Arkaplan Oyuncusu Castingi: figüran/kalabalık seçim ajansı. Statü: sirket. [K]
+- 3914 Crowd Controllers — Kast Sorumlusu: set figüran/kalabalık sevki (Türk saha terimi). Statü: bordro. [K]
+- 3910 Extras Wardrobe Allowance — Arkaplan Oyuncusu Kostüm Ödeneği: kendi kıyafetini getirmesi için ödenek. Statü: sirket. [K]
+- 3915 Payroll Service — Bordro Hizmeti: KART 1600'DEN ÇIKARILDI (5 Eylül 2026, Engin kararı). Kütüphaneye tohumlanmadı, görev listesine girmez.
 
 **Kart dışı (köken kodu ≠ KAAPA Oyuncu kartı):**
 - 1617 Contractuals — Sözleşmesel → item_burdens (yüzde/yük, kart gövdesinde değil; percent_line adayı §8).
@@ -303,7 +311,11 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 
 **1610/1619 AYRIMI (4 Eylül 2026, Engin):** 1610 ikiye ayrıldı. Deneme Çekimi 1610'da kalır (Koster kökeni, damıtım satır 691); Cast Gideri yeni kod 1619'u alır.
 
-**ADR BUYOUT (4 Eylül 2026, Engin):** ADR Hak Devri yeni atom (statü telif_belgeli, hak devri). 1613 ADR/Looping'den ayrı satır — 1613 performans ücretini (smm), ADR Buyout hak devrini karşılar. Toplam atom sayısı 29'a çıktı.
+**ADR BUYOUT (4 Eylül 2026, Engin; kod 5 Eylül 2026'da 1620 atandı):** ADR Hak Devri yeni atom (statü telif_belgeli, hak devri). 1613 ADR/Looping'den ayrı satır — 1613 performans ücretini (smm), ADR Buyout hak devrini karşılar.
+
+**1613 AD ÇAPRAZ KONTROL DÜZELTMESİ (5 Eylül 2026, Engin kararı):** Tohum göçünün ilk yazımında `item_library.name` (Türkçe ad) yanlışlıkla `'Dublaj (ADR/Looping)'` girilmişti; katalog kazandı, tohum `'Dublaj'` olarak düzeltildi. Gerekçe: parantez içindeki bilgi zaten `name_en` hanesinde (`'ADR / Looping'`) duruyor, aynı şeyi iki hanede taşımak kısa-form kararına ters düşerdi.
+
+**ATOM SAYISI DÜZELTMESİ (5 Eylül 2026, Engin kararı):** 4 Eylül'deki "toplam atom sayısı 29'a çıktı" YANLIŞTI — o sayım Bordro Hizmeti'nin (3915) karttan çıkacağını hesaba katmamıştı. 3915 KART 1600'DEN ÇIKARILDI (bkz. Grup 4'teki not); doğru toplam 4 başlık + 28 atomdur (kütüphane tohumu: KART 1600 M2, 5 Eylül 2026).
 
 **Kart-özel anomali:** çift-fringe guard (§4.9; loan-out'a fringe de mi yüklendi) · Crew Overlap (§4.9; aynı isim cast + set ekibinde maaş) · ÇOCUK-COMPLIANCE: minör/çocuk oyuncu var + set öğretmeni (1615) yok → bayrak (Compliance Guard §6, teşhis+uyarı). Looping çift-sayım: 1613 ↔ 5300 alias denetimi.
 
