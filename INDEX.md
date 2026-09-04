@@ -218,6 +218,7 @@ KALICILIK KURALI gereği her karar CURRENT.md'ye VE kendi özel ev dosyasına ya
 | Sıradaki iş | `CURRENT.md` (tamamlananlar ve uzun vadeli backlog: `docs/IS-SIRASI.md`) |
 | Oturum açılış ve kapanış prosedürü, prompt biçimi | `docs/protokol/ACILIS.md`, `KAPANIS.md`, `PROMPT.md` |
 | Tekrar eden kusur sınıfları ve dersleri | `docs/protokol/DERSLER.md` |
+| Bir daha tartışılmayacak değişmez | `docs/DEGISMEZLER.md` |
 
 Şema araştırılırken: güncel şema = baseline + sonraki TÜM göçler. Baseline bayat tabandır, göçler kronolojik okunur. Eski `supabase/SUPABASE-*.sql` ve `full-rebuild.sql` dosyaları `docs/archive/` altındadır, tarihsel referanstır.
 
@@ -256,6 +257,7 @@ Bu tarih burada TEK yerde yaşar; dosyaların kendi içinde "Son güncelleme" ba
 `docs/EKRAN-SAHA.md` [AKAN] (dogrulama: 2 Haziran 2026) — Giriş akışı · Ana ekran/fiş giriş yolları · OCR sonuç formu · Dönem/arama/mesajlar · kod: app/saha/**
 `CLAUDE.md` [AKAN] (dogrulama: 18 Ağustos 2026) — Oturum protokolü · Opus/Sonnet iş bölümü · Prompt zorunlulukları · Doğrulama/karar disiplini · kod: .claude/**
 `CURRENT.md` [AKAN] (dogrulama: 18 Ağustos 2026) — Milestone özeti · Optimizasyon turu · Durum (HEAD/test/build) · Mühür durumu · Karar evleri işaretçisi · Sıradaki iş · kod: yok
+`docs/DEGISMEZLER.md` [AKAN] (dogrulama: 4 Eylül 2026) — Bir daha tartışılmayacak değişmezler, evi doğrulanmış on madde · kod: yok
 
 `docs/protokol/ACILIS.md` [AKAN] (dogrulama: 25 Ağustos 2026) — Oturum açılış protokolü · Taze klon zorunluluğu · Okuma sırası · Durum raporunun biçimi · kod: yok
 `docs/protokol/KAPANIS.md` [AKAN] (dogrulama: 25 Ağustos 2026) — Oturum kapanış protokolü · Diyet kuralı (Milestone damıtılır, sayılmaz) · KALICILIK KURALI · Doküman doğrulamasının zamanı · kod: yok
