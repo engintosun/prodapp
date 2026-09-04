@@ -176,7 +176,7 @@ Nature-split kart-aşırı toplam ihtiyacı doğurdu ("stunt toplam ne?"). Çöz
 - **Kast Sorumlusu** (Crowd Controllers) ≠ **Crowd AD**: ilki figüranı SEVK eder (Oyuncu kartı, 3914); ikincisi sahneyi YÖNETİR (reji asistanı → 2100+ AD kartı, 1500'de değil).
 - Üç "öne çıkan figüran" tipi ayrı: **Sessiz Rol** (eylemli, repliksiz) · **Özel Yetenekli** (beceri) · **Özel Tip** (fiziksel görünüm; ABD Specialty Background, FR Silhouette).
 - **Dublör** (Stunt Double) ≠ **Stunt Oyuncusu** (Stunt Players) ≠ **Aksiyon Teknisyeni** (Stunt Utility): birincisi belirli oyuncunun yerine, ikincisi genel stunt rolü, üçüncüsü genel destek.
-- **Dublaj** (Looping/ADR), **Mesai** (Turnaround); **Stand-In** İngilizce kalır (sektör kullanımı).
+- **Dublaj** (Looping/ADR); **Mesai** (Overtime, fazla mesai — Turnaround DEĞİL, bkz. aşağıdaki Turnaround gerekçesi); **Stand-In** İngilizce kalır (sektör kullanımı).
 
 ### Master Excel doğrulaması
 Oyuncu-Kast 197 kalem. Çekirdek (kaynak-sayısı = kaç bütçede): Cast Director 10k · Stunt Coordinator 9k · ADR 7k · Extras 7k · Stand-ins 7k · Looping 6k · Day Players 5k · Principal Cast 5k · Supporting Cast 4k. Stunt kalemlerinin çok-kart dağılımı (Grip/Lojistik/Oyuncu) doğa-bölmesini doğruladı.
@@ -184,8 +184,11 @@ Oyuncu-Kast 197 kalem. Çekirdek (kaynak-sayısı = kaç bütçede): Cast Direct
 ### 1618 Temsilci Komisyonu atomu (KART 1600 M1, 1 Eylül 2026, Engin kararı)
 Temsilci komisyonu yapımcının maliyetidir ve oyuncunun kendi özeti altında yaşar (1400'de değil). Tek atom yeter: ajans ile menajer farkı statüde yaşar (statü satır bazında seçilir), ayrı atom gerektirmez. Kod 1618 KAAPA-atamalıdır çünkü 1617 Koster'de Contractuals olarak doludur ve item_burdens'a gider.
 
-### Ek Çekim neden mesaiden ayrı atom (1 Eylül 2026, Engin kararı)
-Mesai saatlik telafidir, ek çekim tam gündür; sözleşmede belirli sayıda ek çekim ücrete dahildir ve satırın varlığı "dahil olan sayı aşıldı" demektir. Tek satıra bindirilirse bu sinyal kaybolur. Türkiye pratiği kuralsızdır, doğrusunu biz kurarız.
+### Figüran statüsü neden şirket (ajans modeli, 4 Eylül 2026, Engin'in saha bilgisi)
+Arkaplan grubunun beş atomu (Genel Arkaplan, Stand-In, Sessiz Rol, Özel Yetenekli, Özel Tip) statü=sirket alır. Figüranı ajans temin ediyor, ajans kendi 4/a'lı çalışanını yapımcıya hizmet olarak veriyor; yapımcı ayrıca sigortalı bildirimi yapmıyor. Bu yüzden ödeme yapımcının kendi bordrosu ya da SMM faturası değil, ajansa kesilen şirket faturasıdır.
+
+### Turnaround neden bütçeye hiç girmez (4 Eylül 2026, Engin kararı)
+Turnaround (yetersiz dinlenme telafisi) öngörülemez bir ihlal tazminatıdır, Türkiye'de resmi bir cetveli yoktur; gerçekleşirse muhtelif bloğundan geçer, kendi atomu olmaz. Mesai (Overtime, 1611) ise planlanabilir fazla çalışmadır ve ayrı atomdur — ikisi aynı satırda yaşıyordu, bu turda ayrıştırıldı.
 
 ### 1618'in grup değişikliği (1 Eylül 2026, Engin kararı)
 Komisyon hizmettir ama ekranda oyuncunun özeti altında yaşar; aidiyeti çizim yeriyle aynı tutuldu.
