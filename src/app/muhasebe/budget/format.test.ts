@@ -284,8 +284,8 @@ describe('buildRoomOptions (D3c-2 — AYIKLAMA KURALI + DEVRALMA)', () => {
 
 describe('findCrossCardMatches (D3c-3 — TAM AD, YALNIZ resmi kutuphane, kart bu butcede sinirli)', () => {
   const LIBRARY = [
-    { catalogCode: '1501', name: 'Yönetmen Kaşesi', aliases: [], isGroup: false },
-    { catalogCode: '2201', name: 'Işık Şefi', aliases: ['Gaffer'], isGroup: false },
+    { cardCode: '1500', name: 'Yönetmen Kaşesi', aliases: [], isGroup: false },
+    { cardCode: '2200', name: 'Işık Şefi', aliases: ['Gaffer'], isGroup: false },
   ]
   const CARDS = [
     { cardCode: '1500', name: 'Yönetmen' },
@@ -324,8 +324,8 @@ describe('findCrossCardMatches (D3c-3 — TAM AD, YALNIZ resmi kutuphane, kart b
 
   it('baslik satiri (is_group) ayni ad+kart olsa da eslesme uretmez (DILIM 1100-A)', () => {
     const libraryWithGroup = [
-      { catalogCode: '1101', name: 'Hikâye, Senaryo, Haklar', aliases: [], isGroup: true },
-      { catalogCode: '1501', name: 'Yönetmen Kaşesi', aliases: [], isGroup: false },
+      { cardCode: '1100', name: 'Hikâye, Senaryo, Haklar', aliases: [], isGroup: true },
+      { cardCode: '1500', name: 'Yönetmen Kaşesi', aliases: [], isGroup: false },
     ]
     const cardsWithGeliistirme = [
       { cardCode: '1500', name: 'Yönetmen' },

@@ -7,6 +7,7 @@ const ROWS = [
   {
     id: 'g1',
     catalog_code: '1101',
+    card_code: '1100',
     name: 'Hikâye, Senaryo, Haklar',
     name_en: 'Story & Screenplay',
     default_payment_status: 'sirket',
@@ -17,6 +18,7 @@ const ROWS = [
   {
     id: 'a1',
     catalog_code: '1101-01',
+    card_code: '1100',
     name: 'Hak Satın Alma',
     name_en: 'Story Rights Purchase',
     default_payment_status: 'telif_belgeli',
@@ -30,7 +32,7 @@ vi.mock('./client', () => ({
   supabase: {
     from: () => ({
       select: () => ({
-        like: () => ({
+        eq: () => ({
           order: () => Promise.resolve({ data: ROWS, error: null }),
         }),
         order: () => Promise.resolve({ data: ROWS, error: null }),

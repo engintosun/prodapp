@@ -228,27 +228,25 @@ export function buildRoomOptions(
 // ve kullanicinin gidebilecegi bir yer de yoktur, o durumda mesaj hic cikmaz.
 export function findCrossCardMatches(
   query: string,
-  library: { catalogCode: string; name: string; aliases: string[]; isGroup: boolean }[],
+  library: { cardCode: string; name: string; aliases: string[]; isGroup: boolean }[],
   currentCardCode: string,
   cards: { cardCode: string; name: string }[],
 ): string[] {
   const q = normalizeForSearch(query.trim())
   if (q === '') return []
 
-  const currentPrefix = currentCardCode.slice(0, 2)
-  const matchesPrefix = (prefix: string) =>
+  const matchesCard = (cardCode: string) =>
     library.some(
       (it) =>
         !it.isGroup &&
-        it.catalogCode.slice(0, 2) === prefix &&
+        it.cardCode === cardCode &&
         (normalizeForSearch(it.name) === q || it.aliases.some((a) => normalizeForSearch(a) === q)),
     )
 
   const result: string[] = []
   for (const c of cards) {
-    const prefix = c.cardCode.slice(0, 2)
-    if (prefix === currentPrefix) continue
-    if (matchesPrefix(prefix)) result.push(c.name)
+    if (c.cardCode === currentCardCode) continue
+    if (matchesCard(c.cardCode)) result.push(c.name)
   }
   return result
 }

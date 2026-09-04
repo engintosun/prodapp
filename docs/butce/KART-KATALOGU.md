@@ -255,7 +255,7 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 - 3901 General Extras / Background — Genel Arkaplan Oyuncusu: repliksiz, sahneye hayat veren kalabalık. Statü: sirket (figüranı ajans temin ediyor, ajans kendi 4/a'lisini hizmet olarak veriyor, yapımcı ayrıca sigortalı bildirimi yapmıyor). [Ç]
 - 3902 Stand-Ins — Stand-In: oyuncu yerinde set ışıklanırken duran; regular'dan fazla kazanır. Statü: sirket (ajans modeli, bkz. 3901). [Ç]
 - 3903 Silent Bits — Sessiz Rol: repliksiz ama öne çıkan/eylemli figür; premium. Statü: sirket (ajans modeli, bkz. 3901). [K]
-- 3904 Special Ability — Özel Yetenekli Arkaplan Oyuncusu: beceri/tehlike (yüzücü/binici); baz + ek. Statü: sirket (ajans modeli, bkz. 3901). [K]
+- 3904 Special Ability — Özel Yetenekli Arkaplan: beceri/tehlike (yüzücü/binici); baz + ek. Statü: sirket (ajans modeli, bkz. 3901). [K]
 - 3917 [K!] Specialty Background (FR: Silhouette) — Özel Tip: belirli fiziksel tip/görünüm için (dönem yüzü, ayırt edici tip). KAAPA-eklemesi. Statü: sirket (ajans modeli, bkz. 3901). [K]
 - 3916 [K!] Dancers — Dansçı: koreografili sahne dansçıları. Statü: smm. [K]
 
@@ -265,12 +265,12 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 - 1610 Screen Tests — Deneme Çekimi: seçme sürecindeki deneme çekimi gideri (Koster kökeni, damıtım satır 691). Statü: sirket. [Ç]
 - 1619 [K!] Casting Expenses — Cast Gideri: seçme sürecinin deneme çekimi dışındaki giderleri (1610'dan ayrıldı, 4 Eylül 2026 — bkz. aşağıdaki 1610/1619 AYRIMI). Statü: sirket. [Ç]
 - 1613 ADR / Looping — Dublaj: oyuncunun post diyalog yeniden-seslendirme seansı. Statü: smm (performans ücreti). ÇAPRAZ: 5300 Post Ses alias — stüdyo/miksaj orada (5300 kendi satırı, sadece işaretçi; çift-sayım denetimi). [Ç]
-- 1620 [K!] ADR Buyout — ADR Hak Devri: ADR/dublaj seansındaki performansın hak devri bedeli, 1613'ten ayrı satır. Statü: telif_belgeli (hak devri).
-- 1615 Set Teacher — Set Öğretmeni / Refah Görevlisi: çocuk/minör oyuncuda ZORUNLU (compliance). cost_type=Hizmet. Statü: smm. [Ç]
-- 1612 Cast Musicians — Müzisyen (kadro): sahnede/kayıtta görünen müzisyenler. Statü: smm. [K]
+- 1620 [K!] ADR Buyout — ADR Hak Devri: ADR/dublaj seansındaki performansın hak devri bedeli, 1613'ten ayrı satır. Statü: telif_belgeli (hak devri). [K]
+- 1615 Set Teacher — Set Öğretmeni: çocuk/minör oyuncuda ZORUNLU (compliance). cost_type=Hizmet. Statü: smm. [Ç]
+- 1612 Cast Musicians — Müzisyen: sahnede/kayıtta görünen müzisyenler. Statü: smm. [K]
 - 3913 Extras Casting — Arkaplan Oyuncusu Castingi: figüran/kalabalık seçim ajansı. Statü: sirket. [K]
 - 3914 Crowd Controllers — Kast Sorumlusu: set figüran/kalabalık sevki (Türk saha terimi). Statü: bordro. [K]
-- 3910 Extras Wardrobe Allowance — Arkaplan Oyuncusu Kostüm Ödeneği: kendi kıyafetini getirmesi için ödenek. Statü: sirket. [K]
+- 3910 Extras Wardrobe Allowance — Arkaplan Kostüm Ödeneği: kendi kıyafetini getirmesi için ödenek. Statü: sirket. [K]
 - 3915 Payroll Service — Bordro Hizmeti: KART 1600'DEN ÇIKARILDI (5 Eylül 2026, Engin kararı). Kütüphaneye tohumlanmadı, görev listesine girmez.
 
 **Kart dışı (köken kodu ≠ KAAPA Oyuncu kartı):**
@@ -283,6 +283,8 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 **Stunt = doğa-bölmesi:** tek "Efekt & Dublör" kartı YOK. Performans→Oyuncu (bu kart), araç→Transport, mekanik→Mekanik FX. Üç kartın stunt satırları cost_object=Stunt taşır → CFE tek "Stunt toplam" (§4.10). Gerçekten etkilenen diğer kartlar: Transport, Mekanik FX (5300 değil — alias işaretçi).
 
 **1600/3900 KARARI (DILIM 1100-A, 15 Ağustos 2026, Engin):** 3900 kodları 16xx'e TAŞINMAZ — Grup 3/4'ün 39xx satırları (3901-3915) kendi aralığında kalır. Kartın kütüphanesi İKİ aralığı birden gösterir (16xx + 39xx, iki köken bloğu; ikisi de KART 1600'e aittir — aidiyet kart koduna değil bu kartın tanımladığı ARALIKLAR kümesine bağlanır). Serbest kalem eklenirse 39xx kod alır (16xx değil). Sonuç: mevcut kod-aralığı doktrini (K-B) tek-aralık varsayımıyla yazılmıştı; library-service.ts'teki iki-hane (`catalogCode.slice(0,2)`) aidiyet kuralı ve fn_add_budget_item'daki `substr(p_catalog_code,1,2) = substr(v_card_code,1,2)` aralık denetimi 1600 turunda genişletilecek. BU DİLİMDE YAPILMADI, kayıt olarak düşer.
+
+**Kapandı, 5 Eylül 2026.** Yukarıdaki paragrafın son cümlesi ("BU DİLİMDE YAPILMADI, kayıt olarak düşer") artık eskidir: genişletme değil KALDIRMA yapıldı — K-B doktrini iptal edildi, aidiyet artık `item_library.card_code` alanında veridir, önek aritmetiği dört yerden de söküldü (bkz. BUTCE-SEMA-KARARLARI §I).
 
 **KART 1600 ÜÇ KADEMELİ YAPI KARARI (21 Ağustos 2026, Engin):** Oyuncu satırı, temsilcisi varsa üç kademeli yapıya döner — kart grubu → oyuncu özet başlığı → alt kalemler (temsilci sayısı kadar). Başlık kademesi para taşımaz, altındaki alt kalemlerin toplamını gösterir; temsilcisiz oyuncu tek satır kalır, başlık doğmaz. Her alt kalem kendi ödeme statüsünü taşır (ajans faturası ≠ menajer SMM, farklı statüler tek satıra sığmaz). Detay: CURRENT.md "KART 1600 TASARIM KARARLARI" bölümü.
 
