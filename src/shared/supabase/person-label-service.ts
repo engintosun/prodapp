@@ -10,6 +10,10 @@ export interface PersonLabel {
   roleName: string | null
   dutyCode: string | null
   isActive: boolean
+  hasAgency: boolean
+  agencyName: string | null
+  hasManager: boolean
+  managerName: string | null
 }
 
 function mapPersonLabel(r: Record<string, unknown>): PersonLabel {
@@ -20,6 +24,10 @@ function mapPersonLabel(r: Record<string, unknown>): PersonLabel {
     roleName: (r.role_name as string | null) ?? null,
     dutyCode: (r.duty_code as string | null) ?? null,
     isActive: r.is_active as boolean,
+    hasAgency: r.has_agency as boolean,
+    agencyName: (r.agency_name as string | null) ?? null,
+    hasManager: r.has_manager as boolean,
+    managerName: (r.manager_name as string | null) ?? null,
   }
 }
 
@@ -27,13 +35,26 @@ export async function fetchPersonLabels(): Promise<PersonLabel[]> {
   const projectId = await getProjectId()
   const { data, error } = await supabase
     .from('budget_cost_objects')
-    .select('id, code, name, role_name, duty_code, is_active')
+    .select('id, code, name, role_name, duty_code, is_active, has_agency, agency_name, has_manager, manager_name')
     .eq('project_id', projectId)
     .eq('kind', 'kisi')
     .order('sort_order')
     .order('code')
   if (error) throw new Error(error.message)
   return (data ?? []).map(mapPersonLabel)
+}
+
+// URETIM KAYITLARI masa kapagi: satirlari CEKMEZ, yalniz sayar (head:true count:'exact').
+export async function countPersonLabels(): Promise<number> {
+  const projectId = await getProjectId()
+  const { count, error } = await supabase
+    .from('budget_cost_objects')
+    .select('id', { head: true, count: 'exact' })
+    .eq('project_id', projectId)
+    .eq('kind', 'kisi')
+    .eq('is_active', true)
+  if (error) throw new Error(error.message)
+  return count ?? 0
 }
 
 // code degeri YENI SAYAC ICAT ETMEZ: mevcut kolonun bu projedeki en buyugune bir eklenir
@@ -54,7 +75,7 @@ export async function createPersonLabel(name: string): Promise<PersonLabel> {
   const { data, error } = await supabase
     .from('budget_cost_objects')
     .insert({ project_id: projectId, code: nextCode, name: v, kind: 'kisi' })
-    .select('id, code, name, role_name, duty_code, is_active')
+    .select('id, code, name, role_name, duty_code, is_active, has_agency, agency_name, has_manager, manager_name')
     .single()
   if (error) throw new Error(error.message)
   return mapPersonLabel(data)
@@ -64,6 +85,10 @@ export type PersonLabelPatch = Partial<{
   name: string
   roleName: string | null
   dutyCode: string | null
+  hasAgency: boolean
+  agencyName: string | null
+  hasManager: boolean
+  managerName: string | null
 }>
 
 export async function updatePersonLabel(id: string, patch: PersonLabelPatch): Promise<void> {
@@ -80,6 +105,20 @@ export async function updatePersonLabel(id: string, patch: PersonLabelPatch): Pr
   if ('dutyCode' in patch) {
     const v = String(patch.dutyCode ?? '').trim()
     payload.duty_code = v === '' ? null : v
+  }
+  if ('hasAgency' in patch) {
+    payload.has_agency = Boolean(patch.hasAgency)
+  }
+  if ('agencyName' in patch) {
+    const v = String(patch.agencyName ?? '').trim()
+    payload.agency_name = v === '' ? null : v
+  }
+  if ('hasManager' in patch) {
+    payload.has_manager = Boolean(patch.hasManager)
+  }
+  if ('managerName' in patch) {
+    const v = String(patch.managerName ?? '').trim()
+    payload.manager_name = v === '' ? null : v
   }
   const { error } = await supabase.from('budget_cost_objects').update(payload).eq('id', id)
   if (error) throw new Error(error.message)

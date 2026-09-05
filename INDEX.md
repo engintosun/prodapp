@@ -73,7 +73,7 @@ varsayim yapilmaz.
 -> Etkiler: authenticated-shell.tsx cardId yokken buradan render eder.
 -> Kritik: HAYIR — kararlarin evi KABUK-KARARLARI 12.3; ekran orada yazilani cizer.
 
-`src/app/muhasebe/budget/card-table-screen.tsx` (663)
+`src/app/muhasebe/budget/card-table-screen.tsx` (652)
 -> Görev: Kart tablosu ekranının orkestrasyonu — veri hook'ları + ekleme paneli + satır bileşenlerini birbirine bağlar.
 -> Kullanır: hooks/* (use-card-rows, use-edit-buffers, use-grid-navigation) + components/* + budget-service.ts.
 -> Etkiler: authenticated-shell.tsx (muhasebe "bütçe" sekmesi) buradan render eder.
@@ -107,7 +107,7 @@ varsayim yapilmaz.
 
 `src/App.tsx` (49) — auth durumuna göre login/signup/proje-seçim/kabuk yönlendirmesi
 `src/main.tsx` (13) — React kök giriş noktası, StrictMode + index.css import
-`src/app/auth/authenticated-shell.tsx` (316) — rol-bazlı kabuk: header+nav+ekran seçimi, kurulum durumu kontrolü
+`src/app/auth/authenticated-shell.tsx` (319) — rol-bazlı kabuk: header+nav+ekran seçimi, kurulum durumu kontrolü
 `src/app/auth/create-project-page.tsx` (150) — yeni proje açma formu, fn_create_project çağırır
 `src/app/auth/login-page.tsx` (55) — email/şifre giriş formu
 `src/app/auth/project-selection-page.tsx` (332) — çoklu proje seçim ekranı + yeni proje açma girişi
@@ -115,8 +115,8 @@ varsayim yapilmaz.
 `src/app/layout/app-header.tsx` (381) — üst şerit: avatar dropdown, proje adı, tema, çıkış, bildirim
 `src/app/layout/app-shell.tsx` (190) — kabuk yerleşimi: sol ray + iki şeritli üst bağlam + kendi ekseninde kayan orta masa; ray daraltma düğmesini taşır
 `src/app/layout/bottom-nav.tsx` (76) — rol-bazlı alt navigasyon sekmeleri (NAV_ITEMS)
-`src/app/layout/nav-rail.tsx` (177) — sol ray: modül duraklarını çizer, açık/kapalı iki genişlik (168/68px), kapalıda ikon + ilk harf düşüşü
-`src/app/layout/rail-icons.tsx` (46) — rayın elle yazılmış tek renkli SVG ikonları (currentColor; ikon kütüphanesi kurulmadı)
+`src/app/layout/nav-rail.tsx` (180) — sol ray: modül duraklarını çizer, açık/kapalı iki genişlik (168/68px), kapalıda ikon + ilk harf düşüşü
+`src/app/layout/rail-icons.tsx` (73) — rayın elle yazılmış tek renkli SVG ikonları (currentColor; ikon kütüphanesi kurulmadı)
 `src/app/muhasebe/budget/components/add-item-panel.tsx` (283) — kalem ekleme odası: kütüphane arama + serbest kalem
 `src/app/muhasebe/budget/components/add-item-row.tsx` (60) — tablo altı "+ kalem ekle" düğme satırı
 `src/app/muhasebe/budget/components/bottom-sheet.tsx` (104) — ortak alt-sheet primitivi (backdrop+panel+odak tuzağı)

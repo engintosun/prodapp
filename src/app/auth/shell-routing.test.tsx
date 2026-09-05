@@ -56,6 +56,10 @@ vi.mock('../muhasebe/budget/card-desk-screen', () => ({
   CardDeskScreen: () => <div data-testid="card-desk-screen">masa</div>,
 }))
 
+vi.mock('../muhasebe/production/production-records-screen', () => ({
+  ProductionRecordsScreen: (props: object) => <div data-testid="production-records-screen">{JSON.stringify(props)}</div>,
+}))
+
 vi.mock('../saha/saha-screen', () => ({
   SahaScreen: ({ activeKey }: { activeKey: string }) => <div data-testid="saha-screen">{activeKey}</div>,
 }))
@@ -91,6 +95,12 @@ describe('AuthenticatedShell — adres semasi (KABUK sprint dilim 1)', () => {
   it('/butce adresi cardId varken o karti acar', async () => {
     renderShell('/butce?cardId=11111111-2222-3333-4444-555555555555', 'muhasebe')
     await screen.findByTestId('card-table-screen')
+  })
+
+  it('/butce/uretim-kayitlari adresi Uretim Kayitlari ekranini acar, cardId/budgetId okumaz', async () => {
+    renderShell('/butce/uretim-kayitlari?budgetId=b1&cardId=11111111-2222-3333-4444-555555555555', 'muhasebe')
+    const el = await screen.findByTestId('production-records-screen')
+    expect(el.textContent).toBe('{}')
   })
 
   it('tanimsiz adres sessiz kalmaz, acik karsilik doner', async () => {

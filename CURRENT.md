@@ -14,14 +14,14 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 - **5 Eylül 2026 — KART 1600 canlıya girdi (üç dilim + ekran denemesi).** Kütüphane tohumu (M2: 4 başlık + 28 atom, `heading_id` ile aidiyet, `is_duty` görev bayrağı), K-B doktrini iptali (aidiyet `item_library.card_code`'a taşındı, muhtelif öneki karta ayrıldı), şablon gövdesi (M3: 13 çekirdek atom, `misc_prefix`) sırayla canlıya girdi ve gerçek bir bütçede denendi — kart açılışı, başlık dağılımı, Oyuncular listesi panosu çalışıyor. Bu turda bir teşhis hatası ("kişi listesinin kapısı yok" iddiası, tam okunmamış bir grep çıktısından kuruldu) kaynağa dönülerek düzeltildi — bkz. `docs/protokol/DERSLER.md`. Üç katalog kararı alındı, henüz UYGULANMADI (1620 kalkıyor, kütüphaneden eklenirken kişi soran/sormayan atomlar ayrıldı — asks_person kuralı): tam metin `docs/butce/KART-KATALOGU.md` §7.5.
 - **5 Eylül 2026 — MÜHÜR-3 dilim 1-2 canlıya girdi (dac0e0e, 691e637, 78a5cce, 128a7cd).** Kişi/iş etiketleri (`budget_cost_objects`) bütçe kapsamından PROJE kapsamına taşındı; mühürlü bütçe artık kendi etiket kopyasından (`budget_cost_object_snapshot`) okur, canlı tablodan değil. Bir KVKK bulgusu (etiket değişiklik kaydının herkese açık kalması riski) aynı turda yakalanıp düzeltildi. Gerekçe, geri dönüşü ve tam metin: `docs/butce/BUTCE-SEMA-KARARLARI.md`. Bu taşıma Üretim Kayıtları'nın önkoşuluydu; ekranı bugün YAZILMADI, yalnız veri katmanı hazır.
 - **5 Eylül 2026 — Üretim Kayıtları tasarımı bitti (Engin).** Bütçe rayında yeni durak, kart mimarisi ve veri sahipliği ilkeleri (VERİNİN SAHİBİ KAAPA'DIR, bütçe değil) karara bağlandı — `docs/KABUK-KARARLARI.md` §12.1b, §4 GEVŞEME, §12.3 KAPSAM. Tasarım BİTTİ; sıradaki oturum doğrudan uygulamaya başlar (bkz. Sıradaki iş).
+- **6 Eylül 2026 — Üretim Kayıtları durağı kodda canlıya girdi.** Bütçe rayında Bütçe Girişi'nden hemen sonra yeni durak açıldı (`nav-rail.tsx`, `authenticated-shell.tsx`); kendi ekranı (`production-records-screen.tsx`) masa + Oyuncular listesi olarak kuruldu, listeye giriş buradan yapılıyor. Karttan açılan Oyuncular panosu (`person-list-sheet.tsx`) SALT OKUNUR oldu, yalnız ajans/menajer tikleri karttan işaretlenebilir kaldı — `card-table-screen.tsx`'teki "+ Kişi ekle" ve çağıran taraf temizlendi. Şema dilimi (`budget_cost_objects`'e ajans/menajer haneleri) YAZILDI ama CANLIYA UYGULANMADI — Engin onayı bekliyor (bkz. Sıradaki iş). Servis (`person-label-service.ts`) dört yeni hane ve `countPersonLabels` ile genişledi. Test: 328 → 330. Karar evi: `docs/KABUK-KARARLARI.md` §3/§12.2, `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20.
 
 ## Durum
 
-- HEAD: 78a5cce (5 Eylül 2026 — etiketlerin proje kapsamına taşınması). Denetim E gereği burada CURRENT.md'ye dokunan son commit'in EBEVEYNİ yazar; kapanışta YAZMA ANINDAKİ HEAD yazılır, çünkü kapanış commit'i CURRENT.md'ye dokunur ve "son commit" o olur.
-- MUHUR-3 CANLIDA ve doğrulandı. Kişi ve iş etiketleri artık PROJE kapsamında. Ekranda okuma ve yazma elle denendi, çalışıyor.
-- Bugün inen commit'ler: dac0e0e (dilim 1 — etiket kopyası), 691e637 (dilim 2 SQL), 128a7cd (servis proje kapsamına), 78a5cce (göç sırası düzeltmesi).
-- Canlıda iki etiket satırı kayıpsız taşındı, üzerine ekran üzerinden üçüncüsü eklendi.
-- Migration 20260901130000'den 20260905180000'e kadar (KART 1600 M1/M2/M3, K-B iptali, MÜHÜR-3 dilim 1-2 dahil) CANLIDA. Kod: 328/328 test. Build geçer, eslint 0 hata. Originde tek dal: main.
+- HEAD: f02e1fd (5 Eylül 2026 — oturum kapanışı). Denetim E gereği burada CURRENT.md'ye dokunan son commit'in EBEVEYNİ yazar; kapanışta YAZMA ANINDAKİ HEAD yazılır, çünkü kapanış commit'i CURRENT.md'ye dokunur ve "son commit" o olur.
+- MUHUR-3 CANLIDA ve doğrulandı. Kişi ve iş etiketleri artık PROJE kapsamında.
+- ÜRETİM KAYITLARI DURAĞI kodda CANLIDA (bkz. Milestone 6 Eylül). ŞEMA DİLİMİ (ajans/menajer haneleri, `20260906120000_uretim_kayitlari_temsilci_haneleri.sql`) YAZILDI, CANLIYA UYGULANMADI — `npx supabase db push` Engin onayını bekliyor. Onay gelmeden ekrandaki ajans/menajer tikleri canlı DB'de çalışmaz (kolon yok).
+- Migration 20260901130000'den 20260905180000'e kadar (KART 1600 M1/M2/M3, K-B iptali, MÜHÜR-3 dilim 1-2 dahil) CANLIDA; 20260906120000 BEKLEMEDE. Kod: 330/330 test. Build geçer, eslint 0 hata. Originde tek dal: main.
 - Bütçe kolon modeli: 13 veri kolonu + etiketsiz silme hanesi — No · Ad · Statü · Dönemler · Birim · Birim net · Miktar · X · Ara toplam · Yasal Yük · Maliyet · KDV · Toplam.
 - ÇALIŞMA ORTAMI: yedi deterministik kapı kurulu (dal, sığ klon, damga varlığı/tazeliği, ASCII'ye düşmüş .md metni, tanımsız CSS token, test sayısı kaybı) ve `supabase db push` onaya bağlı. Bu ortamda Docker YOK — `db reset`/`db dump` çalışmaz, `db push` ve salt-okuma `db query` çalışır (bkz. DERSLER.md "Sandbox gerçeği"). Ayarlar `.claude/settings.json`, kapılar `.claude/hooks/`.
 - KLV KAPANMADI: macOS gerçek cihaz turu yapılmadı. `v0.2-klv` etiketi ATILAMAZ.
@@ -46,17 +46,9 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 
 ## Sıradaki iş
 
-**MADDE 1: ÜRETİM KAYITLARI DİLİMİ.** Sonraki oturumun ilk işi budur ve tasarımı BİTMİŞTİR; açılış protokolünden sonra doğrudan prompt yazılabilir. Kapsam:
-- Şema: `budget_cost_objects`'e ajans tiki, ajans adı, menajer tiki, menajer adı (dört hane). Tikler bu dilime GİRER (Engin kararı).
-- Servis: kişi sayımı fonksiyonu (kart kapağındaki rakam) + tik hanelerinin okunması/yazılması. `person-label-service.ts` zaten proje kapsamında çalışıyor.
-- `nav-rail.tsx`: "Üretim Kayıtları" durağı, Bütçe Girişi ile Tanımlar ARASINDA, ikisiyle aynı biçimde.
-- `rail-icons.tsx`: yeni kâğıt ikon (KABUK §12.2 ikon dili: tek renk, `currentColor`, elle yazılmış SVG, kütüphane YOK). Hangi kâğıt olduğu KARARA BAĞLANMADI.
-- `authenticated-shell.tsx`: BUTCE_ROUTES'a bir satır, bir ScreenKind, render'da bir dal. Desen `/butce` ile aynı: kart kimliği yoksa masa, varsa kart açılır.
-- YENİ ekran — masa: bugün tek kart (Oyuncular), kapakta kişi SAYISI + birim.
-- YENİ ekran — kart: karta tıklanınca MASAYI KAPLAR (alttan gelen pano DEĞİL). İçerik BASİT: başlıklar + liste. Haneler: Rol, Oyuncu, Görev, Ajans (tik), Menajer (tik); tik atılınca yanında ad hanesi açılır. YOK: damıtma, Türkçe/İngilizce ayrımı, sıra, hesaplama, alt-üst, serbest kalem.
-- `card-table-screen.tsx`: karttan açılan liste SALT OKUNUR olur (ad/rol/görev), yalnız ajans ve menajer tikleri işaretlenebilir kalır. Giriş Üretim Kayıtları'ndan.
-- Doküman: KABUK §12.1 ve bölüm 3'teki ray listesi BİRLİKTE güncellenir (12.1'in OTORİTE NOTU bunu emrediyor).
-- Kırılmayacağı DOĞRULANAN şey: ismin kart satırına binmesi listeden gelmiyor; kullanıcı satırdaki kişi simgesinden PersonPickSheet ile seçiyor ve `person_object_id` o satıra yazılıyor. Girişin taşınması bu yolu etkilemiyor.
+**MADDE 1: ÜRETİM KAYITLARI ŞEMA ONAYI VE CANLIYA ALMA.** Kod tarafı (ekran, servis, ray, ikon, kabuk) bu oturumda YAZILDI ve testten geçti; eksik olan tek şey canlı DB. Sıradaki oturumun ilk işi:
+- `supabase/migrations/20260906120000_uretim_kayitlari_temsilci_haneleri.sql` Engin'e SQL olarak gösterilir, onay alınır, `npx supabase db push` çalıştırılır.
+- Push sonrası ekranda ajans/menajer tikleri gerçek veriyle elle denenir (okuma/yazma), CURRENT.md'ye "CANLIDA ve doğrulandı" olarak işlenir.
 
 Tam metin ve gerekçeler: `docs/KABUK-KARARLARI.md` §12.1b/§4/§12.3, `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 ÜRETİM KAYITLARI — LİSTE KARARLARI.
 
@@ -64,7 +56,6 @@ Tam metin ve gerekçeler: `docs/KABUK-KARARLARI.md` §12.1b/§4/§12.3, `docs/bu
 
 Bu bölüm KARAR DEĞİL, henüz karara bağlanmamış açık sorulardır (yalnız bu modülün işi; diğerleri `docs/IS-SIRASI.md` Backlog'a).
 
-- Üretim Kayıtları durağının İKONU: hangi kâğıt. Karara bağlanmadı.
 - Masadaki kart başlıkları (Oyuncular, Ekip, Mekânlar…) tablo mu kod sabiti mi. Bugün kapsam dışı bırakıldı; ikinci kategori doğunca konuşulur.
 - Belgeden kopyalama (içe aktarma): hangi kolonlar, hangi biçim, aynı isim ikinci kez gelirse ne olur. Kendi tasarım turunu ister.
 - `fn_check_cost_object_kind` artık ŞARTLI garanti: bileşik FK her yazımda koruyordu, tetik yalnız iki etiket kolonu değiştiğinde koruyor. Kalemin bütçesi sonradan değiştirilirse bağ sessizce projeler arası kalabilir. Bugün böyle bir işlem yok.

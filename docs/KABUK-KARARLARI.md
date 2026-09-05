@@ -68,9 +68,9 @@ Tezin dört sonucu:
 
 **Hedef ray içerikleri:**
 
-| Muhasebe (6 satır) | Bütçe (5 satır) |
+| Muhasebe (6 satır) | Bütçe (6 satır) |
 |---|---|
-| Dashboard · Bekleyen · Şüpheli · Avanslar · Raporlar | Genel Bütçe · Bütçe Girişi · Raporlar · Gerçekleşen |
+| Dashboard · Bekleyen · Şüpheli · Avanslar · Raporlar | Genel Bütçe · Bütçe Girişi · Üretim Kayıtları · Raporlar · Gerçekleşen |
 | — ayraç — | — ayraç — |
 | Tanımlar | Tanımlar |
 
@@ -260,6 +260,7 @@ Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki
 - REVİZYON (ENGİN KARARI, 12 Ağustos 2026) — Daraltma düğmesi RAYIN DEĞİL, KABUĞUN öğesidir. Eski madde "Daraltma düğmesi rayın ÜSTÜNDEDİR" diyordu; doğrusu ray sütununun SAĞ ÜST köşesidir — rayın masayla birleştiği kenarın en üstü. Ray kapanınca düğme AYNI EKRAN NOKTASINDA kalır (kapalı sütunun sağ üst köşesi), zıplamaz. Durum localStorage'da hatırlanır (emsal: `shared/theme.ts`'teki `useTheme` deseni).
 - KARAR DÖNÜŞÜ (ENGİN KARARI, 12 Ağustos 2026) — kapalı rayda duraklar İKONLA görünür ve tıklanabilir kalır. Bu maddenin eski hâlindeki "kısmi daralma yok, simge olmadığı için daralmış rayın gösterecek şeyi yoktur" gerekçesi DÜŞMÜŞTÜR — simge yapıldı. Gerekçe: canlı kullanımda bomboş bir kapalı ray kullanılamıyor. (Bu dönüş bölüm 3'ün "kalıcı ikon şeridi YOK" kararını KAPSAMAZ — bkz. bölüm 3 notu.)
 - İKON DİLİ (ENGİN KARARI, 12 Ağustos 2026): hepsi KÂĞITTIR — çizgili föy (içine yazılan form, Bütçe Girişi), sekmeli kart destesi (tanım/katalog, Tanımlar), ayağında kalın toplam çizgisi olan föy (Genel Bütçe), yırtık kenarlı fiş (Gerçekleşen), köşesi kıvrık föy (Raporlar). Tek renk, `currentColor`, elle yazılmış SVG; ikon kütüphanesi kurulmaz (emsal: `app-header.tsx` BellIcon). Tanımlar'da DİŞLİ KULLANILMAZ — dişli marka ayarlarınındır. Yeni durak eklendiğinde sorulacak soru: o durakta hangi kâğıt var.
+- İKON DİLİ EKİ (6 Eylül 2026): Üretim Kayıtları durağı liste föyü taşır — üç satır işaretli, dikey kolon çizgisi YOK. Ayırt edici yanı budur: Bütçe Girişi'nin ikonu (çizgili föy) bir tablodur, bu bir listedir.
 - Ray seyrek durur, satırlar nefes alır. Duraklar/çerçeve/kartlar çevresinde çok hafif gölge.
 - Rayın tepesinde modül adı KALIR — rayın başlığıdır, üstteki modül anahtarının tekrarı değildir.
 - Puanlama motoru (yaş × tutar × tip) SONRAKİ DÖNEMLERİN İŞİDİR. Bugün kurulmaz: kalibre edecek gerçek veri yoktur ve adet ≠ önem olduğu için adede göre boyanan çok tonlu skala kullanıcıyı yanlış durağa çağırır. Ray dışarıdan durak başına SAYI + AĞIRLIK alır; bugün ağırlık ikilidir (0 / işaretli), motor gelince aynı yerden gerçek puan gelir ve kabuk değişmez.

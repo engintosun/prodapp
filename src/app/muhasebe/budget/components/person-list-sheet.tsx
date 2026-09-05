@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react'
 import type { DutyOption, PersonLabel, PersonLabelPatch } from '../../../../shared/supabase/person-label-service'
 import { BottomSheet } from './bottom-sheet'
 
@@ -26,106 +25,96 @@ const tdStyle = {
   padding: 'var(--space-1) var(--space-1)',
 }
 
+const tickLabelStyle = {
+  display: 'flex',
+  alignItems: 'center' as const,
+  gap: 'var(--space-1)',
+}
+
+const noteStyle = {
+  fontSize: 'var(--text-xs)',
+  color: 'var(--color-text-muted)',
+  margin: '0 0 var(--space-3)',
+}
+
+function dutyName(dutyCode: string | null, dutyOptions: DutyOption[]): string {
+  if (!dutyCode) return ''
+  return dutyOptions.find((d) => d.catalogCode === dutyCode)?.name ?? dutyCode
+}
+
 // Panonun bilesen imzasi hicbir kart koduna baglanmaz: yalniz labels, dutyOptions ve geri
 // cagrilar alir (I1, kart-ozel dal YASAK). budgetId ve servis cagrilari CAGIRAN tarafta yasar.
+// URETIM KAYITLARI duragi geldikten sonra (6 Eylul 2026, KABUK-KARARLARI 12.1) kisi girisi
+// oradan yapilir: Rol/Oyuncu/Gorev burada SALT OKUNUR, yalniz ajans ve menajer tikleri
+// (ve tik isaretliyken ad haneleri) karttan duzenlenebilir kalir. "+ Kisi ekle" KALKTI.
 export function PersonListSheet({
   labels,
   dutyOptions,
   onUpdate,
-  onCreate,
   onClose,
 }: {
   labels: PersonLabel[]
   dutyOptions: DutyOption[]
   onUpdate: (id: string, patch: PersonLabelPatch) => void | Promise<void>
-  onCreate: () => Promise<string | null>
   onClose: () => void
 }) {
-  // Yeni satir eklendiginde odak yeni satirin Oyuncu hanesine gider (m5-m6: kayit dugmesi
-  // YOK, onBlur ile kaydedilir). Girdiler kontrolsuz (defaultValue) oldugu icin odak DOM
-  // referansindan yonetilir, React state'ten degil.
-  const pendingFocusIdRef = useRef<string | null>(null)
-  const nameInputsRef = useRef<Map<string, HTMLInputElement>>(new Map())
-
-  useEffect(() => {
-    const id = pendingFocusIdRef.current
-    if (!id) return
-    const el = nameInputsRef.current.get(id)
-    if (!el) return
-    pendingFocusIdRef.current = null
-    el.focus()
-  }, [labels])
-
-  const handleCreate = async () => {
-    const newId = await onCreate()
-    if (newId) pendingFocusIdRef.current = newId
-  }
-
   return (
     <BottomSheet title="Oyuncular listesi" onClose={onClose}>
+      <p style={noteStyle}>Kişi girişi artık Üretim Kayıtları'ndan yapılır.</p>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr>
             <th style={thStyle}>Rol</th>
             <th style={thStyle}>Oyuncu</th>
             <th style={thStyle}>Görev</th>
+            <th style={thStyle}>Ajans</th>
+            <th style={thStyle}>Menajer</th>
           </tr>
         </thead>
         <tbody>
           {labels.map((l) => (
             <tr key={l.id}>
+              <td style={tdStyle}>{l.roleName ?? ''}</td>
+              <td style={tdStyle}>{l.name}</td>
+              <td style={tdStyle}>{dutyName(l.dutyCode, dutyOptions)}</td>
               <td style={tdStyle}>
-                <input
-                  defaultValue={l.roleName ?? ''}
-                  onBlur={(e) => void onUpdate(l.id, { roleName: e.target.value })}
-                  style={inputStyle}
-                />
+                <label style={tickLabelStyle}>
+                  <input
+                    type="checkbox"
+                    checked={l.hasAgency}
+                    onChange={(e) => void onUpdate(l.id, e.target.checked ? { hasAgency: true } : { hasAgency: false, agencyName: '' })}
+                  />
+                  {l.hasAgency && (
+                    <input
+                      defaultValue={l.agencyName ?? ''}
+                      onBlur={(e) => void onUpdate(l.id, { agencyName: e.target.value })}
+                      placeholder="Ajans adı"
+                      style={inputStyle}
+                    />
+                  )}
+                </label>
               </td>
               <td style={tdStyle}>
-                <input
-                  ref={(el) => {
-                    if (el) nameInputsRef.current.set(l.id, el)
-                    else nameInputsRef.current.delete(l.id)
-                  }}
-                  defaultValue={l.name}
-                  onBlur={(e) => void onUpdate(l.id, { name: e.target.value })}
-                  style={inputStyle}
-                />
-              </td>
-              <td style={tdStyle}>
-                <select
-                  defaultValue={l.dutyCode ?? ''}
-                  onChange={(e) => void onUpdate(l.id, { dutyCode: e.target.value })}
-                  style={inputStyle}
-                >
-                  <option value="">Görev seç</option>
-                  {dutyOptions.map((d) => (
-                    <option key={d.catalogCode} value={d.catalogCode}>
-                      {d.name}
-                    </option>
-                  ))}
-                </select>
+                <label style={tickLabelStyle}>
+                  <input
+                    type="checkbox"
+                    checked={l.hasManager}
+                    onChange={(e) => void onUpdate(l.id, e.target.checked ? { hasManager: true } : { hasManager: false, managerName: '' })}
+                  />
+                  {l.hasManager && (
+                    <input
+                      defaultValue={l.managerName ?? ''}
+                      onBlur={(e) => void onUpdate(l.id, { managerName: e.target.value })}
+                      placeholder="Menajer adı"
+                      style={inputStyle}
+                    />
+                  )}
+                </label>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <button
-        type="button"
-        onClick={() => void handleCreate()}
-        style={{
-          marginTop: 'var(--space-3)',
-          background: 'transparent',
-          border: '1px solid var(--color-border)',
-          borderRadius: 'var(--radius-sm)',
-          padding: 'var(--space-1) var(--space-3)',
-          fontSize: 'var(--text-sm)',
-          color: 'var(--color-text)',
-          cursor: 'pointer',
-        }}
-      >
-        + Kişi ekle
-      </button>
     </BottomSheet>
   )
 }

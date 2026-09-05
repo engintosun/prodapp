@@ -1,6 +1,6 @@
 import type { ComponentType, CSSProperties } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { BudgetEntryIcon, DefinitionsIcon } from './rail-icons'
+import { BudgetEntryIcon, DefinitionsIcon, ProductionRecordsIcon } from './rail-icons'
 
 export type ShellModule = 'muhasebe' | 'butce'
 
@@ -33,7 +33,10 @@ const RAIL_CONFIG: Record<ShellModule, RailModuleConfig> = {
   },
   butce: {
     title: 'Bütçe',
-    stops: [{ key: 'butce-girisi', label: 'Bütçe Girişi', path: '/butce', icon: BudgetEntryIcon }],
+    stops: [
+      { key: 'butce-girisi', label: 'Bütçe Girişi', path: '/butce', icon: BudgetEntryIcon },
+      { key: 'uretim-kayitlari', label: 'Üretim Kayıtları', path: '/butce/uretim-kayitlari', icon: ProductionRecordsIcon },
+    ],
     definitions: { key: 'tanimlar', label: 'Tanımlar', path: '/butce/tanimlar', icon: DefinitionsIcon },
   },
 }

@@ -338,6 +338,7 @@ NOT (8 Ağustos 2026): buradaki üç-rol listesi HARCAMA ZİNCİRİ içindir. Ma
 - Üretim Kayıtları'na giren HER oyuncu bütçede KALEM olur. Üretim Kayıtları KİM OLDUĞUNU tutar, ücret KALEMDE yaşar — ikisi ayrı kayıttır (kişi etiketi ile `budget_items` satırı).
 - Üretim Kayıtları ekranı BÜTÇEYİ HİÇ GÖRMEZ, yalnız PROJEYİ görür (`person-label-service.ts` zaten proje kapsamında çalışıyor, MUHUR-3 dilim 2). Yüzeyin ileride taşınabilir olmasının şartı budur.
 - KIRILMAYACAĞI DOĞRULANDI: ismin kart satırına binmesi listeden gelmiyor; kullanıcı satırdaki kişi simgesinden PersonPickSheet ile seçiyor, `person_object_id` o satıra yazılıyor. Girişin taşınması (kart → Üretim Kayıtları) bu yolu ETKİLEMİYOR.
+- AJANS/MENAJER TİKLERİ (6 Eylül 2026, Engin kararı): tik bu dilimde YALNIZ VERİDİR, satır doğumu ayrı bir dilimdir. Tik/ad haneleri işaretlenir ve kaydedilir, hiçbir bütçe satırı doğurmaz, hiçbir bütçe tablosuna yazmaz — komisyon satırının doğumu (bkz. §20 ORANIN YERİ, KART 1600) bu tiklerden bağımsız, ayrı bir karar ve dilimdir.
 
 **İÇE AKTARMA AÇIĞI (5 Eylül 2026, Engin gündeme getirdi — AÇIK, aynen duruyor):** Yüzlerce oyunculuk kadronun JSON/Excel/başka formattan kopyalanabilmesi hiçbir dosyada geçmiyor. Bugün tek yol "+ Kişi ekle" ile satır satır yazmaktır. Kaynak katman artık BELLİ (Yol B, proje) ama kopyalama biçimi kendi tasarım turunu ister.
 

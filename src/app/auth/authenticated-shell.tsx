@@ -22,6 +22,7 @@ import { InviteScreen } from '../muhasebe/invite-screen'
 import { CardTableScreen } from '../muhasebe/budget/card-table-screen'
 import { CardDeskScreen } from '../muhasebe/budget/card-desk-screen'
 import { DefinitionsScreen } from '../muhasebe/definitions-screen'
+import { ProductionRecordsScreen } from '../muhasebe/production/production-records-screen'
 import { OnboardingFlow } from '../onboarding/onboarding-flow'
 
 interface Props {
@@ -32,7 +33,7 @@ interface Props {
 
 type SetupState = 'checking' | 'departman' | 'donem' | 'none'
 
-type ScreenKind = 'reviewer' | 'invite' | 'definitions' | 'budget' | 'empty'
+type ScreenKind = 'reviewer' | 'invite' | 'definitions' | 'budget' | 'production' | 'empty'
 
 interface RouteEntry {
   key: string
@@ -62,6 +63,7 @@ const MUHASEBE_ROUTES: RouteEntry[] = [
 
 const BUTCE_ROUTES: RouteEntry[] = [
   { key: 'butce-girisi', path: '/butce', kind: 'budget', label: 'Bütçe Girişi' },
+  { key: 'uretim-kayitlari', path: '/butce/uretim-kayitlari', kind: 'production', label: 'Üretim Kayıtları' },
   { key: 'tanimlar', path: '/butce/tanimlar', kind: 'definitions', label: 'Tanımlar' },
 ]
 
@@ -101,6 +103,7 @@ function screenForMatch(
   if (match.kind === 'reviewer') return <ReviewerScreen role={role} />
   if (match.kind === 'invite') return <InviteScreen />
   if (match.kind === 'definitions') return <DefinitionsScreen projectId={projectId as string} userId={userId} />
+  if (match.kind === 'production') return <ProductionRecordsScreen />
   if (match.kind === 'budget') {
     const budgetId = searchParams.get('budgetId') ?? undefined
     const cardId = searchParams.get('cardId') ?? undefined

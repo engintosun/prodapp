@@ -10,7 +10,7 @@ import { isMultiPeriod, fmt, matchLibraryItems, buildRoomOptions, findCrossCardM
 import type { RoomOption } from './format'
 import { cardTotals } from './totals'
 import { addBudgetItem, softDeleteBudgetItem } from '../../../shared/supabase/budget-service'
-import { fetchPersonLabels, createPersonLabel, updatePersonLabel, fetchDutyOptions } from '../../../shared/supabase/person-label-service'
+import { fetchPersonLabels, updatePersonLabel, fetchDutyOptions } from '../../../shared/supabase/person-label-service'
 import type { PersonLabel, PersonLabelPatch, DutyOption } from '../../../shared/supabase/person-label-service'
 import { useToast } from '../../../shared/components/toast'
 import { thStyle, thNum, tdStyle, numStyle, colWidths, tableMinWidth } from './components/table-styles'
@@ -224,7 +224,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // KART 1600 M3b-2: Oyuncular listesi (kisi etiketleri) + Gorev secenekleri. Yuzey GENEL
   // yazilir (KABUK-KARARLARI 12.1 TANIM KATMANLARI): kart yalnizca kapidir, kart-ozel dal YOK.
   // MUHUR-3 dilim 2 ekran tarafi: etiketler artik PROJE kapsamli, kartin butcesine bagli
-  // degil - fetchPersonLabels/createPersonLabel kendi projesini getProjectId() ile alir.
+  // degil - fetchPersonLabels kendi projesini getProjectId() ile alir. URETIM KAYITLARI
+  // duragi geldikten sonra (6 Eylul 2026) kisi girisi oradan yapilir; bu ekran salt okur.
   // setPersonLabels efekt icinden SENKRON cagrilmaz (set-state-in-effect kok cozumu, emsal:
   // reviewer-screen.tsx load()): .then/.catch zinciri kullanilir, useEffect gövdesi promise'i
   // baslatir ama sonucunu senkron beklemez.
@@ -243,17 +244,6 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
       .then(setDutyOptions)
       .catch((e) => addToast(e instanceof Error ? e.message : 'Görev listesi alınamadı', 'error'))
   }, [addToast])
-
-  const onCreatePersonLabel = useCallback(async (): Promise<string | null> => {
-    try {
-      const created = await createPersonLabel('Yeni Oyuncu')
-      refreshPersonLabels()
-      return created.id
-    } catch (e) {
-      addToast(e instanceof Error ? e.message : 'Kişi eklenemedi', 'error')
-      return null
-    }
-  }, [addToast, refreshPersonLabels])
 
   const onUpdatePersonLabel = useCallback(
     async (id: string, patch: PersonLabelPatch) => {
@@ -647,7 +637,6 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           labels={personLabels}
           dutyOptions={dutyOptions}
           onUpdate={onUpdatePersonLabel}
-          onCreate={onCreatePersonLabel}
           onClose={() => setPersonListOpen(false)}
         />
       )}

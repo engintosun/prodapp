@@ -44,3 +44,30 @@ export function DefinitionsIcon() {
     </svg>
   )
 }
+
+// Uretim Kayitlari duragi: liste foyu - Butce Girisi'nden ayirt edici yani dikey
+// kolon cizgisi TASIMAMASI (o tablodur, bu listedir). Her satirda kisa bir isaret
+// (x=7.5 civari) + satir cizgisi (x=10.5'ten x=17'ye), uc satir yuksekliginde.
+export function ProductionRecordsIcon() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="4" y="3" width="16" height="18" rx="2" />
+      <line x1="7" y1="8.5" x2="8" y2="8.5" />
+      <line x1="10.5" y1="8.5" x2="17" y2="8.5" />
+      <line x1="7" y1="13" x2="8" y2="13" />
+      <line x1="10.5" y1="13" x2="17" y2="13" />
+      <line x1="7" y1="17.5" x2="8" y2="17.5" />
+      <line x1="10.5" y1="17.5" x2="17" y2="17.5" />
+    </svg>
+  )
+}
