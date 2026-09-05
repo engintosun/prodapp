@@ -22,6 +22,7 @@ interface ItemRowProps {
   onOpenHeading: (itemId: string) => void
   onOpenPerson: (itemId: string) => void
   onRemove: (itemId: string) => void
+  personNameById: ReadonlyMap<string, string>
   justAdded: boolean
   bufUnitNet: string | undefined
   bufMultiplier: string | undefined
@@ -46,6 +47,7 @@ export const ItemRow = memo(function ItemRow({
   onOpenHeading,
   onOpenPerson,
   onRemove,
+  personNameById,
   justAdded,
   bufUnitNet,
   bufMultiplier,
@@ -127,7 +129,7 @@ export const ItemRow = memo(function ItemRow({
             data-row-id={it.id}
             data-col="person"
             data-cell-kind="button"
-            title="Kişi"
+            title={(it.personObjectId && personNameById.get(it.personObjectId)) || 'Kişi seç'}
             onClick={() => onOpenPerson(it.id)}
             style={{ display: 'flex', alignItems: 'center', flexShrink: 0, background: 'transparent', border: 'none', cursor: 'pointer', padding: 'var(--space-1)', color: it.personObjectId ? 'var(--color-primary)' : 'var(--color-text-muted)', opacity: it.personObjectId ? 1 : 0.45 }}
           >

@@ -245,6 +245,11 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
       .catch((e) => addToast(e instanceof Error ? e.message : 'Görev listesi alınamadı', 'error'))
   }, [addToast])
 
+  // Kart tarafi kisi secimi GOREV hanesine gore suzulur (6 Eylul 2026): ikinci sorgu
+  // ACILMAZ, mevcut dutyOptions'tan turer.
+  const dutyCodes = useMemo(() => new Set(dutyOptions.map((d) => d.catalogCode)), [dutyOptions])
+  const personNameById = useMemo(() => new Map(personLabels.map((l) => [l.id, l.name])), [personLabels])
+
   const onUpdatePersonLabel = useCallback(
     async (id: string, patch: PersonLabelPatch) => {
       try {
@@ -508,6 +513,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                             onOpenHeading={onOpenHeading}
                             onOpenPerson={onOpenPerson}
                             onRemove={onRemoveItem}
+                            personNameById={personNameById}
                             justAdded={justAddedIds.includes(it.id)}
                             bufUnitNet={buffers[it.id + ':unitNet']}
                             bufMultiplier={buffers[it.id + ':multiplier']}
@@ -644,7 +650,15 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         const item = rows.find((r) => r.id === openPersonItemId)
         if (!item) return null
         return (
-          <PersonPickSheet key={item.id} item={item} labels={personLabels} onCommit={api.commitNote} onClose={() => setOpenPersonItemId(null)} />
+          <PersonPickSheet
+            key={item.id}
+            item={item}
+            labels={personLabels}
+            dutyCodes={dutyCodes}
+            rowCatalogCode={item.catalogCode}
+            onCommit={api.commitNote}
+            onClose={() => setOpenPersonItemId(null)}
+          />
         )
       })()}
     </div>
