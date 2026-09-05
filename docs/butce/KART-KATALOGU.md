@@ -235,6 +235,8 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 
 **Görev listesi (19 atom, `is_duty=true`):** 1601, 1602, 1603 (Ana Kast) · 1604, 1606, 1607, 1608 (Dublör) · 3901, 3902, 3903, 3904, 3916, 3917 (Arkaplan) · 1605, 1609, 1612, 1613, 1615, 3914 (Kast Operasyonu). Kodda gömülü aralık YOK; `fetchDutyOptions` tek koşulla okur (`is_duty=true`). Görev OLMAYAN 9 atom: 1611, 1614, 1616, 1618 (Ana Kast) · 1610, 1619, 1620, 3910, 3913 (Kast Operasyonu).
 
+**Şablon (KART 1600 M3, 5 Eylül 2026, Engin kararı):** Kart aktif sistem şablonuna girdi (üçüncü kart, 1100+1500'ün yanına — mevcut bütçelere dokunmadı, kart yalnız YENİ açılan bütçelerde doğar). 28 atomun 13'ü [Ç] işaretli, şablonun çekirdek satır setini oluşturur: 1601, 1602, 1603, 1604, 1606, 3901, 3902, 1605, 1609, 1610, 1613, 1615, 1619. Kalan 15 atom ([K]) şablona girmez, kütüphaneden elle eklenir: 1611, 1614, 1616, 1618, 1607, 1608, 3903, 3904, 3916, 3917, 1612, 3910, 3913, 3914, 1620. Kartın `misc_prefix` hanesi `"39"` — kart kodu `16` değil, çünkü MMB'nin kendi 1600 Talent bloğu 1698 Miscellaneous + 1699 Fringe ile bitiyor ve kart-kodu-öneki muhtelif üretseydi bu ikisiyle çakışırdı (15 Ağustos 2026 kararı zaten bu yüzden serbest kalemi 39xx'e yönlendirmişti).
+
 **Grup 1 — Ana Kast** (ödeme-statüsü §4.8; baz+ek; "on-hold" paket kaşe)
 - 1601 Stars / Principal Roles — Başrol Oyuncu: kaşe GİZLİ, normalde çoğul; sette olmasa da anlaşılan tutar ("on-hold"). cost_type=İşçilik. Statü: smm (sözleşmeli oyuncu kendi faturasını keser). [Ç]
 - 1602 Supporting Cast — Yardımcı Oyuncu: loan-out şirketi olabilir (istisna). cost_type=İşçilik. Statü: smm (sözleşmeli oyuncu kendi faturasını keser). [Ç]
