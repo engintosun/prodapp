@@ -89,6 +89,8 @@ Bugünkü "Davet" ekranı hedefte **Kullanıcı** durağının içidir (EKRAN-MU
 
 **ENGİN KARARI (8 Ağustos 2026).** Faz 1'de kabuk **iki kapı** taşır: **Muhasebe** ve **Bütçe**. Satın Alma / Kart & Banka / Arşiv (mockup'ta örnek olarak var) Faz 1 listesinde yoktur — **boş kapı konmaz**. Mimari çok-modüle göre kurulur, içerik bugünkü gerçeğe göre doldurulur.
 
+**GEVŞEME (5 Eylül 2026, Engin kararı):** Yukarıdaki karar AYNEN geçerlidir — bugün hâlâ iki kapı var, üçüncü AÇILMIYOR. Ama artık KİLİT değildir: üçüncü kapı MÜMKÜNdür, tetiği TEDARİKÇİ KARTI'nın doğduğu gündür — o gün Üretim Kayıtları (bkz. ### 12.1b) modül olur. Gerekçe: yukarıdaki kararın dayanağı "boş kapı konmaz" idi; muhasebenin beklediği sakin tedarikçidir ve henüz doğmamıştır. Üretim Kayıtları bugün bütçe rayında bir DURAK olarak açılıyor, modül DEĞİL.
+
 **Raporlar birinci seviyeye ÇIKMAZ:** kilitli yapıda modül-içidir (muhasebe §7, bütçe rayı ③). Modüller-üstü rapor merkezi ileride ihtiyaç doğarsa açılır.
 
 ---
@@ -222,9 +224,20 @@ Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki
 **TANIM KATMANLARI (1 Eylül 2026, ENGİN KARARI):**
 - ÜÇ KATMAN vardır: (1) şirket ayarı — mevzuat, SGK, şirket bilgisi; bir kez girilir, oran değişince güncellenir. (2) şirket kütüphanesi — oyuncu, mekân, kostüm, tedarikçi; proje değişince SİLİNMEZ, BİRİKİR. (3) projenin dökümü — hangi karakter var, kim oynuyor, hangi mekân; proje ile doğar ve biter.
 - TANIMLAR AYARDIR, DÖKÜM İÇERİKTİR. Döküm öğeleri Tanımlar'a GİRMEZ. Şirket ve mevzuat bilgileri Tanımlar'da KALIR, taşınmaz.
-- Bugün yeni yer AÇILMAZ. Oyuncular listesi KARTTAN açılır; yüzey GENEL yazılır (etiket düzenleyicisi), kart yalnızca bir kapıdır — böylece İ1'in kart-özel dal yasağı bozulmaz.
-- İKİNCİ liste (mekân) doğduğu gün Döküm evi doğar ve iki liste birlikte taşınır; rayda yeri o gün konuşulur. Bugün tek gerçek sakin var, o yüzden ev kurulmaz.
-- GEÇİŞ KURALI: bugün liste tam düzenlenebilir ve kapısı KARTTIR; bu geçicidir. Döküm evi kurulup bütçe rayında yerini aldığında (3 Eylül 2026 kararı) oyuncular listesine girişler oradan yapılır; karttan açılan liste SALT OKUNUR olur, yalnızca ajans ve menajer tikleri karttan işaretlenebilir kalır.
+- ~~Bugün yeni yer AÇILMAZ.~~ DÜŞTÜ (5 Eylül 2026, Engin kararı) — bugün yeni yer AÇILIYOR, bkz. aşağıdaki ### 12.1b ÜRETİM KAYITLARI. Oyuncular listesi bugüne kadar KARTTAN açılıyordu; yüzey GENEL yazılmıştı (etiket düzenleyicisi), kart yalnızca bir kapıydı — böylece İ1'in kart-özel dal yasağı bozulmamıştı; bu ilke Üretim Kayıtları'na taşınır.
+- ~~İKİNCİ liste (mekân) doğduğu gün Döküm evi doğar ve iki liste birlikte taşınır; rayda yeri o gün konuşulur. Bugün tek gerçek sakin var, o yüzden ev kurulmaz.~~ DÜŞTÜ (5 Eylül 2026, Engin kararı). Yeni kural: bir yüzeyde TEK gerçek sakin varsa o yüzey işlevlidir; ikinci sakin beklenmez. Gerekçe (Engin): öyle olsaydı kartların girişi olan bütçe girişi hiç yapılamazdı.
+- **ADI DEĞİŞTİ (5 Eylül 2026, Engin kararı):** ~~Döküm evi~~ adı DÜŞTÜ. Yeni ad: **ÜRETİM KAYITLARI** (GEÇİCİ — adlandırma turu geldiğinde yeniden bakılacak, Engin notu; bkz. docs/GLOSSARY.md).
+- GEÇİŞ KURALI: bugün liste tam düzenlenebilir ve kapısı KARTTIR; bu geçicidir. Üretim Kayıtları kurulup bütçe rayında yerini aldığında (3 Eylül 2026 kararı, 5 Eylül 2026'da UYGULAMAYA ALINDI — bkz. ### 12.1b) oyuncular listesine girişler oradan yapılır; karttan açılan liste SALT OKUNUR olur, yalnızca ajans ve menajer tikleri karttan işaretlenebilir kalır.
+
+### 12.1b ÜRETİM KAYITLARI (5 Eylül 2026, Engin kararı)
+
+**KONUM:** Bütçe rayında, Bütçe Girişi ile Tanımlar arasında bir duraktır — bölüm 3'teki ray tablosu bu satırla BİRLİKTE güncellenir (yukarıdaki OTORİTE NOTU gereği). Üretim Kayıtları = üzerinde çalışılan ÜRETİM VERİLERİdir (kim oynuyor, hangi mekân, hangi tedarikçi); Tanımlar = KAAPA'nın nasıl çalışacağını belirleyen AYARLARdır. İkisi ayrı şeydir. Tanımlar'ın kendi yeri bu oturumda AÇILMADI, bölüm 3'ün KİLİTLİ kararı (Tanımlar rayın en dibinde, ayraçtan sonra) yerinde durur.
+
+**"PROJE MODÜLÜ" DİYE BİR MODÜL OLAMAZ:** bölüm 5 projeyi BAĞLAM olarak kilitler (üst şeritte seçicisi durur, ekranlarda kolon olarak tekrar etmez, değişimi TAM BAĞLAM SIFIRLAMASIdır). Projeyi modül yapmak bağlamı içeriğe çevirir — bu yüzden Üretim Kayıtları bir modül KAPISI değil, BÜTÇE rayının bir durağıdır (bkz. bölüm 4 GEVŞEME).
+
+**SAHİPLİK İLE KAPI AYRI KARARLARDIR:** verinin kime ait olduğu GERİ DÖNÜŞSÜZDÜR (şema, kapsam, canlı veri — bkz. MUHUR-3 dilim 2, docs/butce/BUTCE-SEMA-KARARLARI.md). Yüzeyin hangi rayda asılı durduğu UCUZDUR ve geri alınabilir. İkisi ayrı turda karara bağlanır; bugünkü karar yalnız YÜZEYİN yeridir (bütçe rayı) — verinin sahipliği MUHUR-3'te ayrıca ve önceden karara bağlandı.
+
+**VERİNİN SAHİBİ KAAPA'DIR, BÜTÇE DEĞİL.** Bütçe de muhasebe de bu verinin KULLANICISIDIR, sahibi değil. Kaynaktan doğrulandı: `receipts.vendor_name` bugün serbest metindir (saha fiş girişi, düzeltme ekranı, muhasebeci listesi) ve hiçbir kayda bağlı değildir; tedarikçi kataloğunun ilk müşterisi bütçe değil muhasebedir.
 - LİSTE İNCE KALIR: rol, oyuncu, ajans tiki, menajer tiki. Vesikalık, müsaitlik, casting önerisi, puanlama GİRMEZ — bunlar casting modülünün işidir.
 - ROL serbest metin kalır. Yamdu'da rol senaryo dökümünden gelir; bizde senaryo dökümü KURULMUYOR (mühürlü karar), bu yüzden kullanıcı yazar. Bilinçli eksikliktir.
 - Listenin biçimi (REVİZE 3 Eylül 2026, Engin kararı): Rol · Oyuncu · **Görev** · Ajans (tik) · Menajer (tik). Tik atılınca yanında ad hanesi açılır, kaldırılınca kapanır. Oran listede SORULMAZ, satırda yaşar.
@@ -255,6 +268,9 @@ Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki
 - **AÇIK, KARARA BAĞLANMADI — İŞARET DİLİNİN KART YARISI:** rayın ikon dili karara bağlandı (hepsi kâğıttır). Kartın işareti ise açık: kart içeriğine uygun işaret bir nesne dili olur ve bu, rayın kâğıt ailesinden AYRI bir ailedir. İki ailenin bir arada nasıl duracağı konuşulmadı.
 
 ### 12.3 Kart masası
+
+**KAPSAM (5 Eylül 2026, Engin kararı):** Bu bölümdeki kararların kapsamı yalnız BÜTÇE KARTLARIDIR. Kapak grameri (işaret + ad + tek rakam), "şablonun bütün kartları serilir" keşif gerekçesi ve tek-rakam kuralı BAŞKA MASALARA TAŞINMAZ — bir kart türü için alınan karar diğerlerini bağlamaz. (Karta tıklanınca masayı kaplama davranışı bunun DIŞINDADIR, modülden bağımsızdır — bkz. bu bölümün sonu.)
+
 - Masa TEK AKIŞTIR. Etap/dönem başlığı YOKTUR — kartlar dönemle dizilmez; dönem kalem seviyesinde yaşar.
 - Kart kapağında: işaret + kart adı + tek rakam (Maliyet). Kart veya katalog NUMARASI hiçbir yerde görünmez (BUTCE-SEMA-KARARLARI ve BUTCE-EKRAN-KARARLARI'ndaki kayıtlı kural aynen geçerlidir).
 - REVİZYON — bölüm 9 (K2) karara bağlandı: kartın yüzeyinde toplam BULUNUR. Böylece EKRAN-MUHASEBE §19'daki "işaret + isim; RAKAM YOK" ifadesi kart kapağı için geçersizdir. Kaç rakam duracağı 14 Ağustos 2026'da karara bağlanmıştır: tek rakam, Maliyet.
@@ -292,6 +308,8 @@ Bu bölüm 1-11 arasındaki ana hatların ayrıntısıdır. İki maddede önceki
 - **AÇIK, KARARA BAĞLANMADI — KAPAK RAKAMININ KAYNAĞI:** kapakta duran net toplamın hangi yoldan doğacağı mimari çataldır. Bugün iki sorguyla türetiliyor ve bordro motoru çağrılmıyor (15 Ağustos 2026, db8d5bd); motoru çağıran yol ile çağırmayan yol arasındaki fark karara bağlanmadı.
   KAPANDI (31 Ağustos 2026): kaynak, kart tablosunun kullandığı AYNI hesaptır (totals.ts cardTotals, mapItemRows ile beslenir). Ayrı/ucuz yol REDDEDİLDİ — iki tanımın büyümesi (kapak Maliyet'e geçince kapak da statüyü, KDV oranını, yük bileşenlerini, dönem override'larını bilmek zorunda kalırdı) bakım maliyetini haklı çıkarmadı; tek fonksiyon iki yüzeyi besliyor.
 - **AÇIK, KARARA BAĞLANMADI — KART ADININ DEĞİŞTİRİLMESİ:** kart adı bugün salt-okunurdur. Sonradan değiştirilebilmesi hiç konuşulmadı.
+
+**MODÜLDEN BAĞIMSIZ KURAL (5 Eylül 2026, Engin kararı):** Karta tıklanınca kart MASAYI KAPLAR — bütçe kartı, liste kartı, başka bir modülün kartı fark etmez, davranış aynıdır. Bu, yukarıdaki KAPSAM sınırının TEK istisnasıdır.
 
 ### 12.4 Üst bağlam
 - KABUK HER MODÜLDE BİREBİR AYNIDIR. Modüle göre değişen yalnız iki şeydir: rayın durakları ve ince şeridin içeriği. Bölge sırası, yükseklik ve yerleşim değişmez; modül geçişinde ekran zıplamaz.

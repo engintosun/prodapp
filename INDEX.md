@@ -43,7 +43,7 @@ varsayim yapilmaz.
 -> Etkiler: item-row.tsx/period-row.tsx/burden-sheet.tsx (netToplamDonemli/brutToplamDonemli/kisiyeBanka çağırır).
 -> Kritik: EVET — bordro-dışı tüm statülerin (smm/telif/şirket/kira/konaklama) net<->brüt hesabı tek buradan geçer.
 
-`src/shared/supabase/budget-service.ts` (571)
+`src/shared/supabase/budget-service.ts` (588)
 -> Görev: Bütçe açılış + kart okuma (getCard/getOrOpenBudget) + kalem alanı yazma (updateItemField, setItemPeriodNet vb.) servis çağrıları.
 -> Kullanır: shared/supabase/client.ts (Supabase SDK); fn_open_budget/fn_add_budget_item RPC'lerini çağırır.
 -> Etkiler: use-card-rows.ts (okuma) + use-edit-buffers.ts (yazma) + card-table-screen.tsx buna bağlı.
@@ -73,13 +73,13 @@ varsayim yapilmaz.
 -> Etkiler: authenticated-shell.tsx cardId yokken buradan render eder.
 -> Kritik: HAYIR — kararlarin evi KABUK-KARARLARI 12.3; ekran orada yazilani cizer.
 
-`src/app/muhasebe/budget/card-table-screen.tsx` (500)
+`src/app/muhasebe/budget/card-table-screen.tsx` (663)
 -> Görev: Kart tablosu ekranının orkestrasyonu — veri hook'ları + ekleme paneli + satır bileşenlerini birbirine bağlar.
 -> Kullanır: hooks/* (use-card-rows, use-edit-buffers, use-grid-navigation) + components/* + budget-service.ts.
 -> Etkiler: authenticated-shell.tsx (muhasebe "bütçe" sekmesi) buradan render eder.
 -> Kritik: EVET — İ4 (Ekran ≠ kabuk) sınırı burada tutulur; budgetId/cardId/viewMode dışarıdan alınabilir kalmalı. 500+ satır (1 Eylül 2026), BUTCE-UI-MIMARISI bölüm 8 kayıtlı.
 
-`src/app/muhasebe/budget/components/item-row.tsx` (328)
+`src/app/muhasebe/budget/components/item-row.tsx` (368)
 -> Görev: Kart tablosunun kalem satırı — 14 haneli (13 veri kolonu + etiketsiz silme hanesi) KİLİTLİ kolon setinin tek satırlık render'ı, bordro/genel ayrımı + dönem-satırı açılımı.
 -> Kullanır: shared/cfe (netToplamDonemli/brutToplamDonemli/kisiyeBanka) + format.ts + hooks/use-edit-buffers.ts (EditApi tipi).
 -> Etkiler: card-table-screen.tsx satır-başına bunu render eder.
@@ -121,7 +121,7 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/components/add-item-row.tsx` (60) — tablo altı "+ kalem ekle" düğme satırı
 `src/app/muhasebe/budget/components/bottom-sheet.tsx` (104) — ortak alt-sheet primitivi (backdrop+panel+odak tuzağı)
 `src/app/muhasebe/budget/components/burden-sheet.tsx` (108) — Yasal Yük dökümü sheet'i (bordro 6-bacak + basit statü)
-`src/app/muhasebe/budget/components/heading-row.tsx` (24) — başlık satırı: ad + üç rakam (Net/Yasal Yük/Brüt), data-grid-cell taşımaz
+`src/app/muhasebe/budget/components/heading-row.tsx` (54) — başlık satırı: ad + üç rakam (Net/Yasal Yük/Brüt), data-grid-cell taşımaz
 `src/app/muhasebe/budget/components/heading-sheet.tsx` (71) — başlık seçme tabakası (kartın başlıkları + Başlıksız)
 `src/app/muhasebe/budget/components/note-sheet.tsx` (35) — İç Not / Kamu Notu düzenleme sheet'i
 `src/app/muhasebe/budget/components/period-row.tsx` (186) — çok-dönemli kalemin dönem alt-satırı render'ı
@@ -129,7 +129,7 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/components/table-styles.ts` (138) — kart tablosu kolon genişlikleri + hücre stilleri
 `src/app/muhasebe/budget/format.ts` (309) — fmt/parseNumericDraft + kütüphane arama + başlık grubu saf fonksiyonları
 `src/app/muhasebe/budget/hooks/use-card-rows.ts` (213) — kart verisi yükleme (budgetId/cardId), ref senkronizasyonu
-`src/app/muhasebe/budget/hooks/use-grid-navigation.ts` (269) — İ7 motorunun DOM bağlayıcısı, tuş olaylarını çekirdeğe delege eder
+`src/app/muhasebe/budget/hooks/use-grid-navigation.ts` (273) — İ7 motorunun DOM bağlayıcısı, tuş olaylarını çekirdeğe delege eder
 `src/app/muhasebe/budget/totals.ts` (49) — saf satır ve kart toplamı (rowTotals/cardTotals); item-row kendi hesabını yapmaz, buradan çağırır
 `src/app/muhasebe/definitions-screen.tsx` (116) — Tanımlar ekranı: rate_catalog referansı + şirket profili formu
 `src/app/muhasebe/invite-screen.tsx` (232) — davet oluşturma formu + davet linki gösterimi

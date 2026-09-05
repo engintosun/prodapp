@@ -110,6 +110,13 @@
 
 -----
 
+### Üretim Kayıtları (5 Eylül 2026, GEÇİCİ ad)
+
+- **Üretim Kayıtları:** Bütçe rayında bir durak; proje kapsamlı kişi/iş kayıtlarının (oyuncu listesi ve benzerleri) girildiği yüzey. Ad GEÇİCİDİR — adlandırma turu geldiğinde yeniden bakılacak (Engin notu). Eski çalışma adı "Döküm evi" DÜŞTÜ, bkz. docs/KABUK-KARARLARI.md §12.1b.
+- **"Katalog" adı bu yüzey için REDDEDİLDİ:** yukarıdaki "Katalog" tanımı bu sözlükte zaten "olabilecek bütün kartların listesi" anlamıyla kilitlidir ve şemada `catalog_code` olarak yaşar. Aynı kelimeye ikinci, farklı bir anlam (proje kayıtları) yüklenmez — iki kavram karışırdı.
+
+-----
+
 ### Miktar / X / Birim — terminoloji mührü (2026-07-11, K9-r2)
 
 |Terim |Anlam |Kodda |
