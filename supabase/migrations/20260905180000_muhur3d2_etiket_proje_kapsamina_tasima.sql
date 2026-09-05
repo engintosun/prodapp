@@ -10,6 +10,10 @@
 -- ONCEDEN OLCULDU (5 Eylul 2026, push oncesi salt-okuma sorgusu): ayni projede
 -- iki farkli butcenin ayni code degerini tasidigi CIKMADI (sonuc bos) - proje
 -- kapsaminda unique(project_id, code) kisiti guvenle konabilir.
+--
+-- SIRA DUZELTMESI (5 Eylul 2026, ilk push denemesi statement 13'te patladi):
+-- bir kolon dusurulmeden once o kolona bagli TUM nesneler (politikalar dahil)
+-- cozulur; asagidaki sira KONUYA gore degil BAGIMLILIGA gore dizilmistir.
 
 -- ============================================================
 -- (1) project_id: once nullable ac, budget_id uzerinden doldur, sonra kilitle.
@@ -41,7 +45,7 @@ drop trigger if exists trg_guard_lock_cost_objects on public.budget_cost_objects
 
 -- ============================================================
 -- (3) budget_items'in bilesik FK'leri (id, budget_id) hedefine bagliydi; hedef
---     kalkiyor (madde 4). Once bu FK'ler dusurulur, sonra duz FK (yalniz id)
+--     kalkiyor (madde 5). Once bu FK'ler dusurulur, sonra duz FK (yalniz id)
 --     konur - ayni-butce garantisi ARTIK GEREKMEZ, cunku etiket butceye degil
 --     projeye ait ve kalemin butcesi o projenin icindedir (proje FK'si zaten
 --     bunu sinirlar); artik-eksik kalan cins ve proje eslesmesi fn_check_cost_object_kind'a
@@ -62,30 +66,12 @@ alter table public.budget_items
   foreign key (person_object_id) references public.budget_cost_objects(id) on delete restrict;
 
 -- ============================================================
--- (4) Butce-ici kimlik (budget_id, code) proje-ici kimlige (project_id, code)
---     doner. (id, budget_id) bilesik kisiti yalniz yukaridaki FK'lerin hedefiydi,
---     artik gereksiz.
--- ============================================================
-alter table public.budget_cost_objects
-  drop constraint budget_cost_objects_id_budget_id_key;
-
-alter table public.budget_cost_objects
-  drop constraint budget_cost_objects_budget_id_code_key;
-
-alter table public.budget_cost_objects
-  add constraint budget_cost_objects_project_id_code_key unique (project_id, code);
-
--- ============================================================
--- (5) budget_id kolonu dusuruluyor. Tek-kolonluk budget_cost_objects_budget_id_fkey
---     bu kolonun icinde tamamen kapsandigi icin CASCADE gerekmeden otomatik duser.
--- ============================================================
-alter table public.budget_cost_objects
-  drop column budget_id;
-
--- ============================================================
--- (6) RLS: dort politika YENIDEN YAZILDI. fn_is_budget_muhasebe(budget_id)
+-- (4) RLS: dort politika YENIDEN YAZILDI. fn_is_budget_muhasebe(budget_id)
 --     yerine fn_is_project_muhasebe(project_id) - ikisi de MEVCUT, yeni
---     fonksiyon yazilmadi.
+--     fonksiyon yazilmadi. Bu blok budget_id kolonu dusmeden ONCE gelir:
+--     ilk push denemesi statement 13'te bu politikalar hala eski haliyle
+--     budget_id'ye bagli oldugu icin PATLAMISTI (2BP01, dependency) - sira
+--     bagimliliga gore duzeltildi.
 -- ============================================================
 drop policy if exists sel_cost_objects on public.budget_cost_objects;
 create policy sel_cost_objects on public.budget_cost_objects for select to authenticated
@@ -102,6 +88,29 @@ create policy upd_cost_objects on public.budget_cost_objects for update to authe
 drop policy if exists del_cost_objects on public.budget_cost_objects;
 create policy del_cost_objects on public.budget_cost_objects for delete to authenticated
   using (fn_is_project_muhasebe(project_id));
+
+-- ============================================================
+-- (5) Butce-ici kimlik (budget_id, code) proje-ici kimlige (project_id, code)
+--     doner. (id, budget_id) bilesik kisiti yalniz yukaridaki (madde 3) FK'lerin
+--     hedefiydi, artik gereksiz.
+-- ============================================================
+alter table public.budget_cost_objects
+  drop constraint budget_cost_objects_id_budget_id_key;
+
+alter table public.budget_cost_objects
+  drop constraint budget_cost_objects_budget_id_code_key;
+
+alter table public.budget_cost_objects
+  add constraint budget_cost_objects_project_id_code_key unique (project_id, code);
+
+-- ============================================================
+-- (6) budget_id kolonu dusuruluyor. Tek-kolonluk budget_cost_objects_budget_id_fkey
+--     bu kolonun icinde tamamen kapsandigi icin CASCADE gerekmeden otomatik duser.
+--     Kolona bagli dort RLS politikasi (madde 4) ve iki bilesik kisit (madde 5)
+--     bu noktaya gelmeden ONCE cozuldugu icin drop artik sorunsuz calisir.
+-- ============================================================
+alter table public.budget_cost_objects
+  drop column budget_id;
 
 -- ============================================================
 -- (7) fn_check_cost_object_kind: YAMA YASAK, govde TAMAMI yeniden tanimlandi.
