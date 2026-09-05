@@ -321,6 +321,15 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 
 **ATOM SAYISI DÜZELTMESİ (5 Eylül 2026, Engin kararı):** 4 Eylül'deki "toplam atom sayısı 29'a çıktı" YANLIŞTI — o sayım Bordro Hizmeti'nin (3915) karttan çıkacağını hesaba katmamıştı. 3915 KART 1600'DEN ÇIKARILDI (bkz. Grup 4'teki not); doğru toplam 4 başlık + 28 atomdur (kütüphane tohumu: KART 1600 M2, 5 Eylül 2026).
 
+**1620 ADR HAK DEVRİ KARTTAN ÇIKARILIYOR (5 Eylül 2026, Engin kararı — HENÜZ UYGULANMADI):** Ekran denemesinde Engin'in saha gerekçesi: Türkiye'de oyuncu sözleşmesi hak devrini zaten kapsıyor; 1613 Dublaj varken 1620'yi ayrı satır tutmanın saha karşılığı yok. Bu, dört Eylül'deki "ADR BUYOUT" kararını (yukarıda) TERSİNE ÇEVİRİR. Uygulama bekliyor: 1620 bugün hâlâ kütüphanede CANLI, hiçbir silme göçü yazılmadı; şablon işareti [K] idi, karar UYGULANINCA konusuz kalacak. Sıradaki oturumun ilk işlerinden biri.
+
+**GÖREV DIŞI ATOMLARDA KİŞİ SORMA KURALI — asks_person (5 Eylül 2026, Engin kararı — HENÜZ UYGULANMADI):** Kütüphaneden eklenirken kullanıcıya kişi sorup sormayacağı üç sınıfa ayrıldı:
+- **KİŞİ SORAR:** 1611 Mesai, 1616 Prova, 1614 Tekrar Telifi — üçü de bir oyuncunun kaleminin yanına doğar, hangi oyuncu olduğu doğumda sorulmalı.
+- **GÖREV ATOMLARI SORMAZ** (`is_duty=true` olan 19 atom): kişiyi kendileri yaratır — Oyuncular listesinden kişi zaten atomla birlikte doğuyor, ayrıca sorulmaz.
+- **SÜRECE AİT, KİŞİYE DEĞİL, SORMAZ:** 1610 Deneme Çekimi, 1619 Cast Gideri, 3910 Arkaplan Kostüm Ödeneği, 3913 Arkaplan Castingi.
+- **1618 Temsilci Komisyonu SORMAZ** — kütüphaneden eklenmez, ajans/menajer tikinden doğar (bkz. yukarıdaki 1618 satırı).
+Uygulama bekliyor: kalem ekleme akışında (add-item-panel.tsx / fn_add_budget_item) bu üçlü sınıflamayı okuyacak bir şema alanı yok; ekran yarısı KİŞİ KAYDININ KATMANI kararı (bkz. docs/butce/BUTCE-EKRAN-KARARLARI.md §20 KİŞİ KAYDI KATMANI ÇATALI) çözülmeden yazılamaz.
+
 **Kart-özel anomali:** çift-fringe guard (§4.9; loan-out'a fringe de mi yüklendi) · Crew Overlap (§4.9; aynı isim cast + set ekibinde maaş) · ÇOCUK-COMPLIANCE: minör/çocuk oyuncu var + set öğretmeni (1615) yok → bayrak (Compliance Guard §6, teşhis+uyarı). Looping çift-sayım: 1613 ↔ 5300 alias denetimi.
 
 ## 8. AÇIK / PARK (ilgili bölümlere gelince)

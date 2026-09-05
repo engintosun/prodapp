@@ -193,6 +193,9 @@ Turnaround (yetersiz dinlenme telafisi) öngörülemez bir ihlal tazminatıdır,
 ### 1618'in grup değişikliği (1 Eylül 2026, Engin kararı)
 Komisyon hizmettir ama ekranda oyuncunun özeti altında yaşar; aidiyeti çizim yeriyle aynı tutuldu.
 
+### Komisyon davranış kararlarının evi (5 Eylül 2026 düzeltmesi)
+Oranın seçilebilir olması, şablondan %20 varsayılan gelmesi, ajans/menajer statülerinin ayrı alt kalem doğurması ve ajans-alır-modelinde satır oluşmaması — bu kararların TAMAMI zaten repoda yazılıydı (KART-KATALOGU.md §7.5 "KART 1600 TASARIM KARARLARI", 22 Ağustos 2026; BUTCE-EKRAN-KARARLARI.md §20 "ORANIN YERİ", 3 Eylül 2026). Burada TEKRAR EDİLMEZ. Tek gerçek eksik `derive_rate`'in `item_library`'de bir varsayılan hanesi olmaması — bkz. docs/butce/BUTCE-SEMA-KARARLARI.md "VARSAYILAN ORAN item_library'DE YOK".
+
 ## GENEL EĞİTİM NOTLARI (tüm kartlara yayılan kavramlar)
 
 ### Kalem davranış motoru — neden "not alanı" sadece metin değil?
