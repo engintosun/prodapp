@@ -1,6 +1,7 @@
 // BOY: tek iş = kişi etiketi (budget_cost_objects, kind='kisi') okuma/yazma servis çağrıları
 // (KART 1600 M3b-1), sebep = yeni eksen yeni servis dosyası ister (İ5), budget-service.ts şişirilmez.
 import { supabase } from './client'
+import { getProjectId } from './budget-service'
 
 export interface PersonLabel {
   id: string
@@ -22,11 +23,12 @@ function mapPersonLabel(r: Record<string, unknown>): PersonLabel {
   }
 }
 
-export async function fetchPersonLabels(budgetId: string): Promise<PersonLabel[]> {
+export async function fetchPersonLabels(): Promise<PersonLabel[]> {
+  const projectId = await getProjectId()
   const { data, error } = await supabase
     .from('budget_cost_objects')
     .select('id, code, name, role_name, duty_code, is_active')
-    .eq('budget_id', budgetId)
+    .eq('project_id', projectId)
     .eq('kind', 'kisi')
     .order('sort_order')
     .order('code')
@@ -34,15 +36,16 @@ export async function fetchPersonLabels(budgetId: string): Promise<PersonLabel[]
   return (data ?? []).map(mapPersonLabel)
 }
 
-// code degeri YENI SAYAC ICAT ETMEZ: mevcut kolonun bu butcedeki en buyugune bir eklenir
+// code degeri YENI SAYAC ICAT ETMEZ: mevcut kolonun bu projedeki en buyugune bir eklenir
 // (cost_object'in bugunku deseni, item_code_seq gibi ayri bir sayac tablosu yoktur).
-export async function createPersonLabel(budgetId: string, name: string): Promise<PersonLabel> {
+export async function createPersonLabel(name: string): Promise<PersonLabel> {
   const v = name.trim()
   if (!v) throw new Error('Ad boş olamaz')
+  const projectId = await getProjectId()
   const { data: maxRow, error: em } = await supabase
     .from('budget_cost_objects')
     .select('code')
-    .eq('budget_id', budgetId)
+    .eq('project_id', projectId)
     .order('code', { ascending: false })
     .limit(1)
     .maybeSingle()
@@ -50,7 +53,7 @@ export async function createPersonLabel(budgetId: string, name: string): Promise
   const nextCode = ((maxRow?.code as number | undefined) ?? 0) + 1
   const { data, error } = await supabase
     .from('budget_cost_objects')
-    .insert({ budget_id: budgetId, code: nextCode, name: v, kind: 'kisi' })
+    .insert({ project_id: projectId, code: nextCode, name: v, kind: 'kisi' })
     .select('id, code, name, role_name, duty_code, is_active')
     .single()
   if (error) throw new Error(error.message)

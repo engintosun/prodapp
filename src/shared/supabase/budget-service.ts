@@ -85,7 +85,7 @@ const FIELD_COL: Record<EditableField, string> = {
   personObjectId: 'person_object_id',
 }
 
-async function getProjectId(): Promise<string> {
+export async function getProjectId(): Promise<string> {
   const { data, error } = await supabase.auth.getSession()
   if (error || !data.session) throw new Error('Oturum bulunamadı, tekrar giriş yapın')
   const projectId = data.session.user.app_metadata?.project_id as string | undefined

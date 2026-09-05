@@ -223,16 +223,16 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
 
   // KART 1600 M3b-2: Oyuncular listesi (kisi etiketleri) + Gorev secenekleri. Yuzey GENEL
   // yazilir (KABUK-KARARLARI 12.1 TANIM KATMANLARI): kart yalnizca kapidir, kart-ozel dal YOK.
-  const cardBudgetId = card?.budgetId
+  // MUHUR-3 dilim 2 ekran tarafi: etiketler artik PROJE kapsamli, kartin butcesine bagli
+  // degil - fetchPersonLabels/createPersonLabel kendi projesini getProjectId() ile alir.
   // setPersonLabels efekt icinden SENKRON cagrilmaz (set-state-in-effect kok cozumu, emsal:
   // reviewer-screen.tsx load()): .then/.catch zinciri kullanilir, useEffect gövdesi promise'i
   // baslatir ama sonucunu senkron beklemez.
   const refreshPersonLabels = useCallback(() => {
-    if (!cardBudgetId) return
-    fetchPersonLabels(cardBudgetId)
+    fetchPersonLabels()
       .then(setPersonLabels)
       .catch((e) => addToast(e instanceof Error ? e.message : 'Kişi listesi alınamadı', 'error'))
-  }, [cardBudgetId, addToast])
+  }, [addToast])
 
   useEffect(() => {
     refreshPersonLabels()
@@ -245,16 +245,15 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   }, [addToast])
 
   const onCreatePersonLabel = useCallback(async (): Promise<string | null> => {
-    if (!cardBudgetId) return null
     try {
-      const created = await createPersonLabel(cardBudgetId, 'Yeni Oyuncu')
+      const created = await createPersonLabel('Yeni Oyuncu')
       refreshPersonLabels()
       return created.id
     } catch (e) {
       addToast(e instanceof Error ? e.message : 'Kişi eklenemedi', 'error')
       return null
     }
-  }, [cardBudgetId, addToast, refreshPersonLabels])
+  }, [addToast, refreshPersonLabels])
 
   const onUpdatePersonLabel = useCallback(
     async (id: string, patch: PersonLabelPatch) => {
