@@ -73,13 +73,19 @@ varsayim yapilmaz.
 -> Etkiler: authenticated-shell.tsx cardId yokken buradan render eder.
 -> Kritik: HAYIR — kararlarin evi KABUK-KARARLARI 12.3; ekran orada yazilani cizer.
 
-`src/app/muhasebe/budget/card-table-screen.tsx` (652)
+`src/app/muhasebe/production/production-records-screen.tsx` (283)
+-> Görev: Üretim Kayıtları durağının ekranı — masa (Oyuncular kartı, kapakta kişi sayısı) + karta tıklanınca açılan kişi listesi (Rol · Oyuncu · Görev · Ajans tiki · Menajer tiki).
+-> Kullanır: person-label-service.ts (fetchPersonLabels, countPersonLabels, createPersonLabel, updatePersonLabel, fetchDutyOptions) + shared/components/{loading,toast}.
+-> Etkiler: authenticated-shell.tsx kind='production' dalından render eder.
+-> Kritik: HAYIR — kararların evi KABUK-KARARLARI 12.1b; ekran BÜTÇEYİ HİÇ GÖRMEZ.
+
+`src/app/muhasebe/budget/card-table-screen.tsx` (666)
 -> Görev: Kart tablosu ekranının orkestrasyonu — veri hook'ları + ekleme paneli + satır bileşenlerini birbirine bağlar.
 -> Kullanır: hooks/* (use-card-rows, use-edit-buffers, use-grid-navigation) + components/* + budget-service.ts.
 -> Etkiler: authenticated-shell.tsx (muhasebe "bütçe" sekmesi) buradan render eder.
 -> Kritik: EVET — İ4 (Ekran ≠ kabuk) sınırı burada tutulur; budgetId/cardId/viewMode dışarıdan alınabilir kalmalı. 500+ satır (1 Eylül 2026), BUTCE-UI-MIMARISI bölüm 8 kayıtlı.
 
-`src/app/muhasebe/budget/components/item-row.tsx` (368)
+`src/app/muhasebe/budget/components/item-row.tsx` (370)
 -> Görev: Kart tablosunun kalem satırı — 14 haneli (13 veri kolonu + etiketsiz silme hanesi) KİLİTLİ kolon setinin tek satırlık render'ı, bordro/genel ayrımı + dönem-satırı açılımı.
 -> Kullanır: shared/cfe (netToplamDonemli/brutToplamDonemli/kisiyeBanka) + format.ts + hooks/use-edit-buffers.ts (EditApi tipi).
 -> Etkiler: card-table-screen.tsx satır-başına bunu render eder.
