@@ -50,6 +50,9 @@ const backButtonStyle = {
 // hic gormez, bagimsiz kalmasi yuzeyin tasinabilirliginin sartidir.
 // Esneklik tek sutunda: Oyuncu (kart masasindaki adMin ile ayni is, ayni sayi).
 const colWidths = {
+  // 32 = kart masasindaki No sutunuyla ayni sayi: uc haneli rakam ve hucre dolgusu
+  // bu olcuye oturur. Daha genis olmasi istenmedi (Engin, 6 Eylul 2026).
+  no: 32,
   rol: 160,
   oyuncuMin: 212,
   gorev: 160,
@@ -58,7 +61,15 @@ const colWidths = {
 } as const
 
 const tableMinWidth =
-  colWidths.rol + colWidths.oyuncuMin + colWidths.gorev + colWidths.ajans + colWidths.menajer
+  colWidths.no + colWidths.rol + colWidths.oyuncuMin + colWidths.gorev + colWidths.ajans + colWidths.menajer
+
+// Rakam satirin geri kalaniyla ayni boyda okunsun: hucrelerdeki girdiler text-sm
+// kullaniyor, tablo govdesi kendi basina birakilirsa rakam onlardan iri cikar.
+// Renk/ton bu turun disinda, dokunulmuyor.
+const noCellStyle = {
+  padding: 'var(--space-1) var(--space-1)',
+  fontSize: 'var(--text-sm)',
+}
 
 const thStyle = {
   textAlign: 'left' as const,
@@ -222,6 +233,7 @@ export function ProductionRecordsScreen() {
         <>
           <table style={{ width: '100%', minWidth: tableMinWidth, borderCollapse: 'collapse', tableLayout: 'fixed', marginTop: 'var(--space-3)' }}>
             <colgroup>
+              <col style={{ width: colWidths.no }} />
               <col style={{ width: colWidths.rol }} />
               <col style={{ minWidth: colWidths.oyuncuMin }} />
               <col style={{ width: colWidths.gorev }} />
@@ -230,6 +242,7 @@ export function ProductionRecordsScreen() {
             </colgroup>
             <thead>
               <tr>
+                <th style={thStyle}>No</th>
                 <th style={thStyle}>Rol</th>
                 <th style={thStyle}>Oyuncu</th>
                 <th style={thStyle}>Görev</th>
@@ -238,8 +251,9 @@ export function ProductionRecordsScreen() {
               </tr>
             </thead>
             <tbody>
-              {labels.map((l) => (
+              {labels.map((l, i) => (
                 <tr key={l.id}>
+                  <td style={noCellStyle}>{i + 1}</td>
                   <td style={tdStyle}>
                     <input
                       defaultValue={l.roleName ?? ''}
