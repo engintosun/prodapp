@@ -43,6 +43,23 @@ const backButtonStyle = {
   cursor: 'pointer',
 }
 
+// Sutun genislikleri CIVILI (Engin karari, 6 Eylul 2026). Sebep: tablo genisligini
+// icerige birakinca ajans/menajer ad hanesi dogdugunda butun tablo yeniden ciziliyor,
+// dokunulmamis satirlar da oynuyordu. Olcek emsali kart masasidir
+// (budget/components/table-styles.ts) ama o dosya IMPORT EDILMEZ: bu ekran butceyi
+// hic gormez, bagimsiz kalmasi yuzeyin tasinabilirliginin sartidir.
+// Esneklik tek sutunda: Oyuncu (kart masasindaki adMin ile ayni is, ayni sayi).
+const colWidths = {
+  rol: 160,
+  oyuncuMin: 212,
+  gorev: 160,
+  ajans: 190,
+  menajer: 190,
+} as const
+
+const tableMinWidth =
+  colWidths.rol + colWidths.oyuncuMin + colWidths.gorev + colWidths.ajans + colWidths.menajer
+
 const thStyle = {
   textAlign: 'left' as const,
   fontSize: 'var(--text-xs)',
@@ -71,6 +88,19 @@ const tickLabelStyle = {
   display: 'flex',
   alignItems: 'center' as const,
   gap: 'var(--space-1)',
+}
+
+// Civili hucrede ad kutusu tasmasin: onay kutusu kuculmez, ad kutusu kalani alir ve
+// kendi asgari genisliginin ALTINA inebilir. minWidth 0 olmadan flex kutuyu kucultmez.
+const tickBoxStyle = {
+  flexShrink: 0,
+}
+
+const tickNameInputStyle = {
+  ...inputStyle,
+  width: 'auto',
+  flex: '1 1 0',
+  minWidth: 0,
 }
 
 const addButtonStyle = {
@@ -190,7 +220,14 @@ export function ProductionRecordsScreen() {
         <Loading label="Liste yükleniyor..." />
       ) : (
         <>
-          <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 'var(--space-3)' }}>
+          <table style={{ width: '100%', minWidth: tableMinWidth, borderCollapse: 'collapse', tableLayout: 'fixed', marginTop: 'var(--space-3)' }}>
+            <colgroup>
+              <col style={{ width: colWidths.rol }} />
+              <col style={{ minWidth: colWidths.oyuncuMin }} />
+              <col style={{ width: colWidths.gorev }} />
+              <col style={{ width: colWidths.ajans }} />
+              <col style={{ width: colWidths.menajer }} />
+            </colgroup>
             <thead>
               <tr>
                 <th style={thStyle}>Rol</th>
@@ -240,6 +277,7 @@ export function ProductionRecordsScreen() {
                       <input
                         type="checkbox"
                         checked={l.hasAgency}
+                        style={tickBoxStyle}
                         onChange={(e) => void onUpdate(l.id, e.target.checked ? { hasAgency: true } : { hasAgency: false, agencyName: '' })}
                       />
                       {l.hasAgency && (
@@ -247,7 +285,7 @@ export function ProductionRecordsScreen() {
                           defaultValue={l.agencyName ?? ''}
                           onBlur={(e) => void onUpdate(l.id, { agencyName: e.target.value })}
                           placeholder="Ajans adı"
-                          style={inputStyle}
+                          style={tickNameInputStyle}
                         />
                       )}
                     </label>
@@ -257,6 +295,7 @@ export function ProductionRecordsScreen() {
                       <input
                         type="checkbox"
                         checked={l.hasManager}
+                        style={tickBoxStyle}
                         onChange={(e) => void onUpdate(l.id, e.target.checked ? { hasManager: true } : { hasManager: false, managerName: '' })}
                       />
                       {l.hasManager && (
@@ -264,7 +303,7 @@ export function ProductionRecordsScreen() {
                           defaultValue={l.managerName ?? ''}
                           onBlur={(e) => void onUpdate(l.id, { managerName: e.target.value })}
                           placeholder="Menajer adı"
-                          style={inputStyle}
+                          style={tickNameInputStyle}
                         />
                       )}
                     </label>
