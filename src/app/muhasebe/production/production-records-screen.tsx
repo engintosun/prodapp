@@ -201,6 +201,20 @@ export function ProductionRecordsScreen() {
     }
   }, [addToast, refreshLabels, refreshCount])
 
+  // Hiyerarsi kutuphaneden gelir, burada UYDURULMAZ: fetchDutyOptions gorevleri
+  // catalog_code sirasinda cekiyor (1601 Basrol, 1602 Yardimci, 1603 Gunluk, sonra
+  // Dublor basliginin gorevleri), yani dutyOptions dizisindeki SIRA hiyerarsinin
+  // kendisidir. Ikinci bir siralama alani acilmadi.
+  // Gorevi secilmemis kisi SONA duser: kisi "+ Kisi ekle" ile listenin altinda dogar
+  // ve adi orada yazilir; uste tasinsaydi satir elden kacardi.
+  // Ayni gorevtekiler arasinda servisin getirdigi sira KORUNUR (yazim sirasi):
+  // Array.prototype.sort kararlidir, ikinci anahtar gerekmez.
+  // Siralama EKRANIN ICINDE yapilir; fetchPersonLabels kart masasinin kisi panosu
+  // tarafindan da cagriliyor, servise dokunulursa oranin sirasi da degisirdi.
+  const dutyRank = new Map(dutyOptions.map((d, i): [string, number] => [d.catalogCode, i]))
+  const rankOf = (code: string | null) => dutyRank.get(code ?? '') ?? dutyOptions.length
+  const sortedLabels = labels.slice().sort((a, b) => rankOf(a.dutyCode) - rankOf(b.dutyCode))
+
   if (view === 'desk') {
     return (
       <div
@@ -251,7 +265,7 @@ export function ProductionRecordsScreen() {
               </tr>
             </thead>
             <tbody>
-              {labels.map((l, i) => (
+              {sortedLabels.map((l, i) => (
                 <tr key={l.id}>
                   <td style={noCellStyle}>{i + 1}</td>
                   <td style={tdStyle}>
