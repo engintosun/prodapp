@@ -81,6 +81,39 @@ export async function createPersonLabel(name: string): Promise<PersonLabel> {
   return mapPersonLabel(data)
 }
 
+// Toplu dogum (6 Eylul 2026): N satir TEK yazma islemiyle doger. Sayac BIR KEZ
+// okunur, ardisik numaralar burada dagitilir; satir basina ayri sorgu ATILMAZ.
+// Dosyadaki sira korunur: liste sort_order sonra code ile cekiliyor ve numaralar
+// diziye giris sirasiyla veriliyor.
+export type NewPersonRow = { name: string; roleName: string | null }
+
+export async function createPersonLabels(rows: NewPersonRow[]): Promise<number> {
+  const cleaned = rows
+    .map((r) => ({ name: String(r.name ?? '').trim(), roleName: String(r.roleName ?? '').trim() || null }))
+    .filter((r) => r.name.length > 0)
+  if (cleaned.length === 0) return 0
+  const projectId = await getProjectId()
+  const { data: maxRow, error: em } = await supabase
+    .from('budget_cost_objects')
+    .select('code')
+    .eq('project_id', projectId)
+    .order('code', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (em) throw new Error(em.message)
+  const startCode = ((maxRow?.code as number | undefined) ?? 0) + 1
+  const payload = cleaned.map((r, i) => ({
+    project_id: projectId,
+    code: startCode + i,
+    name: r.name,
+    role_name: r.roleName,
+    kind: 'kisi',
+  }))
+  const { error } = await supabase.from('budget_cost_objects').insert(payload)
+  if (error) throw new Error(error.message)
+  return payload.length
+}
+
 export type PersonLabelPatch = Partial<{
   name: string
   roleName: string | null

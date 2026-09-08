@@ -14,6 +14,7 @@ import {
   fetchDutyOptions,
 } from '../../../shared/supabase/person-label-service'
 import type { PersonLabel, PersonLabelPatch, DutyOption } from '../../../shared/supabase/person-label-service'
+import { ImportPanel } from './import-panel'
 
 type View = 'desk' | 'oyuncular'
 
@@ -132,6 +133,7 @@ export function ProductionRecordsScreen() {
   const [labels, setLabels] = useState<PersonLabel[]>([])
   const [dutyOptions, setDutyOptions] = useState<DutyOption[]>([])
   const [listLoading, setListLoading] = useState(false)
+  const [importOpen, setImportOpen] = useState(false)
 
   const refreshCount = useCallback(() => {
     countPersonLabels()
@@ -214,6 +216,20 @@ export function ProductionRecordsScreen() {
   const dutyRank = new Map(dutyOptions.map((d, i): [string, number] => [d.catalogCode, i]))
   const rankOf = (code: string | null) => dutyRank.get(code ?? '') ?? dutyOptions.length
   const sortedLabels = labels.slice().sort((a, b) => rankOf(a.dutyCode) - rankOf(b.dutyCode))
+
+  if (importOpen && view !== 'desk') {
+    return (
+      <ImportPanel
+        onCancel={() => setImportOpen(false)}
+        onImported={(n) => {
+          setImportOpen(false)
+          addToast(`${n} kişi eklendi`, 'success')
+          void refreshLabels()
+          void refreshCount()
+        }}
+      />
+    )
+  }
 
   if (view === 'desk') {
     return (
@@ -342,6 +358,9 @@ export function ProductionRecordsScreen() {
           </table>
           <button type="button" onClick={() => void onCreate()} style={addButtonStyle}>
             + Kişi ekle
+          </button>
+          <button type="button" onClick={() => setImportOpen(true)} style={addButtonStyle}>
+            İçe aktar
           </button>
         </>
       )}
