@@ -10,9 +10,13 @@ import type { ChangeEvent, DragEvent } from 'react'
 // alt yol olarak yazildi - bare import derlenmiyordu (gercek paket, tahmin edilen kod
 // degil kazandi).
 import readXlsxFile from 'read-excel-file/browser'
+import { unzipSync, strFromU8 } from 'fflate'
 import { createPersonLabels } from '../../../shared/supabase/person-label-service'
 
 type ColumnKind = 'Rol' | 'Oyuncu' | 'Alma'
+// Bir dosya birden cok kaynak tasiyabilir: Excel'de sayfa, Word'de tablo.
+// CSV ve JSON tek kaynaklidir, tek elemanli liste olarak gelir.
+type Sheet = { name: string; rows: string[][] }
 type Phase = 'pick' | 'reading' | 'preview' | 'error'
 
 const panelStyle = {
@@ -198,15 +202,78 @@ function parseCsv(text: string): string[][] {
 type XlsxCell = string | number | boolean | Date | null
 type XlsxRow = XlsxCell[]
 
-// Sandbox turu 6 Eylul 2026: donen deger duz satir dizisi DEGIL, sayfa sarmali
-// ({sheet, data}) olabiliyor. Savunmaci normalize burada, tek yerde.
-async function readXlsxRows(file: File): Promise<string[][]> {
-  const out: unknown = await readXlsxFile(file)
-  const first = Array.isArray(out) ? out[0] : undefined
-  const sheetRows: XlsxRow[] = Array.isArray(first)
-    ? (out as XlsxRow[])
-    : ((first as { data?: XlsxRow[] } | undefined)?.data ?? [])
-  return sheetRows.map((r) => r.map(toCell))
+// Sandbox turu 6 Eylul 2026: getSheets TUM sayfalari tek cagrida veriyor ve tek
+// sayfali dosyada da ayni bicimi donduruyor.
+// ONCEKI HALI KUSURLUYDU: duz cagri yalniz ILK sayfayi aliyordu ve kullaniciya
+// soylemiyordu; uc sayfali bir dosyada "Kapak" sayfasi iceri aliniyordu.
+// { sheet: n } ve { sheet: 'Ad' } bu yapida CALISMIYOR (ikisi de ilk sayfayi
+// donduruyor), o yuzden kullanilmiyor.
+// TIP DONUSUMU GEREKCESI: getSheets calisma zamaninda calisiyor (olculdu) ama
+// paketin Options tipinde TANIMLI DEGIL; nesne degismezi oldugu gibi verilirse
+// TypeScript bilinmeyen alan diye reddeder. Donusum bu bosluk icindir, baska bir
+// sey icin degil.
+type XlsxSheetOut = { sheet?: string; data?: XlsxRow[] }
+async function readXlsxSheets(file: File): Promise<Sheet[]> {
+  const readAll = readXlsxFile as unknown as (f: File, o: { getSheets: true }) => Promise<unknown>
+  const out: unknown = await readAll(file, { getSheets: true })
+  const list: XlsxSheetOut[] = Array.isArray(out) ? (out as XlsxSheetOut[]) : []
+  return list.map((s, i) => ({
+    name: s.sheet ?? `Sayfa ${i + 1}`,
+    rows: (s.data ?? []).map((r) => r.map(toCell)),
+  }))
+}
+
+// docx bir zip'tir; govde word/document.xml icindedir. Tablo <w:tbl>, satir <w:tr>,
+// hucre <w:tc>, metin <w:t>. XML icin PAKET YOK: tarayicinin DOMParser'i kullanilir.
+// YALNIZ TABLO okunur: duz metinde kolon yoktur, ayirici tahmin etmek gerekirdi.
+// IC ICE TABLO TUZAGI (olculdu, sandbox 6 Eylul 2026): getElementsByTagName
+// OZYINELEMELIDIR, ic tablonun satirlarini dis tabloya karistirir. Bu yuzden her
+// seviyede yalniz DOGRUDAN COCUK gezilir ve ust seviye tablolar suzulur.
+function directChildren(el: Element, name: string): Element[] {
+  return Array.from(el.children).filter((c) => c.tagName === name)
+}
+
+// Hucre metni w:p > w:r > w:t derinliginde durur, o yuzden derine inilir; ama IC
+// TABLONUN icine GIRILMEZ, yoksa ic tablonun metni dis hucreye sizar.
+function docxCellText(tc: Element): string {
+  const parts: string[] = []
+  const walk = (node: Element) => {
+    for (const c of Array.from(node.children)) {
+      if (c.tagName === 'w:tbl') continue
+      if (c.tagName === 'w:t') parts.push(c.textContent ?? '')
+      else walk(c)
+    }
+  }
+  walk(tc)
+  return parts.join('').trim()
+}
+
+async function readDocxTables(file: File): Promise<Sheet[]> {
+  const buf = await file.arrayBuffer()
+  const files = unzipSync(new Uint8Array(buf))
+  const doc = files['word/document.xml']
+  if (!doc) throw new Error('Belge gövdesi okunamadı')
+  const xml = new DOMParser().parseFromString(strFromU8(doc), 'application/xml')
+  if (xml.getElementsByTagName('parsererror').length > 0) {
+    throw new Error('Belge çözülemedi')
+  }
+  const all = Array.from(xml.getElementsByTagName('w:tbl'))
+  const top = all.filter((t) => !all.some((o) => o !== t && o.contains(t)))
+  if (top.length === 0) throw new Error('Belgede tablo bulunamadı')
+  return top.map((tbl, i) => ({
+    name: `Tablo ${i + 1}`,
+    rows: directChildren(tbl, 'w:tr').map((tr) => directChildren(tr, 'w:tc').map(docxCellText)),
+  }))
+}
+
+// EN COK SATIRLI kaynak onerilir: kadro genelde en uzun tablodur, kapak ve not
+// sayfalari kisadir. Kullanici degistirebilir.
+function suggestSheet(sheets: Sheet[]): number {
+  let best = 0
+  for (let i = 1; i < sheets.length; i += 1) {
+    if (sheets[i].rows.length > sheets[best].rows.length) best = i
+  }
+  return best
 }
 
 // Baslik metnine gore Rol/Oyuncu/Alma onerisi. toLocaleLowerCase('tr') kullanilir:
@@ -239,6 +306,8 @@ export function ImportPanel({
 }) {
   const [phase, setPhase] = useState<Phase>('pick')
   const [errorMsg, setErrorMsg] = useState('')
+  const [sheets, setSheets] = useState<Sheet[]>([])
+  const [sheetIndex, setSheetIndex] = useState(0)
   const [rows, setRows] = useState<string[][]>([])
   const [headerRow, setHeaderRow] = useState(0)
   const [columnMap, setColumnMap] = useState<ColumnKind[]>([])
@@ -250,22 +319,29 @@ export function ImportPanel({
     setPhase('reading')
     try {
       const lower = file.name.toLowerCase()
-      let parsed: string[][]
+      let found: Sheet[]
       if (lower.endsWith('.xlsx')) {
-        parsed = await readXlsxRows(file)
+        found = await readXlsxSheets(file)
+      } else if (lower.endsWith('.docx')) {
+        found = await readDocxTables(file)
       } else if (lower.endsWith('.csv')) {
         const text = await file.text()
-        parsed = parseCsv(text).map((r) => r.map(toCell))
+        found = [{ name: 'CSV', rows: parseCsv(text).map((r) => r.map(toCell)) }]
       } else if (lower.endsWith('.json')) {
         const text = await file.text()
-        parsed = parseJson(text)
+        found = [{ name: 'JSON', rows: parseJson(text) }]
       } else {
-        throw new Error('Yalnızca .xlsx, .csv ve .json okunur')
+        throw new Error('Yalnızca .xlsx, .docx, .csv ve .json okunur')
       }
-      if (parsed.length === 0) {
+      const nonEmpty = found.filter((s) => s.rows.length > 0)
+      if (nonEmpty.length === 0) {
         throw new Error('Dosyada satır bulunamadı')
       }
+      const pick = suggestSheet(nonEmpty)
+      const parsed = nonEmpty[pick].rows
       const suggested = suggestHeaderRow(parsed)
+      setSheets(nonEmpty)
+      setSheetIndex(pick)
       setRows(parsed)
       setHeaderRow(suggested)
       setColumnMap((parsed[suggested] ?? []).map((c) => suggestColumnKind(c)))
@@ -286,6 +362,20 @@ export function ImportPanel({
       setColumnMap((rows[newIndex] ?? []).map((c) => suggestColumnKind(c)))
     },
     [rows],
+  )
+
+  // Kaynak degisince baslik satiri ve kolon eslestirmesi YENIDEN onerilir: onceki
+  // kaynagin secimleri yeni kaynakta anlamsizdir.
+  const onSheetChange = useCallback(
+    (newIndex: number) => {
+      const next = sheets[newIndex]?.rows ?? []
+      const suggested = suggestHeaderRow(next)
+      setSheetIndex(newIndex)
+      setRows(next)
+      setHeaderRow(suggested)
+      setColumnMap((next[suggested] ?? []).map((c) => suggestColumnKind(c)))
+    },
+    [sheets],
   )
 
   const onFileInputChange = useCallback(
@@ -335,7 +425,7 @@ export function ImportPanel({
     return (
       <div style={panelStyle}>
         <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
-          Excel (.xlsx), CSV veya JSON dosyası seçin
+          Excel (.xlsx), Word (.docx), CSV veya JSON dosyası seçin
         </p>
         <div onDragOver={(e) => e.preventDefault()} onDrop={onDrop} style={dropBoxStyle}>
           Dosyayı buraya sürükleyin
@@ -343,7 +433,7 @@ export function ImportPanel({
         <input
           ref={fileInputRef}
           type="file"
-          accept=".xlsx,.csv,.json"
+          accept=".xlsx,.docx,.csv,.json"
           onChange={onFileInputChange}
           style={{ display: 'none' }}
         />
@@ -402,6 +492,23 @@ export function ImportPanel({
           ))}
         </tbody>
       </table>
+
+      {sheets.length > 1 && (
+        <div style={rowStyle}>
+          <label style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>Kaynak</label>
+          <select
+            value={sheetIndex}
+            onChange={(e) => onSheetChange(Number(e.target.value))}
+            style={selectStyle}
+          >
+            {sheets.map((s, i) => (
+              <option key={i} value={i}>
+                {`${s.name} (${s.rows.length} satır)`}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div style={rowStyle}>
         <label style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>Başlık satırı</label>
