@@ -315,7 +315,51 @@ export function ProductionRecordsScreen() {
         <Loading label="Liste yükleniyor..." />
       ) : (
         <>
-          <table style={{ width: '100%', minWidth: tableMinWidth, borderCollapse: 'collapse', tableLayout: 'fixed', marginTop: 'var(--space-3)' }}>
+          {/* Dugme seridi: "Oyuncular" ile tablo basliginin ARASI. Iki uclu -
+              sol uc kip degistiren dugme, sag uc sag sutunun isi (Engin, 6 Eylul 2026).
+              "+ Kisi ekle" altta kalir: yeni satir sonda dogar ve odak oraya gider. */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              minWidth: tableMinWidth,
+              marginTop: 'var(--space-3)',
+            }}
+          >
+            {selectMode ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectMode(false)
+                    setSelectedIds([])
+                  }}
+                  style={addButtonStyle}
+                >
+                  Vazgeç
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void onDeleteSelected()}
+                  disabled={selectedIds.length === 0}
+                  style={addButtonStyle}
+                >
+                  Sil ({selectedIds.length})
+                </button>
+              </>
+            ) : (
+              <>
+                <button type="button" onClick={() => setSelectMode(true)} style={addButtonStyle}>
+                  Seç
+                </button>
+                <button type="button" onClick={() => setImportOpen(true)} style={addButtonStyle}>
+                  İçe aktar
+                </button>
+              </>
+            )}
+          </div>
+          <table style={{ width: '100%', minWidth: tableMinWidth, borderCollapse: 'collapse', tableLayout: 'fixed', marginTop: 'var(--space-1)' }}>
             <colgroup>
               <col style={{ width: selectMode ? colWidths.sil : colWidths.no }} />
               {selectMode && <col style={{ width: colWidths.no }} />}
@@ -328,7 +372,18 @@ export function ProductionRecordsScreen() {
             </colgroup>
             <thead>
               <tr>
-                {selectMode && <th style={thStyle}></th>}
+                {selectMode && (
+                  <th style={thStyle}>
+                    <input
+                      type="checkbox"
+                      style={tickBoxStyle}
+                      checked={sortedLabels.length > 0 && selectedIds.length === sortedLabels.length}
+                      onChange={(e) =>
+                        setSelectedIds(e.target.checked ? sortedLabels.map((l) => l.id) : [])
+                      }
+                    />
+                  </th>
+                )}
                 <th style={thStyle}>No</th>
                 <th style={thStyle}>Rol</th>
                 <th style={thStyle}>Oyuncu</th>
@@ -435,46 +490,10 @@ export function ProductionRecordsScreen() {
               ))}
             </tbody>
           </table>
-          {selectMode ? (
-            <>
-              <button
-                type="button"
-                onClick={() => setSelectedIds(sortedLabels.map((l) => l.id))}
-                style={addButtonStyle}
-              >
-                Hepsini seç
-              </button>
-              <button
-                type="button"
-                onClick={() => void onDeleteSelected()}
-                disabled={selectedIds.length === 0}
-                style={addButtonStyle}
-              >
-                Sil ({selectedIds.length})
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectMode(false)
-                  setSelectedIds([])
-                }}
-                style={addButtonStyle}
-              >
-                Vazgeç
-              </button>
-            </>
-          ) : (
-            <>
-              <button type="button" onClick={() => void onCreate()} style={addButtonStyle}>
-                + Kişi ekle
-              </button>
-              <button type="button" onClick={() => setImportOpen(true)} style={addButtonStyle}>
-                İçe aktar
-              </button>
-              <button type="button" onClick={() => setSelectMode(true)} style={addButtonStyle}>
-                Seç
-              </button>
-            </>
+          {!selectMode && (
+            <button type="button" onClick={() => void onCreate()} style={addButtonStyle}>
+              + Kişi ekle
+            </button>
           )}
         </>
       )}
