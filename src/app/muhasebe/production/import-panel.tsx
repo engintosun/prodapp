@@ -74,6 +74,55 @@ function toCell(cell: unknown): string {
   return cell == null ? '' : String(cell).trim()
 }
 
+// JSON'da kolon YOKTUR, ANAHTAR vardir. Anahtarlar kolon yerine gecer: donen dizinin
+// 0. satiri anahtarlardan, sonrakiler degerlerden kurulur. Ara ekran boylece hic
+// degismeden calisir.
+// Ic ice deger (nesne/dizi) hucreye YAZILMAZ, bos birakilir: String({}) "[object
+// Object]" uretirdi ve bu kullaniciya gosterilecek bir sey degil.
+function jsonCell(v: unknown): string {
+  if (v == null) return ''
+  if (typeof v === 'object') return ''
+  return String(v).trim()
+}
+
+// TAHMIN SINIRI: yalniz nesne dizisi. Tek anahtarli sarmal acilir (belirsizlik yok);
+// birden cok dizi varsa hangisinin kadro oldugu tahmin olurdu, hata verilir.
+function parseJson(text: string): string[][] {
+  let data: unknown
+  try {
+    data = JSON.parse(text)
+  } catch {
+    throw new Error('Dosya geçerli bir JSON değil')
+  }
+  let list: unknown = data
+  if (!Array.isArray(list) && data !== null && typeof data === 'object') {
+    const arrays = Object.values(data as Record<string, unknown>).filter((v) => Array.isArray(v))
+    if (arrays.length !== 1) {
+      throw new Error('JSON içinde tek bir kayıt listesi bulunamadı')
+    }
+    list = arrays[0]
+  }
+  if (!Array.isArray(list)) {
+    throw new Error('JSON içinde kayıt listesi bulunamadı')
+  }
+  if (list.length === 0) return []
+  const bozuk = list.some((r) => r === null || typeof r !== 'object' || Array.isArray(r))
+  if (bozuk) {
+    throw new Error('JSON listesindeki her kayıt bir nesne olmalı')
+  }
+  const rows = list as Record<string, unknown>[]
+  // Anahtar kumesi TUM kayitlarin birlesimidir, ilk gorulme sirasiyla: kayitlarin
+  // anahtar takimi farkli olabilir, yalniz ilkine bakmak kolon dusururdu.
+  const keys: string[] = []
+  for (const r of rows) {
+    for (const k of Object.keys(r)) {
+      if (!keys.includes(k)) keys.push(k)
+    }
+  }
+  if (keys.length === 0) return []
+  return [keys, ...rows.map((r) => keys.map((k) => jsonCell(r[k])))]
+}
+
 // Ayirici TAHMIN edilmez, OLCULUR: ilk satirdaki ';' sayisi ','dan fazlaysa ';'
 // kullanilir. Turkce Excel CSV'yi noktali virgulle yazar (sandbox turu 6 Eylul 2026).
 // Cift tirnak icindeki ayirici ve satir sonu alan icinde sayilir; "" ikili tirnak
@@ -207,8 +256,11 @@ export function ImportPanel({
       } else if (lower.endsWith('.csv')) {
         const text = await file.text()
         parsed = parseCsv(text).map((r) => r.map(toCell))
+      } else if (lower.endsWith('.json')) {
+        const text = await file.text()
+        parsed = parseJson(text)
       } else {
-        throw new Error('Yalnızca .xlsx ve .csv okunur')
+        throw new Error('Yalnızca .xlsx, .csv ve .json okunur')
       }
       if (parsed.length === 0) {
         throw new Error('Dosyada satır bulunamadı')
@@ -283,7 +335,7 @@ export function ImportPanel({
     return (
       <div style={panelStyle}>
         <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
-          Excel (.xlsx) veya CSV dosyası seçin
+          Excel (.xlsx), CSV veya JSON dosyası seçin
         </p>
         <div onDragOver={(e) => e.preventDefault()} onDrop={onDrop} style={dropBoxStyle}>
           Dosyayı buraya sürükleyin
@@ -291,7 +343,7 @@ export function ImportPanel({
         <input
           ref={fileInputRef}
           type="file"
-          accept=".xlsx,.csv"
+          accept=".xlsx,.csv,.json"
           onChange={onFileInputChange}
           style={{ display: 'none' }}
         />
