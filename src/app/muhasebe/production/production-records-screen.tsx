@@ -11,6 +11,8 @@ import {
   fetchPersonLabels,
   createPersonLabel,
   updatePersonLabel,
+  deletePersonLabel,
+  deletePersonLabels,
   fetchDutyOptions,
 } from '../../../shared/supabase/person-label-service'
 import type { PersonLabel, PersonLabelPatch, DutyOption } from '../../../shared/supabase/person-label-service'
@@ -59,10 +61,13 @@ const colWidths = {
   gorev: 160,
   ajans: 190,
   menajer: 190,
+  // 28 = kart masasindaki silme sutunuyla ayni sayi. Sec ve sil sutunlari ayni anda
+  // GORUNMEZ, o yuzden tablo tabanina bir kez eklenir.
+  sil: 28,
 } as const
 
 const tableMinWidth =
-  colWidths.no + colWidths.rol + colWidths.oyuncuMin + colWidths.gorev + colWidths.ajans + colWidths.menajer
+  colWidths.no + colWidths.rol + colWidths.oyuncuMin + colWidths.gorev + colWidths.ajans + colWidths.menajer + colWidths.sil
 
 // Rakam satirin geri kalaniyla ayni boyda okunsun: hucrelerdeki girdiler text-sm
 // kullaniyor, tablo govdesi kendi basina birakilirsa rakam onlardan iri cikar.
@@ -115,6 +120,14 @@ const tickNameInputStyle = {
   minWidth: 0,
 }
 
+const deleteButtonStyle = {
+  background: 'transparent',
+  border: 'none',
+  cursor: 'pointer',
+  color: 'var(--color-text-muted)',
+  fontSize: 'var(--text-sm)',
+}
+
 const addButtonStyle = {
   marginTop: 'var(--space-3)',
   background: 'transparent',
@@ -132,6 +145,8 @@ export function ProductionRecordsScreen() {
   const [personCount, setPersonCount] = useState<number | null>(null)
   const [labels, setLabels] = useState<PersonLabel[]>([])
   const [dutyOptions, setDutyOptions] = useState<DutyOption[]>([])
+  const [selectMode, setSelectMode] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [listLoading, setListLoading] = useState(false)
   const [importOpen, setImportOpen] = useState(false)
 
@@ -203,6 +218,45 @@ export function ProductionRecordsScreen() {
     }
   }, [addToast, refreshLabels, refreshCount])
 
+  const onDelete = useCallback(
+    async (id: string) => {
+      // Emsal: kart masasi (card-table-screen.tsx 298) ayni soruyu window.confirm ile soruyor.
+      const ok = window.confirm('Bu kişiyi silmek istiyor musun?')
+      if (!ok) return
+      try {
+        await deletePersonLabel(id)
+        await refreshLabels()
+        refreshCount()
+      } catch (e) {
+        addToast(e instanceof Error ? e.message : 'Kişi silinemedi', 'error')
+      }
+    },
+    [addToast, refreshLabels, refreshCount],
+  )
+
+  const onDeleteSelected = useCallback(async () => {
+    const ids = selectedIds
+    if (ids.length === 0) return
+    const ok = window.confirm(`${ids.length} kişiyi silmek istiyor musun?`)
+    if (!ok) return
+    try {
+      const { deleted, blocked } = await deletePersonLabels(ids)
+      setSelectMode(false)
+      setSelectedIds([])
+      await refreshLabels()
+      refreshCount()
+      if (deleted === 0) {
+        addToast('Seçilenlerin hepsi bütçede kullanılıyor, silinemedi', 'error')
+      } else if (blocked > 0) {
+        addToast(`${deleted} silindi, ${blocked} tanesi bütçede kullanıldığı için kaldı`, 'warning')
+      } else {
+        addToast(`${deleted} kişi silindi`, 'success')
+      }
+    } catch (e) {
+      addToast(e instanceof Error ? e.message : 'Silme başarısız', 'error')
+    }
+  }, [addToast, refreshLabels, refreshCount, selectedIds])
+
   // Hiyerarsi kutuphaneden gelir, burada UYDURULMAZ: fetchDutyOptions gorevleri
   // catalog_code sirasinda cekiyor (1601 Basrol, 1602 Yardimci, 1603 Gunluk, sonra
   // Dublor basliginin gorevleri), yani dutyOptions dizisindeki SIRA hiyerarsinin
@@ -263,26 +317,44 @@ export function ProductionRecordsScreen() {
         <>
           <table style={{ width: '100%', minWidth: tableMinWidth, borderCollapse: 'collapse', tableLayout: 'fixed', marginTop: 'var(--space-3)' }}>
             <colgroup>
-              <col style={{ width: colWidths.no }} />
+              <col style={{ width: selectMode ? colWidths.sil : colWidths.no }} />
+              {selectMode && <col style={{ width: colWidths.no }} />}
               <col style={{ width: colWidths.rol }} />
               <col style={{ minWidth: colWidths.oyuncuMin }} />
               <col style={{ width: colWidths.gorev }} />
               <col style={{ width: colWidths.ajans }} />
               <col style={{ width: colWidths.menajer }} />
+              {!selectMode && <col style={{ width: colWidths.sil }} />}
             </colgroup>
             <thead>
               <tr>
+                {selectMode && <th style={thStyle}></th>}
                 <th style={thStyle}>No</th>
                 <th style={thStyle}>Rol</th>
                 <th style={thStyle}>Oyuncu</th>
                 <th style={thStyle}>Görev</th>
                 <th style={thStyle}>Ajans</th>
                 <th style={thStyle}>Menajer</th>
+                {!selectMode && <th style={thStyle}></th>}
               </tr>
             </thead>
             <tbody>
               {sortedLabels.map((l, i) => (
                 <tr key={l.id}>
+                  {selectMode && (
+                    <td style={tdStyle}>
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.includes(l.id)}
+                        style={tickBoxStyle}
+                        onChange={(e) =>
+                          setSelectedIds((prev) =>
+                            e.target.checked ? [...prev, l.id] : prev.filter((v) => v !== l.id),
+                          )
+                        }
+                      />
+                    </td>
+                  )}
                   <td style={noCellStyle}>{i + 1}</td>
                   <td style={tdStyle}>
                     <input
@@ -352,16 +424,58 @@ export function ProductionRecordsScreen() {
                       )}
                     </label>
                   </td>
+                  {!selectMode && (
+                    <td style={tdStyle}>
+                      <button type="button" onClick={() => void onDelete(l.id)} style={deleteButtonStyle} title="Sil">
+                        ×
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
           </table>
-          <button type="button" onClick={() => void onCreate()} style={addButtonStyle}>
-            + Kişi ekle
-          </button>
-          <button type="button" onClick={() => setImportOpen(true)} style={addButtonStyle}>
-            İçe aktar
-          </button>
+          {selectMode ? (
+            <>
+              <button
+                type="button"
+                onClick={() => setSelectedIds(sortedLabels.map((l) => l.id))}
+                style={addButtonStyle}
+              >
+                Hepsini seç
+              </button>
+              <button
+                type="button"
+                onClick={() => void onDeleteSelected()}
+                disabled={selectedIds.length === 0}
+                style={addButtonStyle}
+              >
+                Sil ({selectedIds.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectMode(false)
+                  setSelectedIds([])
+                }}
+                style={addButtonStyle}
+              >
+                Vazgeç
+              </button>
+            </>
+          ) : (
+            <>
+              <button type="button" onClick={() => void onCreate()} style={addButtonStyle}>
+                + Kişi ekle
+              </button>
+              <button type="button" onClick={() => setImportOpen(true)} style={addButtonStyle}>
+                İçe aktar
+              </button>
+              <button type="button" onClick={() => setSelectMode(true)} style={addButtonStyle}>
+                Seç
+              </button>
+            </>
+          )}
         </>
       )}
     </div>

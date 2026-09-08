@@ -33,7 +33,13 @@ done
 # Liste SABITTIR: listede olmayan yeni kelimeyi yakalamaz, kural elle de uygulanir.
 for f in $(git diff --cached --name-only --diff-filter=ACM | grep -E '^src/.*\.(ts|tsx)$' | grep -vE '\.test\.(ts|tsx)$' | grep -v '^src/shared/cfe/' || true); do
   added=$(git diff --cached -U0 -- "$f" | grep '^+' | grep -v '^+++' | grep -vE '^\+[[:space:]]*(//|\*|/\*)' || true)
-  if printf '%s' "$added" | grep -qiE '\b(baslik|sifre|olustur|bulunamadi|gecerli|eslesmiyor|katiliyor|sablon|yukleniyor|kaydedildi|silindi|gonderildi|secildi|muhurlu|yetkiniz|eklenemez|hesaplanamaz|duzenlenemez)\b'; then
+  # 6 Eylul 2026 (Engin karari): listeden BES kelime CIKARILDI - silindi, kaydedildi,
+  # yetkiniz, eklenemez, hesaplanamaz. Sebep: bu bes kelimenin DOGRU Turkce yazilisinda
+  # hic Turkce karakter yok, yani ASCII hali = dogru hali. Listede durduklari surece
+  # dogru yazilmis metni de reddediyorlardi; kapi kusuru degil kendi listesini
+  # yakaliyordu. GERI EKLEME. Kalan on uc kelimede mantik gecerli: ASCII hali ile
+  # dogru hali FARKLI (sifre->sifre, gecerli->gecerli), suzgec isini yapiyor.
+  if printf '%s' "$added" | grep -qiE '\b(baslik|sifre|olustur|bulunamadi|gecerli|eslesmiyor|katiliyor|sablon|yukleniyor|gonderildi|secildi|muhurlu|duzenlenemez)\b'; then
     fail "$f icinde Turkce karaktere dusmemis kullanici metni var (TD-32 sinifi): kullaniciya gorunen metin tam Turkce karakterli yazilir"
   fi
 done

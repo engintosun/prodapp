@@ -114,6 +114,43 @@ export async function createPersonLabels(rows: NewPersonRow[]): Promise<number> 
   return payload.length
 }
 
+// Silme (6 Eylul 2026). Kisi bir butce kaleminde kullaniliyorsa veritabani REDDEDER
+// (person_object_id -> on delete restrict). Bu kusur degil koruma: silinebilseydi
+// kartin oyuncu referansi sessizce bozulurdu. PG hata kodu 23503'u duz Turkce mesaja
+// cevirmek serviste yapilir, cunku kodu bilen katman burasi.
+// is_active hanesine DOKUNULMAZ: bugun hicbir sorgu onu suzmuyor, silmeyi oraya
+// baglamak kisiyi listeden kaldirir ama kartta birakirdi.
+export async function deletePersonLabel(id: string): Promise<void> {
+  const { error } = await supabase.from('budget_cost_objects').delete().eq('id', id)
+  if (!error) return
+  if (error.code === '23503') throw new Error('Bu kişi bütçede kullanılıyor, silinemez')
+  throw new Error(error.message)
+}
+
+export type BulkDeleteResult = { deleted: number; blocked: number }
+
+// Toplu silme. ONCE tek islemle denenir: hicbiri kullanimda degilse bu bir gidis-gelis
+// eder ve biter (yaygin durum, yanlis ice aktarilan satirlari temizlemek). Icinde
+// kullanimda olan varsa PostgreSQL islemin TAMAMINI geri alir, o zaman tek tek
+// denenip hangisinin gectigi sayilir. Once toplu denemenin sebebi: 200 kisilik listede
+// 200 ayri gidis-gelis etmemek.
+export async function deletePersonLabels(ids: string[]): Promise<BulkDeleteResult> {
+  const list = ids.filter((v) => typeof v === 'string' && v.length > 0)
+  if (list.length === 0) return { deleted: 0, blocked: 0 }
+  const { error } = await supabase.from('budget_cost_objects').delete().in('id', list)
+  if (!error) return { deleted: list.length, blocked: 0 }
+  if (error.code !== '23503') throw new Error(error.message)
+  let deleted = 0
+  let blocked = 0
+  for (const id of list) {
+    const { error: e } = await supabase.from('budget_cost_objects').delete().eq('id', id)
+    if (!e) deleted += 1
+    else if (e.code === '23503') blocked += 1
+    else throw new Error(e.message)
+  }
+  return { deleted, blocked }
+}
+
 export type PersonLabelPatch = Partial<{
   name: string
   roleName: string | null
