@@ -14,6 +14,7 @@ import type { PayrollLegs, PayrollRates, TaxBracket } from '../cfe'
 // DILIM 1100-A: updateItemField (payment_status VALID) ve addBudgetItem (RPC cagrisi)
 // gercek supabase agina cikmadan test edilebilsin diye ./client mock'lanir. Emsal:
 // src/app/auth/shell-routing.test.tsx ayni yontemi kullanir.
+let capturedRpcFn: string | null = null
 let capturedRpcArgs: Record<string, unknown> | null = null
 let capturedUpdateArgs: Record<string, unknown> | null = null
 
@@ -27,14 +28,15 @@ vi.mock('./client', () => ({
         }
       },
     }),
-    rpc: (_fn: string, args: Record<string, unknown>) => {
+    rpc: (fn: string, args: Record<string, unknown>) => {
+      capturedRpcFn = fn
       capturedRpcArgs = args
       return Promise.resolve({ data: 'item-id-1', error: null })
     },
   },
 }))
 
-import { updateItemField, addBudgetItem, softDeleteBudgetItem } from './budget-service'
+import { updateItemField, addBudgetItem, addPersonItems, softDeleteBudgetItem } from './budget-service'
 
 const BRACKETS_2026: TaxBracket[] = [
   { floor: 0, ratePercent: 15, baseTax: 0 },
@@ -477,6 +479,28 @@ describe('addBudgetItem — kutuphane/serbest/mevcut-kod yollari (tek imza sonra
       p_payment_status: 'sirket',
       p_unit_code: 'gun',
       p_existing_code: '1198-01',
+    })
+  })
+})
+
+describe('addPersonItems — fn_add_person_items sarmalayicisi (KART 1600 M3b-3)', () => {
+  beforeEach(() => {
+    capturedRpcFn = null
+    capturedRpcArgs = null
+  })
+
+  it('dogru fonksiyon adi ve gövde ile cagirir', async () => {
+    await addPersonItems('group-1', [
+      { catalogCode: '1601', personObjectId: 'person-1' },
+      { catalogCode: '1602', personObjectId: 'person-2' },
+    ])
+    expect(capturedRpcFn).toBe('fn_add_person_items')
+    expect(capturedRpcArgs).toEqual({
+      p_group_id: 'group-1',
+      p_pairs: [
+        { catalog_code: '1601', person_object_id: 'person-1' },
+        { catalog_code: '1602', person_object_id: 'person-2' },
+      ],
     })
   })
 })

@@ -9,7 +9,7 @@ import { useGridNavigation } from './hooks/use-grid-navigation'
 import { isMultiPeriod, fmt, matchLibraryItems, buildRoomOptions, findCrossCardMatches, groupRowsByHeading } from './format'
 import type { RoomOption } from './format'
 import { cardTotals } from './totals'
-import { addBudgetItem, softDeleteBudgetItem } from '../../../shared/supabase/budget-service'
+import { addBudgetItem, addPersonItems, softDeleteBudgetItem } from '../../../shared/supabase/budget-service'
 import { fetchPersonLabels, updatePersonLabel, fetchDutyOptions } from '../../../shared/supabase/person-label-service'
 import type { PersonLabel, PersonLabelPatch, DutyOption } from '../../../shared/supabase/person-label-service'
 import { useToast } from '../../../shared/components/toast'
@@ -20,6 +20,7 @@ import { PeriodRow } from './components/period-row'
 import { HeadingRow } from './components/heading-row'
 import { SummaryRow } from './components/summary-row'
 import { groupByPerson, buildRenderRows } from './person-groups'
+import { personCardPresence } from './person-bring'
 import { BurdenSheet } from './components/burden-sheet'
 import { StatusInfoSheet } from './components/status-info-sheet'
 import { NoteSheet } from './components/note-sheet'
@@ -249,6 +250,12 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // ACILMAZ, mevcut dutyOptions'tan turer.
   const dutyCodes = useMemo(() => new Set(dutyOptions.map((d) => d.catalogCode)), [dutyOptions])
   const personNameById = useMemo(() => new Map(personLabels.map((l) => [l.id, l.name])), [personLabels])
+  // GETIRME YOLU (9 Eylul 2026): dugme metni kartta olmayan kisi sayisini tasir, kart
+  // masasina yeni kolon/dugme/satir turu GIRMEZ - bkz. BUTCE-EKRAN-KARARLARI bolum 20.
+  const missingFromCardCount = useMemo(
+    () => personCardPresence(rows, personLabels).missingCount,
+    [rows, personLabels],
+  )
 
   const onUpdatePersonLabel = useCallback(
     async (id: string, patch: PersonLabelPatch) => {
@@ -264,6 +271,21 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
 
   const onOpenPersonList = useCallback(() => setPersonListOpen(true), [])
   const onOpenPerson = useCallback((itemId: string) => setOpenPersonItemId(itemId), [])
+
+  // GETIRME YOLU (9 Eylul 2026): TEK cagri (fn_add_person_items), dongude satir ekleme YASAK.
+  // Getirilen satirlarin adi/tutari BOS gelir (AD YERLEŞİMİ karari, bolum 20) - elle yazilmaz.
+  const onBringPersons = useCallback(
+    async (pairs: { catalogCode: string; personObjectId: string }[]) => {
+      if (!cardRef.current) return
+      try {
+        await addPersonItems(cardRef.current.groupId, pairs)
+        refetch({ silent: true })
+      } catch (e) {
+        addToast(e instanceof Error ? e.message : 'Kişiler getirilemedi', 'error')
+      }
+    },
+    [refetch, addToast, cardRef],
+  )
 
   useEffect(() => {
     const bordroItemIds = rows.filter((it) => it.paymentStatus === 'bordro').map((it) => it.id)
@@ -403,7 +425,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
             cursor: 'pointer',
           }}
         >
-          Oyuncular listesi
+          {missingFromCardCount > 0 ? `Oyuncular listesi · ${missingFromCardCount} kişi kartta değil` : 'Oyuncular listesi'}
         </button>
       </div>
       <div ref={containerRef} onKeyDown={handleKeyDown} onFocus={handleFocus} onPaste={handlePaste} onDrop={handleDrop} onDragOver={handleDragOver}>
@@ -642,7 +664,9 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         <PersonListSheet
           labels={personLabels}
           dutyOptions={dutyOptions}
+          rows={rows}
           onUpdate={onUpdatePersonLabel}
+          onBring={onBringPersons}
           onClose={() => setPersonListOpen(false)}
         />
       )}

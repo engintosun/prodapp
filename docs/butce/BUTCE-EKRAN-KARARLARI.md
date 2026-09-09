@@ -366,6 +366,14 @@ NOT (8 Ağustos 2026): buradaki üç-rol listesi HARCAMA ZİNCİRİ içindir. Ma
 2. Kartın kendi içinde de her satır tabana girmez: yalnız kişinin kazancı olan statüler girer (Bordro, SMM, Telif). Fatura statüsü girmez — 3910 Arkaplan Kostüm Ödeneği bir ödenektir, 1610 Deneme Çekimi ve 1619 Cast Gideri süreç gideridir. Ayrım için yeni bir eksen açılmadı, var olan ödeme statüsü ekseni kullanıldı. BEDELİ: 1602'nin loan-out istisnasında kullanıcı satırı Fatura statüsüne çevirirse o kazanç tabandan düşer.
 3. Karttan silinen satır kişi bağını da bırakır. Sebep: silme yumuşak silmedir, satır veritabanında kalır; bağ bırakılmazsa ekranda görünmeyen bir satır yüzünden kişinin listeden silinmesi veritabanınca reddedilir.
 
+**GETİRME YOLU (9 Eylül 2026, Engin kararı):**
+1. Kadro listesi kartın konusu değil kaynağıdır; uyarı da getirme de "Oyuncular listesi" düğmesinde ve panosunda toplanır. Kart masasına yeni kolon, yeni satır türü, yeni düğme girmez.
+2. REDDEDİLEN İKİ YOL: (a) blok başına sayaç SATIRI — kart masasında zaten yedi ayrı nesne var, sekizincisi görsel karmaşa; (b) satırdaki kişi düğmesine RAKAM rozeti — kolon açmaya denk düşer, bölüm 20'nin ORANIN YERİ kararı bu yolu zaten reddetmişti; ayrıca iki başrol girildikten sonra rakamın hangi satırda yaşayacağının cevabı yok, yer tutucu silinirse evi hiç kalmıyor.
+3. Yön korunur: liste karta yazmaz, kart listeden okuyup kendi satırını kendisi yazar. Panoyu açan kartın kendisidir, hangi bütçe olduğu bellidir — 6 Eylül'de açık kalan "hangi bütçeye yazsın" sorusu bu yüzden kapanır.
+4. Görevi boş olan kişi getirilemez; panoda "görevi yok" yazar, görev Üretim Kayıtları'ndan girilir.
+5. Getirme TEK sunucu çağrısıdır (fn_add_person_items). Satır başına iki çağrılı döngü tasarım aşamasında reddedildi: on iki kişide yirmi dört gidiş-dönüş ederdi ve gözle yavaşlaması kesindi. Fonksiyon fn_add_budget_item'i sarmalar, kopyalamaz.
+6. BEDELİ: kart üstünde hangi görevin eksik olduğu bir bakışta görünmez; düğme toplamı söyler, dağılım için pano açılır. Kartı kalabalıklaştırmamanın karşılığı bilerek kabul edildi.
+
 ## 21. AÇIK EKRAN SORULARI (karara bağlanmadı)
 
 Bu bölüm, ekran davranışına ait olup henüz karara bağlanmamış soruları tutar. Emsal: KART-KATALOGU.md bölüm 8 ve 9 aynı işi kart kataloğu için yapar.

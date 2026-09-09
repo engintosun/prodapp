@@ -578,6 +578,20 @@ export async function addBudgetItem(
   return data as unknown as string
 }
 
+// KART 1600 M3b-3: fn_add_person_items sarmalayicisi. N kisilik getirmede tek
+// gidis-donus - satir basina addBudgetItem cagirmak N ayri istek acardi.
+export async function addPersonItems(
+  groupId: string,
+  pairs: { catalogCode: string; personObjectId: string }[],
+): Promise<string[]> {
+  const { data, error } = await supabase.rpc('fn_add_person_items', {
+    p_group_id: groupId,
+    p_pairs: pairs.map((p) => ({ catalog_code: p.catalogCode, person_object_id: p.personObjectId })),
+  })
+  if (error) throw new Error(error.message)
+  return (data ?? []) as unknown as string[]
+}
+
 export async function softDeleteBudgetItem(itemId: string): Promise<void> {
   const { error } = await supabase
     .from('budget_items')
