@@ -19,9 +19,10 @@ import { PeriodRow } from './components/period-row'
 import { HeadingRow } from './components/heading-row'
 import { SummaryRow } from './components/summary-row'
 import { buildCardView } from './card-view'
-import { personsNeedingCommissionRow } from './person-groups'
+import { personsNeedingCommissionRow, COMMISSION_STATUS_BY_KIND } from './person-groups'
+import type { CommissionKind } from './person-groups'
 import { personCardPresence, personNameCollisions, filterPersonsForAtom } from './person-bring'
-import { summaryDisplayName } from './display-name'
+import { summaryDisplayName, commissionDisplayName } from './display-name'
 import { BurdenSheet } from './components/burden-sheet'
 import type { BordroSheetEntry } from './components/burden-sheet'
 import type { LibraryItem } from '../../../shared/supabase/library-service'
@@ -87,9 +88,13 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     const defaultRate = allLibraryRef.current.find((l) => l.catalogCode === '1618')?.defaultDeriveRate ?? null
     commissionBirthInFlightRef.current = true
     try {
-      for (const personId of missing) {
+      // TEMSILCI SAYISI KADAR SATIR (21 Agustos 2026 karari, 9 Eylul'e kadar uygulanmamisti):
+      // cins atomu AYNI (1618), fark statude. Ajans -> kutuphane varsayilani zaten Fatura
+      // (sirket), ayrica yazilmaz; menajer -> statu doguma AYRICA yazilir (SMM).
+      for (const need of missing) {
         const newItemId = await addBudgetItem(cardRef.current.groupId, { catalogCode: '1618' })
-        await updateItemField(newItemId, 'personObjectId', personId)
+        await updateItemField(newItemId, 'personObjectId', need.personObjectId)
+        if (need.kind === 'menajer') await updateItemField(newItemId, 'paymentStatus', COMMISSION_STATUS_BY_KIND.menajer)
         if (defaultRate !== null) await updateItemField(newItemId, 'deriveRate', defaultRate)
       }
       refetch({ silent: true })
@@ -313,6 +318,9 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // ACILMAZ, mevcut dutyOptions'tan turer.
   const dutyCodes = useMemo(() => new Set(dutyOptions.map((d) => d.catalogCode)), [dutyOptions])
   const personNameById = useMemo(() => new Map(personLabels.map((l) => [l.id, l.name])), [personLabels])
+  // Turetilmis (komisyon) satirin ad hucresi ajans/menajer adini buradan okur - display-name.ts
+  // commissionDisplayName.
+  const personLabelById = useMemo(() => new Map(personLabels.map((l) => [l.id, l])), [personLabels])
   // GETIRME YOLU (9 Eylul 2026): dugme metni kartta olmayan kisi sayisini tasir, kart
   // masasina yeni kolon/dugme/satir turu GIRMEZ - bkz. BUTCE-EKRAN-KARARLARI bolum 20.
   // presence BIR KEZ hesaplanir: dugme metni ve pano AYNI sonucu kullanir (I1 - pano artik
@@ -322,16 +330,55 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // "kartta benzer satır var" gosterir - bkz. person-bring.ts personNameCollisions.
   const nameCollisions = useMemo(() => personNameCollisions(rows, personLabels), [rows, personLabels])
 
+  // TIK KALDIRMA -> SATIR SILME (9 Eylul 2026, SILME KURALI - UYGULANMAMIS KARAR uygulaniyor):
+  // "Satirin varligi akisi da soyler: tik varsa komisyonu yapimci ustlenir ve satir dogar;
+  // ... tik konmaz, satir hic dogmaz." Tik kalkinca simetri BOZULMASIN diye o STATUDEKI
+  // komisyon satiri silinir. Bu, tabanin sifira dusmesiyle satirin sifir tutarla DURMASI
+  // kararindan (KOMISYON SATIRININ DOGUMU madde 3) FARKLI bir tetiktir: o karar TABAN
+  // degisince satirin kendiliginden silinmedigini soyler (satir kalir), burada ise KULLANICI
+  // ACIKCA tiki kaldiriyor - farkli tetik, farkli sonuc (satir gider).
   const onUpdatePersonLabel = useCallback(
     async (id: string, patch: PersonLabelPatch) => {
       try {
         await updatePersonLabel(id, patch)
+        const kind: CommissionKind | null =
+          patch.hasAgency === false ? 'ajans' : patch.hasManager === false ? 'menajer' : null
+        if (kind) {
+          const statute = COMMISSION_STATUS_BY_KIND[kind]
+          const row = rowsRef.current.find(
+            (r) => r.personObjectId === id && r.deriveRate !== null && r.paymentStatus === statute,
+          )
+          if (row) {
+            const defaultRate = allLibraryRef.current.find((l) => l.catalogCode === '1618')?.defaultDeriveRate ?? null
+            // DOKUNULMAMIS TANIMI: komisyon satirinda kullanicinin elle girdigi TEK sey
+            // orandir (tutar turetilir, ad listeden gelir). Oran hala kutuphane
+            // varsayilanindaysa satir dokunulmamistir, SESSIZCE gider.
+            const untouched = row.deriveRate === defaultRate
+            let shouldDelete = untouched
+            if (!untouched) {
+              const label = personLabelsRef.current.find((l) => l.id === id)
+              const name = commissionDisplayName(row, label).text
+              shouldDelete = window.confirm(`"${name}" satırını silmek istiyor musun?`)
+            }
+            if (shouldDelete) {
+              await softDeleteBudgetItem(row.id)
+              refetch({ silent: true })
+            } else {
+              // Vazgecildi: tik GERI ACILIR - aksi halde tik kapali + satir hala var
+              // celiskisi (bu dilimin kapattigi kusurun ta kendisi) tekrar dogardi.
+              await updatePersonLabel(id, kind === 'ajans' ? { hasAgency: true } : { hasManager: true })
+            }
+          }
+        }
         refreshPersonLabels()
       } catch (e) {
         addToast(e instanceof Error ? e.message : 'Kişi kaydedilemedi', 'error')
       }
     },
-    [addToast, refreshPersonLabels],
+    // rowsRef/allLibraryRef/personLabelsRef useRef nesneleridir, kimlikleri sabittir - deps'e
+    // girmeleri gerekmez (rowsRef/cardRef ile AYNI desen, bkz. use-card-rows.ts).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [addToast, refreshPersonLabels, refetch],
   )
 
   const onOpenPersonList = useCallback(() => setPersonListOpen(true), [])
@@ -595,6 +642,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                             onOpenPerson={onOpenPerson}
                             onRemove={onRemoveItem}
                             personNameById={personNameById}
+                            personLabelById={personLabelById}
                             dutyCodes={dutyCodes}
                             justAdded={justAddedIds.includes(it.id)}
                             bufUnitNet={buffers[it.id + ':unitNet']}

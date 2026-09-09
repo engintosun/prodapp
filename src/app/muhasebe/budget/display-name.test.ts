@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { itemDisplayName, summaryDisplayName } from './display-name'
+import { itemDisplayName, summaryDisplayName, commissionDisplayName } from './display-name'
 
 const DUTY_CODES = new Set(['1601', '1602'])
 
@@ -55,5 +55,36 @@ describe('summaryDisplayName', () => {
   it('kademe 3: etiket listede yoksa bos doner', () => {
     const labels = [{ id: 'p2', name: 'Başka Kişi', roleName: null }]
     expect(summaryDisplayName('p1', labels)).toBe('')
+  })
+})
+
+describe('commissionDisplayName', () => {
+  it('ajans satiri (sirket) ajans adini tasir, SALT OKUNUR', () => {
+    const r = commissionDisplayName(
+      { name: 'Temsilci Komisyonu', paymentStatus: 'sirket' },
+      { agencyName: 'ABC Ajans', managerName: null },
+    )
+    expect(r).toEqual({ text: 'Temsilci Komisyonu — ABC Ajans', editable: false })
+  })
+
+  it('menajer satiri (smm) menajer adini tasir, SALT OKUNUR', () => {
+    const r = commissionDisplayName(
+      { name: 'Temsilci Komisyonu', paymentStatus: 'smm' },
+      { agencyName: null, managerName: 'Zeynep Kaya' },
+    )
+    expect(r).toEqual({ text: 'Temsilci Komisyonu — Zeynep Kaya', editable: false })
+  })
+
+  it('ad bos ise (tik var, ad hanesi bos) duz ad ve DUZENLENEBILIR kalir', () => {
+    const r = commissionDisplayName(
+      { name: 'Temsilci Komisyonu', paymentStatus: 'sirket' },
+      { agencyName: null, managerName: null },
+    )
+    expect(r).toEqual({ text: 'Temsilci Komisyonu', editable: true })
+  })
+
+  it('etiket hic bulunamazsa (label undefined) duz ad ve DUZENLENEBILIR kalir', () => {
+    const r = commissionDisplayName({ name: 'Temsilci Komisyonu', paymentStatus: 'sirket' }, undefined)
+    expect(r).toEqual({ text: 'Temsilci Komisyonu', editable: true })
   })
 })

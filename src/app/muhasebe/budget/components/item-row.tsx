@@ -5,9 +5,10 @@ import type { BudgetItemRow, StageRow, UnitRow } from '../../../../shared/supaba
 import { fmt, itemHasNote, canChangeHeading, isMultiPeriod, summarizeSame, fieldVal, repeatVal, bordroAllowedUnits } from '../format'
 import type { ValueWarning } from '../format'
 import type { RowTotals } from '../totals'
-import { itemDisplayName } from '../display-name'
+import { itemDisplayName, commissionDisplayName } from '../display-name'
 import type { EditApi } from '../hooks/use-edit-buffers'
 import type { BordroSheetEntry } from './burden-sheet'
+import type { PersonLabel } from '../../../../shared/supabase/person-label-service'
 import { tdStyle, selectTd, numStyle, numFlushTd, readOnlyNumTd, readOnlyTextTd, silTd, silButton, cellInput, cellInputNum, cellInputEllipsis } from './table-styles'
 
 interface ItemRowProps {
@@ -28,6 +29,9 @@ interface ItemRowProps {
   onOpenPerson: (itemId: string) => void
   onRemove: (itemId: string) => void
   personNameById: ReadonlyMap<string, string>
+  // Turetilmis (komisyon) satirin ad hucresi ajans/menajer adini buradan okur - display-name.ts
+  // commissionDisplayName.
+  personLabelById: ReadonlyMap<string, PersonLabel>
   dutyCodes: ReadonlySet<string>
   justAdded: boolean
   bufUnitNet: string | undefined
@@ -55,6 +59,7 @@ export const ItemRow = memo(function ItemRow({
   onOpenPerson,
   onRemove,
   personNameById,
+  personLabelById,
   dutyCodes,
   justAdded,
   bufUnitNet,
@@ -67,8 +72,13 @@ export const ItemRow = memo(function ItemRow({
   navDeriveRate,
 }: ItemRowProps) {
   const it = item
-  const nameDisplay = itemDisplayName(it, dutyCodes, personNameById)
   const isCommission = it.deriveRate !== null
+  // AD YERLESIMI + KOMISYON SATIRININ DOGUMU (9 Eylul 2026): turetilmis satirin ad hucresi
+  // AYRI mantik izler (commissionDisplayName) - 1618 gorev atomu DEGILDIR (is_duty=false),
+  // itemDisplayName'in dort hali onu hic kapsamaz.
+  const nameDisplay = isCommission
+    ? commissionDisplayName(it, it.personObjectId ? personLabelById.get(it.personObjectId) : undefined)
+    : itemDisplayName(it, dutyCodes, personNameById)
   const multi = isMultiPeriod(it)
   const addedStageIds = Object.keys(it.periodQty)
   const isBordro = it.paymentStatus === 'bordro'
@@ -187,56 +197,15 @@ export const ItemRow = memo(function ItemRow({
           ))}
         </select>
       </td>
-      <td style={selectTd}>
-        {!multi && addedStages.length === 1 ? (
-          <select
-            key={addedStages[0].id}
-            data-grid-cell="true"
-            data-row-id={it.id}
-            data-col="periods"
-            data-cell-kind="select"
-            style={cellInput}
-            defaultValue={addedStages[0].id}
-            onChange={(e) => {
-              const sid = e.target.value
-              if (sid !== addedStages[0].id) void api.onAddPeriod(it.id, sid)
-            }}
-          >
-            <option value={addedStages[0].id}>{addedStages[0].name}</option>
-            {addableStages.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <select
-            key={addedStages.length}
-            data-grid-cell="true"
-            data-row-id={it.id}
-            data-col="periods"
-            data-cell-kind="select"
-            style={cellInput}
-            defaultValue=""
-            disabled={allAdded}
-            onChange={(e) => {
-              const sid = e.target.value
-              if (sid) void api.onAddPeriod(it.id, sid)
-            }}
-          >
-            <option value="">
-              {allAdded ? 'Tüm dönemler eklendi' : multi ? '+ Dönem ekle' : '+ Dönem seç'}
-            </option>
-            {addableStages.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        )}
-      </td>
       {isCommission ? (
-        <td colSpan={4} style={numFlushTd}>
+        // DONEM YOK (9 Eylul 2026, Engin karari): komisyon tek faturadir, doneme bolunmez.
+        // Birlesik hucre artik Donemler'i de kapsar (Birim + Birim net + Miktar + X'e ek
+        // olarak) - "—" basma yolu REDDEDILDI: bos bir donem secici klavye izgarasinda hala
+        // durak olurdu ve hicbir sey yapmazdi (bkz. ORANIN YERI kararinin reddettigi yollar).
+        // K8: bu satirin "periods" hucresi HIC YOK - COLUMN_EQUIVALENCE_GROUPS'taki tek-
+        // elemanli ['periods'] grubu bu satiri kendiliginden atlar, cekirdege dokunulmadi
+        // (sandbox turunde olculdu, bkz. grid-navigation-core.ts).
+        <td colSpan={5} style={numFlushTd}>
           <input
             data-grid-cell="true"
             data-row-id={it.id}
@@ -251,6 +220,54 @@ export const ItemRow = memo(function ItemRow({
         </td>
       ) : (
         <>
+          <td style={selectTd}>
+            {!multi && addedStages.length === 1 ? (
+              <select
+                key={addedStages[0].id}
+                data-grid-cell="true"
+                data-row-id={it.id}
+                data-col="periods"
+                data-cell-kind="select"
+                style={cellInput}
+                defaultValue={addedStages[0].id}
+                onChange={(e) => {
+                  const sid = e.target.value
+                  if (sid !== addedStages[0].id) void api.onAddPeriod(it.id, sid)
+                }}
+              >
+                <option value={addedStages[0].id}>{addedStages[0].name}</option>
+                {addableStages.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <select
+                key={addedStages.length}
+                data-grid-cell="true"
+                data-row-id={it.id}
+                data-col="periods"
+                data-cell-kind="select"
+                style={cellInput}
+                defaultValue=""
+                disabled={allAdded}
+                onChange={(e) => {
+                  const sid = e.target.value
+                  if (sid) void api.onAddPeriod(it.id, sid)
+                }}
+              >
+                <option value="">
+                  {allAdded ? 'Tüm dönemler eklendi' : multi ? '+ Dönem ekle' : '+ Dönem seç'}
+                </option>
+                {addableStages.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            )}
+          </td>
           <td style={multi ? readOnlyTextTd : selectTd}>
             {multi ? (
               summaryUnitId !== null ? (units.find((u) => u.id === summaryUnitId)?.label ?? it.unitLabel) : '—'

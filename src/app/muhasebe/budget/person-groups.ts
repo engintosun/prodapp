@@ -89,22 +89,52 @@ export function derivedUnitNets(
   return out
 }
 
-// KOMISYON SATIRININ DOGUMU (9 Eylul 2026, BUTCE-EKRAN-KARARLARI bolum 20): uc sart birden
-// saglaninca kisi icin komisyon satiri GEREKIR. VERITABANI TETIKLEYICISI YASAK (B18) - taban
-// hesabi (personNetBases) burada TypeScript'te yasar, SQL'de ikinci bir kopyasi acilmaz.
+// TEMSILCI SAYISI KADAR SATIR (KART-KATALOGU 22 Agustos 2026 KART 1600 TASARIM KARARLARI:
+// "Alt kalem sayisi temsilci sayisi kadardir. Ajans ile menajer AYRI ATOM GEREKTIRMEZ; fark
+// statude yasar"). Iki cins var, ikisi de ayni 1618 atomunu kullanir, fark ODEME STATUSUNDE:
+// ajans = 'sirket' (Fatura, kutuphane varsayilani), menajer = 'smm'. Bu esleme TEK yerde
+// yasar ve DISA AKTARILIR - dogum (card-table-screen.tsx birthMissingCommissionRows) ve
+// silme (onUpdatePersonLabel) ikisi de buradan okur, ikinci bir kopya tanimlanmaz.
+export type CommissionKind = 'ajans' | 'menajer'
+export const COMMISSION_STATUS_BY_KIND: Record<CommissionKind, PaymentStatus> = {
+  ajans: 'sirket',
+  menajer: 'smm',
+}
+
+export interface CommissionNeed {
+  personObjectId: string
+  kind: CommissionKind
+}
+
+// KOMISYON SATIRININ DOGUMU (9 Eylul 2026, BUTCE-EKRAN-KARARLARI bolum 20): CINS bazinda uc
+// sart birden saglaninca kisi+cins ikilisi icin komisyon satiri GEREKIR. VERITABANI
+// TETIKLEYICISI YASAK (B18) - taban hesabi (personNetBases) burada TypeScript'te yasar, SQL'de
+// ikinci bir kopyasi acilmaz. NOT: 'smm' EARNING_PAYMENT_STATUSES beyaz listesindedir ama
+// turetilmis (derive_rate DOLU) satir personNetBases'e ZATEN girmez (derive_rate denetimi
+// statuden ONCE calisir) - menajer komisyon satirinin kendisi boylece kendi tabanini beslemez.
 export function personsNeedingCommissionRow(
   rows: readonly BudgetItemRow[],
   labels: readonly PersonLabel[],
   netByItemId: Readonly<Record<string, number>>,
-): string[] {
+): CommissionNeed[] {
   const bases = personNetBases(rows, netByItemId)
   const hasCommissionRow = new Set<string>()
   for (const row of rows) {
-    if (row.personObjectId && row.deriveRate !== null) hasCommissionRow.add(row.personObjectId)
+    if (row.personObjectId && row.deriveRate !== null && row.paymentStatus) {
+      hasCommissionRow.add(row.personObjectId + ':' + row.paymentStatus)
+    }
   }
-  return labels
-    .filter((l) => (l.hasAgency || l.hasManager) && (bases[l.id] ?? 0) > 0 && !hasCommissionRow.has(l.id))
-    .map((l) => l.id)
+  const needs: CommissionNeed[] = []
+  for (const label of labels) {
+    if ((bases[label.id] ?? 0) <= 0) continue
+    if (label.hasAgency && !hasCommissionRow.has(label.id + ':' + COMMISSION_STATUS_BY_KIND.ajans)) {
+      needs.push({ personObjectId: label.id, kind: 'ajans' })
+    }
+    if (label.hasManager && !hasCommissionRow.has(label.id + ':' + COMMISSION_STATUS_BY_KIND.menajer)) {
+      needs.push({ personObjectId: label.id, kind: 'menajer' })
+    }
+  }
+  return needs
 }
 
 export type RenderRow =
