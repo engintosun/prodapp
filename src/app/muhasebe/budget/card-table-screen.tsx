@@ -743,9 +743,18 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         const item = rows.find((r) => r.id === openBurden.itemId)
         if (!item) return null
         const sheetStage = openBurden.stageId !== null ? (stages.find((s) => s.id === openBurden.stageId) ?? null) : null
+        const { unitNetOverrides } = cardView
+        // TURETILEN SATIRIN DOKUMU (9 Eylul 2026, Engin karari): komisyon satirinin
+        // unitNet'i veritabaninda 0 durur, gercek birim net card-view.ts'in hesabinda
+        // yasar. Ham item gecince dokum sifir tabanla carpim yapiyordu. Yeni hesap YOK,
+        // rowTotals'in totals.ts satir 24'te yaptigi desenin aynisi: unitNet'in yerine
+        // turetilmis deger konur (B18).
+        const sheetItem = unitNetOverrides[item.id] !== undefined
+          ? { ...item, unitNet: unitNetOverrides[item.id] }
+          : item
         return (
           <BurdenSheet
-            item={item}
+            item={sheetItem}
             stageId={openBurden.stageId}
             stage={sheetStage}
             bordro={bordroData[item.id]}

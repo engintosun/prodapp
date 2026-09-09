@@ -27,6 +27,7 @@ export interface CardView {
   groups: CardViewGroup[]
   cardTotals: RowTotals
   rowTotalsById: Record<string, RowTotals>
+  unitNetOverrides: Record<string, number>
 }
 
 const ZERO_TOTALS: RowTotals = { net: 0, yasalYuk: 0, maliyet: 0, kdv: 0, brut: 0 }
@@ -91,5 +92,6 @@ export function buildCardView(
     groups,
     cardTotals: sumRows(rows, rowTotalsById),
     rowTotalsById,
+    unitNetOverrides,
   }
 }
