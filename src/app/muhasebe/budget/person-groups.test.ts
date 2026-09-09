@@ -241,7 +241,7 @@ describe('buildRenderRows', () => {
     ])
   })
 
-  it('ozetlenen kisinin satirlari arasina baska kisinin satiri girse bile ozet BIR kez uretilir', () => {
+  it('kisinin dagitilmis satirlari BLOKTA toplanir - araya giren baska satir bloktan sonraya kayar', () => {
     const rows = [
       makeItem({ id: 'a', personObjectId: 'p1' }),
       makeItem({ id: 'x' }),
@@ -251,8 +251,53 @@ describe('buildRenderRows', () => {
     expect(out).toEqual([
       { kind: 'summary', personObjectId: 'p1', rows: [rows[0], rows[2]] },
       { kind: 'item', row: rows[0], underSummary: true },
-      { kind: 'item', row: rows[1], underSummary: false },
       { kind: 'item', row: rows[2], underSummary: true },
+      { kind: 'item', row: rows[1], underSummary: false },
+    ])
+  })
+
+  it('blok kartta kisinin ILK satirinin bulundugu yerde durur; kisisiz satirlarin kendi aralarindaki sirasi bozulmaz', () => {
+    const rows = [
+      makeItem({ id: 'z' }),
+      makeItem({ id: 'a', personObjectId: 'p1' }),
+      makeItem({ id: 'x' }),
+      makeItem({ id: 'b', personObjectId: 'p1' }),
+      makeItem({ id: 'y' }),
+    ]
+    const out = buildRenderRows(rows, new Set(['p1']))
+    expect(out).toEqual([
+      { kind: 'item', row: rows[0], underSummary: false },
+      { kind: 'summary', personObjectId: 'p1', rows: [rows[1], rows[3]] },
+      { kind: 'item', row: rows[1], underSummary: true },
+      { kind: 'item', row: rows[3], underSummary: true },
+      { kind: 'item', row: rows[2], underSummary: false },
+      { kind: 'item', row: rows[4], underSummary: false },
+    ])
+  })
+
+  it('blok ICI sira korunur (gelis sirasi = katalog kodu sirasi: kase, mesai, komisyon)', () => {
+    const rows = [
+      makeItem({ id: 'kase', personObjectId: 'p1' }),
+      makeItem({ id: 'mesai', personObjectId: 'p1' }),
+      makeItem({ id: 'komisyon', personObjectId: 'p1' }),
+    ]
+    const out = buildRenderRows(rows, new Set(['p1']))
+    expect(out.filter((rr) => rr.kind === 'item').map((rr) => (rr.kind === 'item' ? rr.row.id : ''))).toEqual([
+      'kase',
+      'mesai',
+      'komisyon',
+    ])
+  })
+
+  it('tek satirli (ozeti olmayan) kisinin satiri bulundugu yerde kalir', () => {
+    const rows = [
+      makeItem({ id: 'a', personObjectId: 'p1' }),
+      makeItem({ id: 'x' }),
+    ]
+    const out = buildRenderRows(rows, new Set())
+    expect(out).toEqual([
+      { kind: 'item', row: rows[0], underSummary: false },
+      { kind: 'item', row: rows[1], underSummary: false },
     ])
   })
 

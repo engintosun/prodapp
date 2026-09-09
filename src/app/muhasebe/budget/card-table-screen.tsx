@@ -6,9 +6,8 @@ import { ErrorMessage } from '../../../shared/components/error-message'
 import { useCardRows } from './hooks/use-card-rows'
 import { useEditBuffers } from './hooks/use-edit-buffers'
 import { useGridNavigation } from './hooks/use-grid-navigation'
-import { isMultiPeriod, fmt, matchLibraryItems, buildRoomOptions, findCrossCardMatches, groupRowsByHeading } from './format'
+import { isMultiPeriod, fmt, matchLibraryItems, buildRoomOptions, findCrossCardMatches } from './format'
 import type { RoomOption } from './format'
-import { cardTotals, rowTotals } from './totals'
 import { addBudgetItem, addPersonItems, softDeleteBudgetItem, updateItemField } from '../../../shared/supabase/budget-service'
 import { fetchPersonLabels, updatePersonLabel, fetchDutyOptions } from '../../../shared/supabase/person-label-service'
 import type { PersonLabel, PersonLabelPatch, DutyOption } from '../../../shared/supabase/person-label-service'
@@ -19,7 +18,8 @@ import { ItemRow } from './components/item-row'
 import { PeriodRow } from './components/period-row'
 import { HeadingRow } from './components/heading-row'
 import { SummaryRow } from './components/summary-row'
-import { groupByPerson, buildRenderRows, personsNeedingCommissionRow } from './person-groups'
+import { buildCardView } from './card-view'
+import { personsNeedingCommissionRow } from './person-groups'
 import { personCardPresence, personNameCollisions, filterPersonsForAtom } from './person-bring'
 import { summaryDisplayName } from './display-name'
 import { BurdenSheet } from './components/burden-sheet'
@@ -64,6 +64,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   const personLabelsRef = useRef<PersonLabel[]>([])
   const bordroDataRef = useRef<Record<string, BordroSheetEntry>>({})
   const allLibraryRef = useRef<LibraryItem[]>([])
+  const headingsRef = useRef<LibraryItem[]>([])
   // CIFT DOGUM KORUMASI: devam eden bir dogum varken ikincisi baslamaz.
   const commissionBirthInFlightRef = useRef(false)
 
@@ -73,12 +74,14 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // (kart acilisi + ajans/menajer tik degisikligi, ikisi de refreshPersonLabels'tan gecer).
   // Getirilen satirlarin adi/tutari nasil BOS gelirse (GETIRME YOLU), komisyon satirinin da adi/
   // tutari BOS gelir - fn_add_budget_item zaten boyle davraniyor, elle yazilmaz.
+  // netByItemId AYNI kaynaktan (buildCardView, card-view.ts) beslenir - ikinci bir kopya YOK.
   const birthMissingCommissionRows = useCallback(async () => {
     if (commissionBirthInFlightRef.current) return
     if (!cardRef.current) return
     const currentRows = rowsRef.current
+    const view = buildCardView(currentRows, headingsRef.current, bordroDataRef.current)
     const netByItemId: Record<string, number> = {}
-    for (const r of currentRows) netByItemId[r.id] = rowTotals(r, bordroDataRef.current[r.id]).net
+    for (const id in view.rowTotalsById) netByItemId[id] = view.rowTotalsById[id].net
     const missing = personsNeedingCommissionRow(currentRows, personLabelsRef.current, netByItemId)
     if (missing.length === 0) return
     const defaultRate = allLibraryRef.current.find((l) => l.catalogCode === '1618')?.defaultDeriveRate ?? null
@@ -114,6 +117,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   useLayoutEffect(() => {
     bordroDataRef.current = bordroData
     allLibraryRef.current = allLibrary
+    headingsRef.current = headings
   })
   const [addQuery, setAddQuery] = useState('')
   const [addPanelOpen, setAddPanelOpen] = useState(false)
@@ -406,8 +410,10 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     setOpenStatusInfo(true)
   }, [])
 
-  const totals = useMemo(() => cardTotals(rows, bordroData), [rows, bordroData])
-  const groups = useMemo(() => groupRowsByHeading(rows, headings), [rows, headings])
+  // KARTIN GORUNEN DUZENI (9 Eylul 2026, BUTCE-EKRAN-KARARLARI bolum 20): tek kaynak
+  // card-view.ts'tir - ekran duzeni kendisi KURMAZ, hazir alir. Baslik gruplama, kisi bloklari
+  // ve turetilen satirlarin (komisyon) gercek tutarlari hepsi burada tek cagriyla gelir.
+  const cardView = useMemo(() => buildCardView(rows, headings, bordroData), [rows, headings, bordroData])
 
   // KART 1600 M3a-2: baslik ve ozet satirlarinin katlama durumu. Oturum icinde React state
   // olarak yasar (kalici saklama YOK - kapsam disi). Anahtar: baslik 'h:'+key, ozet 'p:'+personId.
@@ -421,30 +427,20 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     })
   }, [])
 
-  // KART 1600 M3a-2: kartin TUM satirlari uzerinden bir kez gruplanir, ozeti dogacak kisiler
-  // (hasSummary=true) bir Set'te toplanir - bu Set kart genelindedir, her baslik grubuna
-  // buildRenderRows'a AYNI Set gecirilir.
-  const summaryPersonIds = useMemo(
-    () => new Set(groupByPerson(rows).filter((g) => g.hasSummary).map((g) => g.personObjectId)),
-    [rows],
-  )
-  const groupRenderRows = useMemo(
-    () => groups.map((g) => buildRenderRows(g.rows, summaryPersonIds)),
-    [groups, summaryPersonIds],
-  )
-
   // DILIM 1100-B + KART 1600 M3a-2: No kolonu TEK sayac, CIZIM SIRASINDA artar; basliklar
   // sayaci ETKILEMEZ (BUTCE-SEMA-KARARLARI satir 105). Ozet satiri numara ALIR, ozetlenen
   // alt kalemler numara ALMAZ. Katlama numaralandirmayi ETKILEMEZ - gizli satir da numarasini
-  // korur, cunku sayim groupRenderRows'un TAMAMI uzerinden yapilir (collapsed'a bagli degil).
+  // korur, cunku sayim cardView.groups'un TAMAMI uzerinden yapilir (collapsed'a bagli degil).
+  // Kisi blogu toplanmasi (person-groups.ts buildRenderRows) numaralandirmayi degistirir - bu
+  // BEKLENEN sonuctur, satirlar artik farkli yerde (bkz. KARTIN GORUNEN DUZENI karari).
   // Immutable kurulum (react-hooks/immutability): render sirasinda sayac ARTTIRILMAZ, sira bir
   // kere gezilip Map'lere donusturulur.
   const { itemRowNoById, summaryRowNoByPerson } = useMemo(() => {
     const itemMap = new Map<string, number>()
     const summaryMap = new Map<string, number>()
     let n = 0
-    for (const renderRows of groupRenderRows) {
-      for (const rr of renderRows) {
+    for (const group of cardView.groups) {
+      for (const rr of group.renderRows) {
         if (rr.kind === 'summary') {
           n += 1
           summaryMap.set(rr.personObjectId, n)
@@ -455,7 +451,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
       }
     }
     return { itemRowNoById: itemMap, summaryRowNoByPerson: summaryMap }
-  }, [groupRenderRows])
+  }, [cardView])
 
   if (loading) return <Loading label="Bütçe yükleniyor..." />
   if (error) return <ErrorMessage message={error} onRetry={refetch} />
@@ -545,7 +541,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
             </tr>
           </thead>
           <tbody>
-            {groups.map((group, groupIdx) => {
+            {cardView.groups.map((group, groupIdx) => {
               const headingKey = 'h:' + (group.heading?.key ?? 'basliksiz')
               const headingCollapsed = group.heading !== null && collapsed.has(headingKey)
               return (
@@ -553,13 +549,13 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                   {group.heading !== null && (
                     <HeadingRow
                       name={group.heading.name}
-                      totals={cardTotals(group.rows, bordroData)}
+                      totals={group.totals}
                       collapsed={headingCollapsed}
                       onToggle={() => toggleCollapsed(headingKey)}
                     />
                   )}
                   {!headingCollapsed &&
-                    groupRenderRows[groupIdx].map((rr) => {
+                    group.renderRows.map((rr) => {
                       if (rr.kind === 'summary') {
                         const summaryKey = 'p:' + rr.personObjectId
                         return (
@@ -567,7 +563,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                             key={summaryKey}
                             rowNo={summaryRowNoByPerson.get(rr.personObjectId) ?? 0}
                             name={summaryDisplayName(rr.personObjectId, personLabels)}
-                            totals={cardTotals(rr.rows, bordroData)}
+                            totals={rr.totals}
                             collapsed={collapsed.has(summaryKey)}
                             onToggle={() => toggleCollapsed(summaryKey)}
                           />
@@ -585,6 +581,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                         <Fragment key={it.id}>
                           <ItemRow
                             item={it}
+                            totals={rr.totals}
                             rowNo={rr.underSummary ? null : (itemRowNoById.get(it.id) ?? 0)}
                             bufDeriveRate={buffers[it.id + ':deriveRate']}
                             stages={stages}
@@ -670,11 +667,11 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
               <td style={{ ...tdStyle, fontWeight: 600 }} colSpan={8}>
                 Kart toplamı
               </td>
-              <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.net)}</td>
-              <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.yasalYuk)}</td>
-              <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.maliyet)}</td>
-              <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.kdv)}</td>
-              <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(totals.brut)}</td>
+              <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(cardView.cardTotals.net)}</td>
+              <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(cardView.cardTotals.yasalYuk)}</td>
+              <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(cardView.cardTotals.maliyet)}</td>
+              <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(cardView.cardTotals.kdv)}</td>
+              <td style={{ ...numStyle, fontWeight: 600 }}>{fmt(cardView.cardTotals.brut)}</td>
               <td style={tdStyle} />
             </tr>
           </tbody>

@@ -5,6 +5,12 @@ set -uo pipefail
 npm run build >/dev/null 2>&1 || { echo "build gecmedi" >&2; exit 1; }
 npx eslint .  >/dev/null 2>&1 || { echo "eslint gecmedi" >&2; exit 1; }
 
+# Oksuz islev denetimi (9 Eylul 2026): derivedUnitNets uc kez yazildi/test edildi/"UYGULANDI"
+# yazildi ama hicbir kod satiri cagirmiyordu - bkz. DERSLER.md "karar verildi ile karar
+# uygulandi ayri seylerdir". Kapsam yalniz src/app/muhasebe/budget (scripts/orphan-check.mjs
+# icindeki yorum ayrintiyi tasir).
+node scripts/orphan-check.mjs || { echo "oksuz islev denetimi gecmedi" >&2; exit 1; }
+
 out=$(npm test 2>&1); rc=$?
 [ $rc -eq 0 ] || { echo "test gecmedi" >&2; printf '%s\n' "$out" | tail -20 >&2; exit 1; }
 

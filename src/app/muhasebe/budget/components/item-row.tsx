@@ -4,7 +4,7 @@ import { PAYMENT_STATUSES } from '../../../../shared/types/domain'
 import type { BudgetItemRow, StageRow, UnitRow } from '../../../../shared/supabase/budget-service'
 import { fmt, itemHasNote, canChangeHeading, isMultiPeriod, summarizeSame, fieldVal, repeatVal, bordroAllowedUnits } from '../format'
 import type { ValueWarning } from '../format'
-import { rowTotals } from '../totals'
+import type { RowTotals } from '../totals'
 import { itemDisplayName } from '../display-name'
 import type { EditApi } from '../hooks/use-edit-buffers'
 import type { BordroSheetEntry } from './burden-sheet'
@@ -12,6 +12,10 @@ import { tdStyle, selectTd, numStyle, numFlushTd, readOnlyNumTd, readOnlyTextTd,
 
 interface ItemRowProps {
   item: BudgetItemRow
+  // KARTIN GORUNEN DUZENI (9 Eylul 2026, card-view.ts): satirin tutarlari DISARIDAN gelir -
+  // turetilen (komisyon) satirlarda bu, veritabanindaki sifir DEGIL, orandan dogan gercek
+  // rakamdir. ItemRow kendi rowTotals hesabini YAPMAZ (B18: ikinci kopya acilmaz).
+  totals: RowTotals
   rowNo: number | null
   stages: StageRow[]
   units: UnitRow[]
@@ -38,6 +42,7 @@ interface ItemRowProps {
 
 export const ItemRow = memo(function ItemRow({
   item,
+  totals,
   rowNo,
   stages,
   units,
@@ -68,7 +73,7 @@ export const ItemRow = memo(function ItemRow({
   const addedStageIds = Object.keys(it.periodQty)
   const isBordro = it.paymentStatus === 'bordro'
   const bd = bordro
-  const { net: araToplam, yasalYuk: yasalYukTl, maliyet, kdv, brut: brutToplam } = rowTotals(it, bordro)
+  const { net: araToplam, yasalYuk: yasalYukTl, maliyet, kdv, brut: brutToplam } = totals
   const periodKeys = new Set(addedStageIds)
   const addableStages = stages.filter((s) => !periodKeys.has(s.id))
   const addedStages = stages.filter((s) => periodKeys.has(s.id))

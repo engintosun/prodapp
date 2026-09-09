@@ -111,10 +111,14 @@ export type RenderRow =
   | { kind: 'summary'; personObjectId: string; rows: BudgetItemRow[] }
   | { kind: 'item'; row: BudgetItemRow; underSummary: boolean }
 
-// Ucuncu gecis: bir baslik grubunun satirlarini, cizilecek sirayla, ozet satirlariyla birlikte
-// duz bir listeye cevirir. Ozetlenen kisinin ILK satirina gelindiginde once summary uretilir;
-// o kisinin TUM satirlari (ekran sirasiyla) hem summary.rows'ta hem underSummary:true item
-// olarak yerinde kalir - veri asagi tasinmaz, hicbir satir donusmez.
+// Ucuncu gecis: sira VERITABANINDA (fn_add_budget_item catalog_code, item_code'a gore
+// yeniden numaralar), KOMPOZISYON burada. Bir kisinin dagilmis satirlari kisinin ILK satirinin
+// bulundugu yerde BLOKTA toplanir - blok icinde satirlarin KENDI ARALARINDAKI sirasi (gelis
+// sirasi = katalog kodu sirasi: kase, mesai, prova, komisyon) KORUNUR. Kisisiz satirlar ve
+// ozeti olmayan (tek satirli) kisilerin satirlari BULUNDUKLARI YERDE kalir, siralari degismez.
+// SIRALAMAYI SQL'E TASIMA (BUTCE-EKRAN-KARARLARI bolum 20 KARTIN GORUNEN DUZENI): ikinci bir
+// siralama otoritesi kurulmus olurdu, baslik ekranda kisi veritabaninda kalirdi - kompozisyon
+// TEK yerde (burada) yasar.
 export function buildRenderRows(
   groupRows: readonly BudgetItemRow[],
   summaryPersonIds: ReadonlySet<string>,
@@ -124,12 +128,13 @@ export function buildRenderRows(
   for (const row of groupRows) {
     const key = row.personObjectId
     if (key && summaryPersonIds.has(key)) {
-      if (!summarized.has(key)) {
-        summarized.add(key)
-        const rows = groupRows.filter((r) => r.personObjectId === key)
-        out.push({ kind: 'summary', personObjectId: key, rows })
+      if (summarized.has(key)) continue
+      summarized.add(key)
+      const personRows = groupRows.filter((r) => r.personObjectId === key)
+      out.push({ kind: 'summary', personObjectId: key, rows: personRows })
+      for (const pr of personRows) {
+        out.push({ kind: 'item', row: pr, underSummary: true })
       }
-      out.push({ kind: 'item', row, underSummary: true })
     } else {
       out.push({ kind: 'item', row, underSummary: false })
     }

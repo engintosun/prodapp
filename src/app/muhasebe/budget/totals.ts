@@ -14,11 +14,17 @@ export interface RowTotals {
   brut: number
 }
 
-export function rowTotals(item: BudgetItemRow, bordro: BordroSheetEntry | undefined): RowTotals {
+// unitNetOverride (9 Eylul 2026, KART 1600 M3b-3 son parca): turetilen (derive_rate DOLU)
+// satirlarin gercek birim neti veritabaninda degil card-view.ts'in hesabinda yasar - orani
+// kardes satirlarin Ara toplamindan turetiyor (person-groups.ts derivedUnitNets). Ikinci bir
+// hesap YAZILMAZ (B18): bu parametre yalniz item.unitNet'in YERINE gecer, geri kalan tum
+// formul (yasal yuk, KDV, maliyet, toplam) AYNEN calisir.
+export function rowTotals(item: BudgetItemRow, bordro: BordroSheetEntry | undefined, unitNetOverride?: number): RowTotals {
   const isBordro = item.paymentStatus === 'bordro'
+  const effectiveItem = unitNetOverride !== undefined ? { ...item, unitNet: unitNetOverride } : item
   // Bordro: motor (deriveBordroFields) kaynak; genel additive/deduction CFE yolu (cfe.ts)
   // ARTIK CAGRILMAZ (1a borcu - item_burdens skeleton bacaklari null rate tasir).
-  const donemler = isBordro ? [] : buildDonemler(item)
+  const donemler = isBordro ? [] : buildDonemler(effectiveItem)
   const yukler: Yuk[] = isBordro ? [] : item.burdens.map((b) => ({ ratePercent: b.rate, kind: b.kind }))
   const netToplam = isBordro ? (bordro?.data?.totalNet ?? 0) : netToplamDonemli(donemler)
   const brutYuk = isBordro ? 0 : brutToplamDonemli(donemler, yukler)
