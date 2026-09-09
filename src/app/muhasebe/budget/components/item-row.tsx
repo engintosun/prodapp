@@ -5,6 +5,7 @@ import type { BudgetItemRow, StageRow, UnitRow } from '../../../../shared/supaba
 import { fmt, itemHasNote, canChangeHeading, isMultiPeriod, summarizeSame, fieldVal, repeatVal, bordroAllowedUnits } from '../format'
 import type { ValueWarning } from '../format'
 import { rowTotals } from '../totals'
+import { itemDisplayName } from '../display-name'
 import type { EditApi } from '../hooks/use-edit-buffers'
 import type { BordroSheetEntry } from './burden-sheet'
 import { tdStyle, selectTd, numStyle, numFlushTd, readOnlyNumTd, readOnlyTextTd, silTd, silButton, cellInput, cellInputNum, cellInputEllipsis } from './table-styles'
@@ -23,6 +24,7 @@ interface ItemRowProps {
   onOpenPerson: (itemId: string) => void
   onRemove: (itemId: string) => void
   personNameById: ReadonlyMap<string, string>
+  dutyCodes: ReadonlySet<string>
   justAdded: boolean
   bufUnitNet: string | undefined
   bufMultiplier: string | undefined
@@ -48,6 +50,7 @@ export const ItemRow = memo(function ItemRow({
   onOpenPerson,
   onRemove,
   personNameById,
+  dutyCodes,
   justAdded,
   bufUnitNet,
   bufMultiplier,
@@ -59,6 +62,7 @@ export const ItemRow = memo(function ItemRow({
   navDeriveRate,
 }: ItemRowProps) {
   const it = item
+  const nameDisplay = itemDisplayName(it, dutyCodes, personNameById)
   const isCommission = it.deriveRate !== null
   const multi = isMultiPeriod(it)
   const addedStageIds = Object.keys(it.periodQty)
@@ -82,15 +86,32 @@ export const ItemRow = memo(function ItemRow({
       <td style={tdStyle}>{rowNo ?? ''}</td>
       <td style={tdStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-          <input
-            data-grid-cell="true"
-            data-row-id={it.id}
-            data-col="name"
-            style={cellInputEllipsis}
-            value={it.name}
-            onChange={(e) => api.onTextChange(it.id, 'name', e.target.value)}
-            onBlur={() => api.commitField(it.id, 'name')}
-          />
+          {nameDisplay.editable ? (
+            <input
+              data-grid-cell="true"
+              data-row-id={it.id}
+              data-col="name"
+              style={cellInputEllipsis}
+              value={it.name}
+              onChange={(e) => api.onTextChange(it.id, 'name', e.target.value)}
+              onBlur={() => api.commitField(it.id, 'name')}
+            />
+          ) : (
+            // AD YERLESIMI hal 3 (BUTCE-EKRAN-KARARLARI bolum 20): kisi bagli ve etiket listede
+            // VAR - etiketin adi SALT OKUNUR. Gercek readOnly input: gorunen metin dogru
+            // (kisi adi, atomun adi degil) kopyalanir, klavye izgarasindan CIKMAZ (data-cell-kind
+            // "text", bkz. grid-navigation-core.ts).
+            <input
+              readOnly
+              data-grid-cell="true"
+              data-row-id={it.id}
+              data-col="name"
+              data-cell-kind="text"
+              style={{ ...cellInputEllipsis, color: 'var(--color-text-muted)', cursor: 'default' }}
+              value={nameDisplay.text}
+              title={nameDisplay.text}
+            />
+          )}
           <button
             type="button"
             data-grid-cell="true"

@@ -20,7 +20,8 @@ import { PeriodRow } from './components/period-row'
 import { HeadingRow } from './components/heading-row'
 import { SummaryRow } from './components/summary-row'
 import { groupByPerson, buildRenderRows } from './person-groups'
-import { personCardPresence } from './person-bring'
+import { personCardPresence, personNameCollisions } from './person-bring'
+import { summaryDisplayName } from './display-name'
 import { BurdenSheet } from './components/burden-sheet'
 import { StatusInfoSheet } from './components/status-info-sheet'
 import { NoteSheet } from './components/note-sheet'
@@ -252,10 +253,12 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   const personNameById = useMemo(() => new Map(personLabels.map((l) => [l.id, l.name])), [personLabels])
   // GETIRME YOLU (9 Eylul 2026): dugme metni kartta olmayan kisi sayisini tasir, kart
   // masasina yeni kolon/dugme/satir turu GIRMEZ - bkz. BUTCE-EKRAN-KARARLARI bolum 20.
-  const missingFromCardCount = useMemo(
-    () => personCardPresence(rows, personLabels).missingCount,
-    [rows, personLabels],
-  )
+  // presence BIR KEZ hesaplanir: dugme metni ve pano AYNI sonucu kullanir (I1 - pano artik
+  // rows almiyor, hazir presence alir).
+  const personPresence = useMemo(() => personCardPresence(rows, personLabels), [rows, personLabels])
+  // COKLU SATIR UYARISI: fissiz elle yazilmis satirla ayni adli etiket eslesirse pano
+  // "kartta benzer satır var" gosterir - bkz. person-bring.ts personNameCollisions.
+  const nameCollisions = useMemo(() => personNameCollisions(rows, personLabels), [rows, personLabels])
 
   const onUpdatePersonLabel = useCallback(
     async (id: string, patch: PersonLabelPatch) => {
@@ -425,7 +428,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
             cursor: 'pointer',
           }}
         >
-          {missingFromCardCount > 0 ? `Oyuncular listesi · ${missingFromCardCount} kişi kartta değil` : 'Oyuncular listesi'}
+          {personPresence.missingCount > 0 ? `Oyuncular listesi · ${personPresence.missingCount} kişi kartta değil` : 'Oyuncular listesi'}
         </button>
       </div>
       <div ref={containerRef} onKeyDown={handleKeyDown} onFocus={handleFocus} onPaste={handlePaste} onDrop={handleDrop} onDragOver={handleDragOver}>
@@ -505,6 +508,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                           <SummaryRow
                             key={summaryKey}
                             rowNo={summaryRowNoByPerson.get(rr.personObjectId) ?? 0}
+                            name={summaryDisplayName(rr.personObjectId, personLabels)}
                             totals={cardTotals(rr.rows, bordroData)}
                             collapsed={collapsed.has(summaryKey)}
                             onToggle={() => toggleCollapsed(summaryKey)}
@@ -536,6 +540,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                             onOpenPerson={onOpenPerson}
                             onRemove={onRemoveItem}
                             personNameById={personNameById}
+                            dutyCodes={dutyCodes}
                             justAdded={justAddedIds.includes(it.id)}
                             bufUnitNet={buffers[it.id + ':unitNet']}
                             bufMultiplier={buffers[it.id + ':multiplier']}
@@ -664,7 +669,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         <PersonListSheet
           labels={personLabels}
           dutyOptions={dutyOptions}
-          rows={rows}
+          presence={personPresence}
+          nameCollisions={nameCollisions}
           onUpdate={onUpdatePersonLabel}
           onBring={onBringPersons}
           onClose={() => setPersonListOpen(false)}

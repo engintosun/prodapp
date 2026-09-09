@@ -30,6 +30,27 @@ export function personCardPresence(
   return { inCard, missingCount }
 }
 
+// COKLU SATIR UYARISI (9 Eylul 2026): personCardPresence yalniz kisi FISINE bakar. Elle
+// yazilmis fissiz bir satir (orn. sablon yer tutucusuna elle "Ahmet Yilmaz" yazilmis) bu
+// denetime GORUNMEZ - ayni kisi sonra fisle getirilirse iki satir doger, sessiz cift sayim
+// olusur (kart toplami ikisini de toplar, ozet yalniz fisliyi sayar). Bu islev GETIRME
+// ENGELLEMEZ, yalniz kullaniciya haber verir - karar kullanicinindir.
+// ESLESME BIREBIR: iki yandan bosluk kirpilir, sonra tam metin esitligi. Buyuk-kucuk harf
+// katlamasi YOK, normallestirme YOK - bulanik eslestirme kirilgandir ve yanlis uyari,
+// kullaniciya uyarilari gormezden gelmeyi ogretir. Bedeli bilerek kabul edildi: "ahmet yilmaz"
+// ile "Ahmet Yılmaz" eslesmez, uyari cikmaz.
+export function personNameCollisions(
+  rows: readonly BudgetItemRow[],
+  labels: readonly PersonLabel[],
+): Record<string, boolean> {
+  const namelessRowNames = new Set(rows.filter((r) => !r.personObjectId).map((r) => r.name.trim()))
+  const collisions: Record<string, boolean> = {}
+  for (const label of labels) {
+    collisions[label.id] = namelessRowNames.has(label.name.trim())
+  }
+  return collisions
+}
+
 // Sira dutyOptions'in kendi sirasidir. Ayni gorev icinde gelis sirasi korunur (istikrarli
 // siralama). Gorevi bos olanlar (ve dutyOptions'ta karsiligi olmayan bilinmeyen kod) sona duser.
 export function sortPersonsByDuty(

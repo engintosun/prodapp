@@ -252,7 +252,12 @@ export interface KeyEventLike {
 // cellKind resolveKeyAction'a NE karari uygulanacagini soyler; select/buton icin native
 // tus davranisi (ok tuslari, Enter, harfler) korunur, yalniz gezinme (Tab, buton icin +ok)
 // motor karari doner - bu iki tip edit moduna HIC girmez (K7-r2, BUTCE-UI-MIMARISI I7).
-export type CellKind = 'input' | 'select' | 'button' | 'combobox'
+// AD YERLESIMI (KART 1600 M3b-3, 9 Eylul 2026): 'text' SALT-OKUNUR hucreler icindir (kisi
+// etiketinden gelen ad). button ile AYNI ilke - edit moduna HIC girmez - ama Tab + DORT ok
+// yonu de motor karari doner, boylece hucre klavye izgarasindan CIKMAZ (sandbox turunda
+// olculdu: button kind kopyalama saglamiyor, o yuzden metin gercek readOnly input olarak
+// tasinir - kopyalama tarayicinin dogal metin secimine birakilir, cekirdek karismaz).
+export type CellKind = 'input' | 'select' | 'button' | 'combobox' | 'text'
 
 // D3b-1 (KLV-K13): combobox hucresinde ACIK listenin tuslari grid'e ait DEGILDIR. Liste
 // state'i (hangi secenek vurgulu, liste acik mi) cagiran tarafta yasar - cekirdek yalniz
@@ -346,6 +351,17 @@ export function resolveKeyAction(
       const dir = e.key === 'ArrowUp' ? 'up' : e.key === 'ArrowDown' ? 'down' : e.key === 'ArrowLeft' ? 'left' : 'right'
       return { action: { type: 'arrow', dir }, preventDefault: true }
     }
+    return { action: null, preventDefault: false }
+  }
+
+  if (cellKind === 'text') {
+    if (e.key === 'Tab') return { action: { type: 'tab', shift: e.shiftKey }, preventDefault: true }
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      const dir = e.key === 'ArrowUp' ? 'up' : e.key === 'ArrowDown' ? 'down' : e.key === 'ArrowLeft' ? 'left' : 'right'
+      return { action: { type: 'arrow', dir }, preventDefault: true }
+    }
+    // Enter/yazi/MOD+C buraya dusmez - taniMSIZ dal, edit moduna hic girmez (native readOnly
+    // input kendi metin secimini ve kopyalamasini tasir, cekirdek dokunmaz).
     return { action: null, preventDefault: false }
   }
 

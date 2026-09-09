@@ -3,7 +3,17 @@ import { useEffect, useLayoutEffect, useRef } from 'react'
 
 const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
 
-export function BottomSheet({ title, onClose, children }: { title: ReactNode; onClose: () => void; children: ReactNode }) {
+export function BottomSheet({
+  title,
+  maxWidth = 480,
+  onClose,
+  children,
+}: {
+  title: ReactNode
+  maxWidth?: number
+  onClose: () => void
+  children: ReactNode
+}) {
   const panelRef = useRef<HTMLDivElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const triggerElRef = useRef<Element | null>(null)
@@ -73,7 +83,7 @@ export function BottomSheet({ title, onClose, children }: { title: ReactNode; on
           bottom: 0,
           left: '50%',
           transform: 'translateX(-50%)',
-          width: 'min(480px, 100%)',
+          width: `min(${maxWidth}px, 100%)`,
           maxHeight: '80vh',
           overflowY: 'auto',
           borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0',

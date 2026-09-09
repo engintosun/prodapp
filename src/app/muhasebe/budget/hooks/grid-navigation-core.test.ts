@@ -574,6 +574,34 @@ describe('resolveKeyAction cellKind', () => {
     })
   })
 
+  describe('text (AD YERLESIMI, KART 1600 M3b-3, salt-okunur ama izgaradan cikmaz)', () => {
+    it('Tab motor karari doner', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'Tab' }), 'nav', '', 'text')
+      expect(r).toEqual({ action: { type: 'tab', shift: false }, preventDefault: true })
+    })
+
+    it('dort ok motor karari doner', () => {
+      expect(resolveKeyAction(keyEvent({ key: 'ArrowUp' }), 'nav', '', 'text')).toEqual({ action: { type: 'arrow', dir: 'up' }, preventDefault: true })
+      expect(resolveKeyAction(keyEvent({ key: 'ArrowDown' }), 'nav', '', 'text')).toEqual({ action: { type: 'arrow', dir: 'down' }, preventDefault: true })
+      expect(resolveKeyAction(keyEvent({ key: 'ArrowLeft' }), 'nav', '', 'text')).toEqual({ action: { type: 'arrow', dir: 'left' }, preventDefault: true })
+      expect(resolveKeyAction(keyEvent({ key: 'ArrowRight' }), 'nav', '', 'text')).toEqual({ action: { type: 'arrow', dir: 'right' }, preventDefault: true })
+    })
+
+    it('Enter edit modu ACMAZ (button ile ayni ilke)', () => {
+      expect(resolveKeyAction(keyEvent({ key: 'Enter' }), 'nav', '', 'text')).toEqual({ action: null, preventDefault: false })
+    })
+
+    it('yazdirilabilir karakter edit modu ACMAZ', () => {
+      expect(resolveKeyAction(keyEvent({ key: 'a' }), 'nav', '', 'text')).toEqual({ action: null, preventDefault: false })
+    })
+
+    it('MOD+C cekirdekten copyRaw uretmez (native readOnly secimine birakilir)', () => {
+      const r = resolveKeyAction(keyEvent({ key: 'c', ctrlKey: true }), 'nav', '', 'text')
+      expect(r.action).toBeNull()
+      expect(r.copyRaw).toBeUndefined()
+    })
+  })
+
   describe('geriye uyum', () => {
     it('cellKind verilmeden cagri mevcut input davranisiyla ayni (yazdirilabilir karakter type acar)', () => {
       const r = resolveKeyAction(keyEvent({ key: '7' }), 'nav', '')

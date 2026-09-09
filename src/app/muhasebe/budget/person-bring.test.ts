@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { personCardPresence, sortPersonsByDuty } from './person-bring'
+import { personCardPresence, personNameCollisions, sortPersonsByDuty } from './person-bring'
 import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
 import type { PersonLabel, DutyOption } from '../../../shared/supabase/person-label-service'
 
@@ -78,6 +78,32 @@ describe('personCardPresence', () => {
       inCard: { p1: false, p2: false },
       missingCount: 2,
     })
+  })
+})
+
+describe('personNameCollisions', () => {
+  it('eslesen ad uyari uretir', () => {
+    const rows = [makeItem({ id: 'a', name: 'Ahmet Yılmaz', personObjectId: null })]
+    const labels = [makeLabel({ id: 'p1', name: 'Ahmet Yılmaz' })]
+    expect(personNameCollisions(rows, labels)).toEqual({ p1: true })
+  })
+
+  it('fisli satirla eslesme uyari URETMEZ', () => {
+    const rows = [makeItem({ id: 'a', name: 'Ahmet Yılmaz', personObjectId: 'baska-kisi' })]
+    const labels = [makeLabel({ id: 'p1', name: 'Ahmet Yılmaz' })]
+    expect(personNameCollisions(rows, labels)).toEqual({ p1: false })
+  })
+
+  it('bosluk farki eslesir (iki yandan kirpilir)', () => {
+    const rows = [makeItem({ id: 'a', name: '  Ahmet Yılmaz  ', personObjectId: null })]
+    const labels = [makeLabel({ id: 'p1', name: 'Ahmet Yılmaz' })]
+    expect(personNameCollisions(rows, labels)).toEqual({ p1: true })
+  })
+
+  it('harf farki eslesmez (buyuk-kucuk katlama yok)', () => {
+    const rows = [makeItem({ id: 'a', name: 'ahmet yılmaz', personObjectId: null })]
+    const labels = [makeLabel({ id: 'p1', name: 'Ahmet Yılmaz' })]
+    expect(personNameCollisions(rows, labels)).toEqual({ p1: false })
   })
 })
 

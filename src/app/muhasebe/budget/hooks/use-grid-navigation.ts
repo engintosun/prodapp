@@ -194,9 +194,12 @@ export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows, list
     const target = e.target as HTMLElement
     if (!target.dataset.gridCell) return
     if (state.mode !== 'nav') return
-    // select/buton hucrede yapistirma yutulur - mevcut yol nav modunda 'type' dispatch edip
-    // input'suz hucrede edit state aciyordu (sizinti), bu iki tip edit moduna hic girmez (K7-r2).
-    if (target.dataset.cellKind === 'select' || target.dataset.cellKind === 'button') {
+    // select/buton/text hucrede yapistirma yutulur - mevcut yol nav modunda 'type' dispatch
+    // edip edit moduna hic girmeyen bir hucrede sizinti acardi (K7-r2). text (AD YERLESIMI,
+    // KART 1600 M3b-3) icin bu ozellikle onemli: yapistirma yutulmazsa salt-okunur Ad hucresi
+    // uzerinden budget_items.name gorunmeden degisirdi (ekranda kisi adi durur, satirda panodaki
+    // metin saklanirdi).
+    if (target.dataset.cellKind === 'select' || target.dataset.cellKind === 'button' || target.dataset.cellKind === 'text') {
       e.preventDefault()
       return
     }

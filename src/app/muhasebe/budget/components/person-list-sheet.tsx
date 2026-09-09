@@ -1,8 +1,19 @@
 import { useMemo, useState } from 'react'
 import type { DutyOption, PersonLabel, PersonLabelPatch } from '../../../../shared/supabase/person-label-service'
-import type { BudgetItemRow } from '../../../../shared/supabase/budget-service'
-import { personCardPresence, sortPersonsByDuty } from '../person-bring'
+import type { PersonCardPresence } from '../person-bring'
+import { sortPersonsByDuty } from '../person-bring'
 import { BottomSheet } from './bottom-sheet'
+
+const PANEL_WIDTH = 760
+
+const colWidths = {
+  rol: 90,
+  oyuncu: 130,
+  gorev: 100,
+  ajans: 140,
+  menajer: 140,
+  durum: 120,
+} as const
 
 const inputStyle = {
   width: '100%',
@@ -26,6 +37,14 @@ const thStyle = {
 
 const tdStyle = {
   padding: 'var(--space-1) var(--space-1)',
+}
+
+// Rol/Oyuncu/Gorev taşan metni üç noktayla keser; tam metin title ipucunda kalır.
+const ellipsisCellStyle = {
+  ...tdStyle,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap' as const,
 }
 
 const tickLabelStyle = {
@@ -52,13 +71,16 @@ const toolbarStyle = {
   margin: '0 0 var(--space-3)',
 }
 
+// DOLU dugme deseni (confirm-dialog.tsx emsali): cerceveli+bos hali kullanici tarafindan
+// bulunamiyordu (9 Eylul 2026 ekranda gorulen kusur). Var olan tokenlar kullanilir, yeni
+// token uydurulmaz.
 const bringButtonStyle = {
-  background: 'var(--color-surface-2)',
-  border: '1px solid var(--color-border)',
+  background: 'var(--color-primary)',
+  color: 'var(--color-primary-text)',
+  border: 'none',
   borderRadius: 'var(--radius-sm)',
-  padding: 'var(--space-1) var(--space-2)',
+  padding: 'var(--space-1) var(--space-3)',
   fontSize: 'var(--text-xs)',
-  color: 'var(--color-text)',
   cursor: 'pointer',
 }
 
@@ -67,31 +89,34 @@ function dutyName(dutyCode: string | null, dutyOptions: DutyOption[]): string {
   return dutyOptions.find((d) => d.catalogCode === dutyCode)?.name ?? dutyCode
 }
 
-// Panonun bilesen imzasi hicbir kart koduna baglanmaz: yalniz labels, dutyOptions, rows ve
-// geri cagrilar alir (I1, kart-ozel dal YASAK). budgetId, groupId ve servis cagrilari
-// CAGIRAN tarafta yasar; pano yalniz onBring(pairs) cagirir.
+// Panonun bilesen imzasi hicbir kart koduna baglanmaz: yalniz labels, dutyOptions, presence,
+// nameCollisions ve geri cagrilar alir (I1, kart-ozel dal YASAK). budgetId, groupId, rows ve
+// servis cagrilari CAGIRAN tarafta yasar; pano yalniz onBring(pairs) cagirir. presence ve
+// nameCollisions cagiran tarafta BIR KEZ hesaplanir (dugme metni de ayni presence'i kullanir,
+// cift hesap acilmaz - KART 1600 M3b-3).
 // URETIM KAYITLARI duragi geldikten sonra (6 Eylul 2026, KABUK-KARARLARI 12.1) kisi girisi
 // oradan yapilir: Rol/Oyuncu/Gorev burada SALT OKUNUR, yalniz ajans ve menajer tikleri
 // (ve tik isaretliyken ad haneleri) karttan duzenlenebilir kalir. "+ Kisi ekle" KALKTI.
-// GETIRME YOLU (9 Eylul 2026): sira sortPersonsByDuty'den gelir, kartta olma durumu
-// personCardPresence'tan gelir (ikisi de saf modul, person-bring.ts).
+// GETIRME YOLU (9 Eylul 2026): sira sortPersonsByDuty'den gelir, kartta olma durumu ve
+// coklu-satir uyarisi disaridan HAZIR gelir (person-bring.ts).
 export function PersonListSheet({
   labels,
   dutyOptions,
-  rows,
+  presence,
+  nameCollisions,
   onUpdate,
   onBring,
   onClose,
 }: {
   labels: PersonLabel[]
   dutyOptions: DutyOption[]
-  rows: BudgetItemRow[]
+  presence: PersonCardPresence
+  nameCollisions: Record<string, boolean>
   onUpdate: (id: string, patch: PersonLabelPatch) => void | Promise<void>
   onBring: (pairs: { catalogCode: string; personObjectId: string }[]) => void | Promise<void>
   onClose: () => void
 }) {
   const sortedLabels = useMemo(() => sortPersonsByDuty(labels, dutyOptions), [labels, dutyOptions])
-  const presence = useMemo(() => personCardPresence(rows, labels), [rows, labels])
   const bringableIds = useMemo(
     () => sortedLabels.filter((l) => !presence.inCard[l.id] && l.dutyCode !== null).map((l) => l.id),
     [sortedLabels, presence],
@@ -100,6 +125,7 @@ export function PersonListSheet({
   const [bringing, setBringing] = useState(false)
 
   const allChecked = bringableIds.length > 0 && bringableIds.every((id) => checked.has(id))
+  const bringDisabled = checked.size === 0 || bringing
 
   const toggleAll = () => {
     setChecked(allChecked ? new Set() : new Set(bringableIds))
@@ -128,7 +154,7 @@ export function PersonListSheet({
   }
 
   return (
-    <BottomSheet title="Oyuncular listesi" onClose={onClose}>
+    <BottomSheet title="Oyuncular listesi" maxWidth={PANEL_WIDTH} onClose={onClose}>
       <p style={noteStyle}>Kişi girişi artık Üretim Kayıtları'ndan yapılır.</p>
       {bringableIds.length > 0 && (
         <div style={toolbarStyle}>
@@ -139,15 +165,23 @@ export function PersonListSheet({
           <span style={mutedCellStyle}>{checked.size} kişi getirilecek</span>
           <button
             type="button"
-            disabled={checked.size === 0 || bringing}
+            disabled={bringDisabled}
             onClick={() => void handleBring()}
-            style={{ ...bringButtonStyle, opacity: checked.size === 0 || bringing ? 0.5 : 1 }}
+            style={{ ...bringButtonStyle, marginLeft: 'auto', opacity: bringDisabled ? 0.5 : 1, cursor: bringDisabled ? 'not-allowed' : 'pointer' }}
           >
             {bringing ? 'Getiriliyor...' : 'Getir'}
           </button>
         </div>
       )}
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+        <colgroup>
+          <col style={{ width: colWidths.rol }} />
+          <col style={{ width: colWidths.oyuncu }} />
+          <col style={{ width: colWidths.gorev }} />
+          <col style={{ width: colWidths.ajans }} />
+          <col style={{ width: colWidths.menajer }} />
+          <col style={{ width: colWidths.durum }} />
+        </colgroup>
         <thead>
           <tr>
             <th style={thStyle}>Rol</th>
@@ -155,15 +189,15 @@ export function PersonListSheet({
             <th style={thStyle}>Görev</th>
             <th style={thStyle}>Ajans</th>
             <th style={thStyle}>Menajer</th>
-            <th style={thStyle}></th>
+            <th style={thStyle}>Durum</th>
           </tr>
         </thead>
         <tbody>
           {sortedLabels.map((l) => (
             <tr key={l.id}>
-              <td style={tdStyle}>{l.roleName ?? ''}</td>
-              <td style={tdStyle}>{l.name}</td>
-              <td style={tdStyle}>{dutyName(l.dutyCode, dutyOptions)}</td>
+              <td style={ellipsisCellStyle} title={l.roleName ?? ''}>{l.roleName ?? ''}</td>
+              <td style={ellipsisCellStyle} title={l.name}>{l.name}</td>
+              <td style={ellipsisCellStyle} title={dutyName(l.dutyCode, dutyOptions)}>{dutyName(l.dutyCode, dutyOptions)}</td>
               <td style={tdStyle}>
                 <label style={tickLabelStyle}>
                   <input
@@ -202,7 +236,10 @@ export function PersonListSheet({
                 {presence.inCard[l.id] ? (
                   <span style={mutedCellStyle}>kartta</span>
                 ) : l.dutyCode !== null ? (
-                  <input type="checkbox" checked={checked.has(l.id)} onChange={() => toggleOne(l.id)} />
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <input type="checkbox" checked={checked.has(l.id)} onChange={() => toggleOne(l.id)} />
+                    {nameCollisions[l.id] && <span style={mutedCellStyle}>kartta benzer satır var</span>}
+                  </div>
                 ) : (
                   <span style={mutedCellStyle}>görevi yok</span>
                 )}
