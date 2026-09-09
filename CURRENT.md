@@ -16,14 +16,20 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 - **6 Eylül 2026 sabah — Üretim Kayıtları durağı canlıya girdi.** Bütçe rayında yeni durak açıldı; kendi ekranı masa + Oyuncular listesi olarak kuruldu. Karttan açılan Oyuncular panosu SALT OKUNUR oldu. Şema dilimi (`20260906120000`: ajans/menajer haneleri) Engin onayıyla CANLIYA ALINDI ve doğrulandı. Kart tarafında kişi seçimi Görev hanesine göre süzülür (afce76c). Test: 328 → 337.
 - **6 Eylül 2026 — Üretim Kayıtları kullanılabilir hale geldi (sekiz dilim, hepsi sahada doğrulandı).** Sırayla: tablo sütunları çivilendi ve kıpırdama bitti (9f1f037); No sütunu geldi (81d7129); liste göreve göre hiyerarşik dizilir, sıra katalog kodundan gelir, görevsizler sona düşer (6dc48b1); Excel/CSV içe aktarma ara ekranıyla birlikte geldi (24ce826); satır silme, seç kipi ve toplu silme geldi, aynı commit'te kapının kelime listesi düzeltildi — TD-41 (8d218ae); düğme şeridi tablonun üstüne taşındı, "Hepsini seç" başlıktaki ana tike dönüştü (63df638); JSON eklendi (efcb1f8); Word eklendi ve "Kaynak" seçicisi geldi, aynı commit'te Excel'in sessizce ilk sayfayı alma kusuru kapandı (9259aca). Dört biçim (Excel, CSV, JSON, Word) gerçek dosyalarla tarayıcıda denendi ve DOĞRULANDI: Türkçe karakter, metin görünümlü sayı ("07"), başlıktaki gürültü satırları, boş oyuncu hanesi, çok sayfalı Excel, iki tablolu Word ve tablosuz Word (reddedildi) — hepsi beklendiği gibi. Yeni doğrudan bağımlılıklar: `read-excel-file` (Excel) ve `fflate` (Word zip'i); XML için paket kullanılmadı, tarayıcının `DOMParser`'ı yeter. Test: 337, değişmedi.
 
+- **9 Eylül 2026 — KART 1600 M3b-3 tamamlandı (altı commit).** Sırayla: tesisat (komisyon tabanı beyaz listesi, karttan silinen satırın kişi bağını bırakması, `item_library.default_derive_rate` göçü) · getirme yolu (`fn_add_person_items`, düğmede sayı, panoda toplu getirme) · ekran tamamlaması (pano 760 piksel, dolu Getir düğmesi, AD YERLEŞİMİ nihayet uygulandı, çift satır uyarısı, KLV text hücre türü) · komisyon satırının doğumu (istemci tarafı, B18 gereği tetikleyici yok) · türetme hesabı ekrana bağlandı, kişi bloğu toplanıyor, öksüz işlev denetimi kapıya girdi · temsilci sayısı kadar satır, dönem yok, temsilci adı, tik kaldırınca silme. Ayrıntı git log'da, kararlar ev dosyalarında. BU TURDA ÜÇ KEZ AYNI SINIF KUSUR ÇIKTI: karar dosyasında yazılı olup kodda karşılığı olmayan maddeler (AD YERLEŞİMİ, temsilci sayısı kadar satır, silme kuralı) ve bir öksüz işlev (`derivedUnitNets`). Öksüz işlev için kapı kuruldu; uygulanmamış karar sınıfı için kapı YOK, elle okumaya bağlı (bkz. `docs/protokol/DERSLER.md`).
+
 ## Durum
 
-- HEAD: 9259aca (6 Eylül 2026 — içe aktarmaya Word eklendi, kaynak seçicisi geldi). Denetim E gereği burada CURRENT.md'ye dokunan son commit'in EBEVEYNİ yazar; kapanışta YAZMA ANINDAKİ HEAD yazılır, çünkü kapanış commit'i CURRENT.md'ye dokunur ve "son commit" o olur.
+- HEAD: b81a87b (9 Eylül 2026, KART 1600 M3b-3 kayıtları). Denetim E gereği kapanış commit'inin EBEVEYNİ yazılır, çünkü bu commit CURRENT.md'ye dokunur ve "son commit" o olur.
+- KART 1600 M3b-3 TAMAMLANDI ve tarayıcıda gerçek veriyle doğrulandı: ajans (Fatura) ve menajer (SMM) satırları aynı orandan farklı maliyet üretiyor (2.400 ve 3.000), özet ikisini de topluyor, tik kaldırılınca satır gidiyor ve özet düşüyor.
+- AJANS KOMİSYONU FOSİLİ: Tanımlar > Referans ekranında kullanıcıya yüzde 10 gösteriliyor, karttaki oran yüzde 20. Sökme bir sonraki oturumun ilk gündemi ve ilk adımı canlı bağ ölçümüdür (bkz. `docs/butce/BUTCE-SEMA-KARARLARI.md` ve `docs/IS-SIRASI.md`).
+- REFERANS EKRANI DAHA GENİŞ BİR SORUN TAŞIYOR: dört SGK senaryosu yan yana düz satır olarak duruyor, hangisinin bu şirkete ait olduğunu söyleyen işaret yok; oranı motor `fn_resolve_sgk_scenario` ile şirket profilinden çözüyor. Kendi turunu bekliyor (`docs/IS-SIRASI.md` Backlog).
 - MUHUR-3 CANLIDA ve doğrulandı. Kişi ve iş etiketleri PROJE kapsamında.
-- ÜRETİM KAYITLARI kullanılabilir: liste hiyerarşik dizilir, satır numarası var, satır tek tek ya da seç kipiyle toplu silinir, dört biçimden içe aktarma yapılır. Hepsi 6 Eylül'de tarayıcıda gerçek veriyle denendi.
-- Migration 20260901130000'den 20260906120000'e kadar CANLIDA. Kod: 337/337 test. Build geçer, eslint 0 hata. Originde tek dal: main.
-- Bütçe kolon modeli: 13 veri kolonu + etiketsiz silme hanesi — No · Ad · Statü · Dönemler · Birim · Birim net · Miktar · X · Ara toplam · Yasal Yük · Maliyet · KDV · Toplam.
-- ÇALIŞMA ORTAMI: yedi deterministik kapı kurulu ve `supabase db push` onaya bağlı. Bu ortamda Docker YOK — `db reset`/`db dump` çalışmaz, `db push` ve salt-okuma `db query` çalışır. Ayarlar `.claude/settings.json`, kapılar `.claude/hooks/`.
+- ÜRETİM KAYITLARI kullanılabilir: liste hiyerarşik dizilir, satır numarası var, satır tek tek ya da seç kipiyle toplu silinir, dört biçimden içe aktarma yapılır.
+- Migration 20260901130000'den 20260909140000'e kadar CANLIDA. Build geçer, eslint sıfır hata. Originde tek dal: main.
+- SAYILAR BURADA YAŞAMAZ (Engin kararı, 9 Eylül 2026; DERSLER "Aynı olgunun N yerde yaşaması"): beklenen test sayısı `.claude/test-count` dosyasında, kapı kümesi `.claude/hooks/gate.sh` ve `.claude/hooks/run-gates.sh` içinde yaşar. Bu iki sayı düzyazıda tazelenmez, sahibinden okunur — 6 Eylül kaydında ikisi de bayat kalmıştı.
+- Bütçe kolon modeli: 13 veri kolonu + etiketsiz silme hanesi (No · Ad · Statü · Dönemler · Birim · Birim net · Miktar · X · Ara toplam · Yasal Yük · Maliyet · KDV · Toplam).
+- ÇALIŞMA ORTAMI: kapılar `.claude/hooks/` altında kurulu, `supabase db push` onaya bağlı. Bu ortamda Docker YOK: `db reset` ve `db dump` çalışmaz, `db push` ve salt-okuma `db query` çalışır.
 - KLV KAPANMADI: macOS gerçek cihaz turu yapılmadı. `v0.2-klv` etiketi ATILAMAZ.
 - BORÇ DURUMU: `docs/TECH-DEBT.md` tek otoritedir, sayı burada taşınmaz.
 
@@ -40,6 +46,7 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 - KART 1600 üç kademeli tasarım + katalog (28 atom) → `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 + `docs/butce/KART-KATALOGU.md` §7.5
 - Üretim Kayıtları listesi: sütun genişlikleri, No sütunu, hiyerarşik sıralama, silme ve seç kipi, düğme yerleşimi, içe aktarma (dört biçim + ara ekran) → `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20
 - Bütçe şema kararları (B-serisi), NET/BRÜT doktrini, MÜHÜR-3, `code` park kaydı → `docs/butce/BUTCE-SEMA-KARARLARI.md`
+- KART 1600 komisyon satırı, getirme yolu, ad yerleşimi ve kartın görünen düzeni → `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 + `card-view.ts` (kompozisyonun tek kaynağı) + `display-name.ts` (görünen adın tek kaynağı)
 - Bir daha tartışılmayacak değişmezler → `docs/DEGISMEZLER.md`
 - Kabuk, sol ray, kart masası, Üretim Kayıtları tasarımı → `docs/KABUK-KARARLARI.md`
 - Kart mimarisi ve kilitli kartlar → `docs/butce/KART-KATALOGU.md`
@@ -47,9 +54,9 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 
 ## Sıradaki iş
 
-**MADDE 1: TEMSİLCİ KOMİSYONU SATIRININ DOĞUMU.** Bugün ajans/menajer tiki YALNIZ VERİ (6 Eylül kararı). Satırın doğması için önce iki soru kapanmalı: (a) satır hangi bütçeye doğacak — aynı projede birden çok bütçe var ve Üretim Kayıtları bütçeyi görmüyor; (b) varsayılan oran nereden gelecek — `item_library`'de böyle bir hane YOK. Bu iş M3b-3'ü bloke ediyor ve tikler 6 Eylül'de canlıya girdiği için boşluk artık kuramsal değil.
+**MADDE 1: AJANS KOMİSYONU FOSİLİNİN SÖKÜLMESİ.** Kullanıcı Tanımlar > Referans ekranında yüzde 10, kartta yüzde 20 görüyor. İlk adım sökme değil ÖLÇÜM: bileşene ve pakete bağlı canlı satır var mı, salt-okuma sorguyla bakılır ve bu onay istemez. Ölçüm temiz çıkarsa sökme SQL'i yazılır ve Engin onayıyla uygulanır; bağlı satır çıkarsa sökme değil taşıma konuşulur. Ev dosyaları: `docs/butce/BUTCE-SEMA-KARARLARI.md` + `docs/IS-SIRASI.md`.
 
-**MADDE 2: SÜRÜKLE-BIRAK ALANI BELİRGİN DEĞİL.** İçe aktarma panelindeki sürükle-bırak alanı ÇALIŞIYOR (6 Eylül'de denendi) ama gözden kaçıyor: kesikli çerçeve arka planla neredeyse aynı tonda, kutunun içi boş, sürükleme sırasında hiçbir dönüş verilmiyor (`onDragEnter`/`onDragLeave` yok, sürükleme durumu tutulmuyor), ve "Dosya seç" düğmesi kutunun dışında duruyor. Bir şeyin hedef olduğunun görülüp görülmemesi işlevseldir, ton işi değildir. Tek dosya: `import-panel.tsx`.
+**MADDE 2: SÜRÜKLE-BIRAK ALANI BELİRGİN DEĞİL.** İçe aktarma panelindeki sürükle-bırak alanı ÇALIŞIYOR (6 Eylül'de denendi) ama gözden kaçıyor: kesikli çerçeve arka planla neredeyse aynı tonda, kutunun içi boş, sürükleme sırasında hiçbir dönüş verilmiyor (`onDragEnter`/`onDragLeave` yok, sürükleme durumu tutulmuyor) ve "Dosya seç" düğmesi kutunun dışında duruyor. Bir şeyin hedef olduğunun görülüp görülmemesi işlevseldir, ton işi değildir. Tek dosya: `import-panel.tsx`.
 
 ## Açık kalanlar
 

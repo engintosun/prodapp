@@ -205,12 +205,21 @@ export const ItemRow = memo(function ItemRow({
         // K8: bu satirin "periods" hucresi HIC YOK - COLUMN_EQUIVALENCE_GROUPS'taki tek-
         // elemanli ['periods'] grubu bu satiri kendiliginden atlar, cekirdege dokunulmadi
         // (sandbox turunde olculdu, bkz. grid-navigation-core.ts).
-        <td colSpan={5} style={numFlushTd}>
+        // KUTU DARALIR, KALKMAZ (9 Eylul 2026, Engin karari): birlesik hucre bes kolonu
+        // kapsayinca kutu da uzadi ve oran metni en sag ucta kaldi. Ad hucresindeki tedavi
+        // (cerceve ve zemin seffaflasir) BURAYA UYGULANMAZ: o hucre salt-okunur, bu hucre
+        // YAZILABILIR ve muhurlenen kural yazilabilir haneyi kutulu tutar; kutu kalkarsa
+        // kullanici oranin duzenlenebildigini anlamaz. Kutu icerigi kadar daralir (size=10,
+        // en uzun deger on karakter) ve birlesik hucrenin SOLUNA yaslanir. numFlushTd sagi
+        // yasliyordu, td burada sola cevrilir. data-col, klavye duragi, K8 grubu ve oran
+        // girisi DEGISMEDI.
+        <td colSpan={5} style={{ ...numFlushTd, textAlign: 'left' }}>
           <input
             data-grid-cell="true"
             data-row-id={it.id}
             data-col="deriveRate"
-            style={cellInputNum}
+            size={10}
+            style={{ ...cellInputNum, width: 'auto', textAlign: 'left' }}
             type="text"
             inputMode="decimal"
             value={navDeriveRate ?? fieldVal(bufDeriveRate, it.deriveRate ?? 0)}

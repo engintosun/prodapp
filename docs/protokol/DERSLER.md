@@ -1,6 +1,6 @@
 # Süreç Dersleri — Tekrar Eden Kusur Sınıfları
 
-Bu dosyanın tüketicisi Opus'tur. Açılışta okunmaz; yeni bir kusur çıktığında "bu sınıf daha önce oldu mu, kapıya bağlanabilir mi" diye bakılır.
+Bu dosyanın tüketicisi Opus'tur. Açılışta OKUNUR (Engin kararı, 9 Eylül 2026; açılış okuma listesine girdi). Ayrıca yeni bir kusur çıktığında "bu sınıf daha önce oldu mu, kapıya bağlanabilir mi" diye bakılır.
 
 Kayıt anlatı değil SINIFTIR: ne oldu değil, hangi tür hata kaç kez tekrarladı ve bugün onu ne tutuyor. Olayların hikâyesi git log'da ve kararın kendi ev dosyasında yaşar.
 

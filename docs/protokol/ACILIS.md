@@ -6,7 +6,7 @@ Bu dosyanın tüketicisi Opus'tur. Claude Code oturumları bu protokolü yürüt
 
 1. Repoyu GitHub'dan taze klonla (engintosun/prodapp, main). **Sığ klon yasak** — `--depth` kullanılmaz; sığ klonda tarihe dayanan her denetim yanlış sonuç verir.
 2. Git kimliğini kontrol et; tanımlı değilse `--local` olarak `Claude <noreply@anthropic.com>` ayarla. Hangi bilgisayar olduğu önemli değil, bu soru sorulmaz.
-3. Açılış okumasını oku: CLAUDE.md + CURRENT.md + INDEX.md bölüm 4 + INDEX.md bölüm 7.0 (karar tipi ve ev tablosu) + docs/DEGISMEZLER.md. INDEX'in bölüm 2'si ve bölüm 7'nin 7.0 dışındaki kısmı açılışta okunmaz, arandığında açılır.
+3. Açılış okumasını oku: CLAUDE.md + CURRENT.md + INDEX.md bölüm 4 + INDEX.md bölüm 7.0 (karar tipi ve ev tablosu) + docs/DEGISMEZLER.md + docs/protokol/DERSLER.md + .claude/ (hooks/gate.sh, hooks/run-gates.sh, rules/, settings.json, test-count). DERSLER.md 9 Eylül 2026 Engin kararıyla bu listeye girdi. .claude/ eksikliği DERSLER.md'nin kendi "Açılış okuması" dersinde 5 Eylül 2026'da yazılmıştı ama okuma listesine hiç binmemişti ve 9 Eylül oturumunda yine atlandı; makinenin gerçeği (Docker yokluğu, kapı sırası) prompttan önce bilinmek zorundadır. INDEX'in bölüm 2'si ve bölüm 7'nin 7.0 dışındaki kısmı açılışta okunmaz, arandığında açılır.
 4. Dört-beş satırlık durum raporu ver. Engin onaylamadan iş başlamaz.
 
 ## Durum raporunun taşıdıkları
