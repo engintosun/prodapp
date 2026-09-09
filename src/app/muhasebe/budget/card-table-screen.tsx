@@ -1,5 +1,5 @@
 // BOY: tek iş = kart tablosu ekranının orkestrasyonu (veri hook'ları + grid navigasyon + ekleme paneli + satır bileşenlerini birbirine bağlar), sebep = tek ekranın tüm kablolaması aynı yerde görülmeli; bölünürse durum parçalara dağılır, okunabilirlik artmaz.
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Loading } from '../../../shared/components/loading'
 import { EmptyState } from '../../../shared/components/empty-state'
 import { ErrorMessage } from '../../../shared/components/error-message'
@@ -8,8 +8,8 @@ import { useEditBuffers } from './hooks/use-edit-buffers'
 import { useGridNavigation } from './hooks/use-grid-navigation'
 import { isMultiPeriod, fmt, matchLibraryItems, buildRoomOptions, findCrossCardMatches, groupRowsByHeading } from './format'
 import type { RoomOption } from './format'
-import { cardTotals } from './totals'
-import { addBudgetItem, addPersonItems, softDeleteBudgetItem } from '../../../shared/supabase/budget-service'
+import { cardTotals, rowTotals } from './totals'
+import { addBudgetItem, addPersonItems, softDeleteBudgetItem, updateItemField } from '../../../shared/supabase/budget-service'
 import { fetchPersonLabels, updatePersonLabel, fetchDutyOptions } from '../../../shared/supabase/person-label-service'
 import type { PersonLabel, PersonLabelPatch, DutyOption } from '../../../shared/supabase/person-label-service'
 import { useToast } from '../../../shared/components/toast'
@@ -19,10 +19,12 @@ import { ItemRow } from './components/item-row'
 import { PeriodRow } from './components/period-row'
 import { HeadingRow } from './components/heading-row'
 import { SummaryRow } from './components/summary-row'
-import { groupByPerson, buildRenderRows } from './person-groups'
-import { personCardPresence, personNameCollisions } from './person-bring'
+import { groupByPerson, buildRenderRows, personsNeedingCommissionRow } from './person-groups'
+import { personCardPresence, personNameCollisions, filterPersonsForAtom } from './person-bring'
 import { summaryDisplayName } from './display-name'
 import { BurdenSheet } from './components/burden-sheet'
+import type { BordroSheetEntry } from './components/burden-sheet'
+import type { LibraryItem } from '../../../shared/supabase/library-service'
 import { StatusInfoSheet } from './components/status-info-sheet'
 import { NoteSheet } from './components/note-sheet'
 import { HeadingSheet } from './components/heading-sheet'
@@ -53,6 +55,51 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     unitCodeByIdRef,
     minWageThresholdsRef,
   } = useCardRows({ budgetId, cardId })
+  const { addToast } = useToast()
+
+  // KOMISYON SATIRININ DOGUMU (9 Eylul 2026, BUTCE-EKRAN-KARARLARI bolum 20): asagidaki refler
+  // useEditBuffers'in DONDURULMUS ([] bagimli) api kapanisina taze deger tasir - rowsRef/cardRef
+  // ile AYNI desen (bkz. use-card-rows.ts). personLabels ve allLibrary bu bilesenin KENDI
+  // state'idir (useCardRows'un disinda), bu yuzden kendi refleri burada acilir.
+  const personLabelsRef = useRef<PersonLabel[]>([])
+  const bordroDataRef = useRef<Record<string, BordroSheetEntry>>({})
+  const allLibraryRef = useRef<LibraryItem[]>([])
+  // CIFT DOGUM KORUMASI: devam eden bir dogum varken ikincisi baslamaz.
+  const commissionBirthInFlightRef = useRef(false)
+
+  // VERITABANI TETIKLEYICISI YASAK (B18): taban hesabi (personsNeedingCommissionRow,
+  // person-groups.ts) burada TypeScript'te yasar. Doğum ANI: para degistiren bir alan basariyla
+  // kaydedildikten SONRA (useEditBuffers onMoneyCommitted) VEYA kisi listesi (yeniden) yuklendiginde
+  // (kart acilisi + ajans/menajer tik degisikligi, ikisi de refreshPersonLabels'tan gecer).
+  // Getirilen satirlarin adi/tutari nasil BOS gelirse (GETIRME YOLU), komisyon satirinin da adi/
+  // tutari BOS gelir - fn_add_budget_item zaten boyle davraniyor, elle yazilmaz.
+  const birthMissingCommissionRows = useCallback(async () => {
+    if (commissionBirthInFlightRef.current) return
+    if (!cardRef.current) return
+    const currentRows = rowsRef.current
+    const netByItemId: Record<string, number> = {}
+    for (const r of currentRows) netByItemId[r.id] = rowTotals(r, bordroDataRef.current[r.id]).net
+    const missing = personsNeedingCommissionRow(currentRows, personLabelsRef.current, netByItemId)
+    if (missing.length === 0) return
+    const defaultRate = allLibraryRef.current.find((l) => l.catalogCode === '1618')?.defaultDeriveRate ?? null
+    commissionBirthInFlightRef.current = true
+    try {
+      for (const personId of missing) {
+        const newItemId = await addBudgetItem(cardRef.current.groupId, { catalogCode: '1618' })
+        await updateItemField(newItemId, 'personObjectId', personId)
+        if (defaultRate !== null) await updateItemField(newItemId, 'deriveRate', defaultRate)
+      }
+      refetch({ silent: true })
+    } catch (e) {
+      addToast(e instanceof Error ? e.message : 'Komisyon satırı oluşturulamadı', 'error')
+    } finally {
+      commissionBirthInFlightRef.current = false
+    }
+    // cardRef/rowsRef useRef nesneleridir, kimlikleri sabittir (rowsRef/cardRef ile AYNI desen,
+    // bkz. use-card-rows.ts) - deps'e girmeleri gerekmez.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refetch, addToast])
+
   const { buffers, bordroData, itemWarnings, periodWarnings, refreshBordroMany, api } = useEditBuffers({
     rowsRef,
     savedRef,
@@ -62,8 +109,12 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     unitCodeByIdRef,
     minWageThresholdsRef,
     patchRow,
+    onMoneyCommitted: birthMissingCommissionRows,
   })
-  const { addToast } = useToast()
+  useLayoutEffect(() => {
+    bordroDataRef.current = bordroData
+    allLibraryRef.current = allLibrary
+  })
   const [addQuery, setAddQuery] = useState('')
   const [addPanelOpen, setAddPanelOpen] = useState(false)
   // -1 = HICBIR secenek vurgulu degil (D3b-2d). Vurgu YALNIZ ok tusuyla baslar; odada acilma ve
@@ -231,11 +282,18 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // setPersonLabels efekt icinden SENKRON cagrilmaz (set-state-in-effect kok cozumu, emsal:
   // reviewer-screen.tsx load()): .then/.catch zinciri kullanilir, useEffect gövdesi promise'i
   // baslatir ama sonucunu senkron beklemez.
+  // KOMISYON SATIRININ DOGUMU: personLabelsRef her TAZE liste geldiginde senkron guncellenir
+  // (useLayoutEffect'i BEKLEMEZ) ve dogum denetimi hemen ardindan cagrilir - bu yol hem kart
+  // acilisini hem ajans/menajer tik degisikligini (onUpdatePersonLabel de buradan gecer) kapsar.
   const refreshPersonLabels = useCallback(() => {
     fetchPersonLabels()
-      .then(setPersonLabels)
+      .then((labels) => {
+        personLabelsRef.current = labels
+        setPersonLabels(labels)
+        void birthMissingCommissionRows()
+      })
       .catch((e) => addToast(e instanceof Error ? e.message : 'Kişi listesi alınamadı', 'error'))
-  }, [addToast])
+  }, [addToast, birthMissingCommissionRows])
 
   useEffect(() => {
     refreshPersonLabels()
@@ -683,7 +741,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           <PersonPickSheet
             key={item.id}
             item={item}
-            labels={personLabels}
+            labels={filterPersonsForAtom(personLabels, rows, item.catalogCode, item.id)}
             dutyCodes={dutyCodes}
             rowCatalogCode={item.catalogCode}
             onCommit={api.commitNote}

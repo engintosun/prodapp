@@ -2,6 +2,7 @@
 // sebep = KART 1600 ozet satiri ile temsilci komisyonu ayni iki gecisli hesaptan doguyor.
 import Decimal from 'decimal.js'
 import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
+import type { PersonLabel } from '../../../shared/supabase/person-label-service'
 import type { PaymentStatus } from '../../../shared/types/domain'
 
 // Komisyon tabanina yalniz kisinin KENDI KAZANCI olan statuler girer (9 Eylul 2026 karari,
@@ -41,12 +42,13 @@ export function groupByPerson(rows: readonly BudgetItemRow[]): PersonGroup[] {
   })
 }
 
-// Ikinci gecis: derive_rate dolu satirin birim neti, AYNI etiketteki derive_rate BOS satirlarin
-// Ara toplamlarindan oranla dogar. Turetilmis satir tabana GIRMEZ (kendi sonucunu beslemesin).
-// netByItemId disaridan gelir: Ara toplam tanimi totals.ts icinde yasar, burada ikinci kez
-// tanimlanmaz (bordro satirinin neti motordan gelir, ciplak carpimdan degil).
-// Yuvarlama iki hanedir: sonuc Birim net hanesinde gorunur, o kolon numeric(14,2) tasir.
-export function derivedUnitNets(
+// Kisi kimligi basina CIPLAK NET TABAN (9 Eylul 2026, B18: ayni formul iki yerde yasayamaz -
+// derivedUnitNets ASAGIDA bu islevi CAGIRIR, kopyasini tasimaz; KOMISYON SATIRININ DOGUMU da
+// ayni tabani kullanir, bkz. personsNeedingCommissionRow). Kural EARNING_PAYMENT_STATUSES'in
+// AYNISI: yalniz kisinin kendi kazanci olan statuler tabana girer, derive_rate DOLU (turetilmis)
+// satir tabana GIRMEZ. netByItemId disaridan gelir: Ara toplam tanimi totals.ts icinde yasar,
+// burada ikinci kez tanimlanmaz (bordro satirinin neti motordan gelir, ciplak carpimdan degil).
+export function personNetBases(
   rows: readonly BudgetItemRow[],
   netByItemId: Readonly<Record<string, number>>,
 ): Record<string, number> {
@@ -59,10 +61,25 @@ export function derivedUnitNets(
     baseByPerson.set(key, (baseByPerson.get(key) ?? new Decimal(0)).plus(net))
   }
   const out: Record<string, number> = {}
+  for (const [key, value] of baseByPerson) {
+    out[key] = value.toNumber()
+  }
+  return out
+}
+
+// Ikinci gecis: derive_rate dolu satirin birim neti, AYNI etiketteki derive_rate BOS satirlarin
+// Ara toplamlarindan oranla dogar. Turetilmis satir tabana GIRMEZ (kendi sonucunu beslemesin).
+// Yuvarlama iki hanedir: sonuc Birim net hanesinde gorunur, o kolon numeric(14,2) tasir.
+export function derivedUnitNets(
+  rows: readonly BudgetItemRow[],
+  netByItemId: Readonly<Record<string, number>>,
+): Record<string, number> {
+  const bases = personNetBases(rows, netByItemId)
+  const out: Record<string, number> = {}
   for (const row of rows) {
     const key = row.personObjectId
     if (!key || row.deriveRate === null) continue
-    const base = baseByPerson.get(key) ?? new Decimal(0)
+    const base = new Decimal(bases[key] ?? 0)
     out[row.id] = base
       .mul(row.deriveRate)
       .div(100)
@@ -70,6 +87,24 @@ export function derivedUnitNets(
       .toNumber()
   }
   return out
+}
+
+// KOMISYON SATIRININ DOGUMU (9 Eylul 2026, BUTCE-EKRAN-KARARLARI bolum 20): uc sart birden
+// saglaninca kisi icin komisyon satiri GEREKIR. VERITABANI TETIKLEYICISI YASAK (B18) - taban
+// hesabi (personNetBases) burada TypeScript'te yasar, SQL'de ikinci bir kopyasi acilmaz.
+export function personsNeedingCommissionRow(
+  rows: readonly BudgetItemRow[],
+  labels: readonly PersonLabel[],
+  netByItemId: Readonly<Record<string, number>>,
+): string[] {
+  const bases = personNetBases(rows, netByItemId)
+  const hasCommissionRow = new Set<string>()
+  for (const row of rows) {
+    if (row.personObjectId && row.deriveRate !== null) hasCommissionRow.add(row.personObjectId)
+  }
+  return labels
+    .filter((l) => (l.hasAgency || l.hasManager) && (bases[l.id] ?? 0) > 0 && !hasCommissionRow.has(l.id))
+    .map((l) => l.id)
 }
 
 export type RenderRow =

@@ -380,6 +380,17 @@ NOT (8 Ağustos 2026): buradaki üç-rol listesi HARCAMA ZİNCİRİ içindir. Ma
 
 **AÇIK MADDE (9 Eylül 2026):** satırda saklanan ad atomun adıdır, oyuncunun adı değildir — bu yüzden bayatlamaz (bkz. AD YERLEŞİMİ). TEK istisna: getirme yolundan ÖNCE kullanıcının ad hücresine elle yazdığı oyuncu adları. O satırlarda kişi fişi yok, hücre düzenlenebilir, kullanıcı kendisi düzeltir; ama fiş sonradan iliştirilirse eski elle-yazılmış metin satırda saklı kalır ve fiş çıkarılınca (kişi kartttan kaldırılırsa) yüzeye geri döner. Dar hal, bu turda çözülmedi.
 
+**SALT OKUNUR AD HÜCRESİ TAM GÜÇTE (9 Eylül 2026, Engin kararı):** AD YERLEŞİMİ hal 3'te (kişi bağlı, etiket listede var) hücre soluk (`--color-text-muted`) ve çerçeveliydi; sonuç ters okunuyordu — satırın en değerli bilgisi (oyuncunun gerçek adı) "boş kalmış hane" gibi görünüyordu. Düzeltme: metin `--color-text` ile tam güçte, "yazamazsın" bilgisi renkle değil ÇERÇEVE VE ZEMİNİN ŞEFFAFLAŞMASIYLA verilir — yazılabilir haneler kutulu, yazılamayan düz bir etiket gibi durur, karşıtlık doğru yönde çalışır. Klavye tarafı (readOnly, data-cell-kind="text") DEĞİŞMEDİ.
+
+**AYNI ATOMDAN İKİNCİ SATIR ENGELİ (9 Eylül 2026, Engin kararı):** kişi seçicisi yalnız GÖREVE göre süzüyordu, kartta o kişinin AYNI KATALOG KODUNDA zaten satırı olup olmadığına bakmıyordu — kullanıcı şablonun boş satırlarına aynı kişiyi tekrar tekrar seçebiliyordu, aynı atomda üç satır oluşabiliyordu, komisyon tabanı (o kişinin tüm satırlarının toplamı) sessizce katlanıyordu ve özet toplamı düzgün göründüğü için kimse fark etmiyordu. Kural: seçici AYNI KATALOG KODUNDA kartta zaten satırı olan kişiyi listeden ÇIKARIR; iki istisna kalır — satırın KENDİ kişisi ve "Kişisiz". Bir kişinin birden çok satırı olması (kaşe, mesai, prova, tekrar telifi) DOĞRUDUR, engellenen yalnız AYNI ATOMDAN ikincisi. Emsal: bu bölümün "listeden gelen oyuncu satırları genel ekleme listesinde görünmez" maddesiyle AYNI ilke. Getirme yolundaki ÇİFT SATIR UYARISI'ndan FARKLI davranır, bilerek: orada ada göre TAHMİN vardı (uyarıp geçmek doğruydu), burada tahmin yok — kişi fişi kesin, atom kesin; kesin bilgide engellenir.
+
+**KOMİSYON SATIRININ DOĞUMU (9 Eylül 2026, Engin kararı):**
+1. Satır kendiliğinden belirir: kişinin ajans/menajer tiki varsa ve çıplak net tabanı sıfırdan büyükse. Belirdiği anda GERÇEK kayıttır — özet satırı gibi salt çizim değildir, çünkü oran satırda yaşar ve kullanıcı onu değiştirebilir; kaydı olmayan satırda değiştirilen oranın yazılacağı yer olmazdı. Ayrıca mühür, dışa aktarma ve icmalde hayalet satır sürprizi çıkmaz.
+2. Doğum İSTEMCİ tarafındadır, veritabanı tetikleyicisi DEĞİL. Gerekçe B18: taban hesabı TypeScript'te yaşıyor; tetikleyici aynı formülün ikinci bir kopyasını SQL'de kurardı. Bedeli bilerek kabul edildi: kullanıcı rakamı yazıp sekmeyi kapatırsa satır o an doğmaz, bir sonraki açılışta doğar (kişi listesi her kart açılışında ve ajans/menajer tik değişikliğinde yeniden yüklenir, doğum denetimi o yolun ucuna bağlıdır).
+3. Satır kaybolmaz: taban sıfıra düşse de sıfır tutarla durur, kullanıcı isterse siler.
+4. Varsayılan oran item_library'deki 1618 atomunun kendi hanesinden gelir (`default_derive_rate`, 9 Eylül 2026'da göç edildi), koda gömülmez (B20). Hane boşsa oran boş bırakılır, %20 uydurulmaz.
+5. Çift doğum koruması: devam eden bir doğum varken ikincisi başlamaz (istemci tarafı kilit).
+
 ## 21. AÇIK EKRAN SORULARI (karara bağlanmadı)
 
 Bu bölüm, ekran davranışına ait olup henüz karara bağlanmamış soruları tutar. Emsal: KART-KATALOGU.md bölüm 8 ve 9 aynı işi kart kataloğu için yapar.

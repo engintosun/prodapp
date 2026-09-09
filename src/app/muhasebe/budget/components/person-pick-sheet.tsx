@@ -5,6 +5,10 @@ import { BottomSheet } from './bottom-sheet'
 // KART tarafi kisi secimi GOREV hanesine gore suzulur (Engin karari, 6 Eylul 2026):
 // YON TEK TARAFLI, kart listeden OKUR, liste karta YAZMAZ. Bilesenin imzasi hicbir kart
 // koduna baglanmaz (I1, kart-ozel dal YASAK) - pano yalniz dutyCodes ve rowCatalogCode alir.
+// AYNI ATOMDAN IKINCI SATIR ENGELI (9 Eylul 2026): labels prop CAGIRAN tarafta ONCEDEN
+// suzulmus gelir (person-bring.ts filterPersonsForAtom) - kartta ayni katalog kodunda zaten
+// satiri olan kisiler burada hic gorunmez. Suzme mantigi burada GOMULMEZ, panonun tek isi
+// kendi icindeki GOREV suzgecini (asagida) bu hazir listenin ustune uygulamaktir.
 export function PersonPickSheet({
   item,
   labels,

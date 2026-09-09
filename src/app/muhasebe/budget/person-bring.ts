@@ -51,6 +51,26 @@ export function personNameCollisions(
   return collisions
 }
 
+// AYNI ATOMDAN IKINCI SATIR ENGELI (9 Eylul 2026): kisi seciciyi bir kisiyi AYNI KATALOG
+// KODUNDA kartta zaten satiri varsa listeden CIKARIR. Bir kisinin birden cok satiri olmasi
+// DOGRUDUR (kase, mesai, prova, tekrar telifi) - engellenen o degil, AYNI ATOMDAN ikinci satir
+// (komisyon tabanini sessizce katlardi). Duzenlenen satirin KENDI kisisi tarama disi tutulur
+// (excludeItemId): o satir zaten o kisiye ait, kendini engellemez.
+export function filterPersonsForAtom(
+  labels: readonly PersonLabel[],
+  rows: readonly BudgetItemRow[],
+  catalogCode: string,
+  excludeItemId: string,
+): PersonLabel[] {
+  const taken = new Set<string>()
+  for (const row of rows) {
+    if (row.id === excludeItemId) continue
+    if (row.catalogCode !== catalogCode) continue
+    if (row.personObjectId) taken.add(row.personObjectId)
+  }
+  return labels.filter((l) => !taken.has(l.id))
+}
+
 // Sira dutyOptions'in kendi sirasidir. Ayni gorev icinde gelis sirasi korunur (istikrarli
 // siralama). Gorevi bos olanlar (ve dutyOptions'ta karsiligi olmayan bilinmeyen kod) sona duser.
 export function sortPersonsByDuty(

@@ -100,14 +100,17 @@ export const ItemRow = memo(function ItemRow({
             // AD YERLESIMI hal 3 (BUTCE-EKRAN-KARARLARI bolum 20): kisi bagli ve etiket listede
             // VAR - etiketin adi SALT OKUNUR. Gercek readOnly input: gorunen metin dogru
             // (kisi adi, atomun adi degil) kopyalanir, klavye izgarasindan CIKMAZ (data-cell-kind
-            // "text", bkz. grid-navigation-core.ts).
+            // "text", bkz. grid-navigation-core.ts). GORUNUM (9 Eylul 2026 duzeltmesi): metin TAM
+            // GUCTE (--color-text) - soluk renk satirin en degerli bilgisini "bos hane" gibi
+            // okutuyordu. "Yazamazsin" bilgisi renkle degil KUTUNUN KALKMASIYLA verilir: cerceve
+            // ve zemin seffaflasir, boylece yazilabilir/yazilamayan karsitligi dogru yonde calisir.
             <input
               readOnly
               data-grid-cell="true"
               data-row-id={it.id}
               data-col="name"
               data-cell-kind="text"
-              style={{ ...cellInputEllipsis, color: 'var(--color-text-muted)', cursor: 'default' }}
+              style={{ ...cellInputEllipsis, color: 'var(--color-text)', cursor: 'default', background: 'transparent', border: '1px solid transparent' }}
               value={nameDisplay.text}
               title={nameDisplay.text}
             />

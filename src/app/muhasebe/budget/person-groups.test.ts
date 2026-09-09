@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { groupByPerson, derivedUnitNets, buildRenderRows } from './person-groups'
+import { groupByPerson, derivedUnitNets, buildRenderRows, personNetBases, personsNeedingCommissionRow } from './person-groups'
 import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
+import type { PersonLabel } from '../../../shared/supabase/person-label-service'
 
 function makeItem(overrides: Partial<BudgetItemRow> = {}): BudgetItemRow {
   return {
@@ -28,6 +29,22 @@ function makeItem(overrides: Partial<BudgetItemRow> = {}): BudgetItemRow {
     publicNote: null,
     personObjectId: null,
     deriveRate: null,
+    ...overrides,
+  }
+}
+
+function makeLabel(overrides: Partial<PersonLabel> = {}): PersonLabel {
+  return {
+    id: 'p1',
+    code: 1,
+    name: 'Test Oyuncu',
+    roleName: null,
+    dutyCode: null,
+    isActive: true,
+    hasAgency: false,
+    agencyName: null,
+    hasManager: false,
+    managerName: null,
     ...overrides,
   }
 }
@@ -136,6 +153,68 @@ describe('derivedUnitNets', () => {
     expect(
       derivedUnitNets(rows, { kase: 50000, 'ek-cekim': 30000, 'tekrar-telifi': 20000 }),
     ).toEqual({ komisyon: 20000 })
+  })
+})
+
+describe('personNetBases', () => {
+  it('kazanc statuleri toplanir, turetilmis satir tabana girmez', () => {
+    const rows = [
+      makeItem({ id: 'kase', personObjectId: 'p1' }),
+      makeItem({ id: 'mesai', personObjectId: 'p1' }),
+      makeItem({ id: 'komisyon', personObjectId: 'p1', deriveRate: 20 }),
+    ]
+    expect(personNetBases(rows, { kase: 100000, mesai: 20000, komisyon: 24000 })).toEqual({ p1: 120000 })
+  })
+
+  it('kisi basina ayrisir', () => {
+    const rows = [
+      makeItem({ id: 'kase1', personObjectId: 'p1' }),
+      makeItem({ id: 'kase2', personObjectId: 'p2' }),
+    ]
+    expect(personNetBases(rows, { kase1: 50000, kase2: 90000 })).toEqual({ p1: 50000, p2: 90000 })
+  })
+
+  it('etiketsiz satir ve sirket statulu satir tabana girmez', () => {
+    const rows = [
+      makeItem({ id: 'a', personObjectId: null }),
+      makeItem({ id: 'b', personObjectId: 'p1', paymentStatus: 'sirket' }),
+    ]
+    expect(personNetBases(rows, { a: 1000, b: 2000 })).toEqual({})
+  })
+})
+
+describe('personsNeedingCommissionRow', () => {
+  it('tiksiz kisi gerekmez', () => {
+    const rows = [makeItem({ id: 'kase', personObjectId: 'p1' })]
+    const labels = [makeLabel({ id: 'p1', hasAgency: false, hasManager: false })]
+    expect(personsNeedingCommissionRow(rows, labels, { kase: 100000 })).toEqual([])
+  })
+
+  it('tabani sifir olan gerekmez', () => {
+    const rows = [makeItem({ id: 'kase', personObjectId: 'p1' })]
+    const labels = [makeLabel({ id: 'p1', hasAgency: true })]
+    expect(personsNeedingCommissionRow(rows, labels, { kase: 0 })).toEqual([])
+  })
+
+  it('komisyon satiri zaten olan gerekmez', () => {
+    const rows = [
+      makeItem({ id: 'kase', personObjectId: 'p1' }),
+      makeItem({ id: 'komisyon', personObjectId: 'p1', deriveRate: 20 }),
+    ]
+    const labels = [makeLabel({ id: 'p1', hasAgency: true })]
+    expect(personsNeedingCommissionRow(rows, labels, { kase: 100000, komisyon: 20000 })).toEqual([])
+  })
+
+  it('uc sart da saglaninca gerekir', () => {
+    const rows = [makeItem({ id: 'kase', personObjectId: 'p1' })]
+    const labels = [makeLabel({ id: 'p1', hasAgency: true })]
+    expect(personsNeedingCommissionRow(rows, labels, { kase: 100000 })).toEqual(['p1'])
+  })
+
+  it('menajer tiki de yeterlidir (ajans sart degil)', () => {
+    const rows = [makeItem({ id: 'kase', personObjectId: 'p1' })]
+    const labels = [makeLabel({ id: 'p1', hasAgency: false, hasManager: true })]
+    expect(personsNeedingCommissionRow(rows, labels, { kase: 100000 })).toEqual(['p1'])
   })
 })
 

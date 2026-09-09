@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { personCardPresence, personNameCollisions, sortPersonsByDuty } from './person-bring'
+import { personCardPresence, personNameCollisions, filterPersonsForAtom, sortPersonsByDuty } from './person-bring'
 import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
 import type { PersonLabel, DutyOption } from '../../../shared/supabase/person-label-service'
 
@@ -104,6 +104,32 @@ describe('personNameCollisions', () => {
     const rows = [makeItem({ id: 'a', name: 'ahmet yılmaz', personObjectId: null })]
     const labels = [makeLabel({ id: 'p1', name: 'Ahmet Yılmaz' })]
     expect(personNameCollisions(rows, labels)).toEqual({ p1: false })
+  })
+})
+
+describe('filterPersonsForAtom', () => {
+  it('ayni katalog kodunda kartta zaten satiri olan kisi listeden cikar', () => {
+    const rows = [makeItem({ id: 'a', catalogCode: '1601', personObjectId: 'p1' })]
+    const labels = [makeLabel({ id: 'p1' }), makeLabel({ id: 'p2' })]
+    expect(filterPersonsForAtom(labels, rows, '1601', 'b').map((l) => l.id)).toEqual(['p2'])
+  })
+
+  it('duzenlenen satirin KENDI kisisi listede kalir (excludeItemId)', () => {
+    const rows = [makeItem({ id: 'a', catalogCode: '1601', personObjectId: 'p1' })]
+    const labels = [makeLabel({ id: 'p1' }), makeLabel({ id: 'p2' })]
+    expect(filterPersonsForAtom(labels, rows, '1601', 'a').map((l) => l.id)).toEqual(['p1', 'p2'])
+  })
+
+  it('farkli katalog kodunda satiri olan kisi engellenmez', () => {
+    const rows = [makeItem({ id: 'a', catalogCode: '1605', personObjectId: 'p1' })]
+    const labels = [makeLabel({ id: 'p1' }), makeLabel({ id: 'p2' })]
+    expect(filterPersonsForAtom(labels, rows, '1601', 'b').map((l) => l.id)).toEqual(['p1', 'p2'])
+  })
+
+  it('hic satiri olmayan kisi listede kalir', () => {
+    const rows: BudgetItemRow[] = []
+    const labels = [makeLabel({ id: 'p1' })]
+    expect(filterPersonsForAtom(labels, rows, '1601', 'b').map((l) => l.id)).toEqual(['p1'])
   })
 })
 

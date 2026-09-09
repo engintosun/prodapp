@@ -31,6 +31,10 @@ const NUMERIC_EDITABLE_FIELDS = new Set<EditableField>(['unitNet', 'multiplier',
 // Ornek cift: commitNote api'de (notun degerini satira yazar), onOpenNote prop (ekranin
 // modalini acar). Bu yuzden donem silme api'de (yalniz yerel patch), kalem silme prop'ta
 // (karti refetch eder).
+// KOMISYON SATIRININ DOGUMU (9 Eylul 2026) BU SINIRI IHLAL ETMEZ: onMoneyCommitted parametresi
+// EditApi'nin DONEN yuzeyine GIRMEZ (asagidaki EditApi tipi degismedi), yalniz hook'un GIRDISIDIR
+// - basarili para-degistiren commit'lerden sonra CAGRILIR ama GOVDESI (taban hesabi, refetch,
+// toast) card-table-screen.tsx'te yasar. useEditBuffers kendisi "neden" cagrildigini bilmez.
 export type EditApi = {
   onTextChange: (id: string, field: 'name', value: string) => void
   onNumChange: (id: string, field: 'unitNet' | 'multiplier' | 'vatRate' | 'deriveRate', raw: string) => void
@@ -60,6 +64,7 @@ interface UseEditBuffersParams {
   unitCodeByIdRef: MutableRefObject<Map<string, string>>
   minWageThresholdsRef: MutableRefObject<MinimumWageThresholds | null>
   patchRow: (id: string, patch: Partial<BudgetItemRow>) => void
+  onMoneyCommitted?: () => void
 }
 
 export function useEditBuffers({
@@ -71,6 +76,7 @@ export function useEditBuffers({
   unitCodeByIdRef,
   minWageThresholdsRef,
   patchRow,
+  onMoneyCommitted,
 }: UseEditBuffersParams) {
   const { addToast } = useToast()
   const [buffers, setBuffers] = useState<Record<string, string>>({})
@@ -281,6 +287,9 @@ export function useEditBuffers({
         // yeniden hesaplanmasi gerekir - zararsiz, checkItemWarning idempotent.
         checkItemWarning(id)
         if (newStatus === 'bordro') void refreshBordro(id)
+        // Statu, komisyon tabanina giren kazanc statuleri kumesini degistirebilir (EARNING_
+        // PAYMENT_STATUSES) - dogum denetimi burada da tetiklenir.
+        onMoneyCommitted?.()
       } catch (e) {
         if (saved) patchRow(id, { paymentStatus: saved.paymentStatus })
         addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error')
@@ -344,6 +353,9 @@ export function useEditBuffers({
         await updateItemField(id, field, value)
         const norm = value.trim() === '' ? null : value.trim()
         patchRow(id, { [field]: norm } as Partial<BudgetItemRow>)
+        // personObjectId satirin PARASININ KIME SAYILACAGINI degistirir - dogum denetimi
+        // burada da tetiklenir. Diger commitNote alanlari (isim/not) tabani etkilemez.
+        if (field === 'personObjectId') onMoneyCommitted?.()
       } catch (e) {
         addToast(e instanceof Error ? e.message : 'Not kaydedilemedi', 'error')
       }
@@ -389,7 +401,10 @@ export function useEditBuffers({
         // commit sonrasi tam kontrol - statuden BAGIMSIZ (KAAPA harcanacak parayi hesaplar, 0
         // hesaplanacak rakam degildir). Metin statuye/alana gore item-row.tsx'te secilir.
         // refreshBordro (motor) yalniz bordro icindir - bordro-disi hesap 0 bedelle ENGELLENMEZ.
-        if (field === 'unitNet' || field === 'multiplier' || field === 'repeat') checkItemWarning(id)
+        if (field === 'unitNet' || field === 'multiplier' || field === 'repeat') {
+          checkItemWarning(id)
+          onMoneyCommitted?.()
+        }
         if (row.paymentStatus === 'bordro' && (field === 'unitNet' || field === 'multiplier' || field === 'repeat')) void refreshBordro(id)
       } catch (e) {
         if (saved) patchRow(id, { [field]: saved[field] } as Partial<BudgetItemRow>)
@@ -438,6 +453,7 @@ export function useEditBuffers({
         // rowsRef.current burada guncel, override GEREKMEZ.
         checkPeriodWarning(id, stageId)
         if (row.paymentStatus === 'bordro') void refreshBordro(id)
+        onMoneyCommitted?.()
       } catch (e) {
         const current = rowsRef.current.find((r) => r.id === id)
         if (current) patchRow(id, { periodQty: { ...current.periodQty, [stageId]: savedVal } })
@@ -491,6 +507,7 @@ export function useEditBuffers({
         // override ile taze periodNet dogrudan gecirilir (yapisal guvence, spekulatif degil).
         checkPeriodWarning(itemId, stageId, { periodNet: { ...current.periodNet, [stageId]: hedef } })
         if (row.paymentStatus === 'bordro') void refreshBordro(itemId)
+        onMoneyCommitted?.()
       } catch (e) {
         const current = rowsRef.current.find((r) => r.id === itemId) ?? row
         patchRow(itemId, { periodNet: { ...current.periodNet, [stageId]: savedOverride } })
@@ -538,6 +555,7 @@ export function useEditBuffers({
         // taze periodRepeat override ile gecirilir.
         checkPeriodWarning(itemId, stageId, { periodRepeat: { ...current.periodRepeat, [stageId]: hedef } })
         if (row.paymentStatus === 'bordro') void refreshBordro(itemId)
+        onMoneyCommitted?.()
       } catch (e) {
         const current = rowsRef.current.find((r) => r.id === itemId) ?? row
         patchRow(itemId, { periodRepeat: { ...current.periodRepeat, [stageId]: savedOverride } })
@@ -687,6 +705,7 @@ export function useEditBuffers({
           clearBuf(itemId + ':prepeat:' + lastStageId)
         }
         if (row.paymentStatus === 'bordro') void refreshBordro(itemId)
+        onMoneyCommitted?.()
       } catch (e) {
         addToast(e instanceof Error ? e.message : 'Dönem kaldırılamadı', 'error')
       }
