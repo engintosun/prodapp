@@ -15,13 +15,17 @@ import type { PayrollLegs, PayrollRates, TaxBracket } from '../cfe'
 // gercek supabase agina cikmadan test edilebilsin diye ./client mock'lanir. Emsal:
 // src/app/auth/shell-routing.test.tsx ayni yontemi kullanir.
 let capturedRpcArgs: Record<string, unknown> | null = null
+let capturedUpdateArgs: Record<string, unknown> | null = null
 
 vi.mock('./client', () => ({
   supabase: {
     from: () => ({
-      update: () => ({
-        eq: () => Promise.resolve({ error: null }),
-      }),
+      update: (args: Record<string, unknown>) => {
+        capturedUpdateArgs = args
+        return {
+          eq: () => Promise.resolve({ error: null }),
+        }
+      },
     }),
     rpc: (_fn: string, args: Record<string, unknown>) => {
       capturedRpcArgs = args
@@ -30,7 +34,7 @@ vi.mock('./client', () => ({
   },
 }))
 
-import { updateItemField, addBudgetItem } from './budget-service'
+import { updateItemField, addBudgetItem, softDeleteBudgetItem } from './budget-service'
 
 const BRACKETS_2026: TaxBracket[] = [
   { floor: 0, ratePercent: 15, baseTax: 0 },
@@ -474,5 +478,16 @@ describe('addBudgetItem — kutuphane/serbest/mevcut-kod yollari (tek imza sonra
       p_unit_code: 'gun',
       p_existing_code: '1198-01',
     })
+  })
+})
+
+describe('softDeleteBudgetItem — kisi bagini da birakir (KOMISYON TABANI VE SILME, 9 Eylul 2026)', () => {
+  beforeEach(() => {
+    capturedUpdateArgs = null
+  })
+
+  it('tek update icinde hem is_active hem person_object_id degisir', async () => {
+    await softDeleteBudgetItem('item-1')
+    expect(capturedUpdateArgs).toEqual({ is_active: false, person_object_id: null })
   })
 })

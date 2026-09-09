@@ -23,7 +23,7 @@ function makeItem(overrides: Partial<BudgetItemRow> = {}): BudgetItemRow {
     periodNet: {},
     periodUnit: {},
     periodRepeat: {},
-    paymentStatus: 'sirket',
+    paymentStatus: 'bordro',
     internalNote: null,
     publicNote: null,
     personObjectId: null,
@@ -116,6 +116,26 @@ describe('derivedUnitNets', () => {
       makeItem({ id: 'komisyon', personObjectId: 'p1', deriveRate: 33.33 }),
     ]
     expect(derivedUnitNets(rows, { kase: 1001 })).toEqual({ komisyon: 333.63 })
+  })
+
+  it('sirket statulu satir tabana girmez (odenek/gider, kisinin kazanci degil)', () => {
+    const rows = [
+      makeItem({ id: 'kostum-odenegi', personObjectId: 'p1', paymentStatus: 'sirket' }),
+      makeItem({ id: 'komisyon', personObjectId: 'p1', deriveRate: 20 }),
+    ]
+    expect(derivedUnitNets(rows, { 'kostum-odenegi': 100000 })).toEqual({ komisyon: 0 })
+  })
+
+  it('bordro + smm + telif_belgeli karisik satirlarin ucu de tabana girer', () => {
+    const rows = [
+      makeItem({ id: 'kase', personObjectId: 'p1', paymentStatus: 'bordro' }),
+      makeItem({ id: 'ek-cekim', personObjectId: 'p1', paymentStatus: 'smm' }),
+      makeItem({ id: 'tekrar-telifi', personObjectId: 'p1', paymentStatus: 'telif_belgeli' }),
+      makeItem({ id: 'komisyon', personObjectId: 'p1', deriveRate: 20 }),
+    ]
+    expect(
+      derivedUnitNets(rows, { kase: 50000, 'ek-cekim': 30000, 'tekrar-telifi': 20000 }),
+    ).toEqual({ komisyon: 20000 })
   })
 })
 

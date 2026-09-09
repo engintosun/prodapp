@@ -2,6 +2,16 @@
 // sebep = KART 1600 ozet satiri ile temsilci komisyonu ayni iki gecisli hesaptan doguyor.
 import Decimal from 'decimal.js'
 import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
+import type { PaymentStatus } from '../../../shared/types/domain'
+
+// Komisyon tabanina yalniz kisinin KENDI KAZANCI olan statuler girer (9 Eylul 2026 karari,
+// BUTCE-EKRAN-KARARLARI bolum 20 KOMISYON TABANI VE SILME). Beyaz liste: sonradan eklenen
+// yeni bir statu kendiliginden tabana sizmaz - kara liste tersini yapardi.
+const EARNING_PAYMENT_STATUSES: ReadonlySet<PaymentStatus> = new Set([
+  'bordro',
+  'smm',
+  'telif_belgeli',
+])
 
 export interface PersonGroup {
   personObjectId: string
@@ -44,6 +54,7 @@ export function derivedUnitNets(
   for (const row of rows) {
     const key = row.personObjectId
     if (!key || row.deriveRate !== null) continue
+    if (!row.paymentStatus || !EARNING_PAYMENT_STATUSES.has(row.paymentStatus)) continue
     const net = netByItemId[row.id] ?? 0
     baseByPerson.set(key, (baseByPerson.get(key) ?? new Decimal(0)).plus(net))
   }

@@ -13,6 +13,7 @@ export interface LibraryItem {
   nameEn: string | null
   defaultPaymentStatus: string
   defaultUnitCode: string
+  defaultDeriveRate: number | null
   aliases: string[]
   isGroup: boolean
   isDerived: boolean
@@ -32,6 +33,7 @@ function mapLibraryRow(r: Record<string, unknown>): LibraryItem {
     nameEn: (r.name_en as string | null) ?? null,
     defaultPaymentStatus: r.default_payment_status as string,
     defaultUnitCode: r.default_unit_code as string,
+    defaultDeriveRate: (r.default_derive_rate as number | null) ?? null,
     aliases: (r.aliases as string[] | null) ?? [],
     isGroup: r.is_group as boolean,
     isDerived: r.is_derived as boolean,
@@ -46,7 +48,7 @@ function mapLibraryRow(r: Record<string, unknown>): LibraryItem {
 export async function fetchCardLibrary(cardCode: string): Promise<CardLibrary> {
   const { data, error } = await supabase
     .from('item_library')
-    .select('id, catalog_code, card_code, name, name_en, default_payment_status, default_unit_code, aliases, is_group, is_derived')
+    .select('id, catalog_code, card_code, name, name_en, default_payment_status, default_unit_code, default_derive_rate, aliases, is_group, is_derived')
     .eq('card_code', cardCode)
     .order('catalog_code')
   if (error) throw new Error(error.message)
@@ -63,7 +65,7 @@ export async function fetchCardLibrary(cardCode: string): Promise<CardLibrary> {
 export async function fetchAllLibrary(): Promise<LibraryItem[]> {
   const { data, error } = await supabase
     .from('item_library')
-    .select('id, catalog_code, card_code, name, name_en, default_payment_status, default_unit_code, aliases, is_group, is_derived')
+    .select('id, catalog_code, card_code, name, name_en, default_payment_status, default_unit_code, default_derive_rate, aliases, is_group, is_derived')
     .order('catalog_code')
   if (error) throw new Error(error.message)
   return (data ?? []).map(mapLibraryRow)
