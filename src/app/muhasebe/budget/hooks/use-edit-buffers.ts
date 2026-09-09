@@ -112,6 +112,18 @@ export function useEditBuffers({
   function checkItemWarning(itemId: string) {
     const row = rowsRef.current.find((r) => r.id === itemId)
     if (!row) return
+    // TURETILEN SATIR UYARI URETMEZ (9 Eylul 2026, Engin karari). Komisyon satirinin
+    // birim net hanesi YOKTUR: orani kardes satirlarin Ara toplamindan turetiyor
+    // (person-groups.ts derivedUnitNets) ve gercek net card-view.ts'in hesabinda yasar.
+    // effectiveWarning row.unitNet'e bakiyordu, orada 0 goruyor ve 'net' dondurup
+    // "Bedel 0" bastiriyordu; o yazi item-row.tsx'te Yasal Yuk hanesindeki dugmenin
+    // YERINI aliyor, dugme basilamayinca dokum hic acilmiyordu. Uyari bos bir haneyi
+    // degil OLMAYAN bir haneyi isaretliyordu. Olcut person-groups.ts ile AYNI:
+    // deriveRate !== null. Yasal yuk hesabina DOKUNULMADI, o zaten dogru calisiyor.
+    if (row.deriveRate !== null) {
+      setItemWarnings((w) => ({ ...w, [itemId]: null }))
+      return
+    }
     const isBordro = row.paymentStatus === 'bordro'
     const threshold = isBordro ? minWageThresholdFor(row.unitId) : null
     setItemWarnings((w) => ({
