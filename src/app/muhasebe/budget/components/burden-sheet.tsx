@@ -1,4 +1,4 @@
-import { netToplamDonemli, brutToplamDonemli, kisiyeBanka } from '../../../../shared/cfe'
+import { netToplamDonemli, brutToplamDonemli } from '../../../../shared/cfe'
 import type { Yuk, DonemKalemi } from '../../../../shared/cfe'
 import { fmt, buildDonemler } from '../format'
 import type { BudgetItemRow, StageRow } from '../../../../shared/supabase/budget-service'
@@ -38,8 +38,6 @@ export function BurdenSheet({
   const dYukler: Yuk[] = item.burdens.map((b) => ({ ratePercent: b.rate, kind: b.kind }))
   const dNet = netToplamDonemli(dDonemler)
   const dBrutYuk = brutToplamDonemli(dDonemler, dYukler)
-  const dKdv = kisiyeBanka(dNet, dBrutYuk, item.vatRate).kdv
-
   return (
     <BottomSheet title={<>{item.name}{sheetStage ? ' (' + sheetStage.name + ')' : ''}</>} onClose={onClose}>
       {isBordroSheet ? (
@@ -95,12 +93,9 @@ export function BurdenSheet({
               <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(b.kind === 'deduction' ? Math.round(dBrutYuk * b.rate / 100) : Math.round(dNet * b.rate / 100))}</span>
             </div>
           ))}
-          {item.vatRate > 0 && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-1) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
-              <span>KDV %{fmt(item.vatRate)}</span>
-              <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmt(dKdv)}</span>
-            </div>
-          )}
+          {/* KDV DOKUMDE YER ALMAZ (22 Agustos 2026 net/brut doktrini): KDV yasal yukun
+              parcasi degildir, kendi kolonunda yasar. Bu blok karardan once yazilmisti ve
+              kullaniciya ayni tutari iki yerde gosteriyordu. GERI EKLENMEMELIDIR. */}
         </>
       )}
     </BottomSheet>
