@@ -68,6 +68,14 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   const headingsRef = useRef<LibraryItem[]>([])
   // CIFT DOGUM KORUMASI: devam eden bir dogum varken ikincisi baslamaz.
   const commissionBirthInFlightRef = useRef(false)
+  // DOGAN KISI ISARETLENIR (10 Eylul 2026, Engin karari): kilit acildiginda rowsRef
+  // hala eski listeyi tutuyor (refetch void doner, gercek cekme ayri bir efektte
+  // sonradan kosar), ikinci cagri yeni dogan satiri goremeyip ayni kisi icin bir tane
+  // daha doguruyordu. Canli olcum: kopyalarin hepsi saniyenin altinda farkla dogmus.
+  // Anahtar personsNeedingCommissionRow ile AYNI bicimde kurulur: personObjectId:statu.
+  // Isaret satir listede gorununce kendiliginden dusuyor, o yuzden tik kaldirilip
+  // yeniden atildiginda satir tekrar dogabilir.
+  const commissionBornKeysRef = useRef<Set<string>>(new Set())
 
   // VERITABANI TETIKLEYICISI YASAK (B18): taban hesabi (personsNeedingCommissionRow,
   // person-groups.ts) burada TypeScript'te yasar. Doğum ANI: para degistiren bir alan basariyla
@@ -83,7 +91,15 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     const view = buildCardView(currentRows, headingsRef.current, bordroDataRef.current)
     const netByItemId: Record<string, number> = {}
     for (const id in view.rowTotalsById) netByItemId[id] = view.rowTotalsById[id].net
-    const missing = personsNeedingCommissionRow(currentRows, personLabelsRef.current, netByItemId)
+    for (const key of [...commissionBornKeysRef.current]) {
+      const seen = currentRows.some(
+        (r) => r.deriveRate !== null && r.personObjectId && r.personObjectId + ':' + r.paymentStatus === key,
+      )
+      if (seen) commissionBornKeysRef.current.delete(key)
+    }
+    const missing = personsNeedingCommissionRow(currentRows, personLabelsRef.current, netByItemId).filter(
+      (n) => !commissionBornKeysRef.current.has(n.personObjectId + ':' + COMMISSION_STATUS_BY_KIND[n.kind]),
+    )
     if (missing.length === 0) return
     const defaultRate = allLibraryRef.current.find((l) => l.catalogCode === '1618')?.defaultDeriveRate ?? null
     commissionBirthInFlightRef.current = true
@@ -96,6 +112,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         await updateItemField(newItemId, 'personObjectId', need.personObjectId)
         if (need.kind === 'menajer') await updateItemField(newItemId, 'paymentStatus', COMMISSION_STATUS_BY_KIND.menajer)
         if (defaultRate !== null) await updateItemField(newItemId, 'deriveRate', defaultRate)
+        commissionBornKeysRef.current.add(need.personObjectId + ':' + COMMISSION_STATUS_BY_KIND[need.kind])
       }
       refetch({ silent: true })
     } catch (e) {
@@ -345,9 +362,13 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           patch.hasAgency === false ? 'ajans' : patch.hasManager === false ? 'menajer' : null
         if (kind) {
           const statute = COMMISSION_STATUS_BY_KIND[kind]
-          const row = rowsRef.current.find(
+          // KOPYA VARSA HEPSI GIDER (10 Eylul 2026, Engin karari): find tek satir
+          // donduruyordu, kopyali kartta tik kaldirilinca biri gidiyor kalanlar
+          // duruyordu ve kullaniciya "silme calismiyor" gibi gorunuyordu.
+          const dupRows = rowsRef.current.filter(
             (r) => r.personObjectId === id && r.deriveRate !== null && r.paymentStatus === statute,
           )
+          const row = dupRows[0]
           if (row) {
             const defaultRate = allLibraryRef.current.find((l) => l.catalogCode === '1618')?.defaultDeriveRate ?? null
             // DOKUNULMAMIS TANIMI: komisyon satirinda kullanicinin elle girdigi TEK sey
@@ -361,7 +382,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
               shouldDelete = window.confirm(`"${name}" satırını silmek istiyor musun?`)
             }
             if (shouldDelete) {
-              await softDeleteBudgetItem(row.id)
+              for (const r of dupRows) await softDeleteBudgetItem(r.id)
               refetch({ silent: true })
             } else {
               // Vazgecildi: tik GERI ACILIR - aksi halde tik kapali + satir hala var
