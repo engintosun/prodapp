@@ -55,7 +55,7 @@ varsayim yapilmaz.
 -> Etkiler: use-edit-buffers.ts (refreshBordro) + use-card-rows.ts (fetchMinimumWageThresholds) bunu çağırır.
 -> Kritik: EVET — 500+ satır, BUTCE-UI-MIMARISI bölüm 8'de bölünme bekliyor; MUHUR-2 disiplini (açık/kilitli okuma) burada.
 
-`src/app/muhasebe/budget/hooks/use-edit-buffers.ts` (747)
+`src/app/muhasebe/budget/hooks/use-edit-buffers.ts` (759)
 -> Görev: Grid hücrelerinin edit buffer'ı + EditApi — tüm alan-bazlı commit handler'larını (onNumChange/commitField/commitPeriod vb.) tek boğazdan geçirir.
 -> Kullanır: shared/supabase/budget-service.ts (yazma) + payroll-read.ts (refreshBordro) + shared/components/toast.tsx.
 -> Etkiler: card-table-screen.tsx (api) + item-row.tsx/period-row.tsx (EditApi tüketir) + use-grid-navigation.ts buna bağlı.
@@ -85,7 +85,7 @@ varsayim yapilmaz.
 -> Etkiler: production-records-screen.tsx `importOpen` durumunda bunu render eder; bu dosya ekranı DEĞİŞTİRMEZ.
 -> Kritik: HAYIR — kararların evi BUTCE-EKRAN-KARARLARI §20; tahmin sınırı orada yazılı (Görev/Ajans/Menajer TAHMİN EDİLMEZ).
 
-`src/app/muhasebe/budget/card-table-screen.tsx` (799)
+`src/app/muhasebe/budget/card-table-screen.tsx` (829)
 -> Görev: Kart tablosu ekranının orkestrasyonu — veri hook'ları + ekleme paneli + satır bileşenlerini birbirine bağlar.
 -> Kullanır: hooks/* (use-card-rows, use-edit-buffers, use-grid-navigation) + components/* + budget-service.ts.
 -> Etkiler: authenticated-shell.tsx (muhasebe "bütçe" sekmesi) buradan render eder.
@@ -132,7 +132,7 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/components/add-item-panel.tsx` (283) — kalem ekleme odası: kütüphane arama + serbest kalem
 `src/app/muhasebe/budget/components/add-item-row.tsx` (60) — tablo altı "+ kalem ekle" düğme satırı
 `src/app/muhasebe/budget/components/bottom-sheet.tsx` (114) — ortak alt-sheet primitivi (backdrop+panel+odak tuzağı)
-`src/app/muhasebe/budget/components/burden-sheet.tsx` (108) — Yasal Yük dökümü sheet'i (bordro 6-bacak + basit statü)
+`src/app/muhasebe/budget/components/burden-sheet.tsx` (103) — Yasal Yük dökümü sheet'i (bordro 6-bacak + basit statü)
 `src/app/muhasebe/budget/components/heading-row.tsx` (54) — başlık satırı: ad + üç rakam (Net/Yasal Yük/Brüt), data-grid-cell taşımaz
 `src/app/muhasebe/budget/components/heading-sheet.tsx` (71) — başlık seçme tabakası (kartın başlıkları + Başlıksız)
 `src/app/muhasebe/budget/components/note-sheet.tsx` (35) — İç Not / Kamu Notu düzenleme sheet'i
