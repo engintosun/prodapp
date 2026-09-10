@@ -135,9 +135,9 @@ describe('filterPersonsForAtom', () => {
 
 describe('sortPersonsByDuty', () => {
   const DUTIES: DutyOption[] = [
-    { catalogCode: '1601', name: 'Basrol' },
-    { catalogCode: '1602', name: 'Yardimci Oyuncu' },
-    { catalogCode: '1603', name: 'Gunluk Oyuncu' },
+    { catalogCode: '1601', name: 'Basrol', headingCode: '1600-01', headingName: 'Ana Kast' },
+    { catalogCode: '1602', name: 'Yardimci Oyuncu', headingCode: '1600-01', headingName: 'Ana Kast' },
+    { catalogCode: '1603', name: 'Gunluk Oyuncu', headingCode: '1600-01', headingName: 'Ana Kast' },
   ]
 
   it('gorev sirasi dutyOptions sirasini takip eder', () => {

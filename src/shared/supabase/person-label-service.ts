@@ -197,21 +197,51 @@ export async function updatePersonLabel(id: string, patch: PersonLabelPatch): Pr
 export interface DutyOption {
   catalogCode: string
   name: string
+  headingCode: string | null
+  headingName: string | null
 }
 
-// Gorev listesi VERIDEN gelir, kodda gomulmez: item_library.is_duty bayragi kart
-// acilisinda gorev listesine girecek atomlari isaretler. Kodda gomulu aralik YOK -
-// is_duty=true olan satir zaten baslik (is_group) ya da turetilen (is_derived) olamaz,
-// bayrak tek basina yeterli.
+// Gorev listesi VERIDEN gelir, kodda gomulmez: item_library.is_duty bayragi gorev
+// listesine girecek atomlari isaretler.
+// SIRA (10 Eylul 2026, Engin karari): once BASLIK (item_library.heading_id), sonra
+// katalog kodu. Sebep: kart satirlarini once basliga gore grupluyordu, liste ise duz
+// katalog kodu sirasindaydi; ayni gorev seti iki yuzeyde iki turlu okunuyordu.
+// Aidiyet KODDAN TURETILMEZ (DEGISMEZLER md. 2), heading_id VERIDIR.
+// heading_id bos olan atom (baslik satiri olmayan kartlar) SONA duser.
+// Bu dizinin sirasi UC yuzeyi birden besler: Uretim Kayitlari listesi, oradaki Gorev
+// acilir menusu ve karttan acilan Oyuncular panosu (sortPersonsByDuty). Kural TEK
+// yerde yasar, ikinci bir kopyasi acilmaz.
 export async function fetchDutyOptions(): Promise<DutyOption[]> {
-  const { data, error } = await supabase
+  const { data: duties, error: ed } = await supabase
     .from('item_library')
-    .select('catalog_code, name')
+    .select('catalog_code, name, heading_id')
     .eq('is_duty', true)
-    .order('catalog_code')
-  if (error) throw new Error(error.message)
-  return (data ?? []).map((r) => ({
-    catalogCode: r.catalog_code as string,
-    name: r.name as string,
-  }))
+  if (ed) throw new Error(ed.message)
+  const { data: headings, error: eh } = await supabase
+    .from('item_library')
+    .select('id, catalog_code, name')
+    .eq('is_group', true)
+  if (eh) throw new Error(eh.message)
+  const headingById = new Map<string, { catalogCode: string; name: string }>()
+  for (const h of headings ?? []) {
+    headingById.set(h.id as string, { catalogCode: h.catalog_code as string, name: h.name as string })
+  }
+  const out: DutyOption[] = (duties ?? []).map((r) => {
+    const h = r.heading_id ? headingById.get(r.heading_id as string) : undefined
+    return {
+      catalogCode: r.catalog_code as string,
+      name: r.name as string,
+      headingCode: h?.catalogCode ?? null,
+      headingName: h?.name ?? null,
+    }
+  })
+  out.sort((a, b) => {
+    if (a.headingCode !== b.headingCode) {
+      if (a.headingCode === null) return 1
+      if (b.headingCode === null) return -1
+      return a.headingCode < b.headingCode ? -1 : 1
+    }
+    return a.catalogCode < b.catalogCode ? -1 : a.catalogCode > b.catalogCode ? 1 : 0
+  })
+  return out
 }

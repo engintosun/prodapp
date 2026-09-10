@@ -3,7 +3,7 @@
 // masayi kaplar (alttan pano DEGIL). Bu ekran BUTCEYI HIC GORMEZ (BUTCE-EKRAN-KARARLARI 339):
 // budgetId almaz, budget-service'ten hicbir sey cagirmaz, yalniz person-label-service kullanir.
 // Bu dilimde ajans/menajer tikleri YALNIZ VERIDIR - hicbir butce satiri dogurmaz.
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import { Loading } from '../../../shared/components/loading'
 import { useToast } from '../../../shared/components/toast'
 import {
@@ -118,6 +118,13 @@ const tickNameInputStyle = {
   width: 'auto',
   flex: '1 1 0',
   minWidth: 0,
+}
+
+const headingCellStyle = {
+  padding: 'var(--space-2) var(--space-1) var(--space-1)',
+  fontSize: 'var(--text-xs)',
+  fontWeight: 600,
+  color: 'var(--color-text-muted)',
 }
 
 const deleteButtonStyle = {
@@ -257,10 +264,9 @@ export function ProductionRecordsScreen() {
     }
   }, [addToast, refreshLabels, refreshCount, selectedIds])
 
-  // Hiyerarsi kutuphaneden gelir, burada UYDURULMAZ: fetchDutyOptions gorevleri
-  // catalog_code sirasinda cekiyor (1601 Basrol, 1602 Yardimci, 1603 Gunluk, sonra
-  // Dublor basliginin gorevleri), yani dutyOptions dizisindeki SIRA hiyerarsinin
-  // kendisidir. Ikinci bir siralama alani acilmadi.
+  // Hiyerarsi kutuphaneden gelir, burada UYDURULMAZ: sira artik duz katalog kodu
+  // DEGIL, once baslik sonra katalog kodudur ve bu sira fetchDutyOptions icinde kurulur.
+  // Ikinci bir siralama alani acilmadi.
   // Gorevi secilmemis kisi SONA duser: kisi "+ Kisi ekle" ile listenin altinda dogar
   // ve adi orada yazilir; uste tasinsaydi satir elden kacardi.
   // Ayni gorevtekiler arasinda servisin getirdigi sira KORUNUR (yazim sirasi):
@@ -270,6 +276,22 @@ export function ProductionRecordsScreen() {
   const dutyRank = new Map(dutyOptions.map((d, i): [string, number] => [d.catalogCode, i]))
   const rankOf = (code: string | null) => dutyRank.get(code ?? '') ?? dutyOptions.length
   const sortedLabels = labels.slice().sort((a, b) => rankOf(a.dutyCode) - rankOf(b.dutyCode))
+
+  // Baslik satiri (10 Eylul 2026, Engin karari): liste kartin bolmelerini ayni sirayla
+  // gosterir. Baslik adi ve kimligi dutyOptions'tan gelir, burada UYDURULMAZ.
+  // Bos bolme cizilmez: baslik yalnizca uyesi olan blogun basinda doger.
+  const headingByDuty = new Map(
+    dutyOptions.map((d): [string, { key: string | null; name: string | null }] => [
+      d.catalogCode,
+      { key: d.headingCode, name: d.headingName },
+    ]),
+  )
+  const bucketOf = (l: PersonLabel): { key: string; name: string } => {
+    if (l.dutyCode === null) return { key: '__nodutykey', name: 'Görevsiz' }
+    const h = headingByDuty.get(l.dutyCode)
+    if (!h || h.key === null || h.name === null) return { key: '__noheadkey', name: 'Görevsiz' }
+    return { key: h.key, name: h.name }
+  }
 
   if (importOpen && view !== 'desk') {
     return (
@@ -394,100 +416,114 @@ export function ProductionRecordsScreen() {
               </tr>
             </thead>
             <tbody>
-              {sortedLabels.map((l, i) => (
-                <tr key={l.id}>
-                  {selectMode && (
-                    <td style={tdStyle}>
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.includes(l.id)}
-                        style={tickBoxStyle}
-                        onChange={(e) =>
-                          setSelectedIds((prev) =>
-                            e.target.checked ? [...prev, l.id] : prev.filter((v) => v !== l.id),
-                          )
-                        }
-                      />
-                    </td>
-                  )}
-                  <td style={noCellStyle}>{i + 1}</td>
-                  <td style={tdStyle}>
-                    <input
-                      defaultValue={l.roleName ?? ''}
-                      onBlur={(e) => void onUpdate(l.id, { roleName: e.target.value })}
-                      style={inputStyle}
-                    />
-                  </td>
-                  <td style={tdStyle}>
-                    <input
-                      ref={(el) => {
-                        if (el) nameInputsRef.current.set(l.id, el)
-                        else nameInputsRef.current.delete(l.id)
-                      }}
-                      defaultValue={l.name}
-                      onBlur={(e) => void onUpdate(l.id, { name: e.target.value })}
-                      style={inputStyle}
-                    />
-                  </td>
-                  <td style={tdStyle}>
-                    <select
-                      defaultValue={l.dutyCode ?? ''}
-                      onChange={(e) => void onUpdate(l.id, { dutyCode: e.target.value })}
-                      style={inputStyle}
-                    >
-                      <option value="">Görev seç</option>
-                      {dutyOptions.map((d) => (
-                        <option key={d.catalogCode} value={d.catalogCode}>
-                          {d.name}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td style={tdStyle}>
-                    <label style={tickLabelStyle}>
-                      <input
-                        type="checkbox"
-                        checked={l.hasAgency}
-                        style={tickBoxStyle}
-                        onChange={(e) => void onUpdate(l.id, e.target.checked ? { hasAgency: true } : { hasAgency: false, agencyName: '' })}
-                      />
-                      {l.hasAgency && (
-                        <input
-                          defaultValue={l.agencyName ?? ''}
-                          onBlur={(e) => void onUpdate(l.id, { agencyName: e.target.value })}
-                          placeholder="Ajans adı"
-                          style={tickNameInputStyle}
-                        />
+              {sortedLabels.map((l, i) => {
+                const bucket = bucketOf(l)
+                const prevBucket = i > 0 ? bucketOf(sortedLabels[i - 1]) : null
+                const showHeading = prevBucket === null || prevBucket.key !== bucket.key
+                return (
+                  <Fragment key={l.id}>
+                    {showHeading && (
+                      <tr>
+                        <td colSpan={7} style={headingCellStyle}>
+                          {bucket.name}
+                        </td>
+                      </tr>
+                    )}
+                    <tr>
+                      {selectMode && (
+                        <td style={tdStyle}>
+                          <input
+                            type="checkbox"
+                            checked={selectedIds.includes(l.id)}
+                            style={tickBoxStyle}
+                            onChange={(e) =>
+                              setSelectedIds((prev) =>
+                                e.target.checked ? [...prev, l.id] : prev.filter((v) => v !== l.id),
+                              )
+                            }
+                          />
+                        </td>
                       )}
-                    </label>
-                  </td>
-                  <td style={tdStyle}>
-                    <label style={tickLabelStyle}>
-                      <input
-                        type="checkbox"
-                        checked={l.hasManager}
-                        style={tickBoxStyle}
-                        onChange={(e) => void onUpdate(l.id, e.target.checked ? { hasManager: true } : { hasManager: false, managerName: '' })}
-                      />
-                      {l.hasManager && (
+                      <td style={noCellStyle}>{i + 1}</td>
+                      <td style={tdStyle}>
                         <input
-                          defaultValue={l.managerName ?? ''}
-                          onBlur={(e) => void onUpdate(l.id, { managerName: e.target.value })}
-                          placeholder="Menajer adı"
-                          style={tickNameInputStyle}
+                          defaultValue={l.roleName ?? ''}
+                          onBlur={(e) => void onUpdate(l.id, { roleName: e.target.value })}
+                          style={inputStyle}
                         />
+                      </td>
+                      <td style={tdStyle}>
+                        <input
+                          ref={(el) => {
+                            if (el) nameInputsRef.current.set(l.id, el)
+                            else nameInputsRef.current.delete(l.id)
+                          }}
+                          defaultValue={l.name}
+                          onBlur={(e) => void onUpdate(l.id, { name: e.target.value })}
+                          style={inputStyle}
+                        />
+                      </td>
+                      <td style={tdStyle}>
+                        <select
+                          defaultValue={l.dutyCode ?? ''}
+                          onChange={(e) => void onUpdate(l.id, { dutyCode: e.target.value })}
+                          style={inputStyle}
+                        >
+                          <option value="">Görev seç</option>
+                          {dutyOptions.map((d) => (
+                            <option key={d.catalogCode} value={d.catalogCode}>
+                              {d.name}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td style={tdStyle}>
+                        <label style={tickLabelStyle}>
+                          <input
+                            type="checkbox"
+                            checked={l.hasAgency}
+                            style={tickBoxStyle}
+                            onChange={(e) => void onUpdate(l.id, e.target.checked ? { hasAgency: true } : { hasAgency: false, agencyName: '' })}
+                          />
+                          {l.hasAgency && (
+                            <input
+                              defaultValue={l.agencyName ?? ''}
+                              onBlur={(e) => void onUpdate(l.id, { agencyName: e.target.value })}
+                              placeholder="Ajans adı"
+                              style={tickNameInputStyle}
+                            />
+                          )}
+                        </label>
+                      </td>
+                      <td style={tdStyle}>
+                        <label style={tickLabelStyle}>
+                          <input
+                            type="checkbox"
+                            checked={l.hasManager}
+                            style={tickBoxStyle}
+                            onChange={(e) => void onUpdate(l.id, e.target.checked ? { hasManager: true } : { hasManager: false, managerName: '' })}
+                          />
+                          {l.hasManager && (
+                            <input
+                              defaultValue={l.managerName ?? ''}
+                              onBlur={(e) => void onUpdate(l.id, { managerName: e.target.value })}
+                              placeholder="Menajer adı"
+                              style={tickNameInputStyle}
+                            />
+                          )}
+                        </label>
+                      </td>
+                      {!selectMode && (
+                        <td style={tdStyle}>
+                          <button type="button" onClick={() => void onDelete(l.id)} style={deleteButtonStyle} title="Sil">
+                            ×
+                          </button>
+                        </td>
                       )}
-                    </label>
-                  </td>
-                  {!selectMode && (
-                    <td style={tdStyle}>
-                      <button type="button" onClick={() => void onDelete(l.id)} style={deleteButtonStyle} title="Sil">
-                        ×
-                      </button>
-                    </td>
-                  )}
-                </tr>
-              ))}
+                    </tr>
+                  </Fragment>
+                )
+              })}
             </tbody>
           </table>
           {!selectMode && (
