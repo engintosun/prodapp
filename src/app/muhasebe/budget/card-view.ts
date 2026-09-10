@@ -53,6 +53,41 @@ function enrichRenderRow(rr: RenderRow, rowTotalsById: Readonly<Record<string, R
   return { kind: 'item', row: rr.row, underSummary: rr.underSummary, totals: rowTotalsById[rr.row.id] ?? ZERO_TOTALS }
 }
 
+// KISI BLOKLARININ SIRASI LISTEDEN GELIR (11 Eylul 2026, Engin karari). Ayrisma AYNI katalog
+// kodunun icindeydi: liste kisiyi yazilma sirasina, kart karta getirilme sirasina (item_code)
+// diziyordu; ayni olgu iki yuzeyde iki turlu okunuyordu. Gorevler arasi sira ZATEN uyumluydu,
+// ona dokunulmaz.
+// KURAL: bir katalog kodunun icinde once KISILI satirlar, listedeki sirayla; sonra KISISIZ
+// satirlar, bugunku sirasini koruyarak. Kisisiz satir henuz kimse degildir - doldurulmamis
+// sablon yeridir, dolu olanlarin arasina girmez (emsal: listede gorevi secilmemis kisi sona
+// duser).
+// SIRA KURULMAZ, HAZIR ALINIR: personOrderIndex kisi listesinin kendi sirasidir. Ikinci bir
+// siralama otoritesi acilmadi (bkz. KARTIN GORUNEN DUZENI).
+// Katalog kodu BIRINCIL anahtar olarak korunur: gelen dizi zaten o sirada, sort kararli
+// oldugu icin esitlikte item_code sirasi bozulmaz.
+// MUHURLU BUTCE: sira icin donuk kaynak budget_cost_object_snapshot'tir (code ve sort_order
+// haneleri orada da var). Bu dilimde OKUNMUYOR, cunku muhurleme yuzeyi henuz yok.
+function orderRowsByPersonList(
+  rows: readonly BudgetItemRow[],
+  personOrderIndex: ReadonlyMap<string, number>,
+): BudgetItemRow[] {
+  const out = [...rows]
+  out.sort((a, b) => {
+    if (a.catalogCode !== b.catalogCode) return a.catalogCode < b.catalogCode ? -1 : 1
+    const aNoPerson = a.personObjectId === null ? 1 : 0
+    const bNoPerson = b.personObjectId === null ? 1 : 0
+    if (aNoPerson !== bNoPerson) return aNoPerson - bNoPerson
+    if (aNoPerson === 1) return 0
+    const ai = personOrderIndex.get(a.personObjectId as string)
+    const bi = personOrderIndex.get(b.personObjectId as string)
+    if (ai === undefined && bi === undefined) return 0
+    if (ai === undefined) return 1
+    if (bi === undefined) return -1
+    return ai - bi
+  })
+  return out
+}
+
 // Sira: (1) turetilmemis satirlarin netleri hesaplanir, (2) derivedUnitNets ile turetilen
 // satirlarin birim netleri dogar (B18: IKINCI BIR HESAP YAZILMAZ, person-groups.ts CAGIRILIR),
 // (3) turetilen satirlarin TUM tutarlari (ara toplam, yasal yuk, KDV, toplam) veritabanindaki
@@ -63,6 +98,7 @@ export function buildCardView(
   headings: readonly { catalogCode: string; name: string }[],
   bordroData: Readonly<Record<string, BordroSheetEntry>>,
   personIdsWithRole: ReadonlySet<string>,
+  personOrderIndex: ReadonlyMap<string, number>,
 ): CardView {
   const rowTotalsById: Record<string, RowTotals> = {}
   const netByItemId: Record<string, number> = {}
@@ -98,7 +134,7 @@ export function buildCardView(
   const groups: CardViewGroup[] = headingGroups.map((g) => ({
     heading: g.heading,
     totals: sumRows(g.rows, rowTotalsById),
-    renderRows: buildRenderRows(g.rows, summaryPersonIds).map((rr) => enrichRenderRow(rr, rowTotalsById)),
+    renderRows: buildRenderRows(orderRowsByPersonList(g.rows, personOrderIndex), summaryPersonIds).map((rr) => enrichRenderRow(rr, rowTotalsById)),
   }))
 
   return {

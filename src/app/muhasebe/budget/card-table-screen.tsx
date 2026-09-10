@@ -40,6 +40,12 @@ function personIdsWithRoleOf(labels: readonly PersonLabel[]): Set<string> {
   return new Set(labels.filter((l) => l.roleName).map((l) => l.id))
 }
 
+// Kisi listesinin kendi sirasi: fetchPersonLabels sort_order sonra code ile getirir, liste
+// ekrani bu sirayi gorev icinde AYNEN korur. Kart da ayni diziyi okur, kendi sirasini kurmaz.
+function personOrderIndexOf(labels: readonly PersonLabel[]): Map<string, number> {
+  return new Map(labels.map((l, i): [string, number] => [l.id, i]))
+}
+
 export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardId?: string } = {}) {
   const {
     card,
@@ -94,7 +100,13 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     if (commissionBirthInFlightRef.current) return
     if (!cardRef.current) return
     const currentRows = rowsRef.current
-    const view = buildCardView(currentRows, headingsRef.current, bordroDataRef.current, personIdsWithRoleOf(personLabelsRef.current))
+    const view = buildCardView(
+      currentRows,
+      headingsRef.current,
+      bordroDataRef.current,
+      personIdsWithRoleOf(personLabelsRef.current),
+      personOrderIndexOf(personLabelsRef.current),
+    )
     const netByItemId: Record<string, number> = {}
     for (const id in view.rowTotalsById) netByItemId[id] = view.rowTotalsById[id].net
     for (const key of [...commissionBornKeysRef.current]) {
@@ -488,7 +500,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // card-view.ts'tir - ekran duzeni kendisi KURMAZ, hazir alir. Baslik gruplama, kisi bloklari
   // ve turetilen satirlarin (komisyon) gercek tutarlari hepsi burada tek cagriyla gelir.
   const cardView = useMemo(
-    () => buildCardView(rows, headings, bordroData, personIdsWithRoleOf(personLabels)),
+    () => buildCardView(rows, headings, bordroData, personIdsWithRoleOf(personLabels), personOrderIndexOf(personLabels)),
     [rows, headings, bordroData, personLabels],
   )
 
