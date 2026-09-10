@@ -62,6 +62,7 @@ export function buildCardView(
   rows: readonly BudgetItemRow[],
   headings: readonly { catalogCode: string; name: string }[],
   bordroData: Readonly<Record<string, BordroSheetEntry>>,
+  personIdsWithRole: ReadonlySet<string>,
 ): CardView {
   const rowTotalsById: Record<string, RowTotals> = {}
   const netByItemId: Record<string, number> = {}
@@ -80,7 +81,19 @@ export function buildCardView(
   }
 
   const headingGroups = groupRowsByHeading([...rows], [...headings])
-  const summaryPersonIds = new Set(groupByPerson(rows).filter((g) => g.hasSummary).map((g) => g.personObjectId))
+  // OZET SATIRI = IS EKSENI (10 Eylul 2026, Engin karari). Eskiden ozet YALNIZ iki ve daha
+  // fazla kalemi olan kiside dogardi; bu yuzden rolun gorunmesi kisinin ajansi olup olmamasina
+  // bagliydi, oysa ikisinin birbiriyle ilgisi yok. Yeni kural: rolu OLAN her kisi ozet satiri
+  // alir. Rolu OLMAYAN kisi eski kurala gore devam eder (iki ve daha fazla kalem), boylece
+  // bugun ozeti olan hicbir blok ozetini KAYBETMEZ.
+  // person-groups.ts DEGISMEZ: hasSummary hala "iki ve daha fazla kalem" olgusunu bildirir.
+  // Kac satirin toplanacagi SATIR olgusudur, ozetin dogup dogmayacagi DUZEN kararidir; duzen
+  // karari bu dosyada yasar.
+  const summaryPersonIds = new Set(
+    groupByPerson(rows)
+      .filter((g) => g.hasSummary || personIdsWithRole.has(g.personObjectId))
+      .map((g) => g.personObjectId),
+  )
 
   const groups: CardViewGroup[] = headingGroups.map((g) => ({
     heading: g.heading,

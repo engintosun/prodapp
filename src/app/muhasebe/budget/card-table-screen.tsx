@@ -34,6 +34,12 @@ import { PersonPickSheet } from './components/person-pick-sheet'
 import { AddItemRow, ADD_ROW_ID } from './components/add-item-row'
 import { AddItemPanel } from './components/add-item-panel'
 
+// Rolu olan kisi kimlikleri: ozet satirinin dogma kosulu (card-view.ts). TEK yerde hesaplanir,
+// iki buildCardView cagri yeri de burayi kullanir; ikinci bir kopya acilmaz.
+function personIdsWithRoleOf(labels: readonly PersonLabel[]): Set<string> {
+  return new Set(labels.filter((l) => l.roleName).map((l) => l.id))
+}
+
 export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardId?: string } = {}) {
   const {
     card,
@@ -88,7 +94,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     if (commissionBirthInFlightRef.current) return
     if (!cardRef.current) return
     const currentRows = rowsRef.current
-    const view = buildCardView(currentRows, headingsRef.current, bordroDataRef.current)
+    const view = buildCardView(currentRows, headingsRef.current, bordroDataRef.current, personIdsWithRoleOf(personLabelsRef.current))
     const netByItemId: Record<string, number> = {}
     for (const id in view.rowTotalsById) netByItemId[id] = view.rowTotalsById[id].net
     for (const key of [...commissionBornKeysRef.current]) {
@@ -481,7 +487,31 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // KARTIN GORUNEN DUZENI (9 Eylul 2026, BUTCE-EKRAN-KARARLARI bolum 20): tek kaynak
   // card-view.ts'tir - ekran duzeni kendisi KURMAZ, hazir alir. Baslik gruplama, kisi bloklari
   // ve turetilen satirlarin (komisyon) gercek tutarlari hepsi burada tek cagriyla gelir.
-  const cardView = useMemo(() => buildCardView(rows, headings, bordroData), [rows, headings, bordroData])
+  const cardView = useMemo(
+    () => buildCardView(rows, headings, bordroData, personIdsWithRoleOf(personLabels)),
+    [rows, headings, bordroData, personLabels],
+  )
+
+  // Tek kalemli rol blogu KAPALI dogar (10 Eylul 2026, Engin karari): ozet satiri zaten dogru
+  // rakami gosteriyor, tek alt kalem ayni rakami tekrar etmesin; rakam kolonunda ne bosluk ne
+  // tekrar kalir. Bu yuzden collapsed kumesi artik "kullanicinin VARSAYILANI TERSINE CEVIRDIGI
+  // anahtarlar" demektir. Baslik satirlarinin varsayilani ACIK oldugu icin onlarin davranisi
+  // DEGISMEZ, onlar kumeyi eskisi gibi okur.
+  // KABUL EDILEN DAVRANIS: tek kalemli bir blok acikken o kisiye komisyon dogarsa varsayilan
+  // ACIK'a doner ve blok bir kez kendiliginden kapanir. Kullanici tekrar acar.
+  const singleItemPersonIds = useMemo(() => {
+    const s = new Set<string>()
+    for (const g of cardView.groups) {
+      for (const rr of g.renderRows) {
+        if (rr.kind === 'summary' && rr.rows.length === 1) s.add(rr.personObjectId)
+      }
+    }
+    return s
+  }, [cardView])
+  const isSummaryCollapsed = (personObjectId: string) => {
+    const key = 'p:' + personObjectId
+    return singleItemPersonIds.has(personObjectId) ? !collapsed.has(key) : collapsed.has(key)
+  }
 
   // KART 1600 M3a-2: baslik ve ozet satirlarinin katlama durumu. Oturum icinde React state
   // olarak yasar (kalici saklama YOK - kapsam disi). Anahtar: baslik 'h:'+key, ozet 'p:'+personId.
@@ -632,13 +662,13 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                             rowNo={summaryRowNoByPerson.get(rr.personObjectId) ?? 0}
                             name={summaryDisplayName(rr.personObjectId, personLabels)}
                             totals={rr.totals}
-                            collapsed={collapsed.has(summaryKey)}
+                            collapsed={isSummaryCollapsed(rr.personObjectId)}
                             onToggle={() => toggleCollapsed(summaryKey)}
                           />
                         )
                       }
                       const it = rr.row
-                      if (rr.underSummary && it.personObjectId && collapsed.has('p:' + it.personObjectId)) {
+                      if (rr.underSummary && it.personObjectId && isSummaryCollapsed(it.personObjectId)) {
                         return null
                       }
                       const multi = isMultiPeriod(it)

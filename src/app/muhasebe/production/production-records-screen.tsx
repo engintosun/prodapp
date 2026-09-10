@@ -121,10 +121,11 @@ const tickNameInputStyle = {
 }
 
 const headingCellStyle = {
-  padding: 'var(--space-2) var(--space-1) var(--space-1)',
-  fontSize: 'var(--text-xs)',
+  padding: 'var(--space-3) var(--space-1) var(--space-1)',
+  borderTop: '1px solid var(--color-border)',
+  fontSize: 'var(--text-sm)',
   fontWeight: 600,
-  color: 'var(--color-text-muted)',
+  color: 'var(--color-text)',
 }
 
 const deleteButtonStyle = {
