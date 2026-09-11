@@ -59,32 +59,32 @@ describe('summaryDisplayName', () => {
 })
 
 describe('commissionDisplayName', () => {
-  it('ajans satiri (sirket) ajans adini tasir, SALT OKUNUR', () => {
+  it('ajans satiri (1618) ajans adini tasir, SALT OKUNUR', () => {
     const r = commissionDisplayName(
-      { name: 'Temsilci Komisyonu', paymentStatus: 'sirket' },
+      { name: 'Ajans Komisyonu', catalogCode: '1618' },
       { agencyName: 'ABC Ajans', managerName: null },
     )
-    expect(r).toEqual({ text: 'Temsilci Komisyonu — ABC Ajans', editable: false })
+    expect(r).toEqual({ text: 'Ajans Komisyonu — ABC Ajans', editable: false })
   })
 
-  it('menajer satiri (smm) menajer adini tasir, SALT OKUNUR', () => {
+  it('menajer satiri (1618-01) menajer adini tasir, SALT OKUNUR', () => {
     const r = commissionDisplayName(
-      { name: 'Temsilci Komisyonu', paymentStatus: 'smm' },
+      { name: 'Menajer Komisyonu', catalogCode: '1618-01' },
       { agencyName: null, managerName: 'Zeynep Kaya' },
     )
-    expect(r).toEqual({ text: 'Temsilci Komisyonu — Zeynep Kaya', editable: false })
+    expect(r).toEqual({ text: 'Menajer Komisyonu — Zeynep Kaya', editable: false })
   })
 
   it('ad bos ise (tik var, ad hanesi bos) duz ad ve DUZENLENEBILIR kalir', () => {
     const r = commissionDisplayName(
-      { name: 'Temsilci Komisyonu', paymentStatus: 'sirket' },
+      { name: 'Ajans Komisyonu', catalogCode: '1618' },
       { agencyName: null, managerName: null },
     )
-    expect(r).toEqual({ text: 'Temsilci Komisyonu', editable: true })
+    expect(r).toEqual({ text: 'Ajans Komisyonu', editable: true })
   })
 
   it('etiket hic bulunamazsa (label undefined) duz ad ve DUZENLENEBILIR kalir', () => {
-    const r = commissionDisplayName({ name: 'Temsilci Komisyonu', paymentStatus: 'sirket' }, undefined)
-    expect(r).toEqual({ text: 'Temsilci Komisyonu', editable: true })
+    const r = commissionDisplayName({ name: 'Ajans Komisyonu', catalogCode: '1618' }, undefined)
+    expect(r).toEqual({ text: 'Ajans Komisyonu', editable: true })
   })
 })

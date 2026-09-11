@@ -3,7 +3,6 @@
 import Decimal from 'decimal.js'
 import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
 import type { PersonLabel } from '../../../shared/supabase/person-label-service'
-import type { PaymentStatus } from '../../../shared/types/domain'
 
 export interface PersonGroup {
   personObjectId: string
@@ -83,16 +82,17 @@ export function derivedUnitNets(
   return out
 }
 
-// TEMSILCI SAYISI KADAR SATIR (KART-KATALOGU 22 Agustos 2026 KART 1600 TASARIM KARARLARI:
-// "Alt kalem sayisi temsilci sayisi kadardir. Ajans ile menajer AYRI ATOM GEREKTIRMEZ; fark
-// statude yasar"). Iki cins var, ikisi de ayni 1618 atomunu kullanir, fark ODEME STATUSUNDE:
-// ajans = 'sirket' (Fatura, kutuphane varsayilani), menajer = 'smm'. Bu esleme TEK yerde
-// yasar ve DISA AKTARILIR - dogum (card-table-screen.tsx birthMissingCommissionRows) ve
-// silme (onUpdatePersonLabel) ikisi de buradan okur, ikinci bir kopya tanimlanmaz.
+// TEMSILCI SAYISI KADAR SATIR (KART-KATALOGU 22 Agustos 2026 KART 1600 TASARIM KARARLARI'nin
+// "Ajans ile menajer AYRI ATOM GEREKTIRMEZ; fark statude yasar" maddesi 12 Eylul 2026'da
+// TERSINE DONDU): iki cins artik KENDI ATOMUNU tasir - ajans 1618, menajer 1618-01. Fark
+// ATOMDA yasar, statu yalniz vergi olgusudur ve kullanici tarafindan degistirilebilir; kimlik
+// tasiyamaz. Bu esleme TEK yerde yasar ve DISA AKTARILIR - dogum (card-table-screen.tsx
+// birthMissingCommissionRows) ve silme (onUpdatePersonLabel) ikisi de buradan okur, ikinci bir
+// kopya tanimlanmaz.
 export type CommissionKind = 'ajans' | 'menajer'
-export const COMMISSION_STATUS_BY_KIND: Record<CommissionKind, PaymentStatus> = {
-  ajans: 'sirket',
-  menajer: 'smm',
+export const COMMISSION_CATALOG_BY_KIND: Record<CommissionKind, string> = {
+  ajans: '1618',
+  menajer: '1618-01',
 }
 
 export interface CommissionNeed {
@@ -113,17 +113,17 @@ export function personsNeedingCommissionRow(
   const bases = personNetBases(rows, netByItemId)
   const hasCommissionRow = new Set<string>()
   for (const row of rows) {
-    if (row.personObjectId && row.deriveRate !== null && row.paymentStatus) {
-      hasCommissionRow.add(row.personObjectId + ':' + row.paymentStatus)
+    if (row.personObjectId && row.deriveRate !== null && row.catalogCode) {
+      hasCommissionRow.add(row.personObjectId + ':' + row.catalogCode)
     }
   }
   const needs: CommissionNeed[] = []
   for (const label of labels) {
     if ((bases[label.id] ?? 0) <= 0) continue
-    if (label.hasAgency && !hasCommissionRow.has(label.id + ':' + COMMISSION_STATUS_BY_KIND.ajans)) {
+    if (label.hasAgency && !hasCommissionRow.has(label.id + ':' + COMMISSION_CATALOG_BY_KIND.ajans)) {
       needs.push({ personObjectId: label.id, kind: 'ajans' })
     }
-    if (label.hasManager && !hasCommissionRow.has(label.id + ':' + COMMISSION_STATUS_BY_KIND.menajer)) {
+    if (label.hasManager && !hasCommissionRow.has(label.id + ':' + COMMISSION_CATALOG_BY_KIND.menajer)) {
       needs.push({ personObjectId: label.id, kind: 'menajer' })
     }
   }

@@ -207,7 +207,7 @@ describe('personsNeedingCommissionRow', () => {
   it('komisyon satiri zaten olan (o cinste) gerekmez', () => {
     const rows = [
       makeItem({ id: 'kase', personObjectId: 'p1' }),
-      makeItem({ id: 'ajans-komisyon', personObjectId: 'p1', deriveRate: 20, paymentStatus: 'sirket' }),
+      makeItem({ id: 'ajans-komisyon', personObjectId: 'p1', deriveRate: 20, catalogCode: '1618' }),
     ]
     const labels = [makeLabel({ id: 'p1', hasAgency: true })]
     expect(personsNeedingCommissionRow(rows, labels, { kase: 100000, 'ajans-komisyon': 20000 })).toEqual([])
@@ -239,7 +239,7 @@ describe('personsNeedingCommissionRow', () => {
   it('ajans satiri varken menajer eksikse yalniz menajer cifti doner', () => {
     const rows = [
       makeItem({ id: 'kase', personObjectId: 'p1' }),
-      makeItem({ id: 'ajans-komisyon', personObjectId: 'p1', deriveRate: 20, paymentStatus: 'sirket' }),
+      makeItem({ id: 'ajans-komisyon', personObjectId: 'p1', deriveRate: 20, catalogCode: '1618' }),
     ]
     const labels = [makeLabel({ id: 'p1', hasAgency: true, hasManager: true })]
     expect(personsNeedingCommissionRow(rows, labels, { kase: 100000, 'ajans-komisyon': 20000 })).toEqual([

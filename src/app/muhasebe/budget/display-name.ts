@@ -32,17 +32,18 @@ export function itemDisplayName(
 }
 
 // Turetilmis (komisyon) satirin Ad hucresi (9 Eylul 2026, KOMISYON SATIRININ DOGUMU - TEMSILCI
-// SAYISI KADAR SATIR): iki komisyon satiri (ajans + menajer) ayni "Temsilci Komisyonu" adini
-// tasiyinca hangisinin kime ait oldugu ayirt edilemiyordu. Cins odeme statusunden okunur
-// (person-groups.ts'teki eslemeyle AYNI: 'sirket'=ajans, 'smm'=menajer). O cinsin adi
-// (ajansName/managerName) doluysa "<atom adi> — <ad>" SALT OKUNUR gorunur; adi bos ise
-// (tik var, ad hanesi bos) duz atom adi DUZENLENEBILIR kalir. Ad SAKLANMAZ, listeden okunur -
-// bu dosyanin basindaki TEK KAYNAK kurali burada da gecerlidir.
+// SAYISI KADAR SATIR; 12 Eylul 2026'da cins statuden ATOMA tasindi). Iki komisyon atomu var
+// (1618 Ajans, 1618-01 Menajer); cins artik CATALOG KODUNDAN okunur (person-groups.ts'teki
+// eslemeyle AYNI: COMMISSION_CATALOG_BY_KIND), statuye BAKILMAZ - statu kullanici tarafindan
+// degistirilebilir bir vergi hanesidir, kimlik tasiyamaz. O cinsin adi (ajansName/managerName)
+// doluysa "<atom adi> — <ad>" SALT OKUNUR gorunur; adi bos ise (tik var, ad hanesi bos) duz
+// atom adi DUZENLENEBILIR kalir. Ad SAKLANMAZ, listeden okunur - bu dosyanin basindaki TEK
+// KAYNAK kurali burada da gecerlidir.
 export function commissionDisplayName(
-  item: Pick<BudgetItemRow, 'name' | 'paymentStatus'>,
+  item: Pick<BudgetItemRow, 'name' | 'catalogCode'>,
   label: Pick<PersonLabel, 'agencyName' | 'managerName'> | undefined,
 ): ItemDisplayName {
-  const repName = item.paymentStatus === 'smm' ? label?.managerName : label?.agencyName
+  const repName = item.catalogCode === '1618-01' ? label?.managerName : label?.agencyName
   if (repName) return { text: `${item.name} — ${repName}`, editable: false }
   return { text: item.name, editable: true }
 }

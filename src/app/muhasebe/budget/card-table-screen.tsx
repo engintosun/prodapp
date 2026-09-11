@@ -19,7 +19,7 @@ import { PeriodRow } from './components/period-row'
 import { HeadingRow } from './components/heading-row'
 import { SummaryRow } from './components/summary-row'
 import { buildCardView } from './card-view'
-import { personsNeedingCommissionRow, COMMISSION_STATUS_BY_KIND } from './person-groups'
+import { personsNeedingCommissionRow, COMMISSION_CATALOG_BY_KIND } from './person-groups'
 import type { CommissionKind } from './person-groups'
 import { personCardPresence, personNameCollisions, filterPersonsForAtom } from './person-bring'
 import { summaryDisplayName, commissionDisplayName } from './display-name'
@@ -84,7 +84,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // hala eski listeyi tutuyor (refetch void doner, gercek cekme ayri bir efektte
   // sonradan kosar), ikinci cagri yeni dogan satiri goremeyip ayni kisi icin bir tane
   // daha doguruyordu. Canli olcum: kopyalarin hepsi saniyenin altinda farkla dogmus.
-  // Anahtar personsNeedingCommissionRow ile AYNI bicimde kurulur: personObjectId:statu.
+  // Anahtar personsNeedingCommissionRow ile AYNI bicimde kurulur: personObjectId:catalogCode.
   // Isaret satir listede gorununce kendiliginden dusuyor, o yuzden tik kaldirilip
   // yeniden atildiginda satir tekrar dogabilir.
   const commissionBornKeysRef = useRef<Set<string>>(new Set())
@@ -111,26 +111,28 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     for (const id in view.rowTotalsById) netByItemId[id] = view.rowTotalsById[id].net
     for (const key of [...commissionBornKeysRef.current]) {
       const seen = currentRows.some(
-        (r) => r.deriveRate !== null && r.personObjectId && r.personObjectId + ':' + r.paymentStatus === key,
+        (r) => r.deriveRate !== null && r.personObjectId && r.personObjectId + ':' + r.catalogCode === key,
       )
       if (seen) commissionBornKeysRef.current.delete(key)
     }
     const missing = personsNeedingCommissionRow(currentRows, personLabelsRef.current, netByItemId).filter(
-      (n) => !commissionBornKeysRef.current.has(n.personObjectId + ':' + COMMISSION_STATUS_BY_KIND[n.kind]),
+      (n) => !commissionBornKeysRef.current.has(n.personObjectId + ':' + COMMISSION_CATALOG_BY_KIND[n.kind]),
     )
     if (missing.length === 0) return
-    const defaultRate = allLibraryRef.current.find((l) => l.catalogCode === '1618')?.defaultDeriveRate ?? null
     commissionBirthInFlightRef.current = true
     try {
-      // TEMSILCI SAYISI KADAR SATIR (21 Agustos 2026 karari, 9 Eylul'e kadar uygulanmamisti):
-      // cins atomu AYNI (1618), fark statude. Ajans -> kutuphane varsayilani zaten Fatura
-      // (sirket), ayrica yazilmaz; menajer -> statu doguma AYRICA yazilir (SMM).
+      // TEMSILCI SAYISI KADAR SATIR (21 Agustos 2026 karari, 12 Eylul 2026'da atom ikiye
+      // ayrildi): cins artik KENDI ATOMUNDAN dogar (1618 ajans, 1618-01 menajer), statuye
+      // AYRICA yazilmaz - her atomun kendi kutuphane varsayilan statusu (Fatura / SMM) doguma
+      // yeter. Varsayilan oran da cinsin kendi atomundan okunur, iki ayri atom oldugu icin
+      // arama cins basinadir.
       for (const need of missing) {
-        const newItemId = await addBudgetItem(cardRef.current.groupId, { catalogCode: '1618' })
+        const catalogCode = COMMISSION_CATALOG_BY_KIND[need.kind]
+        const defaultRate = allLibraryRef.current.find((l) => l.catalogCode === catalogCode)?.defaultDeriveRate ?? null
+        const newItemId = await addBudgetItem(cardRef.current.groupId, { catalogCode })
         await updateItemField(newItemId, 'personObjectId', need.personObjectId)
-        if (need.kind === 'menajer') await updateItemField(newItemId, 'paymentStatus', COMMISSION_STATUS_BY_KIND.menajer)
         if (defaultRate !== null) await updateItemField(newItemId, 'deriveRate', defaultRate)
-        commissionBornKeysRef.current.add(need.personObjectId + ':' + COMMISSION_STATUS_BY_KIND[need.kind])
+        commissionBornKeysRef.current.add(need.personObjectId + ':' + catalogCode)
       }
       refetch({ silent: true })
     } catch (e) {
@@ -379,16 +381,16 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         const kind: CommissionKind | null =
           patch.hasAgency === false ? 'ajans' : patch.hasManager === false ? 'menajer' : null
         if (kind) {
-          const statute = COMMISSION_STATUS_BY_KIND[kind]
+          const catalogCode = COMMISSION_CATALOG_BY_KIND[kind]
           // KOPYA VARSA HEPSI GIDER (10 Eylul 2026, Engin karari): find tek satir
           // donduruyordu, kopyali kartta tik kaldirilinca biri gidiyor kalanlar
           // duruyordu ve kullaniciya "silme calismiyor" gibi gorunuyordu.
           const dupRows = rowsRef.current.filter(
-            (r) => r.personObjectId === id && r.deriveRate !== null && r.paymentStatus === statute,
+            (r) => r.personObjectId === id && r.deriveRate !== null && r.catalogCode === catalogCode,
           )
           const row = dupRows[0]
           if (row) {
-            const defaultRate = allLibraryRef.current.find((l) => l.catalogCode === '1618')?.defaultDeriveRate ?? null
+            const defaultRate = allLibraryRef.current.find((l) => l.catalogCode === catalogCode)?.defaultDeriveRate ?? null
             // DOKUNULMAMIS TANIMI: komisyon satirinda kullanicinin elle girdigi TEK sey
             // orandir (tutar turetilir, ad listeden gelir). Oran hala kutuphane
             // varsayilanindaysa satir dokunulmamistir, SESSIZCE gider.
