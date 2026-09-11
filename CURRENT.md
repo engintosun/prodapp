@@ -22,6 +22,8 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 
 ## Durum
 
+- **11 Eylül 2026 — Komisyon tabanı ödeme belgesinden koptu (iki commit).** Taban artık statüye bakmıyor; ölçüt kişisi bağlı ve türetilmemiş satır. Loan-out oyuncusunun kazancı tabanda kalıyor. Ayrıntı git log'da, kararlar ev dosyalarında. BU TURUN ÜÇ DERSİ: (1) Bir mekanizma önermeden önce ONSUZ HANGİ SATIRDA NE BOZULUR sorusu somut olarak cevaplanmalı; bu turda iki kez mekanizma önerildi ve ikisi de gereksiz çıktı — kişi düğmesinin kaldırılması (şablon satırının tek kapısı olduğu görülmemişti) ve item_library'ye kazanç hanesi açılması (tabanın zaten yalnız kişisi bağlı satıra baktığı okunmuş ama kullanılmamıştı). Her iki seferde de kanıt zaten açılmış dosyanın içindeydi; eksik olan bilgi değil, kendi önerisini okunana karşı sınamaktı. (2) Bir kusurun tanısı doğru olabilir ama çözümü yanlış katmanda aranabilir: "kişisiz satır işareti" turu tanı olarak doğruydu, çözümü işaret koymak değil taban kuralını düzeltmekti — yanlış rakamın üstüne tabela asmak yamadır. (3) Prompt bloğuna yazılan, o dilimde neyin yapılmayacağını sayan talimat kalıcı dosyaya yazılmamalı; bu turda CURRENT.md'ye sızdı ve Sıradaki iş başlığı altında yapılmayacak işler listesi gibi durdu.
+
 - HEAD: a012f1f (11 Eylül 2026). Denetim E gereği kapanış commit'inin EBEVEYNİ yazılır, çünkü bu commit CURRENT.md'ye dokunur ve "son commit" o olur.
 - KOMİSYON SATIRI UÇTAN UCA DOĞRULANDI (tarayıcıda, gerçek veriyle): kişi başına tek satır doğuyor, tik kaldırılınca gidiyor, Yasal Yük hanesi tıklanabiliyor, döküm gerçek tabanı okuyor ve KDV dökümde tekrarlamıyor.
 - AJANS KOMİSYONU ORANI KALDIRILDI (göç 20260909180000): Referans ekranındaki yüzde 10 gitti. Bileşen ve paket bilerek bırakıldı, gerekçesi `docs/butce/BUTCE-SEMA-KARARLARI.md` içinde.
@@ -58,13 +60,6 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 ## Sıradaki iş
 
 **MADDE 1 KAPANDI VE ÜÇE BÖLÜNDÜ (11 Eylül 2026, Engin kararları).** (1) Loan-out kusuru bu dilimde kökünden çözüldü: komisyon tabanı ödeme statüsüne artık bakmıyor, ölçüt kişisi bağlı ve türetilmemiş satır. Karar evi §20 madde 2. (2) Kişisiz satır işareti turu İPTAL, yerine "isim hanesinde kişi açılır listesi" turu geçti; üç açık maddesiyle IS-SIRASI Backlog'ta. (3) Satır içi düğmeler maddeden DÜŞTÜ: not ve kişi düğmeleri kaldırılamaz, çünkü şablon satırına kişi bağlamanın ve nota ulaşmanın TEK kapısı onlar (fn_add_person_items her zaman yeni satır açar, var olan şablon satırını doldurmaz; asks_person kuralı kodda hiç yok). Türetilmiş komisyon satırındaki kişi düğmesinin kapatılması ayrı bulgu olarak IS-SIRASI'nda.
-
-KAPSAM DIŞI (bu dilimde YAPILMAZ):
-- İsim hanesine açılır liste eklemek.
-- Komisyon satırındaki kişi düğmesine dokunmak.
-- item_library'ye yeni kolon ya da göç. Bu dilimde SQL YOK, şemaya dokunulmuyor.
-- 1614 ve 1620'nin katalogdan çıkarılması.
-- Kart masasında herhangi bir görsel değişiklik.
 
 **MADDE 2: SÜRÜKLE-BIRAK ALANI BELİRGİN DEĞİL.** İçe aktarma panelindeki sürükle-bırak alanı ÇALIŞIYOR (6 Eylül'de denendi) ama gözden kaçıyor: kesikli çerçeve arka planla neredeyse aynı tonda, kutunun içi boş, sürükleme sırasında hiçbir dönüş verilmiyor (`onDragEnter`/`onDragLeave` yok, sürükleme durumu tutulmuyor) ve "Dosya seç" düğmesi kutunun dışında duruyor. Bir şeyin hedef olduğunun görülüp görülmemesi işlevseldir, ton işi değildir. Tek dosya: `import-panel.tsx`.
 
