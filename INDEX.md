@@ -73,19 +73,19 @@ varsayim yapilmaz.
 -> Etkiler: authenticated-shell.tsx cardId yokken buradan render eder.
 -> Kritik: HAYIR — kararlarin evi KABUK-KARARLARI 12.3; ekran orada yazilani cizer.
 
-`src/app/muhasebe/production/production-records-screen.tsx` (502)
+`src/app/muhasebe/production/production-records-screen.tsx` (539)
 -> Görev: Üretim Kayıtları durağının ekranı — masa (Oyuncular kartı, kapakta kişi sayısı) + karta tıklanınca açılan kişi listesi (No · Rol · Oyuncu · Görev · Ajans tiki · Menajer tiki · silme). Liste göreve göre hiyerarşik dizilir (sıra katalog kodundan), No sütunu listedeki yerden hesaplanır ve saklanmaz, seç kipinde en sola tik sütunu gelir ve silme sütunu kapanır.
 -> Kullanır: person-label-service.ts (fetchPersonLabels, countPersonLabels, createPersonLabel, createPersonLabels, updatePersonLabel, deletePersonLabel, deletePersonLabels, fetchDutyOptions) + import-panel.tsx + shared/components/{loading,toast}.
 -> Etkiler: authenticated-shell.tsx kind='production' dalından render eder.
 -> Kritik: HAYIR — kararların evi KABUK-KARARLARI 12.1b; ekran BÜTÇEYİ HİÇ GÖRMEZ.
 
-`src/app/muhasebe/production/import-panel.tsx` (576)
+`src/app/muhasebe/production/import-panel.tsx` (611)
 -> Görev: Üretim Kayıtları içe aktarma ara ekranı — dosya seç veya sürükle-bırak, oku, "Kaynak" ve "Başlık satırı" seçimlerini ve kolon eşleştirmesini onayla, `createPersonLabels` ile toplu doğur. Dört biçim: `.xlsx` (read-excel-file, `getSheets` ile TÜM sayfalar), `.docx` (fflate ile zip + tarayıcının DOMParser'ı, YALNIZ tablo), `.csv` (kendi ayrıştırıcısı, ayırıcı ölçülerek seçilir), `.json` (anahtarlar kolon yerine geçer).
 -> Kullanır: read-excel-file/browser, fflate, person-label-service.ts (createPersonLabels).
 -> Etkiler: production-records-screen.tsx `importOpen` durumunda bunu render eder; bu dosya ekranı DEĞİŞTİRMEZ.
 -> Kritik: HAYIR — kararların evi BUTCE-EKRAN-KARARLARI §20; tahmin sınırı orada yazılı (Görev/Ajans/Menajer TAHMİN EDİLMEZ).
 
-`src/app/muhasebe/budget/card-table-screen.tsx` (829)
+`src/app/muhasebe/budget/card-table-screen.tsx` (873)
 -> Görev: Kart tablosu ekranının orkestrasyonu — veri hook'ları + ekleme paneli + satır bileşenlerini birbirine bağlar.
 -> Kullanır: hooks/* (use-card-rows, use-edit-buffers, use-grid-navigation) + components/* + budget-service.ts.
 -> Etkiler: authenticated-shell.tsx (muhasebe "bütçe" sekmesi) buradan render eder.
