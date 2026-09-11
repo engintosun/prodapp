@@ -30,6 +30,19 @@ const dropBoxStyle = {
   textAlign: 'center' as const,
   color: 'var(--color-text-muted)',
   fontSize: 'var(--text-sm)',
+  display: 'flex',
+  flexDirection: 'column' as const,
+  alignItems: 'center' as const,
+  gap: 'var(--space-2)',
+}
+
+// SURUKLEME DONUSU (surukleme kutunun UZERINDEYKEN cerceve ve zemin degisir): mevcut
+// token kumesinden odunc alinir, yeni token TANIMLANMAZ.
+const dropBoxActiveStyle = {
+  ...dropBoxStyle,
+  border: '1px dashed var(--color-primary)',
+  background: 'var(--color-surface-2)',
+  color: 'var(--color-text)',
 }
 
 const buttonStyle = {
@@ -313,6 +326,7 @@ export function ImportPanel({
   const [columnMap, setColumnMap] = useState<ColumnKind[]>([])
   const [importing, setImporting] = useState(false)
   const [importError, setImportError] = useState<string | null>(null)
+  const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const handleFile = useCallback(async (file: File) => {
@@ -387,9 +401,24 @@ export function ImportPanel({
     [handleFile],
   )
 
+  const onDragEnter = useCallback((e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    setIsDragging(true)
+  }, [])
+
+  // TUZAK (prompta yazili): onDragLeave kutunun ICINDEKI her cocuga geciste de
+  // atesleniyor, sayac olmadan kutu surukleme boyunca yanip soner. Sayac yerine
+  // relatedTarget denetimi secildi: imlecin GERCEKTEN kutunun disina cikip cikmadigini
+  // sorar, cocuk sayisina bagli bir durum tutmaz.
+  const onDragLeave = useCallback((e: DragEvent<HTMLDivElement>) => {
+    if (e.currentTarget.contains(e.relatedTarget as Node | null)) return
+    setIsDragging(false)
+  }, [])
+
   const onDrop = useCallback(
     (e: DragEvent<HTMLDivElement>) => {
       e.preventDefault()
+      setIsDragging(false)
       const file = e.dataTransfer.files?.[0]
       if (file) void handleFile(file)
     },
@@ -424,11 +453,20 @@ export function ImportPanel({
   if (phase === 'pick') {
     return (
       <div style={panelStyle}>
-        <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
-          Excel (.xlsx), Word (.docx), CSV veya JSON dosyası seçin
-        </p>
-        <div onDragOver={(e) => e.preventDefault()} onDrop={onDrop} style={dropBoxStyle}>
-          Dosyayı buraya sürükleyin
+        <div
+          onDragEnter={onDragEnter}
+          onDragLeave={onDragLeave}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={onDrop}
+          style={isDragging ? dropBoxActiveStyle : dropBoxStyle}
+        >
+          <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
+            Excel (.xlsx), Word (.docx), CSV veya JSON dosyası seçin
+          </p>
+          <p style={{ margin: 0 }}>Dosyayı buraya sürükleyin</p>
+          <button type="button" onClick={() => fileInputRef.current?.click()} style={buttonStyle}>
+            Dosya seç
+          </button>
         </div>
         <input
           ref={fileInputRef}
@@ -438,9 +476,6 @@ export function ImportPanel({
           style={{ display: 'none' }}
         />
         <div style={rowStyle}>
-          <button type="button" onClick={() => fileInputRef.current?.click()} style={buttonStyle}>
-            Dosya seç
-          </button>
           <button type="button" onClick={onCancel} style={buttonStyle}>
             Vazgeç
           </button>
