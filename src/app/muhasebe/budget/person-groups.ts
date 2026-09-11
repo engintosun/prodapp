@@ -5,15 +5,6 @@ import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
 import type { PersonLabel } from '../../../shared/supabase/person-label-service'
 import type { PaymentStatus } from '../../../shared/types/domain'
 
-// Komisyon tabanina yalniz kisinin KENDI KAZANCI olan statuler girer (9 Eylul 2026 karari,
-// BUTCE-EKRAN-KARARLARI bolum 20 KOMISYON TABANI VE SILME). Beyaz liste: sonradan eklenen
-// yeni bir statu kendiliginden tabana sizmaz - kara liste tersini yapardi.
-const EARNING_PAYMENT_STATUSES: ReadonlySet<PaymentStatus> = new Set([
-  'bordro',
-  'smm',
-  'telif_belgeli',
-])
-
 export interface PersonGroup {
   personObjectId: string
   itemIds: string[]
@@ -44,10 +35,10 @@ export function groupByPerson(rows: readonly BudgetItemRow[]): PersonGroup[] {
 
 // Kisi kimligi basina CIPLAK NET TABAN (9 Eylul 2026, B18: ayni formul iki yerde yasayamaz -
 // derivedUnitNets ASAGIDA bu islevi CAGIRIR, kopyasini tasimaz; KOMISYON SATIRININ DOGUMU da
-// ayni tabani kullanir, bkz. personsNeedingCommissionRow). Kural EARNING_PAYMENT_STATUSES'in
-// AYNISI: yalniz kisinin kendi kazanci olan statuler tabana girer, derive_rate DOLU (turetilmis)
-// satir tabana GIRMEZ. netByItemId disaridan gelir: Ara toplam tanimi totals.ts icinde yasar,
-// burada ikinci kez tanimlanmaz (bordro satirinin neti motordan gelir, ciplak carpimdan degil).
+// ayni tabani kullanir, bkz. personsNeedingCommissionRow). Kural (11 Eylul 2026): kisisi bagli
+// ve turetilmemis (derive_rate BOS) her satir tabana girer, odeme statusune BAKILMAZ. netByItemId
+// disaridan gelir: Ara toplam tanimi totals.ts icinde yasar, burada ikinci kez tanimlanmaz
+// (bordro satirinin neti motordan gelir, ciplak carpimdan degil).
 export function personNetBases(
   rows: readonly BudgetItemRow[],
   netByItemId: Readonly<Record<string, number>>,
@@ -55,8 +46,11 @@ export function personNetBases(
   const baseByPerson = new Map<string, Decimal>()
   for (const row of rows) {
     const key = row.personObjectId
+    // TABAN OLCUTU (11 Eylul 2026, Engin karari): kisisi bagli ve turetilmemis her satir girer.
+    // Odeme statusune BAKILMAZ - ajans ucreti oyuncunun kazancindan dogar, o kazancin hangi
+    // belgeyle odendigi tabani degistirmez. Eski beyaz liste (bordro/smm/telif) loan-out
+    // oyuncusunun kazancini tabandan sessizce dusuruyordu.
     if (!key || row.deriveRate !== null) continue
-    if (!row.paymentStatus || !EARNING_PAYMENT_STATUSES.has(row.paymentStatus)) continue
     const net = netByItemId[row.id] ?? 0
     baseByPerson.set(key, (baseByPerson.get(key) ?? new Decimal(0)).plus(net))
   }
@@ -109,9 +103,8 @@ export interface CommissionNeed {
 // KOMISYON SATIRININ DOGUMU (9 Eylul 2026, BUTCE-EKRAN-KARARLARI bolum 20): CINS bazinda uc
 // sart birden saglaninca kisi+cins ikilisi icin komisyon satiri GEREKIR. VERITABANI
 // TETIKLEYICISI YASAK (B18) - taban hesabi (personNetBases) burada TypeScript'te yasar, SQL'de
-// ikinci bir kopyasi acilmaz. NOT: 'smm' EARNING_PAYMENT_STATUSES beyaz listesindedir ama
-// turetilmis (derive_rate DOLU) satir personNetBases'e ZATEN girmez (derive_rate denetimi
-// statuden ONCE calisir) - menajer komisyon satirinin kendisi boylece kendi tabanini beslemez.
+// ikinci bir kopyasi acilmaz. NOT: turetilmis (derive_rate DOLU) satir personNetBases'e
+// girmez - menajer komisyon satirinin kendisi boylece kendi tabanini beslemez.
 export function personsNeedingCommissionRow(
   rows: readonly BudgetItemRow[],
   labels: readonly PersonLabel[],

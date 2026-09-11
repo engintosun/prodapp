@@ -135,12 +135,12 @@ describe('derivedUnitNets', () => {
     expect(derivedUnitNets(rows, { kase: 1001 })).toEqual({ komisyon: 333.63 })
   })
 
-  it('sirket statulu satir tabana girmez (odenek/gider, kisinin kazanci degil)', () => {
+  it('LOAN-OUT: sirket (Fatura) statulu satir da tabana girer, odeme belgesi tabani degistirmez', () => {
     const rows = [
-      makeItem({ id: 'kostum-odenegi', personObjectId: 'p1', paymentStatus: 'sirket' }),
+      makeItem({ id: 'kase_fatura', personObjectId: 'p1', paymentStatus: 'sirket' }),
       makeItem({ id: 'komisyon', personObjectId: 'p1', deriveRate: 20 }),
     ]
-    expect(derivedUnitNets(rows, { 'kostum-odenegi': 100000 })).toEqual({ komisyon: 0 })
+    expect(derivedUnitNets(rows, { kase_fatura: 100000 })).toEqual({ komisyon: 20000 })
   })
 
   it('bordro + smm + telif_belgeli karisik satirlarin ucu de tabana girer', () => {
@@ -174,15 +174,15 @@ describe('personNetBases', () => {
     expect(personNetBases(rows, { kase1: 50000, kase2: 90000 })).toEqual({ p1: 50000, p2: 90000 })
   })
 
-  it('etiketsiz satir ve sirket statulu satir tabana girmez', () => {
+  it('etiketsiz satir tabana girmez, etiketli satir statusu ne olursa olsun girer', () => {
     const rows = [
       makeItem({ id: 'a', personObjectId: null }),
       makeItem({ id: 'b', personObjectId: 'p1', paymentStatus: 'sirket' }),
     ]
-    expect(personNetBases(rows, { a: 1000, b: 2000 })).toEqual({})
+    expect(personNetBases(rows, { a: 1000, b: 2000 })).toEqual({ p1: 2000 })
   })
 
-  it('DIKKAT: smm statulu turetilmis (menajer komisyonu) satir tabana girmez - smm beyaz listede olsa da derive_rate denetimi ONCE calisir', () => {
+  it('DIKKAT: turetilmis (menajer komisyonu) satir tabana girmez, kendi tabanini beslemez', () => {
     const rows = [
       makeItem({ id: 'kase', personObjectId: 'p1', paymentStatus: 'bordro' }),
       makeItem({ id: 'menajer-komisyon', personObjectId: 'p1', paymentStatus: 'smm', deriveRate: 20 }),

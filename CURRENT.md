@@ -22,7 +22,7 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 
 ## Durum
 
-- HEAD: 91110eb (11 Eylül 2026). Denetim E gereği kapanış commit'inin EBEVEYNİ yazılır, çünkü bu commit CURRENT.md'ye dokunur ve "son commit" o olur.
+- HEAD: a012f1f (11 Eylül 2026). Denetim E gereği kapanış commit'inin EBEVEYNİ yazılır, çünkü bu commit CURRENT.md'ye dokunur ve "son commit" o olur.
 - KOMİSYON SATIRI UÇTAN UCA DOĞRULANDI (tarayıcıda, gerçek veriyle): kişi başına tek satır doğuyor, tik kaldırılınca gidiyor, Yasal Yük hanesi tıklanabiliyor, döküm gerçek tabanı okuyor ve KDV dökümde tekrarlamıyor.
 - AJANS KOMİSYONU ORANI KALDIRILDI (göç 20260909180000): Referans ekranındaki yüzde 10 gitti. Bileşen ve paket bilerek bırakıldı, gerekçesi `docs/butce/BUTCE-SEMA-KARARLARI.md` içinde.
 - REFERANS EKRANI HANGİ ORANIN GEÇERLİ OLDUĞUNU SÖYLEMİYOR: dört SGK senaryosu yan yana düz satır olarak duruyor, hangisinin bu şirkete ait olduğunu söyleyen işaret yok; oranı motor `fn_resolve_sgk_scenario` ile şirket profilinden çözüyor. Kendi turunu bekliyor.
@@ -57,7 +57,14 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 
 ## Sıradaki iş
 
-**MADDE 1: KİŞİSİZ SATIR İŞARETİ VE SATIR İÇİ DÜĞMELERİN YERİ (Engin kararı 10 Eylül 2026, ayrı tur).** Kişi fişi olmayan satırın komisyon alamadığını söyleyen işaret yok. Buna iki şey bağlandı: 1602 loan-out istisnasında kazancın komisyon tabanından sessizce düşmesi, ve kalem satırındaki not ile kişi düğmelerinin gerekliliği (kişi düğmesi koşulsuz çiziliyor, komisyon satırında hiç olmamalı). Üçü aynı yüzeye bakar, birlikte ele alınır. Gerekçe `docs/IS-SIRASI.md` Backlog bölümünde.
+**MADDE 1 KAPANDI VE ÜÇE BÖLÜNDÜ (11 Eylül 2026, Engin kararları).** (1) Loan-out kusuru bu dilimde kökünden çözüldü: komisyon tabanı ödeme statüsüne artık bakmıyor, ölçüt kişisi bağlı ve türetilmemiş satır. Karar evi §20 madde 2. (2) Kişisiz satır işareti turu İPTAL, yerine "isim hanesinde kişi açılır listesi" turu geçti; üç açık maddesiyle IS-SIRASI Backlog'ta. (3) Satır içi düğmeler maddeden DÜŞTÜ: not ve kişi düğmeleri kaldırılamaz, çünkü şablon satırına kişi bağlamanın ve nota ulaşmanın TEK kapısı onlar (fn_add_person_items her zaman yeni satır açar, var olan şablon satırını doldurmaz; asks_person kuralı kodda hiç yok). Türetilmiş komisyon satırındaki kişi düğmesinin kapatılması ayrı bulgu olarak IS-SIRASI'nda.
+
+KAPSAM DIŞI (bu dilimde YAPILMAZ):
+- İsim hanesine açılır liste eklemek.
+- Komisyon satırındaki kişi düğmesine dokunmak.
+- item_library'ye yeni kolon ya da göç. Bu dilimde SQL YOK, şemaya dokunulmuyor.
+- 1614 ve 1620'nin katalogdan çıkarılması.
+- Kart masasında herhangi bir görsel değişiklik.
 
 **MADDE 2: SÜRÜKLE-BIRAK ALANI BELİRGİN DEĞİL.** İçe aktarma panelindeki sürükle-bırak alanı ÇALIŞIYOR (6 Eylül'de denendi) ama gözden kaçıyor: kesikli çerçeve arka planla neredeyse aynı tonda, kutunun içi boş, sürükleme sırasında hiçbir dönüş verilmiyor (`onDragEnter`/`onDragLeave` yok, sürükleme durumu tutulmuyor) ve "Dosya seç" düğmesi kutunun dışında duruyor. Bir şeyin hedef olduğunun görülüp görülmemesi işlevseldir, ton işi değildir. Tek dosya: `import-panel.tsx`.
 
