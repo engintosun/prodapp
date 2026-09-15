@@ -369,8 +369,10 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
 
   // TIK KALDIRMA -> SATIR SILME (9 Eylul 2026, SILME KURALI - UYGULANMAMIS KARAR uygulaniyor):
   // "Satirin varligi akisi da soyler: tik varsa komisyonu yapimci ustlenir ve satir dogar;
-  // ... tik konmaz, satir hic dogmaz." Tik kalkinca simetri BOZULMASIN diye o STATUDEKI
-  // komisyon satiri silinir. Bu, tabanin sifira dusmesiyle satirin sifir tutarla DURMASI
+  // ... tik konmaz, satir hic dogmaz." Tik kalkinca simetri BOZULMASIN diye o CINSTEKI
+  // komisyon satiri silinir (12 Eylul 2026: cins STATUDEN ATOMA tasindi, esleme artik
+  // katalog koduyla yapilir - statu kullanicinin degistirebildigi bir vergi hanesidir).
+  // Bu, tabanin sifira dusmesiyle satirin sifir tutarla DURMASI
   // kararindan (KOMISYON SATIRININ DOGUMU madde 3) FARKLI bir tetiktir: o karar TABAN
   // degisince satirin kendiliginden silinmedigini soyler (satir kalir), burada ise KULLANICI
   // ACIKCA tiki kaldiriyor - farkli tetik, farkli sonuc (satir gider).
@@ -409,6 +411,18 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
               // celiskisi (bu dilimin kapattigi kusurun ta kendisi) tekrar dogardi.
               await updatePersonLabel(id, kind === 'ajans' ? { hasAgency: true } : { hasManager: true })
             }
+          } else {
+            // SESSIZ CIKIS YASAK (.claude/rules/src.md): tik kaldirildi ama eslesen komisyon
+            // satiri bulunamadi. Eskiden burasi hicbir sey yapmadan cikiyordu - kullanici tikin
+            // kalktigini goruyor, satirin kartta durdugunu goruyor, arada ne oldugunu
+            // bilmiyordu. TIK GERI ACILMAZ: kullanici o komisyonu istemedigini soyledi, ekran
+            // onu yalanlamaz; olan biteni SOYLER, durumu degistirmez.
+            const label = personLabelsRef.current.find((l) => l.id === id)
+            const tick = kind === 'ajans' ? 'Ajans' : 'Menajer'
+            addToast(
+              `"${label?.name ?? 'Kişi'}" için ${tick} tiki kaldırıldı ama silinecek bir komisyon satırı bulunamadı.`,
+              'warning',
+            )
           }
         }
         refreshPersonLabels()
