@@ -178,6 +178,9 @@ export function ProjectSelectionPage() {
                   borderRadius: '8px',
                   cursor: selecting !== null ? 'not-allowed' : 'pointer',
                   textAlign: 'left',
+                  // Acik zeminli kart koyu temada on plan rengini miras alirdi (acik yazi,
+                  // acik zemin -> proje adi okunmuyordu). Renk KARTA verilir, tek metne degil.
+                  color: '#111',
                   background: hoveredId === profile.project_id ? '#f5f5f5' : '#fff',
                   opacity: selecting !== null && selecting !== profile.project_id ? 0.5 : 1,
                   display: 'flex',
@@ -228,6 +231,7 @@ export function ProjectSelectionPage() {
                   padding: '12px',
                   border: '1px solid #eee',
                   borderRadius: '8px',
+                  color: '#111',
                   background: '#fafafa',
                   opacity: 0.6,
                   display: 'flex',
