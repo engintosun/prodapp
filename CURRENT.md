@@ -28,16 +28,16 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 
 ## Durum
 
-- HEAD: 71c670e (12 Eylül 2026 — Temsilci Komisyonu Atom Ayrımı ve Sürükle-Bırak Hedefi).
+- HEAD: d8a8af2 (16 Eylül 2026 — Oturum Kapanışı).
 - KOMİSYON TABANI ARTIK ÖDEME STATÜSÜNE BAKMIYOR: ölçüt kişiye bağlı ve türetilmemiş satır. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 KOMİSYON TABANI VE SİLME madde 2.
-- TEMSİLCİ KOMİSYONU CİNSİ ARTIK ATOMDA: 1618 Ajans Komisyonu, 1618-01 Menajer Komisyonu iki ayrı atom. Testlerle doğrulandı (391), tarayıcıda DENENMEDİ.
-- SÜRÜKLE-BIRAK ALANI HEDEF OLARAK GÖRÜNÜR: biçim yazısı ve "Dosya seç" düğmesi kutunun içinde, sürükleme durumu çerçeve/zeminle geri bildirim veriyor. Testlerle doğrulandı, tarayıcıda DENENMEDİ.
+- TEMSİLCİ KOMİSYONU CİNSİ ARTIK ATOMDA: 1618 Ajans Komisyonu, 1618-01 Menajer Komisyonu iki ayrı atom. Testlerle ve tarayıcıda doğrulandı (17 Eylül 2026).
+- SÜRÜKLE-BIRAK ALANI HEDEF OLARAK GÖRÜNÜR: biçim yazısı ve "Dosya seç" düğmesi kutunun içinde, sürükleme durumu çerçeve/zeminle geri bildirim veriyor. Testlerle ve tarayıcıda doğrulandı (17 Eylül 2026).
 - KOMİSYON SATIRI UÇTAN UCA DOĞRULANDI (tarayıcıda, gerçek veriyle): kişi başına tek satır doğuyor, tik kaldırılınca gidiyor, Yasal Yük hanesi tıklanabiliyor, döküm gerçek tabanı okuyor ve KDV dökümde tekrarlamıyor.
 - AJANS KOMİSYONU ORANI KALDIRILDI (göç 20260909180000): Referans ekranındaki yüzde 10 gitti. Bileşen ve paket bilerek bırakıldı, gerekçesi `docs/butce/BUTCE-SEMA-KARARLARI.md` içinde.
 - REFERANS EKRANI HANGİ ORANIN GEÇERLİ OLDUĞUNU SÖYLEMİYOR: dört SGK senaryosu yan yana düz satır olarak duruyor, hangisinin bu şirkete ait olduğunu söyleyen işaret yok; oranı motor `fn_resolve_sgk_scenario` ile şirket profilinden çözüyor. Kendi turunu bekliyor.
 - MUHUR-3 CANLIDA ve doğrulandı. Kişi ve iş etiketleri PROJE kapsamında.
 - ÜRETİM KAYITLARI kullanılabilir: liste KARTIN BAŞLIK HİYERARŞİSİNE göre dizilir ve bölüm başlıkları çizilir (Ana Kast · Dublör · Arkaplan · Kast Operasyonu), satır numarası var, satır tek tek ya da seç kipiyle toplu silinir, dört biçimden içe aktarma yapılır. Liste hiyerarşisi tarayıcıda DOĞRULANDI.
-- ÖZET SATIRI VE KART İÇİ SIRA DOĞRULANDI (tarayıcıda): rolü olan tek kalemli kişi özet satırı alıyor ve blok kapalı doğuyor; kart içi kişi sırası listeyle birebir aynı. DOĞRULANMAYAN TEK HAL: rol hanesi BOŞ olan kişi (Kast Operasyonu görevleri gibi) — eski kurala göre davranması gerekiyor, denenmedi.
+- ÖZET SATIRI VE KART İÇİ SIRA DOĞRULANDI (tarayıcıda): rolü olan tek kalemli kişi özet satırı alıyor ve blok kapalı doğuyor; kart içi kişi sırası listeyle birebir aynı. Rol hanesi BOŞ olan kişi de eski kurala göre davranıyor: tek kalemde özet satırı doğmuyor, iki ve daha fazla kalemde doğuyor ve adını oyuncunun gerçek adından alıyor. Kural görev koduna değil rol hanesine bakar; denemede görev Başrol'dü. 17 Eylül 2026'da tarayıcıda doğrulandı.
 - Migration 20260901130000'den 20260912140000'e kadar CANLIDA. Build geçer, eslint sıfır hata. Originde tek dal: main.
 - SAYILAR BURADA YAŞAMAZ: beklenen test sayısı `.claude/test-count` dosyasında, kapı kümesi `.claude/hooks/gate.sh` ve `.claude/hooks/run-gates.sh` içinde yaşar. Bu iki sayı düzyazıda tazelenmez, sahibinden okunur.
 - Bütçe kolon modeli: 13 veri kolonu + etiketsiz silme hanesi (No · Ad · Statü · Dönemler · Birim · Birim net · Miktar · X · Ara toplam · Yasal Yük · Maliyet · KDV · Toplam).
@@ -66,7 +66,7 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 
 ## Sıradaki iş
 
-**TARAYICIDA DENENMEMİŞ ÜÇ HAL — DOĞRULAMA TURU BEKLİYOR.** (1) Temsilci komisyonu atom ayrımı (1618 Ajans / 1618-01 Menajer), (2) içe aktarma panelinde sürükle-bırak alanının hedef olarak görünmesi, (3) rol hanesi BOŞ olan kişinin (Kast Operasyonu görevleri) kart içi davranışı. Üçü de testlerle doğrulandı, gerçek veriyle ekranda denenmedi. Bu bir prompt değil, tarayıcı turu ister. (Dört yeni çekirdek atomun yeni açılan bütçede doğduğu 16 Eylül 2026'da ekranda doğrulandı, o madde düştü.) 15 Eylül'ün uyarı bildirimi de aynı turda sınanabilir: ajans ve menajer tiki birlikte olan bir kişinin tiklerini kaldırmak yeterli.
+**UYARI BİLDİRİMİNİN YERİ (17 Eylül 2026'da seçildi).** Görünmeyen uyarı fiilen sessizdir; `.claude/rules/src.md` içindeki "sessiz hata yasak" kuralı bu hâliyle hâlâ çiğneniyor. Önce yer kararı konuşulur, sonra prompt yazılır. Ayrıntı ve karar evi: aşağıda Açık kalanlar, "Uyarı bildiriminin yeri".
 
 ## Açık kalanlar
 
@@ -80,5 +80,7 @@ Bu bölüm KARAR DEĞİL, henüz karara bağlanmamış açık sorulardır (yaln�
 - Kadroda bir görevden kaç kişi var, kartta o görevden kaç satır var — farkın kullanıcıya söylenip söylenmeyeceği. Karara bağlanmadı.
 - `fn_check_cost_object_kind` artık ŞARTLI garanti: bileşik FK her yazımda koruyordu, tetik yalnız iki etiket kolonu değiştiğinde koruyor. Kalemin bütçesi sonradan değiştirilirse bağ sessizce projeler arası kalabilir. Bugün böyle bir işlem yok.
 - **Üretim Kayıtları listesinde iki ayrı hal aynı "Görevsiz" yazısını taşıyor.** Görevi olmayan kişi ile görevi olup başlığı olmayan görev atomu farklı anahtar taşır ama aynı etiketi basar; aynı adlı iki ayrı bölme doğabilir. Bugün tetiklenemez çünkü on dokuz görevin hepsinin başlığı doludur — bu tesadüftür, kural değil. Sahaya çıkmadan kapatılmalı.
+- **Uyarı bildiriminin yeri.** Tik kaldırılınca çıkan uyarı (15 Eylül 2026) çalışıyor, 17 Eylül'de ekranda görüldü; ama uygulamanın ortak bildirim kutusuna düşüyor: Oyuncular listesi açıkken ekranın tepesinde, listeyle ilgisiz bir yerde çıkıyor ve ekran büyütüldüğünde hiç görünmüyor (Engin, 17 Eylül 2026). Soru tek ekranın değil ortak bildirim kutusunun sorusudur. Karara bağlanmadı. Karar evi: `docs/TASARIM-KARARLARI.md`.
+- **Rolsüz kişide ad tekrarı.** Rol hanesi boş kişi iki ve daha fazla kaleme çıkınca özet satırı doğuyor ve adını oyuncunun gerçek adından alıyor (üç kademe: rol adı, oyuncunun gerçek adı, boş). Oyuncunun kendi kalemi de aynı adı taşıdığı için ad alt alta iki kez görünüyor (17 Eylül 2026'da ekranda görüldü). Kurala uygun, kusur değil; tekrarın kalıp kalmayacağı karara bağlanmadı. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 (ÖZET SATIRI İŞ EKSENİDİR ve AD YERLEŞİMİ maddeleri).
 
 Uzun vadeli iş, backlog ve tamamlananlar: `docs/IS-SIRASI.md`.

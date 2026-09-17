@@ -85,7 +85,7 @@ varsayim yapilmaz.
 -> Etkiler: production-records-screen.tsx `importOpen` durumunda bunu render eder; bu dosya ekranı DEĞİŞTİRMEZ.
 -> Kritik: HAYIR — kararların evi BUTCE-EKRAN-KARARLARI §20; tahmin sınırı orada yazılı (Görev/Ajans/Menajer TAHMİN EDİLMEZ).
 
-`src/app/muhasebe/budget/card-table-screen.tsx` (873)
+`src/app/muhasebe/budget/card-table-screen.tsx` (887)
 -> Görev: Kart tablosu ekranının orkestrasyonu — veri hook'ları + ekleme paneli + satır bileşenlerini birbirine bağlar.
 -> Kullanır: hooks/* (use-card-rows, use-edit-buffers, use-grid-navigation) + components/* + budget-service.ts.
 -> Etkiler: authenticated-shell.tsx (muhasebe "bütçe" sekmesi) buradan render eder.
@@ -122,7 +122,7 @@ varsayim yapilmaz.
 `src/app/auth/authenticated-shell.tsx` (319) — rol-bazlı kabuk: header+nav+ekran seçimi, kurulum durumu kontrolü
 `src/app/auth/create-project-page.tsx` (150) — yeni proje açma formu, fn_create_project çağırır
 `src/app/auth/login-page.tsx` (55) — email/şifre giriş formu
-`src/app/auth/project-selection-page.tsx` (332) — çoklu proje seçim ekranı + yeni proje açma girişi
+`src/app/auth/project-selection-page.tsx` (336) — çoklu proje seçim ekranı + yeni proje açma girişi
 `src/app/auth/signup-page.tsx` (107) — davet token'ıyla hesap oluşturma (accept-invitation çağırır)
 `src/app/layout/app-header.tsx` (381) — üst şerit: avatar dropdown, proje adı, tema, çıkış, bildirim
 `src/app/layout/app-shell.tsx` (190) — kabuk yerleşimi: sol ray + iki şeritli üst bağlam + kendi ekseninde kayan orta masa; ray daraltma düğmesini taşır
