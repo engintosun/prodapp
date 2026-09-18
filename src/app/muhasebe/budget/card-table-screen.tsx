@@ -354,6 +354,9 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // Kart tarafi kisi secimi GOREV hanesine gore suzulur (6 Eylul 2026): ikinci sorgu
   // ACILMAZ, mevcut dutyOptions'tan turer.
   const dutyCodes = useMemo(() => new Set(dutyOptions.map((d) => d.catalogCode)), [dutyOptions])
+  // Gorev adi ozet satirinin ikinci kademesidir (AD YERLESIMI, 18 Eylul 2026): etikette yalniz
+  // gorev KODU var, ad katalog listesinden okunur - ad hicbir yerde saklanmaz.
+  const dutyNameByCode = useMemo(() => new Map(dutyOptions.map((d) => [d.catalogCode, d.name] as const)), [dutyOptions])
   const personNameById = useMemo(() => new Map(personLabels.map((l) => [l.id, l.name])), [personLabels])
   // Turetilmis (komisyon) satirin ad hucresi ajans/menajer adini buradan okur - display-name.ts
   // commissionDisplayName.
@@ -688,7 +691,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                           <SummaryRow
                             key={summaryKey}
                             rowNo={summaryRowNoByPerson.get(rr.personObjectId) ?? 0}
-                            name={summaryDisplayName(rr.personObjectId, personLabels)}
+                            name={summaryDisplayName(rr.personObjectId, personLabels, dutyNameByCode)}
                             totals={rr.totals}
                             collapsed={isSummaryCollapsed(rr.personObjectId)}
                             onToggle={() => toggleCollapsed(summaryKey)}

@@ -67,7 +67,7 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 
 ## Sıradaki iş
 
-**TARAYICI TURU: SAHA VE İNCELEME EKRANLARININ UYARI KUTUSU.** Renk kodları 18 Eylül 2026'da tanımlandı, yedek değerler silindi; görünümün değişmemesi gerekiyor ama tarayıcıda denenmedi. Karar evi: `docs/TASARIM-KARARLARI.md` §9 (UYARI KUTUSUNUN RENK KODLARI). Denenecekler: (1) saha ana ekranındaki uyarı kutusu, (2) fiş düzeltme ekranındaki uyarı kutusu, (3) muhasebe inceleme ekranındaki amber düğme ve yanındaki kutu. Üçünde de zemin açık krem, yazı koyu kahve kalmalı; düğme yazısı okunur olmalı.
+**TARAYICI TURU: ROLSÜZ KİŞİDE ÖZET SATIRININ ADI.** Karar 18 Eylül 2026'da alındı ve aynı gün koda girdi; testlerle doğrulandı, tarayıcıda denenmedi. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 (ÖZET ADINA GÖREV KADEMESİ). Denenecekler: (1) rolü boş, görevi dolu bir kişide (ada kara, Başrol Oyuncu) özet satırı görevin adını göstermeli, altındaki kendi kalemi oyuncunun adını. (2) Oyuncular listesinde o kişiye rol yaz: özet satırı role dönmeli, kalem oyuncunun adında kalmalı. (3) Rolü olan kişide (Savcı Kerem) hiçbir şey değişmemeli. (4) Görevi de rolü de olmayan kişide özet oyuncunun adını göstermeli.
 
 ## Açık kalanlar
 
@@ -81,6 +81,5 @@ Bu bölüm KARAR DEĞİL, henüz karara bağlanmamış açık sorulardır (yaln�
 - Kadroda bir görevden kaç kişi var, kartta o görevden kaç satır var — farkın kullanıcıya söylenip söylenmeyeceği. Karara bağlanmadı.
 - `fn_check_cost_object_kind` artık ŞARTLI garanti: bileşik FK her yazımda koruyordu, tetik yalnız iki etiket kolonu değiştiğinde koruyor. Kalemin bütçesi sonradan değiştirilirse bağ sessizce projeler arası kalabilir. Bugün böyle bir işlem yok.
 - **Üretim Kayıtları listesinde iki ayrı hal aynı "Görevsiz" yazısını taşıyor.** Görevi olmayan kişi ile görevi olup başlığı olmayan görev atomu farklı anahtar taşır ama aynı etiketi basar; aynı adlı iki ayrı bölme doğabilir. Bugün tetiklenemez çünkü on dokuz görevin hepsinin başlığı doludur — bu tesadüftür, kural değil. Sahaya çıkmadan kapatılmalı.
-- **Rolsüz kişide ad tekrarı.** Rol hanesi boş kişi iki ve daha fazla kaleme çıkınca özet satırı doğuyor ve adını oyuncunun gerçek adından alıyor (üç kademe: rol adı, oyuncunun gerçek adı, boş). Oyuncunun kendi kalemi de aynı adı taşıdığı için ad alt alta iki kez görünüyor (17 Eylül 2026'da ekranda görüldü). Kurala uygun, kusur değil; tekrarın kalıp kalmayacağı karara bağlanmadı. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 (ÖZET SATIRI İŞ EKSENİDİR ve AD YERLEŞİMİ maddeleri).
 
 Uzun vadeli iş, backlog ve tamamlananlar: `docs/IS-SIRASI.md`.

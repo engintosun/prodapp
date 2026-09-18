@@ -49,16 +49,22 @@ export function commissionDisplayName(
   return { text: item.name, editable: true }
 }
 
-// Ozet satirinin Ad hucresi: uc kademe, hepsi listeden - UYDURMA AD ATANMAZ.
-// 1) Rol hanesi doluysa: rol adi ("Komiser Sukru").
-// 2) Rol bos ama etiket listede varsa: oyuncunun gercek adi (uydurmuyoruz, yine listeden).
-// 3) Etiket listede yoksa: bos - burada gercekten bilmiyoruz.
+// Ozet satirinin Ad hucresi: dort kademe, hepsi listeden - UYDURMA AD ATANMAZ.
+// 1) Rol hanesi doluysa: rol adi (Komiser Sukru).
+// 2) Rol bos ama gorev kodu listede karsiligi olan bir gorevse: GOREV ADI (Basrol Oyuncu).
+//    18 Eylul 2026 (Engin karari): blok bir GOREVI, icindeki kalem o gorevi yapan KISIYI
+//    gosterir. Eskiden bu kademe yoktu ve rol bosken ozet ile kalem ayni adi tasiyordu.
+// 3) Rol ve gorev yoksa: oyuncunun gercek adi - kapali blok kimliksiz kalmasin.
+// 4) Etiket listede yoksa: bos - burada gercekten bilmiyoruz.
 export function summaryDisplayName(
   personObjectId: string,
-  labels: readonly Pick<PersonLabel, 'id' | 'name' | 'roleName'>[],
+  labels: readonly Pick<PersonLabel, 'id' | 'name' | 'roleName' | 'dutyCode'>[],
+  dutyNameByCode: ReadonlyMap<string, string>,
 ): string {
   const label = labels.find((l) => l.id === personObjectId)
   if (!label) return ''
   if (label.roleName) return label.roleName
+  const dutyName = label.dutyCode === null ? undefined : dutyNameByCode.get(label.dutyCode)
+  if (dutyName) return dutyName
   return label.name
 }

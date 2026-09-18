@@ -7,7 +7,7 @@ import type { RowTotals } from '../totals'
 // olarak gosterir - heading-row.tsx ile AYNI desen (bolum 19). Fark: No hanesi ayri durur
 // (ozet numara ALIR). Hucreler data-grid-cell TASIMAZ: satir KLV izgarasina girmez.
 // AD (9 Eylul 2026, AD YERLESIMI): name disaridan HAZIR gelir (display-name.ts,
-// summaryDisplayName) - uc kademe, uydurma ad atanmaz; bu bilesen kendi hesabini yapmaz.
+// summaryDisplayName) - dort kademe (rol adi, gorev adi, oyuncunun adi, bos), uydurma ad atanmaz; bu bilesen kendi hesabini yapmaz.
 export function SummaryRow({
   rowNo,
   name,

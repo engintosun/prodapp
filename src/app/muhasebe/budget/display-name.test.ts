@@ -42,19 +42,31 @@ describe('itemDisplayName', () => {
 })
 
 describe('summaryDisplayName', () => {
+  const duties = new Map([['d1', 'Başrol Oyuncu']])
+
   it('kademe 1: rol hanesi doluysa rol adi doner', () => {
-    const labels = [{ id: 'p1', name: 'Ahmet Yılmaz', roleName: 'Komiser Şükrü' }]
-    expect(summaryDisplayName('p1', labels)).toBe('Komiser Şükrü')
+    const labels = [{ id: 'p1', name: 'Ahmet Yılmaz', roleName: 'Komiser Şükrü', dutyCode: 'd1' }]
+    expect(summaryDisplayName('p1', labels, duties)).toBe('Komiser Şükrü')
   })
 
-  it('kademe 2: rol bos ama etiket listede varsa oyuncunun gercek adi doner', () => {
-    const labels = [{ id: 'p1', name: 'Ahmet Yılmaz', roleName: null }]
-    expect(summaryDisplayName('p1', labels)).toBe('Ahmet Yılmaz')
+  it('kademe 2: rol bos ama gorev varsa gorev adi doner', () => {
+    const labels = [{ id: 'p1', name: 'Ahmet Yılmaz', roleName: null, dutyCode: 'd1' }]
+    expect(summaryDisplayName('p1', labels, duties)).toBe('Başrol Oyuncu')
   })
 
-  it('kademe 3: etiket listede yoksa bos doner', () => {
-    const labels = [{ id: 'p2', name: 'Başka Kişi', roleName: null }]
-    expect(summaryDisplayName('p1', labels)).toBe('')
+  it('kademe 3: rol ve gorev yoksa oyuncunun gercek adi doner', () => {
+    const labels = [{ id: 'p1', name: 'Ahmet Yılmaz', roleName: null, dutyCode: null }]
+    expect(summaryDisplayName('p1', labels, duties)).toBe('Ahmet Yılmaz')
+  })
+
+  it('kademe 3: gorev kodunun listede karsiligi yoksa oyuncunun gercek adi doner', () => {
+    const labels = [{ id: 'p1', name: 'Ahmet Yılmaz', roleName: null, dutyCode: 'yok' }]
+    expect(summaryDisplayName('p1', labels, duties)).toBe('Ahmet Yılmaz')
+  })
+
+  it('kademe 4: etiket listede yoksa bos doner', () => {
+    const labels = [{ id: 'p2', name: 'Başka Kişi', roleName: null, dutyCode: 'd1' }]
+    expect(summaryDisplayName('p1', labels, duties)).toBe('')
   })
 })
 
