@@ -73,7 +73,7 @@ varsayim yapilmaz.
 -> Etkiler: authenticated-shell.tsx cardId yokken buradan render eder.
 -> Kritik: HAYIR — kararlarin evi KABUK-KARARLARI 12.3; ekran orada yazilani cizer.
 
-`src/app/muhasebe/production/production-records-screen.tsx` (539)
+`src/app/muhasebe/production/production-records-screen.tsx` (529)
 -> Görev: Üretim Kayıtları durağının ekranı — masa (Oyuncular kartı, kapakta kişi sayısı) + karta tıklanınca açılan kişi listesi (No · Rol · Oyuncu · Görev · Ajans tiki · Menajer tiki · silme). Liste göreve göre hiyerarşik dizilir (sıra katalog kodundan), No sütunu listedeki yerden hesaplanır ve saklanmaz, seç kipinde en sola tik sütunu gelir ve silme sütunu kapanır.
 -> Kullanır: person-label-service.ts (fetchPersonLabels, countPersonLabels, createPersonLabel, createPersonLabels, updatePersonLabel, deletePersonLabel, deletePersonLabels, fetchDutyOptions) + import-panel.tsx + shared/components/{loading,toast}.
 -> Etkiler: authenticated-shell.tsx kind='production' dalından render eder.
@@ -85,7 +85,7 @@ varsayim yapilmaz.
 -> Etkiler: production-records-screen.tsx `importOpen` durumunda bunu render eder; bu dosya ekranı DEĞİŞTİRMEZ.
 -> Kritik: HAYIR — kararların evi BUTCE-EKRAN-KARARLARI §20; tahmin sınırı orada yazılı (Görev/Ajans/Menajer TAHMİN EDİLMEZ).
 
-`src/app/muhasebe/budget/card-table-screen.tsx` (887)
+`src/app/muhasebe/budget/card-table-screen.tsx` (890)
 -> Görev: Kart tablosu ekranının orkestrasyonu — veri hook'ları + ekleme paneli + satır bileşenlerini birbirine bağlar.
 -> Kullanır: hooks/* (use-card-rows, use-edit-buffers, use-grid-navigation) + components/* + budget-service.ts.
 -> Etkiler: authenticated-shell.tsx (muhasebe "bütçe" sekmesi) buradan render eder.
@@ -129,9 +129,9 @@ varsayim yapilmaz.
 `src/app/layout/bottom-nav.tsx` (76) — rol-bazlı alt navigasyon sekmeleri (NAV_ITEMS)
 `src/app/layout/nav-rail.tsx` (180) — sol ray: modül duraklarını çizer, açık/kapalı iki genişlik (168/68px), kapalıda ikon + ilk harf düşüşü
 `src/app/layout/rail-icons.tsx` (73) — rayın elle yazılmış tek renkli SVG ikonları (currentColor; ikon kütüphanesi kurulmadı)
-`src/app/muhasebe/budget/components/add-item-panel.tsx` (283) — kalem ekleme odası: kütüphane arama + serbest kalem
+`src/app/muhasebe/budget/components/add-item-panel.tsx` (288) — kalem ekleme odası: kütüphane arama + serbest kalem
 `src/app/muhasebe/budget/components/add-item-row.tsx` (60) — tablo altı "+ kalem ekle" düğme satırı
-`src/app/muhasebe/budget/components/bottom-sheet.tsx` (114) — ortak alt-sheet primitivi (backdrop+panel+odak tuzağı)
+`src/app/muhasebe/budget/components/bottom-sheet.tsx` (121) — ortak alt-sheet primitivi (backdrop+panel+odak tuzağı)
 `src/app/muhasebe/budget/components/burden-sheet.tsx` (103) — Yasal Yük dökümü sheet'i (bordro 6-bacak + basit statü)
 `src/app/muhasebe/budget/components/heading-row.tsx` (54) — başlık satırı: ad + üç rakam (Net/Yasal Yük/Brüt), data-grid-cell taşımaz
 `src/app/muhasebe/budget/components/heading-sheet.tsx` (71) — başlık seçme tabakası (kartın başlıkları + Başlıksız)
@@ -169,7 +169,7 @@ Edge functions (`supabase/functions/`):
 
 ### C seviyesi (BASİT)
 
-`src/shared/components/` — 8 dosya, 687 satır: ortak UI primitifleri (dialog/empty-state/error/loading/toast/offline-banner/şirket-profili-formu)
+`src/shared/components/` — 9 dosya, 837 satır: ortak UI primitifleri (dialog/empty-state/error/loading/toast/offline-banner/şirket-profili-formu)
 `src/app/onboarding/` — 5 dosya, 551 satır: kurulum sihirbazı adımları (şirket/departman/dönem/bütçe) + akış orkestrasyonu
 `src/styles/` + `src/index.css` — 2 dosya, 137 satır: tasarım token'ları (renk/spacing/z-katman) + global reset
 

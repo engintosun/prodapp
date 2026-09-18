@@ -28,7 +28,7 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 
 ## Durum
 
-- HEAD: d8a8af2 (16 Eylül 2026 — Oturum Kapanışı).
+- HEAD: 8721e40 (18 Eylül 2026 — Uyarı Mesajlarının Yeri, Özet Adına Görev Kademesi, Liste Bölme Adı).
 - KOMİSYON TABANI ARTIK ÖDEME STATÜSÜNE BAKMIYOR: ölçüt kişiye bağlı ve türetilmemiş satır. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 KOMİSYON TABANI VE SİLME madde 2.
 - TEMSİLCİ KOMİSYONU CİNSİ ARTIK ATOMDA: 1618 Ajans Komisyonu, 1618-01 Menajer Komisyonu iki ayrı atom. Testlerle ve tarayıcıda doğrulandı (17 Eylül 2026).
 - SÜRÜKLE-BIRAK ALANI HEDEF OLARAK GÖRÜNÜR: biçim yazısı ve "Dosya seç" düğmesi kutunun içinde, sürükleme durumu çerçeve/zeminle geri bildirim veriyor. Testlerle ve tarayıcıda doğrulandı (17 Eylül 2026).
@@ -36,8 +36,10 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 - AJANS KOMİSYONU ORANI KALDIRILDI (göç 20260909180000): Referans ekranındaki yüzde 10 gitti. Bileşen ve paket bilerek bırakıldı, gerekçesi `docs/butce/BUTCE-SEMA-KARARLARI.md` içinde.
 - REFERANS EKRANI HANGİ ORANIN GEÇERLİ OLDUĞUNU SÖYLEMİYOR: dört SGK senaryosu yan yana düz satır olarak duruyor, hangisinin bu şirkete ait olduğunu söyleyen işaret yok; oranı motor `fn_resolve_sgk_scenario` ile şirket profilinden çözüyor. Kendi turunu bekliyor.
 - MUHUR-3 CANLIDA ve doğrulandı. Kişi ve iş etiketleri PROJE kapsamında.
+- **LİSTE BÖLME ADI AYRIŞTI (18 Eylül 2026):** görev hanesi boş kişi "Görevsiz" bölmesinde, görevi olup başlığı bulunamayan kişi "Başlığı olmayan görevler" bölmesinde durur; eskiden iki ayrı anahtar aynı yazıyı basıyordu. Ekranda tetiklenemiyor (on dokuz görevin hepsinin başlığı dolu), bu yüzden tarayıcı turu yok; hesap `src/app/muhasebe/production/list-bucket.ts` içine alındı ve testle doğrulandı. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 (BÖLME ADI).
 - ÜRETİM KAYITLARI kullanılabilir: liste KARTIN BAŞLIK HİYERARŞİSİNE göre dizilir ve bölüm başlıkları çizilir (Ana Kast · Dublör · Arkaplan · Kast Operasyonu), satır numarası var, satır tek tek ya da seç kipiyle toplu silinir, dört biçimden içe aktarma yapılır. Liste hiyerarşisi tarayıcıda DOĞRULANDI.
 - **UYARI VE HATA MESAJLARI KAPATILANA KADAR DURUYOR ve açık pencerenin içinde çıkıyor.** 18 Eylül 2026'da tarayıcıda doğrulandı: uyarı Oyuncular listesinin içinde başlığın altında çıktı ve kendiliğinden gitmedi; liste kapanınca ekranın tepesine geçti; liste kaydırılınca yerinde durdu; pencere yokken başarı mesajı 3,5 saniyede gitti. Karar evi: `docs/TASARIM-KARARLARI.md` §9.
+- **ÖZET SATIRININ ADI DÖRT KADEME:** rol adı → görev adı → oyuncunun gerçek adı → boş. Görev kademesi 18 Eylül 2026'da eklendi; rol hanesi boş kişide özet ile kişinin kendi kalemi artık aynı adı taşımıyor. Üç hal aynı gün tarayıcıda doğrulandı (görev adı çıkıyor, rol yazılınca role dönüyor, rolü olan kişide hiçbir şey değişmiyor). DÖRDÜNCÜ HAL EKRANDA OLUŞAMAZ: görevi de rolü de olmayan kişi karta getirilemiyor, çünkü getirme yolu görev atomu üzerinden işliyor; o kademe yalnız testle doğrulandı ve kapalı bloğun kimliksiz kalmaması için duruyor. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 (ÖZET ADINA GÖREV KADEMESİ).
 - ÖZET SATIRI VE KART İÇİ SIRA DOĞRULANDI (tarayıcıda): rolü olan tek kalemli kişi özet satırı alıyor ve blok kapalı doğuyor; kart içi kişi sırası listeyle birebir aynı. Rol hanesi BOŞ olan kişi de eski kurala göre davranıyor: tek kalemde özet satırı doğmuyor, iki ve daha fazla kalemde doğuyor ve adını oyuncunun gerçek adından alıyor. Kural görev koduna değil rol hanesine bakar; denemede görev Başrol'dü. 17 Eylül 2026'da tarayıcıda doğrulandı.
 - Migration 20260901130000'den 20260912140000'e kadar CANLIDA. Build geçer, eslint sıfır hata. Originde tek dal: main.
 - SAYILAR BURADA YAŞAMAZ: beklenen test sayısı `.claude/test-count` dosyasında, kapı kümesi `.claude/hooks/gate.sh` ve `.claude/hooks/run-gates.sh` içinde yaşar. Bu iki sayı düzyazıda tazelenmez, sahibinden okunur.
@@ -67,7 +69,7 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 
 ## Sıradaki iş
 
-**TARAYICI TURU: ROLSÜZ KİŞİDE ÖZET SATIRININ ADI.** Karar 18 Eylül 2026'da alındı ve aynı gün koda girdi; testlerle doğrulandı, tarayıcıda denenmedi. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 (ÖZET ADINA GÖREV KADEMESİ). Denenecekler: (1) rolü boş, görevi dolu bir kişide (ada kara, Başrol Oyuncu) özet satırı görevin adını göstermeli, altındaki kendi kalemi oyuncunun adını. (2) Oyuncular listesinde o kişiye rol yaz: özet satırı role dönmeli, kalem oyuncunun adında kalmalı. (3) Rolü olan kişide (Savcı Kerem) hiçbir şey değişmemeli. (4) Görevi de rolü de olmayan kişide özet oyuncunun adını göstermeli.
+**REFERANS EKRANI: GEÇERLİ SGK SENARYOSUNUN İŞARETLENMESİ.** Boşluk yukarıda Durum'da yazılı: dört senaryo yan yana duruyor, hangisinin bu şirkete ait olduğunu söyleyen işaret yok, oysa motor `fn_resolve_sgk_scenario` ile şirket profilinden çözüyor. Risk: kullanıcı yanlış senaryonun oranını kendi bütçesinin oranı sanabilir. Önce tartışma, sonra prompt: işaretin ne olacağı (senaryo satırının kendisinde mi, ekranın başında mı) ve şirket profili eksikse ne yazacağı karara bağlanmadı. İlgili dosyalar INDEX.md bölüm 7 üzerinden bulunur.
 
 ## Açık kalanlar
 
