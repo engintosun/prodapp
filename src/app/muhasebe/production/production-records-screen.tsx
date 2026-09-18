@@ -6,6 +6,7 @@
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import { Loading } from '../../../shared/components/loading'
 import { useToast } from '../../../shared/components/toast'
+import { bucketOf, headingIndex } from './list-bucket'
 import {
   countPersonLabels,
   fetchPersonLabels,
@@ -278,21 +279,10 @@ export function ProductionRecordsScreen() {
   const rankOf = (code: string | null) => dutyRank.get(code ?? '') ?? dutyOptions.length
   const sortedLabels = labels.slice().sort((a, b) => rankOf(a.dutyCode) - rankOf(b.dutyCode))
 
-  // Baslik satiri (10 Eylul 2026, Engin karari): liste kartin bolmelerini ayni sirayla
-  // gosterir. Baslik adi ve kimligi dutyOptions'tan gelir, burada UYDURULMAZ.
+  // Bolme hesabi list-bucket.ts icinde yasar (10 Eylul 2026 siralama karari + 18 Eylul 2026
+  // bolme adi karari): baslik adi ve kimligi dutyOptions'tan gelir, burada UYDURULMAZ.
   // Bos bolme cizilmez: baslik yalnizca uyesi olan blogun basinda doger.
-  const headingByDuty = new Map(
-    dutyOptions.map((d): [string, { key: string | null; name: string | null }] => [
-      d.catalogCode,
-      { key: d.headingCode, name: d.headingName },
-    ]),
-  )
-  const bucketOf = (l: PersonLabel): { key: string; name: string } => {
-    if (l.dutyCode === null) return { key: '__nodutykey', name: 'Görevsiz' }
-    const h = headingByDuty.get(l.dutyCode)
-    if (!h || h.key === null || h.name === null) return { key: '__noheadkey', name: 'Görevsiz' }
-    return { key: h.key, name: h.name }
-  }
+  const headings = headingIndex(dutyOptions)
 
   if (importOpen && view !== 'desk') {
     return (
@@ -418,8 +408,8 @@ export function ProductionRecordsScreen() {
             </thead>
             <tbody>
               {sortedLabels.map((l, i) => {
-                const bucket = bucketOf(l)
-                const prevBucket = i > 0 ? bucketOf(sortedLabels[i - 1]) : null
+                const bucket = bucketOf(l, headings)
+                const prevBucket = i > 0 ? bucketOf(sortedLabels[i - 1], headings) : null
                 const showHeading = prevBucket === null || prevBucket.key !== bucket.key
                 return (
                   <Fragment key={l.id}>

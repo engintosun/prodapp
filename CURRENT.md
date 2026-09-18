@@ -80,6 +80,5 @@ Bu bölüm KARAR DEĞİL, henüz karara bağlanmamış açık sorulardır (yaln�
 - Masadaki kart başlıkları (Oyuncular, Ekip, Mekânlar…) tablo mu kod sabiti mi. İkinci kategori doğunca konuşulur.
 - Kadroda bir görevden kaç kişi var, kartta o görevden kaç satır var — farkın kullanıcıya söylenip söylenmeyeceği. Karara bağlanmadı.
 - `fn_check_cost_object_kind` artık ŞARTLI garanti: bileşik FK her yazımda koruyordu, tetik yalnız iki etiket kolonu değiştiğinde koruyor. Kalemin bütçesi sonradan değiştirilirse bağ sessizce projeler arası kalabilir. Bugün böyle bir işlem yok.
-- **Üretim Kayıtları listesinde iki ayrı hal aynı "Görevsiz" yazısını taşıyor.** Görevi olmayan kişi ile görevi olup başlığı olmayan görev atomu farklı anahtar taşır ama aynı etiketi basar; aynı adlı iki ayrı bölme doğabilir. Bugün tetiklenemez çünkü on dokuz görevin hepsinin başlığı doludur — bu tesadüftür, kural değil. Sahaya çıkmadan kapatılmalı.
 
 Uzun vadeli iş, backlog ve tamamlananlar: `docs/IS-SIRASI.md`.
