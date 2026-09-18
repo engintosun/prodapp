@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase } from '../../shared/supabase/client'
 import { useToast } from '../../shared/components/toast'
 import { CompanyProfileForm } from '../../shared/components/company-profile-form'
@@ -104,30 +104,31 @@ export function DefinitionsScreen({ projectId, userId }: Props) {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
             {rows.map((r) => (
-              <Fragment key={r.label}>
-                {r.code === activeSgkCode && (
-                  <span style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)' }}>
-                    {profileMissing ? 'Bu şirkette geçerli (Şirket Tanımı boş, varsayılan)' : 'Bu şirkette geçerli'}
-                  </span>
-                )}
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    padding: 'var(--space-2) var(--space-3)',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: 'var(--radius-md)',
-                    fontSize: 'var(--text-sm)',
-                  }}
-                >
+              <div
+                key={r.label}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  padding: 'var(--space-2) var(--space-3)',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: 'var(--radius-md)',
+                  fontSize: 'var(--text-sm)',
+                }}
+              >
+                <span style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--space-2)' }}>
                   <span style={{ color: 'var(--color-text)' }}>{r.label}</span>
-                  <span style={{ color: 'var(--color-text-muted)', fontVariantNumeric: 'tabular-nums' }}>
-                    {r.ratePercent !== null ? `%${r.ratePercent}` : r.amountTl !== null ? `${r.amountTl} TL` : '—'}
-                    {' · '}
-                    {r.validFrom}
-                  </span>
-                </div>
-              </Fragment>
+                  {r.code === activeSgkCode && (
+                    <span style={{ color: 'var(--color-text-muted)' }}>
+                      {profileMissing ? 'Bu şirkette geçerli (Şirket Tanımı boş, varsayılan)' : 'Bu şirkette geçerli'}
+                    </span>
+                  )}
+                </span>
+                <span style={{ color: 'var(--color-text-muted)', fontVariantNumeric: 'tabular-nums' }}>
+                  {r.ratePercent !== null ? `%${r.ratePercent}` : r.amountTl !== null ? `${r.amountTl} TL` : '—'}
+                  {' · '}
+                  {r.validFrom}
+                </span>
+              </div>
             ))}
           </div>
         )}
