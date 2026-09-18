@@ -37,6 +37,7 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 - REFERANS EKRANI HANGİ ORANIN GEÇERLİ OLDUĞUNU SÖYLEMİYOR: dört SGK senaryosu yan yana düz satır olarak duruyor, hangisinin bu şirkete ait olduğunu söyleyen işaret yok; oranı motor `fn_resolve_sgk_scenario` ile şirket profilinden çözüyor. Kendi turunu bekliyor.
 - MUHUR-3 CANLIDA ve doğrulandı. Kişi ve iş etiketleri PROJE kapsamında.
 - ÜRETİM KAYITLARI kullanılabilir: liste KARTIN BAŞLIK HİYERARŞİSİNE göre dizilir ve bölüm başlıkları çizilir (Ana Kast · Dublör · Arkaplan · Kast Operasyonu), satır numarası var, satır tek tek ya da seç kipiyle toplu silinir, dört biçimden içe aktarma yapılır. Liste hiyerarşisi tarayıcıda DOĞRULANDI.
+- **UYARI VE HATA MESAJLARI KAPATILANA KADAR DURUYOR ve açık pencerenin içinde çıkıyor.** 18 Eylül 2026'da tarayıcıda doğrulandı: uyarı Oyuncular listesinin içinde başlığın altında çıktı ve kendiliğinden gitmedi; liste kapanınca ekranın tepesine geçti; liste kaydırılınca yerinde durdu; pencere yokken başarı mesajı 3,5 saniyede gitti. Karar evi: `docs/TASARIM-KARARLARI.md` §9.
 - ÖZET SATIRI VE KART İÇİ SIRA DOĞRULANDI (tarayıcıda): rolü olan tek kalemli kişi özet satırı alıyor ve blok kapalı doğuyor; kart içi kişi sırası listeyle birebir aynı. Rol hanesi BOŞ olan kişi de eski kurala göre davranıyor: tek kalemde özet satırı doğmuyor, iki ve daha fazla kalemde doğuyor ve adını oyuncunun gerçek adından alıyor. Kural görev koduna değil rol hanesine bakar; denemede görev Başrol'dü. 17 Eylül 2026'da tarayıcıda doğrulandı.
 - Migration 20260901130000'den 20260912140000'e kadar CANLIDA. Build geçer, eslint sıfır hata. Originde tek dal: main.
 - SAYILAR BURADA YAŞAMAZ: beklenen test sayısı `.claude/test-count` dosyasında, kapı kümesi `.claude/hooks/gate.sh` ve `.claude/hooks/run-gates.sh` içinde yaşar. Bu iki sayı düzyazıda tazelenmez, sahibinden okunur.
@@ -66,7 +67,7 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 
 ## Sıradaki iş
 
-**TARAYICI TURU: UYARI VE HATA MESAJLARININ YERİ VE SÜRESİ.** Karar 17 Eylül 2026'da alındı ve aynı gün koda girdi; testlerle doğrulandı, tarayıcıda denenmedi. Karar evi: `docs/TASARIM-KARARLARI.md` §9 (UYARI BALONUNUN YERİ VE SÜRESİ). Denenecekler: (1) Oyuncular listesi açıkken kartta satırı olmayan bir kişinin (görevi yok) Ajans tikini aç ve kaldır: uyarı listenin içinde, başlığın hemen altında çıkmalı, kendiliğinden gitmemeli, × ile kapanmalı. (2) Uyarı açıkken listeyi kapat: uyarı ekranın tepesine geçmeli, kaybolmamalı. (3) Uyarı açıkken listeyi aşağı kaydır: uyarı yerinde durmalı. (4) Pencere yokken bir başarı mesajı üret (Üretim Kayıtları'nda bir deneme kişisini silmek "1 kişi silindi" der): 3,5 saniyede kendiliğinden gitmeli.
+**TARAYICI TURU: SAHA VE İNCELEME EKRANLARININ UYARI KUTUSU.** Renk kodları 18 Eylül 2026'da tanımlandı, yedek değerler silindi; görünümün değişmemesi gerekiyor ama tarayıcıda denenmedi. Karar evi: `docs/TASARIM-KARARLARI.md` §9 (UYARI KUTUSUNUN RENK KODLARI). Denenecekler: (1) saha ana ekranındaki uyarı kutusu, (2) fiş düzeltme ekranındaki uyarı kutusu, (3) muhasebe inceleme ekranındaki amber düğme ve yanındaki kutu. Üçünde de zemin açık krem, yazı koyu kahve kalmalı; düğme yazısı okunur olmalı.
 
 ## Açık kalanlar
 

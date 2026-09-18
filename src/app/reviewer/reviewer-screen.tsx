@@ -182,7 +182,7 @@ export function ReviewerScreen({ role }: Props) {
               Reddet
             </button>
             <button
-              style={{ ...actionBtnBase, background: 'var(--color-warning-bg, #fff8e1)', borderColor: 'var(--color-warning, #f59e0b)', color: 'var(--color-warning-text, #92400e)' }}
+              style={{ ...actionBtnBase, background: 'var(--color-warning-bg)', borderColor: 'var(--color-warning, #f59e0b)', color: 'var(--color-warning-text)' }}
               disabled={submitting}
               onClick={() => { setCorrectionTarget(r); setCorrectionNote('') }}
             >
@@ -317,7 +317,7 @@ export function ReviewerScreen({ role }: Props) {
               <button
                 onClick={handleRequestCorrection}
                 disabled={submitting}
-                style={{ flex: 2, minHeight: 'var(--touch-min)', background: 'var(--color-warning, #f59e0b)', color: 'var(--color-warning-text, #92400e)', border: 'none', borderRadius: 'var(--radius-md)', fontSize: 'var(--text-md)', fontWeight: 'var(--weight-bold)', cursor: submitting ? 'default' : 'pointer', opacity: submitting ? 0.6 : 1 }}
+                style={{ flex: 2, minHeight: 'var(--touch-min)', background: 'var(--color-warning, #f59e0b)', color: 'var(--color-warning-text)', border: 'none', borderRadius: 'var(--radius-md)', fontSize: 'var(--text-md)', fontWeight: 'var(--weight-bold)', cursor: submitting ? 'default' : 'pointer', opacity: submitting ? 0.6 : 1 }}
               >
                 {submitting ? 'Gönderiliyor…' : 'Düzeltme İste'}
               </button>

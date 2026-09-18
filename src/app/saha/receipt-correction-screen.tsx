@@ -85,12 +85,12 @@ export function ReceiptCorrectionScreen({ receipt, onClose }: Props) {
 
       {/* Reviewer notu banner */}
       <div style={{
-        background: 'var(--color-warning-bg, #fff8e1)',
+        background: 'var(--color-warning-bg)',
         border: '1px solid var(--color-warning, #f59e0b)',
         borderRadius: 'var(--radius-md)',
         padding: 'var(--space-3)',
       }}>
-        <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--color-warning-text, #92400e)', fontWeight: 'var(--weight-medium)' }}>
+        <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--color-warning-text)', fontWeight: 'var(--weight-medium)' }}>
           Düzeltme gerekiyor
         </p>
         {receipt.correction_note && (

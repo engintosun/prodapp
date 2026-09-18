@@ -19,6 +19,8 @@
   --color-success: #22c55e;   /* onay */
   --color-danger:  #ef4444;   /* red */
   --color-warning: #f59e0b;   /* uyari */
+  --color-warning-bg: #fff8e1;        /* uyari kutusu zemini */
+  --color-warning-text: #92400e;      /* uyari kutusu yazisi */
   --color-pending: #a78bfa;   /* bekleyen */
   --color-info:    #38bdf8;
 
@@ -86,6 +88,8 @@
   --color-success: #16a34a;
   --color-danger:  #dc2626;
   --color-warning: #d97706;
+  --color-warning-bg: #fff8e1;
+  --color-warning-text: #92400e;
   --color-pending: #7c3aed;
   --color-info:    #0284c7;
 

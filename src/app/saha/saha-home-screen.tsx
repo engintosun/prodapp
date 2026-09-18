@@ -141,7 +141,7 @@ export function SahaHomeScreen() {
                 alignItems: 'flex-start',
                 gap: 'var(--space-1)',
                 padding: 'var(--space-3)',
-                background: 'var(--color-warning-bg, #fff8e1)',
+                background: 'var(--color-warning-bg)',
                 border: '1px solid var(--color-warning, #f59e0b)',
                 borderRadius: 'var(--radius-md)',
                 cursor: 'pointer',
@@ -153,7 +153,7 @@ export function SahaHomeScreen() {
                 {r.vendor_name || 'Satıcısız fiş'} — {r.amount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} ₺
               </span>
               {r.correction_note && (
-                <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-warning-text, #92400e)' }}>
+                <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-warning-text)' }}>
                   {r.correction_note}
                 </span>
               )}
