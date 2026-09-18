@@ -66,7 +66,7 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 
 ## Sıradaki iş
 
-**UYARI BİLDİRİMİNİN YERİ (17 Eylül 2026'da seçildi).** Görünmeyen uyarı fiilen sessizdir; `.claude/rules/src.md` içindeki "sessiz hata yasak" kuralı bu hâliyle hâlâ çiğneniyor. Önce yer kararı konuşulur, sonra prompt yazılır. Ayrıntı ve karar evi: aşağıda Açık kalanlar, "Uyarı bildiriminin yeri".
+**TARAYICI TURU: UYARI VE HATA MESAJLARININ YERİ VE SÜRESİ.** Karar 17 Eylül 2026'da alındı ve aynı gün koda girdi; testlerle doğrulandı, tarayıcıda denenmedi. Karar evi: `docs/TASARIM-KARARLARI.md` §9 (UYARI BALONUNUN YERİ VE SÜRESİ). Denenecekler: (1) Oyuncular listesi açıkken kartta satırı olmayan bir kişinin (görevi yok) Ajans tikini aç ve kaldır: uyarı listenin içinde, başlığın hemen altında çıkmalı, kendiliğinden gitmemeli, × ile kapanmalı. (2) Uyarı açıkken listeyi kapat: uyarı ekranın tepesine geçmeli, kaybolmamalı. (3) Uyarı açıkken listeyi aşağı kaydır: uyarı yerinde durmalı. (4) Pencere yokken bir başarı mesajı üret (Üretim Kayıtları'nda bir deneme kişisini silmek "1 kişi silindi" der): 3,5 saniyede kendiliğinden gitmeli.
 
 ## Açık kalanlar
 
@@ -80,7 +80,6 @@ Bu bölüm KARAR DEĞİL, henüz karara bağlanmamış açık sorulardır (yaln�
 - Kadroda bir görevden kaç kişi var, kartta o görevden kaç satır var — farkın kullanıcıya söylenip söylenmeyeceği. Karara bağlanmadı.
 - `fn_check_cost_object_kind` artık ŞARTLI garanti: bileşik FK her yazımda koruyordu, tetik yalnız iki etiket kolonu değiştiğinde koruyor. Kalemin bütçesi sonradan değiştirilirse bağ sessizce projeler arası kalabilir. Bugün böyle bir işlem yok.
 - **Üretim Kayıtları listesinde iki ayrı hal aynı "Görevsiz" yazısını taşıyor.** Görevi olmayan kişi ile görevi olup başlığı olmayan görev atomu farklı anahtar taşır ama aynı etiketi basar; aynı adlı iki ayrı bölme doğabilir. Bugün tetiklenemez çünkü on dokuz görevin hepsinin başlığı doludur — bu tesadüftür, kural değil. Sahaya çıkmadan kapatılmalı.
-- **Uyarı bildiriminin yeri.** Tik kaldırılınca çıkan uyarı (15 Eylül 2026) çalışıyor, 17 Eylül'de ekranda görüldü; ama uygulamanın ortak bildirim kutusuna düşüyor: Oyuncular listesi açıkken ekranın tepesinde, listeyle ilgisiz bir yerde çıkıyor ve ekran büyütüldüğünde hiç görünmüyor (Engin, 17 Eylül 2026). Soru tek ekranın değil ortak bildirim kutusunun sorusudur. Karara bağlanmadı. Karar evi: `docs/TASARIM-KARARLARI.md`.
 - **Rolsüz kişide ad tekrarı.** Rol hanesi boş kişi iki ve daha fazla kaleme çıkınca özet satırı doğuyor ve adını oyuncunun gerçek adından alıyor (üç kademe: rol adı, oyuncunun gerçek adı, boş). Oyuncunun kendi kalemi de aynı adı taşıdığı için ad alt alta iki kez görünüyor (17 Eylül 2026'da ekranda görüldü). Kurala uygun, kusur değil; tekrarın kalıp kalmayacağı karara bağlanmadı. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 (ÖZET SATIRI İŞ EKSENİDİR ve AD YERLEŞİMİ maddeleri).
 
 Uzun vadeli iş, backlog ve tamamlananlar: `docs/IS-SIRASI.md`.

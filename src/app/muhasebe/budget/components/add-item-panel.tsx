@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef } from 'react'
 import type { RefObject } from 'react'
 import { resolveKeyAction } from '../hooks/grid-navigation-core'
 import type { RoomOption } from '../format'
+import { useToastHost } from '../../../../shared/components/toast'
 
 interface AddItemPanelProps {
   query: string
@@ -35,6 +36,9 @@ export function AddItemPanel({
   const createButtonRef = useRef<HTMLButtonElement>(null)
   const triggerElRef = useRef<Element | null>(null)
   const onCloseRef = useRef(onClose)
+  // MESAJ YERI (TASARIM-KARARLARI bolum 9, 17 Eylul 2026): yuzey acikken mesajlar
+  // basligin altindaki kapta cikar.
+  const toastHostRef = useToastHost()
 
   useLayoutEffect(() => {
     onCloseRef.current = onClose
@@ -146,6 +150,7 @@ export function AddItemPanel({
           </button>
         </div>
 
+        <div ref={toastHostRef} style={{ position: 'sticky', top: 0 }} />
         <input
           ref={inputRef}
           type="text"
@@ -195,7 +200,7 @@ export function AddItemPanel({
                     cursor: 'pointer',
                     fontSize: 'var(--text-sm)',
                     color: 'var(--color-text)',
-                    background: i === highlightIndex ? 'var(--color-surface-alt, rgba(0,0,0,0.06))' : 'transparent',
+                    background: i === highlightIndex ? 'var(--color-surface-2)' : 'transparent',
                   }}
                 >
                   {o.name}

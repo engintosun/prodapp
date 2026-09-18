@@ -14,6 +14,7 @@ Bu dosyanın tüketicisi Opus'tur. Sonnet'e bakan kurallar CLAUDE.md'de kalır.
 - **Test EKLEYEN ya da SİLEN dilimde `.claude/test-count` beklenen değişen-dosya listesine YAZILIR;** yazılmazsa kapı ile spec çarpışır.
 - **Şemaya değen dilimde ilgili tablonun TÜM göç geçmişi taranır** (`grep -rn "<tablo_adi>" supabase/migrations/`), yalnız tabloyu yaratan göç YETMEZ.
 - **str_replace çapası çoğaltılmış bir bloğun içinden alınmaz;** bloğu tekilleştiren dışarıdaki işaretten alınır.
+- **Commit komutu imza satırını taşır.** Sonnet'in ortamı her commit mesajının `Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>` satırıyla bitmesini istiyor. Bu yüzden spec'teki komut bu satırı ikinci `-m` olarak içerir: `git commit -m "<mesaj>" -m "Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>"`. Satır eksik yazıldığında Sonnet commit'i amend ediyor, damga bayatlıyor ve kapılar ikinci kez koşuyor (17 Eylül 2026, 2b75afe turunda yaşandı). İmza metni Sonnet'in ortamından gelir; model değişirse Sonnet'in raporundaki metin esas alınır.
 
 ## Onay haritası
 

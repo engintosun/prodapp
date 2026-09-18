@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { useEffect, useLayoutEffect, useRef } from 'react'
+import { useToastHost } from '../../../../shared/components/toast'
 
 const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
 
@@ -18,6 +19,11 @@ export function BottomSheet({
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const triggerElRef = useRef<Element | null>(null)
   const onCloseRef = useRef(onClose)
+  // MESAJ YERI (TASARIM-KARARLARI bolum 9, 17 Eylul 2026): acik pencerenin mesajlari
+  // basligin altindaki kapta cikar, liste kaysa da yerinde durur (sticky). Bu pencereyi
+  // kullanan alti pencerenin hicbiri bugun konumlu oge tasimiyor (17 Eylul 2026 olcumu);
+  // tasirsa kap ortulebilir, o gun pencere ici katman tokeni gerekir.
+  const toastHostRef = useToastHost()
 
   useLayoutEffect(() => {
     onCloseRef.current = onClose
@@ -107,6 +113,7 @@ export function BottomSheet({
             ×
           </button>
         </div>
+        <div ref={toastHostRef} style={{ position: 'sticky', top: 0 }} />
         {children}
       </div>
     </>
