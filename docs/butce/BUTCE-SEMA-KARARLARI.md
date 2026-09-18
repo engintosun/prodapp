@@ -205,3 +205,12 @@ NEDEN: sahadaki gerçek senaryo — görüntü yönetmenine dolar, asistanlara T
 - **SIRA BAĞI (22 Ağustos 2026):** kolon setinin genişlemesi (11 kolondan 13'e; Maliyet ve KDV eklenmesi) MÜHÜR-3'ten ÖNCE inmelidir. Gerekçe B18: hesaplanmış değer saklanmaz, formül kodda yaşar. Mühürleme yüzeyi açıldıktan sonra kolon modeli değişirse mühürlenmiş tutanaktaki rakam ile ekranın gösterdiği rakam ayrışır ve fark geri alınamaz.
 - **AÇIK, KARARA BAĞLANMADI (22 Ağustos 2026): "Net toplam" kolonunun ADI.** Model kilitli, ad açık — bordrolu satırda "net" yazan hücrenin değeri, muhasebe dilindeki brüt maaşı aşıyor. Değerlendirilecek adaylar: "Maliyet" ve fon dilindeki "net bütçe" tabiri.
   **KAPANDI (Engin kararı, 31 Ağustos 2026): Ara toplam / Toplam.** Gerekçe: bordro dilinde "net" ve "brüt" ekranda yanlış çağrışım yapıyordu — bordrolu satırda "net" yazan hücrenin değeri muhasebe dilindeki brüt maaşı aşıyor, "brüt" yazan hücre ise brüt maaşı değil işveren maliyeti + KDV'yi gösteriyordu. Sektör emsalindeki Subtotal/Total çiftinin Türkçe karşılığı alındı (Yamdu icmali: Subtotal · Fringes total · Total; MMB detay ızgarasında çivilenen kolon Subtotal). 22 Ağustos'ta aday tutulan iki isim ("Maliyet" ve "net bütçe") bu arada harcandı: "Maliyet" ayrı bir kolon oldu, fonların "net bütçe" dediği rakam da tam olarak o Maliyet kolonudur.
+
+## REFERANS CETVELİNDE KATSAYI CİNSİ (KARAR 18 Eylül 2026, Engin)
+- **KARAR:** rate_catalog'da değerin cinsini tutan alana dördüncü bir cins eklenir (katsayı); SGK tavan katsayısı satırı bu cinse alınır. Ekran cinse göre yazar, katsayıda birim eki yazılmaz.
+- **GEREKÇE:** cetvel değerin ne olduğunu kendi söylemeli; ekranın kovaya bakıp birim tahmin etmesi bugün yanlış TL üretti, yarın başka yerde başka yanlış üretir.
+- **GERİ DÖNÜŞÜ:** cins ekleme ve tek satırın güncellenmesi geri alınabilir, veri kaybı yok.
+- **REDDEDİLEN YOL (bugün için):** katsayının tutar kolonundan çıkarılıp kendi kolonuna taşınması. Daha temiz ama daha büyük göç; ikinci bir katsayı doğduğunda yeniden açılır. Bugün sayı tutar kolonunda kalır, yalnız cinsi düzelir.
+- **DOĞRULANAN DEĞER:** katsayı 9 doğrudur (2026: brüt asgari ücret 33.030 x 9 = 297.270 aylık tavan).
+
+Bu madde KARARDIR, uygulama değildir; uygulama yeni oturumun ilk işidir.

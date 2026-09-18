@@ -49,7 +49,7 @@ varsayim yapilmaz.
 -> Etkiler: use-card-rows.ts (okuma) + use-edit-buffers.ts (yazma) + card-table-screen.tsx buna bağlı.
 -> Kritik: EVET — 500+ satır, BUTCE-UI-MIMARISI bölüm 8'de bölünme bekliyor (okuma/yazma ekseni), İ5 ilkesine tabi.
 
-`src/shared/supabase/payroll-read.ts` (626)
+`src/shared/supabase/payroll-read.ts` (629)
 -> Görev: Bordro türetme bloğu — saf hesap (computeBordroFields) + Supabase-okuyan orkestrasyon (buildPayrollRates/deriveBordroFields), açık/kilitli (mühür) rate_catalog okuma ayrımı.
 -> Kullanır: shared/cfe (resolvePayrollItem, deriveMinimumWageExemptionSeries); shared/supabase/client.ts.
 -> Etkiler: use-edit-buffers.ts (refreshBordro) + use-card-rows.ts (fetchMinimumWageThresholds) bunu çağırır.
@@ -143,7 +143,7 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/hooks/use-card-rows.ts` (213) — kart verisi yükleme (budgetId/cardId), ref senkronizasyonu
 `src/app/muhasebe/budget/hooks/use-grid-navigation.ts` (276) — İ7 motorunun DOM bağlayıcısı, tuş olaylarını çekirdeğe delege eder
 `src/app/muhasebe/budget/totals.ts` (55) — saf satır ve kart toplamı (rowTotals/cardTotals); item-row kendi hesabını yapmaz, buradan çağırır
-`src/app/muhasebe/definitions-screen.tsx` (116) — Tanımlar ekranı: rate_catalog referansı + şirket profili formu
+`src/app/muhasebe/definitions-screen.tsx` (148) — Tanımlar ekranı: rate_catalog referansı + şirket profili formu
 `src/app/muhasebe/invite-screen.tsx` (232) — davet oluşturma formu + davet linki gösterimi
 `src/app/saha/receipt-correction-screen.tsx` (164) — düzeltme istenen fişin yeniden düzenlenip gönderilmesi
 `src/app/saha/receipt-entry-screen.tsx` (150) — yeni fiş girişi formu (tutar/KDV/tarih/kategori)

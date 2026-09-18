@@ -28,13 +28,13 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 
 ## Durum
 
-- HEAD: 8721e40 (18 Eylül 2026 — Uyarı Mesajlarının Yeri, Özet Adına Görev Kademesi, Liste Bölme Adı).
+- HEAD: c60cb55 (18 Eylül 2026 — Referans ekranında geçerli SGK senaryosu işareti).
 - KOMİSYON TABANI ARTIK ÖDEME STATÜSÜNE BAKMIYOR: ölçüt kişiye bağlı ve türetilmemiş satır. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 KOMİSYON TABANI VE SİLME madde 2.
 - TEMSİLCİ KOMİSYONU CİNSİ ARTIK ATOMDA: 1618 Ajans Komisyonu, 1618-01 Menajer Komisyonu iki ayrı atom. Testlerle ve tarayıcıda doğrulandı (17 Eylül 2026).
 - SÜRÜKLE-BIRAK ALANI HEDEF OLARAK GÖRÜNÜR: biçim yazısı ve "Dosya seç" düğmesi kutunun içinde, sürükleme durumu çerçeve/zeminle geri bildirim veriyor. Testlerle ve tarayıcıda doğrulandı (17 Eylül 2026).
 - KOMİSYON SATIRI UÇTAN UCA DOĞRULANDI (tarayıcıda, gerçek veriyle): kişi başına tek satır doğuyor, tik kaldırılınca gidiyor, Yasal Yük hanesi tıklanabiliyor, döküm gerçek tabanı okuyor ve KDV dökümde tekrarlamıyor.
 - AJANS KOMİSYONU ORANI KALDIRILDI (göç 20260909180000): Referans ekranındaki yüzde 10 gitti. Bileşen ve paket bilerek bırakıldı, gerekçesi `docs/butce/BUTCE-SEMA-KARARLARI.md` içinde.
-- **REFERANS EKRANI GEÇERLİ SGK SENARYOSUNU İŞARETLİYOR (18 Eylül 2026, yer düzeltmesi aynı gün):** dört senaryo satırından şirkete ait olan artık "Bu şirkette geçerli" yazısıyla belli; profil boşken "Bu şirkette geçerli (Şirket Tanımı boş, varsayılan)" yazıyor. İşaret satırın KUTUSU İÇİNDE, etiketin yanında durur — ilk sürümde kutunun dışında serbest yazıydı ve tarayıcıda bir üstteki satıra ait sanılmıştı, bu yüzden içeri alındı. Senaryo çözümü `resolveSgkScenarioCode` (payroll-read.ts) tek yerinde durur, bordro ve ekran aynı fonksiyonu çağırır. Karar evi: `docs/EKRAN-MUHASEBE.md` §19 REFERANS. BU YER DÜZELTMESİ TARAYICIDA DOĞRULANMADI: oturumda Chrome otomasyonu bağlı değildi, ekran canlı Supabase oturumu istiyor; Engin'in gözden geçirmesi bekleniyor.
+- **REFERANS EKRANI GEÇERLİ SGK SENARYOSUNU İŞARETLİYOR (18 Eylül 2026, yer düzeltmesi aynı gün):** dört senaryo satırından şirkete ait olan artık "Bu şirkette geçerli" yazısıyla belli; profil boşken "Bu şirkette geçerli (Şirket Tanımı boş, varsayılan)" yazıyor. İşaret satırın KUTUSU İÇİNDE, etiketin yanında durur — ilk sürümde kutunun dışında serbest yazıydı ve tarayıcıda bir üstteki satıra ait sanılmıştı, bu yüzden içeri alındı. Senaryo çözümü `resolveSgkScenarioCode` (payroll-read.ts) tek yerinde durur, bordro ve ekran aynı fonksiyonu çağırır. Karar evi: `docs/EKRAN-MUHASEBE.md` §19 REFERANS. Tarayıcıda DOĞRULANDI (18 Eylül 2026): işaret Standart satırının kutusunda, etiketin yanında ve %19,75 satırında görüldü.
 - MUHUR-3 CANLIDA ve doğrulandı. Kişi ve iş etiketleri PROJE kapsamında.
 - **LİSTE BÖLME ADI AYRIŞTI (18 Eylül 2026):** görev hanesi boş kişi "Görevsiz" bölmesinde, görevi olup başlığı bulunamayan kişi "Başlığı olmayan görevler" bölmesinde durur; eskiden iki ayrı anahtar aynı yazıyı basıyordu. Ekranda tetiklenemiyor (on dokuz görevin hepsinin başlığı dolu), bu yüzden tarayıcı turu yok; hesap `src/app/muhasebe/production/list-bucket.ts` içine alındı ve testle doğrulandı. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 (BÖLME ADI).
 - ÜRETİM KAYITLARI kullanılabilir: liste KARTIN BAŞLIK HİYERARŞİSİNE göre dizilir ve bölüm başlıkları çizilir (Ana Kast · Dublör · Arkaplan · Kast Operasyonu), satır numarası var, satır tek tek ya da seç kipiyle toplu silinir, dört biçimden içe aktarma yapılır. Liste hiyerarşisi tarayıcıda DOĞRULANDI.
@@ -69,7 +69,7 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 
 ## Sıradaki iş
 
-Bu turda belirlenmedi; kapanışta Opus tarafından seçilir.
+**REFERANS CETVELİNDE KATSAYI CİNSİ.** "Parametre: SGK tavan katsayısı" satırı ekranda "9 TL" diye görünüyor; değer doğru (33.030 x 9 = 297.270, 2026 aylık tavanı), yanlış olan cinsi. Cetvelde değerin cinsi oran/tutar/tarife olarak tutuluyor, katsayının karşılığı yok; satır tutar kovasında durduğu için ekran sonuna TL yapıştırıyor. Karar alındı (18 Eylül 2026): cetvele dördüncü cins eklenir, tavan satırı o cinse alınır, ekran cinse göre yazar. Ekran tarafında "bu satırda TL yazma" YAMASI YASAK. Tam metin ve reddedilen yol: docs/butce/BUTCE-SEMA-KARARLARI.md.
 
 ## Açık kalanlar
 
