@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { supabase } from '../../shared/supabase/client'
 import { useToast } from '../../shared/components/toast'
 import { CompanyProfileForm } from '../../shared/components/company-profile-form'
+import { resolveSgkScenarioCode } from '../../shared/supabase/payroll-read'
+import { getCompanyProfileForProject } from '../../shared/supabase/company-profile-service'
 
 interface Props {
   projectId: string
@@ -10,6 +12,7 @@ interface Props {
 
 interface ReferenceRow {
   label: string
+  code: string
   ratePercent: number | null
   amountTl: number | null
   validFrom: string
@@ -20,7 +23,7 @@ interface RateCatalogRow {
   amount_tl: number | null
   value_kind: string
   valid_from: string
-  burden_components: { label: string } | null
+  burden_components: { label: string; code: string } | null
 }
 
 const sectionHeadingStyle = {
@@ -36,13 +39,15 @@ export function DefinitionsScreen({ projectId, userId }: Props) {
   const { addToast } = useToast()
   const [rows, setRows] = useState<ReferenceRow[]>([])
   const [loading, setLoading] = useState(true)
+  const [activeSgkCode, setActiveSgkCode] = useState<string | null>(null)
+  const [profileMissing, setProfileMissing] = useState(false)
 
   useEffect(() => {
     let cancelled = false
     const today = new Date().toISOString().slice(0, 10)
     supabase
       .from('rate_catalog')
-      .select('rate_percent, amount_tl, value_kind, valid_from, burden_components(label)')
+      .select('rate_percent, amount_tl, value_kind, valid_from, burden_components(label, code)')
       .lte('valid_from', today)
       .order('valid_from', { ascending: false })
       .then(({ data, error }) => {
@@ -57,9 +62,10 @@ export function DefinitionsScreen({ projectId, userId }: Props) {
         for (const r of (data ?? []) as unknown as RateCatalogRow[]) {
           if (r.value_kind === 'tarife') continue
           const label = r.burden_components?.label
-          if (!label || seen.has(label)) continue
+          const code = r.burden_components?.code
+          if (!label || !code || seen.has(label)) continue
           seen.add(label)
-          list.push({ label, ratePercent: r.rate_percent, amountTl: r.amount_tl, validFrom: r.valid_from })
+          list.push({ label, code, ratePercent: r.rate_percent, amountTl: r.amount_tl, validFrom: r.valid_from })
         }
         list.sort((a, b) => a.label.localeCompare(b.label, 'tr'))
         setRows(list)
@@ -70,6 +76,25 @@ export function DefinitionsScreen({ projectId, userId }: Props) {
     }
   }, [addToast])
 
+  // Bu sirkette hangi SGK isveren senaryosunun gecerli oldugunu isaretlemek icin bordro
+  // yolunun kullandigi AYNI cozumleyiciyi cagirir (resolveSgkScenarioCode, payroll-read.ts).
+  useEffect(() => {
+    let cancelled = false
+    Promise.all([resolveSgkScenarioCode(projectId), getCompanyProfileForProject(projectId)])
+      .then(([code, profile]) => {
+        if (cancelled) return
+        setActiveSgkCode(code)
+        setProfileMissing(profile === null)
+      })
+      .catch((error: unknown) => {
+        if (cancelled) return
+        addToast(error instanceof Error ? error.message : 'Senaryo okunamadı', 'error')
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [projectId, addToast])
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
       <div>
@@ -79,24 +104,30 @@ export function DefinitionsScreen({ projectId, userId }: Props) {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
             {rows.map((r) => (
-              <div
-                key={r.label}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  padding: 'var(--space-2) var(--space-3)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: 'var(--radius-md)',
-                  fontSize: 'var(--text-sm)',
-                }}
-              >
-                <span style={{ color: 'var(--color-text)' }}>{r.label}</span>
-                <span style={{ color: 'var(--color-text-muted)', fontVariantNumeric: 'tabular-nums' }}>
-                  {r.ratePercent !== null ? `%${r.ratePercent}` : r.amountTl !== null ? `${r.amountTl} TL` : '—'}
-                  {' · '}
-                  {r.validFrom}
-                </span>
-              </div>
+              <Fragment key={r.label}>
+                {r.code === activeSgkCode && (
+                  <span style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)' }}>
+                    {profileMissing ? 'Bu şirkette geçerli (Şirket Tanımı boş, varsayılan)' : 'Bu şirkette geçerli'}
+                  </span>
+                )}
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    padding: 'var(--space-2) var(--space-3)',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--radius-md)',
+                    fontSize: 'var(--text-sm)',
+                  }}
+                >
+                  <span style={{ color: 'var(--color-text)' }}>{r.label}</span>
+                  <span style={{ color: 'var(--color-text-muted)', fontVariantNumeric: 'tabular-nums' }}>
+                    {r.ratePercent !== null ? `%${r.ratePercent}` : r.amountTl !== null ? `${r.amountTl} TL` : '—'}
+                    {' · '}
+                    {r.validFrom}
+                  </span>
+                </div>
+              </Fragment>
             ))}
           </div>
         )}

@@ -34,7 +34,7 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 - SÜRÜKLE-BIRAK ALANI HEDEF OLARAK GÖRÜNÜR: biçim yazısı ve "Dosya seç" düğmesi kutunun içinde, sürükleme durumu çerçeve/zeminle geri bildirim veriyor. Testlerle ve tarayıcıda doğrulandı (17 Eylül 2026).
 - KOMİSYON SATIRI UÇTAN UCA DOĞRULANDI (tarayıcıda, gerçek veriyle): kişi başına tek satır doğuyor, tik kaldırılınca gidiyor, Yasal Yük hanesi tıklanabiliyor, döküm gerçek tabanı okuyor ve KDV dökümde tekrarlamıyor.
 - AJANS KOMİSYONU ORANI KALDIRILDI (göç 20260909180000): Referans ekranındaki yüzde 10 gitti. Bileşen ve paket bilerek bırakıldı, gerekçesi `docs/butce/BUTCE-SEMA-KARARLARI.md` içinde.
-- REFERANS EKRANI HANGİ ORANIN GEÇERLİ OLDUĞUNU SÖYLEMİYOR: dört SGK senaryosu yan yana düz satır olarak duruyor, hangisinin bu şirkete ait olduğunu söyleyen işaret yok; oranı motor `fn_resolve_sgk_scenario` ile şirket profilinden çözüyor. Kendi turunu bekliyor.
+- **REFERANS EKRANI GEÇERLİ SGK SENARYOSUNU İŞARETLİYOR (18 Eylül 2026):** dört senaryo satırından şirkete ait olan artık üzerinde "Bu şirkette geçerli" yazısıyla belli; profil boşken "Bu şirkette geçerli (Şirket Tanımı boş, varsayılan)" yazıyor. Senaryo çözümü `resolveSgkScenarioCode` (payroll-read.ts) tek yerinde durur, bordro ve ekran aynı fonksiyonu çağırır. Karar evi: `docs/EKRAN-MUHASEBE.md` §19 REFERANS.
 - MUHUR-3 CANLIDA ve doğrulandı. Kişi ve iş etiketleri PROJE kapsamında.
 - **LİSTE BÖLME ADI AYRIŞTI (18 Eylül 2026):** görev hanesi boş kişi "Görevsiz" bölmesinde, görevi olup başlığı bulunamayan kişi "Başlığı olmayan görevler" bölmesinde durur; eskiden iki ayrı anahtar aynı yazıyı basıyordu. Ekranda tetiklenemiyor (on dokuz görevin hepsinin başlığı dolu), bu yüzden tarayıcı turu yok; hesap `src/app/muhasebe/production/list-bucket.ts` içine alındı ve testle doğrulandı. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 (BÖLME ADI).
 - ÜRETİM KAYITLARI kullanılabilir: liste KARTIN BAŞLIK HİYERARŞİSİNE göre dizilir ve bölüm başlıkları çizilir (Ana Kast · Dublör · Arkaplan · Kast Operasyonu), satır numarası var, satır tek tek ya da seç kipiyle toplu silinir, dört biçimden içe aktarma yapılır. Liste hiyerarşisi tarayıcıda DOĞRULANDI.
@@ -69,7 +69,7 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 
 ## Sıradaki iş
 
-**REFERANS EKRANI: GEÇERLİ SGK SENARYOSUNUN İŞARETLENMESİ.** Boşluk yukarıda Durum'da yazılı: dört senaryo yan yana duruyor, hangisinin bu şirkete ait olduğunu söyleyen işaret yok, oysa motor `fn_resolve_sgk_scenario` ile şirket profilinden çözüyor. Risk: kullanıcı yanlış senaryonun oranını kendi bütçesinin oranı sanabilir. Önce tartışma, sonra prompt: işaretin ne olacağı (senaryo satırının kendisinde mi, ekranın başında mı) ve şirket profili eksikse ne yazacağı karara bağlanmadı. İlgili dosyalar INDEX.md bölüm 7 üzerinden bulunur.
+Bu turda belirlenmedi; kapanışta Opus tarafından seçilir.
 
 ## Açık kalanlar
 

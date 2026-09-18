@@ -103,24 +103,27 @@ export function buildPayrollRates(rows: CatalogRateRow[], sgkEmployerCode: strin
   }
 }
 
+// fn_resolve_sgk_scenario RPC cagrisini sarar: projectId yoksa (eski cagri yolu) standart senaryoya
+// duser. Bordro okuma yolu VE Tanimlar ekrani (Referans) AYNI fonksiyonu kullanir - tek cozumleme yeri.
+export async function resolveSgkScenarioCode(projectId?: string): Promise<string> {
+  if (!projectId) return 'sgk_isveren'
+  const { data, error } = await supabase.rpc('fn_resolve_sgk_scenario', { p_project_id: projectId })
+  if (error) throw new Error(error.message)
+  return (data as string | null) ?? 'sgk_isveren'
+}
+
 async function fetchPayrollRates(projectId?: string): Promise<PayrollRates> {
   const today = new Date().toISOString().slice(0, 10)
-  // rate_catalog sorgusu ve senaryo RPC'si birbirinden bagimsiz - paralel baslatilir (perf, davranis ayni).
-  const [{ data: rows, error }, { data: scenario, error: es }] = await Promise.all([
+  // rate_catalog sorgusu ve senaryo cozumlemesi birbirinden bagimsiz - paralel baslatilir (perf, davranis ayni).
+  const [{ data: rows, error }, sgkEmployerCode] = await Promise.all([
     supabase
       .from('rate_catalog')
       .select('rate_percent, amount_tl, bracket_floor, bracket_base_tax, valid_from, value_kind, burden_components(code)')
       .lte('valid_from', today)
       .order('valid_from', { ascending: false }),
-    projectId ? supabase.rpc('fn_resolve_sgk_scenario', { p_project_id: projectId }) : Promise.resolve({ data: null, error: null }),
+    resolveSgkScenarioCode(projectId),
   ])
   if (error) throw new Error(error.message)
-
-  let sgkEmployerCode = 'sgk_isveren'
-  if (projectId) {
-    if (es) throw new Error(es.message)
-    if (scenario) sgkEmployerCode = scenario as string
-  }
 
   const mapped: CatalogRateRow[] = (rows ?? []).map((r) => ({
     code: (r as { burden_components?: { code?: string } | null }).burden_components?.code ?? '',
