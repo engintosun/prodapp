@@ -56,7 +56,7 @@ export function minimumWageNetThresholds(rates: PayrollRates): MinimumWageThresh
 // Profili DILIMI, 2026-07-10) - projectId yoksa (eski cagri yolu) standart senaryoya duser.
 export interface CatalogRateRow {
   code: string
-  valueKind: 'oran' | 'tutar' | 'tarife'
+  valueKind: 'oran' | 'tutar' | 'tarife' | 'katsayi'
   ratePercent: number | null
   amountTl: number | null
   bracketFloor: number | null
@@ -81,6 +81,14 @@ export function buildPayrollRates(rows: CatalogRateRow[], sgkEmployerCode: strin
     if (!row) throw new Error(`Payroll: rate_catalog eksik parametre (${code}, tutar)`)
     return Number(row.amountTl)
   }
+  // 18 Eylul 2026: katsayi, rate_catalog icinde dorduncu cinstir. Sayi amount_tl
+  // kolonunda durur (tutar ile ayni sekil); ayiran sey CINSTIR. Ekran birim ekini
+  // cinse gore yazar, kolona bakarak degil.
+  function latestKatsayi(code: string): number {
+    const row = all.find((r) => r.code === code && r.valueKind === 'katsayi')
+    if (!row) throw new Error(`Payroll: rate_catalog eksik parametre (${code}, katsayi)`)
+    return Number(row.amountTl)
+  }
   const brackets: TaxBracket[] = all
     .filter((r) => r.code === 'gv_ucret' && r.valueKind === 'tarife')
     .map((r) => ({
@@ -99,7 +107,7 @@ export function buildPayrollRates(rows: CatalogRateRow[], sgkEmployerCode: strin
     stampDutyPercent: latestOran('damga'),
     incomeTaxBrackets: brackets,
     minimumWageGrossThisMonth: latestTutar('parametre_asgari_brut'),
-    socialSecurityCeilingMultiplier: latestTutar('parametre_sgk_tavan_katsayi'),
+    socialSecurityCeilingMultiplier: latestKatsayi('parametre_sgk_tavan_katsayi'),
   }
 }
 

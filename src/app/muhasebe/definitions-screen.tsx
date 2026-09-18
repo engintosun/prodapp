@@ -13,6 +13,7 @@ interface Props {
 interface ReferenceRow {
   label: string
   code: string
+  valueKind: string
   ratePercent: number | null
   amountTl: number | null
   validFrom: string
@@ -32,6 +33,18 @@ const sectionHeadingStyle = {
   margin: '0 0 var(--space-3)',
   fontWeight: 'var(--weight-bold)',
 } as const
+
+// 18 Eylul 2026: deger yazimi CINSTEN kararlasir, hangi kolonun dolu olduguna
+// bakarak degil. Onceki hal amount_tl doluysa sonuna TL yapistiriyordu ve
+// katsayi satirinda 9 TL yaziyordu. Katsayida birim eki YOKTUR.
+// Son dal, sekil kisiti (rate_catalog_value_kind_shape) yuzunden gercek veride
+// olusamaz; onceki davranisin yedegi olarak duruyor.
+function formatReferenceValue(row: ReferenceRow): string {
+  if (row.valueKind === 'oran' && row.ratePercent !== null) return `%${row.ratePercent}`
+  if (row.valueKind === 'katsayi' && row.amountTl !== null) return String(row.amountTl)
+  if (row.valueKind === 'tutar' && row.amountTl !== null) return `${row.amountTl} TL`
+  return '—'
+}
 
 // Tanimlar ekrani iskeleti (EKRAN-MUHASEBE §19, 2026-07-10): REFERANS (rate_catalog salt-okunur,
 // hardcode YOK) + SIRKET TANIMI (Kurulum Modu ile ayni form, her zaman duzenlenebilir).
@@ -65,7 +78,7 @@ export function DefinitionsScreen({ projectId, userId }: Props) {
           const code = r.burden_components?.code
           if (!label || !code || seen.has(label)) continue
           seen.add(label)
-          list.push({ label, code, ratePercent: r.rate_percent, amountTl: r.amount_tl, validFrom: r.valid_from })
+          list.push({ label, code, valueKind: r.value_kind, ratePercent: r.rate_percent, amountTl: r.amount_tl, validFrom: r.valid_from })
         }
         list.sort((a, b) => a.label.localeCompare(b.label, 'tr'))
         setRows(list)
@@ -124,7 +137,7 @@ export function DefinitionsScreen({ projectId, userId }: Props) {
                   )}
                 </span>
                 <span style={{ color: 'var(--color-text-muted)', fontVariantNumeric: 'tabular-nums' }}>
-                  {r.ratePercent !== null ? `%${r.ratePercent}` : r.amountTl !== null ? `${r.amountTl} TL` : '—'}
+                  {formatReferenceValue(r)}
                   {' · '}
                   {r.validFrom}
                 </span>

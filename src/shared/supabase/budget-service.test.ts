@@ -56,7 +56,7 @@ const CATALOG_2026_ROWS: CatalogRateRow[] = [
   { code: 'sgk_isveren_kultur_girisim', valueKind: 'oran', ratePercent: 14.81, amountTl: null, bracketFloor: null, bracketBaseTax: null, validFrom: '2026-01-01' },
   { code: 'sgk_isveren_kultur_yatirim', valueKind: 'oran', ratePercent: 9.88, amountTl: null, bracketFloor: null, bracketBaseTax: null, validFrom: '2026-01-01' },
   { code: 'parametre_asgari_brut', valueKind: 'tutar', ratePercent: null, amountTl: 33030, bracketFloor: null, bracketBaseTax: null, validFrom: '2026-01-01' },
-  { code: 'parametre_sgk_tavan_katsayi', valueKind: 'tutar', ratePercent: null, amountTl: 9, bracketFloor: null, bracketBaseTax: null, validFrom: '2026-01-01' },
+  { code: 'parametre_sgk_tavan_katsayi', valueKind: 'katsayi', ratePercent: null, amountTl: 9, bracketFloor: null, bracketBaseTax: null, validFrom: '2026-01-01' },
   ...BRACKETS_2026.map(
     (b): CatalogRateRow => ({
       code: 'gv_ucret',
