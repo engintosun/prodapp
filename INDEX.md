@@ -1,6 +1,6 @@
 # KAAPA — INDEX.md
 
-**Son guncelleme:** 16 Agustos 2026
+**Son güncelleme:** 19 Eylül 2026
 
 ## INDEX STATUS RULE
 
@@ -24,7 +24,7 @@ varsayim yapilmaz.
 - Stack: React 19.2.6 + TypeScript 6.0.2 + Vite 8.0.12 (PWA) · Supabase (PostgreSQL, AWS İstanbul, KVKK) · Vercel deploy.
 - Mimari katman ayrımı (ARCHITECTURE 5.2/5.3): veri (`shared/supabase/*-service.ts`, Supabase SDK doğrudan) → iş mantığı (saf fonksiyon, `shared/cfe/`) → UI (rol-bazlı `app/{rol}/` ekranları) → orkestrasyon (`*-screen.tsx`).
 - Dizin ilkesi: ekranlar role göre (`saha/dept/muhasebe/reviewer/onboarding/auth/layout`), ortak kod `shared/` altında (özellik-bazlı değil).
-- Ölçü: 76 kaynak dosya (`src/**/*.ts,tsx`) · 39 migration (baseline + 38 sonraki göç) · 3 edge function · 10 test dosyası, 299 test.
+- Ölçü (19 Eylül 2026'da ölçüldü): 78 kaynak dosya (`src/**/*.ts,tsx`, test hariç) · 64 migration (baseline + 63 sonraki göç) · 3 edge function · 20 test dosyası, 402 test (`.claude/test-count`).
 - Canlı şema tek kaynağı `supabase/migrations/00000000000000_baseline.sql`: 39 tablo · 101 RLS policy · 25 trigger · 17 fonksiyon.
 
 ## 2. KOD HARİTASI
@@ -129,6 +129,8 @@ varsayim yapilmaz.
 `src/app/layout/bottom-nav.tsx` (76) — rol-bazlı alt navigasyon sekmeleri (NAV_ITEMS)
 `src/app/layout/nav-rail.tsx` (180) — sol ray: modül duraklarını çizer, açık/kapalı iki genişlik (168/68px), kapalıda ikon + ilk harf düşüşü
 `src/app/layout/rail-icons.tsx` (73) — rayın elle yazılmış tek renkli SVG ikonları (currentColor; ikon kütüphanesi kurulmadı)
+`src/app/muhasebe/budget/card-view.ts` (146) — kartın görünen düzeninin (başlık grubu + kişi bloğu + türetilen satır tutarları) TEK kaynağı; dışa aktarma/icmal/mühür de bunu çağıracak
+`src/app/muhasebe/budget/columns.ts` (27) — kart tablosu kolon seti tek kaynağı (BUDGET_COLUMNS: anahtar/etiket/hizalama)
 `src/app/muhasebe/budget/components/add-item-panel.tsx` (288) — kalem ekleme odası: kütüphane arama + serbest kalem
 `src/app/muhasebe/budget/components/add-item-row.tsx` (60) — tablo altı "+ kalem ekle" düğme satırı
 `src/app/muhasebe/budget/components/bottom-sheet.tsx` (121) — ortak alt-sheet primitivi (backdrop+panel+odak tuzağı)
@@ -137,14 +139,21 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/components/heading-sheet.tsx` (71) — başlık seçme tabakası (kartın başlıkları + Başlıksız)
 `src/app/muhasebe/budget/components/note-sheet.tsx` (35) — İç Not / Kamu Notu düzenleme sheet'i
 `src/app/muhasebe/budget/components/period-row.tsx` (186) — çok-dönemli kalemin dönem alt-satırı render'ı
+`src/app/muhasebe/budget/components/person-list-sheet.tsx` (253) — Oyuncular listesi panosu: Rol · Oyuncu · Görev · Ajans/Menajer tiki, "+ Kişi ekle" ve karta toplu getirme
+`src/app/muhasebe/budget/components/person-pick-sheet.tsx` (94) — satırdaki kişi düğmesinden açılan kişi seçme panosu, Görev hanesine göre süzer
 `src/app/muhasebe/budget/components/status-info-sheet.tsx` (15) — statü rehberi metinleri
+`src/app/muhasebe/budget/components/summary-row.tsx` (59) — kişi özet satırının render'ı; kendi budget_items kaydı taşımaz, alt kalemlerin toplamını gösterir
 `src/app/muhasebe/budget/components/table-styles.ts` (138) — kart tablosu kolon genişlikleri + hücre stilleri
+`src/app/muhasebe/budget/display-name.ts` (70) — kalem/özet satırının gösterilen adının TEK kaynağı (AD YERLEŞİMİ kararı, saf hesap)
 `src/app/muhasebe/budget/format.ts` (309) — fmt/parseNumericDraft + kütüphane arama + başlık grubu saf fonksiyonları
 `src/app/muhasebe/budget/hooks/use-card-rows.ts` (213) — kart verisi yükleme (budgetId/cardId), ref senkronizasyonu
 `src/app/muhasebe/budget/hooks/use-grid-navigation.ts` (276) — İ7 motorunun DOM bağlayıcısı, tuş olaylarını çekirdeğe delege eder
+`src/app/muhasebe/budget/person-bring.ts` (90) — Oyuncular listesi panosunun getirme mantığı: kartta olan/olmayan ayrımı, aynı atomdan ikinci satır engeli, görev sırası
+`src/app/muhasebe/budget/person-groups.ts` (166) — kişi etiketine göre satır gruplama + orandan türetme; özet satırı ile komisyon satırı aynı hesabı paylaşır
 `src/app/muhasebe/budget/totals.ts` (55) — saf satır ve kart toplamı (rowTotals/cardTotals); item-row kendi hesabını yapmaz, buradan çağırır
 `src/app/muhasebe/definitions-screen.tsx` (148) — Tanımlar ekranı: rate_catalog referansı + şirket profili formu
 `src/app/muhasebe/invite-screen.tsx` (232) — davet oluşturma formu + davet linki gösterimi
+`src/app/muhasebe/production/list-bucket.ts` (35) — Üretim Kayıtları listesinin bölme (başlık) hesabının tek kaynağı
 `src/app/saha/receipt-correction-screen.tsx` (164) — düzeltme istenen fişin yeniden düzenlenip gönderilmesi
 `src/app/saha/receipt-entry-screen.tsx` (150) — yeni fiş girişi formu (tutar/KDV/tarih/kategori)
 `src/app/saha/saha-home-screen.tsx` (179) — saha ana ekranı: FİŞ TARA diski + galeri/belgesiz + düzeltme listesi
@@ -157,6 +166,7 @@ varsayim yapilmaz.
 `src/shared/supabase/invitation-service.ts` (52) — departman listesi + davet oluşturma
 `src/shared/supabase/library-service.ts` (72) — Kalem Kütüphanesi okuma (kart-bazlı + tüm kütüphane)
 `src/shared/supabase/onboarding-service.ts` (177) — departman/dönem/bütçe oluşturma, proje açma sarmalayıcı
+`src/shared/supabase/person-label-service.ts` (247) — kişi etiketi (budget_cost_objects, kind='kisi') okuma/yazma servis çağrıları
 `src/shared/supabase/receipt-service.ts` (181) — fiş CRUD + onay/red/düzeltme RPC çağrıları
 `src/shared/theme.ts` (24) — dark/light tema state'i + localStorage kalıcılığı
 
@@ -165,7 +175,7 @@ Edge functions (`supabase/functions/`):
 `clear-claims/index.ts` (44) — çıkışta app_metadata claim'lerini temizler
 `set-claims/index.ts` (65) — proje seçiminde app_metadata'ya project_id/role/dept_id yazar
 
-`supabase/migrations/` — 37 göç (baseline hariç), kronolojik. baseline = BAYAT taban; guncel sema = baseline + sonraki tum gocler. Gocleri okurken kronolojik oku, yalniz baseline'a guvenme. Kararlari: docs/butce/BUTCE-SEMA-KARARLARI.md
+`supabase/migrations/` — 63 göç (baseline hariç), kronolojik (19 Eylül 2026'da ölçüldü, toplam 64 dosya). Baseline = bayat taban; güncel şema = baseline + sonraki tüm göçler. Göçleri okurken kronolojik oku, yalnız baseline'a güvenme. Kararları: docs/butce/BUTCE-SEMA-KARARLARI.md
 
 ### C seviyesi (BASİT)
 
@@ -294,15 +304,25 @@ Kaynak: docs/butce/BUTCE-UI-MIMARISI.md bölüm 2 (İ1-İ8) + bölüm 8, docs/AR
 
 ## 9. TEST HARİTASI
 
-Test sayıları `npm test` çıktısından okundu (19 Ağustos 2026), toplam 299/299 geçti.
+Test sayıları `npm test` çıktısından ÖLÇÜLEREK okundu (19 Eylül 2026), toplam 402/402 geçti (20 dosya).
 
 - `src/shared/cfe/cfe.test.ts` — CFE motorunu (net/brüt/KDV/kova) korur — 28 test
 - `src/shared/cfe/payroll.test.ts` — Bordro motorunu (payroll.ts) korur — 27 test
-- `src/shared/supabase/budget-service.test.ts` — budget-service.ts servis fonksiyonlarını korur (kartNetToplamlari + updateItemField payment_status VALID + addBudgetItem RPC yolları dahil) — 35 test
+- `src/shared/supabase/budget-service.test.ts` — budget-service.ts servis fonksiyonlarını korur (kartNetToplamlari + updateItemField payment_status VALID + addBudgetItem RPC yolları, personObjectId pass-through dahil) — 34 test
 - `src/shared/supabase/library-service.test.ts` — Kalem Kütüphanesi okumasını korur (fetchCardLibrary kalemleri ve başlıkları AYRI listelerde döndürür, fetchAllLibrary isGroup ile birlikte tam liste döner) — 3 test
-- `src/app/muhasebe/budget/hooks/grid-navigation-core.test.ts` — İ7 klavye çekirdeğini (resolveKeyAction/reduceGrid) korur — 108 test
+- `src/shared/supabase/payroll-read.test.ts` — assembleBordroInput'u (bordro girdisinin Supabase'den derlenmesi) korur — 6 test
+- `src/shared/supabase/person-label-service.test.ts` — countPersonLabels'ı (Üretim Kayıtları masa kapağı sayacı) korur — 1 test
+- `src/shared/components/toast.test.tsx` — toast süre ve yer kuralını korur — 3 test
+- `src/app/muhasebe/budget/hooks/grid-navigation-core.test.ts` — İ7 klavye çekirdeğini (resolveKeyAction/reduceGrid) korur — 115 test
 - `src/app/muhasebe/budget/format.test.ts` — format.ts saf fonksiyonlarını korur (findCrossCardMatches'in başlık-satırı istisnası + headingKeyOf/groupRowsByHeading dahil) — 66 test
+- `src/app/muhasebe/budget/card-view.test.ts` — buildCardView'ı (kartın görünen düzeni: başlık grubu + kişi bloğu + türetilen satır tutarları, TEK kaynak) korur — 6 test
+- `src/app/muhasebe/budget/columns.test.ts` — BUDGET_COLUMNS kolon seti sabitini korur — 4 test
+- `src/app/muhasebe/budget/display-name.test.ts` — itemDisplayName/summaryDisplayName'i (AD YERLEŞİMİ kararının saf hesabı) korur — 13 test
+- `src/app/muhasebe/budget/person-bring.test.ts` — personCardPresence/personNameCollisions/filterPersonsForAtom'u (Oyuncular listesi getirme mantığı) korur — 14 test
+- `src/app/muhasebe/budget/person-groups.test.ts` — groupByPerson/derivedUnitNets'i (kişi bloğu gruplama + komisyon türetme) korur — 30 test
 - `src/app/muhasebe/budget/components/add-item-panel.test.tsx` — kalem ekleme paneli davranışını korur — 4 test
-- `src/app/muhasebe/budget/totals.test.ts` — satır/kart toplamı saf fonksiyonlarını (rowTotals/cardTotals) korur — 8 test
-- `src/app/auth/shell-routing.test.tsx` — rol/adres eşlemesini ve kabuk-klasik dal ayrımını korur (muhasebe adresinde alt şerit görünmez; /butce cardId'li ve cardId'siz dalları) — 11 test
+- `src/app/muhasebe/budget/components/person-pick-sheet.test.tsx` — kişi seçme panosunun Görev hanesine göre süzmesini korur — 7 test
+- `src/app/muhasebe/budget/totals.test.ts` — satır/kart toplamı saf fonksiyonlarını (rowTotals/cardTotals) korur — 9 test
+- `src/app/muhasebe/production/list-bucket.test.ts` — bucketOf'u (Üretim Kayıtları liste bölme hesabı) korur — 5 test
+- `src/app/auth/shell-routing.test.tsx` — rol/adres eşlemesini ve kabuk-klasik dal ayrımını korur (muhasebe adresinde alt şerit görünmez; /butce cardId'li ve cardId'siz dalları) — 18 test
 - `src/app/layout/app-shell.test.tsx` — kabuk yerleşimini ve ray daraltma davranışını korur — 9 test
