@@ -129,8 +129,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
       for (const need of missing) {
         const catalogCode = COMMISSION_CATALOG_BY_KIND[need.kind]
         const defaultRate = allLibraryRef.current.find((l) => l.catalogCode === catalogCode)?.defaultDeriveRate ?? null
-        const newItemId = await addBudgetItem(cardRef.current.groupId, { catalogCode })
-        await updateItemField(newItemId, 'personObjectId', need.personObjectId)
+        const newItemId = await addBudgetItem(cardRef.current.groupId, { catalogCode, personObjectId: need.personObjectId })
         if (defaultRate !== null) await updateItemField(newItemId, 'deriveRate', defaultRate)
         commissionBornKeysRef.current.add(need.personObjectId + ':' + catalogCode)
       }

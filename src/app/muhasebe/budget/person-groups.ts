@@ -137,7 +137,9 @@ export type RenderRow =
 // Ucuncu gecis: sira VERITABANINDA (fn_add_budget_item catalog_code, item_code'a gore
 // yeniden numaralar), KOMPOZISYON burada. Bir kisinin dagilmis satirlari kisinin ILK satirinin
 // bulundugu yerde BLOKTA toplanir - blok icinde satirlarin KENDI ARALARINDAKI sirasi (gelis
-// sirasi = katalog kodu sirasi: kase, mesai, prova, komisyon) KORUNUR. Kisisiz satirlar ve
+// sirasi = katalog kodu sirasi) KORUNUR. TEK ISTISNA (Engin karari, 19 Eylul 2026): oranla
+// dogan satir (derive_rate dolu) blogun EN SONUNA alinir - komisyon kendi sahibinin
+// kalemlerinden sonra gelmeli, ustunde durursa neye ait oldugu okunmaz. Kisisiz satirlar ve
 // ozeti olmayan (tek satirli) kisilerin satirlari BULUNDUKLARI YERDE kalir, siralari degismez.
 // SIRALAMAYI SQL'E TASIMA (BUTCE-EKRAN-KARARLARI bolum 20 KARTIN GORUNEN DUZENI): ikinci bir
 // siralama otoritesi kurulmus olurdu, baslik ekranda kisi veritabaninda kalirdi - kompozisyon
@@ -153,7 +155,9 @@ export function buildRenderRows(
     if (key && summaryPersonIds.has(key)) {
       if (summarized.has(key)) continue
       summarized.add(key)
-      const personRows = groupRows.filter((r) => r.personObjectId === key)
+      const ownRows = groupRows.filter((r) => r.personObjectId === key && r.deriveRate === null)
+      const derivedRows = groupRows.filter((r) => r.personObjectId === key && r.deriveRate !== null)
+      const personRows = [...ownRows, ...derivedRows]
       out.push({ kind: 'summary', personObjectId: key, rows: personRows })
       for (const pr of personRows) {
         out.push({ kind: 'item', row: pr, underSummary: true })

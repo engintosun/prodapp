@@ -348,4 +348,19 @@ describe('buildRenderRows', () => {
       { kind: 'item', row: rows[3], underSummary: true },
     ])
   })
+
+  it('turetilmis satir blogun EN SONUNDA durur, digerlerinin sirasi bozulmaz', () => {
+    const rows = [
+      makeItem({ id: 'komisyon', personObjectId: 'p1', deriveRate: 20 }),
+      makeItem({ id: 'kase', personObjectId: 'p1' }),
+      makeItem({ id: 'mesai', personObjectId: 'p1' }),
+    ]
+    const out = buildRenderRows(rows, new Set(['p1']))
+    expect(out).toEqual([
+      { kind: 'summary', personObjectId: 'p1', rows: [rows[1], rows[2], rows[0]] },
+      { kind: 'item', row: rows[1], underSummary: true },
+      { kind: 'item', row: rows[2], underSummary: true },
+      { kind: 'item', row: rows[0], underSummary: true },
+    ])
+  })
 })
