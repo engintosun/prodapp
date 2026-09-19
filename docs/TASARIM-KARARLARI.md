@@ -20,6 +20,7 @@
 
 ## 3. Tema ve görsel kimlik (ilke kayıtlı, değerler G6'da)
 - **İki tema EŞİTTİR** (Engin kararı, 5 Ağustos 2026 — ESKİ ifade "Dark-mode öncelikli (set ortamı), light mode da bulunur" idi, kaldırıldı): koyu ve açık temadan hiçbiri diğerine öncelikli değildir. Üç sonucu: (a) koyu temada işlev bozulması ertelenebilir kozmetik değildir — diğer bozukluklarla aynı öncelikte ele alınır; (b) tokens.css baştan iki değerli kurulur, sonradan koyu tema eklenmez; (c) G6 görsel turu iki temayı birlikte kapsar, biri sonra eklenmez. Tema tercihi kullanıcı bazlı.
+- **Ön plan rengi kaba verilir, tek metne yamanmaz (Engin kararı, 16 Eylül 2026):** renk kapsayan öğe (kart/buton/sheet) üzerinde tanımlanır, içindeki tek tek metinlere ayrı ayrı yamanmaz. Açık zeminli bir kap koyu temanın yazı rengini miras alır.
 - **Renk paleti, accent kullanımı, tipografi, ikonografi, logo/favicon → G6 görsel tasarım oturumunda belirlenecek (AÇIK SLOT).**
 - tokens.css yapısı placeholder değerlerle kurulur; değerler G6'da swap edilir, yapı değişmez.
 

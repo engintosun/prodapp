@@ -562,7 +562,7 @@ export async function copyLastPeriodToMain(itemId: string, stageId: string): Pro
 export async function addBudgetItem(
   groupId: string,
   opts:
-    | { catalogCode: string }
+    | { catalogCode: string; personObjectId?: string }
     | { name: string; paymentStatus: string; unitCode: string }
     | { existingCode: string; name: string; paymentStatus: string; unitCode: string }
 ): Promise<string> {
@@ -573,6 +573,7 @@ export async function addBudgetItem(
     p_payment_status: 'catalogCode' in opts ? null : opts.paymentStatus,
     p_unit_code: 'catalogCode' in opts ? null : opts.unitCode,
     p_existing_code: 'existingCode' in opts ? opts.existingCode : null,
+    p_person_object_id: 'catalogCode' in opts ? (opts.personObjectId ?? null) : null,
   })
   if (error) throw new Error(error.message)
   return data as unknown as string

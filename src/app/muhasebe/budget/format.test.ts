@@ -200,8 +200,8 @@ describe('matchLibraryItems', () => {
 
 describe('buildRoomOptions (D3c-2 — AYIKLAMA KURALI + DEVRALMA)', () => {
   const LIBRARY = [
-    { id: 'l1', catalogCode: '1501', name: 'Yönetmen Kaşesi', aliases: [], defaultPaymentStatus: 'sirket', defaultUnitCode: 'day' },
-    { id: 'l2', catalogCode: '1502', name: 'Koreograf', aliases: ['Coreographer'], defaultPaymentStatus: 'bordro', defaultUnitCode: 'day' },
+    { id: 'l1', catalogCode: '1501', name: 'Yönetmen Kaşesi', aliases: [], defaultPaymentStatus: 'sirket', defaultUnitCode: 'day', asksPerson: false },
+    { id: 'l2', catalogCode: '1502', name: 'Koreograf', aliases: ['Coreographer'], defaultPaymentStatus: 'bordro', defaultUnitCode: 'day', asksPerson: false },
   ]
 
   it('kutuphane satirlari listeye oldugu gibi girer', () => {
@@ -235,6 +235,7 @@ describe('buildRoomOptions (D3c-2 — AYIKLAMA KURALI + DEVRALMA)', () => {
       catalogCode: '1598-01',
       paymentStatus: 'bordro',
       unitCode: 'week',
+      asksPerson: false,
     })
   })
 

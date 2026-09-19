@@ -446,7 +446,7 @@ describe('addBudgetItem — kutuphane/serbest/mevcut-kod yollari (tek imza sonra
     capturedRpcArgs = null
   })
 
-  it('kutuphane modu: p_existing_code her zaman null gonderilir (6-parametreli imzaya duser)', async () => {
+  it('kutuphane modu: p_existing_code ve p_person_object_id null gonderilir (7-parametreli imzaya duser)', async () => {
     await addBudgetItem('group-1', { catalogCode: '1101-01' })
     expect(capturedRpcArgs).toEqual({
       p_group_id: 'group-1',
@@ -455,10 +455,24 @@ describe('addBudgetItem — kutuphane/serbest/mevcut-kod yollari (tek imza sonra
       p_payment_status: null,
       p_unit_code: null,
       p_existing_code: null,
+      p_person_object_id: null,
     })
   })
 
-  it('serbest mod: isim/statu/birim gonderilir, p_existing_code null', async () => {
+  it('kutuphane modu + personObjectId: p_person_object_id doldurulur (asks_person, 19 Eylul 2026)', async () => {
+    await addBudgetItem('group-1', { catalogCode: '1611', personObjectId: 'person-1' })
+    expect(capturedRpcArgs).toEqual({
+      p_group_id: 'group-1',
+      p_catalog_code: '1611',
+      p_name: null,
+      p_payment_status: null,
+      p_unit_code: null,
+      p_existing_code: null,
+      p_person_object_id: 'person-1',
+    })
+  })
+
+  it('serbest mod: isim/statu/birim gonderilir, p_existing_code ve p_person_object_id null', async () => {
     await addBudgetItem('group-1', { name: 'Yeni Kalem', paymentStatus: 'sirket', unitCode: 'gun' })
     expect(capturedRpcArgs).toEqual({
       p_group_id: 'group-1',
@@ -467,10 +481,11 @@ describe('addBudgetItem — kutuphane/serbest/mevcut-kod yollari (tek imza sonra
       p_payment_status: 'sirket',
       p_unit_code: 'gun',
       p_existing_code: null,
+      p_person_object_id: null,
     })
   })
 
-  it('mevcut-kod modu: p_existing_code doldurulur', async () => {
+  it('mevcut-kod modu: p_existing_code doldurulur, p_person_object_id null', async () => {
     await addBudgetItem('group-1', { existingCode: '1198-01', name: 'Yeni Kalem', paymentStatus: 'sirket', unitCode: 'gun' })
     expect(capturedRpcArgs).toEqual({
       p_group_id: 'group-1',
@@ -479,6 +494,7 @@ describe('addBudgetItem — kutuphane/serbest/mevcut-kod yollari (tek imza sonra
       p_payment_status: 'sirket',
       p_unit_code: 'gun',
       p_existing_code: '1198-01',
+      p_person_object_id: null,
     })
   })
 })

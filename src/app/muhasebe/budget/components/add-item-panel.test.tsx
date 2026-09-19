@@ -19,6 +19,7 @@ const LIBRARY_OPTION: RoomOption = {
   catalogCode: '1500001',
   paymentStatus: 'bordro',
   unitCode: 'day',
+  asksPerson: false,
 }
 
 function renderPanel(overrides: { query?: string; options?: RoomOption[]; crossCardNames?: string[] } = {}) {
@@ -35,6 +36,7 @@ function renderPanel(overrides: { query?: string; options?: RoomOption[]; crossC
       crossCardNames={overrides.crossCardNames ?? []}
       onCreateFree={() => {}}
       onClose={() => {}}
+      persons={[]}
     />,
   )
   return screen.getByRole('dialog')

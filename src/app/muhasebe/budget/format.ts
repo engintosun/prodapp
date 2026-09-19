@@ -166,10 +166,11 @@ export interface RoomOption {
   catalogCode: string
   paymentStatus: string
   unitCode: string
+  asksPerson: boolean
 }
 
 export function buildRoomOptions(
-  library: { id: string; catalogCode: string; name: string; aliases: string[]; defaultPaymentStatus: string; defaultUnitCode: string }[],
+  library: { id: string; catalogCode: string; name: string; aliases: string[]; defaultPaymentStatus: string; defaultUnitCode: string; asksPerson: boolean }[],
   rows: { catalogCode: string | null; libraryItemId: string | null; name: string; paymentStatusCode: string; unitCode: string; sortNo: number }[],
 ): RoomOption[] {
   const libraryOptions: RoomOption[] = library
@@ -183,6 +184,7 @@ export function buildRoomOptions(
       catalogCode: it.catalogCode,
       paymentStatus: it.defaultPaymentStatus,
       unitCode: it.defaultUnitCode,
+      asksPerson: it.asksPerson,
     }))
 
   // AYIKLAMA KURALI: libraryItemId dolu satirlar ATLANIR (karsiligi kutuphane adiyla zaten
@@ -215,6 +217,7 @@ export function buildRoomOptions(
       catalogCode: code,
       paymentStatus: v.paymentStatus,
       unitCode: v.unitCode,
+      asksPerson: false,
     }))
 
   return [...libraryOptions, ...cardOptions]

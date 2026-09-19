@@ -1,8 +1,13 @@
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { RefObject } from 'react'
 import { resolveKeyAction } from '../hooks/grid-navigation-core'
 import type { RoomOption } from '../format'
 import { useToastHost } from '../../../../shared/components/toast'
+
+export interface PersonOption {
+  id: string
+  name: string
+}
 
 interface AddItemPanelProps {
   query: string
@@ -11,10 +16,13 @@ interface AddItemPanelProps {
   inputRef: RefObject<HTMLInputElement | null>
   onQueryChange: (value: string) => void
   onHighlightChange: (next: number) => void
-  onSelect: (item: RoomOption) => void
+  onSelect: (item: RoomOption, personObjectId?: string) => void
   crossCardNames: string[]
   onCreateFree: (name: string) => void
   onClose: () => void
+  // GOREV DISI ATOMLARDA KISI SORMA (asks_person, 19 Eylul 2026): kartta aktif satiri
+  // olan kisiler - panelde HESAPLANMAZ, prop olarak gelir (card-table-screen.tsx).
+  persons: PersonOption[]
 }
 
 // CALISMA YUZEYI (panel), modal DEGIL - TASARIM-KARARLARI bolum 9: karartmaz, altindaki icerik
@@ -31,11 +39,39 @@ export function AddItemPanel({
   crossCardNames,
   onCreateFree,
   onClose,
+  persons,
 }: AddItemPanelProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const createButtonRef = useRef<HTMLButtonElement>(null)
   const triggerElRef = useRef<Element | null>(null)
   const onCloseRef = useRef(onClose)
+  // ASKS_PERSON IKI ADIM (19 Eylul 2026): birinci adim bugunku kalem listesi; asksPerson
+  // isaretli secenek secilince panel KAPANMAZ, ikinci adima gecer (baslik "Kime?", liste
+  // kisi listesi olur). pendingOption ikinci adimda hangi kalemin kisi bekledigini tasir.
+  const [step, setStep] = useState<'library' | 'person'>('library')
+  const [pendingOption, setPendingOption] = useState<RoomOption | null>(null)
+
+  const backToLibraryStep = () => {
+    setStep('library')
+    setPendingOption(null)
+  }
+
+  const selectOption = (o: RoomOption) => {
+    if (o.asksPerson) {
+      setPendingOption(o)
+      setStep('person')
+      onQueryChange('')
+      onHighlightChange(-1)
+      return
+    }
+    onSelect(o)
+  }
+
+  const selectPerson = (personId: string) => {
+    if (!pendingOption) return
+    onSelect(pendingOption, personId)
+    backToLibraryStep()
+  }
   // MESAJ YERI (TASARIM-KARARLARI bolum 9, 17 Eylul 2026): yuzey acikken mesajlar
   // basligin altindaki kapta cikar.
   const toastHostRef = useToastHost()
@@ -75,6 +111,16 @@ export function AddItemPanel({
   // kontrati (vurgu YALNIZ ok tusuyla dogar; vurgusuz Enter/Tab kalem DOGURMAZ) tek kaynaktan
   // gelir ve grid-navigation-core.test.ts'teki testlerle korunmaya devam eder.
   const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    // ASKS_PERSON IKI ADIM: ikinci adimda (kisi listesi) cekirdegin combobox sozlesmesi
+    // (options/highlightIndex) uygulanmaz - o liste bu odanin degil. Yalniz Esc, kapatma
+    // dugmesiyle AYNI anlami tasir: birinci adima doner, oda kapanmaz.
+    if (step === 'person') {
+      if (e.key === 'Escape') {
+        e.stopPropagation()
+        backToLibraryStep()
+      }
+      return
+    }
     const res = resolveKeyAction(e, 'nav', '', 'combobox', { open: true, hasHighlight })
     if (res.preventDefault) e.preventDefault()
     if (res.listIntent === 'listDown') {
@@ -83,7 +129,7 @@ export function AddItemPanel({
       onHighlightChange(Math.max(highlightIndex - 1, -1))
     } else if (res.listIntent === 'listSelect') {
       const picked = options[highlightIndex]
-      if (picked) onSelect(picked)
+      if (picked) selectOption(picked)
     } else if (res.listIntent === 'listClose') {
       // Cekirdek Esc ve VURGUSUZ Tab icin ayni niyeti uretir; odada anlamlari AYRIDIR:
       // Esc odayi kapatir, Tab odak tuzagi icinde dondurur (oda kapanmaz, liste hep acik).
@@ -118,7 +164,7 @@ export function AddItemPanel({
       />
       <div
         role="dialog"
-        aria-label="Kalem ekle"
+        aria-label={step === 'person' ? 'Kime?' : 'Kalem ekle'}
         onKeyDown={onKeyDown}
         onClick={(e) => e.stopPropagation()}
         style={{
@@ -138,12 +184,16 @@ export function AddItemPanel({
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-3)' }}>
-          <span style={{ fontSize: 'var(--text-md)', fontWeight: 600, color: 'var(--color-text)' }}>Kalem ekle</span>
+          <span style={{ fontSize: 'var(--text-md)', fontWeight: 600, color: 'var(--color-text)' }}>
+            {step === 'person' ? 'Kime?' : 'Kalem ekle'}
+          </span>
           <button
             ref={closeButtonRef}
             type="button"
-            aria-label="Kapat"
-            onClick={onClose}
+            aria-label={step === 'person' ? 'Geri dön' : 'Kapat'}
+            // ASKS_PERSON IKI ADIM: ikinci adimda ayni dugme birinci adima doner, oda
+            // kapanmaz, satir dogmaz (Engin karari, 19 Eylul 2026).
+            onClick={step === 'person' ? backToLibraryStep : onClose}
             style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', fontSize: 'var(--text-lg)', padding: '0 var(--space-1)' }}
           >
             ×
@@ -151,6 +201,53 @@ export function AddItemPanel({
         </div>
 
         <div ref={toastHostRef} style={{ position: 'sticky', top: 0 }} />
+
+        {step === 'person' ? (
+          persons.length > 0 ? (
+            <ul
+              role="listbox"
+              style={{
+                marginTop: 0,
+                marginBottom: 0,
+                padding: 0,
+                listStyle: 'none',
+                maxHeight: 320,
+                overflowY: 'auto',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-sm)',
+              }}
+            >
+              {persons.map((p) => (
+                <li key={p.id} role="option">
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => selectPerson(p.id)}
+                    style={{
+                      display: 'block',
+                      width: '100%',
+                      textAlign: 'left',
+                      padding: 'var(--space-2)',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: 'var(--text-sm)',
+                      color: 'var(--color-text)',
+                      background: 'transparent',
+                    }}
+                  >
+                    {p.name}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p style={{ margin: 0, fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>
+              Bu kartta aktif satırı olan kimse yok.
+            </p>
+          )
+        ) : (
+          <>
         <input
           ref={inputRef}
           type="text"
@@ -190,7 +287,7 @@ export function AddItemPanel({
                   // Secenege tiklandiginda yazi alaninin blur olmasini engeller
                   // (mousedown blur'dan ONCE gelir). Blur ASLA secmez (bolum 17 kontrati).
                   onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => onSelect(o)}
+                  onClick={() => selectOption(o)}
                   style={{
                     display: 'block',
                     width: '100%',
@@ -281,6 +378,8 @@ export function AddItemPanel({
               </span>
             </button>
           </div>
+        )}
+          </>
         )}
       </div>
     </>

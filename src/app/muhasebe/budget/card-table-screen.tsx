@@ -209,15 +209,17 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   }, [addQuery, allLibrary, cardCode, budgetCards])
 
   const onSelectLibraryItem = useCallback(
-    async (o: RoomOption) => {
+    async (o: RoomOption, personObjectId?: string) => {
       if (!cardRef.current || adding) return
       try {
         setAdding(true)
         // D3c-2: kutuphane secenegi bugunku davranisin AYNISI; kart secenegi (kartin mevcut
         // serbest kalemi) AYNI kodla + ilk satirin statu/birimini DEVRALARAK ikinci satir doger.
+        // ASKS_PERSON (19 Eylul 2026): personObjectId yalniz kutuphane yolunda anlamlidir -
+        // panel bunu yalniz asksPerson isaretli (source==='library') secenekte gonderir.
         const newItemId =
           o.source === 'library'
-            ? await addBudgetItem(cardRef.current.groupId, { catalogCode: o.catalogCode })
+            ? await addBudgetItem(cardRef.current.groupId, { catalogCode: o.catalogCode, personObjectId })
             : await addBudgetItem(cardRef.current.groupId, {
                 existingCode: o.catalogCode,
                 name: o.name,
@@ -369,6 +371,13 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // COKLU SATIR UYARISI: fissiz elle yazilmis satirla ayni adli etiket eslesirse pano
   // "kartta benzer satır var" gosterir - bkz. person-bring.ts personNameCollisions.
   const nameCollisions = useMemo(() => personNameCollisions(rows, personLabels), [rows, personLabels])
+
+  // ASKS_PERSON (19 Eylul 2026): kartta aktif satiri olan kisiler - var olan personLabels ve
+  // rows'tan turetilir, yeni sorgu acilmaz. Panelin ikinci adiminda (Kime?) bu liste gosterilir.
+  const cardPersons = useMemo(() => {
+    const ids = new Set(rows.map((r) => r.personObjectId).filter((id): id is string => id !== null))
+    return personLabels.filter((l) => ids.has(l.id)).map((l) => ({ id: l.id, name: l.name }))
+  }, [rows, personLabels])
 
   // TIK KALDIRMA -> SATIR SILME (9 Eylul 2026, SILME KURALI - UYGULANMAMIS KARAR uygulaniyor):
   // "Satirin varligi akisi da soyler: tik varsa komisyonu yapimci ustlenir ve satir dogar;
@@ -819,6 +828,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           crossCardNames={crossCardNames}
           onCreateFree={onCreateFreeItem}
           onClose={onCloseAddPanel}
+          persons={cardPersons}
         />
       )}
       {openBurden !== null && (() => {

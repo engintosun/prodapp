@@ -174,7 +174,7 @@ Bu belge, kurulacak şema+CFE kolonlarının gerekçesidir. **Önerilen** alanla
 
 **Çift-fringe guard (§4.9 zaten karar):** statü `smm`/`sirket`/`telif_belgeli`/`kira_sahis`/`konaklama`/`resmi_odeme` ise SGK fringe SIFIRLANIR (yük faturada/ayrı); yalnız `bordro`da fringe biner.
 
-`rate_catalog` = versiyonlu parametre DB'nin veri katmanı; `fn_open_budget` açılışta bütçeye snapshot'lar (B16 — açık yapım donmuş kopyasını korur). Mevzuat değişince tek yer güncellenir, açık yapımlar etkilenmez. Koda oran gömmek YASAK (B20). Katalog türetim zinciri ve satır türleri (oran/tutar/tarife): PERSONEL-MEVZUATI §1.
+`rate_catalog` = versiyonlu parametre DB'nin veri katmanı; `fn_open_budget` açılışta bütçeye snapshot'lar (B16 — açık yapım donmuş kopyasını korur). Mevzuat değişince tek yer güncellenir, açık yapımlar etkilenmez. Koda oran gömmek YASAK (B20). Katalog türetim zinciri ve satır türleri (oran/tutar/tarife/katsayı — dördüncü tür 18 Eylül 2026'da eklendi, göç `20260918120000`): PERSONEL-MEVZUATI §1.
 
 ---
 

@@ -17,6 +17,7 @@ export interface LibraryItem {
   aliases: string[]
   isGroup: boolean
   isDerived: boolean
+  asksPerson: boolean
 }
 
 export interface CardLibrary {
@@ -37,6 +38,7 @@ function mapLibraryRow(r: Record<string, unknown>): LibraryItem {
     aliases: (r.aliases as string[] | null) ?? [],
     isGroup: r.is_group as boolean,
     isDerived: r.is_derived as boolean,
+    asksPerson: r.asks_person as boolean,
   }
 }
 
@@ -48,7 +50,7 @@ function mapLibraryRow(r: Record<string, unknown>): LibraryItem {
 export async function fetchCardLibrary(cardCode: string): Promise<CardLibrary> {
   const { data, error } = await supabase
     .from('item_library')
-    .select('id, catalog_code, card_code, name, name_en, default_payment_status, default_unit_code, default_derive_rate, aliases, is_group, is_derived')
+    .select('id, catalog_code, card_code, name, name_en, default_payment_status, default_unit_code, default_derive_rate, aliases, is_group, is_derived, asks_person')
     .eq('card_code', cardCode)
     .order('catalog_code')
   if (error) throw new Error(error.message)
@@ -65,7 +67,7 @@ export async function fetchCardLibrary(cardCode: string): Promise<CardLibrary> {
 export async function fetchAllLibrary(): Promise<LibraryItem[]> {
   const { data, error } = await supabase
     .from('item_library')
-    .select('id, catalog_code, card_code, name, name_en, default_payment_status, default_unit_code, default_derive_rate, aliases, is_group, is_derived')
+    .select('id, catalog_code, card_code, name, name_en, default_payment_status, default_unit_code, default_derive_rate, aliases, is_group, is_derived, asks_person')
     .order('catalog_code')
   if (error) throw new Error(error.message)
   return (data ?? []).map(mapLibraryRow)
