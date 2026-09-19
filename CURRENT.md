@@ -85,6 +85,14 @@ Bu oturumda alınan kararlar; tam metinleri KALICILIK KURALI gereği kendi ev do
 - **Türetilmiş satır kişinin bloğunda EN SONDA durur — UYGULANDI (20 Eylül 2026).** Kural `person-groups.ts` içindeki `buildRenderRows` kompozisyonuna girdi; katalog sırasına ve 17 Ağustos elle sıralama kararına dokunulmadı, tarayıcıda doğrulandı. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20.
 - **İsim kararları (kart 1600 tarandı, altı aday).** Stand-In olduğu gibi kalır. 1606 Stunt Oyuncusu ile 1607 Dublör AYRI şeylerdir, ikisi de sektörde yerleşiktir, ikisi de kalır. 1605/1609/1619 "Cast" yazımı kalır, sektörde böyle yazılıyor. 1613 Dublaj ile 1620 ADR AYRI şeylerdir — dublaj dil değiştirme (yerelleştirme) amacı güder, ADR oyuncunun kendi repliklerini aynı dilde ve dudak hareketleriyle yeniden kaydetmesidir; ikisi de kalır. Yalnız kart içi imla çatlağı tekleştirildi: Kast → Cast. Ev dosyası: `docs/butce/KART-KATALOGU.md` §7.5, "1613 AD ÇAPRAZ KONTROL DÜZELTMESİ" maddesinin hemen altına yeni "İSİM TARAMASI" bloğu olarak yazıldı.
 
+## Alınan kararlar (20 Eylül 2026, Engin)
+
+- **Komisyon kaleminin aidiyeti kişiden gelir.** Uygulandı ve sahada doğrulandı; ayrıntı yukarıdaki 20 Eylül milestone kaydında. Ev dosyası: `docs/butce/KART-KATALOGU.md` §7.5 AİDİYET KURALI.
+- **Mesainin saha karşılığı.** Mesai teknik ekibe ve başta öyle anlaşılmış oyunculara yazılır; fatura kesene, başta konuşulmamış oyuncuya, figürasyona ve sürücüye yazılmaz. Ev dosyası: `docs/butce/KART-KATALOGU.md` §7.5.
+- **Mesai/prova ve komisyon alabilecek görevler.** Mesai ve prova: 1604, 1606, 1607, 1608, 3902, 3904. Ayrıca ajans ve menajer komisyonu: 1606, 1607, 3904. Yeni mekanizma gerektirmiyor; tek şart kişinin Üretim Kayıtları'nda kaydının olması. Ev dosyası: aynı yer.
+- **Mesainin blok içi yeri konu değil**, bugünkü haliyle kalır. Ev dosyası: aynı yer.
+- **İŞ ÇIPASI AYRI TURA BIRAKILDI.** Adı girilmemiş şablon satırına mesai, prova ya da komisyon eklenemiyor; kartta bir kaleme iliştirilebilen tek çıpa kişi kaydıdır. Etiket tablosunda iş cinsi hanesi var, Oyuncular listesi okumuyor. Karara bağlanmadı, kendi turunu bekliyor.
+
 ## Sıradaki iş
 
 **OYUNCU KARTINDAN KALANLAR.** Bir haftalık KART 1600 / Üretim Kayıtları turunun artığı.
