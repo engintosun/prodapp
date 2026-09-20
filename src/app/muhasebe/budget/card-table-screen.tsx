@@ -19,6 +19,8 @@ import { PeriodRow } from './components/period-row'
 import { HeadingRow } from './components/heading-row'
 import { SummaryRow } from './components/summary-row'
 import { buildCardView } from './card-view'
+import { resolveCollapsed, toggleCollapse, openBlock } from './collapse-state'
+import type { CollapseState } from './collapse-state'
 import { personsNeedingCommissionRow, COMMISSION_CATALOG_BY_KIND } from './person-groups'
 import type { CommissionKind } from './person-groups'
 import { personCardPresence, personNameCollisions } from './person-bring'
@@ -172,6 +174,10 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // sonraki bir turda "satir gelince baslasin" diye degistirilmez (Engin karari 2026-07-31).
   const [justAddedIds, setJustAddedIds] = useState<string[]>([])
   const pendingScrollIdRef = useRef<string | null>(null)
+  // KART 1600 M3a-2: baslik ve ozet satirlarinin katlama durumu. Oturum icinde React state
+  // olarak yasar (kalici saklama YOK - kapsam disi). Anahtar: baslik 'h:'+key, ozet 'p:'+personId.
+  // Kaydirma efektinin (asagida) openBlock cagirabilmesi icin bu state ondan ONCE tanimlanir.
+  const [collapseState, setCollapseState] = useState<CollapseState>(new Map())
 
   // D3c-2: oda listesi artik kutuphane + kartin MEVCUT serbest kalemlerinden kurulur
   // (AYIKLAMA KURALI: kutuphaneden dogmus satirlar ikinci kez GIRMEZ). Sorgu bos iken TUMU
@@ -300,14 +306,28 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // iceri girer; alt bosluk scroll-margin-bottom ile gelir. DIKKAT: bu efekt odaga
   // DOKUNMAZ, bu yuzden KLV-K12 dialog korumasinin ICINE ALINMAZ - oda acikken de
   // calismasi gerekir, ekleme zaten oda acikken oluyor.
+  // KAPALI BLOGA EKLEME (20 Eylul 2026, Engin karari): satir kapali bir blokta ise DOM'da
+  // hic cizilmez, hedef bulunamaz. Boyle bir durumda satirin personObjectId'sine bakilir;
+  // doluysa blok openBlock ile ACILIR ve bayrak SIFIRLANMAZ - blok acilinca satir cizilir,
+  // efekt bir sonraki render'da tekrar kosar ve bu kez kaydirir. Kendiliginden dogan satir
+  // (getirme yolu, komisyon dogumu) bu yolu TETIKLEMEZ, cunku pendingScrollIdRef yalniz
+  // kullanicinin kendi eklemesinde doldurulur (onSelectLibraryItem/onCreateFreeItem).
   useEffect(() => {
     const pendingId = pendingScrollIdRef.current
     if (!pendingId) return
-    if (!rows.some((r) => r.id === pendingId)) return
-    pendingScrollIdRef.current = null
     const el = containerRef.current?.querySelector<HTMLElement>(`[data-item-id="${pendingId}"]`)
-    if (!el) return
-    el.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+    if (el) {
+      pendingScrollIdRef.current = null
+      el.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+      return
+    }
+    const row = rows.find((r) => r.id === pendingId)
+    if (!row) return
+    if (row.personObjectId) {
+      setCollapseState((prev) => openBlock('p:' + row.personObjectId, prev))
+      return
+    }
+    pendingScrollIdRef.current = null
   }, [rows, containerRef])
 
   const [openBurden, setOpenBurden] = useState<{ itemId: string; stageId: string | null } | null>(null)
@@ -530,11 +550,10 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
 
   // Tek kalemli rol blogu KAPALI dogar (10 Eylul 2026, Engin karari): ozet satiri zaten dogru
   // rakami gosteriyor, tek alt kalem ayni rakami tekrar etmesin; rakam kolonunda ne bosluk ne
-  // tekrar kalir. Bu yuzden collapsed kumesi artik "kullanicinin VARSAYILANI TERSINE CEVIRDIGI
-  // anahtarlar" demektir. Baslik satirlarinin varsayilani ACIK oldugu icin onlarin davranisi
-  // DEGISMEZ, onlar kumeyi eskisi gibi okur.
-  // KABUL EDILEN DAVRANIS: tek kalemli bir blok acikken o kisiye komisyon dogarsa varsayilan
-  // ACIK'a doner ve blok bir kez kendiliginden kapanir. Kullanici tekrar acar.
+  // tekrar kalir. Bu varsayilan yalniz kullanicinin hic dokunmadigi bloga uygulanir.
+  // KATLAMA DURUMU MUTLAKTIR (20 Eylul 2026, Engin karari): collapseState artik "varsayilani
+  // tersine cevirme bayragi" DEGIL, kullanicinin blokta BIRAKTIGI acik/kapali halin kendisidir
+  // (bkz. collapse-state.ts). Baslik satirlarinin varsayilani ACIK'tir.
   const singleItemPersonIds = useMemo(() => {
     const s = new Set<string>()
     for (const g of cardView.groups) {
@@ -545,20 +564,11 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     return s
   }, [cardView])
   const isSummaryCollapsed = (personObjectId: string) => {
-    const key = 'p:' + personObjectId
-    return singleItemPersonIds.has(personObjectId) ? !collapsed.has(key) : collapsed.has(key)
+    return resolveCollapsed('p:' + personObjectId, collapseState, singleItemPersonIds.has(personObjectId))
   }
 
-  // KART 1600 M3a-2: baslik ve ozet satirlarinin katlama durumu. Oturum icinde React state
-  // olarak yasar (kalici saklama YOK - kapsam disi). Anahtar: baslik 'h:'+key, ozet 'p:'+personId.
-  const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
-  const toggleCollapsed = useCallback((key: string) => {
-    setCollapsed((prev) => {
-      const next = new Set(prev)
-      if (next.has(key)) next.delete(key)
-      else next.add(key)
-      return next
-    })
+  const toggleCollapsed = useCallback((key: string, defaultCollapsed: boolean) => {
+    setCollapseState((prev) => toggleCollapse(key, prev, defaultCollapsed))
   }, [])
 
   // DILIM 1100-B + KART 1600 M3a-2: No kolonu TEK sayac, CIZIM SIRASINDA artar; basliklar
@@ -677,7 +687,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           <tbody>
             {cardView.groups.map((group, groupIdx) => {
               const headingKey = 'h:' + (group.heading?.key ?? 'basliksiz')
-              const headingCollapsed = group.heading !== null && collapsed.has(headingKey)
+              const headingCollapsed = group.heading !== null && resolveCollapsed(headingKey, collapseState, false)
               return (
                 <Fragment key={groupIdx}>
                   {group.heading !== null && (
@@ -685,7 +695,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                       name={group.heading.name}
                       totals={group.totals}
                       collapsed={headingCollapsed}
-                      onToggle={() => toggleCollapsed(headingKey)}
+                      onToggle={() => toggleCollapsed(headingKey, false)}
                     />
                   )}
                   {!headingCollapsed &&
@@ -699,7 +709,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                             name={summaryDisplayName(rr.personObjectId, personLabels, dutyNameByCode)}
                             totals={rr.totals}
                             collapsed={isSummaryCollapsed(rr.personObjectId)}
-                            onToggle={() => toggleCollapsed(summaryKey)}
+                            onToggle={() => toggleCollapsed(summaryKey, singleItemPersonIds.has(rr.personObjectId))}
                           />
                         )
                       }
