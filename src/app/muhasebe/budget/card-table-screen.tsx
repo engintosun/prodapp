@@ -567,6 +567,22 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
 
   const onRemoveItem = useCallback(
     async (itemId: string) => {
+      // KOMISYON SATIRI SILINMEZ (21 Eylul 2026, Engin karari). Tik kisinin kendisinde ve
+      // PROJE capinda duruyor (budget_cost_objects, project_id); tik acikken satir kart
+      // acilisinda kendiliginden geri doguyor, yani silme dugmesi yapamadigi seyi vaat
+      // ediyordu. Dugme YERINDE KALIR (klavye izgarasinda durak, kalkarsa bos durak olurdu),
+      // yalniz isi degisir: onay penceresi ACILMAZ, bildirim cikar ve silme yapilmaz.
+      // TIK YOLU BILEREK ANILMIYOR: tik kisinin proje kunyesidir, kart onu degistirmeye
+      // cagirmaz - ajansi gercekten yoksa kullanici oyuncu listesinde duzeltir.
+      // Cins STATUDEN degil KATALOG KODUNDAN okunur (12 Eylul 2026 karari): statu
+      // kullanicinin degistirebildigi bir vergi hanesidir.
+      const target = rowsRef.current.find((r) => r.id === itemId)
+      if (target && target.deriveRate !== null) {
+        const kindLabel =
+          target.catalogCode === COMMISSION_CATALOG_BY_KIND.menajer ? 'Menajer' : 'Ajans'
+        addToast(`${kindLabel} tanımlı. Komisyon yoksa silmek yerine oranı 0 yapın.`, 'warning')
+        return
+      }
       const ok = window.confirm('Bu kalemi silmek istiyor musun?')
       if (!ok) return
       try {

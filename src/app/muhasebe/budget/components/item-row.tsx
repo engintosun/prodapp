@@ -398,7 +398,7 @@ export const ItemRow = memo(function ItemRow({
           data-cell-kind="button"
           onClick={() => onRemove(item.id)}
           style={silButton}
-          title="Kalemi sil"
+          title={isCommission ? 'Komisyon satırı silinmez' : 'Kalemi sil'}
         >
           ×
         </button>
