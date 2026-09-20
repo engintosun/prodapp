@@ -312,6 +312,9 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // efekt bir sonraki render'da tekrar kosar ve bu kez kaydirir. Kendiliginden dogan satir
   // (getirme yolu, komisyon dogumu) bu yolu TETIKLEMEZ, cunku pendingScrollIdRef yalniz
   // kullanicinin kendi eklemesinde doldurulur (onSelectLibraryItem/onCreateFreeItem).
+  // Bagimlilik dizisinde collapseState VAR ve olmak zorunda: openBlock blogu actiginda rows
+  // degismez, efekt ancak bu bagimlilikla tekrar kosar ve satiri kaydirir. Eslint bunu
+  // yakalayamaz cunku efekt collapseState'i OKUMUYOR - eksik olan okuma degil TETIK.
   useEffect(() => {
     const pendingId = pendingScrollIdRef.current
     if (!pendingId) return
@@ -328,7 +331,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
       return
     }
     pendingScrollIdRef.current = null
-  }, [rows, containerRef])
+  }, [rows, containerRef, collapseState])
 
   const [openBurden, setOpenBurden] = useState<{ itemId: string; stageId: string | null } | null>(null)
   const [openNoteItemId, setOpenNoteItemId] = useState<string | null>(null)
