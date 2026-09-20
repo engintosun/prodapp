@@ -92,13 +92,15 @@ Bu oturumda alınan kararlar; tam metinleri KALICILIK KURALI gereği kendi ev do
 - **Mesai/prova ve komisyon alabilecek görevler.** Mesai ve prova: 1604, 1606, 1607, 1608, 3902, 3904. Ayrıca ajans ve menajer komisyonu: 1606, 1607, 3904. Yeni mekanizma gerektirmiyor; tek şart kişinin Üretim Kayıtları'nda kaydının olması. Ev dosyası: aynı yer.
 - **Mesainin blok içi yeri konu değil**, bugünkü haliyle kalır. Ev dosyası: aynı yer.
 - **İŞ ÇIPASI AYRI TURA BIRAKILDI.** Adı girilmemiş şablon satırına mesai, prova ya da komisyon eklenemiyor; kartta bir kaleme iliştirilebilen tek çıpa kişi kaydıdır. Etiket tablosunda iş cinsi hanesi var, Oyuncular listesi okumuyor. Karara bağlanmadı, kendi turunu bekliyor.
+- **Satır içi kişi düğmesi kalktı; kişi karta yalnız Oyuncular listesinden girer.** Not ve Başlık düğmeleri yerinde kaldı. Gerekçe: iki kapı aynı işi ters yönden yapıyordu ve elle iliştirme yolunun işi 16 Eylül'de getirme yoluna geçmişti. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20.
+- **İsim hanesinde kişi açılır listesi DÜŞÜRÜLDÜ.** 11 Eylül 2026 kaydı kapandı: görev atomu olan satırın ad hanesine kişi adı yazdırmak satırın ne olduğunu belirsizleştiriyor, üstelik bugünkü doğum modelinde dördüncü bir giriş kapısı açıyordu. Karar çevirme değil düşürme. Ev dosyası: aynı yer.
 
 ## Sıradaki iş
 
 **OYUNCU KARTINDAN KALANLAR.** Bir haftalık KART 1600 / Üretim Kayıtları turunun artığı.
 
 1. **Karar evi taraması — KAPANDI (19 Eylül 2026).** 11-18 Eylül 2026 aralığında değişen 26 kod dosyası tarandı, her dosyanın evi `INDEX.md` bölüm 7 üzerinden bulunup o bölüm okundu. Bulguların üçü bu turda (44a9ae5) yazıldı: SİLME KURALI üçüncü hal, ön plan rengi ilkesi, `rate_catalog` dördüncü cins. Kalan iki bulgu (kapalı blokta eklenen kalemin gözden kaybolması, `asks_person` kararı) aşağıdaki Park listesindedir.
-2. **`asks_person` kuralı — KAPANDI (19 Eylül 2026).** 5 Eylül 2026 kararı: kütüphaneden eklenen görev dışı atomlarda kullanıcıya kişi sorulup sorulmayacağı üç sınıfa ayrılmıştı. Göç `20260919120000` ile şemaya ve kalem ekleme yoluna girdi, sahada doğrulandı. Karar evi: `docs/butce/KART-KATALOGU.md` §7.5. AÇIK KALAN: `docs/butce/BUTCE-EKRAN-KARARLARI.md` 11 Eylül maddesi ("satır içi kişi düğmesi kaldırılamaz") bu kuralın UYGULANMAMIŞ olmasına dayanıyordu; kural artık uygulandığı için o madde yeniden gözden geçirilmeli — bu turda yapılmadı.
+2. **`asks_person` kuralı — KAPANDI (19 Eylül 2026).** 5 Eylül 2026 kararı: kütüphaneden eklenen görev dışı atomlarda kullanıcıya kişi sorulup sorulmayacağı üç sınıfa ayrılmıştı. Göç `20260919120000` ile şemaya ve kalem ekleme yoluna girdi, sahada doğrulandı. Karar evi: `docs/butce/KART-KATALOGU.md` §7.5. AÇIK KALAN KAPANDI (20 Eylül 2026): o madde yeniden gözden geçirildi ve yürürlükten kalktı.
 3. **Karara bağlanmamış üç soru.** Hepsi "Açık kalanlar" bölümünde tam metniyle duruyor, burada tekrarlanmaz: kart masasında seç kipi (cevap tek bir saha sorusuna bağlı — kullanıcılar kullanmadıkları şablon satırlarını gerçekten siliyor mu) · kadroda bir görevden kaç kişi var, kartta o görevden kaç satır var farkının kullanıcıya söylenip söylenmeyeceği · `parseCsv` ve `parseJson` testsizliği.
 
 ## Açık kalanlar

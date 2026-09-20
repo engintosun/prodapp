@@ -21,7 +21,7 @@ import { SummaryRow } from './components/summary-row'
 import { buildCardView } from './card-view'
 import { personsNeedingCommissionRow, COMMISSION_CATALOG_BY_KIND } from './person-groups'
 import type { CommissionKind } from './person-groups'
-import { personCardPresence, personNameCollisions, filterPersonsForAtom } from './person-bring'
+import { personCardPresence, personNameCollisions } from './person-bring'
 import { summaryDisplayName, commissionDisplayName } from './display-name'
 import { BurdenSheet } from './components/burden-sheet'
 import type { BordroSheetEntry } from './components/burden-sheet'
@@ -30,7 +30,6 @@ import { StatusInfoSheet } from './components/status-info-sheet'
 import { NoteSheet } from './components/note-sheet'
 import { HeadingSheet } from './components/heading-sheet'
 import { PersonListSheet } from './components/person-list-sheet'
-import { PersonPickSheet } from './components/person-pick-sheet'
 import { AddItemRow, ADD_ROW_ID } from './components/add-item-row'
 import { AddItemPanel } from './components/add-item-panel'
 
@@ -316,7 +315,6 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   const [openHeadingItemId, setOpenHeadingItemId] = useState<string | null>(null)
   const [openStatusInfo, setOpenStatusInfo] = useState(false)
   const [personListOpen, setPersonListOpen] = useState(false)
-  const [openPersonItemId, setOpenPersonItemId] = useState<string | null>(null)
   const [personLabels, setPersonLabels] = useState<PersonLabel[]>([])
   const [dutyOptions, setDutyOptions] = useState<DutyOption[]>([])
   const didInitialFocusRef = useRef(false)
@@ -448,7 +446,6 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   )
 
   const onOpenPersonList = useCallback(() => setPersonListOpen(true), [])
-  const onOpenPerson = useCallback((itemId: string) => setOpenPersonItemId(itemId), [])
 
   // GETIRME YOLU (9 Eylul 2026): TEK cagri (fn_add_person_items), dongude satir ekleme YASAK.
   // Getirilen satirlarin adi/tutari BOS gelir (AD YERLEŞİMİ karari, bolum 20) - elle yazilmaz.
@@ -729,7 +726,6 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                             onOpenBurden={onOpenBurden}
                             onOpenNote={onOpenNote}
                             onOpenHeading={onOpenHeading}
-                            onOpenPerson={onOpenPerson}
                             onRemove={onRemoveItem}
                             personNameById={personNameById}
                             personLabelById={personLabelById}
@@ -879,21 +875,6 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           onClose={() => setPersonListOpen(false)}
         />
       )}
-      {openPersonItemId !== null && (() => {
-        const item = rows.find((r) => r.id === openPersonItemId)
-        if (!item) return null
-        return (
-          <PersonPickSheet
-            key={item.id}
-            item={item}
-            labels={filterPersonsForAtom(personLabels, rows, item.catalogCode, item.id)}
-            dutyCodes={dutyCodes}
-            rowCatalogCode={item.catalogCode}
-            onCommit={api.commitNote}
-            onClose={() => setOpenPersonItemId(null)}
-          />
-        )
-      })()}
     </div>
   )
 }
