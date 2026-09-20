@@ -32,9 +32,11 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 
 - **20 Eylül 2026 — Komisyon satırı sahibinin yanına taşındı (HEAD d5c07b5).** 1618 ve 1618-01'in aidiyet hanesi boşaltıldı (göç `20260920120000`); komisyon artık kişinin bulunduğu bölümde doğuyor, doğum çağrısı kişiyi taşıyor ve türetilmiş satır kişi bloğunun EN SONUNDA duruyor. Canlıda iki satır taşındı (bir dublörün ajans ve menajer komisyonu, Ana Kast'tan Dublör bölümüne); kalan on aktif satırın kişisi zaten Ana Kast'taydı, yerlerinde kaldılar. ÖLÇÜLDÜ (göç öncesi, canlıya karşı): kilitli bütçe yok, aktif kişisiz komisyon satırı yok. Tarayıcıda DOĞRULANDI: dublörde ve sessiz rolde komisyon kendi bölümünde ve bloğun sonunda — sessiz rol (3903) sıralama kuralının kod sırasından ayrıştığı ilk saha kanıtı. Karar evleri: `docs/butce/KART-KATALOGU.md` §7.5 AİDİYET KURALI + `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20.
 
+- **20 Eylül 2026 — Kart girişleri sadeleşti ve katlama durumu düzeldi (iki dilim).** Satır içi kişi düğmesi kaldırıldı: kişi karta yalnız Oyuncular listesinden girer, Not ve Başlık düğmeleri yerinde kaldı; düğmeyle birlikte kişi seçme panosu, `filterPersonsForAtom` ve on bir test düştü. İsim hanesinde kişi açılır listesi kaydı DÜŞÜRÜLDÜ. Katlama durumu tersine-çevirme bayrağı olmaktan çıkıp kullanıcının bıraktığı hal oldu (`collapse-state.ts`, saf modül + testler) ve kullanıcının kapalı bıraktığı bloğa odadan kalem eklendiğinde blok açılıyor. BU TURUN DERSİ: kaydırmanın bloğu açtıktan sonra tekrar koşması gerektiği spec'te yazıldı ama efektin bağımlılık dizisi okunmadan yazıldı; kusur push sonrası kod okumasıyla yakalandı, tarayıcıyla değil (bkz. `docs/protokol/DERSLER.md`).
+
 ## Durum
 
-- HEAD: d5c07b5 (20 Eylül 2026 — komisyon aidiyeti kişiden gelir, türetilmiş satır blok sonunda durur).
+- HEAD: 7d64e2b (20 Eylül 2026 — kişi düğmesi kalktı, katlama durumu mutlak).
 - **`asks_person` KURALI ARTIK UYGULANDI (19 Eylül 2026).** Daha önce burada ve "Sıradaki iş"te "kararı var, uygulanmamış TEK iş" diye duran kayıt kapandı — göç `20260919120000` canlıda, sahada doğrulandı. Karar evi: `docs/butce/KART-KATALOGU.md` §7.5.
 - KOMİSYON TABANI ARTIK ÖDEME STATÜSÜNE BAKMIYOR: ölçüt kişiye bağlı ve türetilmemiş satır. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 KOMİSYON TABANI VE SİLME madde 2.
 - TEMSİLCİ KOMİSYONU CİNSİ ARTIK ATOMDA: 1618 Ajans Komisyonu, 1618-01 Menajer Komisyonu iki ayrı atom. Testlerle ve tarayıcıda doğrulandı (17 Eylül 2026).
@@ -99,11 +101,12 @@ Bu oturumda alınan kararlar; tam metinleri KALICILIK KURALI gereği kendi ev do
 
 ## Sıradaki iş
 
-**OYUNCU KARTINDAN KALANLAR.** Bir haftalık KART 1600 / Üretim Kayıtları turunun artığı.
+**OYUNCU KARTINDAN KALANLAR.** KART 1600 turunun artığı; sıra listenin kendi sırasıdır.
 
-1. **Karar evi taraması — KAPANDI (19 Eylül 2026).** 11-18 Eylül 2026 aralığında değişen 26 kod dosyası tarandı, her dosyanın evi `INDEX.md` bölüm 7 üzerinden bulunup o bölüm okundu. Bulguların üçü bu turda (44a9ae5) yazıldı: SİLME KURALI üçüncü hal, ön plan rengi ilkesi, `rate_catalog` dördüncü cins. Kalan iki bulgu (kapalı blokta eklenen kalemin gözden kaybolması, `asks_person` kararı) aşağıdaki Park listesindedir.
-2. **`asks_person` kuralı — KAPANDI (19 Eylül 2026).** 5 Eylül 2026 kararı: kütüphaneden eklenen görev dışı atomlarda kullanıcıya kişi sorulup sorulmayacağı üç sınıfa ayrılmıştı. Göç `20260919120000` ile şemaya ve kalem ekleme yoluna girdi, sahada doğrulandı. Karar evi: `docs/butce/KART-KATALOGU.md` §7.5. AÇIK KALAN KAPANDI (20 Eylül 2026): o madde yeniden gözden geçirildi ve yürürlükten kalktı.
-3. **Karara bağlanmamış üç soru.** Hepsi "Açık kalanlar" bölümünde tam metniyle duruyor, burada tekrarlanmaz: kart masasında seç kipi (cevap tek bir saha sorusuna bağlı — kullanıcılar kullanmadıkları şablon satırlarını gerçekten siliyor mu) · kadroda bir görevden kaç kişi var, kartta o görevden kaç satır var farkının kullanıcıya söylenip söylenmeyeceği · `parseCsv` ve `parseJson` testsizliği.
+1. **Komisyonun doğum anı — iki bulgu tek turda.** (a) Tik ilk konduğunda komisyon satırı doğmadı (20 Eylül, sahada görüldü; tik kaldırılıp tekrar konunca doğdu, sebep aranmadı). (b) Canlıda 64 pasif ve kişisiz komisyon satırı var, nereden doğdukları ölçülmedi. İkisinin de tetiği aynı: `birthMissingCommissionRows` ve `refreshPersonLabels`.
+2. **Ayıklama kuralı ölçülmedi.** Kütüphaneden doğmuş satır oda listesine ikinci kez giriyor mu; ölçüt `library_item_id`, şablondan doğan satırın onu taşıyıp taşımadığı bilinmiyor.
+3. **Temsilci satırındaki ızgara deliği.** Üç hücre kilitli; sol-sağ atlama ve aşağı-yukarı inişte imlecin nereye düştüğü hiç ölçülmedi, tek tetiği bir sandbox turu. Mac doğrulaması da burada bekliyor.
+4. **Serbest kalem için kullanıcı başlığı.** Ekran turu değil motor turudur: IS-SIRASI'ndaki MOTOR İŞİ dört parçasından ikisi (çalışma anında başlık doğması, ikinci başlık anahtarı) tam olarak bu iştir.
 
 ## Açık kalanlar
 
