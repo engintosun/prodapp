@@ -89,6 +89,9 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // Isaret satir listede gorununce kendiliginden dusuyor, o yuzden tik kaldirilip
   // yeniden atildiginda satir tekrar dogabilir.
   const commissionBornKeysRef = useRef<Set<string>>(new Set())
+  // ACILIS DOGUM TETIGI (21 Eylul 2026, Engin karari): denetim kart basina TEK kez kosar.
+  // Anahtar kartin group kimligidir, baska karta gecilince denetim yeniden kosar.
+  const commissionOpenCheckedGroupRef = useRef<string | null>(null)
 
   // VERITABANI TETIKLEYICISI YASAK (B18): taban hesabi (personsNeedingCommissionRow,
   // person-groups.ts) burada TypeScript'te yasar. Doğum ANI: para degistiren bir alan basariyla
@@ -339,6 +342,9 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   const [openStatusInfo, setOpenStatusInfo] = useState(false)
   const [personListOpen, setPersonListOpen] = useState(false)
   const [personLabels, setPersonLabels] = useState<PersonLabel[]>([])
+  // Kisi listesinin ILK yuklemesi bitti mi. UZUNLUGA BAKILMAZ: kisisi olmayan projede liste
+  // bos doner ve bos liste de yuklenmis sayilir; uzunluk olcut olsaydi denetim hic kosmazdi.
+  const [personLabelsLoaded, setPersonLabelsLoaded] = useState(false)
   const [dutyOptions, setDutyOptions] = useState<DutyOption[]>([])
   const didInitialFocusRef = useRef(false)
 
@@ -358,6 +364,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
       .then((labels) => {
         personLabelsRef.current = labels
         setPersonLabels(labels)
+        setPersonLabelsLoaded(true)
         void birthMissingCommissionRows()
       })
       .catch((e) => addToast(e instanceof Error ? e.message : 'Kişi listesi alınamadı', 'error'))
@@ -366,6 +373,51 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   useEffect(() => {
     refreshPersonLabels()
   }, [refreshPersonLabels])
+
+  // Primitive bagimliliklar (.claude/rules/src.md): efekt kartin yalnizca group kimligini ve
+  // kutuphanenin dolu olup olmadigini okuyor - dizinin ya da nesnenin tamami bagimlilik
+  // olsaydi her yenilemede yeni referansla bosuna kosardi.
+  const cardGroupId = card?.groupId ?? null
+  const allLibraryCount = allLibrary.length
+
+  // ACILIS DOGUM TETIGI (21 Eylul 2026, Engin karari).
+  // BUGUNKU KUSUR: dogum denetimi refreshPersonLabels ucunda acilista TEK kez kosuyordu.
+  // Kisi listesi kartin verisinden once geldigi icin denetim bos masaya bakip cikiyor, ve
+  // refetch ile addToast sabit kimlikli oldugu icin acilis efekti bir daha tetiklenmiyordu.
+  // Sonuc: BUTCE-EKRAN-KARARLARI bolum 20 KOMISYON SATIRININ DOGUMU madde 2'nin verdigi
+  // "bir sonraki acilista dogar" sozu tutmuyordu; satir fiilen yalniz para hanesi
+  // kaydedildiginde ya da kart ZATEN ACIKKEN tik oynatildiginda doguyordu.
+  // KART DORT DALGADA GELIYOR: kart ve satirlar, sonra kalem kutuphanesi, sonra bordro
+  // hesaplari. Denetim HEPSI yerlestikten sonra kosar, cunku:
+  //   (1) varsayilan oran allLibrary'den okunur; gelmeden dogan satir ORANSIZ dogar ve tik
+  //       kaldirma yolunun dokunulmamislik olcutu (oran === varsayilan) bozulup gereksiz
+  //       onay penceresi acar,
+  //   (2) bordro statusundeki satirin neti motordan gelir (totals.ts rowTotals); gelmeden 0
+  //       okunur, bordrolu kisinin tabani sifir cikar ve satir yine dogmaz.
+  // BORDRO YERLESTI OLCUTU loading === false: basari, hata ve net-girilmemis hallerinin ucu
+  // de sonuclanmis sayilir - aksi halde neti girilmemis bir kartta denetim hic kosmazdi.
+  // TEK KEZ: satir listesi her tus vurusunda degisiyor; bayrak olmasa denetim yarim yazilmis
+  // rakamdan satir dogururdu (emsal: ayni dosyadaki bordro toplu cekme efekti, K5 notu).
+  useEffect(() => {
+    if (!cardGroupId || loading) return
+    if (!personLabelsLoaded) return
+    if (allLibraryCount === 0) return
+    if (commissionOpenCheckedGroupRef.current === cardGroupId) return
+    const bordroPending = rows.some(
+      (r) => r.paymentStatus === 'bordro' && bordroData[r.id]?.loading !== false,
+    )
+    if (bordroPending) return
+    commissionOpenCheckedGroupRef.current = cardGroupId
+    void birthMissingCommissionRows()
+  }, [
+    cardGroupId,
+    loading,
+    personLabelsLoaded,
+    allLibraryCount,
+    rows,
+    bordroData,
+    birthMissingCommissionRows,
+  ])
 
   useEffect(() => {
     fetchDutyOptions()
