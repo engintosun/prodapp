@@ -88,6 +88,12 @@ Kayıt anlatı değil SINIFTIR: ne oldu değil, hangi tür hata kaç kez tekrarl
 
 **Tetiği bağımlılık dizisinde aramamak.** 20 Eylül 2026: kapalı bloğa eklenen kalemin görünmesi için efektin bloğu açıp TEKRAR koşması gerekiyordu; spec "blok açılınca efekt tekrar koşar" diye yazdı, oysa efektin bağımlılık dizisinde yalnız `rows` vardı ve `rows` bir `useState` dizisi olduğu için blok açıldığında kimliği değişmiyor. Sonuç: blok açılıyor, kaydırma hiç olmuyor, üstelik bekleyen bayrak sıfırlanmadığı için bir sonraki satır yenilemesinde eski satıra beklenmedik kaydırma yapıyor. Kapı yok ve eslint de yakalamaz: efekt o değeri OKUMADIĞI için `exhaustive-deps` eksik bağımlılık görmez — kural yalnız okunan değerleri bilir, tekrar koşma İHTİYACINI bilmez. Ders: bir efektin ikinci kez koşmasına dayanan her spec, o efektin bağımlılık dizisi OKUNARAK yazılır; "sonra tekrar koşar" cümlesi ölçülmeden yazılamaz. Kusuru tarayıcı değil, push sonrası kod okuması yakaladı.
 
+### Ölü bir yolu canlandırmak, ona dayanan yalanı görünür kılar
+
+21 Eylül 2026. Komisyon satırının açılışta doğması düzeltildi; düzeltmenin kendisi doğruydu ve dar kapsamlıydı. Ama o yol çalışmaya başlar başlamaz karttaki silme düğmesi yalancı oldu: kullanıcı satırı siliyor, kart açılışında satır geri doğuyor. Düğme eskiden de aynı şeyi yapıyordu, sadece doğum yolu ölü olduğu için kimse görmüyordu.
+
+DERS: bir tetiği yeniden canlandıran dilimde, o tetiğin ÜRETTİĞİ şeye dokunan öteki yüzeyler taranır — düzeltmenin kendi dosyası yetmez. Burada taranacak yüzey silme yoluydu ve spec yazılırken hiç bakılmamıştı; kusuru Engin sahada buldu.
+
 ## Ters yönde bir kayıt
 
 Sonnet'in DUR'ları üç kez haklı çıktı ve üçünde de canlıyı korudu: canlıda olmayan tablo zincire konmak üzereydi, ölü bir fonksiyon overload'ı taban alınmıştı, zorunlu alan eklemek kapsam dışı bir testi kırıyordu. Sonnet'in RAPORU doğrulama değildir ama DUR'u sinyaldir; incelenmeden geçilmez.
