@@ -43,13 +43,13 @@ varsayim yapilmaz.
 -> Etkiler: item-row.tsx/period-row.tsx/burden-sheet.tsx (netToplamDonemli/brutToplamDonemli/kisiyeBanka çağırır).
 -> Kritik: EVET — bordro-dışı tüm statülerin (smm/telif/şirket/kira/konaklama) net<->brüt hesabı tek buradan geçer.
 
-`src/shared/supabase/budget-service.ts` (602)
+`src/shared/supabase/budget-service.ts` (603)
 -> Görev: Bütçe açılış + kart okuma (getCard/getOrOpenBudget) + kalem alanı yazma (updateItemField, setItemPeriodNet vb.) servis çağrıları.
 -> Kullanır: shared/supabase/client.ts (Supabase SDK); fn_open_budget/fn_add_budget_item RPC'lerini çağırır.
 -> Etkiler: use-card-rows.ts (okuma) + use-edit-buffers.ts (yazma) + card-table-screen.tsx buna bağlı.
 -> Kritik: EVET — 500+ satır, BUTCE-UI-MIMARISI bölüm 8'de bölünme bekliyor (okuma/yazma ekseni), İ5 ilkesine tabi.
 
-`src/shared/supabase/payroll-read.ts` (629)
+`src/shared/supabase/payroll-read.ts` (637)
 -> Görev: Bordro türetme bloğu — saf hesap (computeBordroFields) + Supabase-okuyan orkestrasyon (buildPayrollRates/deriveBordroFields), açık/kilitli (mühür) rate_catalog okuma ayrımı.
 -> Kullanır: shared/cfe (resolvePayrollItem, deriveMinimumWageExemptionSeries); shared/supabase/client.ts.
 -> Etkiler: use-edit-buffers.ts (refreshBordro) + use-card-rows.ts (fetchMinimumWageThresholds) bunu çağırır.
@@ -91,7 +91,7 @@ varsayim yapilmaz.
 -> Etkiler: authenticated-shell.tsx (muhasebe "bütçe" sekmesi) buradan render eder.
 -> Kritik: EVET — İ4 (Ekran ≠ kabuk) sınırı burada tutulur; budgetId/cardId/viewMode dışarıdan alınabilir kalmalı. 500+ satır (1 Eylül 2026), BUTCE-UI-MIMARISI bölüm 8 kayıtlı.
 
-`src/app/muhasebe/budget/components/item-row.tsx` (425)
+`src/app/muhasebe/budget/components/item-row.tsx` (408)
 -> Görev: Kart tablosunun kalem satırı — 14 haneli (13 veri kolonu + etiketsiz silme hanesi) KİLİTLİ kolon setinin tek satırlık render'ı, bordro/genel ayrımı + dönem-satırı açılımı.
 -> Kullanır: shared/cfe (netToplamDonemli/brutToplamDonemli/kisiyeBanka) + format.ts + hooks/use-edit-buffers.ts (EditApi tipi).
 -> Etkiler: card-table-screen.tsx satır-başına bunu render eder.
@@ -132,7 +132,7 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/card-view.ts` (146) — kartın görünen düzeninin (başlık grubu + kişi bloğu + türetilen satır tutarları) TEK kaynağı; dışa aktarma/icmal/mühür de bunu çağıracak
 `src/app/muhasebe/budget/collapse-state.ts` (39) — başlık ve özet satırlarının açık/kapalı halinin tek kaynağı: kullanıcının bıraktığı hal saklanır, varsayılan yalnız hiç dokunulmamış bloğa uygulanır, kapalı bloğa kalem eklenince blok açılır
 `src/app/muhasebe/budget/columns.ts` (27) — kart tablosu kolon seti tek kaynağı (BUDGET_COLUMNS: anahtar/etiket/hizalama)
-`src/app/muhasebe/budget/components/add-item-panel.tsx` (288) — kalem ekleme odası: kütüphane arama + serbest kalem
+`src/app/muhasebe/budget/components/add-item-panel.tsx` (387) — kalem ekleme odası: kütüphane arama + serbest kalem
 `src/app/muhasebe/budget/components/add-item-row.tsx` (60) — tablo altı "+ kalem ekle" düğme satırı
 `src/app/muhasebe/budget/components/bottom-sheet.tsx` (121) — ortak alt-sheet primitivi (backdrop+panel+odak tuzağı)
 `src/app/muhasebe/budget/components/burden-sheet.tsx` (103) — Yasal Yük dökümü sheet'i (bordro 6-bacak + basit statü)
@@ -145,13 +145,13 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/components/summary-row.tsx` (59) — kişi özet satırının render'ı; kendi budget_items kaydı taşımaz, alt kalemlerin toplamını gösterir
 `src/app/muhasebe/budget/components/table-styles.ts` (138) — kart tablosu kolon genişlikleri + hücre stilleri
 `src/app/muhasebe/budget/display-name.ts` (70) — kalem/özet satırının gösterilen adının TEK kaynağı (AD YERLEŞİMİ kararı, saf hesap)
-`src/app/muhasebe/budget/format.ts` (309) — fmt/parseNumericDraft + kütüphane arama + başlık grubu saf fonksiyonları
+`src/app/muhasebe/budget/format.ts` (312) — fmt/parseNumericDraft + kütüphane arama + başlık grubu saf fonksiyonları
 `src/app/muhasebe/budget/hooks/use-card-rows.ts` (213) — kart verisi yükleme (budgetId/cardId), ref senkronizasyonu
 `src/app/muhasebe/budget/hooks/use-grid-navigation.ts` (276) — İ7 motorunun DOM bağlayıcısı, tuş olaylarını çekirdeğe delege eder
 `src/app/muhasebe/budget/person-bring.ts` (84) — Oyuncular listesi panosunun getirme mantığı: kartta olan/olmayan ayrımı, benzer ad uyarısı, görev sırası, düğmenin kendi listesi olan kartta çizilmesi
-`src/app/muhasebe/budget/person-groups.ts` (166) — kişi etiketine göre satır gruplama + orandan türetme; özet satırı ile komisyon satırı aynı hesabı paylaşır
+`src/app/muhasebe/budget/person-groups.ts` (170) — kişi etiketine göre satır gruplama + orandan türetme; özet satırı ile komisyon satırı aynı hesabı paylaşır
 `src/app/muhasebe/budget/totals.ts` (55) — saf satır ve kart toplamı (rowTotals/cardTotals); item-row kendi hesabını yapmaz, buradan çağırır
-`src/app/muhasebe/definitions-screen.tsx` (148) — Tanımlar ekranı: rate_catalog referansı + şirket profili formu
+`src/app/muhasebe/definitions-screen.tsx` (161) — Tanımlar ekranı: rate_catalog referansı + şirket profili formu
 `src/app/muhasebe/invite-screen.tsx` (232) — davet oluşturma formu + davet linki gösterimi
 `src/app/muhasebe/production/list-bucket.ts` (35) — Üretim Kayıtları listesinin bölme (başlık) hesabının tek kaynağı
 `src/app/saha/receipt-correction-screen.tsx` (164) — düzeltme istenen fişin yeniden düzenlenip gönderilmesi
@@ -164,7 +164,7 @@ varsayim yapilmaz.
 `src/shared/supabase/client.ts` (10) — tek Supabase client instance
 `src/shared/supabase/company-profile-service.ts` (85) — şirket profili okuma/güncelleme (proje sahibi satırı)
 `src/shared/supabase/invitation-service.ts` (52) — departman listesi + davet oluşturma
-`src/shared/supabase/library-service.ts` (72) — Kalem Kütüphanesi okuma (kart-bazlı + tüm kütüphane)
+`src/shared/supabase/library-service.ts` (74) — Kalem Kütüphanesi okuma (kart-bazlı + tüm kütüphane)
 `src/shared/supabase/onboarding-service.ts` (177) — departman/dönem/bütçe oluşturma, proje açma sarmalayıcı
 `src/shared/supabase/person-label-service.ts` (247) — kişi etiketi (budget_cost_objects, kind='kisi') okuma/yazma servis çağrıları
 `src/shared/supabase/receipt-service.ts` (181) — fiş CRUD + onay/red/düzeltme RPC çağrıları
