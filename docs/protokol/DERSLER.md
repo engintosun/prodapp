@@ -90,7 +90,7 @@ Kayıt anlatı değil SINIFTIR: ne oldu değil, hangi tür hata kaç kez tekrarl
 
 ### Ölü bir yolu canlandırmak, ona dayanan yalanı görünür kılar
 
-21 Eylül 2026. Komisyon satırının açılışta doğması düzeltildi; düzeltmenin kendisi doğruydu ve dar kapsamlıydı. Ama o yol çalışmaya başlar başlamaz karttaki silme düğmesi yalancı oldu: kullanıcı satırı siliyor, kart açılışında satır geri doğuyor. Düğme eskiden de aynı şeyi yapıyordu, sadece doğum yolu ölü olduğu için kimse görmüyordu.
+20 Eylül 2026. Komisyon satırının açılışta doğması düzeltildi; düzeltmenin kendisi doğruydu ve dar kapsamlıydı. Ama o yol çalışmaya başlar başlamaz karttaki silme düğmesi yalancı oldu: kullanıcı satırı siliyor, kart açılışında satır geri doğuyor. Düğme eskiden de aynı şeyi yapıyordu, sadece doğum yolu ölü olduğu için kimse görmüyordu.
 
 DERS: bir tetiği yeniden canlandıran dilimde, o tetiğin ÜRETTİĞİ şeye dokunan öteki yüzeyler taranır — düzeltmenin kendi dosyası yetmez. Burada taranacak yüzey silme yoluydu ve spec yazılırken hiç bakılmamıştı; kusuru Engin sahada buldu.
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { personCardPresence, personNameCollisions, sortPersonsByDuty } from './person-bring'
+import { cardUsesPersonList, personCardPresence, personNameCollisions, sortPersonsByDuty } from './person-bring'
 import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
 import type { PersonLabel, DutyOption } from '../../../shared/supabase/person-label-service'
 
@@ -139,5 +139,24 @@ describe('sortPersonsByDuty', () => {
       makeLabel({ id: 'c', dutyCode: '1601' }),
     ]
     expect(sortPersonsByDuty(labels, DUTIES).map((l) => l.id)).toEqual(['c', 'b', 'a'])
+  })
+})
+
+describe('cardUsesPersonList', () => {
+  const DUTY_CODES = new Set(['1601', '1602'])
+
+  it('kutuphanesinde gorev atomu olan kart listeyi kullanir', () => {
+    const library = [{ catalogCode: '1611' }, { catalogCode: '1602' }]
+    expect(cardUsesPersonList(library, DUTY_CODES)).toBe(true)
+  })
+
+  it('gorev atomu olmayan kart listeyi kullanmaz', () => {
+    const library = [{ catalogCode: '1101' }, { catalogCode: '1501' }]
+    expect(cardUsesPersonList(library, DUTY_CODES)).toBe(false)
+  })
+
+  it('gorev listesi henuz gelmediyse sonuc false', () => {
+    const library = [{ catalogCode: '1602' }]
+    expect(cardUsesPersonList(library, new Set())).toBe(false)
   })
 })

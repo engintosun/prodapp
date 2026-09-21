@@ -23,7 +23,7 @@ import { resolveCollapsed, toggleCollapse, openBlock } from './collapse-state'
 import type { CollapseState } from './collapse-state'
 import { personsNeedingCommissionRow, COMMISSION_CATALOG_BY_KIND } from './person-groups'
 import type { CommissionKind } from './person-groups'
-import { personCardPresence, personNameCollisions } from './person-bring'
+import { personCardPresence, personNameCollisions, cardUsesPersonList } from './person-bring'
 import { summaryDisplayName, commissionDisplayName } from './display-name'
 import { BurdenSheet } from './components/burden-sheet'
 import type { BordroSheetEntry } from './components/burden-sheet'
@@ -440,6 +440,9 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // presence BIR KEZ hesaplanir: dugme metni ve pano AYNI sonucu kullanir (I1 - pano artik
   // rows almiyor, hazir presence alir).
   const personPresence = useMemo(() => personCardPresence(rows, personLabels), [rows, personLabels])
+  // KARTIN KENDI LISTESI (21 Eylul 2026): dugme yalniz kendi listesi olan kartta cizilir;
+  // olcut veriden gelir, kart numarasindan degil (person-bring.ts cardUsesPersonList).
+  const showPersonListButton = useMemo(() => cardUsesPersonList(library, dutyCodes), [library, dutyCodes])
   // COKLU SATIR UYARISI: fissiz elle yazilmis satirla ayni adli etiket eslesirse pano
   // "kartta benzer satır var" gosterir - bkz. person-bring.ts personNameCollisions.
   const nameCollisions = useMemo(() => personNameCollisions(rows, personLabels), [rows, personLabels])
@@ -683,22 +686,24 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', margin: 0 }}>
           Dönem eklemek için Dönemler hücresinden seç; her dönem için X (adet) gir. Hücreden çıkınca otomatik kaydeder.
         </p>
-        <button
-          type="button"
-          onClick={onOpenPersonList}
-          style={{
-            flexShrink: 0,
-            background: 'transparent',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius-sm)',
-            padding: 'var(--space-1) var(--space-2)',
-            fontSize: 'var(--text-xs)',
-            color: 'var(--color-text)',
-            cursor: 'pointer',
-          }}
-        >
-          {personPresence.missingCount > 0 ? `Oyuncular listesi · ${personPresence.missingCount} kişi kartta değil` : 'Oyuncular listesi'}
-        </button>
+        {showPersonListButton && (
+          <button
+            type="button"
+            onClick={onOpenPersonList}
+            style={{
+              flexShrink: 0,
+              background: 'transparent',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-sm)',
+              padding: 'var(--space-1) var(--space-2)',
+              fontSize: 'var(--text-xs)',
+              color: 'var(--color-text)',
+              cursor: 'pointer',
+            }}
+          >
+            {personPresence.missingCount > 0 ? `Oyuncular listesi · ${personPresence.missingCount} kişi kartta değil` : 'Oyuncular listesi'}
+          </button>
+        )}
       </div>
       <div ref={containerRef} onKeyDown={handleKeyDown} onFocus={handleFocus} onPaste={handlePaste} onDrop={handleDrop} onDragOver={handleDragOver}>
         <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: tableMinWidth, tableLayout: 'fixed' }}>

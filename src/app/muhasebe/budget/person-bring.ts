@@ -68,3 +68,17 @@ export function sortPersonsByDuty(
     })
     .map((x) => x.label)
 }
+
+// KARTIN KENDI LISTESI (21 Eylul 2026, Engin karari): Oyuncular listesi dugmesi kartin KENDI
+// listesinin kapisidir, her kartta duran bir oyuncu dugmesi degildir. Kendi listesi olmayan
+// kartta liste dogana kadar CIZILMEZ. Olcut VERIDEN gelir, kart numarasindan degil (I1):
+// kartin kutuphanesinde en az bir gorev atomu varsa kartin listesi Oyuncular listesidir.
+// Mekan ya da prop listesi dogdugunda ayni kapiya kendi olcutuyle eklenir. Gorev listesi
+// henuz gelmediyse (bos kume) sonuc false: dugme veri yerlesince belirir, yanlis kartta
+// bir an bile gorunmez.
+export function cardUsesPersonList(
+  library: readonly { catalogCode: string }[],
+  dutyCodes: ReadonlySet<string>,
+): boolean {
+  return library.some((item) => dutyCodes.has(item.catalogCode))
+}
