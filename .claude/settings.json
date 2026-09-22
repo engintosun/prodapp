@@ -2,7 +2,9 @@
   "permissions": {
     "ask": [
       "Bash(supabase db push:*)",
-      "Bash(supabase migration up:*)"
+      "Bash(supabase migration up:*)",
+      "Bash(npx supabase db push:*)",
+      "Bash(npx supabase migration up:*)"
     ]
   },
   "hooks": {
