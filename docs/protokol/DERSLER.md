@@ -94,6 +94,14 @@ Kayıt anlatı değil SINIFTIR: ne oldu değil, hangi tür hata kaç kez tekrarl
 
 DERS: bir tetiği yeniden canlandıran dilimde, o tetiğin ÜRETTİĞİ şeye dokunan öteki yüzeyler taranır — düzeltmenin kendi dosyası yetmez. Burada taranacak yüzey silme yoluydu ve spec yazılırken hiç bakılmamıştı; kusuru Engin sahada buldu.
 
+**Düzeltmeyi sistemi yazmadan önermek; ekrana öğe uydurmak.** 22 Eylül 2026: kullanıcı başlığında üç öneri art arda elendi (satırdaki Başlık listesine "düzelt" işareti, Başlıksız satırında yeni kapı, kalem ekleme odasıyla birleşik oda); iş sonunda var olan "+ Ekle" satırında Kalem/Başlık seçimiyle çözüldü ve bu çözümü Engin buldu. Ders: öneriden önce kararlaşmış akış yazılır ve var olan kapılar sayılır; yeni öğe ancak var olanların hiçbirinin işi taşıyamadığı gösterilerek önerilir (`docs/butce/BUTCE-EKRAN-KARARLARI.md` §0 KALABALIK MASA İLKESİ). Engin bunu her oturumda yeniden anlatmak istemiyor.
+
+**"Kodda var" ile "canlıda var" ayrı iddialardır.** 22 Eylül 2026: satırdaki Başlık düğmesi için koddan okunup "bugün canlıda var" dendi; ekran görülmemişti ve Engin itiraz etti. Ders: koddan doğrulanan şey "kodda var" diye söylenir; "canlıda" ya da "ekranda" ancak canlı sorgu ya da ekran gözlemiyle söylenir (CLAUDE.md sandbox tetiği: ekrandaki metne dayanan iddia).
+
+**Açılışta protokol dışı okuma.** 22 Eylül 2026: açılış okumaları bittikten sonra rapor verilmeden hafızaya ve rakip dosyasına gidildi; Engin durdurdu. Ders: açılış protokolünün okuma listesi dışına çıkılmaz; bir çakışma şüphesi görülürse okumadan önce raporda tek cümleyle söylenir.
+
+**Göç doğrulamasını `raise notice`e bırakmak.** 22 Eylül 2026: göçün sonundaki doğrulama bloğunun dört NOTICE'i `npx supabase db push` çıktısında hiç görünmedi; Sonnet değerleri ayrı salt-okuma sorgusuyla doğruladı. Ders: göç doğrulaması `npx supabase db query --linked` ile ayrı adım olarak yazılır, beklenti NOTICE'e bağlanmaz.
+
 ## Ters yönde bir kayıt
 
 Sonnet'in DUR'ları üç kez haklı çıktı ve üçünde de canlıyı korudu: canlıda olmayan tablo zincire konmak üzereydi, ölü bir fonksiyon overload'ı taban alınmıştı, zorunlu alan eklemek kapsam dışı bir testi kırıyordu. Sonnet'in RAPORU doğrulama değildir ama DUR'u sinyaldir; incelenmeden geçilmez.
