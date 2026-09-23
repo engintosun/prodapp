@@ -3,6 +3,7 @@
 import Decimal from 'decimal.js'
 import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
 import type { PersonLabel } from '../../../shared/supabase/person-label-service'
+import { personCardPresence } from './person-bring'
 
 export interface PersonGroup {
   personObjectId: string
@@ -33,8 +34,8 @@ export function groupByPerson(rows: readonly BudgetItemRow[]): PersonGroup[] {
 }
 
 // Kisi kimligi basina CIPLAK NET TABAN (9 Eylul 2026, B18: ayni formul iki yerde yasayamaz -
-// derivedUnitNets ASAGIDA bu islevi CAGIRIR, kopyasini tasimaz; KOMISYON SATIRININ DOGUMU da
-// ayni tabani kullanir, bkz. personsNeedingCommissionRow). Kural (11 Eylul 2026): kisisi bagli
+// derivedUnitNets ASAGIDA bu islevi CAGIRIR, kopyasini tasimaz; KOMISYON SATIRININ DOGUMU
+// 23 Eylul 2026'dan beri tabana BAKMAZ, bkz. personsNeedingCommissionRow). Kural (11 Eylul 2026): kisisi bagli
 // ve turetilmemis (derive_rate BOS) her satir tabana girer, odeme statusune BAKILMAZ. netByItemId
 // disaridan gelir: Ara toplam tanimi totals.ts icinde yasar, burada ikinci kez tanimlanmaz
 // (bordro satirinin neti motordan gelir, ciplak carpimdan degil).
@@ -100,17 +101,17 @@ export interface CommissionNeed {
   kind: CommissionKind
 }
 
-// KOMISYON SATIRININ DOGUMU (9 Eylul 2026, BUTCE-EKRAN-KARARLARI bolum 20): CINS bazinda uc
-// sart birden saglaninca kisi+cins ikilisi icin komisyon satiri GEREKIR. VERITABANI
-// TETIKLEYICISI YASAK (B18) - taban hesabi (personNetBases) burada TypeScript'te yasar, SQL'de
-// ikinci bir kopyasi acilmaz. NOT: turetilmis (derive_rate DOLU) satir personNetBases'e
-// girmez - menajer komisyon satirinin kendisi boylece kendi tabanini beslemez.
+// KOMISYON SATIRININ DOGUMU (9 Eylul 2026; SART DEGISTI 23 Eylul 2026, Engin karari,
+// BUTCE-EKRAN-KARARLARI bolum 20 madde 1): CINS bazinda iki sart birden saglaninca kisi+cins
+// ikilisi icin komisyon satiri GEREKIR: kisi bu kartta ve o cinsin tiki var. "Kartta" olcutu
+// Oyuncular listesinin olcutunun AYNISIDIR (person-bring.ts personCardPresence), ikinci tanim
+// acilmaz. Taban ARTIK SART DEGIL: rakam yoksa satir sifir tutarla dogar. VERITABANI
+// TETIKLEYICISI YASAK (B18).
 export function personsNeedingCommissionRow(
   rows: readonly BudgetItemRow[],
   labels: readonly PersonLabel[],
-  netByItemId: Readonly<Record<string, number>>,
 ): CommissionNeed[] {
-  const bases = personNetBases(rows, netByItemId)
+  const { inCard } = personCardPresence(rows, labels)
   const hasCommissionRow = new Set<string>()
   for (const row of rows) {
     if (row.personObjectId && row.deriveRate !== null && row.catalogCode) {
@@ -119,7 +120,7 @@ export function personsNeedingCommissionRow(
   }
   const needs: CommissionNeed[] = []
   for (const label of labels) {
-    if ((bases[label.id] ?? 0) <= 0) continue
+    if (!inCard[label.id]) continue
     if (label.hasAgency && !hasCommissionRow.has(label.id + ':' + COMMISSION_CATALOG_BY_KIND.ajans)) {
       needs.push({ personObjectId: label.id, kind: 'ajans' })
     }

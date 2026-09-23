@@ -26,9 +26,7 @@ import type { CommissionKind } from './person-groups'
 import { personCardPresence, personNameCollisions, cardUsesPersonList } from './person-bring'
 import { summaryDisplayName, commissionDisplayName } from './display-name'
 import { BurdenSheet } from './components/burden-sheet'
-import type { BordroSheetEntry } from './components/burden-sheet'
 import type { LibraryItem } from '../../../shared/supabase/library-service'
-import type { UserHeading } from '../../../shared/supabase/user-heading-service'
 import { StatusInfoSheet } from './components/status-info-sheet'
 import { NoteSheet } from './components/note-sheet'
 import { PersonListSheet } from './components/person-list-sheet'
@@ -39,7 +37,7 @@ import type { AddChoice } from './components/add-chooser'
 import { HeadingWindow } from './components/heading-window'
 
 // Rolu olan kisi kimlikleri: ozet satirinin dogma kosulu (card-view.ts). TEK yerde hesaplanir,
-// iki buildCardView cagri yeri de burayi kullanir; ikinci bir kopya acilmaz.
+// buildCardView cagri yeri burayi kullanir; ikinci bir kopya acilmaz.
 function personIdsWithRoleOf(labels: readonly PersonLabel[]): Set<string> {
   return new Set(labels.filter((l) => l.roleName).map((l) => l.id))
 }
@@ -80,10 +78,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // ile AYNI desen (bkz. use-card-rows.ts). personLabels ve allLibrary bu bilesenin KENDI
   // state'idir (useCardRows'un disinda), bu yuzden kendi refleri burada acilir.
   const personLabelsRef = useRef<PersonLabel[]>([])
-  const bordroDataRef = useRef<Record<string, BordroSheetEntry>>({})
   const allLibraryRef = useRef<LibraryItem[]>([])
-  const headingsRef = useRef<LibraryItem[]>([])
-  const userHeadingsRef = useRef<UserHeading[]>([])
   // CIFT DOGUM KORUMASI: devam eden bir dogum varken ikincisi baslamaz.
   const commissionBirthInFlightRef = useRef(false)
   // DOGAN KISI ISARETLENIR (10 Eylul 2026, Engin karari): kilit acildiginda rowsRef
@@ -97,35 +92,39 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // ACILIS DOGUM TETIGI (21 Eylul 2026, Engin karari): denetim kart basina TEK kez kosar.
   // Anahtar kartin group kimligidir, baska karta gecilince denetim yeniden kosar.
   const commissionOpenCheckedGroupRef = useRef<string | null>(null)
+  // LISTEDEN DOGAN SATIR (23 Eylul 2026, Engin karari, BUTCE-EKRAN-KARARLARI bolum 20): tik
+  // acmak ve kisi getirmek Oyuncular listesindeki acik eylemlerdir; bu eylemlerden dogan
+  // satirlar kullanicinin kendi eklemesi sayilir. listBirthRef liste eylemiyle kurulur, dogum
+  // denetimi kilidi gectikten sonra okunup sifirlanir. listRevealQueueRef liste kapaninca
+  // gorunur kilinacak satir kimliklerini tasir. Kuyruk BILEREK ref'tir, state degil: efekt
+  // icinde state okuyup state yazmak react-hooks/set-state-in-effect kuralina takilir.
+  const listBirthRef = useRef(false)
+  const listRevealQueueRef = useRef<string[]>([])
+  // GETIRME DOGUM ANI (23 Eylul 2026): getirilen satirlarin kimlikleri; satirlar karta
+  // yerlesince dogum denetimi bir kez kosar ve liste bosaltilir.
+  const bringBirthIdsRef = useRef<string[]>([])
 
-  // VERITABANI TETIKLEYICISI YASAK (B18): taban hesabi (personsNeedingCommissionRow,
-  // person-groups.ts) burada TypeScript'te yasar. Doğum ANI: para degistiren bir alan basariyla
-  // kaydedildikten SONRA (useEditBuffers onMoneyCommitted) VEYA kisi listesi (yeniden) yuklendiginde
-  // (kart acilisi + ajans/menajer tik degisikligi, ikisi de refreshPersonLabels'tan gecer).
+  // VERITABANI TETIKLEYICISI YASAK (B18): dogum sarti (personsNeedingCommissionRow,
+  // person-groups.ts) burada TypeScript'te yasar. SART (23 Eylul 2026): kisi bu kartta ve tik
+  // var; taban ARTIK SART DEGIL, rakam yoksa satir sifir tutarla dogar. Dogum ANI: tik
+  // degisikligi ve kart acilisi (refreshPersonLabels + ACILIS DOGUM TETIGI), getirme (GETIRME
+  // DOGUM ANI) ve para degistiren alan kaydi (useEditBuffers onMoneyCommitted).
   // Getirilen satirlarin adi/tutari nasil BOS gelirse (GETIRME YOLU), komisyon satirinin da adi/
   // tutari BOS gelir - fn_add_budget_item zaten boyle davraniyor, elle yazilmaz.
-  // netByItemId AYNI kaynaktan (buildCardView, card-view.ts) beslenir - ikinci bir kopya YOK.
   const birthMissingCommissionRows = useCallback(async () => {
     if (commissionBirthInFlightRef.current) return
     if (!cardRef.current) return
     const currentRows = rowsRef.current
-    const view = buildCardView(
-      currentRows,
-      headingsRef.current,
-      userHeadingsRef.current,
-      bordroDataRef.current,
-      personIdsWithRoleOf(personLabelsRef.current),
-      personOrderIndexOf(personLabelsRef.current),
-    )
-    const netByItemId: Record<string, number> = {}
-    for (const id in view.rowTotalsById) netByItemId[id] = view.rowTotalsById[id].net
+    // LISTEDEN DOGAN SATIR: bayrak kilit gectikten sonra okunur ve sifirlanir.
+    const fromList = listBirthRef.current
+    listBirthRef.current = false
     for (const key of [...commissionBornKeysRef.current]) {
       const seen = currentRows.some(
         (r) => r.deriveRate !== null && r.personObjectId && r.personObjectId + ':' + r.catalogCode === key,
       )
       if (seen) commissionBornKeysRef.current.delete(key)
     }
-    const missing = personsNeedingCommissionRow(currentRows, personLabelsRef.current, netByItemId).filter(
+    const missing = personsNeedingCommissionRow(currentRows, personLabelsRef.current).filter(
       (n) => !commissionBornKeysRef.current.has(n.personObjectId + ':' + COMMISSION_CATALOG_BY_KIND[n.kind]),
     )
     if (missing.length === 0) return
@@ -142,6 +141,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         const newItemId = await addBudgetItem(cardRef.current.groupId, { catalogCode, personObjectId: need.personObjectId })
         if (defaultRate !== null) await updateItemField(newItemId, 'deriveRate', defaultRate)
         commissionBornKeysRef.current.add(need.personObjectId + ':' + catalogCode)
+        if (fromList) listRevealQueueRef.current.push(newItemId)
       }
       refetch({ silent: true })
     } catch (e) {
@@ -166,10 +166,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     onMoneyCommitted: birthMissingCommissionRows,
   })
   useLayoutEffect(() => {
-    bordroDataRef.current = bordroData
     allLibraryRef.current = allLibrary
-    headingsRef.current = headings
-    userHeadingsRef.current = userHeadings
   })
   const [addQuery, setAddQuery] = useState('')
   const [addPanelOpen, setAddPanelOpen] = useState(false)
@@ -407,14 +404,12 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // "bir sonraki acilista dogar" sozu tutmuyordu; satir fiilen yalniz para hanesi
   // kaydedildiginde ya da kart ZATEN ACIKKEN tik oynatildiginda doguyordu.
   // KART DORT DALGADA GELIYOR: kart ve satirlar, sonra kalem kutuphanesi, sonra bordro
-  // hesaplari. Denetim HEPSI yerlestikten sonra kosar, cunku:
+  // hesaplari. Denetim kart ve kutuphane yerlestikten sonra kosar, cunku:
   //   (1) varsayilan oran allLibrary'den okunur; gelmeden dogan satir ORANSIZ dogar ve tik
   //       kaldirma yolunun dokunulmamislik olcutu (oran === varsayilan) bozulup gereksiz
   //       onay penceresi acar,
-  //   (2) bordro statusundeki satirin neti motordan gelir (totals.ts rowTotals); gelmeden 0
-  //       okunur, bordrolu kisinin tabani sifir cikar ve satir yine dogmaz.
-  // BORDRO YERLESTI OLCUTU loading === false: basari, hata ve net-girilmemis hallerinin ucu
-  // de sonuclanmis sayilir - aksi halde neti girilmemis bir kartta denetim hic kosmazdi.
+  //   (2) KALKTI (23 Eylul 2026): bordro hesaplarini bekleme sebebi tabanin sifir okunmasiydi;
+  //       dogum artik tabana bakmiyor (person-groups.ts), bekleme sokuldu.
   // TEK KEZ: satir listesi her tus vurusunda degisiyor; bayrak olmasa denetim yarim yazilmis
   // rakamdan satir dogururdu (emsal: ayni dosyadaki bordro toplu cekme efekti, K5 notu).
   useEffect(() => {
@@ -422,10 +417,6 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     if (!personLabelsLoaded) return
     if (allLibraryCount === 0) return
     if (commissionOpenCheckedGroupRef.current === cardGroupId) return
-    const bordroPending = rows.some(
-      (r) => r.paymentStatus === 'bordro' && bordroData[r.id]?.loading !== false,
-    )
-    if (bordroPending) return
     commissionOpenCheckedGroupRef.current = cardGroupId
     void birthMissingCommissionRows()
   }, [
@@ -433,8 +424,6 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     loading,
     personLabelsLoaded,
     allLibraryCount,
-    rows,
-    bordroData,
     birthMissingCommissionRows,
   ])
 
@@ -485,6 +474,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   const onUpdatePersonLabel = useCallback(
     async (id: string, patch: PersonLabelPatch) => {
       try {
+        // LISTEDEN DOGAN SATIR: tik ACILIYORSA bu eylemin tetikledigi dogum listeden sayilir.
+        if (patch.hasAgency === true || patch.hasManager === true) listBirthRef.current = true
         await updatePersonLabel(id, patch)
         const kind: CommissionKind | null =
           patch.hasAgency === false ? 'ajans' : patch.hasManager === false ? 'menajer' : null
@@ -550,7 +541,11 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     async (pairs: { catalogCode: string; personObjectId: string }[]) => {
       if (!cardRef.current) return
       try {
-        await addPersonItems(cardRef.current.groupId, pairs)
+        const ids = await addPersonItems(cardRef.current.groupId, pairs)
+        // GETIRME DOGUM ANI + LISTEDEN DOGAN SATIR (23 Eylul 2026): getirilen satirlar liste
+        // kapaninca gorunur kilinir; satirlar karta yerlesince dogum denetimi bir kez kosar.
+        bringBirthIdsRef.current = ids
+        listRevealQueueRef.current.push(...ids)
         refetch({ silent: true })
       } catch (e) {
         addToast(e instanceof Error ? e.message : 'Kişiler getirilemedi', 'error')
@@ -558,6 +553,18 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     },
     [refetch, addToast, cardRef],
   )
+
+  // GETIRME DOGUM ANI (23 Eylul 2026, Engin karari): getirme aninda satir listesi henuz eski
+  // (refetch void doner), o yuzden denetim getirilen satirlarin HEPSI karta yerlesince kosar.
+  // Kart acilisindaki tetikle ayni desen: bekle, bir kez kos, bosalt.
+  useEffect(() => {
+    const ids = bringBirthIdsRef.current
+    if (ids.length === 0) return
+    if (!ids.every((id) => rows.some((r) => r.id === id))) return
+    bringBirthIdsRef.current = []
+    listBirthRef.current = true
+    void birthMissingCommissionRows()
+  }, [rows, birthMissingCommissionRows])
 
   useEffect(() => {
     const bordroItemIds = rows.filter((it) => it.paymentStatus === 'bordro').map((it) => it.id)
@@ -685,6 +692,40 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     }
     return { itemRowNoById: itemMap, summaryRowNoByPerson: summaryMap }
   }, [cardView])
+
+  // LISTEDEN DOGAN SATIR GORUNUR KILINIR (23 Eylul 2026, Engin karari, BUTCE-EKRAN-KARARLARI
+  // bolum 20): liste KAPALIYKEN kuyruktaki satirlardan kartta olanlar islenir - bloklari acilir,
+  // her hucresi 2 saniye cerceve alir (sayac BURADA baslar, satir eklendiginde degil: eklendigi
+  // anda satir pencerenin arkasindaydi), ekran kart sirasinda en ustteki satira kayar (kaydirma
+  // yukaridaki pendingScrollIdRef efektinden gecer). Henuz karta gelmeyen kimlik kuyrukta
+  // kalir, geldiginde ayni sekilde islenir. Imlece DOKUNULMAZ: liste kapaninca imlec listeyi
+  // acan dugmeye doner (bottom-sheet.tsx), kaydirma odagi oynatmaz.
+  useEffect(() => {
+    if (personListOpen) return
+    const queued = listRevealQueueRef.current
+    if (queued.length === 0) return
+    const order: string[] = []
+    for (const group of cardView.groups) {
+      for (const rr of group.renderRows) {
+        if (rr.kind === 'summary') order.push(...rr.rows.map((r) => r.id))
+        else order.push(rr.row.id)
+      }
+    }
+    const present = order.filter((id) => queued.includes(id))
+    if (present.length === 0) return
+    listRevealQueueRef.current = queued.filter((id) => !present.includes(id))
+    setJustAddedIds((prev) => [...prev, ...present])
+    window.setTimeout(() => {
+      setJustAddedIds((prev) => prev.filter((id) => !present.includes(id)))
+    }, 2000)
+    const personIds = rows.filter((r) => present.includes(r.id) && r.personObjectId).map((r) => r.personObjectId as string)
+    setCollapseState((prev) => {
+      let next: CollapseState = prev
+      for (const pid of personIds) next = openBlock('p:' + pid, next)
+      return next
+    })
+    pendingScrollIdRef.current = present[0]
+  }, [personListOpen, cardView, rows])
 
   if (loading) return <Loading label="Bütçe yükleniyor..." />
   if (error) return <ErrorMessage message={error} onRetry={refetch} />

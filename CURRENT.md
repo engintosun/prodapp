@@ -39,6 +39,8 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 
 - **22-23 Eylül 2026 — Serbest kalem için kullanıcı başlığı tamamlandı (göçler `20260922120000`, `20260923120000`, `20260923130000`).** Kullanıcı kartta kendi başlığını açar ve serbest kalemlerini oraya gönderir: "+ Ekle" → Kalem ya da Başlık; Başlık penceresinde gönderim ve geri al. Başlık her kartta standarttır, 1500'de en altta çizilir. "Aynı ad aynı başlık" kuralının hakemi veritabanıdır. Satırdaki Başlık düğmesi söküldü, mühürlü bütçe mesajı mühür modeliyle uyumlu hale geldi. Kararlar: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §19 ve `docs/butce/BUTCE-SEMA-KARARLARI.md` KULLANICI BAŞLIĞININ EVİ.
 
+- **23 Eylül 2026 — KART 1600 komisyon satırı tikle doğuyor, listeden doğan satır görünür (tek dilim).** Komisyon satırı artık rakam girilmesini beklemiyor: tik atıldığı anda, kişi karttaysa sıfır tutarla doğuyor; listeden kişi getirilince de doğum denetimi koşuyor. Oyuncular listesinden doğan satırlar liste kapanınca görünür kılınıyor: blok açılır, ekran en üstteki satıra kayar, satır iki saniye çerçevelenir. Üç eski karar kayıtlarda kapandı (blok içi ekleme, özet adı penceresi, İMLEÇ). Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20.
+
 ## Durum
 
 - HEAD: 3793027 (23 Eylül 2026 — oturum kapanışı)
@@ -122,13 +124,17 @@ Bu oturumda alınan kararlar; tam metinleri KALICILIK KURALI gereği kendi ev do
 - **İş seçilince o işin dosyaları okunur.** Açılış raporuna "kabul" denip iş seçilince o işi yöneten bütün dosyalar INDEX.md bölüm 7.0 üzerinden bulunup okunur; iş listesi bu okumadan sonra sunulur. Ev dosyası: `docs/protokol/` altındaki açılış protokolü, Okuma kuralları.
 - **Bir özellik, aksi kararlaştırılmadıkça bütün kartlarda aynı biçimde yer alır.** Karta göre değişen yalnız ihtiyaca bağlı düğmelerdir (oyuncular listesi düğmesi gibi). "+ Ekle" her kartta Kalem ve Başlık'a ayrılır; 1500 ve 1600 dahil. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §19 GÜNCELLEME (23 Eylül 2026).
 - **Mühürlü bütçe mesajı: "Mühürlü bütçe değiştirilemez. Değişiklik taslakta yapılır."** Mühür açılmaz; revizyon taslakta yapılır ve yeniden mühürlenir (MÜHÜR-1). Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §19 UYGULAMA (23 Eylül 2026, Dilim 2b).
+- **Blok içi ekleme kapandı; yerini "Kime?" adımı aldı.** Mesai, Prova, Tekrar Telifi ve ADR Hak Devri genel eklemede kişiyi sorar ve kişinin bloğuna düşer. Bedeli: oyuncu dışı bir kalem kişi bloğuna konamaz. "Baz+ek" hanesi sorusu da konusuz kaldı. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 İKİ AYRI EKLEME YERİ.
+- **Özet adı penceresi kapandı.** Özetin adı Üretim Kayıtları'ndan gelir, kartta düzenlenmez. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 (özetin adı maddesi).
+- **İMLEÇ kararı kapandı.** Komisyon satırı imleci çekmez; oran varsayılanla gelir. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 İMLEÇ.
+- **Komisyon satırı tik atıldığı anda doğar.** Şart "taban sıfırdan büyük" değil "kişi bu kartta"; rakam yoksa sıfır tutarla. Getirme de doğum anıdır. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 KOMİSYON SATIRININ DOĞUMU madde 1.
+- **Oyuncular listesinden doğan satırlar kullanıcının kendi eklemesi sayılır.** Liste kapanınca blok açılır, ekran kayar, satır iki saniye çerçevelenir; imleç düğmede kalır. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 KATLAMA DURUMU MUTLAKTIR (daraltma) ve §16 KAYDIRMA VE İŞARET (liste yolu istisnası).
 
 ## Sıradaki iş
 
 **AÇIK İŞ.** Sıradaki asıl işi Engin seçer; aşağıdakiler bekleyen işlerdir.
 
 1. **Mac gerçek cihaz turu.** KLV kapanışına bağlı, bekliyor.
-2. **Sıradaki kod dilimine iliştirilecek yorum düzeltmesi.** `src/app/muhasebe/budget/components/add-chooser.tsx` yorumu emsal olarak silinmiş `heading-sheet.tsx` dosyasını anıyor; yorum emsali "sökülen satırdaki Başlık düğmesinin kısa listesi" diye anmalı. Ekrana etkisi yok.
 
 ## Açık kalanlar
 

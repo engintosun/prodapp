@@ -5,8 +5,8 @@ import { BottomSheet } from './bottom-sheet'
 export type AddChoice = 'item' | 'heading'
 
 // "+ EKLE" SECIMI (BUTCE-EKRAN-KARARLARI bolum 16 + 19, 23 Eylul 2026, Engin karari): pencere
-// ailesinden kucuk bir pencere, iki satir. Emsal: satirdaki Baslik dugmesinin kisa listesi
-// (heading-sheet.tsx). Acilinca odak Kalem satirindadir; ok tuslari iki satir arasinda
+// ailesinden kucuk bir pencere, iki satir. Emsal: sokulen satirdaki Baslik dugmesinin kisa listesi
+// Acilinca odak Kalem satirindadir; ok tuslari iki satir arasinda
 // gezer, Enter secer (dugmenin kendi davranisi), Esc ve disina tiklama kapatir (BottomSheet).
 export function AddChooser({ onPick, onClose }: { onPick: (choice: AddChoice) => void; onClose: () => void }) {
   const itemRef = useRef<HTMLButtonElement>(null)

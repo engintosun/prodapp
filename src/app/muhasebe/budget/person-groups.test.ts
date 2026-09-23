@@ -195,13 +195,19 @@ describe('personsNeedingCommissionRow', () => {
   it('tiksiz kisi gerekmez', () => {
     const rows = [makeItem({ id: 'kase', personObjectId: 'p1' })]
     const labels = [makeLabel({ id: 'p1', hasAgency: false, hasManager: false })]
-    expect(personsNeedingCommissionRow(rows, labels, { kase: 100000 })).toEqual([])
+    expect(personsNeedingCommissionRow(rows, labels)).toEqual([])
   })
 
-  it('tabani sifir olan gerekmez', () => {
+  it('tabani sifir ama kartta olan gerekir (satir sifir tutarla dogar)', () => {
     const rows = [makeItem({ id: 'kase', personObjectId: 'p1' })]
     const labels = [makeLabel({ id: 'p1', hasAgency: true })]
-    expect(personsNeedingCommissionRow(rows, labels, { kase: 0 })).toEqual([])
+    expect(personsNeedingCommissionRow(rows, labels)).toEqual([{ personObjectId: 'p1', kind: 'ajans' }])
+  })
+
+  it('kartta satiri olmayan gerekmez', () => {
+    const rows = [makeItem({ id: 'kase', personObjectId: 'p2' })]
+    const labels = [makeLabel({ id: 'p1', hasAgency: true })]
+    expect(personsNeedingCommissionRow(rows, labels)).toEqual([])
   })
 
   it('komisyon satiri zaten olan (o cinste) gerekmez', () => {
@@ -210,13 +216,13 @@ describe('personsNeedingCommissionRow', () => {
       makeItem({ id: 'ajans-komisyon', personObjectId: 'p1', deriveRate: 20, catalogCode: '1618' }),
     ]
     const labels = [makeLabel({ id: 'p1', hasAgency: true })]
-    expect(personsNeedingCommissionRow(rows, labels, { kase: 100000, 'ajans-komisyon': 20000 })).toEqual([])
+    expect(personsNeedingCommissionRow(rows, labels)).toEqual([])
   })
 
   it('iki tik iki cift uretir (ajans + menajer)', () => {
     const rows = [makeItem({ id: 'kase', personObjectId: 'p1' })]
     const labels = [makeLabel({ id: 'p1', hasAgency: true, hasManager: true })]
-    expect(personsNeedingCommissionRow(rows, labels, { kase: 100000 })).toEqual([
+    expect(personsNeedingCommissionRow(rows, labels)).toEqual([
       { personObjectId: 'p1', kind: 'ajans' },
       { personObjectId: 'p1', kind: 'menajer' },
     ])
@@ -225,7 +231,7 @@ describe('personsNeedingCommissionRow', () => {
   it('tek tik (ajans) bir cift uretir', () => {
     const rows = [makeItem({ id: 'kase', personObjectId: 'p1' })]
     const labels = [makeLabel({ id: 'p1', hasAgency: true, hasManager: false })]
-    expect(personsNeedingCommissionRow(rows, labels, { kase: 100000 })).toEqual([
+    expect(personsNeedingCommissionRow(rows, labels)).toEqual([
       { personObjectId: 'p1', kind: 'ajans' },
     ])
   })
@@ -233,7 +239,7 @@ describe('personsNeedingCommissionRow', () => {
   it('tiksiz kisi hicbir cift uretmez', () => {
     const rows = [makeItem({ id: 'kase', personObjectId: 'p1' })]
     const labels = [makeLabel({ id: 'p1', hasAgency: false, hasManager: false })]
-    expect(personsNeedingCommissionRow(rows, labels, { kase: 100000 })).toEqual([])
+    expect(personsNeedingCommissionRow(rows, labels)).toEqual([])
   })
 
   it('ajans satiri varken menajer eksikse yalniz menajer cifti doner', () => {
@@ -242,7 +248,7 @@ describe('personsNeedingCommissionRow', () => {
       makeItem({ id: 'ajans-komisyon', personObjectId: 'p1', deriveRate: 20, catalogCode: '1618' }),
     ]
     const labels = [makeLabel({ id: 'p1', hasAgency: true, hasManager: true })]
-    expect(personsNeedingCommissionRow(rows, labels, { kase: 100000, 'ajans-komisyon': 20000 })).toEqual([
+    expect(personsNeedingCommissionRow(rows, labels)).toEqual([
       { personObjectId: 'p1', kind: 'menajer' },
     ])
   })
