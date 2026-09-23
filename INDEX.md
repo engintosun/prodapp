@@ -85,13 +85,13 @@ varsayim yapilmaz.
 -> Etkiler: production-records-screen.tsx `importOpen` durumunda bunu render eder; bu dosya ekranı DEĞİŞTİRMEZ.
 -> Kritik: HAYIR — kararların evi BUTCE-EKRAN-KARARLARI §20; tahmin sınırı orada yazılı (Görev/Ajans/Menajer TAHMİN EDİLMEZ).
 
-`src/app/muhasebe/budget/card-table-screen.tsx` (998)
+`src/app/muhasebe/budget/card-table-screen.tsx` (985)
 -> Görev: Kart tablosu ekranının orkestrasyonu — veri hook'ları + ekleme paneli + satır bileşenlerini birbirine bağlar.
 -> Kullanır: hooks/* (use-card-rows, use-edit-buffers, use-grid-navigation) + components/* + budget-service.ts.
 -> Etkiler: authenticated-shell.tsx (muhasebe "bütçe" sekmesi) buradan render eder.
 -> Kritik: EVET — İ4 (Ekran ≠ kabuk) sınırı burada tutulur; budgetId/cardId/viewMode dışarıdan alınabilir kalmalı. 500+ satır (1 Eylül 2026), BUTCE-UI-MIMARISI bölüm 8 kayıtlı.
 
-`src/app/muhasebe/budget/components/item-row.tsx` (408)
+`src/app/muhasebe/budget/components/item-row.tsx` (390)
 -> Görev: Kart tablosunun kalem satırı — 14 haneli (13 veri kolonu + etiketsiz silme hanesi) KİLİTLİ kolon setinin tek satırlık render'ı, bordro/genel ayrımı + dönem-satırı açılımı.
 -> Kullanır: shared/cfe (netToplamDonemli/brutToplamDonemli/kisiyeBanka) + format.ts + hooks/use-edit-buffers.ts (EditApi tipi).
 -> Etkiler: card-table-screen.tsx satır-başına bunu render eder.
@@ -138,8 +138,7 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/components/bottom-sheet.tsx` (121) — ortak alt-sheet primitivi (backdrop+panel+odak tuzağı)
 `src/app/muhasebe/budget/components/burden-sheet.tsx` (103) — Yasal Yük dökümü sheet'i (bordro 6-bacak + basit statü)
 `src/app/muhasebe/budget/components/heading-row.tsx` (54) — başlık satırı: ad + üç rakam (Net/Yasal Yük/Brüt), data-grid-cell taşımaz
-`src/app/muhasebe/budget/components/heading-sheet.tsx` (71) — başlık seçme tabakası (kartın başlıkları + Başlıksız)
-`src/app/muhasebe/budget/components/heading-window.tsx` (289) — Başlık penceresi: serbest kalemleri başlığa gönderme, başlık açma, geri al
+`src/app/muhasebe/budget/components/heading-window.tsx` (294) — Başlık penceresi: serbest kalemleri başlığa gönderme, başlık açma, geri al
 `src/app/muhasebe/budget/components/note-sheet.tsx` (35) — İç Not / Kamu Notu düzenleme sheet'i
 `src/app/muhasebe/budget/components/period-row.tsx` (186) — çok-dönemli kalemin dönem alt-satırı render'ı
 `src/app/muhasebe/budget/components/person-list-sheet.tsx` (253) — Oyuncular listesi panosu: Rol · Oyuncu · Görev · Ajans/Menajer tiki, "+ Kişi ekle" ve karta toplu getirme
@@ -273,7 +272,7 @@ Bu tarih burada TEK yerde yaşar; dosyaların kendi içinde "Son güncelleme" ba
 `docs/rakip/YONTEM.md` [AKAN] — Kanıt seviyeleri · İki doktrin kuralı · Boyut ızgarası (42 boyut) · Adres haritası · kod: yok
 `docs/IS-SIRASI.md` [AKAN] (dogrulama: 18 Ağustos 2026) — Yapıldı (referans) · Sırada · Backlog · Borçlar · kod: yok
 `docs/ARCHITECTURE.md` [AKAN] (dogrulama: 18 Ağustos 2026) — Çalışma sözleşmesi · Vizyon kontrolü · Teknik felsefe · Entropi koruması/mimari yeniden yapılanma · kod: dizin yapısının tamamı (5.3)
-`docs/butce/BUTCE-EKRAN-KARARLARI.md` [AKAN] (dogrulama: 19 Ağustos 2026) — Kalem satırı yapısı/statü · Net/Brüt/Yasal Yük · Not mimarisi · Satır ekleme+autocomplete+KLV · kod: budget/components/{item-row,period-row,add-item-panel}.tsx · budget/card-table-screen.tsx (§18 kart toplamı şeridi + tablo genişliği) · budget/components/heading-row.tsx (§19 başlık satırı) · budget/components/heading-sheet.tsx (§19 sonradan taşıma)
+`docs/butce/BUTCE-EKRAN-KARARLARI.md` [AKAN] (dogrulama: 19 Ağustos 2026) — Kalem satırı yapısı/statü · Net/Brüt/Yasal Yük · Not mimarisi · Satır ekleme+autocomplete+KLV · kod: budget/components/{item-row,period-row,add-item-panel}.tsx · budget/card-table-screen.tsx (§18 kart toplamı şeridi + tablo genişliği) · budget/components/heading-row.tsx (§19 başlık satırı)
 `docs/EKRAN-MUHASEBE.md` [AKAN] (dogrulama: 14 Ağustos 2026) — Header/tab bar · Dashboard/Bekleyen/Şüpheli/Raporlar · Departman/kategori/kullanıcı yönetimi · Bütçe modülü ekranları (B-serisi) · kod: reviewer-screen.tsx · definitions-screen.tsx · invite-screen.tsx
 `docs/KABUK-KARARLARI.md` [AKAN] (dogrulama: 5 Eylül 2026) — Tasarım tezi · Dört bölge kabuk anatomisi · Sol ray/üst bağlam/sağ referans · Ayrıntı turu kararları · Tanım katmanları (şirket ayarı / şirket kütüphanesi / proje dökümü) ve kişi listesi geçiş kuralı (§12.1) · kod: layout/{app-header,bottom-nav,app-shell,nav-rail,rail-icons}.tsx · authenticated-shell.tsx · shared/rail-state.ts [PARTIAL] — sol ray [ACTIVE] (KABUK sprinti, 8-12 Ağustos 2026), sağ referans paneli [ABSENT] (Engin kararı 11 Ağustos 2026: bu sprintte çizilmez, yeri ayrılı kalır), kart masası [PARTIAL] (15 Ağustos 2026, db8d5bd: ızgara + kapak (ad + net) + karta giriş CANLI; işaret, kişiye özel diziliş, icmal seçimi ve ince şerit dönüş yolu henüz çizilmedi)
 `docs/GLOSSARY.md` [AKAN] (dogrulama: 17 Ağustos 2026) — Ana terimler (görsel grup/başlık satırı/alt-kod/harç-vergi dahil) · Alan adlandırma doktrini · Tehlikeli Türkçe kökler · Katalog/Şablon/Masa · kod: shared/types/domain.ts

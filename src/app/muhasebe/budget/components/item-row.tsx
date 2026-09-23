@@ -2,7 +2,7 @@
 import { memo } from 'react'
 import { PAYMENT_STATUSES } from '../../../../shared/types/domain'
 import type { BudgetItemRow, StageRow, UnitRow } from '../../../../shared/supabase/budget-service'
-import { fmt, itemHasNote, canChangeHeading, isMultiPeriod, summarizeSame, fieldVal, repeatVal, bordroAllowedUnits } from '../format'
+import { fmt, itemHasNote, isMultiPeriod, summarizeSame, fieldVal, repeatVal, bordroAllowedUnits } from '../format'
 import type { ValueWarning } from '../format'
 import type { RowTotals } from '../totals'
 import { itemDisplayName, commissionDisplayName } from '../display-name'
@@ -25,7 +25,6 @@ interface ItemRowProps {
   warning: ValueWarning
   onOpenBurden: (itemId: string, stageId: string | null) => void
   onOpenNote: (itemId: string) => void
-  onOpenHeading: (itemId: string) => void
   onRemove: (itemId: string) => void
   personNameById: ReadonlyMap<string, string>
   // Turetilmis (komisyon) satirin ad hucresi ajans/menajer adini buradan okur - display-name.ts
@@ -54,7 +53,6 @@ export const ItemRow = memo(function ItemRow({
   warning,
   onOpenBurden,
   onOpenNote,
-  onOpenHeading,
   onRemove,
   personNameById,
   personLabelById,
@@ -144,22 +142,6 @@ export const ItemRow = memo(function ItemRow({
               <path d="M9 13h6M9 17h4" />
             </svg>
           </button>
-          {canChangeHeading(it) && (
-            <button
-              type="button"
-              data-grid-cell="true"
-              data-row-id={it.id}
-              data-col="heading"
-              data-cell-kind="button"
-              title="Başlık"
-              onClick={() => onOpenHeading(it.id)}
-              style={{ display: 'flex', alignItems: 'center', flexShrink: 0, background: 'transparent', border: 'none', cursor: 'pointer', padding: 'var(--space-1)', color: it.headingCode ? 'var(--color-primary)' : 'var(--color-text-muted)', opacity: it.headingCode ? 1 : 0.45 }}
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M4 6h10M4 12h16M4 18h13" />
-              </svg>
-            </button>
-          )}
         </div>
       </td>
       <td style={selectTd}>

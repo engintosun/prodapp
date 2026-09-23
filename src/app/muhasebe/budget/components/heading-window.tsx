@@ -87,6 +87,7 @@ function optionStyle(active: boolean) {
 
 export function HeadingWindow({
   rows,
+  rowNoById,
   libraryHeadings,
   userHeadings,
   cardCode,
@@ -94,6 +95,9 @@ export function HeadingWindow({
   onClose,
 }: {
   rows: readonly BudgetItemRow[]
+  // NUMARA tablonun No sutunundan gelir (card-table-screen itemRowNoById); ozetin altindaki
+  // satirin numarasi yoktur, o satirda numara yazilmaz.
+  rowNoById: ReadonlyMap<string, number>
   libraryHeadings: readonly { catalogCode: string; name: string }[]
   userHeadings: readonly UserHeading[]
   cardCode: string
@@ -218,7 +222,8 @@ export function HeadingWindow({
                   {g.items.map((it) => (
                     <label key={it.id} style={tickLabelStyle}>
                       <input type="checkbox" checked={checked.has(it.id)} onChange={() => toggleOne(it.id)} />
-                      #{it.itemCode} {it.name}
+                      {rowNoById.has(it.id) ? `#${rowNoById.get(it.id)} ` : ''}
+                      {it.name}
                     </label>
                   ))}
                 </div>
