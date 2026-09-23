@@ -168,6 +168,7 @@ varsayim yapilmaz.
 `src/shared/supabase/onboarding-service.ts` (177) — departman/dönem/bütçe oluşturma, proje açma sarmalayıcı
 `src/shared/supabase/person-label-service.ts` (247) — kişi etiketi (budget_cost_objects, kind='kisi') okuma/yazma servis çağrıları
 `src/shared/supabase/receipt-service.ts` (181) — fiş CRUD + onay/red/düzeltme RPC çağrıları
+`src/shared/supabase/user-heading-service.ts` (60) — kullanıcı başlığı okuma, açma (`fn_open_user_heading`), kalemleri başlığa taşıma
 `src/shared/theme.ts` (24) — dark/light tema state'i + localStorage kalıcılığı
 
 Edge functions (`supabase/functions/`):
@@ -304,7 +305,7 @@ Kaynak: docs/butce/BUTCE-UI-MIMARISI.md bölüm 2 (İ1-İ8) + bölüm 8, docs/AR
 
 ## 9. TEST HARİTASI
 
-Test sayıları `npm test` çıktısından ÖLÇÜLEREK okundu (21 Eylül 2026), toplam 401/401 geçti (20 dosya).
+Test sayıları `npm test` çıktısından ÖLÇÜLEREK okundu (23 Eylül 2026), toplam 409/409 geçti (21 dosya).
 
 - `src/shared/cfe/cfe.test.ts` — CFE motorunu (net/brüt/KDV/kova) korur — 28 test
 - `src/shared/cfe/payroll.test.ts` — Bordro motorunu (payroll.ts) korur — 27 test
@@ -312,6 +313,7 @@ Test sayıları `npm test` çıktısından ÖLÇÜLEREK okundu (21 Eylül 2026),
 - `src/shared/supabase/library-service.test.ts` — Kalem Kütüphanesi okumasını korur (fetchCardLibrary kalemleri ve başlıkları AYRI listelerde döndürür, fetchAllLibrary isGroup ile birlikte tam liste döner) — 3 test
 - `src/shared/supabase/payroll-read.test.ts` — assembleBordroInput'u (bordro girdisinin Supabase'den derlenmesi) korur — 6 test
 - `src/shared/supabase/person-label-service.test.ts` — countPersonLabels'ı (Üretim Kayıtları masa kapağı sayacı) korur — 1 test
+- `src/shared/supabase/user-heading-service.test.ts` — fetchUserHeadings/openUserHeading/moveItemsToHeading'i (kullanıcı başlığı servis çağrıları) korur — 8 test
 - `src/shared/components/toast.test.tsx` — toast süre ve yer kuralını korur — 3 test
 - `src/app/muhasebe/budget/hooks/grid-navigation-core.test.ts` — İ7 klavye çekirdeğini (resolveKeyAction/reduceGrid) korur — 115 test
 - `src/app/muhasebe/budget/format.test.ts` — format.ts saf fonksiyonlarını korur (findCrossCardMatches'in başlık-satırı istisnası + headingKeyOf/groupRowsByHeading dahil) — 66 test

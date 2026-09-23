@@ -39,9 +39,11 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 
 - **22 Eylül 2026 — Kullanıcı başlığının tasarımı kapandı, veritabanı dilimi canlıya girdi (göç `20260922120000`).** Kapı yeni bir düğme değil, kartın altındaki giriş satırı oldu: "+ Ekle" → Kalem ya da Başlık. Satırdaki Başlık simgesi kalkıyor, çünkü görünmüyordu. Canlıda iki şey var: başlık defteri `budget_user_headings` (proje + kart + ad; kaydı silinmez, boşluğu hesaplanır) ve kalemin başlık hanesindeki kapı kontrolü `trg_check_item_heading`. Bu kontrol SEMA'da yazılı olduğu halde hiç yazılmamıştı. Göçten önce canlıya karşı salt-okuma turu koştu (şema repoyla aynı, kontrole takılan kalem yok); göç de mevcut kalemleri, kütüphaneyi ve şablonları kendi ön koşuluyla denetliyor. Ekranda değişen yok; servis ve ekran dilimi bekliyor. Karar evleri: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §19 GÜNCELLEME (22 Eylül 2026) + `docs/butce/BUTCE-SEMA-KARARLARI.md` KULLANICI BAŞLIĞININ EVİ.
 
+- **23 Eylül 2026 — Kullanıcı başlığının servis dilimi canlıya girdi (göç `20260923120000`).** Veritabanına başlık açma işlevi `fn_open_user_heading` eklendi: "aynı ad aynı başlıktır" kuralının hakemi veritabanıdır, ad anahtarı yalnız orada yaşar. Yeni servis dosyası `user-heading-service.ts` üç işlev taşır: `fetchUserHeadings`, `openUserHeading`, `moveItemsToHeading`. Ekranda hiçbir şey değişmedi; sıradaki adım ekran dilimi. Test: 401 → 409.
+
 ## Durum
 
-- HEAD: 08bb111 (22 Eylül 2026 — kullanıcı başlığı veritabanı dilimi, db push izin kapısı)
+- HEAD: b506e34 (22 Eylül 2026 oturum kapanışı; 23 Eylül servis dilimi bunun üstüne gelir)
 - **`asks_person` KURALI ARTIK UYGULANDI (19 Eylül 2026).** Daha önce burada ve "Sıradaki iş"te "kararı var, uygulanmamış TEK iş" diye duran kayıt kapandı — göç `20260919120000` canlıda, sahada doğrulandı. Karar evi: `docs/butce/KART-KATALOGU.md` §7.5.
 - KOMİSYON TABANI ARTIK ÖDEME STATÜSÜNE BAKMIYOR: ölçüt kişiye bağlı ve türetilmemiş satır. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 KOMİSYON TABANI VE SİLME madde 2.
 - TEMSİLCİ KOMİSYONU CİNSİ ARTIK ATOMDA: 1618 Ajans Komisyonu, 1618-01 Menajer Komisyonu iki ayrı atom. Testlerle ve tarayıcıda doğrulandı (17 Eylül 2026).
@@ -55,7 +57,7 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 - **UYARI VE HATA MESAJLARI KAPATILANA KADAR DURUYOR ve açık pencerenin içinde çıkıyor.** 18 Eylül 2026'da tarayıcıda doğrulandı: uyarı Oyuncular listesinin içinde başlığın altında çıktı ve kendiliğinden gitmedi; liste kapanınca ekranın tepesine geçti; liste kaydırılınca yerinde durdu; pencere yokken başarı mesajı 3,5 saniyede gitti. Karar evi: `docs/TASARIM-KARARLARI.md` §9.
 - **ÖZET SATIRININ ADI DÖRT KADEME:** rol adı → görev adı → oyuncunun gerçek adı → boş. Görev kademesi 18 Eylül 2026'da eklendi; rol hanesi boş kişide özet ile kişinin kendi kalemi artık aynı adı taşımıyor. Üç hal aynı gün tarayıcıda doğrulandı (görev adı çıkıyor, rol yazılınca role dönüyor, rolü olan kişide hiçbir şey değişmiyor). DÖRDÜNCÜ HAL EKRANDA OLUŞAMAZ: görevi de rolü de olmayan kişi karta getirilemiyor, çünkü getirme yolu görev atomu üzerinden işliyor; o kademe yalnız testle doğrulandı ve kapalı bloğun kimliksiz kalmaması için duruyor. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 (ÖZET ADINA GÖREV KADEMESİ).
 - ÖZET SATIRI VE KART İÇİ SIRA DOĞRULANDI (tarayıcıda): rolü olan tek kalemli kişi özet satırı alıyor ve blok kapalı doğuyor; kart içi kişi sırası listeyle birebir aynı. Rol hanesi BOŞ olan kişi de eski kurala göre davranıyor: tek kalemde özet satırı doğmuyor, iki ve daha fazla kalemde doğuyor ve adını oyuncunun gerçek adından alıyor. Kural görev koduna değil rol hanesine bakar; denemede görev Başrol'dü. 17 Eylül 2026'da tarayıcıda doğrulandı.
-- Migration 20260901130000'den 20260922120000'e kadar CANLIDA. Build geçer, eslint sıfır hata. Originde tek dal: main.
+- Migration 20260901130000'den 20260923120000'e kadar CANLIDA. Build geçer, eslint sıfır hata. Originde tek dal: main.
 - SAYILAR BURADA YAŞAMAZ: beklenen test sayısı `.claude/test-count` dosyasında, kapı kümesi `.claude/hooks/gate.sh` ve `.claude/hooks/run-gates.sh` içinde yaşar. Bu iki sayı düzyazıda tazelenmez, sahibinden okunur.
 - Bütçe kolon modeli: 13 veri kolonu + etiketsiz silme hanesi (No · Ad · Statü · Dönemler · Birim · Birim net · Miktar · X · Ara toplam · Yasal Yük · Maliyet · KDV · Toplam).
 - ÇALIŞMA ORTAMI: kapılar `.claude/hooks/` altında kurulu, `supabase db push` onaya bağlı. Bu ortamda Docker YOK: `db reset` ve `db dump` çalışmaz, `db push` çalışır, salt-okuma `db query` ancak `--linked` bayrağıyla çalışır (bayraksız komut yerel veritabanına bağlanmaya çalışıp ECONNREFUSED verir). İZİN KAPISI ÖLÇÜLDÜ VE DÜZELTİLDİ (22 Eylül 2026): `.claude/settings.json` kuralı yalnız `supabase db push` ile başlayan komutu tutuyordu; 22 Eylül göçünde `npx supabase db push` izin ekranı açılmadan çalıştı. Kurala `npx supabase db push` ve `npx supabase migration up` biçimleri eklendi; kuru denemede (`npx supabase db push --dry-run`) izin ekranı çıktı.
@@ -125,11 +127,16 @@ Bu oturumda alınan kararlar; tam metinleri KALICILIK KURALI gereği kendi ev do
 - **Başlık işini kalem ekleme odasının içine almak PARK EDİLDİ.** Oda iki işi taşıyınca karmaşıklaşıyordu. Ev dosyası: §19 GÜNCELLEME, ELENEN SEÇENEKLER.
 - **`db push` izin kapısı `npx` biçimini de tutar.** Kural yalnız `supabase` ile başlayan komutu bekliyordu; 22 Eylül göçü bu yüzden izin ekranı açılmadan uygulandı ve tek koruma sohbetteki onaydı. Ev dosyası: `CLAUDE.md` Ortamlar / deploy, Engin onayı maddesi.
 
+## Alınan kararlar (23 Eylül 2026, Engin)
+
+- **"Aynı ad aynı başlıktır" kuralının hakemi veritabanıdır.** Başlık `fn_open_user_heading` ile açılır; ekranda ad karşılaştırması yazılmaz, Türkçe harf kuralının ikinci kopyası kurulmaz. Ev dosyası: `docs/butce/BUTCE-SEMA-KARARLARI.md` KULLANICI BAŞLIĞININ EVİ.
+- **İş seçilince o işin dosyaları okunur.** Açılış raporuna "kabul" denip iş seçilince o işi yöneten bütün dosyalar INDEX.md bölüm 7.0 üzerinden bulunup okunur; iş listesi bu okumadan sonra sunulur. Ev dosyası: `docs/protokol/` altındaki açılış protokolü, Okuma kuralları.
+
 ## Sıradaki iş
 
 **OYUNCU KARTINDAN KALANLAR.** KART 1600 turunun artığı; sıra listenin kendi sırasıdır.
 
-1. **Serbest kalem için kullanıcı başlığı — tasarım kapandı, veritabanı dilimi canlıda (22 Eylül 2026).** Sıradaki adım servis dilimi, ardından ekran dilimi ("+ Ekle" seçimi, Başlık penceresi, satırdaki simgenin sökülmesi, kullanıcı başlıklarının çizime bağlanması). Ekran diliminden önce açık soru: 1500'de ve 1600'de "Başlık" seçeneğinin durumu. Kararlar: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §19 KULLANICI BAŞLIĞI ve `docs/butce/BUTCE-SEMA-KARARLARI.md` KULLANICI BAŞLIĞININ EVİ. IS-SIRASI'ndaki MOTOR İŞİ'nin iki parçası (çalışma anında başlık doğması, ikinci başlık anahtarı) bu iştir.
+1. **Serbest kalem için kullanıcı başlığı — tasarım kapandı, veritabanı dilimi canlıda (22 Eylül 2026).** Servis dilimi canlıda (23 Eylül 2026, göç `20260923120000`, `user-heading-service.ts`). Sıradaki adım ekran dilimi ("+ Ekle" seçimi, Başlık penceresi, satırdaki simgenin sökülmesi, kullanıcı başlıklarının çizime bağlanması). Ekran diliminden önce açık soru: 1500'de ve 1600'de "Başlık" seçeneğinin durumu. Kararlar: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §19 KULLANICI BAŞLIĞI ve `docs/butce/BUTCE-SEMA-KARARLARI.md` KULLANICI BAŞLIĞININ EVİ. IS-SIRASI'ndaki MOTOR İŞİ'nin iki parçası (çalışma anında başlık doğması, ikinci başlık anahtarı) bu iştir.
 2. **Mac gerçek cihaz turu.** KLV kapanışına bağlı, bekliyor.
 
 ## Açık kalanlar

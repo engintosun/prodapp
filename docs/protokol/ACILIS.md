@@ -20,6 +20,7 @@ Bu dosyanın tüketicisi Opus'tur. Claude Code oturumları bu protokolü yürüt
 
 - **Okuma teyitli olmalı:** bir araç içerik yerine boş çıktı ya da URL dönerse bu "okundu" değil DUR sinyalidir. Gerçek içerik görülmeden "okundu" denmez.
 - Tam dosya ve tüm tarihçe okuması YOK — ama bu kural İLGİSİZ dosyalar içindir. Dokunulacak dosyanın dokunulacak bölümü her zaman baştan sona okunur; maliyetli olması mazeret değildir.
+- **İş seçilince o işin dosyaları okunur (Engin kararı, 23 Eylül 2026):** Engin açılış raporuna "kabul" deyip bir iş seçildiğinde, o işi yöneten BÜTÜN dosyalar INDEX.md bölüm 7.0 üzerinden bulunup okunur: karar evleri, dokunulacak kod ve ilgili göçler. Yapılacak iş listesi bu okumadan SONRA sunulur. Açılış okuması bu okumanın yerine geçmez.
 - Bir tabloya ya da listeye kayıt eklenecekse tablonun TAMAMI ve varsa sayaç satırları okunur. Boş numara aramak okumak değildir.
 - Grep dosyayı ya da satırı BULMAK içindir; içeriği anlamak için yetersizdir.
 - Jeton bütçesi gereksiz iş yapmamak ve döngüye girmemek içindir, okumamak için değil.
