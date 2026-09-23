@@ -43,7 +43,7 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 
 ## Durum
 
-- HEAD: 3793027 (23 Eylül 2026 — oturum kapanışı)
+- HEAD: 568ad0c (23 Eylül 2026 — KART 1600 kalan işler, oturum kapanışı)
 - **`asks_person` KURALI ARTIK UYGULANDI (19 Eylül 2026).** Daha önce burada ve "Sıradaki iş"te "kararı var, uygulanmamış TEK iş" diye duran kayıt kapandı — göç `20260919120000` canlıda, sahada doğrulandı. Karar evi: `docs/butce/KART-KATALOGU.md` §7.5.
 - KOMİSYON TABANI ARTIK ÖDEME STATÜSÜNE BAKMIYOR: ölçüt kişiye bağlı ve türetilmemiş satır. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 KOMİSYON TABANI VE SİLME madde 2.
 - TEMSİLCİ KOMİSYONU CİNSİ ARTIK ATOMDA: 1618 Ajans Komisyonu, 1618-01 Menajer Komisyonu iki ayrı atom. Testlerle ve tarayıcıda doğrulandı (17 Eylül 2026).
@@ -135,6 +135,8 @@ Bu oturumda alınan kararlar; tam metinleri KALICILIK KURALI gereği kendi ev do
 **AÇIK İŞ.** Sıradaki asıl işi Engin seçer; aşağıdakiler bekleyen işlerdir.
 
 1. **Mac gerçek cihaz turu.** KLV kapanışına bağlı, bekliyor.
+2. **KART 1600'de kodda karşılığı bulunmayan dört karar (23 Eylül 2026'da koddan doğrulandı).** Her biri için önce uygulanacak mı, kapanacak mı karara bağlanır. (a) Dönem varsayılanları: Prova Yapım Öncesi'ne, Mesai Yapım'a, Tekrar Telifi Yapım Sonrası'na düşer (`docs/butce/KART-KATALOGU.md` §7.5 "Dönem varsayılanları"); kalem kütüphanesinde varsayılan dönem hanesi yok, kalem dönemsiz doğuyor. (b) Dublör grubuna otomatik Stunt iş etiketi (`docs/butce/KART-KATALOGU.md` §7.5 Grup 2 ve §4.10 oto-etiket); kaleme iş etiketi bağlayan kod yok. (c) Görev atomları "+ Ekle → Kalem" listesinde görünüyor; `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 "Listeden gelen oyuncu satırları genel ekleme listesinde GÖRÜNMEZ" kararının hangi anlamda okunacağı açık. (d) Çocuk oyuncu + set öğretmeni denetimi (`docs/butce/KART-KATALOGU.md` §7.5 kart-özel anomaliler); kodda yok, genel denetim motoru parkta (`docs/butce/KART-KATALOGU.md` §8).
+3. **Sıradaki kod dilimine iliştirilecek nokta.** `src/app/muhasebe/budget/components/add-chooser.tsx` başındaki yorumda "kisa listesi" cümlesinin sonunda nokta eksik (23 Eylül 2026 düzeltmesinde parantezle birlikte gitti). Ekrana etkisi yok.
 
 ## Açık kalanlar
 

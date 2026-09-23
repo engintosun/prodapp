@@ -18,7 +18,7 @@ Aktif milestone: M2 — Çekirdek Döngü.
 Bu bölüm kasıtlı boş bırakılmıştır. "Sıradaki iş" için CURRENT.md'ye bak.
 
 ## Backlog (uzun vadeli, tarihsiz — CURRENT.md'nin "Sıradaki iş"ine henüz girmedi)
-- Diğer kartlar (1300/1400/1600) — 1500 modeli üzerinden geçilir. (KART 1100 TAMAMLANDI, 21 Ağustos 2026'da çift kayıttan çıkarıldı — bkz. Yapıldı bölümü.)
+- Diğer kartlar (1300/1400) — 1500 modeli üzerinden geçilir. (KART 1100 TAMAMLANDI, 21 Ağustos 2026'da çift kayıttan çıkarıldı — bkz. Yapıldı bölümü.) KART 1600 5 Eylül 2026'da canlıya girdi (CURRENT.md Milestone); bu listeden 23 Eylül 2026'da çıkarıldı.
 - **DÜZELTME (17 Ağustos 2026, Engin):** yukarıdaki "1500 modeli üzerinden geçilir" cümlesi artık TÜM kartlar için geçerli DEĞİLDİR. 1500 ÇOĞU kartın modelidir; KART 1100 ve Oyuncu kartı (1600) kendi şekillerine sahiptir ve ikisi de 1500'den farklıdır. Somut fark: 1100'ün kodları iki seviyelidir (1101 başlık + 1101-01 atom, dokuz başlık), 1500'ünkiler düzdür (1501-1505, başlık satırı yok) — bu yüzden 1100 başlıklı çizilir, 1500 düz kalır. Model kart olmak "her kart aynı şekle girer" demek değildir.
 - G6 görsel tasarım (renk/tipografi/ikonografi/tema; tokens.css placeholder bekliyor) — KABUK'tan AYRI turdur (bkz. docs/TASARIM-KARARLARI.md §3, iki tema eşitliği kararı).
 - Şablon-tipi ("ne bütçesi: film/reklam/dizi") yer tutucusu.
@@ -86,7 +86,7 @@ Bu bölüm kasıtlı boş bırakılmıştır. "Sıradaki iş" için CURRENT.md'y
 
 ### CURRENT.md'den taşındı (25 Ağustos 2026, D4b budaması)
 
-- Birim cetveli tarama işi: `item_library` içinde kaynak ve eş-ad metinlerinde "adet" ya da "kişi" geçen ad/açıklamalar taranmadı. Birim cetveli beş değerlidir (gün/hafta/ay/bölüm/sabit); adet ve kişi Miktar ile X kolonunun konusudur. İŞ, karar değil.
+- Birim cetveli tarama işi: `item_library` içinde kaynak ve eş-ad metinlerinde "adet" ya da "kişi" geçen ad/açıklamalar taranmadı. Birim cetveli yedi değerlidir (gün/hafta/ay/bölüm/film/saat/sabit; film ve saat göç `20260901130000` ile eklendi, 23 Eylül 2026 düzeltmesi); adet ve kişi Miktar ile X kolonunun konusudur. İŞ, karar değil.
 - `fn_open_budget` içindeki "Donemsiz" etap adı ASCII; düzeltmek fonksiyonu yeniden yaratmayı gerektiriyor. İŞ, karar değil.
 - Zaten açılmış bütçelerin `budget_items` satırları eski ASCII adları taşıyor; canlı veri olduğu için dokunulmadı. İŞ, karar değil.
 - UI TURU PAKETİ (Engin kararı 27 Temmuz 2026, ertelendi): (1) kütüphane listesinde vurgulu seçeneğin rengi koyu temada neredeyse görünmüyor; (2) odak göstergesi HİÇ YOK — kod tabanında `outline` ya da `:focus` stili hiçbir yerde tanımlı değil, yazı hücrelerinde input kenarlığı bunu telafi ediyor ama saydam 20px düğme hücrelerinde (×, Not, Yasal Yük) imlecin nerede olduğu görünmüyor. İkisi aynı aileden, aynı UI turunda çözülür; odak göstergesi bir KLV kararıdır ve bütün düğme ile select hücrelerini kapsar. TECH-DEBT'e borç olarak AÇILMADI (Engin kararı).
