@@ -51,7 +51,7 @@ export const AddItemRow = memo(function AddItemRow({ disabled, onOpen }: AddItem
           onClick={onOpen}
           style={{ ...buttonBase, fontSize: 'var(--text-sm)' }}
         >
-          kalem ekle
+          Ekle
         </button>
       </td>
       <td style={tdStyle} colSpan={12} />

@@ -35,6 +35,9 @@ import { HeadingSheet } from './components/heading-sheet'
 import { PersonListSheet } from './components/person-list-sheet'
 import { AddItemRow, ADD_ROW_ID } from './components/add-item-row'
 import { AddItemPanel } from './components/add-item-panel'
+import { AddChooser } from './components/add-chooser'
+import type { AddChoice } from './components/add-chooser'
+import { HeadingWindow } from './components/heading-window'
 
 // Rolu olan kisi kimlikleri: ozet satirinin dogma kosulu (card-view.ts). TEK yerde hesaplanir,
 // iki buildCardView cagri yeri de burayi kullanir; ikinci bir kopya acilmaz.
@@ -171,6 +174,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   })
   const [addQuery, setAddQuery] = useState('')
   const [addPanelOpen, setAddPanelOpen] = useState(false)
+  const [addChooserOpen, setAddChooserOpen] = useState(false)
+  const [headingWindowOpen, setHeadingWindowOpen] = useState(false)
   // -1 = HICBIR secenek vurgulu degil (D3b-2d). Vurgu YALNIZ ok tusuyla baslar; odada acilma ve
   // yazarak suzme vurgu OLUSTURMAZ - aksi halde vurgusuz Enter/Tab kalem doguruyordu.
   const [addHighlight, setAddHighlight] = useState(-1)
@@ -306,6 +311,17 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     setAddPanelOpen(true)
   }, [])
   const onCloseAddPanel = useCallback(() => setAddPanelOpen(false), [])
+  // "+ EKLE" SECIMI (BUTCE-EKRAN-KARARLARI bolum 16, 23 Eylul 2026): satir once secim
+  // penceresini acar; Kalem bugunku odayi DEGISMEDEN acar, Baslik baslik penceresini acar.
+  const onOpenAddChooser = useCallback(() => setAddChooserOpen(true), [])
+  const onPickAdd = useCallback(
+    (choice: AddChoice) => {
+      setAddChooserOpen(false)
+      if (choice === 'item') onOpenAddPanel()
+      else setHeadingWindowOpen(true)
+    },
+    [onOpenAddPanel],
+  )
 
   const { containerRef, handleKeyDown, handleFocus, handlePaste, handleDrop, handleDragOver, isActiveEdit } = useGridNavigation({ rowsRef, savedRef, patchRow, api, rows })
 
@@ -861,7 +877,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                 </Fragment>
               )
             })}
-            <AddItemRow disabled={adding} onOpen={onOpenAddPanel} />
+            <AddItemRow disabled={adding} onOpen={onOpenAddChooser} />
           </tbody>
         </table>
       </div>
@@ -915,6 +931,17 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           onCreateFree={onCreateFreeItem}
           onClose={onCloseAddPanel}
           persons={cardPersons}
+        />
+      )}
+      {addChooserOpen && <AddChooser onPick={onPickAdd} onClose={() => setAddChooserOpen(false)} />}
+      {headingWindowOpen && card && (
+        <HeadingWindow
+          rows={rows}
+          libraryHeadings={headings}
+          userHeadings={userHeadings}
+          cardCode={card.cardCode}
+          onChanged={() => refetch({ silent: true })}
+          onClose={() => setHeadingWindowOpen(false)}
         />
       )}
       {openBurden !== null && (() => {

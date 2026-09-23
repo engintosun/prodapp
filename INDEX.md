@@ -85,7 +85,7 @@ varsayim yapilmaz.
 -> Etkiler: production-records-screen.tsx `importOpen` durumunda bunu render eder; bu dosya ekranı DEĞİŞTİRMEZ.
 -> Kritik: HAYIR — kararların evi BUTCE-EKRAN-KARARLARI §20; tahmin sınırı orada yazılı (Görev/Ajans/Menajer TAHMİN EDİLMEZ).
 
-`src/app/muhasebe/budget/card-table-screen.tsx` (971)
+`src/app/muhasebe/budget/card-table-screen.tsx` (998)
 -> Görev: Kart tablosu ekranının orkestrasyonu — veri hook'ları + ekleme paneli + satır bileşenlerini birbirine bağlar.
 -> Kullanır: hooks/* (use-card-rows, use-edit-buffers, use-grid-navigation) + components/* + budget-service.ts.
 -> Etkiler: authenticated-shell.tsx (muhasebe "bütçe" sekmesi) buradan render eder.
@@ -132,12 +132,14 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/card-view.ts` (147) — kartın görünen düzeninin (başlık grubu + kişi bloğu + türetilen satır tutarları) TEK kaynağı; dışa aktarma/icmal/mühür de bunu çağıracak
 `src/app/muhasebe/budget/collapse-state.ts` (39) — başlık ve özet satırlarının açık/kapalı halinin tek kaynağı: kullanıcının bıraktığı hal saklanır, varsayılan yalnız hiç dokunulmamış bloğa uygulanır, kapalı bloğa kalem eklenince blok açılır
 `src/app/muhasebe/budget/columns.ts` (27) — kart tablosu kolon seti tek kaynağı (BUDGET_COLUMNS: anahtar/etiket/hizalama)
+`src/app/muhasebe/budget/components/add-chooser.tsx` (57) — "+ Ekle" seçim penceresi (Kalem / Başlık)
 `src/app/muhasebe/budget/components/add-item-panel.tsx` (387) — kalem ekleme odası: kütüphane arama + serbest kalem
-`src/app/muhasebe/budget/components/add-item-row.tsx` (60) — tablo altı "+ kalem ekle" düğme satırı
+`src/app/muhasebe/budget/components/add-item-row.tsx` (60) — tablo altı "+ Ekle" düğme satırı
 `src/app/muhasebe/budget/components/bottom-sheet.tsx` (121) — ortak alt-sheet primitivi (backdrop+panel+odak tuzağı)
 `src/app/muhasebe/budget/components/burden-sheet.tsx` (103) — Yasal Yük dökümü sheet'i (bordro 6-bacak + basit statü)
 `src/app/muhasebe/budget/components/heading-row.tsx` (54) — başlık satırı: ad + üç rakam (Net/Yasal Yük/Brüt), data-grid-cell taşımaz
 `src/app/muhasebe/budget/components/heading-sheet.tsx` (71) — başlık seçme tabakası (kartın başlıkları + Başlıksız)
+`src/app/muhasebe/budget/components/heading-window.tsx` (289) — Başlık penceresi: serbest kalemleri başlığa gönderme, başlık açma, geri al
 `src/app/muhasebe/budget/components/note-sheet.tsx` (35) — İç Not / Kamu Notu düzenleme sheet'i
 `src/app/muhasebe/budget/components/period-row.tsx` (186) — çok-dönemli kalemin dönem alt-satırı render'ı
 `src/app/muhasebe/budget/components/person-list-sheet.tsx` (253) — Oyuncular listesi panosu: Rol · Oyuncu · Görev · Ajans/Menajer tiki, "+ Kişi ekle" ve karta toplu getirme
@@ -146,6 +148,7 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/components/table-styles.ts` (138) — kart tablosu kolon genişlikleri + hücre stilleri
 `src/app/muhasebe/budget/display-name.ts` (70) — kalem/özet satırının gösterilen adının TEK kaynağı (AD YERLEŞİMİ kararı, saf hesap)
 `src/app/muhasebe/budget/format.ts` (328) — fmt/parseNumericDraft + kütüphane arama + başlık grubu saf fonksiyonları
+`src/app/muhasebe/budget/heading-window.ts` (63) — Başlık penceresinin saf mantığı (liste, hedef süzmesi, geri alma paketleri)
 `src/app/muhasebe/budget/hooks/use-card-rows.ts` (233) — kart verisi yükleme (budgetId/cardId), ref senkronizasyonu
 `src/app/muhasebe/budget/hooks/use-grid-navigation.ts` (276) — İ7 motorunun DOM bağlayıcısı, tuş olaylarını çekirdeğe delege eder
 `src/app/muhasebe/budget/person-bring.ts` (84) — Oyuncular listesi panosunun getirme mantığı: kartta olan/olmayan ayrımı, benzer ad uyarısı, görev sırası, düğmenin kendi listesi olan kartta çizilmesi
@@ -305,7 +308,7 @@ Kaynak: docs/butce/BUTCE-UI-MIMARISI.md bölüm 2 (İ1-İ8) + bölüm 8, docs/AR
 
 ## 9. TEST HARİTASI
 
-Test sayıları `npm test` çıktısından ÖLÇÜLEREK okundu (23 Eylül 2026), toplam 414/414 geçti (21 dosya).
+Test sayıları `npm test` çıktısından ÖLÇÜLEREK okundu (23 Eylül 2026), toplam 421/421 geçti (22 dosya).
 
 - `src/shared/cfe/cfe.test.ts` — CFE motorunu (net/brüt/KDV/kova) korur — 28 test
 - `src/shared/cfe/payroll.test.ts` — Bordro motorunu (payroll.ts) korur — 27 test
@@ -318,6 +321,7 @@ Test sayıları `npm test` çıktısından ÖLÇÜLEREK okundu (23 Eylül 2026),
 - `src/app/muhasebe/budget/hooks/grid-navigation-core.test.ts` — İ7 klavye çekirdeğini (resolveKeyAction/reduceGrid) korur — 115 test
 - `src/app/muhasebe/budget/format.test.ts` — format.ts saf fonksiyonlarını korur (findCrossCardMatches'in başlık-satırı istisnası + headingKeyOf/groupRowsByHeading dahil, kullanıcı başlığının çizimi dahil) — 70 test
 - `src/app/muhasebe/budget/card-view.test.ts` — buildCardView'ı (kartın görünen düzeni: başlık grubu + kişi bloğu + türetilen satır tutarları, TEK kaynak; kullanıcı başlığı içindeki kişi bloğu dahil) korur — 7 test
+- `src/app/muhasebe/budget/heading-window.test.ts` — Başlık penceresinin saf mantığını korur (yalnız serbest kalem, Başlıksız en üstte, hedef süzmesi, geri almada her kalemin geldiği yere dönmesi) — 7 test
 - `src/app/muhasebe/budget/collapse-state.test.ts` — başlık ve özet satırlarının katlama durumu hesabını korur — 6 test
 - `src/app/muhasebe/budget/columns.test.ts` — BUDGET_COLUMNS kolon seti sabitini korur — 4 test
 - `src/app/muhasebe/budget/display-name.test.ts` — itemDisplayName/summaryDisplayName'i (AD YERLEŞİMİ kararının saf hesabı) korur — 13 test
