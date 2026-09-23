@@ -353,14 +353,14 @@ describe('headingKeyOf (DILIM 1100-B, BUTCE-EKRAN-KARARLARI bolum 19)', () => {
 describe('groupRowsByHeading (DILIM 1100-B, BUTCE-EKRAN-KARARLARI bolum 19)', () => {
   it('baslik listesi BOS: tek grup doner, heading null, satir sirasi korunur (KART 1500 duz liste)', () => {
     const rows = [makeRow('1501', null), makeRow('1503', null), makeRow('1502', null)]
-    const groups = groupRowsByHeading(rows, [])
+    const groups = groupRowsByHeading(rows, [], [])
     expect(groups).toHaveLength(1)
     expect(groups[0].heading).toBeNull()
     expect(groups[0].rows.map((r) => r.catalogCode)).toEqual(['1501', '1503', '1502'])
   })
 
   it('baslik listesi bos VE satir bos: bos dizi doner', () => {
-    expect(groupRowsByHeading([], [])).toEqual([])
+    expect(groupRowsByHeading([], [], [])).toEqual([])
   })
 
   it('kalemi olmayan baslik gruplara GIRMEZ', () => {
@@ -369,7 +369,7 @@ describe('groupRowsByHeading (DILIM 1100-B, BUTCE-EKRAN-KARARLARI bolum 19)', ()
       { catalogCode: '1101', name: 'Hikâye, Senaryo, Haklar' },
       { catalogCode: '1102', name: 'Yapımcılık' },
     ]
-    const groups = groupRowsByHeading(rows, headings)
+    const groups = groupRowsByHeading(rows, headings, [])
     expect(groups).toHaveLength(1)
     expect(groups[0].heading?.key).toBe('1101')
   })
@@ -380,7 +380,7 @@ describe('groupRowsByHeading (DILIM 1100-B, BUTCE-EKRAN-KARARLARI bolum 19)', ()
       { catalogCode: '1101', name: 'Hikâye, Senaryo, Haklar' },
       { catalogCode: '1102', name: 'Yapımcılık' },
     ]
-    const groups = groupRowsByHeading(rows, headings)
+    const groups = groupRowsByHeading(rows, headings, [])
     expect(groups.map((g) => g.heading?.key)).toEqual(['1101', '1102'])
     expect(groups[0].rows.map((r) => r.catalogCode)).toEqual(['1101-01', '1101-02'])
     expect(groups[1].rows.map((r) => r.catalogCode)).toEqual(['1102-02', '1102-01'])
@@ -389,7 +389,7 @@ describe('groupRowsByHeading (DILIM 1100-B, BUTCE-EKRAN-KARARLARI bolum 19)', ()
   it('eslesmeyen kod EN SONDAKI Basliksiz grubuna duser, adi tam olarak Başlıksız', () => {
     const rows = [makeRow('1101-01', '1101'), makeRow('1198-01', null)]
     const headings = [{ catalogCode: '1101', name: 'Hikâye, Senaryo, Haklar' }]
-    const groups = groupRowsByHeading(rows, headings)
+    const groups = groupRowsByHeading(rows, headings, [])
     expect(groups).toHaveLength(2)
     const last = groups[groups.length - 1]
     expect(last.heading?.key).toBeNull()
@@ -403,14 +403,14 @@ describe('groupRowsByHeading (DILIM 1100-B, BUTCE-EKRAN-KARARLARI bolum 19)', ()
       { catalogCode: '1101', name: 'Hikâye, Senaryo, Haklar' },
       { catalogCode: '1102', name: 'Yapımcılık' },
     ]
-    const groups = groupRowsByHeading(rows, headings)
+    const groups = groupRowsByHeading(rows, headings, [])
     expect(groups.some((g) => g.heading?.key === null)).toBe(false)
   })
 
   it('serbest kalem (1198-nn) bir basligin altinda durabilir', () => {
     const rows = [makeRow('1101-01', '1101'), makeRow('1198-01', '1101')]
     const headings = [{ catalogCode: '1101', name: 'Hikâye, Senaryo, Haklar' }]
-    const groups = groupRowsByHeading(rows, headings)
+    const groups = groupRowsByHeading(rows, headings, [])
     expect(groups).toHaveLength(1)
     expect(groups[0].heading?.key).toBe('1101')
     expect(groups[0].rows).toHaveLength(2)
@@ -419,11 +419,44 @@ describe('groupRowsByHeading (DILIM 1100-B, BUTCE-EKRAN-KARARLARI bolum 19)', ()
   it('kartta olmayan bir basliga isaret eden kalem Basliksiz grubuna duser', () => {
     const rows = [makeRow('1101-01', '1101'), makeRow('1106-01', '1106')]
     const headings = [{ catalogCode: '1101', name: 'Hikâye, Senaryo, Haklar' }]
-    const groups = groupRowsByHeading(rows, headings)
+    const groups = groupRowsByHeading(rows, headings, [])
     expect(groups).toHaveLength(2)
     const last = groups[groups.length - 1]
     expect(last.heading?.key).toBeNull()
     expect(last.heading?.name).toBe('Başlıksız')
+  })
+})
+
+describe('groupRowsByHeading - kullanici basligi (23 Eylul 2026, BUTCE-EKRAN-KARARLARI bolum 19)', () => {
+  const user = [{ id: 'u1', name: 'Istanbul Masraflari' }]
+
+  it('duz kartta kartin kendi satirlari etiketsiz once, kullanici basligi en altta', () => {
+    const rows = [makeRow('1501', null), makeRow('1598-01', 'u1'), makeRow('1502', null)]
+    const groups = groupRowsByHeading(rows, [], user)
+    expect(groups).toHaveLength(2)
+    expect(groups[0].heading).toBeNull()
+    expect(groups[0].rows.map((r) => r.catalogCode)).toEqual(['1501', '1502'])
+    expect(groups[1].heading).toEqual({ key: 'u1', name: 'Istanbul Masraflari' })
+  })
+
+  it('duz kartta Basliksiz grubu dogmaz', () => {
+    const rows = [makeRow('1501', null), makeRow('1598-01', null), makeRow('1598-02', 'u1')]
+    const groups = groupRowsByHeading(rows, [], user)
+    expect(groups.some((g) => g.heading?.name === 'Başlıksız')).toBe(false)
+  })
+
+  it('baslikli kartta kullanici basligi kutuphane basliklarinin ardindan, Basliksiz in ustunde', () => {
+    const rows = [makeRow('1198-01', null), makeRow('1198-02', 'u1'), makeRow('1101-01', '1101')]
+    const headings = [{ catalogCode: '1101', name: 'Hikâye, Senaryo, Haklar' }]
+    const groups = groupRowsByHeading(rows, headings, user)
+    expect(groups.map((g) => g.heading?.key)).toEqual(['1101', 'u1', null])
+  })
+
+  it('kalemi olmayan kullanici basligi cizilmez', () => {
+    const rows = [makeRow('1101-01', '1101')]
+    const headings = [{ catalogCode: '1101', name: 'Hikâye, Senaryo, Haklar' }]
+    const groups = groupRowsByHeading(rows, headings, user)
+    expect(groups.map((g) => g.heading?.key)).toEqual(['1101'])
   })
 })
 

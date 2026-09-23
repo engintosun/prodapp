@@ -278,19 +278,25 @@ export interface HeadingGroup {
 // baslik CIZILMEZ (Engin karari 18 Agustos 2026: bolum 19 "kalem listesi basliklara gore
 // BOLUNUR" der, kalemi olmayan baslik bir bolme uretmez; silinen kalem kutuphaneden geri
 // cagrilabildigi icin kayip degildir). Basliksiz blogu EN SONA gelir ve yalniz doluysa cizilir.
+// KULLANICI BASLIGI (23 Eylul 2026, Engin karari; BUTCE-EKRAN-KARARLARI bolum 19):
+// kullanici basliginin anahtari budget_user_headings.id, kutuphane basliginin catalog_code.
+// Baslikli kartta kullanici basliklari kutuphane basliklarinin ARDINDAN, Basliksiz'in
+// USTUNDE gelir. Duz kartta (kutuphanesinde baslik yok, KART 1500) kartin kendi satirlari
+// ve basligi olmayan serbest kalemler bugunku gibi ETIKETSIZ kalir (heading === null),
+// kullanici basliklari EN ALTA gelir; duz kartta Basliksiz blogu DOGMAZ. Kalemi olmayan
+// kullanici basligi da cizilmez. Davranis VERIDEN dogar, kart-ozel dal YOK (BUTCE-UI-MIMARISI I1).
 export function groupRowsByHeading(
   rows: BudgetItemRow[],
   headings: { catalogCode: string; name: string }[],
+  userHeadings: readonly { id: string; name: string }[],
 ): HeadingGroup[] {
-  if (headings.length === 0) {
-    return rows.length === 0 ? [] : [{ heading: null, rows }]
-  }
-  const known = new Set(headings.map((h) => h.catalogCode))
+  const libraryKeys = new Set(headings.map((h) => h.catalogCode))
+  const userKeys = new Set(userHeadings.map((h) => h.id))
   const byKey = new Map<string, BudgetItemRow[]>()
   const orphans: BudgetItemRow[] = []
   for (const r of rows) {
     const key = headingKeyOf(r)
-    if (key !== null && known.has(key)) {
+    if (key !== null && (libraryKeys.has(key) || userKeys.has(key))) {
       const bucket = byKey.get(key)
       if (bucket) bucket.push(r)
       else byKey.set(key, [r])
@@ -298,14 +304,24 @@ export function groupRowsByHeading(
       orphans.push(r)
     }
   }
+  const flat = headings.length === 0
   const groups: HeadingGroup[] = []
+  if (flat && orphans.length > 0) {
+    groups.push({ heading: null, rows: orphans })
+  }
   for (const h of headings) {
     const bucket = byKey.get(h.catalogCode)
     if (bucket && bucket.length > 0) {
       groups.push({ heading: { key: h.catalogCode, name: h.name }, rows: bucket })
     }
   }
-  if (orphans.length > 0) {
+  for (const h of userHeadings) {
+    const bucket = byKey.get(h.id)
+    if (bucket && bucket.length > 0) {
+      groups.push({ heading: { key: h.id, name: h.name }, rows: bucket })
+    }
+  }
+  if (!flat && orphans.length > 0) {
     groups.push({ heading: { key: null, name: 'Başlıksız' }, rows: orphans })
   }
   return groups

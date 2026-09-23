@@ -5,6 +5,8 @@ import { fetchMinimumWageThresholds } from '../../../../shared/supabase/payroll-
 import type { MinimumWageThresholds } from '../../../../shared/supabase/payroll-read'
 import { fetchCardLibrary, fetchAllLibrary } from '../../../../shared/supabase/library-service'
 import type { LibraryItem } from '../../../../shared/supabase/library-service'
+import { fetchUserHeadings } from '../../../../shared/supabase/user-heading-service'
+import type { UserHeading } from '../../../../shared/supabase/user-heading-service'
 import { useToast } from '../../../../shared/components/toast'
 
 export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
@@ -21,6 +23,9 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
   // DILIM 1100-B: ayni cekimden gelen baslik satirlari (bolum 19). Ekrana cizilir,
   // kalem ekleme listesine GIRMEZ.
   const [headings, setHeadings] = useState<LibraryItem[]>([])
+  // KULLANICI BASLIGI (23 Eylul 2026, BUTCE-EKRAN-KARARLARI bolum 19): kartin kullanici
+  // basliklari. Asagidaki kart cekimiyle AYNI turda gelir.
+  const [userHeadings, setUserHeadings] = useState<UserHeading[]>([])
   // D3c-3: capraz-kart bilgisini besleyen ikincil veri - tum kutuphane + butcenin kart listesi.
   // Kart cizildikten SONRA arka planda inar (bolum 16), kalem eklemeyi hic etkilemez.
   const [allLibrary, setAllLibrary] = useState<LibraryItem[]>([])
@@ -64,6 +69,20 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
         const budgetId = paramBudgetId ?? (await getOrOpenBudget())
         const c = await getCard(budgetId, cardId)
         if (cancelled) return
+        // KULLANICI BASLIGI: basliklar satirlarla AYNI turda cekilir ve AYNI anda yerlestirilir.
+        // Ayri bir efekt olsaydi yeni baslik acildiginda kalemleri bir an Basliksiz'da
+        // gorunurdu. Basarisizlik TOAST'lanir, kart yine cizilir (o turda kullanici basligindaki
+        // kalemler Basliksiz'da gorunur); sessiz gecilmez.
+        let uh: UserHeading[] = []
+        if (c) {
+          try {
+            uh = await fetchUserHeadings(c.cardCode)
+          } catch (e) {
+            addToast(e instanceof Error ? e.message : 'Kullanıcı başlıkları yüklenemedi', 'error')
+          }
+        }
+        if (cancelled) return
+        setUserHeadings(uh)
         setCard(c)
         setRows(c?.items ?? [])
         setStages(c?.stages ?? [])
@@ -86,7 +105,7 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
     return () => {
       cancelled = true
     }
-  }, [reload, paramBudgetId, cardId])
+  }, [reload, paramBudgetId, cardId, addToast])
 
   useEffect(() => {
     let cancelled = false
@@ -195,6 +214,7 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
     units,
     library,
     headings,
+    userHeadings,
     allLibrary,
     budgetCards,
     unitLabelById,

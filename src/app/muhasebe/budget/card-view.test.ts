@@ -41,7 +41,7 @@ describe('buildCardView', () => {
       makeItem({ id: 'kase', personObjectId: 'p1', unitNet: 100000 }),
       makeItem({ id: 'komisyon', personObjectId: 'p1', deriveRate: 20, unitNet: 0, paymentStatus: 'sirket' }),
     ]
-    const view = buildCardView(rows, [], NO_BORDRO, new Set(), new Map())
+    const view = buildCardView(rows, [], [], NO_BORDRO, new Set(), new Map())
     expect(view.rowTotalsById.komisyon).toEqual({ net: 20000, yasalYuk: 0, maliyet: 20000, kdv: 0, brut: 20000 })
   })
 
@@ -50,7 +50,7 @@ describe('buildCardView', () => {
       makeItem({ id: 'kase', personObjectId: 'p1', unitNet: 100000 }),
       makeItem({ id: 'komisyon', personObjectId: 'p1', deriveRate: 20, unitNet: 0, paymentStatus: 'sirket' }),
     ]
-    const view = buildCardView(rows, [], NO_BORDRO, new Set(), new Map())
+    const view = buildCardView(rows, [], [], NO_BORDRO, new Set(), new Map())
     expect(view.cardTotals.net).toBe(120000)
   })
 
@@ -60,7 +60,7 @@ describe('buildCardView', () => {
       makeItem({ id: 'mesai', personObjectId: null, unitNet: 5000, headingCode: 'H1' }),
       makeItem({ id: 'komisyon', personObjectId: 'p1', deriveRate: 20, unitNet: 0, paymentStatus: 'sirket', headingCode: 'H1' }),
     ]
-    const view = buildCardView(rows, [{ catalogCode: 'H1', name: 'Baslik 1' }], NO_BORDRO, new Set(), new Map())
+    const view = buildCardView(rows, [{ catalogCode: 'H1', name: 'Baslik 1' }], [], NO_BORDRO, new Set(), new Map())
     expect(view.groups).toHaveLength(1)
     const group = view.groups[0]
     expect(group.heading).toEqual({ key: 'H1', name: 'Baslik 1' })
@@ -89,6 +89,7 @@ describe('buildCardView', () => {
         { catalogCode: 'H1', name: 'Baslik 1' },
         { catalogCode: 'H2', name: 'Baslik 2' },
       ],
+      [],
       NO_BORDRO,
       new Set(),
       new Map(),
@@ -98,7 +99,7 @@ describe('buildCardView', () => {
 
   it('rolu olan ve tek kalemi olan kisi ozet satiri alir', () => {
     const rows = [makeItem({ id: 'a', personObjectId: 'p1', unitNet: 1000 })]
-    const view = buildCardView(rows, [], NO_BORDRO, new Set(['p1']), new Map())
+    const view = buildCardView(rows, [], [], NO_BORDRO, new Set(['p1']), new Map())
     const group = view.groups[0]
     const summary = group.renderRows.find((rr) => rr.kind === 'summary' && rr.personObjectId === 'p1')
     expect(summary?.kind).toBe('summary')
@@ -117,12 +118,32 @@ describe('buildCardView', () => {
       ['ali', 0],
       ['veli', 1],
     ])
-    const view = buildCardView(rows, [], NO_BORDRO, new Set(), personOrderIndex)
+    const view = buildCardView(rows, [], [], NO_BORDRO, new Set(), personOrderIndex)
     const group = view.groups[0]
     expect(group.renderRows.map((rr) => (rr.kind === 'summary' ? 'summary:' + rr.personObjectId : rr.row.id))).toEqual([
       'ali-1',
       'veli-1',
       'bossatir',
+    ])
+  })
+
+  it('kullanici basliginin icinde kisi blogu ve ozeti bugunku kuralla kurulur (1600)', () => {
+    const rows = [
+      makeItem({ id: 'kase', personObjectId: 'p1', unitNet: 100000, headingCode: 'H1' }),
+      makeItem({ id: 'kostum', personObjectId: 'p1', unitNet: 5000, headingCode: 'u1' }),
+    ]
+    const view = buildCardView(
+      rows,
+      [{ catalogCode: 'H1', name: 'Baslik 1' }],
+      [{ id: 'u1', name: 'Ozel Giderler' }],
+      NO_BORDRO,
+      new Set(['p1']),
+      new Map(),
+    )
+    expect(view.groups.map((g) => g.heading?.key)).toEqual(['H1', 'u1'])
+    expect(view.groups[1].renderRows.map((rr) => (rr.kind === 'summary' ? 'summary:' + rr.personObjectId : rr.row.id))).toEqual([
+      'summary:p1',
+      'kostum',
     ])
   })
 })

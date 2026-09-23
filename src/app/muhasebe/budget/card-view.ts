@@ -96,6 +96,7 @@ function orderRowsByPersonList(
 export function buildCardView(
   rows: readonly BudgetItemRow[],
   headings: readonly { catalogCode: string; name: string }[],
+  userHeadings: readonly { id: string; name: string }[],
   bordroData: Readonly<Record<string, BordroSheetEntry>>,
   personIdsWithRole: ReadonlySet<string>,
   personOrderIndex: ReadonlyMap<string, number>,
@@ -116,7 +117,7 @@ export function buildCardView(
     }
   }
 
-  const headingGroups = groupRowsByHeading([...rows], [...headings])
+  const headingGroups = groupRowsByHeading([...rows], [...headings], userHeadings)
   // OZET SATIRI = IS EKSENI (10 Eylul 2026, Engin karari). Eskiden ozet YALNIZ iki ve daha
   // fazla kalemi olan kiside dogardi; bu yuzden rolun gorunmesi kisinin ajansi olup olmamasina
   // bagliydi, oysa ikisinin birbiriyle ilgisi yok. Yeni kural: rolu OLAN her kisi ozet satiri

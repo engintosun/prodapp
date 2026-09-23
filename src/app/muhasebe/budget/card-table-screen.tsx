@@ -28,6 +28,7 @@ import { summaryDisplayName, commissionDisplayName } from './display-name'
 import { BurdenSheet } from './components/burden-sheet'
 import type { BordroSheetEntry } from './components/burden-sheet'
 import type { LibraryItem } from '../../../shared/supabase/library-service'
+import type { UserHeading } from '../../../shared/supabase/user-heading-service'
 import { StatusInfoSheet } from './components/status-info-sheet'
 import { NoteSheet } from './components/note-sheet'
 import { HeadingSheet } from './components/heading-sheet'
@@ -55,6 +56,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     units,
     library,
     headings,
+    userHeadings,
     allLibrary,
     budgetCards,
     loading,
@@ -79,6 +81,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   const bordroDataRef = useRef<Record<string, BordroSheetEntry>>({})
   const allLibraryRef = useRef<LibraryItem[]>([])
   const headingsRef = useRef<LibraryItem[]>([])
+  const userHeadingsRef = useRef<UserHeading[]>([])
   // CIFT DOGUM KORUMASI: devam eden bir dogum varken ikincisi baslamaz.
   const commissionBirthInFlightRef = useRef(false)
   // DOGAN KISI ISARETLENIR (10 Eylul 2026, Engin karari): kilit acildiginda rowsRef
@@ -107,6 +110,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     const view = buildCardView(
       currentRows,
       headingsRef.current,
+      userHeadingsRef.current,
       bordroDataRef.current,
       personIdsWithRoleOf(personLabelsRef.current),
       personOrderIndexOf(personLabelsRef.current),
@@ -163,6 +167,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     bordroDataRef.current = bordroData
     allLibraryRef.current = allLibrary
     headingsRef.current = headings
+    userHeadingsRef.current = userHeadings
   })
   const [addQuery, setAddQuery] = useState('')
   const [addPanelOpen, setAddPanelOpen] = useState(false)
@@ -618,8 +623,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // card-view.ts'tir - ekran duzeni kendisi KURMAZ, hazir alir. Baslik gruplama, kisi bloklari
   // ve turetilen satirlarin (komisyon) gercek tutarlari hepsi burada tek cagriyla gelir.
   const cardView = useMemo(
-    () => buildCardView(rows, headings, bordroData, personIdsWithRoleOf(personLabels), personOrderIndexOf(personLabels)),
-    [rows, headings, bordroData, personLabels],
+    () => buildCardView(rows, headings, userHeadings, bordroData, personIdsWithRoleOf(personLabels), personOrderIndexOf(personLabels)),
+    [rows, headings, userHeadings, bordroData, personLabels],
   )
 
   // Tek kalemli rol blogu KAPALI dogar (10 Eylul 2026, Engin karari): ozet satiri zaten dogru
