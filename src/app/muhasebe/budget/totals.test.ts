@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { rowTotals, cardTotals } from './totals'
+import { rowTotals } from './totals'
 import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
 import type { BordroSheetEntry } from './components/burden-sheet'
 
@@ -111,31 +111,5 @@ describe('rowTotals', () => {
     })
     const t = rowTotals(item, undefined)
     expect(t.maliyet + t.kdv).toBe(t.brut)
-  })
-})
-
-describe('cardTotals', () => {
-  it('bos dizide bes alan da 0', () => {
-    expect(cardTotals([], {})).toEqual({ net: 0, yasalYuk: 0, maliyet: 0, kdv: 0, brut: 0 })
-  })
-
-  it('birden cok bordro-disi satirda besini de dogru toplar', () => {
-    const rows = [
-      makeItem({ id: 'a', unitNet: 1000, multiplier: 1, repeat: 1, vatRate: 20, burdens: [] }),
-      makeItem({ id: 'b', unitNet: 500, multiplier: 2, repeat: 1, vatRate: 20, burdens: [] }),
-    ]
-    // a: net 1000, yasalYuk 0, maliyet 1000, kdv 200, brut 1200
-    // b: netBaz 500*2*1=1000, yukYok -> maliyet 1000, kdv 1000*0.2=200, brut 1200, yasalYuk 0
-    expect(cardTotals(rows, {})).toEqual({ net: 2000, yasalYuk: 0, maliyet: 2000, kdv: 400, brut: 2400 })
-  })
-
-  it('bordro ve bordro-disi karisik dizide dogru toplar', () => {
-    const rows = [
-      makeItem({ id: 'a', unitNet: 1000, multiplier: 1, repeat: 1, vatRate: 20, burdens: [] }),
-      makeItem({ id: 'b', paymentStatus: 'bordro', unitNet: 0, vatRate: 0, burdens: [] }),
-    ]
-    const bordroData: Record<string, BordroSheetEntry> = { b: makeBordro(5000, 6500) }
-    // a: net 1000, yasalYuk 0, maliyet 1000, kdv 200, brut 1200 ; b: net 5000, yasalYuk 1500, maliyet 6500, kdv 0, brut 6500
-    expect(cardTotals(rows, bordroData)).toEqual({ net: 6000, yasalYuk: 1500, maliyet: 7500, kdv: 200, brut: 7700 })
   })
 })

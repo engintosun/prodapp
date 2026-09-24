@@ -1,4 +1,4 @@
-// BOY: tek iş = kalem satırı ve kart toplamı hesabının saf fonksiyonları (DOM/React/Supabase yok),
+// BOY: tek iş = kalem satırı toplam hesabının saf fonksiyonu (DOM/React/Supabase yok),
 // sebep = aynı hesap hem satır render'ında hem toplam şeridinde kullanılıyor; tek yerde yaşamalı.
 import { netToplamDonemli, brutToplamDonemli, kisiyeBanka } from '../../../shared/cfe'
 import type { Yuk } from '../../../shared/cfe'
@@ -33,23 +33,4 @@ export function rowTotals(item: BudgetItemRow, bordro: BordroSheetEntry | undefi
   const yasalYukTl = maliyet - netToplam
   const brutToplam = maliyet + kdvTl
   return { net: netToplam, yasalYuk: yasalYukTl, maliyet, kdv: kdvTl, brut: brutToplam }
-}
-
-export function cardTotals(
-  rows: BudgetItemRow[],
-  bordroData: Record<string, BordroSheetEntry>,
-): RowTotals {
-  return rows.reduce<RowTotals>(
-    (acc, it) => {
-      const t = rowTotals(it, bordroData[it.id])
-      return {
-        net: acc.net + t.net,
-        yasalYuk: acc.yasalYuk + t.yasalYuk,
-        maliyet: acc.maliyet + t.maliyet,
-        kdv: acc.kdv + t.kdv,
-        brut: acc.brut + t.brut,
-      }
-    },
-    { net: 0, yasalYuk: 0, maliyet: 0, kdv: 0, brut: 0 },
-  )
 }

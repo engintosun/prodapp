@@ -7,7 +7,7 @@ import { getOrOpenBudget, fetchBudgetCards, fetchBudgetItemRowsByCard } from '..
 import type { BudgetCardRef, BudgetItemRow } from '../../../shared/supabase/budget-service'
 import { deriveBordroFieldsBatch } from '../../../shared/supabase/payroll-read'
 import { fmt, bordroReasonMessage } from './format'
-import { cardTotals } from './totals'
+import { cardViewTotals } from './card-view'
 import type { BordroSheetEntry } from './components/burden-sheet'
 
 interface Props {
@@ -40,7 +40,7 @@ export function CardDeskScreen({ budgetId: paramBudgetId }: Props) {
         if (cancelled) return
 
         // Kapaktaki rakam Maliyet'tir (Ara toplam + Yasal Yuk); kart tablosunun toplam seridiyle
-        // AYNI fonksiyondan (cardTotals) beslenir - ikinci tanim yok (KABUK-KARARLARI 12.3).
+        // AYNI hesaptan (card-view.ts cardViewTotals, kartin toplam seridiyle ortak) beslenir - ikinci tanim yok (KABUK-KARARLARI 12.3).
         // Bordro motoru butce basina TEK dalgada cagrilir (deriveBordroFieldsBatch, perf dilimi
         // 16ba2c6) - kalem basina degil, ag panelinde kalem sayisindan bagimsiz kalir.
         const allRows: BudgetItemRow[] = Object.values(rowsByCard).flat()
@@ -68,7 +68,7 @@ export function CardDeskScreen({ budgetId: paramBudgetId }: Props) {
 
         const costs: Record<string, number> = {}
         for (const card of list) {
-          costs[card.id] = cardTotals(rowsByCard[card.id] ?? [], bordroData).maliyet
+          costs[card.id] = cardViewTotals(rowsByCard[card.id] ?? [], bordroData).maliyet
         }
 
         setCards(list)

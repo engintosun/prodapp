@@ -88,19 +88,15 @@ function orderRowsByPersonList(
   return out
 }
 
-// Sira: (1) turetilmemis satirlarin netleri hesaplanir, (2) derivedUnitNets ile turetilen
-// satirlarin birim netleri dogar (B18: IKINCI BIR HESAP YAZILMAZ, person-groups.ts CAGIRILIR),
-// (3) turetilen satirlarin TUM tutarlari (ara toplam, yasal yuk, KDV, toplam) veritabanindaki
-// sifir yerine bu birim netle doner, (4) basliga gore bolunur, (5) her baslik grubu icinde
-// kisi bloklari toplanir.
-export function buildCardView(
+// SATIR TUTARLARININ TEK HESABI (24 Eylul 2026): (1) turetilmemis satirlarin netleri
+// hesaplanir, (2) derivedUnitNets ile turetilen satirlarin birim netleri dogar (B18: IKINCI
+// BIR HESAP YAZILMAZ, person-groups.ts CAGIRILIR), (3) turetilen satirlarin TUM tutarlari
+// veritabanindaki sifir yerine bu birim netle doner. buildCardView ve cardViewTotals ikisi de
+// BURADAN okur.
+function computeRowTotals(
   rows: readonly BudgetItemRow[],
-  headings: readonly { catalogCode: string; name: string }[],
-  userHeadings: readonly { id: string; name: string }[],
   bordroData: Readonly<Record<string, BordroSheetEntry>>,
-  personIdsWithRole: ReadonlySet<string>,
-  personOrderIndex: ReadonlyMap<string, number>,
-): CardView {
+): { rowTotalsById: Record<string, RowTotals>; unitNetOverrides: Record<string, number> } {
   const rowTotalsById: Record<string, RowTotals> = {}
   const netByItemId: Record<string, number> = {}
   for (const row of rows) {
@@ -116,6 +112,29 @@ export function buildCardView(
       rowTotalsById[row.id] = rowTotals(row, bordroData[row.id], unitNetOverrides[row.id] ?? 0)
     }
   }
+  return { rowTotalsById, unitNetOverrides }
+}
+
+// KART MASASI KAPAGI (KABUK-KARARLARI 12.3 TEK HESAP IKI YUZEY, 24 Eylul 2026): masa kapagindaki
+// rakam bu islevden gelir, kartin toplam seridiyle AYNI hesaptir. Eski totals.ts cardTotals
+// turetilen satiri veritabanindaki sifirdan okuyordu ve komisyon kapaga hic girmiyordu (canlida
+// olculdu: fark 167.861, komisyon satirlarinin kart toplaminin kendisi).
+export function cardViewTotals(
+  rows: readonly BudgetItemRow[],
+  bordroData: Readonly<Record<string, BordroSheetEntry>>,
+): RowTotals {
+  return sumRows(rows, computeRowTotals(rows, bordroData).rowTotalsById)
+}
+
+export function buildCardView(
+  rows: readonly BudgetItemRow[],
+  headings: readonly { catalogCode: string; name: string }[],
+  userHeadings: readonly { id: string; name: string }[],
+  bordroData: Readonly<Record<string, BordroSheetEntry>>,
+  personIdsWithRole: ReadonlySet<string>,
+  personOrderIndex: ReadonlyMap<string, number>,
+): CardView {
+  const { rowTotalsById, unitNetOverrides } = computeRowTotals(rows, bordroData)
 
   const headingGroups = groupRowsByHeading([...rows], [...headings], userHeadings)
   // OZET SATIRI = IS EKSENI (10 Eylul 2026, Engin karari). Eskiden ozet YALNIZ iki ve daha

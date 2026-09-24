@@ -43,6 +43,8 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 
 - **24 Eylül 2026 — Üretim Kayıtları içe aktarması PDF okuyor (tek dilim).** Oyuncular listesinin "İçe aktar" düğmesi beşinci biçim olarak metin PDF kabul ediyor; taranmış PDF açık mesajla reddediliyor. Okuyucu Mozilla PDF.js'in legacy yapısı (Safari şartı) ve yalnız PDF seçildiğinde iniyor. Beş biçimi de etkileyen iki değişiklik aynı dilimde geldi: seçilen başlık satırıyla aynı satır listeden atılıyor, önizleme ilk altı satırın yanında son üç satırı da gösteriyor. PDF'te sayfalar tek liste, kırılan hücre yalnız numaralı listede birleşiyor, yan yana bölünmüş sayfa birleştirilmiyor. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 İÇE AKTARMA — PDF. Chrome'da DOĞRULANDI (24 Eylül 2026, Engin): Word ve Excel PDF'lerinde önizleme ve kişi sayısı (62 ve 47) sandbox ölçümüyle aynı çıktı, taranmış PDF onaylanan mesajla reddedildi. Mac Safari denemesi bekliyor.
 
+- **24 Eylül 2026 — Kart masası kapağı kartın toplamıyla aynı rakamı gösteriyor (tek dilim).** Masa 9 Eylül'den beri eski toplam işlevinde kalmıştı ve komisyon satırlarını veritabanındaki sıfırdan okuyordu; Oyuncu kartında kapak 876.730,66, kartın içi 1.044.591,66 gösteriyordu. Canlıda salt-okuma ölçüldü: fark 167.861, on yedi komisyon satırının kartta aldığı Maliyet toplamının kendisi; komisyon satırlarında kayıtlı birim net sıfır, dönem kaydı yok, oransız 1618 satırı yok. Masa artık kartın hesabını (`card-view.ts` `cardViewTotals`) çağırıyor, `totals.ts` `cardTotals` silindi, testleri yeni işleve taşındı. Karar evi: `docs/KABUK-KARARLARI.md` §12.3 TEK HESAP İKİ YÜZEY.
+
 ## Durum
 
 - HEAD: 660abcd (24 Eylül 2026 — PDF içe aktarma dilimi)

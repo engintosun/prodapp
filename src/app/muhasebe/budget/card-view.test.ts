@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { buildCardView } from './card-view'
+import { buildCardView, cardViewTotals } from './card-view'
 import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
 import type { BordroSheetEntry } from './components/burden-sheet'
 
@@ -34,6 +34,28 @@ function makeItem(overrides: Partial<BudgetItemRow> = {}): BudgetItemRow {
 }
 
 const NO_BORDRO: Record<string, BordroSheetEntry> = {}
+
+function makeBordro(totalNet: number, totalGross: number): BordroSheetEntry {
+  return {
+    loading: false,
+    error: null,
+    data: {
+      totalNet,
+      totalGross,
+      monthlySeries: [],
+      signals: [],
+      bucketBreakdown: {
+        socialSecurityEmployee: 0,
+        unemploymentEmployee: 0,
+        socialSecurityEmployer: 0,
+        unemploymentEmployer: 0,
+        incomeTax: 0,
+        stampDuty: 0,
+      },
+      periodBreakdown: [],
+    },
+  }
+}
 
 describe('buildCardView', () => {
   it('turetilen satirin tutari orandan dogar (veritabanindaki sifir degil)', () => {
@@ -145,5 +167,46 @@ describe('buildCardView', () => {
       'summary:p1',
       'kostum',
     ])
+  })
+})
+
+describe('cardViewTotals', () => {
+  it('bos dizide bes alan da 0', () => {
+    expect(cardViewTotals([], NO_BORDRO)).toEqual({ net: 0, yasalYuk: 0, maliyet: 0, kdv: 0, brut: 0 })
+  })
+
+  it('birden cok bordro-disi satirda besini de dogru toplar', () => {
+    const rows = [
+      makeItem({ id: 'a', unitNet: 1000, multiplier: 1, repeat: 1, vatRate: 20, burdens: [], paymentStatus: 'sirket' }),
+      makeItem({ id: 'b', unitNet: 500, multiplier: 2, repeat: 1, vatRate: 20, burdens: [], paymentStatus: 'sirket' }),
+    ]
+    expect(cardViewTotals(rows, NO_BORDRO)).toEqual({ net: 2000, yasalYuk: 0, maliyet: 2000, kdv: 400, brut: 2400 })
+  })
+
+  it('bordro ve bordro-disi karisik dizide dogru toplar', () => {
+    const rows = [
+      makeItem({ id: 'a', unitNet: 1000, multiplier: 1, repeat: 1, vatRate: 20, burdens: [], paymentStatus: 'sirket' }),
+      makeItem({ id: 'b', paymentStatus: 'bordro', unitNet: 0, vatRate: 0, burdens: [] }),
+    ]
+    const bordroData: Record<string, BordroSheetEntry> = { b: makeBordro(5000, 6500) }
+    expect(cardViewTotals(rows, bordroData)).toEqual({ net: 6000, yasalYuk: 1500, maliyet: 7500, kdv: 200, brut: 7700 })
+  })
+
+  it('komisyon satirini veritabanindaki sifirdan degil orandan sayar', () => {
+    const rows = [
+      makeItem({ id: 'kase', personObjectId: 'p1', unitNet: 100000 }),
+      makeItem({ id: 'komisyon', personObjectId: 'p1', deriveRate: 20, unitNet: 0, paymentStatus: 'sirket' }),
+    ]
+    expect(cardViewTotals(rows, NO_BORDRO).maliyet).toBe(120000)
+  })
+
+  it('kartin toplam seridiyle ayni sonucu verir', () => {
+    const rows = [
+      makeItem({ id: 'kase', personObjectId: 'p1', unitNet: 100000, headingCode: 'H1' }),
+      makeItem({ id: 'mesai', personObjectId: null, unitNet: 5000, headingCode: 'H1' }),
+      makeItem({ id: 'komisyon', personObjectId: 'p1', deriveRate: 20, unitNet: 0, paymentStatus: 'sirket', headingCode: 'H1' }),
+    ]
+    const view = buildCardView(rows, [{ catalogCode: 'H1', name: 'Baslik 1' }], [], NO_BORDRO, new Set(), new Map())
+    expect(cardViewTotals(rows, NO_BORDRO)).toEqual(view.cardTotals)
   })
 })
