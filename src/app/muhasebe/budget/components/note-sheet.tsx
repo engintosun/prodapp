@@ -4,16 +4,18 @@ import { BottomSheet } from './bottom-sheet'
 export function NoteSheet({
   item,
   onCommit,
+  name,
   anchor,
   onClose,
 }: {
   item: BudgetItemRow
   onCommit: (id: string, field: 'internalNote' | 'publicNote', value: string) => void | Promise<void>
+  name: string
   anchor?: () => HTMLElement | null
   onClose: () => void
 }) {
   return (
-    <BottomSheet title={<>#{item.itemCode} {item.name}</>} anchor={anchor} onClose={onClose}>
+    <BottomSheet title={<>#{item.itemCode} {name}</>} anchor={anchor} onClose={onClose}>
       <label style={{ display: 'block', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', fontWeight: 600, marginBottom: 'var(--space-1)' }}>
         İç Not
       </label>

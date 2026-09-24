@@ -111,6 +111,8 @@ Bu çift-sayma doktrini §18'deki kart toplamı tasarımını da MİRAS yoluyla 
 - **Düzenlenen detay** (dönem kırılımı, SGK matrahı) → **satır-içi açılır (accordion)**, aynı anda tek satır açık.
 - **Salt-okunur döküm** (yük nasıl hesaplandı) → hücreye yapışık **küçük popover** (3-4 satır: net ÷ oran → brüt, yük, "Yasal Yükler'e git" bağı). Dışına tıkla → kapanır. Mobilde bottom-sheet.
 - **UYGULAMA (24 Eylül 2026, TASARIM-KARARLARI §9 K1, Dilim 1a):** Yasal Yük dökümü tıklanan Yasal Yük hücresinin yanında açılır, dönem satırında o dönemin hücresinin yanında; arka karartılmaz. "Mobilde bottom-sheet" gerekçesi 24 Eylül 2026'da düştü: bütçe ekranları büyük ekran için tasarlanır.
+- **BAŞLIK (24 Eylül 2026, Engin):** Yasal Yük dökümünün başlığı satırın Ad hücresinde görünen adı taşır (`display-name.ts` `rowDisplayName`): kişi bağlı satırda kişinin adı, komisyon satırında "Ajans Komisyonu — ajans adı", kişisiz satırda kalemin adı; dönem satırında yanına dönem adı eklenir. Eskiden kalemin kayıtlı adını (görev adı) basıyordu; AD YERLEŞİMİ kararının (§20) uygulanmamış bir yüzeyiydi.
+- **GENİŞLİK VE UYARI YAZISI (24 Eylül 2026, Engin; uygulaması Dilim 1a-3):** Yasal Yük dökümü içeriği kadar geniş açılır, en dar 240, en geniş 480 piksel. Bordro dökümündeki uyarılar iki eşit satıra kırılır ve ortalanır; pencere bu genişliğe göre daralır. "Tarih girilmedi" uyarısının metni: "Tarih girilmediği için ihtiyatlı (en yüksek maliyetli) varsayım kullanıldı. Tarih girildiğinde rakam yalnız aşağı inebilir." Not ve Statü rehberi bugünkü genişlikte kalır.
 
 **NEDEN:** Veri girerken yerinde düzenleme + bağlam korunur (accordion); sadece "61.446 nereden çıktı" bakarken tam panel ağır/gürültülü olur, minik kart yeter. İki farklı doğa, iki farklı çözüm — "sade temiz" hedefi.
 
@@ -172,6 +174,8 @@ Realizasyon notu: ilk tasarimda "hucreye yapisik popover" denmisti; 11-kolon yat
 **GEREKÇE DÜŞTÜ (24 Eylül 2026, Engin):** Yukarıdaki realizasyon notunun mobil gerekçesi `docs/TASARIM-KARARLARI.md` §9 AÇILIR PENCERE VE UYARI TETİĞİN YANINDA ilkesiyle düştü: bütçe ekranları büyük ekran için tasarlanır. Not penceresinin yeri o ilkenin tasarım oturumunda yeniden belirlenir; o güne kadar bugünkü alttan açılan pencere durur.
 
 **YER BELİRLENDİ (24 Eylül 2026, TASARIM-KARARLARI §9 K1, Dilim 1a):** Not penceresi Ad hücresindeki not işaretinin yanında açılır, arka karartılmaz; alttan açılan pencere kalktı. Pencerenin içi (iki not alanı, hep görünür) değişmedi. Başlıktaki "Ic Not" yazısı "İç Not" oldu.
+
+**BAŞLIK (24 Eylül 2026, Engin):** Not penceresinin başlığı "#kod" ile satırın Ad hücresinde görünen adı taşır; kişi bağlı satırda görev adı değil kişinin adı çıkar. Kaynak Yasal Yük başlığıyla aynı işlevdir (`display-name.ts` `rowDisplayName`).
 
 DB: budget_items.internal_note + budget_items.public_note (nullable text, goc 20260702120000). Eski atil note kolonu onceki gocte dusmustu; bu iki kolon temiz eklemedir. variance_note (B5 fark aciklamasi) AYRI kavram, dokunulmadi. Yeni tablo degil, yeni GRANT/RLS yok; mevcut budget_items RLS (yalniz muhasebe) iki kolonu da kapsar. Iz: trg_log_items (B19, full-snapshot) + trg_upd_items (updated_at) not duzenlemesini otomatik loglar; yeni trigger YOK.
 

@@ -5,7 +5,7 @@ import type { BudgetItemRow, StageRow, UnitRow } from '../../../../shared/supaba
 import { fmt, itemHasNote, isMultiPeriod, summarizeSame, fieldVal, repeatVal, bordroAllowedUnits } from '../format'
 import type { ValueWarning } from '../format'
 import type { RowTotals } from '../totals'
-import { itemDisplayName, commissionDisplayName } from '../display-name'
+import { rowDisplayName } from '../display-name'
 import type { EditApi } from '../hooks/use-edit-buffers'
 import type { BordroSheetEntry } from './burden-sheet'
 import type { PersonLabel } from '../../../../shared/supabase/person-label-service'
@@ -72,9 +72,7 @@ export const ItemRow = memo(function ItemRow({
   // AD YERLESIMI + KOMISYON SATIRININ DOGUMU (9 Eylul 2026): turetilmis satirin ad hucresi
   // AYRI mantik izler (commissionDisplayName) - 1618 gorev atomu DEGILDIR (is_duty=false),
   // itemDisplayName'in dort hali onu hic kapsamaz.
-  const nameDisplay = isCommission
-    ? commissionDisplayName(it, it.personObjectId ? personLabelById.get(it.personObjectId) : undefined)
-    : itemDisplayName(it, dutyCodes, personNameById)
+  const nameDisplay = rowDisplayName(it, dutyCodes, personNameById, personLabelById)
   const multi = isMultiPeriod(it)
   const addedStageIds = Object.keys(it.periodQty)
   const isBordro = it.paymentStatus === 'bordro'

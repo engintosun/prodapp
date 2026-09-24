@@ -24,7 +24,7 @@ import type { CollapseState } from './collapse-state'
 import { personsNeedingCommissionRow, commissionRowsWithoutTick, COMMISSION_CATALOG_BY_KIND } from './person-groups'
 import type { CommissionKind, UntickedCommission } from './person-groups'
 import { personCardPresence, personNameCollisions, cardUsesPersonList } from './person-bring'
-import { summaryDisplayName, commissionDisplayName } from './display-name'
+import { summaryDisplayName, commissionDisplayName, rowDisplayName } from './display-name'
 import { BurdenSheet } from './components/burden-sheet'
 import type { LibraryItem } from '../../../shared/supabase/library-service'
 import { StatusInfoSheet } from './components/status-info-sheet'
@@ -35,6 +35,16 @@ import { AddItemPanel } from './components/add-item-panel'
 import { AddChooser } from './components/add-chooser'
 import type { AddChoice } from './components/add-chooser'
 import { HeadingWindow } from './components/heading-window'
+
+// TETIGIN YANINDA (TASARIM-KARARLARI bolum 9, K1): pencerenin tetigi ADRESLE bulunur - satir ve
+// sutun isaretinden sayfada aranir. Ref okumaz (react-hooks/refs kurali susturulmaz); sessiz
+// yenileme dugumu degistirse de ayni adres ayni hucreyi bulur.
+function cellSelector(rowId: string, col: string): string {
+  return `[data-row-id="${rowId}"][data-col="${col}"]`
+}
+function findTrigger(selector: string): HTMLElement | null {
+  return document.querySelector<HTMLElement>(selector)
+}
 
 // Rolu olan kisi kimlikleri: ozet satirinin dogma kosulu (card-view.ts). TEK yerde hesaplanir,
 // buildCardView cagri yeri burayi kullanir; ikinci bir kopya acilmaz.
@@ -404,19 +414,6 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   const [openBurden, setOpenBurden] = useState<{ itemId: string; stageId: string | null } | null>(null)
   const [openNoteItemId, setOpenNoteItemId] = useState<string | null>(null)
   const [openStatusInfo, setOpenStatusInfo] = useState(false)
-  const statusInfoButtonRef = useRef<HTMLButtonElement>(null)
-  // TETIGIN YANINDA (TASARIM-KARARLARI bolum 9, K1, Dilim 1a): pencere tetik hucresinin yaninda
-  // acilir. Hucre her hesapta DOM'dan yeniden bulunur; sessiz yenileme dugumu degistirebilir.
-  const findCell = useCallback(
-    (rowId: string, col: string) =>
-      containerRef.current?.querySelector<HTMLElement>(`[data-row-id="${rowId}"][data-col="${col}"]`) ?? null,
-    [containerRef],
-  )
-  const findBurdenCell = useCallback(
-    (itemId: string, stageId: string | null) =>
-      stageId === null ? findCell(itemId, 'burden') : findCell(`${itemId}:${stageId}`, 'periodBurden'),
-    [findCell],
-  )
   const [personListOpen, setPersonListOpen] = useState(false)
   const [personLabels, setPersonLabels] = useState<PersonLabel[]>([])
   // Kisi listesinin ILK yuklemesi bitti mi. UZUNLUGA BAKILMAZ: kisisi olmayan projede liste
@@ -849,7 +846,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                       <button
                         type="button"
                         title="Statü rehberi"
-                        ref={statusInfoButtonRef}
+                        data-anchor="status-info"
                         onClick={onOpenStatusInfo}
                         style={{
                           display: 'flex',
@@ -1059,9 +1056,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
             stageId={openBurden.stageId}
             stage={sheetStage}
             bordro={bordroData[item.id]}
-            // anchor gecikmeli cagrilir: BottomSheet kendi useLayoutEffect'inde okur, bu render'da degil.
-            // eslint-disable-next-line react-hooks/refs
-            anchor={() => findBurdenCell(item.id, openBurden.stageId)}
+            name={rowDisplayName(item, dutyCodes, personNameById, personLabelById).text}
+            anchor={() => findTrigger(openBurden.stageId === null ? cellSelector(item.id, 'burden') : cellSelector(`${item.id}:${openBurden.stageId}`, 'periodBurden'))}
             onClose={() => setOpenBurden(null)}
           />
         )
@@ -1070,12 +1066,10 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         const item = rows.find((r) => r.id === openNoteItemId)
         if (!item) return null
         return (
-          // anchor gecikmeli cagrilir: BottomSheet kendi useLayoutEffect'inde okur, bu render'da degil.
-          // eslint-disable-next-line react-hooks/refs
-          <NoteSheet key={item.id} item={item} onCommit={api.commitNote} anchor={() => findCell(item.id, 'note')} onClose={() => setOpenNoteItemId(null)} />
+          <NoteSheet key={item.id} item={item} name={rowDisplayName(item, dutyCodes, personNameById, personLabelById).text} onCommit={api.commitNote} anchor={() => findTrigger(cellSelector(item.id, 'note'))} onClose={() => setOpenNoteItemId(null)} />
         )
       })()}
-      {openStatusInfo && <StatusInfoSheet anchor={() => statusInfoButtonRef.current} onClose={() => setOpenStatusInfo(false)} />}
+      {openStatusInfo && <StatusInfoSheet anchor={() => findTrigger('[data-anchor="status-info"]')} onClose={() => setOpenStatusInfo(false)} />}
       {personListOpen && (
         <PersonListSheet
           labels={personLabels}

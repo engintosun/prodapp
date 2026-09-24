@@ -91,7 +91,7 @@ varsayim yapilmaz.
 -> Etkiler: authenticated-shell.tsx (muhasebe "bütçe" sekmesi) buradan render eder.
 -> Kritik: EVET — İ4 (Ekran ≠ kabuk) sınırı burada tutulur; budgetId/cardId/viewMode dışarıdan alınabilir kalmalı. 500+ satır (1 Eylül 2026), BUTCE-UI-MIMARISI bölüm 8 kayıtlı.
 
-`src/app/muhasebe/budget/components/item-row.tsx` (390)
+`src/app/muhasebe/budget/components/item-row.tsx` (388)
 -> Görev: Kart tablosunun kalem satırı — 14 haneli (13 veri kolonu + etiketsiz silme hanesi) KİLİTLİ kolon setinin tek satırlık render'ı, bordro/genel ayrımı + dönem-satırı açılımı.
 -> Kullanır: shared/cfe (netToplamDonemli/brutToplamDonemli/kisiyeBanka) + format.ts + hooks/use-edit-buffers.ts (EditApi tipi).
 -> Etkiler: card-table-screen.tsx satır-başına bunu render eder.
@@ -136,16 +136,16 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/components/add-item-panel.tsx` (387) — kalem ekleme odası: kütüphane arama + serbest kalem
 `src/app/muhasebe/budget/components/add-item-row.tsx` (60) — tablo altı "+ Ekle" düğme satırı
 `src/app/muhasebe/budget/components/bottom-sheet.tsx` (201) — ortak alt-sheet primitivi (backdrop+panel+odak tuzağı)
-`src/app/muhasebe/budget/components/burden-sheet.tsx` (105) — Yasal Yük dökümü sheet'i (bordro 6-bacak + basit statü)
+`src/app/muhasebe/budget/components/burden-sheet.tsx` (107) — Yasal Yük dökümü sheet'i (bordro 6-bacak + basit statü)
 `src/app/muhasebe/budget/components/heading-row.tsx` (54) — başlık satırı: ad + üç rakam (Net/Yasal Yük/Brüt), data-grid-cell taşımaz
 `src/app/muhasebe/budget/components/heading-window.tsx` (294) — Başlık penceresi: serbest kalemleri başlığa gönderme, başlık açma, geri al
-`src/app/muhasebe/budget/components/note-sheet.tsx` (37) — İç Not / Kamu Notu düzenleme sheet'i
+`src/app/muhasebe/budget/components/note-sheet.tsx` (39) — İç Not / Kamu Notu düzenleme sheet'i
 `src/app/muhasebe/budget/components/period-row.tsx` (186) — çok-dönemli kalemin dönem alt-satırı render'ı
 `src/app/muhasebe/budget/components/person-list-sheet.tsx` (253) — Oyuncular listesi panosu: Rol · Oyuncu · Görev · Ajans/Menajer tiki, "+ Kişi ekle" ve karta toplu getirme
 `src/app/muhasebe/budget/components/status-info-sheet.tsx` (15) — statü rehberi metinleri
 `src/app/muhasebe/budget/components/summary-row.tsx` (59) — kişi özet satırının render'ı; kendi budget_items kaydı taşımaz, alt kalemlerin toplamını gösterir
 `src/app/muhasebe/budget/components/table-styles.ts` (138) — kart tablosu kolon genişlikleri + hücre stilleri
-`src/app/muhasebe/budget/display-name.ts` (70) — kalem/özet satırının gösterilen adının TEK kaynağı (AD YERLEŞİMİ kararı, saf hesap)
+`src/app/muhasebe/budget/display-name.ts` (87) — kalem/özet satırının gösterilen adının TEK kaynağı (AD YERLEŞİMİ kararı, saf hesap)
 `src/app/muhasebe/budget/format.ts` (328) — fmt/parseNumericDraft + kütüphane arama + başlık grubu saf fonksiyonları
 `src/app/muhasebe/budget/heading-window.ts` (63) — Başlık penceresinin saf mantığı (liste, hedef süzmesi, geri alma paketleri)
 `src/app/muhasebe/budget/hooks/use-card-rows.ts` (233) — kart verisi yükleme (budgetId/cardId), ref senkronizasyonu
@@ -309,7 +309,7 @@ Kaynak: docs/butce/BUTCE-UI-MIMARISI.md bölüm 2 (İ1-İ8) + bölüm 8, docs/AR
 
 ## 9. TEST HARİTASI
 
-Test sayıları `npm test` çıktısından ÖLÇÜLEREK okundu (24 Eylül 2026), toplam 443/443 geçti (24 dosya).
+Test sayıları `npm test` çıktısından ÖLÇÜLEREK okundu (24 Eylül 2026), toplam 446/446 geçti (24 dosya).
 
 - `src/shared/cfe/cfe.test.ts` — CFE motorunu (net/brüt/KDV/kova) korur — 28 test
 - `src/shared/cfe/payroll.test.ts` — Bordro motorunu (payroll.ts) korur — 27 test
@@ -325,7 +325,7 @@ Test sayıları `npm test` çıktısından ÖLÇÜLEREK okundu (24 Eylül 2026),
 - `src/app/muhasebe/budget/heading-window.test.ts` — Başlık penceresinin saf mantığını korur (yalnız serbest kalem, Başlıksız en üstte, hedef süzmesi, geri almada her kalemin geldiği yere dönmesi) — 7 test
 - `src/app/muhasebe/budget/collapse-state.test.ts` — başlık ve özet satırlarının katlama durumu hesabını korur — 6 test
 - `src/app/muhasebe/budget/columns.test.ts` — BUDGET_COLUMNS kolon seti sabitini korur — 4 test
-- `src/app/muhasebe/budget/display-name.test.ts` — itemDisplayName/summaryDisplayName'i (AD YERLEŞİMİ kararının saf hesabı) korur — 13 test
+- `src/app/muhasebe/budget/display-name.test.ts` — itemDisplayName/summaryDisplayName'i (AD YERLEŞİMİ kararının saf hesabı) korur — 16 test
 - `src/app/muhasebe/budget/person-bring.test.ts` — personCardPresence/personNameCollisions/sortPersonsByDuty/cardUsesPersonList'i (Oyuncular listesi getirme mantığı ve düğmenin çizilmesi) korur — 13 test
 - `src/app/muhasebe/budget/person-groups.test.ts` — groupByPerson/derivedUnitNets'i (kişi bloğu gruplama + komisyon türetme) ve commissionRowsWithoutTick'i (tik kalkmış komisyon satırı) korur — 37 test
 - `src/app/muhasebe/budget/components/add-item-panel.test.tsx` — kalem ekleme paneli davranışını korur — 4 test

@@ -12,6 +12,7 @@ export function BurdenSheet({
   stageId,
   stage,
   bordro,
+  name,
   anchor,
   onClose,
 }: {
@@ -19,6 +20,7 @@ export function BurdenSheet({
   stageId: string | null
   stage: StageRow | null
   bordro: BordroSheetEntry | undefined
+  name: string
   anchor?: () => HTMLElement | null
   onClose: () => void
 }) {
@@ -41,7 +43,7 @@ export function BurdenSheet({
   const dNet = netToplamDonemli(dDonemler)
   const dBrutYuk = brutToplamDonemli(dDonemler, dYukler)
   return (
-    <BottomSheet title={<>{item.name}{sheetStage ? ' (' + sheetStage.name + ')' : ''}</>} anchor={anchor} onClose={onClose}>
+    <BottomSheet title={<>{name}{sheetStage ? ' (' + sheetStage.name + ')' : ''}</>} anchor={anchor} onClose={onClose}>
       {isBordroSheet ? (
         <>
           {bdSheet?.loading && (

@@ -68,3 +68,20 @@ export function summaryDisplayName(
   if (dutyName) return dutyName
   return label.name
 }
+
+// SATIRIN GORUNEN ADI TEK KARARDA (24 Eylul 2026, Engin karari): satirin Ad hucresi ve pencere
+// basliklari (Yasal Yuk dokumu, Not) AYNI adi tasir. Turetilmis (komisyon) satir deriveRate
+// dolu olan satirdir ve commissionDisplayName'e gider; digerleri itemDisplayName'e. Bu secim
+// eskiden yalniz item-row.tsx icinde yaziliydi; pencere basligi kalemin kayitli adini (gorev
+// adi) basiyordu.
+export function rowDisplayName(
+  item: Pick<BudgetItemRow, 'name' | 'catalogCode' | 'personObjectId' | 'deriveRate'>,
+  dutyCodes: ReadonlySet<string>,
+  personNameById: ReadonlyMap<string, string>,
+  personLabelById: ReadonlyMap<string, Pick<PersonLabel, 'agencyName' | 'managerName'>>,
+): ItemDisplayName {
+  if (item.deriveRate !== null) {
+    return commissionDisplayName(item, item.personObjectId ? personLabelById.get(item.personObjectId) : undefined)
+  }
+  return itemDisplayName(item, dutyCodes, personNameById)
+}

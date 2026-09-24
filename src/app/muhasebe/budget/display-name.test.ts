@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { itemDisplayName, summaryDisplayName, commissionDisplayName } from './display-name'
+import { itemDisplayName, summaryDisplayName, commissionDisplayName, rowDisplayName } from './display-name'
 
 const DUTY_CODES = new Set(['1601', '1602'])
 
@@ -98,5 +98,37 @@ describe('commissionDisplayName', () => {
   it('etiket hic bulunamazsa (label undefined) duz ad ve DUZENLENEBILIR kalir', () => {
     const r = commissionDisplayName({ name: 'Ajans Komisyonu', catalogCode: '1618' }, undefined)
     expect(r).toEqual({ text: 'Ajans Komisyonu', editable: true })
+  })
+})
+
+describe('rowDisplayName', () => {
+  it('komisyon satiri (deriveRate dolu) ajans adiyla birlikte, SALT OKUNUR', () => {
+    const r = rowDisplayName(
+      { name: 'Ajans Komisyonu', catalogCode: '1618', personObjectId: 'p1', deriveRate: 20 },
+      DUTY_CODES,
+      new Map([['p1', 'Ahmet Yılmaz']]),
+      new Map([['p1', { agencyName: 'Yıldız Ajans', managerName: null }]]),
+    )
+    expect(r).toEqual({ text: 'Ajans Komisyonu — Yıldız Ajans', editable: false })
+  })
+
+  it('komisyon satirinin kisisi yoksa duz ad, DUZENLENEBILIR', () => {
+    const r = rowDisplayName(
+      { name: 'Ajans Komisyonu', catalogCode: '1618', personObjectId: null, deriveRate: 20 },
+      DUTY_CODES,
+      new Map(),
+      new Map(),
+    )
+    expect(r).toEqual({ text: 'Ajans Komisyonu', editable: true })
+  })
+
+  it('komisyon disi satir itemDisplayName yolundan gider: kisi bagli gorev satirinda kisinin adi', () => {
+    const r = rowDisplayName(
+      { name: 'Başrol Oyuncu', catalogCode: '1601', personObjectId: 'p1', deriveRate: null },
+      DUTY_CODES,
+      new Map([['p1', 'Ahmet Yılmaz']]),
+      new Map(),
+    )
+    expect(r).toEqual({ text: 'Ahmet Yılmaz', editable: false })
   })
 })
