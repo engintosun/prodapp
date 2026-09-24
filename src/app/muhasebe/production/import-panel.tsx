@@ -11,6 +11,13 @@ import type { ChangeEvent, DragEvent } from 'react'
 // degil kazandi).
 import readXlsxFile from 'read-excel-file/browser'
 import { unzipSync, strFromU8 } from 'fflate'
+// PDF okuyucusu (pdfjs-dist) YALNIZ PDF secildiginde yuklenir: readPdfRows icindeki
+// dinamik import. Buradaki ?url importu paketi yuklemez, yalniz arka plan okuyucusunun
+// (worker) derlenmis dosya adresini verir. Legacy yapi secildi: PDF.js kendi destek
+// tablosunda Safari'yi yalniz legacy yapiyla destekliyor (24 Eylul 2026 karari).
+import pdfWorkerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url'
+import { pdfItemsToRows } from './pdf-rows'
+import type { PdfTextItem } from './pdf-rows'
 import { createPersonLabels } from '../../../shared/supabase/person-label-service'
 
 type ColumnKind = 'Rol' | 'Oyuncu' | 'Alma'
@@ -279,6 +286,40 @@ async function readDocxTables(file: File): Promise<Sheet[]> {
   }))
 }
 
+// PDF'te hucre yoktur, sayfaya basilmis yazi parcalari ve konumlari vardir; dizme
+// pdf-rows.ts icinde. Butun sayfalar TEK kaynak olarak gelir: kadro sayfa sinirini
+// tanimaz, sayfalari ayri kaynak yapmak listeyi ortasindan bolerdi (24 Eylul 2026).
+// Hic yazi parcasi cikmayan PDF taranmistir (resim): OCR yok, tahmin edilmez, reddedilir.
+// PDF.js hata metinleri Ingilizcedir; kullaniciya mevcut Turkce metin gider.
+async function readPdfRows(file: File): Promise<Sheet[]> {
+  let items: PdfTextItem[]
+  try {
+    const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs')
+    pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl
+    const task = pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) })
+    const doc = await task.promise
+    items = []
+    for (let p = 1; p <= doc.numPages; p += 1) {
+      const content = await (await doc.getPage(p)).getTextContent()
+      for (const it of content.items) {
+        if (!('str' in it)) continue
+        const text = it.str.trim()
+        if (text === '') continue
+        items.push({ text, x: it.transform[4], y: it.transform[5], height: Math.abs(it.transform[3]) || it.height, page: p })
+      }
+    }
+    await task.destroy()
+  } catch {
+    throw new Error('Dosya okunamadı')
+  }
+  if (items.length === 0) {
+    throw new Error(
+      'Bu PDF taranmış görünüyor, içinde okunabilir yazı yok. Excel ya da Word dosyasını ya da onlardan kaydedilen PDF dosyasını kullanın.',
+    )
+  }
+  return [{ name: 'PDF', rows: pdfItemsToRows(items) }]
+}
+
 // EN COK SATIRLI kaynak onerilir: kadro genelde en uzun tablodur, kapak ve not
 // sayfalari kisadir. Kullanici degistirebilir.
 function suggestSheet(sheets: Sheet[]): number {
@@ -338,6 +379,8 @@ export function ImportPanel({
         found = await readXlsxSheets(file)
       } else if (lower.endsWith('.docx')) {
         found = await readDocxTables(file)
+      } else if (lower.endsWith('.pdf')) {
+        found = await readPdfRows(file)
       } else if (lower.endsWith('.csv')) {
         const text = await file.text()
         found = [{ name: 'CSV', rows: parseCsv(text).map((r) => r.map(toCell)) }]
@@ -345,7 +388,7 @@ export function ImportPanel({
         const text = await file.text()
         found = [{ name: 'JSON', rows: parseJson(text) }]
       } else {
-        throw new Error('Yalnızca .xlsx, .docx, .csv ve .json okunur')
+        throw new Error('Yalnızca .xlsx, .docx, .pdf, .csv ve .json okunur')
       }
       const nonEmpty = found.filter((s) => s.rows.length > 0)
       if (nonEmpty.length === 0) {
@@ -427,7 +470,11 @@ export function ImportPanel({
 
   const oyuncuIdx = columnMap.findIndex((k) => k === 'Oyuncu')
   const rolIdx = columnMap.findIndex((k) => k === 'Rol')
-  const dataRows = rows.slice(headerRow + 1)
+  // Secilen baslik satiriyla ayni yaziyi tasiyan satir veri degildir: PDF basligi her
+  // sayfanin tepesine yeniden basar (24 Eylul 2026 karari). Kural ara ekranindir, bes
+  // bicimde de ayni calisir.
+  const headerKey = (rows[headerRow] ?? []).join('\u0000')
+  const dataRows = rows.slice(headerRow + 1).filter((r) => r.join('\u0000') !== headerKey)
   const foundCount = oyuncuIdx === -1 ? 0 : dataRows.filter((r) => (r[oyuncuIdx] ?? '') !== '').length
 
   const onImportClick = useCallback(async () => {
@@ -461,7 +508,7 @@ export function ImportPanel({
           style={isDragging ? dropBoxActiveStyle : dropBoxStyle}
         >
           <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--color-text)' }}>
-            Excel (.xlsx), Word (.docx), CSV veya JSON dosyası seçin
+            Excel (.xlsx), Word (.docx), PDF, CSV veya JSON dosyası seçin
           </p>
           <p style={{ margin: 0 }}>Dosyayı buraya sürükleyin</p>
           <button type="button" onClick={() => fileInputRef.current?.click()} style={buttonStyle}>
@@ -471,7 +518,7 @@ export function ImportPanel({
         <input
           ref={fileInputRef}
           type="file"
-          accept=".xlsx,.docx,.csv,.json"
+          accept=".xlsx,.docx,.pdf,.csv,.json"
           onChange={onFileInputChange}
           style={{ display: 'none' }}
         />
@@ -511,20 +558,35 @@ export function ImportPanel({
   // phase === 'preview'
   const headerCells = rows[headerRow] ?? []
   const headerCandidateCount = Math.min(10, rows.length)
+  // Onizleme ilk 6 satir + son 3 satir: listenin sonundaki fazlalik (toplam satiri,
+  // alttaki not, ikinci tablo) aktarmadan once gorunsun (24 Eylul 2026 karari).
+  // 9 ve daha az satirda liste tamami gosterilir, ayrac cizilmez.
+  const previewHead = rows.length > 9 ? rows.slice(0, 6) : rows
+  const previewTail = rows.length > 9 ? rows.slice(-3) : []
+  const previewColCount = Math.max(1, ...rows.map((r) => r.length))
+  const renderPreviewRow = (r: string[], key: string) => (
+    <tr key={key}>
+      {r.map((c, ci) => (
+        <td key={ci} style={tdStyle}>
+          {c}
+        </td>
+      ))}
+    </tr>
+  )
 
   return (
     <div style={panelStyle}>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <tbody>
-          {rows.slice(0, 6).map((r, ri) => (
-            <tr key={ri}>
-              {r.map((c, ci) => (
-                <td key={ci} style={tdStyle}>
-                  {c}
-                </td>
-              ))}
+          {previewHead.map((r, ri) => renderPreviewRow(r, `h${ri}`))}
+          {previewTail.length > 0 && (
+            <tr>
+              <td colSpan={previewColCount} style={tdStyle}>
+                …
+              </td>
             </tr>
-          ))}
+          )}
+          {previewTail.map((r, ri) => renderPreviewRow(r, `t${ri}`))}
         </tbody>
       </table>
 

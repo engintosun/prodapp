@@ -1,6 +1,6 @@
 # KAAPA — INDEX.md
 
-**Son güncelleme:** 21 Eylül 2026
+**Son güncelleme:** 24 Eylül 2026
 
 ## INDEX STATUS RULE
 
@@ -79,9 +79,9 @@ varsayim yapilmaz.
 -> Etkiler: authenticated-shell.tsx kind='production' dalından render eder.
 -> Kritik: HAYIR — kararların evi KABUK-KARARLARI 12.1b; ekran BÜTÇEYİ HİÇ GÖRMEZ.
 
-`src/app/muhasebe/production/import-panel.tsx` (611)
--> Görev: Üretim Kayıtları içe aktarma ara ekranı — dosya seç veya sürükle-bırak, oku, "Kaynak" ve "Başlık satırı" seçimlerini ve kolon eşleştirmesini onayla, `createPersonLabels` ile toplu doğur. Dört biçim: `.xlsx` (read-excel-file, `getSheets` ile TÜM sayfalar), `.docx` (fflate ile zip + tarayıcının DOMParser'ı, YALNIZ tablo), `.csv` (kendi ayrıştırıcısı, ayırıcı ölçülerek seçilir), `.json` (anahtarlar kolon yerine geçer).
--> Kullanır: read-excel-file/browser, fflate, person-label-service.ts (createPersonLabels).
+`src/app/muhasebe/production/import-panel.tsx` (673)
+-> Görev: Üretim Kayıtları içe aktarma ara ekranı — dosya seç veya sürükle-bırak, oku, "Kaynak" ve "Başlık satırı" seçimlerini ve kolon eşleştirmesini onayla, `createPersonLabels` ile toplu doğur. Beş biçim: `.xlsx` (read-excel-file, `getSheets` ile TÜM sayfalar), `.docx` (fflate ile zip + tarayıcının DOMParser'ı, YALNIZ tablo), `.csv` (kendi ayrıştırıcısı, ayırıcı ölçülerek seçilir), `.json` (anahtarlar kolon yerine geçer), `.pdf` (pdfjs-dist legacy yapı, yalnız PDF seçilince yüklenir; dizme `pdf-rows.ts` içinde; taranmış PDF reddedilir).
+-> Kullanır: read-excel-file/browser, fflate, pdfjs-dist (legacy, dinamik import), pdf-rows.ts (pdfItemsToRows), person-label-service.ts (createPersonLabels).
 -> Etkiler: production-records-screen.tsx `importOpen` durumunda bunu render eder; bu dosya ekranı DEĞİŞTİRMEZ.
 -> Kritik: HAYIR — kararların evi BUTCE-EKRAN-KARARLARI §20; tahmin sınırı orada yazılı (Görev/Ajans/Menajer TAHMİN EDİLMEZ).
 
@@ -156,6 +156,7 @@ varsayim yapilmaz.
 `src/app/muhasebe/definitions-screen.tsx` (161) — Tanımlar ekranı: rate_catalog referansı + şirket profili formu
 `src/app/muhasebe/invite-screen.tsx` (232) — davet oluşturma formu + davet linki gösterimi
 `src/app/muhasebe/production/list-bucket.ts` (35) — Üretim Kayıtları listesinin bölme (başlık) hesabının tek kaynağı
+`src/app/muhasebe/production/pdf-rows.ts` (107) — PDF'ten okunan yazı parçalarını satır ve kolona dizen saf işlev (Üretim Kayıtları içe aktarma; OCR gelirse onun da dizme katmanı)
 `src/app/saha/receipt-correction-screen.tsx` (164) — düzeltme istenen fişin yeniden düzenlenip gönderilmesi
 `src/app/saha/receipt-entry-screen.tsx` (150) — yeni fiş girişi formu (tutar/KDV/tarih/kategori)
 `src/app/saha/saha-home-screen.tsx` (179) — saha ana ekranı: FİŞ TARA diski + galeri/belgesiz + düzeltme listesi
@@ -307,7 +308,7 @@ Kaynak: docs/butce/BUTCE-UI-MIMARISI.md bölüm 2 (İ1-İ8) + bölüm 8, docs/AR
 
 ## 9. TEST HARİTASI
 
-Test sayıları `npm test` çıktısından ÖLÇÜLEREK okundu (23 Eylül 2026), toplam 421/421 geçti (22 dosya).
+Test sayıları `npm test` çıktısından ÖLÇÜLEREK okundu (24 Eylül 2026), toplam 429/429 geçti (23 dosya).
 
 - `src/shared/cfe/cfe.test.ts` — CFE motorunu (net/brüt/KDV/kova) korur — 28 test
 - `src/shared/cfe/payroll.test.ts` — Bordro motorunu (payroll.ts) korur — 27 test
@@ -329,5 +330,6 @@ Test sayıları `npm test` çıktısından ÖLÇÜLEREK okundu (23 Eylül 2026),
 - `src/app/muhasebe/budget/components/add-item-panel.test.tsx` — kalem ekleme paneli davranışını korur — 4 test
 - `src/app/muhasebe/budget/totals.test.ts` — satır/kart toplamı saf fonksiyonlarını (rowTotals/cardTotals) korur — 9 test
 - `src/app/muhasebe/production/list-bucket.test.ts` — bucketOf'u (Üretim Kayıtları liste bölme hesabı) korur — 5 test
+- `src/app/muhasebe/production/pdf-rows.test.ts` — pdfItemsToRows'u (PDF yazı parçalarının satır ve kolona dizilmesi, numara kolonuyla kırık hücre birleştirme) korur — 7 test
 - `src/app/auth/shell-routing.test.tsx` — rol/adres eşlemesini ve kabuk-klasik dal ayrımını korur (muhasebe adresinde alt şerit görünmez; /butce cardId'li ve cardId'siz dalları) — 18 test
 - `src/app/layout/app-shell.test.tsx` — kabuk yerleşimini ve ray daraltma davranışını korur — 9 test
