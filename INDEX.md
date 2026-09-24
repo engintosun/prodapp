@@ -135,8 +135,8 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/components/add-chooser.tsx` (57) — "+ Ekle" seçim penceresi (Kalem / Başlık)
 `src/app/muhasebe/budget/components/add-item-panel.tsx` (387) — kalem ekleme odası: kütüphane arama + serbest kalem
 `src/app/muhasebe/budget/components/add-item-row.tsx` (60) — tablo altı "+ Ekle" düğme satırı
-`src/app/muhasebe/budget/components/bottom-sheet.tsx` (201) — ortak alt-sheet primitivi (backdrop+panel+odak tuzağı)
-`src/app/muhasebe/budget/components/burden-sheet.tsx` (107) — Yasal Yük dökümü sheet'i (bordro 6-bacak + basit statü)
+`src/app/muhasebe/budget/components/bottom-sheet.tsx` (212) — ortak alt-sheet primitivi (backdrop+panel+odak tuzağı)
+`src/app/muhasebe/budget/components/burden-sheet.tsx` (108) — Yasal Yük dökümü sheet'i (bordro 6-bacak + basit statü)
 `src/app/muhasebe/budget/components/heading-row.tsx` (54) — başlık satırı: ad + üç rakam (Net/Yasal Yük/Brüt), data-grid-cell taşımaz
 `src/app/muhasebe/budget/components/heading-window.tsx` (294) — Başlık penceresi: serbest kalemleri başlığa gönderme, başlık açma, geri al
 `src/app/muhasebe/budget/components/note-sheet.tsx` (39) — İç Not / Kamu Notu düzenleme sheet'i
@@ -146,7 +146,7 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/components/summary-row.tsx` (59) — kişi özet satırının render'ı; kendi budget_items kaydı taşımaz, alt kalemlerin toplamını gösterir
 `src/app/muhasebe/budget/components/table-styles.ts` (138) — kart tablosu kolon genişlikleri + hücre stilleri
 `src/app/muhasebe/budget/display-name.ts` (87) — kalem/özet satırının gösterilen adının TEK kaynağı (AD YERLEŞİMİ kararı, saf hesap)
-`src/app/muhasebe/budget/format.ts` (328) — fmt/parseNumericDraft + kütüphane arama + başlık grubu saf fonksiyonları
+`src/app/muhasebe/budget/format.ts` (349) — fmt/parseNumericDraft + kütüphane arama + başlık grubu saf fonksiyonları
 `src/app/muhasebe/budget/heading-window.ts` (63) — Başlık penceresinin saf mantığı (liste, hedef süzmesi, geri alma paketleri)
 `src/app/muhasebe/budget/hooks/use-card-rows.ts` (233) — kart verisi yükleme (budgetId/cardId), ref senkronizasyonu
 `src/app/muhasebe/budget/hooks/use-grid-navigation.ts` (276) — İ7 motorunun DOM bağlayıcısı, tuş olaylarını çekirdeğe delege eder
@@ -309,7 +309,7 @@ Kaynak: docs/butce/BUTCE-UI-MIMARISI.md bölüm 2 (İ1-İ8) + bölüm 8, docs/AR
 
 ## 9. TEST HARİTASI
 
-Test sayıları `npm test` çıktısından ÖLÇÜLEREK okundu (24 Eylül 2026), toplam 446/446 geçti (24 dosya).
+Test sayıları `npm test` çıktısından ÖLÇÜLEREK okundu (24 Eylül 2026), toplam 450/450 geçti (24 dosya).
 
 - `src/shared/cfe/cfe.test.ts` — CFE motorunu (net/brüt/KDV/kova) korur — 28 test
 - `src/shared/cfe/payroll.test.ts` — Bordro motorunu (payroll.ts) korur — 27 test
@@ -320,7 +320,7 @@ Test sayıları `npm test` çıktısından ÖLÇÜLEREK okundu (24 Eylül 2026),
 - `src/shared/supabase/user-heading-service.test.ts` — fetchUserHeadings/openUserHeading/moveItemsToHeading'i (kullanıcı başlığı servis çağrıları) korur — 8 test
 - `src/shared/components/toast.test.tsx` — toast süre ve yer kuralını korur — 3 test
 - `src/app/muhasebe/budget/hooks/grid-navigation-core.test.ts` — İ7 klavye çekirdeğini (resolveKeyAction/reduceGrid) korur — 115 test
-- `src/app/muhasebe/budget/format.test.ts` — format.ts saf fonksiyonlarını korur (findCrossCardMatches'in başlık-satırı istisnası + headingKeyOf/groupRowsByHeading dahil, kullanıcı başlığının çizimi dahil) — 70 test
+- `src/app/muhasebe/budget/format.test.ts` — format.ts saf fonksiyonlarını korur (findCrossCardMatches'in başlık-satırı istisnası + headingKeyOf/groupRowsByHeading dahil, kullanıcı başlığının çizimi dahil) — 74 test
 - `src/app/muhasebe/budget/card-view.test.ts` — buildCardView'ı (kartın görünen düzeni: başlık grubu + kişi bloğu + türetilen satır tutarları, TEK kaynak; kullanıcı başlığı içindeki kişi bloğu dahil) ve masa kapağının hesabını (cardViewTotals) korur — 12 test
 - `src/app/muhasebe/budget/heading-window.test.ts` — Başlık penceresinin saf mantığını korur (yalnız serbest kalem, Başlıksız en üstte, hedef süzmesi, geri almada her kalemin geldiği yere dönmesi) — 7 test
 - `src/app/muhasebe/budget/collapse-state.test.ts` — başlık ve özet satırlarının katlama durumu hesabını korur — 6 test

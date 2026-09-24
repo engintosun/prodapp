@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseNumericDraft, effectiveWarning, bordroAllowedUnits, normalizeForSearch, matchLibraryItems, buildRoomOptions, findCrossCardMatches, headingKeyOf, groupRowsByHeading, canChangeHeading } from './format'
+import { parseNumericDraft, effectiveWarning, bordroAllowedUnits, normalizeForSearch, matchLibraryItems, buildRoomOptions, findCrossCardMatches, headingKeyOf, groupRowsByHeading, canChangeHeading, splitIntoTwoLines } from './format'
 import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
 
 describe('parseNumericDraft (PARSE GUVENCESI, K10 revize + TD-16)', () => {
@@ -467,5 +467,29 @@ describe('AIDIYET-2b-1 dugme gorunurlugu', () => {
 
   it('libraryItemId dolu olan satir icin kosul false', () => {
     expect(canChangeHeading({ libraryItemId: 'lib-1' })).toBe(false)
+  })
+})
+
+describe('splitIntoTwoLines (IKI ESIT SATIR, 24 Eylul 2026)', () => {
+  it('esit uzunlukta iki satira boler', () => {
+    expect(splitIntoTwoLines('aa bb cc dd')).toEqual(['aa bb', 'cc dd'])
+  })
+
+  it('tarih uyarisini harf sayisi en yakin kelime sinirindan boler', () => {
+    expect(
+      splitIntoTwoLines('Tarih girilmediği için ihtiyatlı (en yüksek maliyetli) varsayım kullanıldı. Tarih girildiğinde rakam yalnız aşağı inebilir.'),
+    ).toEqual([
+      'Tarih girilmediği için ihtiyatlı (en yüksek maliyetli) varsayım',
+      'kullanıldı. Tarih girildiğinde rakam yalnız aşağı inebilir.',
+    ])
+  })
+
+  it('tek kelime tek satir kalir', () => {
+    expect(splitIntoTwoLines('uyari')).toEqual(['uyari', ''])
+  })
+
+  it('bos ve fazla bosluklu yaziyi temizler', () => {
+    expect(splitIntoTwoLines('')).toEqual(['', ''])
+    expect(splitIntoTwoLines('  aa   bb  ')).toEqual(['aa', 'bb'])
   })
 })

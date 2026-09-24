@@ -18,6 +18,7 @@ export function BottomSheet({
   title,
   maxWidth = 480,
   anchor,
+  fitWidth,
   onClose,
   children,
 }: {
@@ -26,6 +27,9 @@ export function BottomSheet({
   // Tetik her hesapta yeniden bulunur (sessiz yenileme dugumu degistirebilir). Tetik
   // activeElement'ten okunamaz: Mac Safari'de tiklanan dugme odak almaz.
   anchor?: () => HTMLElement | null
+  // ICERIK KADAR GENIS (24 Eylul 2026, Engin karari, BUTCE-EKRAN-KARARLARI bolum 8): verilirse
+  // tetigin yaninda acilan pencere icerigi kadar genis olur, en dar min, en genis maxWidth.
+  fitWidth?: { min: number }
   onClose: () => void
   children: ReactNode
 }) {
@@ -51,6 +55,7 @@ export function BottomSheet({
   })
 
   const anchored = anchor !== undefined
+  const fitMin = fitWidth?.min ?? null
   useLayoutEffect(() => {
     if (!anchored) return undefined
     const place = () => {
@@ -65,7 +70,7 @@ export function BottomSheet({
       setPlacement(
         placeSheet({
           anchor: { top: r.top, bottom: r.bottom, left: r.left },
-          panelWidth: maxWidth,
+          panelWidth: fitMin === null ? maxWidth : (panelRef.current?.offsetWidth ?? maxWidth),
           panelHeight: content.offsetHeight,
           viewportWidth: window.innerWidth,
           viewportHeight: window.innerHeight,
@@ -82,7 +87,7 @@ export function BottomSheet({
       window.removeEventListener('resize', place)
       observer?.disconnect()
     }
-  }, [anchored, maxWidth])
+  }, [anchored, maxWidth, fitMin])
 
   useEffect(() => {
     triggerElRef.current = document.activeElement
@@ -123,6 +128,12 @@ export function BottomSheet({
   }
 
   const mode: 'anchored' | 'bottom' = anchored && !anchorLost ? 'anchored' : 'bottom'
+  // Genislik icerik kadarsa SABITLENMEZ: icerik sonradan buyurse (bordro hesabi gelince) pencere
+  // de buyur; yer yeniden hesaplanir (ResizeObserver). Tavan ekrandan da tasmaz.
+  const anchoredWidth: CSSProperties =
+    fitMin === null
+      ? { width: placement === null ? `min(${maxWidth}px, 100%)` : placement.width }
+      : { width: 'fit-content', minWidth: fitMin, maxWidth: `min(${maxWidth}px, calc(100vw - ${2 * SHEET_MARGIN}px))` }
   // Yer hesaplanana kadar pencere saydam durur (boyu olculsun, odak alabilsin); hesap boyamadan
   // once biter, kullanici bu hali gormez.
   const panelPlace: CSSProperties =
@@ -136,12 +147,12 @@ export function BottomSheet({
           borderRadius: 'var(--radius-lg) var(--radius-lg) 0 0',
         }
       : placement === null
-        ? { top: 0, left: 0, width: `min(${maxWidth}px, 100%)`, opacity: 0, borderRadius: 'var(--radius-lg)' }
+        ? { top: 0, left: 0, ...anchoredWidth, opacity: 0, borderRadius: 'var(--radius-lg)' }
         : {
             top: placement.top ?? undefined,
             bottom: placement.bottom ?? undefined,
             left: placement.left,
-            width: placement.width,
+            ...anchoredWidth,
             maxHeight: placement.maxHeight,
             borderRadius: 'var(--radius-lg)',
           }
@@ -180,7 +191,7 @@ export function BottomSheet({
           ref={contentRef}
           style={{ padding: 'var(--space-4)', paddingBottom: mode === 'bottom' ? 'var(--space-6)' : 'var(--space-4)' }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-3)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-3)' }}>
             <span style={{ fontSize: 'var(--text-md)', fontWeight: 600, color: 'var(--color-text)' }}>{title}</span>
             <button
               ref={closeButtonRef}

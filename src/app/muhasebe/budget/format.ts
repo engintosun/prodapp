@@ -326,3 +326,24 @@ export function groupRowsByHeading(
   }
   return groups
 }
+
+// IKI ESIT SATIR (24 Eylul 2026, Engin karari, BUTCE-EKRAN-KARARLARI bolum 8): uyari yazisi
+// kelime sinirindan, iki satirin harf sayisi en yakin olacak yerden bolunur. Piksel degil harf
+// sayilir: piksel olcumu tarayici ister, fark en fazla bir kelimedir. Tek kelimelik ya da bos
+// yazi tek satir kalir (ikinci eleman bos).
+export function splitIntoTwoLines(text: string): [string, string] {
+  const words = text.trim().split(/\s+/).filter((w) => w !== '')
+  if (words.length < 2) return [words.join(' '), '']
+  let best: [string, string] = [words.join(' '), '']
+  let bestLongest = Infinity
+  for (let i = 1; i < words.length; i++) {
+    const first = words.slice(0, i).join(' ')
+    const second = words.slice(i).join(' ')
+    const longest = Math.max(first.length, second.length)
+    if (longest < bestLongest) {
+      best = [first, second]
+      bestLongest = longest
+    }
+  }
+  return best
+}
