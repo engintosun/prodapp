@@ -404,6 +404,19 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   const [openBurden, setOpenBurden] = useState<{ itemId: string; stageId: string | null } | null>(null)
   const [openNoteItemId, setOpenNoteItemId] = useState<string | null>(null)
   const [openStatusInfo, setOpenStatusInfo] = useState(false)
+  const statusInfoButtonRef = useRef<HTMLButtonElement>(null)
+  // TETIGIN YANINDA (TASARIM-KARARLARI bolum 9, K1, Dilim 1a): pencere tetik hucresinin yaninda
+  // acilir. Hucre her hesapta DOM'dan yeniden bulunur; sessiz yenileme dugumu degistirebilir.
+  const findCell = useCallback(
+    (rowId: string, col: string) =>
+      containerRef.current?.querySelector<HTMLElement>(`[data-row-id="${rowId}"][data-col="${col}"]`) ?? null,
+    [containerRef],
+  )
+  const findBurdenCell = useCallback(
+    (itemId: string, stageId: string | null) =>
+      stageId === null ? findCell(itemId, 'burden') : findCell(`${itemId}:${stageId}`, 'periodBurden'),
+    [findCell],
+  )
   const [personListOpen, setPersonListOpen] = useState(false)
   const [personLabels, setPersonLabels] = useState<PersonLabel[]>([])
   // Kisi listesinin ILK yuklemesi bitti mi. UZUNLUGA BAKILMAZ: kisisi olmayan projede liste
@@ -836,6 +849,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                       <button
                         type="button"
                         title="Statü rehberi"
+                        ref={statusInfoButtonRef}
                         onClick={onOpenStatusInfo}
                         style={{
                           display: 'flex',
@@ -1045,6 +1059,9 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
             stageId={openBurden.stageId}
             stage={sheetStage}
             bordro={bordroData[item.id]}
+            // anchor gecikmeli cagrilir: BottomSheet kendi useLayoutEffect'inde okur, bu render'da degil.
+            // eslint-disable-next-line react-hooks/refs
+            anchor={() => findBurdenCell(item.id, openBurden.stageId)}
             onClose={() => setOpenBurden(null)}
           />
         )
@@ -1053,10 +1070,12 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         const item = rows.find((r) => r.id === openNoteItemId)
         if (!item) return null
         return (
-          <NoteSheet key={item.id} item={item} onCommit={api.commitNote} onClose={() => setOpenNoteItemId(null)} />
+          // anchor gecikmeli cagrilir: BottomSheet kendi useLayoutEffect'inde okur, bu render'da degil.
+          // eslint-disable-next-line react-hooks/refs
+          <NoteSheet key={item.id} item={item} onCommit={api.commitNote} anchor={() => findCell(item.id, 'note')} onClose={() => setOpenNoteItemId(null)} />
         )
       })()}
-      {openStatusInfo && <StatusInfoSheet onClose={() => setOpenStatusInfo(false)} />}
+      {openStatusInfo && <StatusInfoSheet anchor={() => statusInfoButtonRef.current} onClose={() => setOpenStatusInfo(false)} />}
       {personListOpen && (
         <PersonListSheet
           labels={personLabels}

@@ -110,6 +110,7 @@ Bu çift-sayma doktrini §18'deki kart toplamı tasarımını da MİRAS yoluyla 
 **KARAR:**
 - **Düzenlenen detay** (dönem kırılımı, SGK matrahı) → **satır-içi açılır (accordion)**, aynı anda tek satır açık.
 - **Salt-okunur döküm** (yük nasıl hesaplandı) → hücreye yapışık **küçük popover** (3-4 satır: net ÷ oran → brüt, yük, "Yasal Yükler'e git" bağı). Dışına tıkla → kapanır. Mobilde bottom-sheet.
+- **UYGULAMA (24 Eylül 2026, TASARIM-KARARLARI §9 K1, Dilim 1a):** Yasal Yük dökümü tıklanan Yasal Yük hücresinin yanında açılır, dönem satırında o dönemin hücresinin yanında; arka karartılmaz. "Mobilde bottom-sheet" gerekçesi 24 Eylül 2026'da düştü: bütçe ekranları büyük ekran için tasarlanır.
 
 **NEDEN:** Veri girerken yerinde düzenleme + bağlam korunur (accordion); sadece "61.446 nereden çıktı" bakarken tam panel ağır/gürültülü olur, minik kart yeter. İki farklı doğa, iki farklı çözüm — "sade temiz" hedefi.
 
@@ -169,6 +170,8 @@ Not sheet'i acan isaret AD hucresinde kalir (Engin kararı 2026-07-26); gerekce 
 Realizasyon notu: ilk tasarimda "hucreye yapisik popover" denmisti; 11-kolon yatay-kaydirmali mobil tabloda popover + iki textarea sikisik kaliyor ve ikinci overlay mekanizmasi mevcut Yasal Yuk alt-sheet'iyle tutarsiz olurdu. Alt-sheet ayni salt-bakis dogasini tutarli ve mobil-dogru verir; kalem kimligi sheet basliginda (#kod + ad).
 
 **GEREKÇE DÜŞTÜ (24 Eylül 2026, Engin):** Yukarıdaki realizasyon notunun mobil gerekçesi `docs/TASARIM-KARARLARI.md` §9 AÇILIR PENCERE VE UYARI TETİĞİN YANINDA ilkesiyle düştü: bütçe ekranları büyük ekran için tasarlanır. Not penceresinin yeri o ilkenin tasarım oturumunda yeniden belirlenir; o güne kadar bugünkü alttan açılan pencere durur.
+
+**YER BELİRLENDİ (24 Eylül 2026, TASARIM-KARARLARI §9 K1, Dilim 1a):** Not penceresi Ad hücresindeki not işaretinin yanında açılır, arka karartılmaz; alttan açılan pencere kalktı. Pencerenin içi (iki not alanı, hep görünür) değişmedi. Başlıktaki "Ic Not" yazısı "İç Not" oldu.
 
 DB: budget_items.internal_note + budget_items.public_note (nullable text, goc 20260702120000). Eski atil note kolonu onceki gocte dusmustu; bu iki kolon temiz eklemedir. variance_note (B5 fark aciklamasi) AYRI kavram, dokunulmadi. Yeni tablo degil, yeni GRANT/RLS yok; mevcut budget_items RLS (yalniz muhasebe) iki kolonu da kapsar. Iz: trg_log_items (B19, full-snapshot) + trg_upd_items (updated_at) not duzenlemesini otomatik loglar; yeni trigger YOK.
 
