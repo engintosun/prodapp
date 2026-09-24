@@ -43,7 +43,7 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 
 ## Durum
 
-- HEAD: 568ad0c (23 Eylül 2026 — KART 1600 kalan işler, oturum kapanışı)
+- HEAD: 2a543cc (24 Eylül 2026 — KART 1600 dört kararın kapanışı)
 - **`asks_person` KURALI ARTIK UYGULANDI (19 Eylül 2026).** Daha önce burada ve "Sıradaki iş"te "kararı var, uygulanmamış TEK iş" diye duran kayıt kapandı — göç `20260919120000` canlıda, sahada doğrulandı. Karar evi: `docs/butce/KART-KATALOGU.md` §7.5.
 - KOMİSYON TABANI ARTIK ÖDEME STATÜSÜNE BAKMIYOR: ölçüt kişiye bağlı ve türetilmemiş satır. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 KOMİSYON TABANI VE SİLME madde 2.
 - TEMSİLCİ KOMİSYONU CİNSİ ARTIK ATOMDA: 1618 Ajans Komisyonu, 1618-01 Menajer Komisyonu iki ayrı atom. Testlerle ve tarayıcıda doğrulandı (17 Eylül 2026).
@@ -130,13 +130,16 @@ Bu oturumda alınan kararlar; tam metinleri KALICILIK KURALI gereği kendi ev do
 - **Komisyon satırı tik atıldığı anda doğar.** Şart "taban sıfırdan büyük" değil "kişi bu kartta"; rakam yoksa sıfır tutarla. Getirme de doğum anıdır. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 KOMİSYON SATIRININ DOĞUMU madde 1.
 - **Oyuncular listesinden doğan satırlar kullanıcının kendi eklemesi sayılır.** Liste kapanınca blok açılır, ekran kayar, satır iki saniye çerçevelenir; imleç düğmede kalır. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 KATLAMA DURUMU MUTLAKTIR (daraltma) ve §16 KAYDIRMA VE İŞARET (liste yolu istisnası).
 
+## Alınan kararlar (24 Eylül 2026, Engin)
+
+- **KART 1600'ün kodda karşılığı olmayan dört kararı kapandı.** Görev atomları "+ Ekle → Kalem" listesinde kalır; dönem varsayılanları uygulanmaz; Stunt iş etiketi ve çocuk oyuncu denetimi parkta. Kod değişmedi. Ev dosyaları: `docs/butce/KART-KATALOGU.md` §7.5 24 EYLÜL 2026 KARARLARI, `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20.
+- **Psikolog/Pedagog yeni atom, KART 1600'de doğmaz.** Yeri Set Operasyonları ya da Sağlık ve Güvenlik kartı; kart kurulurken kesinleşir. Set Öğretmeni 1600'de, Oyuncu/Diyalog Koçu 1500'de sabit. Ev dosyası: aynı blok.
+
 ## Sıradaki iş
 
 **AÇIK İŞ.** Sıradaki asıl işi Engin seçer; aşağıdakiler bekleyen işlerdir.
 
 1. **Mac gerçek cihaz turu.** KLV kapanışına bağlı, bekliyor.
-2. **KART 1600'de kodda karşılığı bulunmayan dört karar (23 Eylül 2026'da koddan doğrulandı).** Her biri için önce uygulanacak mı, kapanacak mı karara bağlanır. (a) Dönem varsayılanları: Prova Yapım Öncesi'ne, Mesai Yapım'a, Tekrar Telifi Yapım Sonrası'na düşer (`docs/butce/KART-KATALOGU.md` §7.5 "Dönem varsayılanları"); kalem kütüphanesinde varsayılan dönem hanesi yok, kalem dönemsiz doğuyor. (b) Dublör grubuna otomatik Stunt iş etiketi (`docs/butce/KART-KATALOGU.md` §7.5 Grup 2 ve §4.10 oto-etiket); kaleme iş etiketi bağlayan kod yok. (c) Görev atomları "+ Ekle → Kalem" listesinde görünüyor; `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 "Listeden gelen oyuncu satırları genel ekleme listesinde GÖRÜNMEZ" kararının hangi anlamda okunacağı açık. (d) Çocuk oyuncu + set öğretmeni denetimi (`docs/butce/KART-KATALOGU.md` §7.5 kart-özel anomaliler); kodda yok, genel denetim motoru parkta (`docs/butce/KART-KATALOGU.md` §8).
-3. **Sıradaki kod dilimine iliştirilecek nokta.** `src/app/muhasebe/budget/components/add-chooser.tsx` başındaki yorumda "kisa listesi" cümlesinin sonunda nokta eksik (23 Eylül 2026 düzeltmesinde parantezle birlikte gitti). Ekrana etkisi yok.
 
 ## Açık kalanlar
 
@@ -149,6 +152,7 @@ Bu bölüm KARAR DEĞİL, henüz karara bağlanmamış açık sorulardır (yaln�
 - Masadaki kart başlıkları (Oyuncular, Ekip, Mekânlar…) tablo mu kod sabiti mi. İkinci kategori doğunca konuşulur.
 - Kadroda bir görevden kaç kişi var, kartta o görevden kaç satır var — farkın kullanıcıya söylenip söylenmeyeceği. Karara bağlanmadı.
 - `fn_check_cost_object_kind` artık ŞARTLI garanti: bileşik FK her yazımda koruyordu, tetik yalnız iki etiket kolonu değiştiğinde koruyor. Kalemin bütçesi sonradan değiştirilirse bağ sessizce projeler arası kalabilir. Bugün böyle bir işlem yok.
+- **Psikolog/Pedagog kalemi hangi kartta doğacak.** Set Operasyonları ya da Sağlık ve Güvenlik; ikisi de kurulmadı. O kart kurulurken kesinleşir. Ev dosyası: `docs/butce/KART-KATALOGU.md` §7.5 24 EYLÜL 2026 KARARLARI.
 
 Uzun vadeli iş, backlog ve tamamlananlar: `docs/IS-SIRASI.md`.
 
@@ -163,3 +167,4 @@ Bu bölüm, karar evi taramasının (19 Eylül 2026) ve sahada ölçülen bulgul
 - **TİK KALDIRMA KOMŞU KARTTA SIZINTI BIRAKIYOR (20 Eylül 2026, kod okunarak bulundu, sahada ölçülmedi).** Tik kaldırıldığında `onUpdatePersonLabel` yalnız AÇIK karttaki satırları siliyor (`rowsRef.current`), oysa tik kişinin kendisinde ve proje çapında duruyor. Kişi başka kartta da varsa oradaki komisyon satırı yerinde kalır ve tik kapalı olduğu için bir daha doğmaz — yani "tik yok ama satır var" hâli, 9 Eylül 2026 SİLME KURALI'nın tam da yasakladığı çelişki, yalnız komşu kartta. Aynı kişinin birden fazla kartta yer alması nadir ama olası. TETİK: tik kaldırma yoluna ya da kişi künyesine dokunan dilim.
 - **BİLDİRİMLER EKRANIN ORTA ÜSTÜNDE ÇIKIYOR, İLGİLİ SATIRDA DEĞİL (20 Eylül 2026, sahada görüldü).** Komisyon silme bildirimi tarayıcıda ekranın tepesinde, başlık şeridinin yanında çıktı; kullanıcının baktığı satır çok aşağıdaydı. İŞLEV KAYBI YOK: uyarı cinsi yapışkan, kullanıcı kapatana kadar duruyor (18 Eylül 2026 kaydı) — sorun görünmezlik değil, uzaklık. Bu tek bir bildirimin değil kabuğun kararıdır, o yüzden tek tek çözülmez. OKUNMAMIŞ İPUCU: bildirim düzeninde `registerHost`/`unregisterHost` diye bir yerleşim mekanizması duruyor (`src/shared/components/toast.tsx`), hiç incelenmedi — iş sanıldığından ucuz olabilir. TETİK: EV/NAV turu. Karar evi olacak dosya: `docs/TASARIM-KARARLARI.md` §9.
 - **KAPI DOSYA ADINA TAKILIYOR (23 Eylül 2026, sahada görüldü).** `gate.sh`'in .md denetimi, eklenen satırda geçen açılış protokolü dosyasının yolunu Türkçe karaktere düşmemiş kelime sandı ve commit'i reddetti; satır dosya adı yazılmadan yeniden kuruldu. Kapı yalnız kelimeye bakıyor, ters tırnak içindeki dosya yolunu ayırt etmiyor. TETİK: kapı betiğine dokunan dilim.
+- **ÇOCUK OYUNCU DENETİMİ (24 Eylül 2026, Engin: gözden kaçmasın).** Çocuk oyuncu varsa Set Öğretmeni, Psikolog/Pedagog ve Oyuncu/Diyalog Koçu zorunlu (Engin'in saha bilgisi; mevzuat maddesi ve tarihi denetim kurulurken kaynağa eklenecek). Bugün kişi kaydında çocuk olduğunu gösteren hane yok. Denetim üç kartı okur: 1615 (KART 1600), 1504 (KART 1500), Psikolog/Pedagog (kartı kesinleşmedi). TETİK: genel denetim motorunun kurulması (`docs/butce/KART-KATALOGU.md` §6, §8).
