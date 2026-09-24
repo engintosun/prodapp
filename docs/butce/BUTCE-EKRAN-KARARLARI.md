@@ -168,6 +168,8 @@ Not sheet'i acan isaret AD hucresinde kalir (Engin kararı 2026-07-26); gerekce 
 
 Realizasyon notu: ilk tasarimda "hucreye yapisik popover" denmisti; 11-kolon yatay-kaydirmali mobil tabloda popover + iki textarea sikisik kaliyor ve ikinci overlay mekanizmasi mevcut Yasal Yuk alt-sheet'iyle tutarsiz olurdu. Alt-sheet ayni salt-bakis dogasini tutarli ve mobil-dogru verir; kalem kimligi sheet basliginda (#kod + ad).
 
+**GEREKÇE DÜŞTÜ (24 Eylül 2026, Engin):** Yukarıdaki realizasyon notunun mobil gerekçesi `docs/TASARIM-KARARLARI.md` §9 AÇILIR PENCERE VE UYARI TETİĞİN YANINDA ilkesiyle düştü: bütçe ekranları büyük ekran için tasarlanır. Not penceresinin yeri o ilkenin tasarım oturumunda yeniden belirlenir; o güne kadar bugünkü alttan açılan pencere durur.
+
 DB: budget_items.internal_note + budget_items.public_note (nullable text, goc 20260702120000). Eski atil note kolonu onceki gocte dusmustu; bu iki kolon temiz eklemedir. variance_note (B5 fark aciklamasi) AYRI kavram, dokunulmadi. Yeni tablo degil, yeni GRANT/RLS yok; mevcut budget_items RLS (yalniz muhasebe) iki kolonu da kapsar. Iz: trg_log_items (B19, full-snapshot) + trg_upd_items (updated_at) not duzenlemesini otomatik loglar; yeni trigger YOK.
 
 Ileri seam (acik karar, CURRENT.md): public_note ileride kart/kalem-granulunde ortak-calisma yetkilendirmesine acilacak (yalniz-muhasebe RLS o granulde asilir) + RAPORLAR fazinda sunuma cikis kapisi. Faz 1'de kapali.
