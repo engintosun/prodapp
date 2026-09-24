@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { groupByPerson, derivedUnitNets, buildRenderRows, personNetBases, personsNeedingCommissionRow } from './person-groups'
+import { groupByPerson, derivedUnitNets, buildRenderRows, personNetBases, personsNeedingCommissionRow, commissionRowsWithoutTick } from './person-groups'
 import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
 import type { PersonLabel } from '../../../shared/supabase/person-label-service'
 
@@ -251,6 +251,39 @@ describe('personsNeedingCommissionRow', () => {
     expect(personsNeedingCommissionRow(rows, labels)).toEqual([
       { personObjectId: 'p1', kind: 'menajer' },
     ])
+  })
+})
+
+describe('commissionRowsWithoutTick', () => {
+  it('tiki acik kisinin komisyon satiri donmez', () => {
+    const rows = [makeItem({ id: 'ajans', personObjectId: 'p1', deriveRate: 20, catalogCode: '1618' })]
+    const labels = [makeLabel({ id: 'p1', hasAgency: true })]
+    expect(commissionRowsWithoutTick(rows, labels)).toEqual([])
+  })
+
+  it('tiki kapali cinsin satiri doner, tiki acik cinsinki donmez', () => {
+    const ajans = makeItem({ id: 'ajans', personObjectId: 'p1', deriveRate: 20, catalogCode: '1618' })
+    const menajer = makeItem({ id: 'menajer', personObjectId: 'p1', deriveRate: 20, catalogCode: '1618-01' })
+    const labels = [makeLabel({ id: 'p1', hasAgency: false, hasManager: true })]
+    expect(commissionRowsWithoutTick([ajans, menajer], labels)).toEqual([{ personObjectId: 'p1', kind: 'ajans', rows: [ajans] }])
+  })
+
+  it('kopya satirlar ayni grupta doner', () => {
+    const a1 = makeItem({ id: 'a1', personObjectId: 'p1', deriveRate: 20, catalogCode: '1618' })
+    const a2 = makeItem({ id: 'a2', personObjectId: 'p1', deriveRate: 15, catalogCode: '1618' })
+    const labels = [makeLabel({ id: 'p1', hasAgency: false })]
+    expect(commissionRowsWithoutTick([a1, a2], labels)).toEqual([{ personObjectId: 'p1', kind: 'ajans', rows: [a1, a2] }])
+  })
+
+  it('etiketi bulunamayan kisinin satiri donmez', () => {
+    const rows = [makeItem({ id: 'ajans', personObjectId: 'p9', deriveRate: 20, catalogCode: '1618' })]
+    expect(commissionRowsWithoutTick(rows, [])).toEqual([])
+  })
+
+  it('turetilmemis satir donmez', () => {
+    const rows = [makeItem({ id: 'x', personObjectId: 'p1', deriveRate: null, catalogCode: '1618' })]
+    const labels = [makeLabel({ id: 'p1', hasAgency: false })]
+    expect(commissionRowsWithoutTick(rows, labels)).toEqual([])
   })
 })
 

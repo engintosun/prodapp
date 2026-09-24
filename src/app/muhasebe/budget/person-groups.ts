@@ -131,6 +131,45 @@ export function personsNeedingCommissionRow(
   return needs
 }
 
+// TIK KALKMIS KOMISYON SATIRI (24 Eylul 2026, Engin karari, BUTCE-EKRAN-KARARLARI bolum 20
+// SILME KURALI): personsNeedingCommissionRow islevinin AYNASI. Turetilmis (derive_rate dolu)
+// satirin cinsi katalog kodundan okunur; kisinin o cinsteki tiki KAPALIYSA satir silinmelidir.
+// Tik Uretim Kayitlari duragindan da kaldirilabilir ve o ekran butceyi hic gormez; bu yuzden
+// kart bu islevi hem acilista hem kendi panosunda cagirir. Kopya varsa HEPSI ayni gruba duser
+// (10 Eylul 2026). Etiketi bulunamayan kisinin satiri DONMEZ: tik bilinmiyor, silmeye dayanak yok.
+export interface UntickedCommission {
+  personObjectId: string
+  kind: CommissionKind
+  rows: BudgetItemRow[]
+}
+
+export function commissionRowsWithoutTick(
+  rows: readonly BudgetItemRow[],
+  labels: readonly PersonLabel[],
+): UntickedCommission[] {
+  const labelById = new Map(labels.map((l) => [l.id, l] as const))
+  const groups = new Map<string, UntickedCommission>()
+  for (const row of rows) {
+    if (!row.personObjectId || row.deriveRate === null) continue
+    const kind: CommissionKind | null =
+      row.catalogCode === COMMISSION_CATALOG_BY_KIND.ajans
+        ? 'ajans'
+        : row.catalogCode === COMMISSION_CATALOG_BY_KIND.menajer
+          ? 'menajer'
+          : null
+    if (!kind) continue
+    const label = labelById.get(row.personObjectId)
+    if (!label) continue
+    const tickOn = kind === 'ajans' ? label.hasAgency : label.hasManager
+    if (tickOn) continue
+    const key = row.personObjectId + ':' + kind
+    const group = groups.get(key)
+    if (group) group.rows.push(row)
+    else groups.set(key, { personObjectId: row.personObjectId, kind, rows: [row] })
+  }
+  return [...groups.values()]
+}
+
 export type RenderRow =
   | { kind: 'summary'; personObjectId: string; rows: BudgetItemRow[] }
   | { kind: 'item'; row: BudgetItemRow; underSummary: boolean }

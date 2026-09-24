@@ -21,8 +21,8 @@ import { SummaryRow } from './components/summary-row'
 import { buildCardView } from './card-view'
 import { resolveCollapsed, toggleCollapse, openBlock } from './collapse-state'
 import type { CollapseState } from './collapse-state'
-import { personsNeedingCommissionRow, COMMISSION_CATALOG_BY_KIND } from './person-groups'
-import type { CommissionKind } from './person-groups'
+import { personsNeedingCommissionRow, commissionRowsWithoutTick, COMMISSION_CATALOG_BY_KIND } from './person-groups'
+import type { CommissionKind, UntickedCommission } from './person-groups'
 import { personCardPresence, personNameCollisions, cardUsesPersonList } from './person-bring'
 import { summaryDisplayName, commissionDisplayName } from './display-name'
 import { BurdenSheet } from './components/burden-sheet'
@@ -81,6 +81,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   const allLibraryRef = useRef<LibraryItem[]>([])
   // CIFT DOGUM KORUMASI: devam eden bir dogum varken ikincisi baslamaz.
   const commissionBirthInFlightRef = useRef(false)
+  // Tik kalkmis komisyon satirlarinin silinmesi de ayni anda iki kez kosmasin (dogum kilidinin aynasi).
+  const commissionRemovalInFlightRef = useRef(false)
   // DOGAN KISI ISARETLENIR (10 Eylul 2026, Engin karari): kilit acildiginda rowsRef
   // hala eski listeyi tutuyor (refetch void doner, gercek cekme ayri bir efektte
   // sonradan kosar), ikinci cagri yeni dogan satiri goremeyip ayni kisi icin bir tane
@@ -153,6 +155,52 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     // bkz. use-card-rows.ts) - deps'e girmeleri gerekmez.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetch, addToast])
+
+  // SILME KURALI TEK YERDE (24 Eylul 2026): hangi satirin silinecegini person-groups.ts
+  // commissionRowsWithoutTick secer; SILINIP SILINMEYECEGINE burasi karar verir. DOKUNULMAMIS
+  // TANIMI: komisyon satirinda kullanicinin elle girdigi TEK sey orandir (tutar turetilir, ad
+  // listeden gelir). Gruptaki butun satirlarin orani kutuphane varsayilanindaysa grup sessizce
+  // gider; en az biri degistirilmisse o satirin ADIYLA onay sorulur. Kart acilisi ve kartin
+  // Oyuncular panosu ikisi de buradan gecer.
+  const decideCommissionRemoval = useCallback((group: UntickedCommission): boolean => {
+    const catalogCode = COMMISSION_CATALOG_BY_KIND[group.kind]
+    const defaultRate = allLibraryRef.current.find((l) => l.catalogCode === catalogCode)?.defaultDeriveRate ?? null
+    const touched = group.rows.find((r) => r.deriveRate !== defaultRate)
+    if (!touched) return true
+    const label = personLabelsRef.current.find((l) => l.id === group.personObjectId)
+    const name = commissionDisplayName(touched, label).text
+    return window.confirm(`"${name}" satırını silmek istiyor musun?`)
+  }, [])
+
+  // TIK YOK, SATIR VAR (24 Eylul 2026, Engin karari, BUTCE-EKRAN-KARARLARI bolum 20): dogum
+  // denetiminin AYNASI. Tik Uretim Kayitlari duragindan kaldirilmis olabilir ve o ekran butceyi
+  // hic gormez; satiri kart acilista toplar. Vazgecilirse tik GERI ACILIR (tik kapali + satir
+  // var celiskisi kalmasin). Donus: tik geri acildiysa true, cagiran kisi listesini tazeler.
+  const removeUntickedCommissionRows = useCallback(async (): Promise<boolean> => {
+    if (commissionRemovalInFlightRef.current) return false
+    commissionRemovalInFlightRef.current = true
+    let deleted = false
+    let reticked = false
+    try {
+      for (const group of commissionRowsWithoutTick(rowsRef.current, personLabelsRef.current)) {
+        if (decideCommissionRemoval(group)) {
+          for (const r of group.rows) await softDeleteBudgetItem(r.id)
+          deleted = true
+        } else {
+          await updatePersonLabel(group.personObjectId, group.kind === 'ajans' ? { hasAgency: true } : { hasManager: true })
+          reticked = true
+        }
+      }
+    } catch (e) {
+      addToast(e instanceof Error ? e.message : 'Komisyon satırı silinemedi', 'error')
+    } finally {
+      commissionRemovalInFlightRef.current = false
+    }
+    if (deleted) refetch({ silent: true })
+    return reticked
+    // rowsRef/personLabelsRef useRef nesneleridir, kimlikleri sabittir (dogum islevinin deseni).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [decideCommissionRemoval, refetch, addToast])
 
   const { buffers, bordroData, itemWarnings, periodWarnings, refreshBordroMany, api } = useEditBuffers({
     rowsRef,
@@ -419,12 +467,20 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     if (commissionOpenCheckedGroupRef.current === cardGroupId) return
     commissionOpenCheckedGroupRef.current = cardGroupId
     void birthMissingCommissionRows()
+    // TIK YOK, SATIR VAR (24 Eylul 2026, Engin karari): dogumun AYNASI ayni acilista kosar.
+    // Uretim Kayitlari duragi butceyi hic gormez ve tik kaldirinca satir silmez; kart bunu
+    // acilista toplar. Vazgecilip tik geri acildiysa kisi listesi tazelenir.
+    void removeUntickedCommissionRows().then((reticked) => {
+      if (reticked) refreshPersonLabels()
+    })
   }, [
     cardGroupId,
     loading,
     personLabelsLoaded,
     allLibraryCount,
     birthMissingCommissionRows,
+    removeUntickedCommissionRows,
+    refreshPersonLabels,
   ])
 
   useEffect(() => {
@@ -471,66 +527,57 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // kararindan (KOMISYON SATIRININ DOGUMU madde 3) FARKLI bir tetiktir: o karar TABAN
   // degisince satirin kendiliginden silinmedigini soyler (satir kalir), burada ise KULLANICI
   // ACIKCA tiki kaldiriyor - farkli tetik, farkli sonuc (satir gider).
+
+  // ONCE KARAR, SONRA KUNYE (24 Eylul 2026, Engin karari): eskiden tik kaldirilinca kunye (tik +
+  // ajans/menajer adi) ONCE yaziliyor, onay SONRA soruluyordu; Vazgec denince tik geri aciliyor
+  // ama ad silinmis kaliyordu. Simdi once silme karari alinir; Vazgec denirse kunyeye HIC
+  // dokunulmaz. Silinecek satirlar ve dokunulmamislik olcutu kart acilisiyla AYNI yerden gelir
+  // (commissionRowsWithoutTick + decideCommissionRemoval), ikinci kopya yok.
   const onUpdatePersonLabel = useCallback(
     async (id: string, patch: PersonLabelPatch) => {
       try {
         // LISTEDEN DOGAN SATIR: tik ACILIYORSA bu eylemin tetikledigi dogum listeden sayilir.
         if (patch.hasAgency === true || patch.hasManager === true) listBirthRef.current = true
-        await updatePersonLabel(id, patch)
         const kind: CommissionKind | null =
           patch.hasAgency === false ? 'ajans' : patch.hasManager === false ? 'menajer' : null
-        if (kind) {
-          const catalogCode = COMMISSION_CATALOG_BY_KIND[kind]
-          // KOPYA VARSA HEPSI GIDER (10 Eylul 2026, Engin karari): find tek satir
-          // donduruyordu, kopyali kartta tik kaldirilinca biri gidiyor kalanlar
-          // duruyordu ve kullaniciya "silme calismiyor" gibi gorunuyordu.
-          const dupRows = rowsRef.current.filter(
-            (r) => r.personObjectId === id && r.deriveRate !== null && r.catalogCode === catalogCode,
+        if (!kind) {
+          await updatePersonLabel(id, patch)
+          refreshPersonLabels()
+          return
+        }
+        // Kunye henuz yazilmadi: secim kurali ayni kalsin diye etiket listesinin bu kisi icin
+        // tiki kapali bir kopyasi verilir.
+        const labelsAfter = personLabelsRef.current.map((l) =>
+          l.id !== id ? l : kind === 'ajans' ? { ...l, hasAgency: false } : { ...l, hasManager: false },
+        )
+        const group = commissionRowsWithoutTick(rowsRef.current, labelsAfter).find(
+          (g) => g.personObjectId === id && g.kind === kind,
+        )
+        if (group && !decideCommissionRemoval(group)) return
+        await updatePersonLabel(id, patch)
+        if (group) {
+          for (const r of group.rows) await softDeleteBudgetItem(r.id)
+          refetch({ silent: true })
+        } else {
+          // SESSIZ CIKIS YASAK (.claude/rules/src.md): tik kaldirildi ama eslesen komisyon
+          // satiri bulunamadi. TIK GERI ACILMAZ: kullanici o komisyonu istemedigini soyledi,
+          // ekran onu yalanlamaz; olan biteni SOYLER, durumu degistirmez.
+          const label = personLabelsRef.current.find((l) => l.id === id)
+          const tick = kind === 'ajans' ? 'Ajans' : 'Menajer'
+          addToast(
+            `"${label?.name ?? 'Kişi'}" için ${tick} tiki kaldırıldı ama silinecek bir komisyon satırı bulunamadı.`,
+            'warning',
           )
-          const row = dupRows[0]
-          if (row) {
-            const defaultRate = allLibraryRef.current.find((l) => l.catalogCode === catalogCode)?.defaultDeriveRate ?? null
-            // DOKUNULMAMIS TANIMI: komisyon satirinda kullanicinin elle girdigi TEK sey
-            // orandir (tutar turetilir, ad listeden gelir). Oran hala kutuphane
-            // varsayilanindaysa satir dokunulmamistir, SESSIZCE gider.
-            const untouched = row.deriveRate === defaultRate
-            let shouldDelete = untouched
-            if (!untouched) {
-              const label = personLabelsRef.current.find((l) => l.id === id)
-              const name = commissionDisplayName(row, label).text
-              shouldDelete = window.confirm(`"${name}" satırını silmek istiyor musun?`)
-            }
-            if (shouldDelete) {
-              for (const r of dupRows) await softDeleteBudgetItem(r.id)
-              refetch({ silent: true })
-            } else {
-              // Vazgecildi: tik GERI ACILIR - aksi halde tik kapali + satir hala var
-              // celiskisi (bu dilimin kapattigi kusurun ta kendisi) tekrar dogardi.
-              await updatePersonLabel(id, kind === 'ajans' ? { hasAgency: true } : { hasManager: true })
-            }
-          } else {
-            // SESSIZ CIKIS YASAK (.claude/rules/src.md): tik kaldirildi ama eslesen komisyon
-            // satiri bulunamadi. Eskiden burasi hicbir sey yapmadan cikiyordu - kullanici tikin
-            // kalktigini goruyor, satirin kartta durdugunu goruyor, arada ne oldugunu
-            // bilmiyordu. TIK GERI ACILMAZ: kullanici o komisyonu istemedigini soyledi, ekran
-            // onu yalanlamaz; olan biteni SOYLER, durumu degistirmez.
-            const label = personLabelsRef.current.find((l) => l.id === id)
-            const tick = kind === 'ajans' ? 'Ajans' : 'Menajer'
-            addToast(
-              `"${label?.name ?? 'Kişi'}" için ${tick} tiki kaldırıldı ama silinecek bir komisyon satırı bulunamadı.`,
-              'warning',
-            )
-          }
         }
         refreshPersonLabels()
       } catch (e) {
         addToast(e instanceof Error ? e.message : 'Kişi kaydedilemedi', 'error')
       }
     },
-    // rowsRef/allLibraryRef/personLabelsRef useRef nesneleridir, kimlikleri sabittir - deps'e
-    // girmeleri gerekmez (rowsRef/cardRef ile AYNI desen, bkz. use-card-rows.ts).
+    // rowsRef/personLabelsRef useRef nesneleridir, kimlikleri sabittir (rowsRef/cardRef ile AYNI
+    // desen, bkz. use-card-rows.ts).
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [addToast, refreshPersonLabels, refetch],
+    [addToast, refreshPersonLabels, refetch, decideCommissionRemoval],
   )
 
   const onOpenPersonList = useCallback(() => setPersonListOpen(true), [])
