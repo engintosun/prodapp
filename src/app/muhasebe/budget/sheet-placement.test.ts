@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { placeSheet } from './sheet-placement'
 
-const base = { panelWidth: 480, viewportWidth: 1200, viewportHeight: 800, margin: 8, gap: 4 }
+const base = { panelWidth: 480, frame: { top: 0, bottom: 800, left: 0, right: 1200 }, viewportHeight: 800, margin: 8, gap: 4 }
 
 describe('placeSheet', () => {
   it('opens below the trigger when the content fits below', () => {
@@ -35,8 +35,18 @@ describe('placeSheet', () => {
   })
 
   it('narrows the panel to the viewport minus margins on a narrow screen', () => {
-    const p = placeSheet({ ...base, viewportWidth: 400, anchor: { top: 100, bottom: 120, left: 100 }, panelHeight: 200 })
+    const p = placeSheet({ ...base, frame: { top: 0, bottom: 800, left: 0, right: 400 }, anchor: { top: 100, bottom: 120, left: 100 }, panelHeight: 200 })
     expect(p.width).toBe(384)
     expect(p.left).toBe(8)
+  })
+
+  it('alan tarayicidan kucukse yer alana gore hesaplanir: altta alan bitiyorsa ustte acilir', () => {
+    const p = placeSheet({ ...base, frame: { top: 100, bottom: 600, left: 50, right: 900 }, anchor: { top: 500, bottom: 520, left: 300 }, panelHeight: 150 })
+    expect(p).toEqual({ side: 'above', top: null, bottom: 304, left: 300, width: 480, maxHeight: 388 })
+  })
+
+  it('alanin sag kenarina gore sola kayar', () => {
+    const p = placeSheet({ ...base, frame: { top: 100, bottom: 600, left: 50, right: 900 }, anchor: { top: 200, bottom: 220, left: 700 }, panelHeight: 150 })
+    expect(p.left).toBe(412)
   })
 })
