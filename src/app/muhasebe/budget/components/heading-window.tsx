@@ -92,6 +92,7 @@ export function HeadingWindow({
   userHeadings,
   cardCode,
   onChanged,
+  anchor,
   onClose,
 }: {
   rows: readonly BudgetItemRow[]
@@ -102,6 +103,7 @@ export function HeadingWindow({
   userHeadings: readonly UserHeading[]
   cardCode: string
   onChanged: () => void
+  anchor?: () => HTMLElement | null
   onClose: () => void
 }) {
   const { addToast } = useToast()
@@ -205,7 +207,7 @@ export function HeadingWindow({
         : `${lastSend.moves.length} kalem "${lastSend.targetName}" başlığına gitti`
 
   return (
-    <BottomSheet title="Başlık" maxWidth={PANEL_WIDTH} onClose={onClose}>
+    <BottomSheet title="Başlık" maxWidth={PANEL_WIDTH} anchor={anchor} prefer="above" onClose={onClose}>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-4)' }}>
         <div style={{ flex: '1 1 280px', minWidth: 0 }}>
           {allIds.length === 0 ? (

@@ -49,4 +49,19 @@ describe('placeSheet', () => {
     const p = placeSheet({ ...base, frame: { top: 100, bottom: 600, left: 50, right: 900 }, anchor: { top: 200, bottom: 220, left: 700 }, panelHeight: 150 })
     expect(p.left).toBe(412)
   })
+
+  it('once ustu dene: icerik ustte sigiyorsa ustte acilir', () => {
+    const p = placeSheet({ ...base, prefer: 'above', anchor: { top: 500, bottom: 520, left: 300 }, panelHeight: 150 })
+    expect(p).toEqual({ side: 'above', top: null, bottom: 304, left: 300, width: 480, maxHeight: 488 })
+  })
+
+  it('once ustu dene: ustte sigmiyor ve altta daha cok yer varsa altta acilir', () => {
+    const p = placeSheet({ ...base, prefer: 'above', anchor: { top: 100, bottom: 120, left: 300 }, panelHeight: 200 })
+    expect(p).toEqual({ side: 'below', top: 124, bottom: null, left: 300, width: 480, maxHeight: 668 })
+  })
+
+  it('once ustu dene: iki tarafa da sigmiyor ve ustte daha cok yer varsa ustte kalir', () => {
+    const p = placeSheet({ ...base, prefer: 'above', anchor: { top: 700, bottom: 720, left: 300 }, panelHeight: 2000 })
+    expect(p).toEqual({ side: 'above', top: null, bottom: 104, left: 300, width: 480, maxHeight: 688 })
+  })
 })

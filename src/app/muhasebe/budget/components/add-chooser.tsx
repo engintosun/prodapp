@@ -8,7 +8,7 @@ export type AddChoice = 'item' | 'heading'
 // ailesinden kucuk bir pencere, iki satir. Emsal: sokulen satirdaki Baslik dugmesinin kisa listesi.
 // Acilinca odak Kalem satirindadir; ok tuslari iki satir arasinda
 // gezer, Enter secer (dugmenin kendi davranisi), Esc ve disina tiklama kapatir (BottomSheet).
-export function AddChooser({ onPick, onClose }: { onPick: (choice: AddChoice) => void; onClose: () => void }) {
+export function AddChooser({ anchor, onPick, onClose }: { anchor?: () => HTMLElement | null; onPick: (choice: AddChoice) => void; onClose: () => void }) {
   const itemRef = useRef<HTMLButtonElement>(null)
   const headingRef = useRef<HTMLButtonElement>(null)
 
@@ -39,7 +39,7 @@ export function AddChooser({ onPick, onClose }: { onPick: (choice: AddChoice) =>
   }
 
   return (
-    <BottomSheet title="Ekle" onClose={onClose}>
+    <BottomSheet title="Ekle" anchor={anchor} prefer="above" onClose={onClose}>
       <ul onKeyDown={onListKeyDown} style={{ margin: 0, padding: 0, listStyle: 'none' }}>
         <li>
           <button ref={itemRef} type="button" onClick={() => onPick('item')} style={optionStyle}>

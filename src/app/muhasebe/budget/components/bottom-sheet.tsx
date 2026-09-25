@@ -44,6 +44,7 @@ export function BottomSheet({
   maxWidth = 480,
   anchor,
   fitWidth,
+  prefer,
   onClose,
   children,
 }: {
@@ -55,6 +56,8 @@ export function BottomSheet({
   // ICERIK KADAR GENIS (24 Eylul 2026, Engin karari, BUTCE-EKRAN-KARARLARI bolum 8): verilirse
   // tetigin yaninda acilan pencere icerigi kadar genis olur, en dar min, en genis maxWidth.
   fitWidth?: { min: number }
+  // ONCE USTU DENE (25 Eylul 2026, Dilim 1b-1): ekleme satirindan acilan pencereler 'above' verir.
+  prefer?: 'below' | 'above'
   onClose: () => void
   children: ReactNode
 }) {
@@ -101,6 +104,7 @@ export function BottomSheet({
           viewportHeight: window.innerHeight,
           margin: SHEET_MARGIN,
           gap: SHEET_GAP,
+          prefer,
         }),
       )
     }
@@ -112,7 +116,7 @@ export function BottomSheet({
       window.removeEventListener('resize', place)
       observer?.disconnect()
     }
-  }, [anchored, maxWidth, fitMin])
+  }, [anchored, maxWidth, fitMin, prefer])
 
   useEffect(() => {
     triggerElRef.current = document.activeElement
@@ -131,8 +135,10 @@ export function BottomSheet({
 
     return () => {
       document.removeEventListener('keydown', onKeyDown, true)
-      // Tetik biliniyorsa imlec ona doner (Safari'de activeElement tetik degildir).
-      const trigger = anchorRef.current?.() ?? triggerElRef.current
+      // Tetik odaklanabilir bir ogeyse imlec ona doner (Safari'de activeElement tetik degildir);
+      // degilse (ekleme satirinin bos hucresi gibi) acilistaki odakli ogeye doner (K11).
+      const anchorEl = anchorRef.current?.() ?? null
+      const trigger = anchorEl && anchorEl.matches(FOCUSABLE_SELECTOR) ? anchorEl : triggerElRef.current
       if (trigger instanceof HTMLElement && trigger.isConnected) trigger.focus()
     }
   }, [])

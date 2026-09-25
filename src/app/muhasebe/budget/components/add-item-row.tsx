@@ -54,7 +54,8 @@ export const AddItemRow = memo(function AddItemRow({ disabled, onOpen }: AddItem
           Ekle
         </button>
       </td>
-      <td style={tdStyle} colSpan={12} />
+      {/* EKLEME SATIRI ADRESI (25 Eylul 2026, Dilim 1b-1): "+ Ekle" secici ve heading-window.tsx bu hucreye baglanir; sol kenari Statu sutununun basladigi yer (Ad sutununun bittigi yer). */}
+      <td data-anchor="add-row" style={tdStyle} colSpan={12} />
     </tr>
   )
 })
