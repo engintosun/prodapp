@@ -3,6 +3,9 @@ import type { RefObject } from 'react'
 import { resolveKeyAction } from '../hooks/grid-navigation-core'
 import type { RoomOption } from '../format'
 import { useToastHost } from '../../../../shared/components/toast'
+import { placeSheet } from '../sheet-placement'
+import type { SheetPlacement } from '../sheet-placement'
+import { visibleFrame, SHEET_MARGIN, SHEET_GAP } from '../sheet-frame'
 
 export interface PersonOption {
   id: string
@@ -23,7 +26,13 @@ interface AddItemPanelProps {
   // GOREV DISI ATOMLARDA KISI SORMA (asks_person, 19 Eylul 2026): kartta aktif satiri
   // olan kisiler - panelde HESAPLANMAZ, prop olarak gelir (card-table-screen.tsx).
   persons: PersonOption[]
+  // YER (25 Eylul 2026, Dilim 1b-2): odanin baglandigi ekleme satiri hucresi; bulunamazsa oda ortada acilir.
+  anchor?: () => HTMLElement | null
 }
+
+// GENISLIK (25 Eylul 2026, Engin karari): 340 piksel; en uzun kutuphane adi ("Seyahat, Konaklama,
+// Yemek, Harcirah") tek satirda sigar. 28 Temmuz'daki "alt-sheet ile ayni olcu" kurali bu kararla degisti.
+const ROOM_WIDTH = 340
 
 // CALISMA YUZEYI (panel), modal DEGIL - TASARIM-KARARLARI bolum 9: karartmaz, altindaki icerik
 // okunur kalir ama dokunulamaz, disina tiklamak Esc ile ayni sonucu verir. Bu yuzden aria-modal
@@ -40,11 +49,15 @@ export function AddItemPanel({
   onCreateFree,
   onClose,
   persons,
+  anchor,
 }: AddItemPanelProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const createButtonRef = useRef<HTMLButtonElement>(null)
   const triggerElRef = useRef<Element | null>(null)
   const onCloseRef = useRef(onClose)
+  const panelRef = useRef<HTMLDivElement>(null)
+  const anchorRef = useRef(anchor)
+  const [placement, setPlacement] = useState<SheetPlacement | null>(null)
   // ASKS_PERSON IKI ADIM (19 Eylul 2026): birinci adim bugunku kalem listesi; asksPerson
   // isaretli secenek secilince panel KAPANMAZ, ikinci adima gecer (baslik "Kime?", liste
   // kisi listesi olur). pendingOption ikinci adimda hangi kalemin kisi bekledigini tasir.
@@ -78,7 +91,37 @@ export function AddItemPanel({
 
   useLayoutEffect(() => {
     onCloseRef.current = onClose
+    anchorRef.current = anchor
   })
+
+  // YER (25 Eylul 2026, Engin karari, TASARIM-KARARLARI bolum 9 K1 EKLEME SATIRI, Dilim 1b-2):
+  // oda ekleme satirinin bos hucresine gore yerlesir, once ustu dener. Yer YALNIZ acilista ve
+  // tarayici yeniden boyutlaninca hesaplanir: kalem eklenip ekleme satiri asagi inse de oda
+  // yerinde durur. Ustte acilan odanin alt kenari sabittir; liste uzarsa oda yukari buyur.
+  // Tetik bulunamazsa placement bos kalir ve oda eskisi gibi ekranin ortasinda acilir.
+  useLayoutEffect(() => {
+    const place = () => {
+      const el = anchorRef.current?.() ?? null
+      const panel = panelRef.current
+      if (!el || !panel) return
+      const r = el.getBoundingClientRect()
+      setPlacement(
+        placeSheet({
+          anchor: { top: r.top, bottom: r.bottom, left: r.left },
+          frame: visibleFrame(el),
+          panelWidth: ROOM_WIDTH,
+          panelHeight: panel.offsetHeight,
+          viewportHeight: window.innerHeight,
+          margin: SHEET_MARGIN,
+          gap: SHEET_GAP,
+          prefer: 'above',
+        }),
+      )
+    }
+    place()
+    window.addEventListener('resize', place)
+    return () => window.removeEventListener('resize', place)
+  }, [])
 
   useEffect(() => {
     // Acilista imlec yazi alaninda; kapanista odak yuzeyi acan dugmeye geri doner
@@ -164,17 +207,16 @@ export function AddItemPanel({
       />
       <div
         role="dialog"
+        ref={panelRef}
         aria-label={step === 'person' ? 'Kime?' : 'Kalem ekle'}
         onKeyDown={onKeyDown}
         onClick={(e) => e.stopPropagation()}
         style={{
           position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          // Alt-sheet ile AYNI olcu (bolum 16): ikinci bir genislik olcusu cikarilmaz.
-          width: 'min(480px, 100%)',
-          maxHeight: '70vh',
+          ...(placement === null
+            ? { top: '50%', left: '50%', transform: 'translate(-50%, -50%)', maxHeight: '70vh' }
+            : { top: placement.top ?? undefined, bottom: placement.bottom ?? undefined, left: placement.left, maxHeight: placement.maxHeight }),
+          width: `min(${ROOM_WIDTH}px, 100%)`,
           overflowY: 'auto',
           borderRadius: 'var(--radius-lg)',
           background: 'var(--color-surface)',

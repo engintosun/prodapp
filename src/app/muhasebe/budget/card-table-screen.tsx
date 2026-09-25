@@ -1022,6 +1022,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           crossCardNames={crossCardNames}
           onCreateFree={onCreateFreeItem}
           onClose={onCloseAddPanel}
+          anchor={() => findTrigger('[data-anchor="add-row"]')}
           persons={cardPersons}
         />
       )}

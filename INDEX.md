@@ -85,7 +85,7 @@ varsayim yapilmaz.
 -> Etkiler: production-records-screen.tsx `importOpen` durumunda bunu render eder; bu dosya ekranı DEĞİŞTİRMEZ.
 -> Kritik: HAYIR — kararların evi BUTCE-EKRAN-KARARLARI §20; tahmin sınırı orada yazılı (Görev/Ajans/Menajer TAHMİN EDİLMEZ).
 
-`src/app/muhasebe/budget/card-table-screen.tsx` (1088)
+`src/app/muhasebe/budget/card-table-screen.tsx` (1089)
 -> Görev: Kart tablosu ekranının orkestrasyonu — veri hook'ları + ekleme paneli + satır bileşenlerini birbirine bağlar.
 -> Kullanır: hooks/* (use-card-rows, use-edit-buffers, use-grid-navigation) + components/* + budget-service.ts.
 -> Etkiler: authenticated-shell.tsx (muhasebe "bütçe" sekmesi) buradan render eder.
@@ -133,9 +133,9 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/collapse-state.ts` (39) — başlık ve özet satırlarının açık/kapalı halinin tek kaynağı: kullanıcının bıraktığı hal saklanır, varsayılan yalnız hiç dokunulmamış bloğa uygulanır, kapalı bloğa kalem eklenince blok açılır
 `src/app/muhasebe/budget/columns.ts` (27) — kart tablosu kolon seti tek kaynağı (BUDGET_COLUMNS: anahtar/etiket/hizalama)
 `src/app/muhasebe/budget/components/add-chooser.tsx` (57) — "+ Ekle" seçim penceresi (Kalem / Başlık)
-`src/app/muhasebe/budget/components/add-item-panel.tsx` (387) — kalem ekleme odası: kütüphane arama + serbest kalem
+`src/app/muhasebe/budget/components/add-item-panel.tsx` (429) — kalem ekleme odası: kütüphane arama + serbest kalem
 `src/app/muhasebe/budget/components/add-item-row.tsx` (61) — tablo altı "+ Ekle" düğme satırı
-`src/app/muhasebe/budget/components/bottom-sheet.tsx` (253) — ortak alt-sheet primitivi (backdrop+panel+odak tuzağı)
+`src/app/muhasebe/budget/components/bottom-sheet.tsx` (227) — ortak alt-sheet primitivi (backdrop+panel+odak tuzağı)
 `src/app/muhasebe/budget/components/burden-sheet.tsx` (108) — Yasal Yük dökümü sheet'i (bordro 6-bacak + basit statü)
 `src/app/muhasebe/budget/components/heading-row.tsx` (54) — başlık satırı: ad + üç rakam (Net/Yasal Yük/Brüt), data-grid-cell taşımaz
 `src/app/muhasebe/budget/components/heading-window.tsx` (299) — Başlık penceresi: serbest kalemleri başlığa gönderme, başlık açma, geri al
@@ -152,6 +152,7 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/hooks/use-grid-navigation.ts` (276) — İ7 motorunun DOM bağlayıcısı, tuş olaylarını çekirdeğe delege eder
 `src/app/muhasebe/budget/person-bring.ts` (84) — Oyuncular listesi panosunun getirme mantığı: kartta olan/olmayan ayrımı, benzer ad uyarısı, görev sırası, düğmenin kendi listesi olan kartta çizilmesi
 `src/app/muhasebe/budget/person-groups.ts` (210) — kişi etiketine göre satır gruplama + orandan türetme; özet satırı ile komisyon satırı aynı hesabı paylaşır; tik kalkmış komisyon satırının seçimi (commissionRowsWithoutTick)
+`src/app/muhasebe/budget/sheet-frame.ts` (30) — pencerelerin kenar payları ve durabileceği alan (tablonun görünen alanı); ortak pencere parçası ve kalem ekleme odası kullanır
 `src/app/muhasebe/budget/sheet-placement.ts` (51) — tetiğin yanında açılan pencerenin yerleşim hesabı (alta ya da üste açılma, sola kayma, boy sınırı); saf işlev, ortak pencere parçası (bottom-sheet.tsx) çağırır
 `src/app/muhasebe/budget/totals.ts` (36) — saf satır toplamı (rowTotals); item-row kendi hesabını yapmaz, buradan çağırır; kart toplamı `card-view.ts` `cardViewTotals`
 `src/app/muhasebe/definitions-screen.tsx` (161) — Tanımlar ekranı: rate_catalog referansı + şirket profili formu
