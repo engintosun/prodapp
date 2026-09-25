@@ -64,4 +64,14 @@ describe('placeSheet', () => {
     const p = placeSheet({ ...base, prefer: 'above', anchor: { top: 700, bottom: 720, left: 300 }, panelHeight: 2000 })
     expect(p).toEqual({ side: 'above', top: null, bottom: 104, left: 300, width: 480, maxHeight: 688 })
   })
+
+  it('satiri orterek, once ustu dene: alt kenar satirin alt cizgisine oturur', () => {
+    const p = placeSheet({ ...base, prefer: 'above', cover: true, anchor: { top: 500, bottom: 540, left: 300 }, panelHeight: 150 })
+    expect(p).toEqual({ side: 'above', top: null, bottom: 260, left: 300, width: 480, maxHeight: 532 })
+  })
+
+  it('satiri orterek: ustte yer yoksa ust kenar satirin ust cizgisine oturur', () => {
+    const p = placeSheet({ ...base, prefer: 'above', cover: true, anchor: { top: 60, bottom: 100, left: 300 }, panelHeight: 300 })
+    expect(p).toEqual({ side: 'below', top: 60, bottom: null, left: 300, width: 480, maxHeight: 732 })
+  })
 })

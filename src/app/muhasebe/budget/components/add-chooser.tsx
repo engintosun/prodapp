@@ -39,7 +39,7 @@ export function AddChooser({ anchor, onPick, onClose }: { anchor?: () => HTMLEle
   }
 
   return (
-    <BottomSheet title="Ekle" anchor={anchor} prefer="above" onClose={onClose}>
+    <BottomSheet title="Ekle" anchor={anchor} fitWidth={{ min: 240 }} onClose={onClose}>
       <ul onKeyDown={onListKeyDown} style={{ margin: 0, padding: 0, listStyle: 'none' }}>
         <li>
           <button ref={itemRef} type="button" onClick={() => onPick('item')} style={optionStyle}>

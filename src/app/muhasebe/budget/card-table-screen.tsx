@@ -1025,7 +1025,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           persons={cardPersons}
         />
       )}
-      {addChooserOpen && <AddChooser anchor={() => findTrigger('[data-anchor="add-row"]')} onPick={onPickAdd} onClose={() => setAddChooserOpen(false)} />}
+      {addChooserOpen && <AddChooser anchor={() => findTrigger(cellSelector(ADD_ROW_ID, 'name'))} onPick={onPickAdd} onClose={() => setAddChooserOpen(false)} />}
       {headingWindowOpen && card && (
         <HeadingWindow
           rows={rows}
@@ -1035,6 +1035,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           cardCode={card.cardCode}
           onChanged={() => refetch({ silent: true })}
           anchor={() => findTrigger('[data-anchor="add-row"]')}
+          anchorLeft={() => findTrigger('[data-col="note"]')}
           onClose={() => setHeadingWindowOpen(false)}
         />
       )}

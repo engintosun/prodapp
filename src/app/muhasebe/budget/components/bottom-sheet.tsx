@@ -45,6 +45,8 @@ export function BottomSheet({
   anchor,
   fitWidth,
   prefer,
+  cover,
+  anchorLeft,
   onClose,
   children,
 }: {
@@ -58,6 +60,11 @@ export function BottomSheet({
   fitWidth?: { min: number }
   // ONCE USTU DENE (25 Eylul 2026, Dilim 1b-1): ekleme satirindan acilan pencereler 'above' verir.
   prefer?: 'below' | 'above'
+  // SATIRI ORTEREK (25 Eylul 2026, Dilim 1b-1 duzeltmesi): bkz. sheet-placement.ts cover.
+  cover?: boolean
+  // YATAY YASLANMA (25 Eylul 2026, Dilim 1b-1 duzeltmesi): verilirse ve bulunursa sol kenar bu
+  // ogenin sol kenarindan alinir (dikey yine anchor'dan). Bulunamazsa anchor'in sol kenari.
+  anchorLeft?: () => HTMLElement | null
   onClose: () => void
   children: ReactNode
 }) {
@@ -67,6 +74,7 @@ export function BottomSheet({
   const triggerElRef = useRef<Element | null>(null)
   const onCloseRef = useRef(onClose)
   const anchorRef = useRef(anchor)
+  const anchorLeftRef = useRef(anchorLeft)
   const placedRef = useRef(false)
   const [placement, setPlacement] = useState<SheetPlacement | null>(null)
   // Tetik ilk hesapta bulunamazsa pencere bugunku alt-orta bicimine duser; gorunmez kalmaz.
@@ -80,6 +88,7 @@ export function BottomSheet({
   useLayoutEffect(() => {
     onCloseRef.current = onClose
     anchorRef.current = anchor
+    anchorLeftRef.current = anchorLeft
   })
 
   const anchored = anchor !== undefined
@@ -97,7 +106,7 @@ export function BottomSheet({
       placedRef.current = true
       setPlacement(
         placeSheet({
-          anchor: { top: r.top, bottom: r.bottom, left: r.left },
+          anchor: { top: r.top, bottom: r.bottom, left: anchorLeftRef.current?.()?.getBoundingClientRect().left ?? r.left },
           panelWidth: fitMin === null ? maxWidth : (panelRef.current?.offsetWidth ?? maxWidth),
           panelHeight: content.offsetHeight,
           frame: visibleFrame(el),
@@ -105,6 +114,7 @@ export function BottomSheet({
           margin: SHEET_MARGIN,
           gap: SHEET_GAP,
           prefer,
+          cover,
         }),
       )
     }
@@ -116,7 +126,7 @@ export function BottomSheet({
       window.removeEventListener('resize', place)
       observer?.disconnect()
     }
-  }, [anchored, maxWidth, fitMin, prefer])
+  }, [anchored, maxWidth, fitMin, prefer, cover])
 
   useEffect(() => {
     triggerElRef.current = document.activeElement

@@ -15,7 +15,8 @@ import type { HeadingOption, SendRecord } from '../heading-window'
 // Ctrl+Z KURULMAZ: son gonderim "Geri al" satiriyla geri alinir, her kalem geldigi yere
 // doner; pencere kapaninca satir da gider. Dar ekranda iki sutun alt alta duser (flex-wrap),
 // liste ustte kalir.
-const PANEL_WIDTH = 760
+// GENISLIK (25 Eylul 2026, Engin karari): iki sutunun en az genisligi (280 + 240) + aradaki bosluk (16) + kenarlar (32) = 568; eskiden 760, artan yer yalniz bosluktu.
+const PANEL_WIDTH = 568
 
 const inputStyle = {
   width: '100%',
@@ -93,6 +94,7 @@ export function HeadingWindow({
   cardCode,
   onChanged,
   anchor,
+  anchorLeft,
   onClose,
 }: {
   rows: readonly BudgetItemRow[]
@@ -104,6 +106,7 @@ export function HeadingWindow({
   cardCode: string
   onChanged: () => void
   anchor?: () => HTMLElement | null
+  anchorLeft?: () => HTMLElement | null
   onClose: () => void
 }) {
   const { addToast } = useToast()
@@ -207,7 +210,7 @@ export function HeadingWindow({
         : `${lastSend.moves.length} kalem "${lastSend.targetName}" başlığına gitti`
 
   return (
-    <BottomSheet title="Başlık" maxWidth={PANEL_WIDTH} anchor={anchor} prefer="above" onClose={onClose}>
+    <BottomSheet title="Başlık" maxWidth={PANEL_WIDTH} anchor={anchor} anchorLeft={anchorLeft} prefer="above" cover onClose={onClose}>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-4)' }}>
         <div style={{ flex: '1 1 280px', minWidth: 0 }}>
           {allIds.length === 0 ? (
