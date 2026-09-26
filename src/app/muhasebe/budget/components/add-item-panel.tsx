@@ -267,6 +267,9 @@ export function AddItemPanel({
                 padding: 0,
                 listStyle: 'none',
                 maxHeight: 320,
+                // KAYDIRMA CUBUGU GIZLI (25 Eylul 2026, Engin karari): kaydirma fare, dokunmatik yuzey ve
+                // oklarla calisir; en alttaki yarim kesik satir devami oldugunu gosterir.
+                scrollbarWidth: 'none',
                 overflowY: 'auto',
                 border: '1px solid var(--color-border)',
                 borderRadius: 'var(--radius-sm)',
@@ -329,6 +332,8 @@ export function AddItemPanel({
               padding: 0,
               listStyle: 'none',
               maxHeight: 240,
+              // KAYDIRMA CUBUGU GIZLI (25 Eylul 2026, Engin karari): bkz. Kime? listesi.
+              scrollbarWidth: 'none',
               overflowY: 'auto',
               border: '1px solid var(--color-border)',
               borderRadius: 'var(--radius-sm)',
@@ -373,7 +378,7 @@ export function AddItemPanel({
               }}
             >
               Bu kalem resmî kütüphanede yok. Serbest kalem olarak eklenecek: kartın sonundaki
-              Muhtelif bölümüne düşer, statü ve birim seçimi size ait olur, yasal yükler bu
+              Başlıksız bölümüne düşer, statü ve birim seçimi size ait olur, yasal yükler bu
               seçime göre hesaplanır.
             </p>
             {crossCardNames.length > 0 && (

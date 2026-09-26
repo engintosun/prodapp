@@ -133,7 +133,7 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/collapse-state.ts` (39) — başlık ve özet satırlarının açık/kapalı halinin tek kaynağı: kullanıcının bıraktığı hal saklanır, varsayılan yalnız hiç dokunulmamış bloğa uygulanır, kapalı bloğa kalem eklenince blok açılır
 `src/app/muhasebe/budget/columns.ts` (27) — kart tablosu kolon seti tek kaynağı (BUDGET_COLUMNS: anahtar/etiket/hizalama)
 `src/app/muhasebe/budget/components/add-chooser.tsx` (57) — "+ Ekle" seçim penceresi (Kalem / Başlık)
-`src/app/muhasebe/budget/components/add-item-panel.tsx` (442) — kalem ekleme odası: kütüphane arama + serbest kalem
+`src/app/muhasebe/budget/components/add-item-panel.tsx` (447) — kalem ekleme odası: kütüphane arama + serbest kalem
 `src/app/muhasebe/budget/components/add-item-row.tsx` (61) — tablo altı "+ Ekle" düğme satırı
 `src/app/muhasebe/budget/components/bottom-sheet.tsx` (227) — ortak alt-sheet primitivi (backdrop+panel+odak tuzağı)
 `src/app/muhasebe/budget/components/burden-sheet.tsx` (108) — Yasal Yük dökümü sheet'i (bordro 6-bacak + basit statü)
