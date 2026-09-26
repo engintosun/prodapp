@@ -19,6 +19,7 @@ import { PeriodRow } from './components/period-row'
 import { HeadingRow } from './components/heading-row'
 import { SummaryRow } from './components/summary-row'
 import { buildCardView } from './card-view'
+import type { CardView } from './card-view'
 import { resolveCollapsed, toggleCollapse, openBlock } from './collapse-state'
 import type { CollapseState } from './collapse-state'
 import { personsNeedingCommissionRow, commissionRowsWithoutTick, COMMISSION_CATALOG_BY_KIND } from './person-groups'
@@ -167,21 +168,56 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetch, addToast])
 
+  // KART 1600 M3a-2: baslik ve ozet satirlarinin katlama durumu. Oturum icinde React state
+  // olarak yasar (kalici saklama YOK - kapsam disi). Anahtar: baslik 'h:'+key, ozet 'p:'+personId.
+  // Kaydirma efektinin (asagida) openBlock cagirabilmesi icin bu state ondan ONCE tanimlanir.
+  const [collapseState, setCollapseState] = useState<CollapseState>(new Map())
+
+  // SORU PENCERESI (K3, 25 Eylul 2026, Engin karari): silme sorulari tetigin yaninda, proje penceresiyle.
+  const { ask: askConfirm, element: confirmElement } = useConfirmSheet()
+
+  // KART GORUNUMU (25 Eylul 2026, K3-4): komisyon sorusu kapali baslik blogunu acabilsin diye
+  // satirin hangi baslik grubunda oldugu buradan okunur; cardView asagida kurulur, ref ona esitlenir.
+  const cardViewRef = useRef<CardView | null>(null)
+
   // SILME KURALI TEK YERDE (24 Eylul 2026): hangi satirin silinecegini person-groups.ts
   // commissionRowsWithoutTick secer; SILINIP SILINMEYECEGINE burasi karar verir. DOKUNULMAMIS
   // TANIMI: komisyon satirinda kullanicinin elle girdigi TEK sey orandir (tutar turetilir, ad
   // listeden gelir). Gruptaki butun satirlarin orani kutuphane varsayilanindaysa grup sessizce
   // gider; en az biri degistirilmisse o satirin ADIYLA onay sorulur. Kart acilisi ve kartin
   // Oyuncular panosu ikisi de buradan gecer.
-  const decideCommissionRemoval = useCallback((group: UntickedCommission): boolean => {
-    const catalogCode = COMMISSION_CATALOG_BY_KIND[group.kind]
-    const defaultRate = allLibraryRef.current.find((l) => l.catalogCode === catalogCode)?.defaultDeriveRate ?? null
-    const touched = group.rows.find((r) => r.deriveRate !== defaultRate)
-    if (!touched) return true
-    const label = personLabelsRef.current.find((l) => l.id === group.personObjectId)
-    const name = commissionDisplayName(touched, label).text
-    return window.confirm(`"${name}" satırını silmek istiyor musun?`)
-  }, [])
+  const decideCommissionRemoval = useCallback(
+    async (group: UntickedCommission, via: 'tick' | 'row'): Promise<boolean> => {
+      const catalogCode = COMMISSION_CATALOG_BY_KIND[group.kind]
+      const defaultRate = allLibraryRef.current.find((l) => l.catalogCode === catalogCode)?.defaultDeriveRate ?? null
+      const touched = group.rows.find((r) => r.deriveRate !== defaultRate)
+      if (!touched) return true
+      const label = personLabelsRef.current.find((l) => l.id === group.personObjectId)
+      const name = commissionDisplayName(touched, label).text
+      const rowAnchor = () => findTrigger(cellSelector(touched.id, 'itemRemove'))
+      // SORU SATIRIN YANINDA (25 Eylul 2026, Engin karari K3b): kart acilisinda once kisi ve
+      // baslik blogu acilir (kapaliysa satir cizilmez), iki kare beklenir, ekran satira kayar,
+      // soru satirin x'inin yaninda acilir. Tik yolunda soru kaldirilan tikin yaninda acilir.
+      if (via === 'row') {
+        const viewGroup = cardViewRef.current?.groups.find((g) =>
+          g.renderRows.some((rr) => (rr.kind === 'summary' ? rr.rows.some((r) => r.id === touched.id) : rr.row.id === touched.id)),
+        )
+        setCollapseState((prev) => {
+          let next: CollapseState = openBlock('p:' + group.personObjectId, prev)
+          if (viewGroup) next = openBlock('h:' + (viewGroup.heading?.key ?? 'basliksiz'), next)
+          return next
+        })
+        await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+        rowAnchor()?.scrollIntoView({ block: 'center' })
+      }
+      return askConfirm({
+        message: `"${name}" satırını silmek istiyor musun?`,
+        confirmLabel: 'Sil',
+        anchor: via === 'row' ? rowAnchor : () => findTrigger(`[data-tick-id="${group.personObjectId}:${group.kind}"]`),
+      })
+    },
+    [askConfirm],
+  )
 
   // TIK YOK, SATIR VAR (24 Eylul 2026, Engin karari, BUTCE-EKRAN-KARARLARI bolum 20): dogum
   // denetiminin AYNASI. Tik Uretim Kayitlari duragindan kaldirilmis olabilir ve o ekran butceyi
@@ -194,7 +230,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     let reticked = false
     try {
       for (const group of commissionRowsWithoutTick(rowsRef.current, personLabelsRef.current)) {
-        if (decideCommissionRemoval(group)) {
+        if (await decideCommissionRemoval(group, 'row')) {
           for (const r of group.rows) await softDeleteBudgetItem(r.id)
           deleted = true
         } else {
@@ -213,8 +249,6 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [decideCommissionRemoval, refetch, addToast])
 
-  // SORU PENCERESI (K3, 25 Eylul 2026, Engin karari): silme sorulari tetigin yaninda, proje penceresiyle.
-  const { ask: askConfirm, element: confirmElement } = useConfirmSheet()
   const confirmPeriodRemoval = useCallback(
     (itemId: string, stageId: string) =>
       askConfirm({
@@ -255,10 +289,6 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // sonraki bir turda "satir gelince baslasin" diye degistirilmez (Engin karari 2026-07-31).
   const [justAddedIds, setJustAddedIds] = useState<string[]>([])
   const pendingScrollIdRef = useRef<string | null>(null)
-  // KART 1600 M3a-2: baslik ve ozet satirlarinin katlama durumu. Oturum icinde React state
-  // olarak yasar (kalici saklama YOK - kapsam disi). Anahtar: baslik 'h:'+key, ozet 'p:'+personId.
-  // Kaydirma efektinin (asagida) openBlock cagirabilmesi icin bu state ondan ONCE tanimlanir.
-  const [collapseState, setCollapseState] = useState<CollapseState>(new Map())
 
   // D3c-2: oda listesi artik kutuphane + kartin MEVCUT serbest kalemlerinden kurulur
   // (AYIKLAMA KURALI: kutuphaneden dogmus satirlar ikinci kez GIRMEZ). Sorgu bos iken TUMU
@@ -577,7 +607,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         const group = commissionRowsWithoutTick(rowsRef.current, labelsAfter).find(
           (g) => g.personObjectId === id && g.kind === kind,
         )
-        if (group && !decideCommissionRemoval(group)) return
+        if (group && !(await decideCommissionRemoval(group, 'tick'))) return
         await updatePersonLabel(id, patch)
         if (group) {
           for (const r of group.rows) await softDeleteBudgetItem(r.id)
@@ -718,6 +748,9 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     () => buildCardView(rows, headings, userHeadings, bordroData, personIdsWithRoleOf(personLabels), personOrderIndexOf(personLabels)),
     [rows, headings, userHeadings, bordroData, personLabels],
   )
+  useLayoutEffect(() => {
+    cardViewRef.current = cardView
+  })
 
   // Tek kalemli rol blogu KAPALI dogar (10 Eylul 2026, Engin karari): ozet satiri zaten dogru
   // rakami gosteriyor, tek alt kalem ayni rakami tekrar etmesin; rakam kolonunda ne bosluk ne
@@ -1092,7 +1125,6 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         )
       })()}
       {openStatusInfo && <StatusInfoSheet anchor={() => findTrigger('[data-anchor="status-info"]')} onClose={() => setOpenStatusInfo(false)} />}
-      {confirmElement}
       {personListOpen && (
         <PersonListSheet
           labels={personLabels}
@@ -1104,6 +1136,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           onClose={() => setPersonListOpen(false)}
         />
       )}
+      {/* SORU PENCERESI EN SONDA (K3-4): pano ustunde acilan soru panonun arkasinda kalmasin. */}
+      {confirmElement}
     </div>
   )
 }

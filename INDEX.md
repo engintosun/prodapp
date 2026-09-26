@@ -85,7 +85,7 @@ varsayim yapilmaz.
 -> Etkiler: production-records-screen.tsx `importOpen` durumunda bunu render eder; bu dosya ekranı DEĞİŞTİRMEZ.
 -> Kritik: HAYIR — kararların evi BUTCE-EKRAN-KARARLARI §20; tahmin sınırı orada yazılı (Görev/Ajans/Menajer TAHMİN EDİLMEZ).
 
-`src/app/muhasebe/budget/card-table-screen.tsx` (1109)
+`src/app/muhasebe/budget/card-table-screen.tsx` (1143)
 -> Görev: Kart tablosu ekranının orkestrasyonu — veri hook'ları + ekleme paneli + satır bileşenlerini birbirine bağlar.
 -> Kullanır: hooks/* (use-card-rows, use-edit-buffers, use-grid-navigation) + components/* + budget-service.ts.
 -> Etkiler: authenticated-shell.tsx (muhasebe "bütçe" sekmesi) buradan render eder.
@@ -140,7 +140,7 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/components/heading-window.tsx` (299) — Başlık penceresi: serbest kalemleri başlığa gönderme, başlık açma, geri al
 `src/app/muhasebe/budget/components/note-sheet.tsx` (39) — İç Not / Kamu Notu düzenleme sheet'i
 `src/app/muhasebe/budget/components/period-row.tsx` (186) — çok-dönemli kalemin dönem alt-satırı render'ı
-`src/app/muhasebe/budget/components/person-list-sheet.tsx` (254) — Oyuncular listesi panosu: Rol · Oyuncu · Görev · Ajans/Menajer tiki, "+ Kişi ekle" ve karta toplu getirme
+`src/app/muhasebe/budget/components/person-list-sheet.tsx` (257) — Oyuncular listesi panosu: Rol · Oyuncu · Görev · Ajans/Menajer tiki, "+ Kişi ekle" ve karta toplu getirme
 `src/app/muhasebe/budget/components/status-info-sheet.tsx` (15) — statü rehberi metinleri
 `src/app/muhasebe/budget/components/summary-row.tsx` (59) — kişi özet satırının render'ı; kendi budget_items kaydı taşımaz, alt kalemlerin toplamını gösterir
 `src/app/muhasebe/budget/components/table-styles.ts` (138) — kart tablosu kolon genişlikleri + hücre stilleri
@@ -182,8 +182,8 @@ Edge functions (`supabase/functions/`):
 
 ### C seviyesi (BASİT)
 
-`src/shared/components/` — 14 dosya, 1292 satır: ortak UI primitifleri (dialog/empty-state/error/loading/toast/offline-banner/şirket-profili-formu); tetiğin yanında açılan pencere parçası, yerleşim hesabı ve durabileceği alan (25 Eylül 2026, bütçeden taşındı: bütçe ve Üretim Kayıtları kullanır)
-`src/shared/components/bottom-sheet.tsx` (227) — ortak pencere parçası: alt ortada karartmalı ya da tetiğin yanında karartmasız açılır (arka örtü, panel, odak tuzağı); bütçe ve Üretim Kayıtları kullanır
+`src/shared/components/` — 14 dosya, 1301 satır: ortak UI primitifleri (dialog/empty-state/error/loading/toast/offline-banner/şirket-profili-formu); tetiğin yanında açılan pencere parçası, yerleşim hesabı ve durabileceği alan (25 Eylül 2026, bütçeden taşındı: bütçe ve Üretim Kayıtları kullanır)
+`src/shared/components/bottom-sheet.tsx` (236) — ortak pencere parçası: alt ortada karartmalı ya da tetiğin yanında karartmasız açılır (arka örtü, panel, odak tuzağı); bütçe ve Üretim Kayıtları kullanır
 `src/shared/components/sheet-frame.ts` (30) — pencerelerin kenar payları ve durabileceği alan (tablonun görünen alanı); ortak pencere parçası ve kalem ekleme odası kullanır
 `src/shared/components/sheet-placement.ts` (51) — tetiğin yanında açılan pencerenin yerleşim hesabı (alta ya da üste açılma, satırı örterek açılma, sola kayma, boy sınırı); saf işlev
 `src/shared/components/use-confirm-sheet.tsx` (70) — soru penceresi kancası: tarayıcı kutusu yerine tetiğin yanında proje penceresiyle sorar, cevabı bekler (Promise); ortak pencere parçasını kullanır

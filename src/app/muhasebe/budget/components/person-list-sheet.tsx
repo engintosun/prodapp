@@ -201,8 +201,10 @@ export function PersonListSheet({
               <td style={ellipsisCellStyle} title={dutyName(l.dutyCode, dutyOptions)}>{dutyName(l.dutyCode, dutyOptions)}</td>
               <td style={tdStyle}>
                 <label style={tickLabelStyle}>
+                  {/* TIK ADRESI (K3-4): soru penceresi bu kutucugun yaninda acilir. */}
                   <input
                     type="checkbox"
+                    data-tick-id={`${l.id}:ajans`}
                     checked={l.hasAgency}
                     onChange={(e) => void onUpdate(l.id, e.target.checked ? { hasAgency: true } : { hasAgency: false, agencyName: '' })}
                   />
@@ -220,6 +222,7 @@ export function PersonListSheet({
                 <label style={tickLabelStyle}>
                   <input
                     type="checkbox"
+                    data-tick-id={`${l.id}:menajer`}
                     checked={l.hasManager}
                     onChange={(e) => void onUpdate(l.id, e.target.checked ? { hasManager: true } : { hasManager: false, managerName: '' })}
                   />

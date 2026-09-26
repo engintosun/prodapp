@@ -7,6 +7,10 @@ import { visibleFrame, SHEET_MARGIN, SHEET_GAP } from './sheet-frame'
 
 const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
 
+// ACIK PENCERE YIGINI (25 Eylul 2026, K3-4): Esc yalniz EN SON acilan pencereyi kapatir; pano
+// ustunde soru penceresi acikken Esc panoyu da kapatmasin. Tek pencere acikken davranis ayni.
+const openSheetStack: object[] = []
+
 // TETIGIN YANINDA (TASARIM-KARARLARI bolum 9, 24 Eylul 2026, Engin karari K1): anchor verilirse
 // pencere tetigin yaninda acilir ve arka KARARTILMAZ (okunur kalir, dokunulmaz, disina tiklamak
 // kapatir). anchor verilmezse bugunku alt-orta, karartmali pencere AYNEN durur. Pencere acikken
@@ -103,11 +107,14 @@ export function BottomSheet({
   }, [anchored, maxWidth, fitMin, prefer, cover])
 
   useEffect(() => {
+    const token = {}
+    openSheetStack.push(token)
     triggerElRef.current = document.activeElement
     closeButtonRef.current?.focus()
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        if (openSheetStack[openSheetStack.length - 1] !== token) return
         e.preventDefault()
         e.stopPropagation()
         const active = document.activeElement
@@ -119,6 +126,8 @@ export function BottomSheet({
 
     return () => {
       document.removeEventListener('keydown', onKeyDown, true)
+      const at = openSheetStack.indexOf(token)
+      if (at >= 0) openSheetStack.splice(at, 1)
       // Tetik odaklanabilir bir ogeyse imlec ona doner (Safari'de activeElement tetik degildir);
       // degilse (ekleme satirinin bos hucresi gibi) acilistaki odakli ogeye doner (K11).
       const anchorEl = anchorRef.current?.() ?? null
