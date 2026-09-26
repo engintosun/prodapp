@@ -184,7 +184,7 @@ export function AuthenticatedShell({ user, theme, onToggleTheme }: Props) {
     try {
       await signOut()
     } catch (_e) {
-      alert('Çıkış hatası, tekrar deneyin')
+      addToast('Çıkış hatası, tekrar deneyin', 'error')
     }
   }
 

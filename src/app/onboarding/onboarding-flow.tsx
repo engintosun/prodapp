@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { signOut } from '../../shared/supabase/auth-service'
+import { useToast } from '../../shared/components/toast'
 import { InviteScreen } from '../muhasebe/invite-screen'
 import { CompanyProfileStep } from './company-profile-step'
 import { DepartmentStep } from './department-step'
@@ -18,12 +19,13 @@ const STEP_LABELS = ['Şirket Tanımı', 'Departman', 'Dönem', 'Bütçe', 'Dave
 
 export function OnboardingFlow({ projectId, projectName, userId, initialStep, onFinish }: Props) {
   const [step, setStep] = useState<number>(initialStep)
+  const { addToast } = useToast()
 
   async function handleSignOut() {
     try {
       await signOut()
     } catch (_e) {
-      alert('Çıkış hatası, tekrar deneyin')
+      addToast('Çıkış hatası, tekrar deneyin', 'error')
     }
   }
 

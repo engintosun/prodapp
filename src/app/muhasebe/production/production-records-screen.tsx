@@ -18,6 +18,7 @@ import {
 } from '../../../shared/supabase/person-label-service'
 import type { PersonLabel, PersonLabelPatch, DutyOption } from '../../../shared/supabase/person-label-service'
 import { ImportPanel } from './import-panel'
+import { useConfirmSheet } from '../../../shared/components/use-confirm-sheet'
 
 type View = 'desk' | 'oyuncular'
 
@@ -150,6 +151,8 @@ const addButtonStyle = {
 
 export function ProductionRecordsScreen() {
   const { addToast } = useToast()
+  // SORU PENCERESI (K3, 25 Eylul 2026, Engin karari): silme sorulari tetigin yaninda, proje penceresiyle.
+  const { ask: askConfirm, element: confirmElement } = useConfirmSheet()
   const [view, setView] = useState<View>('desk')
   const [personCount, setPersonCount] = useState<number | null>(null)
   const [labels, setLabels] = useState<PersonLabel[]>([])
@@ -229,8 +232,12 @@ export function ProductionRecordsScreen() {
 
   const onDelete = useCallback(
     async (id: string) => {
-      // Emsal: kart masasi (card-table-screen.tsx 298) ayni soruyu window.confirm ile soruyor.
-      const ok = window.confirm('Bu kişiyi silmek istiyor musun?')
+      // SORU PENCERESI (K3, 25 Eylul 2026): kart masasindaki kalem silmeyle ayni parca; tetik satirdaki x.
+      const ok = await askConfirm({
+        message: 'Bu kişiyi silmek istiyor musun?',
+        confirmLabel: 'Sil',
+        anchor: () => document.querySelector<HTMLElement>(`[data-delete-id="${id}"]`),
+      })
       if (!ok) return
       try {
         await deletePersonLabel(id)
@@ -240,13 +247,17 @@ export function ProductionRecordsScreen() {
         addToast(e instanceof Error ? e.message : 'Kişi silinemedi', 'error')
       }
     },
-    [addToast, refreshLabels, refreshCount],
+    [addToast, refreshLabels, refreshCount, askConfirm],
   )
 
   const onDeleteSelected = useCallback(async () => {
     const ids = selectedIds
     if (ids.length === 0) return
-    const ok = window.confirm(`${ids.length} kişiyi silmek istiyor musun?`)
+    const ok = await askConfirm({
+      message: `${ids.length} kişiyi silmek istiyor musun?`,
+      confirmLabel: 'Sil',
+      anchor: () => document.querySelector<HTMLElement>('[data-anchor="delete-selected"]'),
+    })
     if (!ok) return
     try {
       const { deleted, blocked } = await deletePersonLabels(ids)
@@ -264,7 +275,7 @@ export function ProductionRecordsScreen() {
     } catch (e) {
       addToast(e instanceof Error ? e.message : 'Silme başarısız', 'error')
     }
-  }, [addToast, refreshLabels, refreshCount, selectedIds])
+  }, [addToast, refreshLabels, refreshCount, selectedIds, askConfirm])
 
   // Hiyerarsi kutuphaneden gelir, burada UYDURULMAZ: sira artik duz katalog kodu
   // DEGIL, once baslik sonra katalog kodudur ve bu sira fetchDutyOptions icinde kurulur.
@@ -354,6 +365,7 @@ export function ProductionRecordsScreen() {
                 </button>
                 <button
                   type="button"
+                  data-anchor="delete-selected"
                   onClick={() => void onDeleteSelected()}
                   disabled={selectedIds.length === 0}
                   style={addButtonStyle}
@@ -506,7 +518,7 @@ export function ProductionRecordsScreen() {
                       </td>
                       {!selectMode && (
                         <td style={tdStyle}>
-                          <button type="button" onClick={() => void onDelete(l.id)} style={deleteButtonStyle} title="Sil">
+                          <button type="button" data-delete-id={l.id} onClick={() => void onDelete(l.id)} style={deleteButtonStyle} title="Sil">
                             ×
                           </button>
                         </td>
@@ -524,6 +536,7 @@ export function ProductionRecordsScreen() {
           )}
         </>
       )}
+      {confirmElement}
     </div>
   )
 }

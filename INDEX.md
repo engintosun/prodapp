@@ -73,7 +73,7 @@ varsayim yapilmaz.
 -> Etkiler: authenticated-shell.tsx cardId yokken buradan render eder.
 -> Kritik: HAYIR — kararlarin evi KABUK-KARARLARI 12.3; ekran orada yazilani cizer.
 
-`src/app/muhasebe/production/production-records-screen.tsx` (529)
+`src/app/muhasebe/production/production-records-screen.tsx` (542)
 -> Görev: Üretim Kayıtları durağının ekranı — masa (Oyuncular kartı, kapakta kişi sayısı) + karta tıklanınca açılan kişi listesi (No · Rol · Oyuncu · Görev · Ajans tiki · Menajer tiki · silme). Liste göreve göre hiyerarşik dizilir (sıra katalog kodundan), No sütunu listedeki yerden hesaplanır ve saklanmaz, seç kipinde en sola tik sütunu gelir ve silme sütunu kapanır.
 -> Kullanır: person-label-service.ts (fetchPersonLabels, countPersonLabels, createPersonLabel, createPersonLabels, updatePersonLabel, deletePersonLabel, deletePersonLabels, fetchDutyOptions) + import-panel.tsx + shared/components/{loading,toast}.
 -> Etkiler: authenticated-shell.tsx kind='production' dalından render eder.
@@ -187,7 +187,7 @@ Edge functions (`supabase/functions/`):
 `src/shared/components/sheet-frame.ts` (30) — pencerelerin kenar payları ve durabileceği alan (tablonun görünen alanı); ortak pencere parçası ve kalem ekleme odası kullanır
 `src/shared/components/sheet-placement.ts` (51) — tetiğin yanında açılan pencerenin yerleşim hesabı (alta ya da üste açılma, satırı örterek açılma, sola kayma, boy sınırı); saf işlev
 `src/shared/components/use-confirm-sheet.tsx` (70) — soru penceresi kancası: tarayıcı kutusu yerine tetiğin yanında proje penceresiyle sorar, cevabı bekler (Promise); ortak pencere parçasını kullanır
-`src/app/onboarding/` — 5 dosya, 551 satır: kurulum sihirbazı adımları (şirket/departman/dönem/bütçe) + akış orkestrasyonu
+`src/app/onboarding/` — 5 dosya, 553 satır: kurulum sihirbazı adımları (şirket/departman/dönem/bütçe) + akış orkestrasyonu
 `src/styles/` + `src/index.css` — 2 dosya, 137 satır: tasarım token'ları (renk/spacing/z-katman) + global reset
 
 ## 3. MODUL HARITASI
