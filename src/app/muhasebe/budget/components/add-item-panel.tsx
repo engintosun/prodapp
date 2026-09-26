@@ -28,6 +28,9 @@ interface AddItemPanelProps {
   persons: PersonOption[]
   // YER (25 Eylul 2026, Dilim 1b-2): odanin baglandigi ekleme satiri hucresi; bulunamazsa oda ortada acilir.
   anchor?: () => HTMLElement | null
+  // YATAY YASLANMA (25 Eylul 2026, Dilim 1b-2 duzeltmesi, Engin karari): verilirse ve bulunursa sol
+  // kenar bu ogenin (ilk not dugmesi) sol kenarindan alinir; bulunamazsa anchor'in sol kenari.
+  anchorLeft?: () => HTMLElement | null
 }
 
 // GENISLIK (25 Eylul 2026, Engin karari): 340 piksel; en uzun kutuphane adi ("Seyahat, Konaklama,
@@ -50,6 +53,7 @@ export function AddItemPanel({
   onClose,
   persons,
   anchor,
+  anchorLeft,
 }: AddItemPanelProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const createButtonRef = useRef<HTMLButtonElement>(null)
@@ -57,6 +61,7 @@ export function AddItemPanel({
   const onCloseRef = useRef(onClose)
   const panelRef = useRef<HTMLDivElement>(null)
   const anchorRef = useRef(anchor)
+  const anchorLeftRef = useRef(anchorLeft)
   const [placement, setPlacement] = useState<SheetPlacement | null>(null)
   // ASKS_PERSON IKI ADIM (19 Eylul 2026): birinci adim bugunku kalem listesi; asksPerson
   // isaretli secenek secilince panel KAPANMAZ, ikinci adima gecer (baslik "Kime?", liste
@@ -92,6 +97,7 @@ export function AddItemPanel({
   useLayoutEffect(() => {
     onCloseRef.current = onClose
     anchorRef.current = anchor
+    anchorLeftRef.current = anchorLeft
   })
 
   // YER (25 Eylul 2026, Engin karari, TASARIM-KARARLARI bolum 9 K1 EKLEME SATIRI, Dilim 1b-2):
@@ -107,7 +113,7 @@ export function AddItemPanel({
       const r = el.getBoundingClientRect()
       setPlacement(
         placeSheet({
-          anchor: { top: r.top, bottom: r.bottom, left: r.left },
+          anchor: { top: r.top, bottom: r.bottom, left: anchorLeftRef.current?.()?.getBoundingClientRect().left ?? r.left },
           frame: visibleFrame(el),
           panelWidth: ROOM_WIDTH,
           panelHeight: panel.offsetHeight,
@@ -115,6 +121,8 @@ export function AddItemPanel({
           margin: SHEET_MARGIN,
           gap: SHEET_GAP,
           prefer: 'above',
+          // SATIRI ORTEREK (25 Eylul 2026, Dilim 1b-2 duzeltmesi, Engin karari): alt kenar ekleme satirinin alt cizgisinde.
+          cover: true,
         }),
       )
     }
@@ -217,7 +225,12 @@ export function AddItemPanel({
             ? { top: '50%', left: '50%', transform: 'translate(-50%, -50%)', maxHeight: '70vh' }
             : { top: placement.top ?? undefined, bottom: placement.bottom ?? undefined, left: placement.left, maxHeight: placement.maxHeight }),
           width: `min(${ROOM_WIDTH}px, 100%)`,
-          overflowY: 'auto',
+          // TEK KAYDIRMA (25 Eylul 2026, Engin karari): oda kendisi kaymaz; dikey kutudur, liste kalan
+          // yeri alir ve sigmazsa yalniz liste kayar (listeler kaydirilan kutu oldugu icin kendiliginden
+          // kisalir; baslik, yazi alani ve serbest kalem aciklamasi kisalmaz).
+          display: 'flex',
+          flexDirection: 'column',
+          overflowY: 'hidden',
           borderRadius: 'var(--radius-lg)',
           background: 'var(--color-surface)',
           padding: 'var(--space-4)',

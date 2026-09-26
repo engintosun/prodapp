@@ -1023,6 +1023,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           onCreateFree={onCreateFreeItem}
           onClose={onCloseAddPanel}
           anchor={() => findTrigger('[data-anchor="add-row"]')}
+          anchorLeft={() => findTrigger('[data-col="note"]')}
           persons={cardPersons}
         />
       )}

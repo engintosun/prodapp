@@ -54,7 +54,7 @@ export const AddItemRow = memo(function AddItemRow({ disabled, onOpen }: AddItem
           Ekle
         </button>
       </td>
-      {/* EKLEME SATIRI ADRESI (25 Eylul 2026, Dilim 1b-1 ve 1b-2): heading-window.tsx dikeyde bu hucreye baglanir (satiri orterek; not dugmesi yoksa sol kenar da buradan); kalem ekleme odasi (add-item-panel.tsx) bu hucreye baglanir, sol kenari Statu sutununun basi. Secici Ekle dugmesine baglanir. */}
+      {/* EKLEME SATIRI ADRESI (25 Eylul 2026, Dilim 1b-1 ve 1b-2): heading-window.tsx ve kalem ekleme odasi (add-item-panel.tsx) dikeyde bu hucreye baglanir, satiri orterek acilir; sol kenar ilk not dugmesinden, not dugmesi yoksa buradan (Statu sutununun basi) alinir. Secici Ekle dugmesine baglanir. */}
       <td data-anchor="add-row" style={tdStyle} colSpan={12} />
     </tr>
   )
