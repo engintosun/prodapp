@@ -108,6 +108,18 @@ DERS: bir tetiği yeniden canlandıran dilimde, o tetiğin ÜRETTİĞİ şeye do
 
 **Hedef ortamı ölçmeden araç seçmek.** 24 Eylül 2026: PDF okuyucu paketi boyut, bağımlılık ve güvenlik açığına bakılarak önerildi (`unpdf`); hedef tarayıcıdaki desteği ölçülmemişti. Engin "Safari'de nasıl çalışır" diye sorunca PDF.js'in kendi destek tablosu okundu: Safari yalnız legacy yapıyla destekli, önerilen paket modern yapıdan türüyordu; karar `pdfjs-dist` legacy yapıya çevrildi. Aynı gün ilk sürümün şartına iPhone Safari yazıldı; Engin ekranın telefona sığmadığını söyledi, kabuğun cihaz kararı (`docs/KABUK-KARARLARI.md`, 8 Ağustos 2026) da içe aktarmayı zaten telefonda yazılan işler arasında saymıyordu. Ders: paket karşılaştırmasının ölçütüne hedef tarayıcıların resmi destek tablosu girer; hedef cihaz kabuğun cihaz kararından okunur, varsayılmaz.
 
+### Kendi yazdığın metni denetime karşı saymamak (25 Eylül 2026)
+
+Opus bir oturumda dört kez, kendi yazdığı metnin kendi koyduğu denetime takılacağını görmedi: (1) 6b'de yeni yorum `react-hooks/refs` kelimesini içeriyordu, 6h denetimi aynı kelimeyi "geçmemeli" diye arıyordu; (2) JSX yorumuna ASCII "Baslik" yazıldı, commit kapısı reddetti; (3) BULMA İFADESİ "kişiyi silmek istiyor musun?" tek sanıldı, oysa "Bu kişiyi silmek…" cümlesinin parçası olarak da geçiyordu; (4) K3-2'de yazılan bir yorum "window.confirm" diyordu, K3-3 denetimi aynı kelimeyi arıyordu. Dördünde de Sonnet durdu ve haklıydı. KURAL: spec'e bir denetim ya da BULMA İFADESİ yazılırken, aynı spec'in (ve önceki dilimlerin) eklediği metin de o denetime karşı sayılır; teklik sayılırken ifadenin başka bir ifadenin parçası olarak geçip geçmediğine bakılır.
+
+### Bir pencere için kurulan gerekçeyi ötekilere taşımak (25 Eylül 2026)
+
+"No ve Ad açık kalsın" kuralı kalem ekleme odası için kuruldu (oda açıkken kalem eklenir, eklenen kalem görülmeli). Opus bunu ekleme satırından açılan dört pencerenin hepsine uyguladı; seçicide bu gerekçe yoktu, Engin'in denemesinde seçici yanlış yerde ve anlamsız genişlikte çıktı. Aynı oturumda Engin "not hanesi görünmesin, ad görünsün" dediğinde Opus bunu "hepsini ört" diye okudu ve kolay ölçülebilen sabit sınırlara (sütun başı, tablo başı) yöneldi; istenen sınır (not düğmesinin sol kenarı) ölçülebilirdi. Bir de kapalı bloğu açan hazır mekanizma (`openBlock`) varken "blok kapalıysa soru ortada sorulur" bedel diye yazıldı. KURAL: bir pencerenin kuralı ötekine taşınmadan önce her birinde gerekçenin var olup olmadığı sorulur; kolay ölçü istenen ölçünün yerine konmaz; "bedel" yazmadan önce kodda o işi yapan mekanizma aranır.
+
+### Spec dışı düzeltmeyle commit (24 Eylül 2026)
+
+Dilim 1a'da Sonnet lint uyarısını spec'te olmayan iki susturma satırıyla geçti ve commit atıp sonra raporladı. Kod doğru çalıştı ama susturma, sonradan ADRESLE BULMA deseniyle sökülmek zorunda kaldı. Sonraki bütün promptların başına "Spec'te öngörülmeyen bir durum çıkarsa kendi çözümünle commit ATMA: DUR ve raporla" satırı kondu; oturumun geri kalanında Sonnet her beklenmedik durumda durdu. KURAL: bu satır prompt başlığının kalıcı parçasıdır.
+
 ## Ters yönde bir kayıt
 
 Sonnet'in DUR'ları üç kez haklı çıktı ve üçünde de canlıyı korudu: canlıda olmayan tablo zincire konmak üzereydi, ölü bir fonksiyon overload'ı taban alınmıştı, zorunlu alan eklemek kapsam dışı bir testi kırıyordu. Sonnet'in RAPORU doğrulama değildir ama DUR'u sinyaldir; incelenmeden geçilmez.
@@ -115,3 +127,5 @@ Sonnet'in DUR'ları üç kez haklı çıktı ve üçünde de canlıyı korudu: c
 31 Ağustos 2026'da Sonnet BEŞ kez spec'in dışına çıkmadan önce bildirdi ve beşinde de haklıydı — imkânsız çapa, düşürülmüş kolon, test sayısı çelişkisi, grep DUR şartının kapı bölümüyle çelişmesi, ve kapsam dışı kalan bayat bir doküman satırı (KABUK §9). Beşinde de kapsamı kendiliğinden genişletmedi.
 
 21 Eylül 2026. GECİKMENİN SEBEBİ KAYITTAN SÖYLENİR. Engin "neden bu kadar uzadı" diye sorduğunda Opus iki kez farklı sebep söyledi: önce "tarih düzeltmesi", itiraz gelince "tarih değil, yazım kuralı". Etkinlik kaydı ikisini de tutmadı; iş tarih etiketleri, INDEX denetimi, dosya sayısı kuralı ve çapa arayışı arasında dağılmıştı. Engin buna yalan dedi; doğruydu. KURAL: "neden uzadı" sorusu tahminle değil, o turun komut kaydına bakılarak cevaplanır; itiraz gelince sebep değiştirilmez, kayıt yeniden okunur.
+
+25 Eylül 2026'da Sonnet dört kez DUR dedi ve dördünde de haklıydı: kendi içinde çelişen denetim (6b/6h), commit kapısının yakaladığı JSX yorumu, alt dize olarak iki kez geçen BULMA İFADESİ, yorum satırında geçen aranan kelime. Hiçbirinde kendi çözümüyle commit atmadı.
