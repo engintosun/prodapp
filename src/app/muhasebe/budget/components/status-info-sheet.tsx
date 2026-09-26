@@ -1,4 +1,4 @@
-import { BottomSheet } from './bottom-sheet'
+import { BottomSheet } from '../../../../shared/components/bottom-sheet'
 import { PAYMENT_STATUSES } from '../../../../shared/types/domain'
 
 export function StatusInfoSheet({ anchor, onClose }: { anchor?: () => HTMLElement | null; onClose: () => void }) {

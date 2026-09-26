@@ -1,9 +1,9 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { useToastHost } from '../../../../shared/components/toast'
-import { placeSheet } from '../sheet-placement'
-import type { SheetPlacement } from '../sheet-placement'
-import { visibleFrame, SHEET_MARGIN, SHEET_GAP } from '../sheet-frame'
+import { useToastHost } from './toast'
+import { placeSheet } from './sheet-placement'
+import type { SheetPlacement } from './sheet-placement'
+import { visibleFrame, SHEET_MARGIN, SHEET_GAP } from './sheet-frame'
 
 const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
 

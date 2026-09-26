@@ -4,7 +4,7 @@ import type { BudgetItemRow } from '../../../../shared/supabase/budget-service'
 import type { UserHeading } from '../../../../shared/supabase/user-heading-service'
 import { openUserHeading, moveItemsToHeading } from '../../../../shared/supabase/user-heading-service'
 import { useToast } from '../../../../shared/components/toast'
-import { BottomSheet } from './bottom-sheet'
+import { BottomSheet } from '../../../../shared/components/bottom-sheet'
 import { buildWindowGroups, filterHeadingOptions, undoBatches } from '../heading-window'
 import type { HeadingOption, SendRecord } from '../heading-window'
 

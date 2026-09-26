@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import type { DutyOption, PersonLabel, PersonLabelPatch } from '../../../../shared/supabase/person-label-service'
 import type { PersonCardPresence } from '../person-bring'
 import { sortPersonsByDuty } from '../person-bring'
-import { BottomSheet } from './bottom-sheet'
+import { BottomSheet } from '../../../../shared/components/bottom-sheet'
 
 // GENISLIK (25 Eylul 2026, Engin karari K2): rol ve oyuncu adlari serbest yaziliyor, gorev adlarinin en uzunu "Dublor Koordinatoru"; 760'ta kesiliyordu. Yeri degismez (karta bagli is, alt orta).
 const PANEL_WIDTH = 940

@@ -135,7 +135,6 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/components/add-chooser.tsx` (57) — "+ Ekle" seçim penceresi (Kalem / Başlık)
 `src/app/muhasebe/budget/components/add-item-panel.tsx` (447) — kalem ekleme odası: kütüphane arama + serbest kalem
 `src/app/muhasebe/budget/components/add-item-row.tsx` (61) — tablo altı "+ Ekle" düğme satırı
-`src/app/muhasebe/budget/components/bottom-sheet.tsx` (227) — ortak alt-sheet primitivi (backdrop+panel+odak tuzağı)
 `src/app/muhasebe/budget/components/burden-sheet.tsx` (108) — Yasal Yük dökümü sheet'i (bordro 6-bacak + basit statü)
 `src/app/muhasebe/budget/components/heading-row.tsx` (54) — başlık satırı: ad + üç rakam (Net/Yasal Yük/Brüt), data-grid-cell taşımaz
 `src/app/muhasebe/budget/components/heading-window.tsx` (299) — Başlık penceresi: serbest kalemleri başlığa gönderme, başlık açma, geri al
@@ -152,8 +151,6 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/hooks/use-grid-navigation.ts` (276) — İ7 motorunun DOM bağlayıcısı, tuş olaylarını çekirdeğe delege eder
 `src/app/muhasebe/budget/person-bring.ts` (84) — Oyuncular listesi panosunun getirme mantığı: kartta olan/olmayan ayrımı, benzer ad uyarısı, görev sırası, düğmenin kendi listesi olan kartta çizilmesi
 `src/app/muhasebe/budget/person-groups.ts` (210) — kişi etiketine göre satır gruplama + orandan türetme; özet satırı ile komisyon satırı aynı hesabı paylaşır; tik kalkmış komisyon satırının seçimi (commissionRowsWithoutTick)
-`src/app/muhasebe/budget/sheet-frame.ts` (30) — pencerelerin kenar payları ve durabileceği alan (tablonun görünen alanı); ortak pencere parçası ve kalem ekleme odası kullanır
-`src/app/muhasebe/budget/sheet-placement.ts` (51) — tetiğin yanında açılan pencerenin yerleşim hesabı (alta ya da üste açılma, sola kayma, boy sınırı); saf işlev, ortak pencere parçası (bottom-sheet.tsx) çağırır
 `src/app/muhasebe/budget/totals.ts` (36) — saf satır toplamı (rowTotals); item-row kendi hesabını yapmaz, buradan çağırır; kart toplamı `card-view.ts` `cardViewTotals`
 `src/app/muhasebe/definitions-screen.tsx` (161) — Tanımlar ekranı: rate_catalog referansı + şirket profili formu
 `src/app/muhasebe/invite-screen.tsx` (232) — davet oluşturma formu + davet linki gösterimi
@@ -185,7 +182,10 @@ Edge functions (`supabase/functions/`):
 
 ### C seviyesi (BASİT)
 
-`src/shared/components/` — 9 dosya, 837 satır: ortak UI primitifleri (dialog/empty-state/error/loading/toast/offline-banner/şirket-profili-formu)
+`src/shared/components/` — 13 dosya, 1222 satır: ortak UI primitifleri (dialog/empty-state/error/loading/toast/offline-banner/şirket-profili-formu); tetiğin yanında açılan pencere parçası, yerleşim hesabı ve durabileceği alan (25 Eylül 2026, bütçeden taşındı: bütçe ve Üretim Kayıtları kullanır)
+`src/shared/components/bottom-sheet.tsx` (227) — ortak pencere parçası: alt ortada karartmalı ya da tetiğin yanında karartmasız açılır (arka örtü, panel, odak tuzağı); bütçe ve Üretim Kayıtları kullanır
+`src/shared/components/sheet-frame.ts` (30) — pencerelerin kenar payları ve durabileceği alan (tablonun görünen alanı); ortak pencere parçası ve kalem ekleme odası kullanır
+`src/shared/components/sheet-placement.ts` (51) — tetiğin yanında açılan pencerenin yerleşim hesabı (alta ya da üste açılma, satırı örterek açılma, sola kayma, boy sınırı); saf işlev
 `src/app/onboarding/` — 5 dosya, 551 satır: kurulum sihirbazı adımları (şirket/departman/dönem/bütçe) + akış orkestrasyonu
 `src/styles/` + `src/index.css` — 2 dosya, 137 satır: tasarım token'ları (renk/spacing/z-katman) + global reset
 
@@ -320,6 +320,7 @@ Test sayıları `npm test` çıktısından ÖLÇÜLEREK okundu (24 Eylül 2026),
 - `src/shared/supabase/person-label-service.test.ts` — countPersonLabels'ı (Üretim Kayıtları masa kapağı sayacı) korur — 1 test
 - `src/shared/supabase/user-heading-service.test.ts` — fetchUserHeadings/openUserHeading/moveItemsToHeading'i (kullanıcı başlığı servis çağrıları) korur — 8 test
 - `src/shared/components/toast.test.tsx` — toast süre ve yer kuralını korur — 3 test
+- `src/shared/components/sheet-placement.test.ts` — placeSheet'i (tetiğin yanında açılan pencerenin alta ya da üste yerleşimi, satırı örterek açılma, sola kayma, dar ekran) korur — 14 test
 - `src/app/muhasebe/budget/hooks/grid-navigation-core.test.ts` — İ7 klavye çekirdeğini (resolveKeyAction/reduceGrid) korur — 115 test
 - `src/app/muhasebe/budget/format.test.ts` — format.ts saf fonksiyonlarını korur (findCrossCardMatches'in başlık-satırı istisnası + headingKeyOf/groupRowsByHeading dahil, kullanıcı başlığının çizimi dahil) — 74 test
 - `src/app/muhasebe/budget/card-view.test.ts` — buildCardView'ı (kartın görünen düzeni: başlık grubu + kişi bloğu + türetilen satır tutarları, TEK kaynak; kullanıcı başlığı içindeki kişi bloğu dahil) ve masa kapağının hesabını (cardViewTotals) korur — 12 test
@@ -331,7 +332,6 @@ Test sayıları `npm test` çıktısından ÖLÇÜLEREK okundu (24 Eylül 2026),
 - `src/app/muhasebe/budget/person-groups.test.ts` — groupByPerson/derivedUnitNets'i (kişi bloğu gruplama + komisyon türetme) ve commissionRowsWithoutTick'i (tik kalkmış komisyon satırı) korur — 37 test
 - `src/app/muhasebe/budget/components/add-item-panel.test.tsx` — kalem ekleme paneli davranışını korur — 4 test
 - `src/app/muhasebe/budget/totals.test.ts` — satır toplamı saf fonksiyonunu (rowTotals) korur — 6 test
-- `src/app/muhasebe/budget/sheet-placement.test.ts` — placeSheet'i (tetiğin yanında açılan pencerenin alta ya da üste yerleşimi, sola kayma, dar ekran) korur — 14 test
 - `src/app/muhasebe/production/list-bucket.test.ts` — bucketOf'u (Üretim Kayıtları liste bölme hesabı) korur — 5 test
 - `src/app/muhasebe/production/pdf-rows.test.ts` — pdfItemsToRows'u (PDF yazı parçalarının satır ve kolona dizilmesi, numara kolonuyla kırık hücre birleştirme) korur — 7 test
 - `src/app/auth/shell-routing.test.tsx` — rol/adres eşlemesini ve kabuk-klasik dal ayrımını korur (muhasebe adresinde alt şerit görünmez; /butce cardId'li ve cardId'siz dalları) — 18 test

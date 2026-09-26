@@ -3,9 +3,9 @@ import type { RefObject } from 'react'
 import { resolveKeyAction } from '../hooks/grid-navigation-core'
 import type { RoomOption } from '../format'
 import { useToastHost } from '../../../../shared/components/toast'
-import { placeSheet } from '../sheet-placement'
-import type { SheetPlacement } from '../sheet-placement'
-import { visibleFrame, SHEET_MARGIN, SHEET_GAP } from '../sheet-frame'
+import { placeSheet } from '../../../../shared/components/sheet-placement'
+import type { SheetPlacement } from '../../../../shared/components/sheet-placement'
+import { visibleFrame, SHEET_MARGIN, SHEET_GAP } from '../../../../shared/components/sheet-frame'
 
 export interface PersonOption {
   id: string

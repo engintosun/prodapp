@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import type { KeyboardEvent } from 'react'
-import { BottomSheet } from './bottom-sheet'
+import { BottomSheet } from '../../../../shared/components/bottom-sheet'
 
 export type AddChoice = 'item' | 'heading'
 

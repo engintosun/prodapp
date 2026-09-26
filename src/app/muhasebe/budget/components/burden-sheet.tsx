@@ -3,7 +3,7 @@ import type { Yuk, DonemKalemi } from '../../../../shared/cfe'
 import { fmt, buildDonemler, splitIntoTwoLines } from '../format'
 import type { BudgetItemRow, StageRow } from '../../../../shared/supabase/budget-service'
 import type { BordroDerivedFields } from '../../../../shared/supabase/payroll-read'
-import { BottomSheet } from './bottom-sheet'
+import { BottomSheet } from '../../../../shared/components/bottom-sheet'
 
 export type BordroSheetEntry = { loading: boolean; data: BordroDerivedFields | null; error: string | null; missingNet?: boolean }
 

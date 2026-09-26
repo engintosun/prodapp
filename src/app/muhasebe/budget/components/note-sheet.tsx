@@ -1,5 +1,5 @@
 import type { BudgetItemRow } from '../../../../shared/supabase/budget-service'
-import { BottomSheet } from './bottom-sheet'
+import { BottomSheet } from '../../../../shared/components/bottom-sheet'
 
 export function NoteSheet({
   item,
