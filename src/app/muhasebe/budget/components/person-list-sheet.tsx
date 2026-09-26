@@ -4,12 +4,13 @@ import type { PersonCardPresence } from '../person-bring'
 import { sortPersonsByDuty } from '../person-bring'
 import { BottomSheet } from './bottom-sheet'
 
-const PANEL_WIDTH = 760
+// GENISLIK (25 Eylul 2026, Engin karari K2): rol ve oyuncu adlari serbest yaziliyor, gorev adlarinin en uzunu "Dublor Koordinatoru"; 760'ta kesiliyordu. Yeri degismez (karta bagli is, alt orta).
+const PANEL_WIDTH = 940
 
 const colWidths = {
-  rol: 90,
-  oyuncu: 130,
-  gorev: 100,
+  rol: 180,
+  oyuncu: 170,
+  gorev: 145,
   ajans: 140,
   menajer: 140,
   durum: 120,

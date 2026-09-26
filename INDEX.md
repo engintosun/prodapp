@@ -141,7 +141,7 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/components/heading-window.tsx` (299) — Başlık penceresi: serbest kalemleri başlığa gönderme, başlık açma, geri al
 `src/app/muhasebe/budget/components/note-sheet.tsx` (39) — İç Not / Kamu Notu düzenleme sheet'i
 `src/app/muhasebe/budget/components/period-row.tsx` (186) — çok-dönemli kalemin dönem alt-satırı render'ı
-`src/app/muhasebe/budget/components/person-list-sheet.tsx` (253) — Oyuncular listesi panosu: Rol · Oyuncu · Görev · Ajans/Menajer tiki, "+ Kişi ekle" ve karta toplu getirme
+`src/app/muhasebe/budget/components/person-list-sheet.tsx` (254) — Oyuncular listesi panosu: Rol · Oyuncu · Görev · Ajans/Menajer tiki, "+ Kişi ekle" ve karta toplu getirme
 `src/app/muhasebe/budget/components/status-info-sheet.tsx` (15) — statü rehberi metinleri
 `src/app/muhasebe/budget/components/summary-row.tsx` (59) — kişi özet satırının render'ı; kendi budget_items kaydı taşımaz, alt kalemlerin toplamını gösterir
 `src/app/muhasebe/budget/components/table-styles.ts` (138) — kart tablosu kolon genişlikleri + hücre stilleri
