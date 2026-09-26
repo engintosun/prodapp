@@ -35,6 +35,7 @@ import { AddItemPanel } from './components/add-item-panel'
 import { AddChooser } from './components/add-chooser'
 import type { AddChoice } from './components/add-chooser'
 import { HeadingWindow } from './components/heading-window'
+import { useConfirmSheet } from '../../../shared/components/use-confirm-sheet'
 
 // TETIGIN YANINDA (TASARIM-KARARLARI bolum 9, K1): pencerenin tetigi ADRESLE bulunur - satir ve
 // sutun isaretinden sayfada aranir. Ref okumaz (react-hooks/refs kurali susturulmaz); sessiz
@@ -212,6 +213,18 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [decideCommissionRemoval, refetch, addToast])
 
+  // SORU PENCERESI (K3, 25 Eylul 2026, Engin karari): silme sorulari tetigin yaninda, proje penceresiyle.
+  const { ask: askConfirm, element: confirmElement } = useConfirmSheet()
+  const confirmPeriodRemoval = useCallback(
+    (itemId: string, stageId: string) =>
+      askConfirm({
+        message: 'Bu dönemi kaldırmak istiyor musun?',
+        confirmLabel: 'Kaldır',
+        anchor: () => findTrigger(cellSelector(`${itemId}:${stageId}`, 'periodRemove')),
+      }),
+    [askConfirm],
+  )
+
   const { buffers, bordroData, itemWarnings, periodWarnings, refreshBordroMany, api } = useEditBuffers({
     rowsRef,
     savedRef,
@@ -222,6 +235,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     minWageThresholdsRef,
     patchRow,
     onMoneyCommitted: birthMissingCommissionRows,
+    confirmPeriodRemoval,
   })
   useLayoutEffect(() => {
     allLibraryRef.current = allLibrary
@@ -665,7 +679,11 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         addToast(`${kindLabel} tanımlı. Komisyon yoksa silmek yerine oranı 0 yapın.`, 'warning')
         return
       }
-      const ok = window.confirm('Bu kalemi silmek istiyor musun?')
+      const ok = await askConfirm({
+        message: 'Bu kalemi silmek istiyor musun?',
+        confirmLabel: 'Sil',
+        anchor: () => findTrigger(cellSelector(itemId, 'itemRemove')),
+      })
       if (!ok) return
       try {
         const list = rowsRef.current
@@ -686,7 +704,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         addToast(e instanceof Error ? e.message : 'Kalem silinemedi', 'error')
       }
     },
-    [refetch, addToast, rowsRef, containerRef],
+    [refetch, addToast, rowsRef, containerRef, askConfirm],
   )
 
   const onOpenStatusInfo = useCallback(() => {
@@ -1074,6 +1092,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         )
       })()}
       {openStatusInfo && <StatusInfoSheet anchor={() => findTrigger('[data-anchor="status-info"]')} onClose={() => setOpenStatusInfo(false)} />}
+      {confirmElement}
       {personListOpen && (
         <PersonListSheet
           labels={personLabels}

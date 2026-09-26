@@ -65,6 +65,10 @@ interface UseEditBuffersParams {
   minWageThresholdsRef: MutableRefObject<MinimumWageThresholds | null>
   patchRow: (id: string, patch: Partial<BudgetItemRow>) => void
   onMoneyCommitted?: () => void
+  // SORU PENCERESI (K3, 25 Eylul 2026): donem kaldirma sorusu kart ekraninda kurulur (yazi ve
+  // tetik adresi orada); bu kanca yalniz sorar ve cevabi bekler. Kimligi sabit olmali (api bir
+  // kere kurulur).
+  confirmPeriodRemoval: (itemId: string, stageId: string) => Promise<boolean>
 }
 
 export function useEditBuffers({
@@ -77,6 +81,7 @@ export function useEditBuffers({
   minWageThresholdsRef,
   patchRow,
   onMoneyCommitted,
+  confirmPeriodRemoval,
 }: UseEditBuffersParams) {
   const { addToast } = useToast()
   const [buffers, setBuffers] = useState<Record<string, string>>({})
@@ -655,7 +660,7 @@ export function useEditBuffers({
     async function onRemovePeriod(itemId: string, stageId: string) {
       const card = cardRef.current
       if (!card) return
-      const ok = window.confirm('Bu dönemi kaldırmak istiyor musun?')
+      const ok = await confirmPeriodRemoval(itemId, stageId)
       if (!ok) return
       const row = rowsRef.current.find((r) => r.id === itemId)
       if (!row) return
