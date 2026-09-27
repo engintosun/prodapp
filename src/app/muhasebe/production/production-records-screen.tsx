@@ -213,7 +213,8 @@ export function ProductionRecordsScreen() {
         refreshLabels()
         refreshCount()
       } catch (e) {
-        addToast(e instanceof Error ? e.message : 'Kişi kaydedilemedi', 'error')
+        // K4 (TASARIM-KARARLARI bolum 9, 27 Eylul 2026): hata degistirilen hanenin dibinde cikar. Hane yamanin ilk anahtariyla bulunur: her hanenin onUpdate cagrisi yamaya once kendi alanini yazar.
+        addToast(e instanceof Error ? e.message : 'Kişi kaydedilemedi', 'error', { anchor: `[data-person-id="${id}"][data-field="${Object.keys(patch)[0]}"]` })
       }
     },
     [addToast, refreshLabels, refreshCount],
@@ -226,7 +227,7 @@ export function ProductionRecordsScreen() {
       refreshLabels()
       refreshCount()
     } catch (e) {
-      addToast(e instanceof Error ? e.message : 'Kişi eklenemedi', 'error')
+      addToast(e instanceof Error ? e.message : 'Kişi eklenemedi', 'error', { anchor: '[data-anchor="add-person"]' })
     }
   }, [addToast, refreshLabels, refreshCount])
 
@@ -244,7 +245,7 @@ export function ProductionRecordsScreen() {
         await refreshLabels()
         refreshCount()
       } catch (e) {
-        addToast(e instanceof Error ? e.message : 'Kişi silinemedi', 'error')
+        addToast(e instanceof Error ? e.message : 'Kişi silinemedi', 'error', { anchor: `[data-delete-id="${id}"]` })
       }
     },
     [addToast, refreshLabels, refreshCount, askConfirm],
@@ -273,7 +274,7 @@ export function ProductionRecordsScreen() {
         addToast(`${deleted} kişi silindi`, 'success')
       }
     } catch (e) {
-      addToast(e instanceof Error ? e.message : 'Silme başarısız', 'error')
+      addToast(e instanceof Error ? e.message : 'Silme başarısız', 'error', { anchor: '[data-anchor="delete-selected"]' })
     }
   }, [addToast, refreshLabels, refreshCount, selectedIds, askConfirm])
 
@@ -450,6 +451,7 @@ export function ProductionRecordsScreen() {
                       <td style={noCellStyle}>{i + 1}</td>
                       <td style={tdStyle}>
                         <input
+                          data-person-id={l.id} data-field="roleName"
                           defaultValue={l.roleName ?? ''}
                           onBlur={(e) => void onUpdate(l.id, { roleName: e.target.value })}
                           style={inputStyle}
@@ -457,6 +459,7 @@ export function ProductionRecordsScreen() {
                       </td>
                       <td style={tdStyle}>
                         <input
+                          data-person-id={l.id} data-field="name"
                           ref={(el) => {
                             if (el) nameInputsRef.current.set(l.id, el)
                             else nameInputsRef.current.delete(l.id)
@@ -468,6 +471,7 @@ export function ProductionRecordsScreen() {
                       </td>
                       <td style={tdStyle}>
                         <select
+                          data-person-id={l.id} data-field="dutyCode"
                           defaultValue={l.dutyCode ?? ''}
                           onChange={(e) => void onUpdate(l.id, { dutyCode: e.target.value })}
                           style={inputStyle}
@@ -483,6 +487,7 @@ export function ProductionRecordsScreen() {
                       <td style={tdStyle}>
                         <label style={tickLabelStyle}>
                           <input
+                            data-person-id={l.id} data-field="hasAgency"
                             type="checkbox"
                             checked={l.hasAgency}
                             style={tickBoxStyle}
@@ -490,6 +495,7 @@ export function ProductionRecordsScreen() {
                           />
                           {l.hasAgency && (
                             <input
+                              data-person-id={l.id} data-field="agencyName"
                               defaultValue={l.agencyName ?? ''}
                               onBlur={(e) => void onUpdate(l.id, { agencyName: e.target.value })}
                               placeholder="Ajans adı"
@@ -501,6 +507,7 @@ export function ProductionRecordsScreen() {
                       <td style={tdStyle}>
                         <label style={tickLabelStyle}>
                           <input
+                            data-person-id={l.id} data-field="hasManager"
                             type="checkbox"
                             checked={l.hasManager}
                             style={tickBoxStyle}
@@ -508,6 +515,7 @@ export function ProductionRecordsScreen() {
                           />
                           {l.hasManager && (
                             <input
+                              data-person-id={l.id} data-field="managerName"
                               defaultValue={l.managerName ?? ''}
                               onBlur={(e) => void onUpdate(l.id, { managerName: e.target.value })}
                               placeholder="Menajer adı"
@@ -530,7 +538,7 @@ export function ProductionRecordsScreen() {
             </tbody>
           </table>
           {!selectMode && (
-            <button type="button" onClick={() => void onCreate()} style={addButtonStyle}>
+            <button type="button" data-anchor="add-person" onClick={() => void onCreate()} style={addButtonStyle}>
               + Kişi ekle
             </button>
           )}
