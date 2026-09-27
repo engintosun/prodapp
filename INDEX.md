@@ -55,9 +55,9 @@ varsayim yapilmaz.
 -> Etkiler: use-edit-buffers.ts (refreshBordro) + use-card-rows.ts (fetchMinimumWageThresholds) bunu çağırır.
 -> Kritik: EVET — 500+ satır, BUTCE-UI-MIMARISI bölüm 8'de bölünme bekliyor; MUHUR-2 disiplini (açık/kilitli okuma) burada.
 
-`src/app/muhasebe/budget/hooks/use-edit-buffers.ts` (764)
+`src/app/muhasebe/budget/hooks/use-edit-buffers.ts` (765)
 -> Görev: Grid hücrelerinin edit buffer'ı + EditApi — tüm alan-bazlı commit handler'larını (onNumChange/commitField/commitPeriod vb.) tek boğazdan geçirir.
--> Kullanır: shared/supabase/budget-service.ts (yazma) + payroll-read.ts (refreshBordro) + shared/components/toast.tsx.
+-> Kullanır: shared/supabase/budget-service.ts (yazma) + payroll-read.ts (refreshBordro) + shared/components/toast.tsx + cell-address.ts (K4 hücre adresi).
 -> Etkiler: card-table-screen.tsx (api) + item-row.tsx/period-row.tsx (EditApi tüketir) + use-grid-navigation.ts buna bağlı.
 -> Kritik: EVET — 500+ satır, İ8 sınırını (EditApi yalnız kendi state'ine dokunur) taşır; bölünme BUTCE-UI-MIMARISI bölüm 8'de kayıtlı.
 
@@ -73,7 +73,7 @@ varsayim yapilmaz.
 -> Etkiler: authenticated-shell.tsx cardId yokken buradan render eder.
 -> Kritik: HAYIR — kararlarin evi KABUK-KARARLARI 12.3; ekran orada yazilani cizer.
 
-`src/app/muhasebe/production/production-records-screen.tsx` (542)
+`src/app/muhasebe/production/production-records-screen.tsx` (550)
 -> Görev: Üretim Kayıtları durağının ekranı — masa (Oyuncular kartı, kapakta kişi sayısı) + karta tıklanınca açılan kişi listesi (No · Rol · Oyuncu · Görev · Ajans tiki · Menajer tiki · silme). Liste göreve göre hiyerarşik dizilir (sıra katalog kodundan), No sütunu listedeki yerden hesaplanır ve saklanmaz, seç kipinde en sola tik sütunu gelir ve silme sütunu kapanır.
 -> Kullanır: person-label-service.ts (fetchPersonLabels, countPersonLabels, createPersonLabel, createPersonLabels, updatePersonLabel, deletePersonLabel, deletePersonLabels, fetchDutyOptions) + import-panel.tsx + shared/components/{loading,toast}.
 -> Etkiler: authenticated-shell.tsx kind='production' dalından render eder.
@@ -85,11 +85,13 @@ varsayim yapilmaz.
 -> Etkiler: production-records-screen.tsx `importOpen` durumunda bunu render eder; bu dosya ekranı DEĞİŞTİRMEZ.
 -> Kritik: HAYIR — kararların evi BUTCE-EKRAN-KARARLARI §20; tahmin sınırı orada yazılı (Görev/Ajans/Menajer TAHMİN EDİLMEZ).
 
-`src/app/muhasebe/budget/card-table-screen.tsx` (1143)
+`src/app/muhasebe/budget/card-table-screen.tsx` (1141)
 -> Görev: Kart tablosu ekranının orkestrasyonu — veri hook'ları + ekleme paneli + satır bileşenlerini birbirine bağlar.
--> Kullanır: hooks/* (use-card-rows, use-edit-buffers, use-grid-navigation) + components/* + budget-service.ts.
+-> Kullanır: hooks/* (use-card-rows, use-edit-buffers, use-grid-navigation) + components/* + budget-service.ts + cell-address.ts (K1 ve K4 hücre adresi).
 -> Etkiler: authenticated-shell.tsx (muhasebe "bütçe" sekmesi) buradan render eder.
 -> Kritik: EVET — İ4 (Ekran ≠ kabuk) sınırı burada tutulur; budgetId/cardId/viewMode dışarıdan alınabilir kalmalı. 500+ satır (1 Eylül 2026), BUTCE-UI-MIMARISI bölüm 8 kayıtlı.
+
+`src/app/muhasebe/budget/cell-address.ts` (5) — tablodaki hücre adresi (satır ve sütun işareti); pencerenin tetiği (K1) ve hücreye bağlı mesaj (K4) aynı adresi kullanır; kart ekranı ve kaydetme kodu buradan alır
 
 `src/app/muhasebe/budget/components/item-row.tsx` (388)
 -> Görev: Kart tablosunun kalem satırı — 14 haneli (13 veri kolonu + etiketsiz silme hanesi) KİLİTLİ kolon setinin tek satırlık render'ı, bordro/genel ayrımı + dönem-satırı açılımı.
@@ -182,10 +184,10 @@ Edge functions (`supabase/functions/`):
 
 ### C seviyesi (BASİT)
 
-`src/shared/components/` — 14 dosya, 1301 satır: ortak UI primitifleri (dialog/empty-state/error/loading/toast/offline-banner/şirket-profili-formu); tetiğin yanında açılan pencere parçası, yerleşim hesabı ve durabileceği alan (25 Eylül 2026, bütçeden taşındı: bütçe ve Üretim Kayıtları kullanır)
+`src/shared/components/` — 14 dosya, 1513 satır: ortak UI primitifleri (dialog/empty-state/error/loading/toast/offline-banner/şirket-profili-formu); tetiğin yanında açılan pencere parçası, yerleşim hesabı ve durabileceği alan (25 Eylül 2026, bütçeden taşındı: bütçe ve Üretim Kayıtları kullanır)
 `src/shared/components/bottom-sheet.tsx` (236) — ortak pencere parçası: alt ortada karartmalı ya da tetiğin yanında karartmasız açılır (arka örtü, panel, odak tuzağı); bütçe ve Üretim Kayıtları kullanır
-`src/shared/components/sheet-frame.ts` (30) — pencerelerin kenar payları ve durabileceği alan (tablonun görünen alanı); ortak pencere parçası ve kalem ekleme odası kullanır
-`src/shared/components/sheet-placement.ts` (51) — tetiğin yanında açılan pencerenin yerleşim hesabı (alta ya da üste açılma, satırı örterek açılma, sola kayma, boy sınırı); saf işlev
+`src/shared/components/sheet-frame.ts` (30) — pencerelerin kenar payları ve durabileceği alan (tablonun görünen alanı); ortak pencere parçası, kalem ekleme odası ve hücreye bağlı mesaj kutusu (toast.tsx, K4) kullanır
+`src/shared/components/sheet-placement.ts` (51) — tetiğin yanında açılan pencerenin yerleşim hesabı (alta ya da üste açılma, satırı örterek açılma, sola kayma, boy sınırı); saf işlev; hücreye bağlı mesaj kutusu da kullanır (toast.tsx, K4)
 `src/shared/components/use-confirm-sheet.tsx` (70) — soru penceresi kancası: tarayıcı kutusu yerine tetiğin yanında proje penceresiyle sorar, cevabı bekler (Promise); ortak pencere parçasını kullanır
 `src/app/onboarding/` — 5 dosya, 553 satır: kurulum sihirbazı adımları (şirket/departman/dönem/bütçe) + akış orkestrasyonu
 `src/styles/` + `src/index.css` — 2 dosya, 137 satır: tasarım token'ları (renk/spacing/z-katman) + global reset
@@ -320,7 +322,7 @@ Test sayıları `npm test` çıktısından ÖLÇÜLEREK okundu (24 Eylül 2026),
 - `src/shared/supabase/payroll-read.test.ts` — assembleBordroInput'u (bordro girdisinin Supabase'den derlenmesi) korur — 6 test
 - `src/shared/supabase/person-label-service.test.ts` — countPersonLabels'ı (Üretim Kayıtları masa kapağı sayacı) korur — 1 test
 - `src/shared/supabase/user-heading-service.test.ts` — fetchUserHeadings/openUserHeading/moveItemsToHeading'i (kullanıcı başlığı servis çağrıları) korur — 8 test
-- `src/shared/components/toast.test.tsx` — toast süre ve yer kuralını korur — 3 test
+- `src/shared/components/toast.test.tsx` — toast süre ve yer kuralını, mesajın doğduğu yerde kalmasını (K4b) ve hücreye bağlı mesajı (K4) korur — 8 test
 - `src/shared/components/sheet-placement.test.ts` — placeSheet'i (tetiğin yanında açılan pencerenin alta ya da üste yerleşimi, satırı örterek açılma, sola kayma, dar ekran) korur — 14 test
 - `src/app/muhasebe/budget/hooks/grid-navigation-core.test.ts` — İ7 klavye çekirdeğini (resolveKeyAction/reduceGrid) korur — 115 test
 - `src/app/muhasebe/budget/format.test.ts` — format.ts saf fonksiyonlarını korur (findCrossCardMatches'in başlık-satırı istisnası + headingKeyOf/groupRowsByHeading dahil, kullanıcı başlığının çizimi dahil) — 74 test
