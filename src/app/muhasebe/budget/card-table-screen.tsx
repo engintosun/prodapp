@@ -37,13 +37,11 @@ import { AddChooser } from './components/add-chooser'
 import type { AddChoice } from './components/add-chooser'
 import { HeadingWindow } from './components/heading-window'
 import { useConfirmSheet } from '../../../shared/components/use-confirm-sheet'
+import { cellSelector } from './cell-address'
 
 // TETIGIN YANINDA (TASARIM-KARARLARI bolum 9, K1): pencerenin tetigi ADRESLE bulunur - satir ve
 // sutun isaretinden sayfada aranir. Ref okumaz (react-hooks/refs kurali susturulmaz); sessiz
 // yenileme dugumu degistirse de ayni adres ayni hucreyi bulur.
-function cellSelector(rowId: string, col: string): string {
-  return `[data-row-id="${rowId}"][data-col="${col}"]`
-}
 function findTrigger(selector: string): HTMLElement | null {
   return document.querySelector<HTMLElement>(selector)
 }
@@ -706,7 +704,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
       if (target && target.deriveRate !== null) {
         const kindLabel =
           target.catalogCode === COMMISSION_CATALOG_BY_KIND.menajer ? 'Menajer' : 'Ajans'
-        addToast(`${kindLabel} tanımlı. Komisyon yoksa silmek yerine oranı 0 yapın.`, 'warning')
+        addToast(`${kindLabel} tanımlı. Komisyon yoksa silmek yerine oranı 0 yapın.`, 'warning', { anchor: cellSelector(itemId, 'itemRemove') })
         return
       }
       const ok = await askConfirm({
@@ -731,7 +729,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           : container?.querySelector<HTMLElement>(`[data-row-id="${ADD_ROW_ID}"][data-col="name"]`)
         target?.focus()
       } catch (e) {
-        addToast(e instanceof Error ? e.message : 'Kalem silinemedi', 'error')
+        addToast(e instanceof Error ? e.message : 'Kalem silinemedi', 'error', { anchor: cellSelector(itemId, 'itemRemove') })
       }
     },
     [refetch, addToast, rowsRef, containerRef, askConfirm],

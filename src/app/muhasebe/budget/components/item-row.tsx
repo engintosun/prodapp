@@ -338,7 +338,7 @@ export const ItemRow = memo(function ItemRow({
         ) : isBordro && bd?.loading ? (
           <span style={{ color: 'var(--color-text-muted)', fontStyle: 'italic', fontSize: 'var(--text-xs)' }}>hesaplanıyor…</span>
         ) : isBordro && bd?.error ? (
-          <span style={{ color: 'var(--color-danger, #c0392b)', fontSize: 'var(--text-xs)' }}>{bd.error}</span>
+          <span data-row-id={it.id} data-col="burden" style={{ color: 'var(--color-danger, #c0392b)', fontSize: 'var(--text-xs)' }}>{bd.error}</span>
         ) : yasalYukTl > 0 ? (
           <button
             data-grid-cell="true"

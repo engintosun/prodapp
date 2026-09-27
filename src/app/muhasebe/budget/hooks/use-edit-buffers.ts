@@ -16,6 +16,7 @@ import { isPaymentStatus } from '../../../../shared/types/domain'
 import { deriveBordroFields, deriveBordroFieldsBatch } from '../../../../shared/supabase/payroll-read'
 import type { MinimumWageThresholds, BordroDerivationResult } from '../../../../shared/supabase/payroll-read'
 import { useToast } from '../../../../shared/components/toast'
+import { cellSelector } from '../cell-address'
 import { bordroReasonMessage, parseNumericDraft, effectiveWarning } from '../format'
 import type { ValueWarning } from '../format'
 import type { BordroSheetEntry } from '../components/burden-sheet'
@@ -184,7 +185,7 @@ export function useEditBuffers({
       }
       const message = bordroReasonMessage(reason)
       setBordroData((b) => ({ ...b, [itemId]: { loading: false, data: null, error: message } }))
-      addToast(message, 'error')
+      addToast(message, 'error', { anchor: cellSelector(itemId, 'burden') })
     }
   }, [addToast])
 
@@ -309,7 +310,7 @@ export function useEditBuffers({
         onMoneyCommitted?.()
       } catch (e) {
         if (saved) patchRow(id, { paymentStatus: saved.paymentStatus })
-        addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error')
+        addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error', { anchor: cellSelector(id, 'status') })
       }
     }
 
@@ -335,7 +336,7 @@ export function useEditBuffers({
         }
       } catch (e) {
         if (saved) patchRow(id, { unitId: saved.unitId, unitLabel: saved.unitLabel })
-        addToast(e instanceof Error ? e.message : 'Birim kaydedilemedi', 'error')
+        addToast(e instanceof Error ? e.message : 'Birim kaydedilemedi', 'error', { anchor: cellSelector(id, 'unit') })
       }
     }
 
@@ -361,7 +362,7 @@ export function useEditBuffers({
       } catch (e) {
         const current = rowsRef.current.find((r) => r.id === itemId)
         if (current) patchRow(itemId, { periodUnit: { ...current.periodUnit, [stageId]: prevUnit } })
-        addToast(e instanceof Error ? e.message : 'Birim kaydedilemedi', 'error')
+        addToast(e instanceof Error ? e.message : 'Birim kaydedilemedi', 'error', { anchor: cellSelector(`${itemId}:${stageId}`, 'periodUnit') })
       }
     }
 
@@ -425,7 +426,7 @@ export function useEditBuffers({
         if (row.paymentStatus === 'bordro' && (field === 'unitNet' || field === 'multiplier' || field === 'repeat')) void refreshBordro(id)
       } catch (e) {
         if (saved) patchRow(id, { [field]: saved[field] } as Partial<BudgetItemRow>)
-        addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error')
+        addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error', { anchor: cellSelector(id, field) })
       } finally {
         clearBuf(bufKey)
       }
@@ -474,7 +475,7 @@ export function useEditBuffers({
       } catch (e) {
         const current = rowsRef.current.find((r) => r.id === id)
         if (current) patchRow(id, { periodQty: { ...current.periodQty, [stageId]: savedVal } })
-        addToast(e instanceof Error ? e.message : 'X kaydedilemedi', 'error')
+        addToast(e instanceof Error ? e.message : 'X kaydedilemedi', 'error', { anchor: cellSelector(`${id}:${stageId}`, 'periodQty') })
       } finally {
         clearBuf(bufKey)
       }
@@ -528,7 +529,7 @@ export function useEditBuffers({
       } catch (e) {
         const current = rowsRef.current.find((r) => r.id === itemId) ?? row
         patchRow(itemId, { periodNet: { ...current.periodNet, [stageId]: savedOverride } })
-        addToast(e instanceof Error ? e.message : 'Net override kaydedilemedi', 'error')
+        addToast(e instanceof Error ? e.message : 'Net override kaydedilemedi', 'error', { anchor: cellSelector(`${itemId}:${stageId}`, 'periodNet') })
       } finally {
         clearBuf(bufKey)
       }
@@ -576,7 +577,7 @@ export function useEditBuffers({
       } catch (e) {
         const current = rowsRef.current.find((r) => r.id === itemId) ?? row
         patchRow(itemId, { periodRepeat: { ...current.periodRepeat, [stageId]: savedOverride } })
-        addToast(e instanceof Error ? e.message : 'Miktar override kaydedilemedi', 'error')
+        addToast(e instanceof Error ? e.message : 'Miktar override kaydedilemedi', 'error', { anchor: cellSelector(`${itemId}:${stageId}`, 'periodRepeat') })
       } finally {
         clearBuf(bufKey)
       }
@@ -653,7 +654,7 @@ export function useEditBuffers({
         checkPeriodWarning(itemId, stageId, { periodNet: pn, periodQty: pq, periodRepeat: pr })
         if (row.paymentStatus === 'bordro') void refreshBordro(itemId)
       } catch (e) {
-        addToast(e instanceof Error ? e.message : 'Dönem eklenemedi', 'error')
+        addToast(e instanceof Error ? e.message : 'Dönem eklenemedi', 'error', { anchor: cellSelector(itemId, 'periods') })
       }
     }
 
@@ -724,7 +725,7 @@ export function useEditBuffers({
         if (row.paymentStatus === 'bordro') void refreshBordro(itemId)
         onMoneyCommitted?.()
       } catch (e) {
-        addToast(e instanceof Error ? e.message : 'Dönem kaldırılamadı', 'error')
+        addToast(e instanceof Error ? e.message : 'Dönem kaldırılamadı', 'error', { anchor: cellSelector(`${itemId}:${stageId}`, 'periodRemove') })
       }
     }
 
