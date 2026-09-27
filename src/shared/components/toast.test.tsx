@@ -20,6 +20,17 @@ function Host() {
   return <div data-testid="host" ref={hostRef} />
 }
 
+function LateHost({ name }: { name: string }) {
+  const [open, setOpen] = useState(false)
+  const hostRef = useToastHost()
+  return (
+    <>
+      <button type="button" onClick={() => setOpen(true)}>{`ac-${name}`}</button>
+      {open && <div data-testid={name} ref={hostRef} />}
+    </>
+  )
+}
+
 function HostToggle() {
   const [open, setOpen] = useState(true)
   return (
@@ -81,5 +92,36 @@ describe('toast sure ve yer kurali', () => {
     fireEvent.click(screen.getByText('pencereyi-kapat'))
     expect(screen.queryByTestId('host')).toBeNull()
     expect(screen.queryByText('uyari')).not.toBeNull()
+  })
+
+  it('pencere yokken cikan mesaj sonradan acilan pencereye tasinmaz', () => {
+    render(
+      <ToastProvider>
+        <Trigger message="uyari" type="warning" />
+        <LateHost name="pencere" />
+      </ToastProvider>,
+    )
+    fireEvent.click(screen.getByText('tetik-uyari'))
+    fireEvent.click(screen.getByText('ac-pencere'))
+    expect(screen.getByTestId('pencere').contains(screen.getByText('uyari'))).toBe(false)
+    expect(screen.queryByText('uyari')).not.toBeNull()
+  })
+
+  it('ilk pencerede cikan mesaj ikinci pencere acilinca ilk pencerede kalir', () => {
+    render(
+      <ToastProvider>
+        <Trigger message="uyari" type="warning" />
+        <Trigger message="hata" type="error" />
+        <LateHost name="birinci" />
+        <LateHost name="ikinci" />
+      </ToastProvider>,
+    )
+    fireEvent.click(screen.getByText('ac-birinci'))
+    fireEvent.click(screen.getByText('tetik-uyari'))
+    fireEvent.click(screen.getByText('ac-ikinci'))
+    expect(screen.getByTestId('birinci').contains(screen.getByText('uyari'))).toBe(true)
+    expect(screen.getByTestId('ikinci').contains(screen.getByText('uyari'))).toBe(false)
+    fireEvent.click(screen.getByText('tetik-hata'))
+    expect(screen.getByTestId('ikinci').contains(screen.getByText('hata'))).toBe(true)
   })
 })

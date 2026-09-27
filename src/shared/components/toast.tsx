@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { CSSProperties, ReactNode, RefCallback } from 'react'
 
@@ -8,6 +8,8 @@ interface ToastItem {
   id: string
   message: string
   type: ToastType
+  // K4b: mesajin dogdugu pencerenin kabi; pencere yoksa null (ekranin tepesi).
+  host: HTMLElement | null
 }
 
 interface ToastContextValue {
@@ -16,9 +18,10 @@ interface ToastContextValue {
 
 const ToastContext = createContext<ToastContextValue | null>(null)
 
-// MESAJ YERI (TASARIM-KARARLARI bolum 9, 17 Eylul 2026): acik bir pencere kendi icinde
-// mesaj yeri acarsa mesajlar EN USTTEKI pencerenin icinde cikar; pencere yoksa ekranin
-// tepesinde. Pencere kapaninca acik kalan mesaj tepeye gecer, kaybolmaz.
+// MESAJ YERI (TASARIM-KARARLARI bolum 9, 17 Eylul 2026; K4b 27 Eylul 2026): mesaj dogdugu
+// anda en ustteki pencerenin icinde, pencere yoksa ekranin tepesinde cikar ve orada kalir;
+// sonradan acilan pencere eski mesaji icine cekmez. Pencere kapaninca acik kalan mesaj
+// tepeye gecer, kaybolmaz.
 interface ToastHostContextValue {
   registerHost: (el: HTMLElement) => void
   unregisterHost: (el: HTMLElement) => void
@@ -103,34 +106,48 @@ function ToastContainer({ toasts, onRemove, host }: { toasts: ToastItem[]; onRem
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([])
   const [hosts, setHosts] = useState<HTMLElement[]>([])
+  // addToast sabit kalir (TD-11): dogum anindaki ust pencere state yerine bu ref'ten okunur.
+  const hostsRef = useRef<HTMLElement[]>([])
 
   const removeToast = useCallback((id: string) =>
     setToasts((prev) => prev.filter((t) => t.id !== id)), [])
 
   const addToast = useCallback((message: string, type: ToastType = 'info', durationMs = 3500) => {
     const id = crypto.randomUUID()
+    // En son acilan pencere en usttedir; mesaj o an ustteki pencerede dogar.
+    const current = hostsRef.current
+    const host = current.length > 0 ? current[current.length - 1] : null
     setToasts((prev) => {
       if (prev.some((t) => t.message === message && t.type === type)) return prev
-      return [...prev, { id, message, type }]
+      return [...prev, { id, message, type, host }]
     })
     if (!STICKY_TYPES.has(type)) setTimeout(() => removeToast(id), durationMs)
   }, [removeToast])
 
   const value = useMemo(() => ({ addToast }), [addToast])
 
-  const registerHost = useCallback((el: HTMLElement) =>
-    setHosts((prev) => (prev.includes(el) ? prev : [...prev, el])), [])
-  const unregisterHost = useCallback((el: HTMLElement) =>
-    setHosts((prev) => prev.filter((h) => h !== el)), [])
+  const registerHost = useCallback((el: HTMLElement) => {
+    if (!hostsRef.current.includes(el)) hostsRef.current = [...hostsRef.current, el]
+    setHosts(hostsRef.current)
+  }, [])
+  const unregisterHost = useCallback((el: HTMLElement) => {
+    hostsRef.current = hostsRef.current.filter((h) => h !== el)
+    setHosts(hostsRef.current)
+  }, [])
   const hostValue = useMemo(() => ({ registerHost, unregisterHost }), [registerHost, unregisterHost])
-  // En son acilan pencere en usttedir; ic ice pencerede mesaj ustteki pencereye duser.
-  const host = hosts.length > 0 ? hosts[hosts.length - 1] : null
+
+  // Kabi artik sayfada olmayan mesaj (pencere kapandi) ekranin tepesine duser.
+  const topToasts = toasts.filter((t) => t.host === null || !hosts.includes(t.host))
 
   return (
     <ToastContext.Provider value={value}>
       <ToastHostContext.Provider value={hostValue}>
         {children}
-        <ToastContainer toasts={toasts} onRemove={removeToast} host={host} />
+        {/* Kap basina bir yigin; ToastContainer durumsuz, sira anahtari yeterli. */}
+        {hosts.map((h, i) => (
+          <ToastContainer key={i} toasts={toasts.filter((t) => t.host === h)} onRemove={removeToast} host={h} />
+        ))}
+        <ToastContainer toasts={topToasts} onRemove={removeToast} host={null} />
       </ToastHostContext.Provider>
     </ToastContext.Provider>
   )
