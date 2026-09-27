@@ -20,6 +20,15 @@ function Host() {
   return <div data-testid="host" ref={hostRef} />
 }
 
+function AnchorTrigger({ message, anchor, label }: { message: string; anchor: string; label: string }) {
+  const { addToast } = useToast()
+  return (
+    <button type="button" onClick={() => addToast(message, 'error', { anchor })}>
+      {`tetik-${label}`}
+    </button>
+  )
+}
+
 function LateHost({ name }: { name: string }) {
   const [open, setOpen] = useState(false)
   const hostRef = useToastHost()
@@ -123,5 +132,40 @@ describe('toast sure ve yer kurali', () => {
     expect(screen.getByTestId('ikinci').contains(screen.getByText('uyari'))).toBe(false)
     fireEvent.click(screen.getByText('tetik-hata'))
     expect(screen.getByTestId('ikinci').contains(screen.getByText('hata'))).toBe(true)
+  })
+
+  it('adresli mesaj ogesi sayfadaysa ogenin dibindeki kutuda cikar', () => {
+    render(
+      <ToastProvider>
+        <div data-cell="a" />
+        <AnchorTrigger message="hata" anchor='[data-cell="a"]' label="a" />
+      </ToastProvider>,
+    )
+    fireEvent.click(screen.getByText('tetik-a'))
+    expect(screen.getByText('hata').closest('[data-toast-anchored]')).not.toBeNull()
+  })
+
+  it('adresli mesajin ogesi sayfada yoksa mesaj ekranin tepesinde cikar', () => {
+    render(
+      <ToastProvider>
+        <AnchorTrigger message="hata" anchor='[data-cell="yok"]' label="yok" />
+      </ToastProvider>,
+    )
+    fireEvent.click(screen.getByText('tetik-yok'))
+    expect(screen.getByText('hata').closest('[data-toast-anchored]')).toBeNull()
+  })
+
+  it('ayni metin iki ayri hucrede iki ayri kutuda cikar', () => {
+    render(
+      <ToastProvider>
+        <div data-cell="a" />
+        <div data-cell="b" />
+        <AnchorTrigger message="hata" anchor='[data-cell="a"]' label="a" />
+        <AnchorTrigger message="hata" anchor='[data-cell="b"]' label="b" />
+      </ToastProvider>,
+    )
+    fireEvent.click(screen.getByText('tetik-a'))
+    fireEvent.click(screen.getByText('tetik-b'))
+    expect(screen.getAllByText('hata')).toHaveLength(2)
   })
 })
