@@ -43,7 +43,7 @@ varsayim yapilmaz.
 -> Etkiler: item-row.tsx/period-row.tsx/burden-sheet.tsx (netToplamDonemli/brutToplamDonemli/kisiyeBanka çağırır).
 -> Kritik: EVET — bordro-dışı tüm statülerin (smm/telif/şirket/kira/konaklama) net<->brüt hesabı tek buradan geçer.
 
-`src/shared/supabase/budget-service.ts` (603)
+`src/shared/supabase/budget-service.ts` (626)
 -> Görev: Bütçe açılış + kart okuma (getCard/getOrOpenBudget) + kalem alanı yazma (updateItemField, setItemPeriodNet vb.) servis çağrıları.
 -> Kullanır: shared/supabase/client.ts (Supabase SDK); fn_open_budget/fn_add_budget_item RPC'lerini çağırır.
 -> Etkiler: use-card-rows.ts (okuma) + use-edit-buffers.ts (yazma) + card-table-screen.tsx buna bağlı.
@@ -85,7 +85,7 @@ varsayim yapilmaz.
 -> Etkiler: production-records-screen.tsx `importOpen` durumunda bunu render eder; bu dosya ekranı DEĞİŞTİRMEZ.
 -> Kritik: HAYIR — kararların evi BUTCE-EKRAN-KARARLARI §20; tahmin sınırı orada yazılı (Görev/Ajans/Menajer TAHMİN EDİLMEZ).
 
-`src/app/muhasebe/budget/card-table-screen.tsx` (1141)
+`src/app/muhasebe/budget/card-table-screen.tsx` (1142)
 -> Görev: Kart tablosu ekranının orkestrasyonu — veri hook'ları + ekleme paneli + satır bileşenlerini birbirine bağlar.
 -> Kullanır: hooks/* (use-card-rows, use-edit-buffers, use-grid-navigation) + components/* + budget-service.ts + cell-address.ts (K1 ve K4 hücre adresi).
 -> Etkiler: authenticated-shell.tsx (muhasebe "bütçe" sekmesi) buradan render eder.
@@ -149,7 +149,7 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/display-name.ts` (87) — kalem/özet satırının gösterilen adının TEK kaynağı (AD YERLEŞİMİ kararı, saf hesap)
 `src/app/muhasebe/budget/format.ts` (349) — fmt/parseNumericDraft + kütüphane arama + başlık grubu saf fonksiyonları
 `src/app/muhasebe/budget/heading-window.ts` (63) — Başlık penceresinin saf mantığı (liste, hedef süzmesi, geri alma paketleri)
-`src/app/muhasebe/budget/hooks/use-card-rows.ts` (233) — kart verisi yükleme (budgetId/cardId), ref senkronizasyonu
+`src/app/muhasebe/budget/hooks/use-card-rows.ts` (242) — kart verisi yükleme (budgetId/cardId), ref senkronizasyonu
 `src/app/muhasebe/budget/hooks/use-grid-navigation.ts` (276) — İ7 motorunun DOM bağlayıcısı, tuş olaylarını çekirdeğe delege eder
 `src/app/muhasebe/budget/person-bring.ts` (84) — Oyuncular listesi panosunun getirme mantığı: kartta olan/olmayan ayrımı, benzer ad uyarısı, görev sırası, düğmenin kendi listesi olan kartta çizilmesi
 `src/app/muhasebe/budget/person-groups.ts` (210) — kişi etiketine göre satır gruplama + orandan türetme; özet satırı ile komisyon satırı aynı hesabı paylaşır; tik kalkmış komisyon satırının seçimi (commissionRowsWithoutTick)

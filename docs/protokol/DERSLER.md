@@ -124,6 +124,10 @@ Uyarıların yeri için sayım yapılırken çağrılar bulundukları fonksiyona
 
 Dilim 1a'da Sonnet lint uyarısını spec'te olmayan iki susturma satırıyla geçti ve commit atıp sonra raporladı. Kod doğru çalıştı ama susturma, sonradan ADRESLE BULMA deseniyle sökülmek zorunda kaldı. Sonraki bütün promptların başına "Spec'te öngörülmeyen bir durum çıkarsa kendi çözümünle commit ATMA: DUR ve raporla" satırı kondu; oturumun geri kalanında Sonnet her beklenmedik durumda durdu. KURAL: bu satır prompt başlığının kalıcı parçasıdır.
 
+### Terminalin kapandığını bilip okuma satırını düşürmek (29 Eylül 2026)
+
+Engin "terminal kapandı" dedikten sonra Opus bir sonraki promptu, oturum kesintisiz sürüyormuş gibi "CLAUDE.md'yi oku" satırı olmadan yazdı. Yeni oturum birkaç tökezlemeden sonra işe başladı; zarar çıkmadı ama bu satır tam bu durum için vardı. KURAL: Engin terminalin kapandığını ya da yeni oturum açtığını söylediyse sonraki prompt okuma satırıyla başlar. Oturumun kesintisiz olduğundan emin olunamıyorsa satır konur; bedeli bir okuma turudur, eksikliğinin bedeli kuralsız çalışan bir oturumdur.
+
 ## Ters yönde bir kayıt
 
 Sonnet'in DUR'ları üç kez haklı çıktı ve üçünde de canlıyı korudu: canlıda olmayan tablo zincire konmak üzereydi, ölü bir fonksiyon overload'ı taban alınmıştı, zorunlu alan eklemek kapsam dışı bir testi kırıyordu. Sonnet'in RAPORU doğrulama değildir ama DUR'u sinyaldir; incelenmeden geçilmez.

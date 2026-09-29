@@ -81,7 +81,7 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 
 ## Durum
 
-- HEAD: ea7fdc2 (27 Eylül 2026 — uyarının yeri K4 ve K4b: uyarı hücrenin ya da düğmenin dibinde, mesaj doğduğu yerde kalır)
+- HEAD: 19383e0 (29 Eylül 2026 — kalem ekleme yavaşlığı: ölçüm, kart okuması iki dalga, anında kayma, ölçer söküldü)
 - **`asks_person` KURALI ARTIK UYGULANDI (19 Eylül 2026).** Daha önce burada ve "Sıradaki iş"te "kararı var, uygulanmamış TEK iş" diye duran kayıt kapandı — göç `20260919120000` canlıda, sahada doğrulandı. Karar evi: `docs/butce/KART-KATALOGU.md` §7.5.
 - KOMİSYON TABANI ARTIK ÖDEME STATÜSÜNE BAKMIYOR: ölçüt kişiye bağlı ve türetilmemiş satır. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 KOMİSYON TABANI VE SİLME madde 2.
 - TEMSİLCİ KOMİSYONU CİNSİ ARTIK ATOMDA: 1618 Ajans Komisyonu, 1618-01 Menajer Komisyonu iki ayrı atom. Testlerle ve tarayıcıda doğrulandı (17 Eylül 2026).
