@@ -447,7 +447,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     if (el) {
       pendingScrollIdRef.current = null
       probeMark('cizim')
-      el.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+      // KAYMA ANINDA (29 Eylul 2026, Engin karari, olcum): yumusak kayma uzak satirda 0,4-1,1 sn bekleme ekliyordu; satiri 2 sn'lik isaret gosterir.
+      el.scrollIntoView({ block: 'nearest', behavior: 'instant' })
       probeAwaitScroll()
       return
     }
