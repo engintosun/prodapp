@@ -38,6 +38,7 @@ import type { AddChoice } from './components/add-chooser'
 import { HeadingWindow } from './components/heading-window'
 import { useConfirmSheet } from '../../../shared/components/use-confirm-sheet'
 import { cellSelector } from './cell-address'
+import { probeBegin, probeMark, probeAwaitScroll } from '../../../shared/utils/perf-probe'
 
 // TETIGIN YANINDA (TASARIM-KARARLARI bolum 9, K1): pencerenin tetigi ADRESLE bulunur - satir ve
 // sutun isaretinden sayfada aranir. Ref okumaz (react-hooks/refs kurali susturulmaz); sessiz
@@ -326,6 +327,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
       if (!cardRef.current || adding) return
       try {
         setAdding(true)
+        probeBegin('kalem ekle')
         // D3c-2: kutuphane secenegi bugunku davranisin AYNISI; kart secenegi (kartin mevcut
         // serbest kalemi) AYNI kodla + ilk satirin statu/birimini DEVRALARAK ikinci satir doger.
         // ASKS_PERSON (19 Eylul 2026): personObjectId yalniz kutuphane yolunda anlamlidir -
@@ -341,6 +343,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
               })
         setAddQuery('')
         setAddHighlight(-1)
+        probeMark('kayit')
         pendingScrollIdRef.current = newItemId
         setJustAddedIds((prev) => [...prev, newItemId])
         window.setTimeout(() => {
@@ -369,6 +372,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
       if (!cardRef.current || adding) return
       try {
         setAdding(true)
+        probeBegin('kalem ekle')
         const newItemId = await addBudgetItem(cardRef.current.groupId, {
           name,
           paymentStatus: 'sirket',
@@ -376,6 +380,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         })
         setAddQuery('')
         setAddHighlight(-1)
+        probeMark('kayit')
         pendingScrollIdRef.current = newItemId
         setJustAddedIds((prev) => [...prev, newItemId])
         window.setTimeout(() => {
@@ -441,7 +446,9 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     const el = containerRef.current?.querySelector<HTMLElement>(`[data-item-id="${pendingId}"]`)
     if (el) {
       pendingScrollIdRef.current = null
+      probeMark('cizim')
       el.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+      probeAwaitScroll()
       return
     }
     const row = rows.find((r) => r.id === pendingId)

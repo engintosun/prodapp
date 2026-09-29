@@ -8,6 +8,7 @@ import type { LibraryItem } from '../../../../shared/supabase/library-service'
 import { fetchUserHeadings } from '../../../../shared/supabase/user-heading-service'
 import type { UserHeading } from '../../../../shared/supabase/user-heading-service'
 import { useToast } from '../../../../shared/components/toast'
+import { probeMark } from '../../../../shared/utils/perf-probe'
 
 export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
   const { budgetId: paramBudgetId, cardId } = params ?? {}
@@ -68,6 +69,7 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
         setError(null)
         const budgetId = paramBudgetId ?? (await getOrOpenBudget())
         const c = await getCard(budgetId, cardId)
+        probeMark('kart')
         if (cancelled) return
         // KULLANICI BASLIGI: basliklar satirlarla AYNI turda cekilir ve AYNI anda yerlestirilir.
         // Ayri bir efekt olsaydi yeni baslik acildiginda kalemleri bir an Basliksiz'da
@@ -82,6 +84,7 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
           }
         }
         if (cancelled) return
+        probeMark('basliklar')
         setUserHeadings(uh)
         setCard(c)
         setRows(c?.items ?? [])

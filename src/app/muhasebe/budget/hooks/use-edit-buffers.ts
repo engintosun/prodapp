@@ -16,6 +16,7 @@ import { isPaymentStatus } from '../../../../shared/types/domain'
 import { deriveBordroFields, deriveBordroFieldsBatch } from '../../../../shared/supabase/payroll-read'
 import type { MinimumWageThresholds, BordroDerivationResult } from '../../../../shared/supabase/payroll-read'
 import { useToast } from '../../../../shared/components/toast'
+import { probeBegin, probeMark, probeEnd, probeLog } from '../../../../shared/utils/perf-probe'
 import { cellSelector } from '../cell-address'
 import { bordroReasonMessage, parseNumericDraft, effectiveWarning } from '../format'
 import type { ValueWarning } from '../format'
@@ -202,9 +203,11 @@ export function useEditBuffers({
       }
       return next
     })
+    const probeT0 = performance.now()
     let map: Map<string, BordroDerivationResult>
     try {
       map = await deriveBordroFieldsBatch(itemIds)
+      probeLog('bordro toplu', probeT0, itemIds.length)
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Bordro hesaplanamadı'
       setBordroData((b) => {
@@ -593,18 +596,24 @@ export function useEditBuffers({
       const willBecomeMulti = existingStageIds.length === 1
       const needsExplicitDefaults = existingStageIds.length >= 1
       const oldStageId = existingStageIds[0]
+      probeBegin('donem ekle')
       try {
         await setItemPeriodQuantity(card.budgetId, itemId, stageId, 1)
+        probeMark('donem')
         if (willBecomeMulti) {
           await copyMainToFirstPeriod(itemId, oldStageId, row.unitNet, row.unitId, row.multiplier, row.repeat)
+          probeMark('kopya')
         }
         let sourceUnitId: string | null = null
         if (needsExplicitDefaults) {
           const sourceStageId = stagesRef.current.find((s) => existingStageIds.includes(s.id))?.id ?? existingStageIds[0]
           sourceUnitId = row.periodUnit[sourceStageId] ?? row.unitId
           await updateItemPeriodUnit(itemId, stageId, sourceUnitId)
+          probeMark('birim')
           await updateItemPeriodRepeat(itemId, stageId, 1)
+          probeMark('tekrar')
           await setItemPeriodNet(itemId, stageId, 0)
+          probeMark('net')
         }
         const current = rowsRef.current.find((r) => r.id === itemId) ?? row
         const pq = { ...current.periodQty, [stageId]: needsExplicitDefaults ? 0 : 1 }
@@ -651,6 +660,7 @@ export function useEditBuffers({
         // TD-14 ucuncu duzeltme (2026-07-18, Engin talebi): yeni donem X=0 ile dogabilir
         // (needsExplicitDefaults dalinda net=0/qty=0/repeat=1) - ANINDA isaretlenir, hem
         // willBecomeMulti hem needsExplicitDefaults yollarinda gecerli tek pq/pn/pr uzerinden.
+        probeEnd()
         checkPeriodWarning(itemId, stageId, { periodNet: pn, periodQty: pq, periodRepeat: pr })
         if (row.paymentStatus === 'bordro') void refreshBordro(itemId)
       } catch (e) {
