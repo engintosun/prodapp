@@ -68,21 +68,30 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
         if (!silent) setLoading(true)
         setError(null)
         const budgetId = paramBudgetId ?? (await getOrOpenBudget())
-        const c = await getCard(budgetId, cardId)
-        probeMark('kart')
-        if (cancelled) return
         // KULLANICI BASLIGI: basliklar satirlarla AYNI turda cekilir ve AYNI anda yerlestirilir.
         // Ayri bir efekt olsaydi yeni baslik acildiginda kalemleri bir an Basliksiz'da
         // gorunurdu. Basarisizlik TOAST'lanir, kart yine cizilir (o turda kullanici basligindaki
         // kalemler Basliksiz'da gorunur); sessiz gecilmez.
-        let uh: UserHeading[] = []
-        if (c) {
+        // HIZ (29 Eylul 2026, olcum): ayni kart yeniden okunurken (kalem eklemeden sonra) kartin
+        // kodu zaten elde ve kod dogumdan beri degismez; basliklar kartla BIRLIKTE istenir. Ilk
+        // acilista kod henuz bilinmez, basliklar kart geldikten sonra istenir.
+        const loadHeadings = async (cardCode: string): Promise<UserHeading[]> => {
           try {
-            uh = await fetchUserHeadings(c.cardCode)
+            return await fetchUserHeadings(cardCode)
           } catch (e) {
             addToast(e instanceof Error ? e.message : 'Kullanıcı başlıkları yüklenemedi', 'error')
+            return []
           }
         }
+        const known = cardRef.current
+        const knownCode = known && cardId && known.groupId === cardId ? known.cardCode : null
+        const [c, earlyHeadings] = await Promise.all([
+          getCard(budgetId, cardId),
+          knownCode ? loadHeadings(knownCode) : Promise.resolve(null),
+        ])
+        probeMark('kart')
+        if (cancelled) return
+        const uh: UserHeading[] = c ? (earlyHeadings ?? (await loadHeadings(c.cardCode))) : []
         if (cancelled) return
         probeMark('basliklar')
         setUserHeadings(uh)

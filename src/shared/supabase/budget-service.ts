@@ -3,7 +3,6 @@ import { supabase } from './client'
 import type { YukCins } from '../cfe'
 import type { PaymentStatus } from '../types/domain'
 import { isPaymentStatus } from '../types/domain'
-import { probeMark } from '../utils/perf-probe'
 
 export interface StageRow {
   id: string
@@ -163,13 +162,29 @@ export async function fetchBudgetCards(budgetId: string): Promise<BudgetCardRef[
 // ve fetchBudgetItemRowsByCard (butcenin tamami, masa kapak rakami icin) AYNI eslemeyi kullanir,
 // ikinci bir tanim yoktur (KABUK-KARARLARI 12.3 TEK HESAP IKI YUZEY).
 export async function mapItemRows(itemList: readonly Record<string, unknown>[]): Promise<BudgetItemRow[]> {
-  probeMark('q satirlar')
   const itemIds = itemList.map((i) => i.id as string)
 
-  const { data: units, error: eu } = await supabase.from('units').select('id, label')
+  // HIZ (29 Eylul 2026, olcum): birimler, yukler ve donem ayrintilari birbirini beklemez, TEK
+  // dalgada birlikte istenir. Kalem yoksa yuk ve donem sorgusu gitmez (bos sonuc).
+  const noRows = Promise.resolve({ data: [] as Record<string, unknown>[], error: null })
+  const [{ data: units, error: eu }, { data: burdens, error: eb }, { data: periods, error: ep }] = await Promise.all([
+    supabase.from('units').select('id, label'),
+    itemIds.length
+      ? supabase
+          .from('item_burdens')
+          .select('item_id, rate_percent, burden_components(label, kind)')
+          .in('item_id', itemIds)
+          .order('rate_percent', { ascending: false })
+      : noRows,
+    itemIds.length
+      ? supabase
+          .from('budget_item_periods')
+          .select('item_id, stage_id, quantity, unit_net_override, unit_id_override, repeat_override')
+          .in('item_id', itemIds)
+      : noRows,
+  ])
   if (eu) throw new Error(eu.message)
   const unitLabel: Record<string, string> = {}
-  probeMark('q birimler')
   for (const u of units ?? []) unitLabel[u.id as string] = u.label as string
 
   const burdensByItem: Record<string, number[]> = {}
@@ -179,13 +194,7 @@ export async function mapItemRows(itemList: readonly Record<string, unknown>[]):
   const periodUnitByItem: Record<string, Record<string, string | null>> = {}
   const periodRepeatByItem: Record<string, Record<string, number | null>> = {}
   if (itemIds.length) {
-    const { data: burdens, error: eb } = await supabase
-      .from('item_burdens')
-      .select('item_id, rate_percent, burden_components(label, kind)')
-      .in('item_id', itemIds)
-      .order('rate_percent', { ascending: false })
     if (eb) throw new Error(eb.message)
-    probeMark('q yukler')
     for (const b of burdens ?? []) {
       const k = b.item_id as string
       // rate_percent NULL = iskelet bacagi (fill_mode=skeleton, orn. bordro); Number(null)===0 SESSIZCE
@@ -198,12 +207,7 @@ export async function mapItemRows(itemList: readonly Record<string, unknown>[]):
       ;(burdenDetailByItem[k] ??= []).push({ label: bLabel, rate, kind: bKind })
     }
 
-    const { data: periods, error: ep } = await supabase
-      .from('budget_item_periods')
-      .select('item_id, stage_id, quantity, unit_net_override, unit_id_override, repeat_override')
-      .in('item_id', itemIds)
     if (ep) throw new Error(ep.message)
-    probeMark('q donem ayrinti')
     for (const p of periods ?? []) {
       const k = p.item_id as string
       ;(periodByItem[k] ??= {})[p.stage_id as string] = Number(p.quantity)
@@ -278,36 +282,48 @@ export async function fetchBudgetItemRowsByCard(
 // Butcenin bir kartini (cardId verilirse o karti, verilmezse ilk kart - sort_order) + etaplarini +
 // kalemlerini getir. X etap-basina: periodQty[stageId]. Birim label ayri raftan map'lenir.
 export async function getCard(budgetId: string, cardId?: string): Promise<CardView | null> {
-  const { data: stageData, error: es } = await supabase
+  // HIZ (29 Eylul 2026, olcum): sorgular art arda gidince her biri bir oncekini bekliyordu
+  // (yedi sefer, ~1 sn). Donemler, kart ve satirlar TEK dalgada birlikte istenir; satirlar
+  // yalniz cardId biliniyorsa bu dalgaya girer, bilinmiyorsa kart once, satirlar sonra gelir.
+  // Ikinci dalga mapItemRows icindedir. Hata onceligi eskisiyle ayni: donemler, kart, satirlar.
+  const stagesQuery = supabase
     .from('budget_stages')
     .select('id, name, is_undated, sort_order')
     .eq('budget_id', budgetId)
     .order('sort_order')
-  if (es) throw new Error(es.message)
-  probeMark('q donemler')
-  const stages: StageRow[] = (stageData ?? []).map((s) => ({
+
+  // D3b-2a: card_code kutuphane sorgusunun ANAHTARIDIR (aidiyet=kod doktrini, K-B). Kart ADI
+  // anahtar OLAMAZ - kullanici hucrede degistirmis olabilir; kod dogumdan beri sabittir.
+  const grpBase = supabase.from('expense_groups').select('id, name, card_code').eq('budget_id', budgetId)
+  const grpQuery = (cardId ? grpBase.eq('id', cardId) : grpBase.order('sort_order').limit(1)).maybeSingle()
+
+  const itemsQuery = (groupId: string) =>
+    supabase
+      .from('budget_items')
+      .select('id, item_code, catalog_code, heading_code, library_item_id, name, name_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, person_object_id, derive_rate, public_note')
+      .eq('group_id', groupId)
+      .eq('is_active', true)
+      .order('sort_order')
+
+  const [stagesRes, grpRes, earlyItemsRes] = await Promise.all([
+    stagesQuery,
+    grpQuery,
+    cardId ? itemsQuery(cardId) : Promise.resolve(null),
+  ])
+  if (stagesRes.error) throw new Error(stagesRes.error.message)
+  const stages: StageRow[] = (stagesRes.data ?? []).map((s) => ({
     id: s.id as string,
     name: s.name as string,
     isUndated: s.is_undated as boolean,
     sortOrder: s.sort_order as number,
   }))
-
-  // D3b-2a: card_code kutuphane sorgusunun ANAHTARIDIR (aidiyet=kod doktrini, K-B). Kart ADI
-  // anahtar OLAMAZ - kullanici hucrede degistirmis olabilir; kod dogumdan beri sabittir.
-  const grpQuery = supabase.from('expense_groups').select('id, name, card_code').eq('budget_id', budgetId)
-  const { data: grp, error: eg } = await (cardId ? grpQuery.eq('id', cardId) : grpQuery.order('sort_order').limit(1)).maybeSingle()
-  if (eg) throw new Error(eg.message)
-  probeMark('q kart')
+  if (grpRes.error) throw new Error(grpRes.error.message)
+  const grp = grpRes.data
   if (!grp) return null
 
-  const { data: items, error: ei } = await supabase
-    .from('budget_items')
-    .select('id, item_code, catalog_code, heading_code, library_item_id, name, name_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, person_object_id, derive_rate, public_note')
-    .eq('group_id', grp.id)
-    .eq('is_active', true)
-    .order('sort_order')
-  if (ei) throw new Error(ei.message)
-  const itemList = items ?? []
+  const itemsRes = earlyItemsRes ?? (await itemsQuery(grp.id as string))
+  if (itemsRes.error) throw new Error(itemsRes.error.message)
+  const itemList = itemsRes.data ?? []
 
   const rows = await mapItemRows(itemList)
 
