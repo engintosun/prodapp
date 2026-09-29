@@ -3,6 +3,7 @@ import { supabase } from './client'
 import type { YukCins } from '../cfe'
 import type { PaymentStatus } from '../types/domain'
 import { isPaymentStatus } from '../types/domain'
+import { probeMark } from '../utils/perf-probe'
 
 export interface StageRow {
   id: string
@@ -162,11 +163,13 @@ export async function fetchBudgetCards(budgetId: string): Promise<BudgetCardRef[
 // ve fetchBudgetItemRowsByCard (butcenin tamami, masa kapak rakami icin) AYNI eslemeyi kullanir,
 // ikinci bir tanim yoktur (KABUK-KARARLARI 12.3 TEK HESAP IKI YUZEY).
 export async function mapItemRows(itemList: readonly Record<string, unknown>[]): Promise<BudgetItemRow[]> {
+  probeMark('q satirlar')
   const itemIds = itemList.map((i) => i.id as string)
 
   const { data: units, error: eu } = await supabase.from('units').select('id, label')
   if (eu) throw new Error(eu.message)
   const unitLabel: Record<string, string> = {}
+  probeMark('q birimler')
   for (const u of units ?? []) unitLabel[u.id as string] = u.label as string
 
   const burdensByItem: Record<string, number[]> = {}
@@ -182,6 +185,7 @@ export async function mapItemRows(itemList: readonly Record<string, unknown>[]):
       .in('item_id', itemIds)
       .order('rate_percent', { ascending: false })
     if (eb) throw new Error(eb.message)
+    probeMark('q yukler')
     for (const b of burdens ?? []) {
       const k = b.item_id as string
       // rate_percent NULL = iskelet bacagi (fill_mode=skeleton, orn. bordro); Number(null)===0 SESSIZCE
@@ -199,6 +203,7 @@ export async function mapItemRows(itemList: readonly Record<string, unknown>[]):
       .select('item_id, stage_id, quantity, unit_net_override, unit_id_override, repeat_override')
       .in('item_id', itemIds)
     if (ep) throw new Error(ep.message)
+    probeMark('q donem ayrinti')
     for (const p of periods ?? []) {
       const k = p.item_id as string
       ;(periodByItem[k] ??= {})[p.stage_id as string] = Number(p.quantity)
@@ -279,6 +284,7 @@ export async function getCard(budgetId: string, cardId?: string): Promise<CardVi
     .eq('budget_id', budgetId)
     .order('sort_order')
   if (es) throw new Error(es.message)
+  probeMark('q donemler')
   const stages: StageRow[] = (stageData ?? []).map((s) => ({
     id: s.id as string,
     name: s.name as string,
@@ -291,6 +297,7 @@ export async function getCard(budgetId: string, cardId?: string): Promise<CardVi
   const grpQuery = supabase.from('expense_groups').select('id, name, card_code').eq('budget_id', budgetId)
   const { data: grp, error: eg } = await (cardId ? grpQuery.eq('id', cardId) : grpQuery.order('sort_order').limit(1)).maybeSingle()
   if (eg) throw new Error(eg.message)
+  probeMark('q kart')
   if (!grp) return null
 
   const { data: items, error: ei } = await supabase
