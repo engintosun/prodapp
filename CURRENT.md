@@ -83,7 +83,7 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 
 ## Durum
 
-- HEAD: b2c4d36 (29 Eylül 2026 oturum kapanışı; 30 Eylül 2026 KART 1500 Dilim 1 bu HEAD'in üstüne commit edilir)
+- HEAD: 526772e (30 Eylül 2026 — KART 1500 Dilim 1 ve oturum kapanışı)
 - **`asks_person` KURALI ARTIK UYGULANDI (19 Eylül 2026).** Daha önce burada ve "Sıradaki iş"te "kararı var, uygulanmamış TEK iş" diye duran kayıt kapandı — göç `20260919120000` canlıda, sahada doğrulandı. Karar evi: `docs/butce/KART-KATALOGU.md` §7.5.
 - KOMİSYON TABANI ARTIK ÖDEME STATÜSÜNE BAKMIYOR: ölçüt kişiye bağlı ve türetilmemiş satır. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 KOMİSYON TABANI VE SİLME madde 2.
 - TEMSİLCİ KOMİSYONU CİNSİ ARTIK ATOMDA: 1618 Ajans Komisyonu, 1618-01 Menajer Komisyonu iki ayrı atom. Testlerle ve tarayıcıda doğrulandı (17 Eylül 2026).
@@ -124,85 +124,6 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 - Kart mimarisi ve kilitli kartlar → `docs/butce/KART-KATALOGU.md`
 - Ödeme statüsü kümesi ve Statü rehberi → `docs/butce/BUTCE-UI-MIMARISI.md`
 
-## Alınan kararlar (19 Eylül 2026, Engin)
-
-Bu oturumda alınan kararlar; tam metinleri KALICILIK KURALI gereği kendi ev dosyalarına da işlendi (aşağıda işaretçili).
-
-- **Gerçekleşen bütçe için ayrı kart tasarımı yapılmayacak.** Mesai ve prova gerçekleşenin işidir ama aynı kartta yaşar. Kullanıcı öngörülene şimdiden koymak isterse kendi bileceği iştir. Bu karar KART 1600'ün ÖTESİNE GEÇER. Ev dosyasına (KART-KATALOGU §7.5, "öngörülen bütçeye konulamaz" yasağının kalkışı) 44a9ae5'te ZATEN işlendi, burada tekrarlanmaz.
-- **1614 Tekrar Telifi'nin aidiyeti Ana Kast'tır ve DEĞİŞMEZ.** Yönetmen ve senaristi de kapsıyor olması bu kartın işi değildir — KART 1600 yalnız oyuncu tarafını tutar. Ev dosyası: `docs/butce/KART-KATALOGU.md` §7.5, AİDİYET KURALI paragrafı.
-- **Tekrar telifinin giderden değil hasılattan hesaplanması bütçenin konusu değildir, kâr paylaşımıdır.** Ev dosyası: `docs/butce/KART-KATALOGU.md` §7.5, 11 Eylül tekrar telifi kaydının yanı.
-- **Türetilmiş satır kişinin bloğunda EN SONDA durur — UYGULANDI (20 Eylül 2026).** Kural `person-groups.ts` içindeki `buildRenderRows` kompozisyonuna girdi; katalog sırasına ve 17 Ağustos elle sıralama kararına dokunulmadı, tarayıcıda doğrulandı. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20.
-- **İsim kararları (kart 1600 tarandı, altı aday).** Stand-In olduğu gibi kalır. 1606 Stunt Oyuncusu ile 1607 Dublör AYRI şeylerdir, ikisi de sektörde yerleşiktir, ikisi de kalır. 1605/1609/1619 "Cast" yazımı kalır, sektörde böyle yazılıyor. 1613 Dublaj ile 1620 ADR AYRI şeylerdir — dublaj dil değiştirme (yerelleştirme) amacı güder, ADR oyuncunun kendi repliklerini aynı dilde ve dudak hareketleriyle yeniden kaydetmesidir; ikisi de kalır. Yalnız kart içi imla çatlağı tekleştirildi: Kast → Cast. Ev dosyası: `docs/butce/KART-KATALOGU.md` §7.5, "1613 AD ÇAPRAZ KONTROL DÜZELTMESİ" maddesinin hemen altına yeni "İSİM TARAMASI" bloğu olarak yazıldı.
-
-## Alınan kararlar (20 Eylül 2026, Engin)
-
-- **Komisyon kaleminin aidiyeti kişiden gelir.** Uygulandı ve sahada doğrulandı; ayrıntı yukarıdaki 20 Eylül milestone kaydında. Ev dosyası: `docs/butce/KART-KATALOGU.md` §7.5 AİDİYET KURALI.
-- **Mesainin saha karşılığı.** Mesai teknik ekibe ve başta öyle anlaşılmış oyunculara yazılır; fatura kesene, başta konuşulmamış oyuncuya, figürasyona ve sürücüye yazılmaz. Ev dosyası: `docs/butce/KART-KATALOGU.md` §7.5.
-- **Mesai/prova ve komisyon alabilecek görevler.** Mesai ve prova: 1604, 1606, 1607, 1608, 3902, 3904. Ayrıca ajans ve menajer komisyonu: 1606, 1607, 3904. Yeni mekanizma gerektirmiyor; tek şart kişinin Üretim Kayıtları'nda kaydının olması. Ev dosyası: aynı yer.
-- **Mesainin blok içi yeri konu değil**, bugünkü haliyle kalır. Ev dosyası: aynı yer.
-- **İŞ ÇIPASI AYRI TURA BIRAKILDI.** Adı girilmemiş şablon satırına mesai, prova ya da komisyon eklenemiyor; kartta bir kaleme iliştirilebilen tek çıpa kişi kaydıdır. Etiket tablosunda iş cinsi hanesi var, Oyuncular listesi okumuyor. Karara bağlanmadı, kendi turunu bekliyor.
-- **Satır içi kişi düğmesi kalktı; kişi karta yalnız Oyuncular listesinden girer.** Not ve Başlık düğmeleri yerinde kaldı. Gerekçe: iki kapı aynı işi ters yönden yapıyordu ve elle iliştirme yolunun işi 16 Eylül'de getirme yoluna geçmişti. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20.
-- **İsim hanesinde kişi açılır listesi DÜŞÜRÜLDÜ.** 11 Eylül 2026 kaydı kapandı: görev atomu olan satırın ad hanesine kişi adı yazdırmak satırın ne olduğunu belirsizleştiriyor, üstelik bugünkü doğum modelinde dördüncü bir giriş kapısı açıyordu. Karar çevirme değil düşürme. Ev dosyası: aynı yer.
-- **Katlama durumu mutlaktır.** Kullanıcının bir blokta bıraktığı açık/kapalı hali saklanır; varsayılan yalnız hiç dokunulmamış bloğa uygulanır. 10 Eylül'ün "blok bir kez kendiliğinden kapanır" bedeli yürürlükten kalktı. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20.
-- **Kapalı bloğa kalem eklendiğinde blok açılır.** Kendiliğinden doğan satır bloğu açmaz; kural kaydırma yoluna bağlıdır. Ev dosyası: aynı yer.
-- **Komisyon satırı karttan silinmez, oranı sıfırlanır.** × düğmesi yerinde kalır ama silmez; cinse göre bildirim verir. Gerekçe: ajans ücret almasa bile sözleşmede taraf olabilir ve ek çekimde ücret talep edebilir — sıfır oran o varlığı kartta görünür tutar. Tik yolu bildirimde BİLEREK anılmaz: tik kişinin proje künyesindedir, kart onu değiştirmeye çağırmaz. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 madde 3.
-- **Komisyon doğum denetimi kartın verisi yerleştikten sonra koşar.** Kart başına bir kez; kütüphane gelmezse satır doğmaz. Ev dosyası: aynı yer, madde 2.
-
-## Alınan kararlar (21 Eylül 2026, Engin)
-
-- **Kullanıcı başlığı projede yaşar, başka projeye geçmez**, aynı kullanıcı başka proje açsa bile. Küresel kütüphaneye yazılmaz. Ev dosyası: `docs/butce/BUTCE-SEMA-KARARLARI.md` KULLANICI BAŞLIĞININ EVİ.
-- **Oyuncular listesi düğmesi kartın kendi listesinin kapısıdır.** Kendi listesi olmayan kartta liste doğana kadar çizilmez; mekân, prop gibi listeler doğduğunda aynı kapıdan açılır. Kostüm istisnası yeri gelince konuşulur. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 KARTIN KENDİ LİSTESİNİN KAPISI.
-- **Kalabalık masa ilkesi.** Yeni iş önce var olan kolon, satır, pencere ya da açılır listenin içinde yer arar; bulunamazsa eklenen öğe yararı görünmeden kullanıcıyı yorar. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §0 KALABALIK MASA İLKESİ.
-
-## Alınan kararlar (22 Eylül 2026, Engin)
-
-- **Mühür modeli teyit edildi, yeni karar gerekmedi.** Mühürlü versiyonlar asla değişmez; revizyon taslakta çalışıp yeniden mühürlemektir ve V+1 doğurur; geçerli olan son mühürdür (MÜHÜR-1, göç `20260711140000`).
-- **`db push` izin kapısı `npx` biçimini de tutar.** Kural yalnız `supabase` ile başlayan komutu bekliyordu; 22 Eylül göçü bu yüzden izin ekranı açılmadan uygulandı ve tek koruma sohbetteki onaydı. Ev dosyası: `CLAUDE.md` Ortamlar / deploy, Engin onayı maddesi.
-
-## Alınan kararlar (23 Eylül 2026, Engin)
-
-- **İş seçilince o işin dosyaları okunur.** Açılış raporuna "kabul" denip iş seçilince o işi yöneten bütün dosyalar INDEX.md bölüm 7.0 üzerinden bulunup okunur; iş listesi bu okumadan sonra sunulur. Ev dosyası: `docs/protokol/` altındaki açılış protokolü, Okuma kuralları.
-- **Bir özellik, aksi kararlaştırılmadıkça bütün kartlarda aynı biçimde yer alır.** Karta göre değişen yalnız ihtiyaca bağlı düğmelerdir (oyuncular listesi düğmesi gibi). "+ Ekle" her kartta Kalem ve Başlık'a ayrılır; 1500 ve 1600 dahil. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §19 GÜNCELLEME (23 Eylül 2026).
-- **Mühürlü bütçe mesajı: "Mühürlü bütçe değiştirilemez. Değişiklik taslakta yapılır."** Mühür açılmaz; revizyon taslakta yapılır ve yeniden mühürlenir (MÜHÜR-1). Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §19 UYGULAMA (23 Eylül 2026, Dilim 2b).
-- **Blok içi ekleme kapandı; yerini "Kime?" adımı aldı.** Mesai, Prova, Tekrar Telifi ve ADR Hak Devri genel eklemede kişiyi sorar ve kişinin bloğuna düşer. Bedeli: oyuncu dışı bir kalem kişi bloğuna konamaz. "Baz+ek" hanesi sorusu da konusuz kaldı. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 İKİ AYRI EKLEME YERİ.
-- **Özet adı penceresi kapandı.** Özetin adı Üretim Kayıtları'ndan gelir, kartta düzenlenmez. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 (özetin adı maddesi).
-- **İMLEÇ kararı kapandı.** Komisyon satırı imleci çekmez; oran varsayılanla gelir. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 İMLEÇ.
-- **Komisyon satırı tik atıldığı anda doğar.** Şart "taban sıfırdan büyük" değil "kişi bu kartta"; rakam yoksa sıfır tutarla. Getirme de doğum anıdır. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 KOMİSYON SATIRININ DOĞUMU madde 1.
-- **Oyuncular listesinden doğan satırlar kullanıcının kendi eklemesi sayılır.** Liste kapanınca blok açılır, ekran kayar, satır iki saniye çerçevelenir; imleç düğmede kalır. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 KATLAMA DURUMU MUTLAKTIR (daraltma) ve §16 KAYDIRMA VE İŞARET (liste yolu istisnası).
-
-## Alınan kararlar (24 Eylül 2026, Engin)
-
-- **KART 1600'ün kodda karşılığı olmayan dört kararı kapandı.** Görev atomları "+ Ekle → Kalem" listesinde kalır; dönem varsayılanları uygulanmaz; Stunt iş etiketi ve çocuk oyuncu denetimi parkta. Kod değişmedi. Ev dosyaları: `docs/butce/KART-KATALOGU.md` §7.5 24 EYLÜL 2026 KARARLARI, `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20.
-- **Psikolog/Pedagog yeni atom, KART 1600'de doğmaz.** Yeri Set Operasyonları ya da Sağlık ve Güvenlik kartı; kart kurulurken kesinleşir. Set Öğretmeni 1600'de, Oyuncu/Diyalog Koçu 1500'de sabit. Ev dosyası: aynı blok.
-- **Kalem tablosuna seç kipi gelmez.** Satır sonundaki × silmeye yeter; asıl ayrım icmal kapsamıdır ve icmal turunda konuşulur. "Açık kalanlar"daki kart masasında seç kipi sorusu kapandı. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 SATIR SİLME VE SEÇ KİPİ.
-- **Üretim Kayıtları içe aktarması metin PDF okur, taranmış PDF reddedilir.** 6 Eylül'ün "metin PDF sonraki turlar" kararının uygulaması; "Açık kalanlar"daki PDF sorusu kapandı. Paket `pdfjs-dist` legacy yapı (Safari), yalnız PDF seçilince yüklenir; sayfalar tek liste; tekrarlanan başlık atılır; önizleme ilk altı + son üç satır (beş biçimde); kırılan hücre yalnız en soldaki kolon numara kolonuysa (dolu hücrelerin en az %80'i sayı) birleşir; yan yana bölünmüş sayfa birleştirilmez. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 İÇE AKTARMA — PDF.
-- **PDF içe aktarmanın ilk sürümü Chrome ve Mac Safari'de denenince tamam sayılır; iPhone şartı düştü.** Ekran masaüstü için tasarlandı; içe aktarma, kabuğun cihaz kararında telefonda yazılan işler arasında değil (`docs/KABUK-KARARLARI.md`, 8 Ağustos 2026). Legacy yapı kararı değişmedi: Mac Safari de yalnız o yapıyla resmi destek içinde. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 İÇE AKTARMA — PDF.
-- **Kart masası kapağı kartın toplamının aynısıdır; masa kartın hesabını çağırır.** KABUK §12.3 TEK HESAP İKİ YÜZEY kararının uygulaması; 9 Eylül'den beri ayrışmıştı. Ev dosyası: `docs/KABUK-KARARLARI.md` §12.3.
-- **Üretim Kayıtları bütçeyi görmemeye devam eder; tiki kalkmış komisyon satırını kart açılışta toplar.** Oranı dokunulmamış satır sessizce gider, değişmiş satır için onay sorulur, vazgeçilirse tik geri açılır. Kartın panosunda önce onay, sonra künye. Reddedilen yol: durağın bütçe satırı silmesi. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 SİLME KARTIN AÇILIŞINDA DA KOŞAR.
-- **Açılır pencere ve uyarı tetiğin yanında açılır (ilke).** Tasarım sonraki oturumda. Ev dosyası: `docs/TASARIM-KARARLARI.md` §9 AÇILIR PENCERE VE UYARI TETİĞİN YANINDA.
-- **K1 — Satırdan ya da hücreden açılan pencere tetiğin yanında açılır, arka kararmaz.** Ekleme satırından açılan pencereler satırın üstünde ve Ad sütununun sağında açılır; No ve Ad açıkta kalır. Pencere açıkken ekran kaymadığı için pencere kaydırmayı izlemez. Ev dosyası: `docs/TASARIM-KARARLARI.md` §9 TETİĞİN YANINDA AÇILMA — K1.
-- **Açılır pencere işi dilimlere bölündü, sıra:** 1a (Yasal Yük, Not, Statü rehberi) → Başlık penceresinin genişlik ölçümü → 1b (ekleme satırı pencereleri) → K2 (Oyuncular listesinin yeri) → K3 (onay kutusu) → uyarı balonunun yeri. Her dilim ekranda onaylanınca sıradaki konuşulur; Oyuncular listesi K2 konuşulana kadar bugünkü gibi kalır.
-- **Pencere başlığı satırın görünen adıdır.** Yasal Yük ve Not pencereleri satırın Ad hücresinde yazanı taşır; kaynak `display-name.ts` `rowDisplayName`. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §8 ve §14.
-- **Yasal Yük dökümü içeriği kadar geniş açılır: en dar 240, en geniş 480 piksel.** Bordro dökümündeki uyarılar iki eşit satıra kırılır ve ortalanır; "tarih girilmedi" uyarısının metni değişir. Not ve Statü rehberi bugünkü genişlikte kalır. Uygulandı: Dilim 1a-3. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §8.
-- **Pencere tablonun görünen alanının içinde kalır (25 Eylül 2026).** Yer hesabı tarayıcının tamamına göre değil, tablonun kaydırma çubukları hariç görünen alanına göre yapılır; kaydırma çubukları ve kart toplamı örtülmez. Uygulandı: Dilim 1a-4. Ev dosyası: `docs/TASARIM-KARARLARI.md` §9 K1.
-- **Kalem ekleme odası açıldığı yerde durur (25 Eylül 2026).** Kalem eklenip tablo kaysa da oda ekleme satırıyla birlikte kaymaz; No ve Ad açıkta kaldığı için eklenen kalem görünür, peş peşe eklemede yazma kutusu yerinde kalır. Uygulandı: Dilim 1b-2. Ev dosyası: `docs/TASARIM-KARARLARI.md` §9 K1 (EKLEME SATIRI).
-- **Seçici ve Başlık penceresinin yeri ve genişliği (25 Eylül 2026).** "+ Ekle" seçici "Ekle" yazısının dibinde, içeriği kadar geniş (en dar 240). Başlık penceresi 568 piksel; sol kenarı not işaretinde (ad kutusu açık), ekleme satırını örterek açılır. Ev dosyası: `docs/TASARIM-KARARLARI.md` §9 K1 (EKLEME SATIRI).
-- **Kalem ekleme odası 340 piksel (25 Eylül 2026).** En uzun kütüphane adı tek satırda sığar; 28 Temmuz'daki "alt-sheet ile aynı ölçü" kuralı değişti. Bedel: serbest kalem açıklaması 3 yerine 4 satır. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §16.
-- **Oda Başlık penceresiyle aynı yere oturur, tek kaydırma (25 Eylül 2026).** Sol kenar not işaretinde, alt kenar Ekle satırının alt çizgisinde; oda kendisi kaymaz, yalnız liste kayar. Ev dosyası: `docs/TASARIM-KARARLARI.md` §9 K1 (EKLEME SATIRI).
-- **Odadaki listelerde kaydırma çubuğu gizli (25 Eylül 2026).** Kaydırma çalışır; Başlık penceresindeki listeler bu karara girmez. Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §16.
-- **K2 — Oyuncular listesi ortada kalır, 940 piksel (25 Eylül 2026).** Karta bağlı iş; tetiğin yanında değil alt ortada, arkası kararık. Rol 180, Oyuncu 170, Görev 145; daha uzun adlar kesilir, tam adı üstüne gelince görünür. Ev dosyası: `docs/TASARIM-KARARLARI.md` §9 K2, `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 madde 7.
-- **K3 — Silme soruları proje onay penceresiyle, tetiğin yanında (25 Eylül 2026).** Kalem silme, dönem kaldırma, Üretim Kayıtları'nda tek ve toplu kişi silme tarayıcı kutusu yerine projenin onay penceresiyle sorulur; pencere basılan ×'in ya da düğmenin yanında açılır, arka kararmaz. Onay düğmesi kırmızıdır ve sorunun fiilini taşır ("Sil", dönemde "Kaldır"); diğeri "Vazgeç"; Esc Vazgeç sayılır. İki "Çıkış hatası" uyarısı soru olmadığı için hata mesajına geçer. Ev dosyası: `docs/TASARIM-KARARLARI.md` §9 SORU PENCERESİ — K3.
-- **K3b — Komisyon sorusunun yeri (25 Eylül 2026).** Oyuncular listesinden gelen soru kaldırılan tikin yanında açılır. Kart açılırken gelen soruda ekran önce silinecek komisyon satırına kayar, soru o satırın ×'inin yanında açılır; birden fazla satırda sorular sırayla gelir. Vazgeçilirse tik geri açılır (bugünkü gibi). Ev dosyası: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 (SORUNUN YERİ — K3b).
-
-## Alınan kararlar (27 Eylül 2026, Engin)
-
-- **K4 — Uyarı hücrenin ya da düğmenin dibinde.** Hücreye, satıra ya da ekrandaki bir düğmeye bağlı uyarı ve hata bugünkü mesaj kutusuyla o öğenin dibinde çıkar, K1 yer hesabıyla yerleşir, kapatılana kadar durur, tablo kayınca öğeyle gider. Pencerenin işi olan mesaj pencere başlığının altında, hiçbir yere bağlı olmayan ve başarı mesajları ekranın tepesinde kalır. Ev dosyası: `docs/TASARIM-KARARLARI.md` §9 UYARININ YERİ — K4 ve K4b.
-- **K4b — Mesaj doğduğu yerde kalır.** Açık duran mesaj sonradan açılan pencereye taşınmaz; pencere kapanınca içindeki mesaj tepeye geçer. Ev dosyası: aynı blok.
-- **Hücre sayfada yoksa mesaj tepeye düşer, hücre geri gelince döner; aynı metin farklı hücrede ayrı kutuda çıkar.** Emsal K1: tetiği bulunamayan pencere bugünkü yerinde açılır. Ev dosyası: aynı blok.
-- **Bordro hatası Yasal Yük hücresindeki kırmızı yazının dibinde.** Yazıya hücrenin adresi verildi; Yasal Yük düğmesi hata anında çizilmiyor. Ev dosyası: aynı blok.
-- **Toplu silmenin iki sonuç mesajı tepede kalır.** Silme bitince "Sil (n)" düğmesi ekrandan kalkıyor; adres verilseydi mesaj yeniden "Seç"e basıldığında yeni düğmenin altına dönerdi. Ev dosyası: aynı blok.
-- **Sıradaki ana konu: kalem eklenince yeni kaleme kaymanın yavaşlığının ölçümü.** Kaydı "açılır pencere işi bitince ele alınır" diyordu, o iş bitti. Ev dosyası: bu dosya, Sıradaki iş 1.
-
 ## Alınan kararlar (30 Eylül 2026, Engin)
 
 - **KART 1500 MMB 6.1'e hizalandı, kart DÜZ.** Kütüphane başlığı yok, sıralama kod sırası. Kalemler: 1501 Yönetmen Kaşesi · 1502 Yönetmen Özel Asistanı · 1503 Koreograf · 1504 Oyuncu/Diyalog Koçu · 1506 Storyboard ve Animatic Sanatçısı · 1507 Yönetmen Birimi Ofis Giderleri · 1508-01..06 · 1509 İkinci Ekip Yönetmeni · 1510 Konsept Sanatçısı; şablon 1501, 1502, 1503, 1504, 1506. 1505 boş. Eski 1508/1509 ayrımı kalktı, ikisi 1508-03 Yemek-Ağırlama'da. UYGULANDI (Dilim 1). Ev dosyası: `docs/butce/KART-KATALOGU.md` §7.4.
@@ -212,7 +133,7 @@ Bu oturumda alınan kararlar; tam metinleri KALICILIK KURALI gereği kendi ev do
 
 ## Sıradaki iş
 
-**ANA KONU: KART 1500 (30 Eylül 2026).** Dilim 1 (kod hizalaması, kütüphane, şablon) uygulandı. DİLİM 2 BEKLİYOR: hak devri (1501-01), temsilci komisyonu (1511), "Kime?" listesi, yönetmen kişi adı alanı, %50 eşiği; teknik tasarım konuşulmadan başlanmaz. Mühür yüzeyi icmalle birlikte ele alınır (30 Eylül 2026).
+**ANA KONU: KART 1500 (30 Eylül 2026).** Dilim 1 (kod hizalaması, kütüphane, şablon) uygulandı. DİLİM 2 BEKLİYOR: hak devri (1501-01), temsilci komisyonu (1511), "Kime?" listesi, yönetmen kişi adı alanı, %50 eşiği; teknik tasarım konuşulmadan uygulama başlamaz. Karar evi: `docs/butce/KART-KATALOGU.md` §7.4. Mühür yüzeyi icmalle birlikte ele alınır (30 Eylül 2026).
 
 1. **Mac turları — MAKİNE YOK (24 Eylül 2026, Engin).** Mac gerçek cihaz turu (KLV kapanışı ve `v0.2-klv` etiketi buna bağlı) ve Mac Safari'de PDF içe aktarma denemesi (PDF ilk sürümünün tamam sayılması buna bağlı; Chrome'da doğrulandı) yapılamıyor. İkisi askıda; makine bulununca aynı oturumda yapılır.
 
