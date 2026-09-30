@@ -157,7 +157,7 @@ Etap: Geliştirme · tüm kart RECOUPABLE · görünürlük: TAM MASKE 🔒 (set
 | **1108** | Seyahat, Konaklama, Yemek, Harcırah | Travel, Accommodation & Living | — | *(başlık)* | — |
 | 1108-01 | Ulaşım-Uçak | Air Travel | flat | sirket | S |
 | 1108-02 | Konaklama | Hotels / Accommodation | day | konaklama | S |
-| 1108-03 | Yemek-Ağırlama | Catering & Hospitality | day | sirket | K |
+| 1108-03 | Yemek-Ağırlama | Catering & Hospitality | flat | sirket | K |
 | 1108-04 | Harcırah | Per Diem | day | sirket | K |
 | 1108-05 | Festival-Pazar Katılımı | Festival & Market Attendance | flat | sirket | K |
 | 1108-06 | Araç Kiralama | Car Rentals | day | sirket | K |
@@ -204,24 +204,63 @@ Kart-özel anomali kuralları: çift-fringe guard (1404/1405/1406) · geliştirm
 ### 7.4 KART 1500 — YÖNETMEN ve KREATİF REJİ EKİBİ  [KİLİTLİ]
 Etap: ATL (Prep→Prod→Post) · RECOUPABLE DEĞİL · görünürlük: KISMİ MASKE 👁️ (1501 baş-kaşe set rollerine gizli; operasyonel ekip yapımcı isterse açılır) · DB'de Muhasebe tam erişim · anomali aktif.
 
+**REVİZE (KART 1500 Dilim 1, 30 Eylül 2026, Engin kararı; göç `20260930120000`):** Kodlar MMB 6.1'e hizalandı (kaynak: `docs/butce/MMB-6.1-ornek-hesap-plani.pdf`, 1500 Directors Unit). Kart DÜZ: kütüphane başlığı YOK (MMB'de 1500 ara başlıksız tek hesap grubu; atomlarda `heading_id` boş). Sıralama kod sırasıdır. Kütüphane 14 satır, şablon 5 kalem.
+
+**Kütüphane (14 satır):** S = şablona giren, K = yalnız kütüphanede.
+
+| Kod | Ad | İngilizce | Birim | Ödeme statüsü | S/K |
+|---|---|---|---|---|---|
+| 1501 | Yönetmen Kaşesi | Director Fee | flat | telif_belgeli | S |
+| 1502 | Yönetmen Özel Asistanı | Personal Assistant | week | bordro | S |
+| 1503 | Koreograf | Choreographer | week | smm | S |
+| 1504 | Oyuncu/Diyalog Koçu | Dialogue/Acting Coach | day | smm | S |
+| 1506 | Storyboard ve Animatic Sanatçısı | Storyboard & Animatic Artist | week | smm | S |
+| 1507 | Yönetmen Birimi Ofis Giderleri | Director's Office Expenses | flat | sirket | K |
+| 1508-01 | Ulaşım-Uçak | Air Travel | flat | sirket | K |
+| 1508-02 | Konaklama | Hotels / Accommodation | day | konaklama | K |
+| 1508-03 | Yemek-Ağırlama | Catering & Hospitality | flat | sirket | K |
+| 1508-04 | Harcırah | Per Diem | day | sirket | K |
+| 1508-05 | Festival Katılımı | Festival Attendance | flat | sirket | K |
+| 1508-06 | Araç Kiralama | Car Rentals | day | sirket | K |
+| 1509 | İkinci Ekip Yönetmeni | Second Unit Director | week | smm | K |
+| 1510 | Konsept Sanatçısı | Concept Artist | week | smm | K |
+
+1505 (MMB: Secretary) BOŞ; işi 1502'nin içinde. 1508-01..06, 1100'deki 1108 ekleriyle aynıdır (05 Festival Katılımı); 1108-03'ün birimi de `flat`'e çekildi (göçle, bkz. §7.1). 1506'nın eş adları (`aliases`): Previz, Previsualization, Animatic; kalem ekleme odasındaki arama eş adı okur. Provenance: 1508-xx 'Koster/MMB + KAAPA damitim', 1510 'KAAPA', diğerleri 'Koster/MMB-6.1'.
+
+**Şablon (5 kalem):** 1501, 1502, 1503, 1504, 1506. Kartın `misc_prefix` hanesi `"15"` (1100 kartınınki `"11"`); değerler `fn_open_budget`'taki geri-düşümün ürettiği değerin aynısıdır, davranış değişmedi (TD-39).
+
 A. Kreatif Ana İşçilik (İşçilik + ödeme-statüsü)
 - 1501 Yönetmen Kaşesi (Director Fee): cost_type=İşçilik(ATL) · ödeme-statüsü: SMM/Loan-Out/Telif · kısmi maskede gizli baş-kaşe 🔒 · milestone denetimi: 5100 Kurgu onay tikleri ile.
-- 1502 İkinci Ekip Yönetmeni (Second Unit Director): cost_type=İşçilik(ATL) · haftalık/paket · çapraz: 4200 Second Unit (orası ekip/ekipman; 1502 sadece kaşe).
+- 1509 İkinci Ekip Yönetmeni (Second Unit Director): cost_type=İşçilik(ATL) · haftalık/paket · çapraz: 4200 Second Unit (orası ekip/ekipman; 1509 sadece kaşe). Eski kodu 1502'ydi.
 
 B. Kreatif Destek Ekibi (İşçilik + ödeme-statüsü)
+- 1502 Yönetmen Özel Asistanı (Personal Assistant): doğrudan yönetmene bağlı, set reji departmanından ayrı. cost_type=İşçilik · Crew Overlap denetimi. Eski kodu 1505'ti.
 - 1503 Koreograf (Choreographer): dans/dövüş/hareket. cost_type=İşçilik(ATL).
 - 1504 Oyuncu/Diyalog Koçu (Dialogue/Acting Coach): çocuk oyuncu/şive/cast hazırlığı. cost_type=İşçilik(ATL) · Crew Overlap denetimi.
-- 1505 Yönetmen Özel Asistanı (Personal Assistant): doğrudan yönetmene bağlı, set reji departmanından ayrı. cost_type=İşçilik · Crew Overlap denetimi.
 
 C. Görselleştirme & Tasarım (İşçilik + ödeme-statüsü)
-- 1506 Storyboard & Animatic Sanatçısı: çekim-öncesi kare/dijital canlandırma. cost_type=İşçilik · çapraz: 1300 alias (geliştirmede başladıysa mükerrer denetimi).
-- 1507 Konsept Sanatçısı/Moodboard: Kapsam: SADECE yönetmen erken-vizyonu (greenlight öncesi dünya/renk/VFX-planı). Prodüksiyon tasarımı → 2200. cost_type=İşçilik · çapraz: 2200 alias (çift-sayım önler).
+- 1506 Storyboard ve Animatic Sanatçısı: çekim-öncesi kare/dijital canlandırma. cost_type=İşçilik · çapraz: 1300 alias (geliştirmede başladıysa mükerrer denetimi). Previz bu kalemin eş adıdır (`aliases`).
+- 1510 Konsept Sanatçısı: Kapsam: SADECE yönetmen erken-vizyonu (greenlight öncesi dünya/renk/VFX-planı). Prodüksiyon tasarımı → 2200. cost_type=İşçilik · çapraz: 2200 alias (çift-sayım önler). Eski kodu 1507'ydi.
 
 D. Lojistik & Temsil (operasyonel gider)
-- 1508 Yönetmen Birimi Seyahat/Konaklama (Travel & Living): Kapsam: KENDİ kreatif ekibimizin gideri (festival/reco/çekim — uçak/araç/otel). Genel lojistikten "Yönetmen Dönemi" etiketiyle süzülen roll-up havuz.
-- 1509 Kreatif Ağırlama/İş Yemekleri (Entertainment): Kapsam: KARŞI TARAFI ağırlama (oyuncu/DoP rol-revizyon, reji blokaj yemekleri). Ayrım: karşı taraf=1509, kendi yol-yemeği=1508.
+- 1507 Yönetmen Birimi Ofis Giderleri.
+- 1508-01..06 Yönetmen birimi seyahat/konaklama/yemek: Kapsam: KENDİ kreatif ekibimizin gideri (festival/reco/çekim — uçak/araç/otel) ve karşı tarafı ağırlama. Eski 1508/1509 ayrımı (kendi yol-yemeği / karşı tarafı ağırlama) KALKTI; ikisi 1508-03 Yemek-Ağırlama'da, birimi sabit (1108-03 ile aynı).
 
-Kart-özel anomali kuralları: çift-fringe guard (1501/kreatifler Loan-Out) · milestone uyuşmazlık (1501↔5100) · Crew Overlap (1504/1505 ↔ set ekibi). Genel kurallar §4.9'da.
+Kart-özel anomali kuralları: çift-fringe guard (1501/kreatifler Loan-Out) · milestone uyuşmazlık (1501↔5100) · Crew Overlap (1504/1502 ↔ set ekibi). Genel kurallar §4.9'da.
+
+**KARARLAŞTI, UYGULANMADI (Dilim 2):** 1501-01 Yönetmen Hak Devri ve 1511 Yönetmen Temsilci Komisyonu.
+- İkisi de kütüphaneden çağrılır; "Kime?" listesiyle kartın yönetmen satırlarından (1501/1509) birinin ALTINA alt satır olarak girer. Liste satırları görünen adlarıyla gösterilir.
+- Yönetmenin kişi adı kalemin adından AYRI bir alanda tutulur ve "Yönetmen Kaşesi — Ayşe Yılmaz" biçiminde gösterilir (tek kaynak `display-name.ts`).
+- Komisyon: tek atom, statü sirket, oran %20 (kütüphane `default_derive_rate`), taban = kaşe + hak devri toplamı.
+- Hak devri: statü telif; oran, kaşe ile hak devrinin bölüşümünü belirler. Oran hanesine bitişik kilit: KİLİTLİ (hazır gelen) = toplam sabit, oran ya da bir alt satır değişince öbürü tamamlar; AÇIK = oran devre dışı, alt satırlar serbest, toplam onların toplamı.
+- Hak devri %50'yi GEÇİNCE uyarı: "Telif oranının kaşeden çok daha yüksek olması, Avrupa fonlarında (örn: CNC) 'gizli maaş' (salaire déguisé) denetimlerine takılma riski taşır. Oranı dengede tutmanız önerilir." Eşik koda gömülmez, oran cetveline girer.
+- Türk bütçesinde hak devri kalemi olmaz (Türkiye'de yönetmen kaşesi tek rakam, telif %17).
+- Gerekçe: CNC, Eurimages, FFA, Medienboard, Wallimage, Screen Flanders ve ortak yapımcı Avrupa kanalları (Arte, ZDF, Canal+) iki kalemi "Director" altında ayrı ister.
+- Teknik tasarım konuşulmadan başlanmaz.
+
+**Reddedilen:** kişi listesi modelinin 1500'e taşınması; kütüphane başlıkları (dört grup); tek kalemli başlığın çizilmemesi kuralı.
+
+**Alınmayan adaylar:** Teknik Danışman (2100 turunda), Dialogue Director (post), geliştirme moodboard/konsept (1100'de 1104-03/1104-05), Associate Director / Direction Trainee / Creative Consultant / Assistant Choreographer, Prep/Shoot/Post (etap ekseni), avans/bonus/royalty.
 
 ### 7.5 KART 1600 — OYUNCU  [KİLİTLİ]
 *Üst-grup: OYUNCU · Etap: Yapım (casting Yapım Öncesi'ne sarkar) · Recoupable DEĞİL · Görünürlük: KISMİ MASKE (baş-kaşe satırları set rollerine gizli/çoğul, gerisi açık) · DB'de muhasebe tam · anomali aktif.*

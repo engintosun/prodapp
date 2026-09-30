@@ -1,7 +1,7 @@
 # KAAPA — BÜTÇE KART GEREKÇELERİ ve EĞİTİM NOTLARI
 
 *Bu dosya "NEDEN" dosyasıdır. KART-KATALOGU.md kuru kararı tutar (ne); burası muhakemeyi tutar (neden, sebep, sonuç, gerçek-set örneği, çift-sayım riski).*
-*Amaç: eğitim/onboarding — yeni muhasebeci/yapımcı KAAPA'nın kart mantığını buradan öğrenir. "1507 neden 2200'den ayrı?" sorusunun cevabı kararın kendisinde değil, burada.*
+*Amaç: eğitim/onboarding — yeni muhasebeci/yapımcı KAAPA'nın kart mantığını buradan öğrenir. "1510 neden 2200'den ayrı?" sorusunun cevabı kararın kendisinde değil, burada.*
 *KART-KATALOGU.md ile çapraz: her kart KART-KATALOGU §7.x ile eşleşir. Oluşturma: 19 Haziran 2026. Kapsam: KART 1100, 1300, 1400, 1500, 1600.*
 
 ---
@@ -138,17 +138,17 @@ Koster'ın "loan-out" dediği şey KAAPA için fringe motorunun TEMEL ayrımı. 
 
 **Anomali bağı (çift-fringe guard):** "Fatura kesen kişiye fringe DE Mİ yüklenmiş?" → çift-sayım bayrağı. Bu, 1400'deki çift-fringe guard'ın işçilik tarafındaki kardeşi. Eurimages "fringe-inclusive" kilidiyle doğrudan bağlı.
 
-### 1507 Konsept Sanatçısı — neden 2200'den ayrı? (çift-sayım önleme)
-Konsept sanatçısı iki yerde çalışabilir: (a) yönetmen için greenlight öncesi vizyon/moodboard ("filmin dünyası nasıl görünecek"), (b) Sanat Departmanı için prep'te gerçek dekor/set tasarımı. Aynı iş gibi görünür. Sınır koymazsak aynı konsept çalışması hem 1507 hem 2200'e yazılır → çift-sayım. Karar: **1507 = sadece yönetmen erken-vizyonu** (greenlight öncesi), prodüksiyon tasarımı → 2200. İkisi alias ile bağlı (birbirini işaret eder, kopyalamaz).
+### 1510 Konsept Sanatçısı — neden 2200'den ayrı? (çift-sayım önleme)
+Konsept sanatçısı iki yerde çalışabilir: (a) yönetmen için greenlight öncesi vizyon/moodboard ("filmin dünyası nasıl görünecek"), (b) Sanat Departmanı için prep'te gerçek dekor/set tasarımı. Aynı iş gibi görünür. Sınır koymazsak aynı konsept çalışması hem 1510 hem 2200'e yazılır → çift-sayım. Karar: **1510 = sadece yönetmen erken-vizyonu** (greenlight öncesi), prodüksiyon tasarımı → 2200. İkisi alias ile bağlı (birbirini işaret eder, kopyalamaz).
 
 ### Milestone uyuşmazlık denetimi — neden 1501 ↔ 5100?
 Koster: "yönetmen EN ÇOK kurgucuyla çalışır." Bu, çekim ile post-prodüksiyon arasındaki köprü. Yönetmen kaşesi genelde taksitli ödenir, taksitler teslim kilometre taşlarına bağlı ("kaba kurgu onayı faturası"). Motor: 1501 hakediş taksiti girildiğinde 5100 Kurgu kartındaki onay tikini denetler. Kaba kurgu teslim edilmeden fatura işlendiyse → erken ödeme/sözleşme ihlali uyarısı. Bu, 1403'teki mahsup denetiminin yönetmen versiyonu.
 
 ### Crew Overlap Guard — neden GENEL kural (sadece 1500 değil)?
-1504 (diyalog koçu) veya 1505 (özel asistan) paket ücretle çalışırken, set başlayınca operasyonel set ekibinde aynı isim haftalık maaşla listelenirse → aynı kişi iki koldan para alıyor (çift maaş). Ama bu sahtekarlık/hata HER YERDE olur — bir kişi hem kamera hem grip kartında, hem ATL hem BTL'de görünebilir. Bu yüzden Crew Overlap GENEL motor kuralı: tüm kartlarda "aynı isim iki kartta maaş alıyor mu?" taraması. Sadece 1500'e özel değil.
+1504 (diyalog koçu) veya 1502 (özel asistan) paket ücretle çalışırken, set başlayınca operasyonel set ekibinde aynı isim haftalık maaşla listelenirse → aynı kişi iki koldan para alıyor (çift maaş). Ama bu sahtekarlık/hata HER YERDE olur — bir kişi hem kamera hem grip kartında, hem ATL hem BTL'de görünebilir. Bu yüzden Crew Overlap GENEL motor kuralı: tüm kartlarda "aynı isim iki kartta maaş alıyor mu?" taraması. Sadece 1500'e özel değil.
 
 ### Master Excel doğrulaması
-Storyboard Artist [8k], Script Timing [6k], Dialogue Coach [4k], Choreographer (Koster) → 1500 ekibini doğruluyor. "Storyboard for development" vs "Storyboard Artist" Master'da ayrı geçiyor — tam bizim 1506 ↔ 1300 alias kararı (geliştirmede başlayan storyboard ile yönetmen storyboard'u arasında mükerrer denetimi). 2nd Unit Director → 1502 (kaşe); ekip/ekipman 4200'de (ayrı).
+Storyboard Artist [8k], Script Timing [6k], Dialogue Coach [4k], Choreographer (Koster) → 1500 ekibini doğruluyor. "Storyboard for development" vs "Storyboard Artist" Master'da ayrı geçiyor — tam bizim 1506 ↔ 1300 alias kararı (geliştirmede başlayan storyboard ile yönetmen storyboard'u arasında mükerrer denetimi). 2nd Unit Director → 1509 (kaşe); ekip/ekipman 4200'de (ayrı).
 
 ---
 
