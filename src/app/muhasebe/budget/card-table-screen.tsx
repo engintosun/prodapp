@@ -8,7 +8,7 @@ import { useEditBuffers } from './hooks/use-edit-buffers'
 import { useGridNavigation } from './hooks/use-grid-navigation'
 import { isMultiPeriod, fmt, matchLibraryItems, buildRoomOptions, findCrossCardMatches } from './format'
 import type { RoomOption } from './format'
-import { addBudgetItem, addPersonItems, softDeleteBudgetItem, updateItemField, setSplitLock } from '../../../shared/supabase/budget-service'
+import { addBudgetItem, addPersonItems, softDeleteBudgetItem, softDeleteBudgetItems, updateItemField, setSplitLock } from '../../../shared/supabase/budget-service'
 import { fetchPersonLabels, updatePersonLabel, fetchDutyOptions } from '../../../shared/supabase/person-label-service'
 import type { PersonLabel, PersonLabelPatch, DutyOption } from '../../../shared/supabase/person-label-service'
 import { useToast } from '../../../shared/components/toast'
@@ -19,11 +19,11 @@ import { PeriodRow } from './components/period-row'
 import { HeadingRow } from './components/heading-row'
 import { SummaryRow } from './components/summary-row'
 import { buildCardView } from './card-view'
-import { unlockWrite, relockWrite } from './split-lock'
+import { unlockWrite, relockWrite, lockedRemainder } from './split-lock'
 import type { CardView } from './card-view'
 import { resolveCollapsed, toggleCollapse, openBlock } from './collapse-state'
 import type { CollapseState } from './collapse-state'
-import { personsNeedingCommissionRow, commissionRowsWithoutTick, COMMISSION_CATALOG_BY_KIND } from './person-groups'
+import { personsNeedingCommissionRow, commissionRowsWithoutTick, COMMISSION_CATALOG_BY_KIND, lockedSplits } from './person-groups'
 import type { CommissionKind, UntickedCommission } from './person-groups'
 import { personCardPresence, personNameCollisions, cardUsesPersonList } from './person-bring'
 import { summaryDisplayName, commissionDisplayName, rowDisplayName } from './display-name'
@@ -43,6 +43,12 @@ import { cellSelector } from './cell-address'
 // TETIGIN YANINDA (TASARIM-KARARLARI bolum 9, K1): pencerenin tetigi ADRESLE bulunur - satir ve
 // sutun isaretinden sayfada aranir. Ref okumaz (react-hooks/refs kurali susturulmaz); sessiz
 // yenileme dugumu degistirse de ayni adres ayni hucreyi bulur.
+// Turkce liste: "A", "A ve B", "A, B ve C".
+function joinTr(names: string[]): string {
+  if (names.length <= 1) return names[0] ?? ''
+  return names.slice(0, -1).join(', ') + ' ve ' + names[names.length - 1]
+}
+
 function findTrigger(selector: string): HTMLElement | null {
   return document.querySelector<HTMLElement>(selector)
 }
@@ -714,15 +720,35 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
       // cagirmaz - ajansi gercekten yoksa kullanici oyuncu listesinde duzeltir.
       // Cins STATUDEN degil KATALOG KODUNDAN okunur (12 Eylul 2026 karari): statu
       // kullanicinin degistirebildigi bir vergi hanesidir.
+      // 1500 Dilim 2c-1: zimbali komisyon (1511) bu kurala GIRMEZ - kutuphaneden elle eklenir, tikten dogmaz; x normal siler.
       const target = rowsRef.current.find((r) => r.id === itemId)
-      if (target && target.deriveRate !== null) {
+      if (target && target.deriveRate !== null && target.parentItemId === null) {
         const kindLabel =
           target.catalogCode === COMMISSION_CATALOG_BY_KIND.menajer ? 'Menajer' : 'Ajans'
         addToast(`${kindLabel} tanımlı. Komisyon yoksa silmek yerine oranı 0 yapın.`, 'warning', { anchor: cellSelector(itemId, 'itemRemove') })
         return
       }
+      // 1500 Dilim 2c-1 (Karar 8, 9): yonetmen satiri zimbalilariyla birlikte silinir, soru
+      // silinecekleri adiyla soyler. Kilitli hak devri silinirken rakami Hizmet Bedeli'ne doner
+      // (kayda bir sey yazilmaz - Karar 11), soru bunu soyler.
+      const all = rowsRef.current
+      const children = all.filter((r) => r.parentItemId === itemId)
+      const deleteIds = [itemId, ...children.map((r) => r.id)]
+      let message = 'Bu kalemi silmek istiyor musun?'
+      if (target && children.length > 0) {
+        const lib = library.find((l) => l.catalogCode === target.catalogCode)
+        const head = target.personName ?? lib?.name ?? target.name
+        const anchorLabel = lib?.nameSuffix ? head + ' ' + lib.nameSuffix : head
+        message = `${anchorLabel} ile altındaki ${joinTr(children.map((r) => r.name))} silinecek.`
+      } else if (target && target.parentItemId !== null) {
+        const lock = lockedSplits(all).get(target.parentItemId)
+        const anchor = all.find((r) => r.id === target.parentItemId)
+        if (lock && lock.splitItemId === target.id && anchor) {
+          message = `${target.name} silinecek, ${fmt(lockedRemainder(anchor, lock.rate))} Hizmet Bedeli'ne eklenecek.`
+        }
+      }
       const ok = await askConfirm({
-        message: 'Bu kalemi silmek istiyor musun?',
+        message,
         confirmLabel: 'Sil',
         anchor: () => findTrigger(cellSelector(itemId, 'itemRemove')),
       })
@@ -731,7 +757,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         const list = rowsRef.current
         const idx = list.findIndex((r) => r.id === itemId)
         const neighbour = idx > 0 ? list[idx - 1] : list[idx + 1]
-        await softDeleteBudgetItem(itemId)
+        await softDeleteBudgetItems(deleteIds)
         refetch({ silent: true })
         // Silinen satir gozden kayboluyor, odak bosta kalmasin (Engin karari 2026-07-27):
         // bir USTTEKI kaleme gider; ilk satir siliniyorsa alttakine; kart tamamen bosaliyorsa
@@ -746,7 +772,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         addToast(e instanceof Error ? e.message : 'Kalem silinemedi', 'error', { anchor: cellSelector(itemId, 'itemRemove') })
       }
     },
-    [refetch, addToast, rowsRef, containerRef, askConfirm],
+    [refetch, addToast, rowsRef, containerRef, askConfirm, library],
   )
 
   const onOpenStatusInfo = useCallback(() => {

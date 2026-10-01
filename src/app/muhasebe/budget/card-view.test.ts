@@ -311,4 +311,17 @@ describe('hak devri bolmesi (1500 Dilim 2b-1)', () => {
     ]
     expect(cardViewTotals(rows, NO_BORDRO).net).toBe(1000000)
   })
+
+  it('zimbali komisyon tabani: ozet toplami (Hizmet Bedeli + hak devri) x oran', () => {
+    const rows = [
+      makeItem({ id: 'hb', catalogCode: '1501', unitNet: 1000000 }),
+      makeItem({ id: 'hd', catalogCode: '1501-01', parentItemId: 'hb', splitRate: 50, unitNet: 0 }),
+      makeItem({ id: 'k', catalogCode: '1511', parentItemId: 'hb', deriveRate: 20, unitNet: 0 }),
+    ]
+    const view = build(rows)
+    expect(view.rowTotalsById.k.net).toBe(200000)
+    const summary = view.groups[0].renderRows[0]
+    expect(summary.kind).toBe('anchorSummary')
+    if (summary.kind === 'anchorSummary') expect(summary.totals.net).toBe(1200000)
+  })
 })

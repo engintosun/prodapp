@@ -671,3 +671,13 @@ export async function softDeleteBudgetItem(itemId: string): Promise<void> {
   if (error) throw new Error(error.message)
 }
 
+// 1500 Dilim 2c-1 (Karar 8): yonetmen satiri ve zimbali satirlari TEK guncellemede silinir; biri
+// silinip oburu kalmaz. Govde softDeleteBudgetItem ile ayni.
+export async function softDeleteBudgetItems(itemIds: string[]): Promise<void> {
+  const { error } = await supabase
+    .from('budget_items')
+    .update({ is_active: false, person_object_id: null })
+    .in('id', itemIds)
+  if (error) throw new Error(error.message)
+}
+

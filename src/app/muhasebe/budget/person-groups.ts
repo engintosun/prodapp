@@ -61,19 +61,44 @@ export function personNetBases(
   return out
 }
 
+// ZIMBALI KOMISYON TABANI (1 Ekim 2026, KART-KATALOGU 7.4; Engin 30 Eylul: "kase arti hak
+// devrinin toplamindan hesaplanir bu zaten ozette yer alacak"): capanin ve capaya zimbali
+// TURETILMEMIS satirlarin net toplami = ozet toplami (kilitliyken pay + kalan = toplam).
+// Kisi tabanindan (personNetBases) AYRI: zimbali satirin kisi etiketi yoktur.
+export function anchorNetBases(
+  rows: readonly BudgetItemRow[],
+  netByItemId: Readonly<Record<string, number>>,
+): Record<string, number> {
+  const anchorIds = new Set(rows.filter((r) => r.parentItemId !== null).map((r) => r.parentItemId as string))
+  const base = new Map<string, Decimal>()
+  for (const row of rows) {
+    if (row.deriveRate !== null) continue
+    const key = anchorIds.has(row.id) ? row.id : row.parentItemId !== null && anchorIds.has(row.parentItemId) ? row.parentItemId : null
+    if (key === null) continue
+    base.set(key, (base.get(key) ?? new Decimal(0)).plus(netByItemId[row.id] ?? 0))
+  }
+  const out: Record<string, number> = {}
+  for (const [key, value] of base) out[key] = value.toNumber()
+  return out
+}
+
 // Ikinci gecis: derive_rate dolu satirin birim neti, AYNI etiketteki derive_rate BOS satirlarin
 // Ara toplamlarindan oranla dogar. Turetilmis satir tabana GIRMEZ (kendi sonucunu beslemesin).
 // Yuvarlama iki hanedir: sonuc Birim net hanesinde gorunur, o kolon numeric(14,2) tasir.
+// 1500 Dilim 2c-1: zimbali turetilmis satir tabanini capanin blogundan alir, kisiden degil.
 export function derivedUnitNets(
   rows: readonly BudgetItemRow[],
   netByItemId: Readonly<Record<string, number>>,
 ): Record<string, number> {
   const bases = personNetBases(rows, netByItemId)
+  const anchorBases = anchorNetBases(rows, netByItemId)
   const out: Record<string, number> = {}
   for (const row of rows) {
-    const key = row.personObjectId
-    if (!key || row.deriveRate === null) continue
-    const base = new Decimal(bases[key] ?? 0)
+    if (row.deriveRate === null) continue
+    let base: Decimal
+    if (row.parentItemId !== null) base = new Decimal(anchorBases[row.parentItemId] ?? 0)
+    else if (row.personObjectId) base = new Decimal(bases[row.personObjectId] ?? 0)
+    else continue
     out[row.id] = base
       .mul(row.deriveRate)
       .div(100)

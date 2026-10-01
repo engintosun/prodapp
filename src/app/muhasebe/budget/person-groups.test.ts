@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { groupByPerson, derivedUnitNets, buildRenderRows, personNetBases, personsNeedingCommissionRow, commissionRowsWithoutTick, anchorCodesOf, summaryAnchorIds, lockedSplits, shareItem } from './person-groups'
+import { groupByPerson, derivedUnitNets, buildRenderRows, personNetBases, personsNeedingCommissionRow, commissionRowsWithoutTick, anchorCodesOf, summaryAnchorIds, lockedSplits, shareItem, anchorNetBases } from './person-groups'
 import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
 import type { PersonLabel } from '../../../shared/supabase/person-label-service'
 
@@ -492,5 +492,26 @@ describe('hak devri bolmesi (1500 Dilim 2b-1)', () => {
     expect(a.multiplier).toBe(2)
     const b = shareItem(makeItem({ unitNet: 1000, periodNet: { s1: 200000, s2: null } }), 30)
     expect(b.periodNet).toEqual({ s1: 140000, s2: null })
+  })
+})
+
+describe('zimbali komisyon tabani (1500 Dilim 2c-1)', () => {
+  const hb = makeItem({ id: 'hb', catalogCode: '1501' })
+  const hd = makeItem({ id: 'hd', catalogCode: '1501-01', parentItemId: 'hb', splitRate: 50 })
+  const k = makeItem({ id: 'k', catalogCode: '1511', parentItemId: 'hb', deriveRate: 20 })
+
+  it('anchorNetBases: capa ve zimbali turetilmemis satirlarin toplami, komisyon tabana girmez', () => {
+    expect(anchorNetBases([hb, hd, k], { hb: 500000, hd: 500000, k: 999 })).toEqual({ hb: 1000000 })
+  })
+
+  it('derivedUnitNets: zimbali komisyon ozet toplaminin yuzdesi', () => {
+    expect(derivedUnitNets([hb, hd, k], { hb: 500000, hd: 500000, k: 999 })).toEqual({ k: 200000 })
+  })
+
+  it('derivedUnitNets: kisi komisyonu ile zimbali komisyon ayni anda', () => {
+    const kase = makeItem({ id: 'kase', personObjectId: 'p1' })
+    const pk = makeItem({ id: 'pk', personObjectId: 'p1', deriveRate: 20 })
+    const out = derivedUnitNets([kase, pk, hb, hd, k], { kase: 100000, hb: 500000, hd: 500000 })
+    expect(out).toEqual({ pk: 20000, k: 200000 })
   })
 })

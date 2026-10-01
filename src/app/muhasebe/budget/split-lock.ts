@@ -77,3 +77,10 @@ export function shownRow(rows: readonly BudgetItemRow[], row: BudgetItemRow): Bu
   const split = lockedSplits(rows).get(row.id)
   return split ? shareItem(row, split.rate) : row
 }
+
+// KILITLI HAK DEVRININ RAKAMI (Karar 11): toplam - pay. TEK YER: card-view.ts computeRowTotals ve
+// kart ekraninin silme sorusu bunu okur (ayni formul iki yerde yasamaz). Bordro capa bolunmez
+// (lockedSplits), bordro verisi gerekmez.
+export function lockedRemainder(anchor: BudgetItemRow, rate: number): number {
+  return rowTotals(anchor, undefined).net - rowTotals(shareItem(anchor, rate), undefined).net
+}

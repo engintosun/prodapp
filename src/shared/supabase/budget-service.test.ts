@@ -25,6 +25,7 @@ vi.mock('./client', () => ({
         capturedUpdateArgs = args
         return {
           eq: () => Promise.resolve({ error: null }),
+          in: () => Promise.resolve({ error: null }),
         }
       },
     }),
@@ -36,7 +37,7 @@ vi.mock('./client', () => ({
   },
 }))
 
-import { updateItemField, addBudgetItem, addPersonItems, softDeleteBudgetItem, setSplitLock } from './budget-service'
+import { updateItemField, addBudgetItem, addPersonItems, softDeleteBudgetItem, softDeleteBudgetItems, setSplitLock } from './budget-service'
 
 const BRACKETS_2026: TaxBracket[] = [
   { floor: 0, ratePercent: 15, baseTax: 0 },
@@ -568,5 +569,16 @@ describe('setSplitLock (1500 Dilim 2b-2b)', () => {
       p_anchor_unit_net: 500000,
       p_anchor_period_nets: {},
     })
+  })
+})
+
+describe('softDeleteBudgetItems (1500 Dilim 2c-1)', () => {
+  beforeEach(() => {
+    capturedUpdateArgs = null
+  })
+
+  it('tek update icinde is_active ve person_object_id degisir', async () => {
+    await softDeleteBudgetItems(['a', 'b'])
+    expect(capturedUpdateArgs).toEqual({ is_active: false, person_object_id: null })
   })
 })

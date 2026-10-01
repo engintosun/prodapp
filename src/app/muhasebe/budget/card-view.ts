@@ -12,6 +12,7 @@ import type { RowTotals } from './totals'
 import { groupRowsByHeading } from './format'
 import { groupByPerson, buildRenderRows, derivedUnitNets, anchorCodesOf, summaryAnchorIds, lockedSplits, shareItem } from './person-groups'
 import { anchorNames } from './display-name'
+import { lockedRemainder } from './split-lock'
 import type { AnchorLibraryEntry, AnchorNames } from './display-name'
 import type { RenderRow } from './person-groups'
 
@@ -117,12 +118,10 @@ function computeRowTotals(
   const displayItemById: Record<string, BudgetItemRow> = {}
   const splits = lockedSplits(rows)
   const splitItemIds = new Set([...splits.values()].map((s) => s.splitItemId))
-  const fullNetByAnchor: Record<string, number> = {}
   for (const row of rows) {
     if (row.deriveRate !== null || splitItemIds.has(row.id)) continue
     const split = splits.get(row.id)
     if (split) {
-      fullNetByAnchor[row.id] = rowTotals(row, bordroData[row.id]).net
       const shown = shareItem(row, split.rate)
       displayItemById[row.id] = shown
       const t = rowTotals(shown, bordroData[row.id])
@@ -137,8 +136,9 @@ function computeRowTotals(
   const splitOverrides: Record<string, number> = {}
   for (const [anchorId, split] of splits) {
     const splitRow = rows.find((r) => r.id === split.splitItemId)
-    if (!splitRow) continue
-    const remainder = (fullNetByAnchor[anchorId] ?? 0) - (netByItemId[anchorId] ?? 0)
+    const anchorRow = rows.find((r) => r.id === anchorId)
+    if (!splitRow || !anchorRow) continue
+    const remainder = lockedRemainder(anchorRow, split.rate)
     splitOverrides[splitRow.id] = remainder
     rowTotalsById[splitRow.id] = rowTotals(splitRow, bordroData[splitRow.id], remainder)
     netByItemId[splitRow.id] = remainder
