@@ -133,7 +133,7 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 
 ## Sıradaki iş
 
-**ANA KONU: KART 1500 Dilim 2 (1 Ekim 2026).** Teknik tasarım dokuz kararla tamamlandı, adım 1 (kayıt yapısı, göç `20261001120000`) uygulandı. SIRADA: 2a adlar, özet satırı ve "Kime?"; 2b hak devri oranı, kilit ve bölme; 2c komisyon tabanı, %50 uyarısı ve silme. Karar evi: `docs/butce/KART-KATALOGU.md` §7.4. Mühür yüzeyi icmalle birlikte ele alınır (30 Eylül 2026).
+**ANA KONU: KART 1500 Dilim 2 (1 Ekim 2026).** Teknik tasarım tamamlandı; adım 1 (kayıt yapısı, göç `20261001120000`) ve 2a (adlar, özet satırı, isim yazma, "Kime?") uygulandı. SIRADA: 2b hak devri oranı, kilit ve bölme (Hizmet Bedeli'nin rakamı dönemlere dağıtılmış olabilir, bölme ekran tarafında yapılır); 2c komisyon tabanı, %50 uyarısı ve silme. Karar evi: `docs/butce/KART-KATALOGU.md` §7.4. Mühür yüzeyi icmalle birlikte ele alınır (30 Eylül 2026).
 
 1. **Mac turları — MAKİNE YOK (24 Eylül 2026, Engin).** Mac gerçek cihaz turu (KLV kapanışı ve `v0.2-klv` etiketi buna bağlı) ve Mac Safari'de PDF içe aktarma denemesi (PDF ilk sürümünün tamam sayılması buna bağlı; Chrome'da doğrulandı) yapılamıyor. İkisi askıda; makine bulununca aynı oturumda yapılır.
 

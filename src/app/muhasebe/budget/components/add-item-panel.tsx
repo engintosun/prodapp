@@ -19,13 +19,16 @@ interface AddItemPanelProps {
   inputRef: RefObject<HTMLInputElement | null>
   onQueryChange: (value: string) => void
   onHighlightChange: (next: number) => void
-  onSelect: (item: RoomOption, personObjectId?: string) => void
+  onSelect: (item: RoomOption, personObjectId?: string, parentItemId?: string) => void
   crossCardNames: string[]
   onCreateFree: (name: string) => void
   onClose: () => void
   // GOREV DISI ATOMLARDA KISI SORMA (asks_person, 19 Eylul 2026): kartta aktif satiri
   // olan kisiler - panelde HESAPLANMAZ, prop olarak gelir (card-table-screen.tsx).
   persons: PersonOption[]
+  // 1500 Dilim 2a-3b: attaches_to dolu secenegin Kime? listesi - kartin zimbalanabilir satirlari,
+  // Kime? adlariyla (display-name.ts anchorNames). Panelde HESAPLANMAZ, card-table-screen.tsx verir.
+  anchorRowsFor: (option: RoomOption) => PersonOption[]
   // YER (25 Eylul 2026, Dilim 1b-2): odanin baglandigi ekleme satiri hucresi; bulunamazsa oda ortada acilir.
   anchor?: () => HTMLElement | null
   // YATAY YASLANMA (25 Eylul 2026, Dilim 1b-2 duzeltmesi, Engin karari): verilirse ve bulunursa sol
@@ -52,6 +55,7 @@ export function AddItemPanel({
   onCreateFree,
   onClose,
   persons,
+  anchorRowsFor,
   anchor,
   anchorLeft,
 }: AddItemPanelProps) {
@@ -66,6 +70,7 @@ export function AddItemPanel({
   // ASKS_PERSON IKI ADIM (19 Eylul 2026): birinci adim bugunku kalem listesi; asksPerson
   // isaretli secenek secilince panel KAPANMAZ, ikinci adima gecer (baslik "Kime?", liste
   // kisi listesi olur). pendingOption ikinci adimda hangi kalemin kisi bekledigini tasir.
+  // 1500 Dilim 2a-3b: attachesTo dolu secenek de ayni ikinci adima gecer; liste kisiler yerine satirlardir.
   const [step, setStep] = useState<'library' | 'person'>('library')
   const [pendingOption, setPendingOption] = useState<RoomOption | null>(null)
 
@@ -75,7 +80,7 @@ export function AddItemPanel({
   }
 
   const selectOption = (o: RoomOption) => {
-    if (o.asksPerson) {
+    if (o.asksPerson || o.attachesTo.length > 0) {
       setPendingOption(o)
       setStep('person')
       onQueryChange('')
@@ -87,9 +92,12 @@ export function AddItemPanel({
 
   const selectPerson = (personId: string) => {
     if (!pendingOption) return
-    onSelect(pendingOption, personId)
+    if (pendingOption.attachesTo.length > 0) onSelect(pendingOption, undefined, personId)
+    else onSelect(pendingOption, personId)
     backToLibraryStep()
   }
+  const anchorStep = pendingOption !== null && pendingOption.attachesTo.length > 0
+  const whoList = anchorStep && pendingOption ? anchorRowsFor(pendingOption) : persons
   // MESAJ YERI (TASARIM-KARARLARI bolum 9, 17 Eylul 2026): yuzey acikken mesajlar
   // basligin altindaki kapta cikar.
   const toastHostRef = useToastHost()
@@ -258,7 +266,7 @@ export function AddItemPanel({
         <div ref={toastHostRef} style={{ position: 'sticky', top: 0 }} />
 
         {step === 'person' ? (
-          persons.length > 0 ? (
+          whoList.length > 0 ? (
             <ul
               role="listbox"
               style={{
@@ -275,7 +283,7 @@ export function AddItemPanel({
                 borderRadius: 'var(--radius-sm)',
               }}
             >
-              {persons.map((p) => (
+              {whoList.map((p) => (
                 <li key={p.id} role="option">
                   <button
                     type="button"
@@ -301,7 +309,7 @@ export function AddItemPanel({
             </ul>
           ) : (
             <p style={{ margin: 0, fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)' }}>
-              Bu kartta aktif satırı olan kimse yok.
+              {anchorStep ? 'Bu kartta bu kalemin bağlanacağı satır yok.' : 'Bu kartta aktif satırı olan kimse yok.'}
             </p>
           )
         ) : (

@@ -250,7 +250,7 @@ D. Lojistik & Temsil (operasyonel gider)
 
 Kart-özel anomali kuralları: çift-fringe guard (1501/kreatifler Loan-Out) · milestone uyuşmazlık (1501↔5100) · Crew Overlap (1504/1502 ↔ set ekibi). Genel kurallar §4.9'da.
 
-**KARARLAŞTI (Dilim 2; 30 Eylül 2026 ve 1 Ekim 2026, Engin kararları):** 1501-01 Yönetmen Hak Devri ve 1511 Yönetmen Temsilci Komisyonu. Uygulama dört adımdadır: 1) kayıt yapısı (göç `20261001120000`, UYGULANDI); 2a) adlar, özet satırı ve "Kime?"; 2b) hak devri oranı, kilit ve bölme; 2c) komisyon tabanı, %50 uyarısı ve silme.
+**KARARLAŞTI (Dilim 2; 30 Eylül 2026 ve 1 Ekim 2026, Engin kararları):** 1501-01 Yönetmen Hak Devri ve 1511 Yönetmen Temsilci Komisyonu. Uygulama dört adımdadır: 1) kayıt yapısı (göç `20261001120000`, UYGULANDI); 2a) adlar, özet satırı, isim yazma ve "Kime?" (UYGULANDI, 1 Ekim 2026); 2b) hak devri oranı, kilit ve bölme; 2c) komisyon tabanı, %50 uyarısı ve silme.
 
 **Engin'in metni (30 Eylül 2026, BİREBİR; özetlenmez, kısaltılmaz):**
 
@@ -297,6 +297,8 @@ Kart-özel anomali kuralları: çift-fringe guard (1501/kreatifler Loan-Out) · 
 - AJANS VAR, KOMİSYON YOK: komisyon satırı %0 oranla eklenir ve durur (1600 emsali: ajans ücret almasa da sözleşmede taraftır).
 - EŞİK: oran cetvelinde "Parametre: Hak devri uyarı eşiği" %50. Uyarı hak devrinin toplam içindeki payına bakar, kilitli ve açık halde aynıdır; metin yukarıdaki Engin metnindeki cümledir.
 - AJANS ADI PARKTA: 1511 satırında ajansın adı gösterilmez (1 Ekim 2026, Engin); ayrıca değerlendirilecek.
+- KARAR 10 (1 Ekim 2026, Engin): numara görev adının göründüğü her yerde aynıdır. Aynı kodda iki ve daha fazla isimsiz yönetmen satırı varsa satır özetsiz de olsa "Yönetmen 1", "Yönetmen 2" yazar; "Kime?" listesi aynı adı gösterir. Tek isimsiz satır numara almaz.
+- AD HÜCRESİ (1 Ekim 2026, Engin): yönetmen satırının Ad hücresine girince yalnız kişi adı görünür (yoksa boş), çıkınca kurulmuş ad görünür (sayı hücrelerinin deseni). Yazılan ad hücreden çıkılana kadar kaydedilmez; her harfte özet satırı doğup kaybolmasın. Kullanıcı ismi kendisi yazdığında blok açık doğar. Klavye motoru bu hücreyi ayrı kolon olarak tanır (`personName`), Ad kolonuyla dikey eşdeğerdir.
 
 **Reddedilen:** kişi listesi modelinin 1500'e taşınması; kütüphane başlıkları (dört grup); tek kalemli başlığın çizilmemesi kuralı.
 

@@ -200,8 +200,8 @@ describe('matchLibraryItems', () => {
 
 describe('buildRoomOptions (D3c-2 — AYIKLAMA KURALI + DEVRALMA)', () => {
   const LIBRARY = [
-    { id: 'l1', catalogCode: '1501', name: 'Yönetmen Kaşesi', aliases: [], defaultPaymentStatus: 'sirket', defaultUnitCode: 'day', asksPerson: false },
-    { id: 'l2', catalogCode: '1502', name: 'Koreograf', aliases: ['Coreographer'], defaultPaymentStatus: 'bordro', defaultUnitCode: 'day', asksPerson: false },
+    { id: 'l1', catalogCode: '1501', name: 'Yönetmen Kaşesi', aliases: [], defaultPaymentStatus: 'sirket', defaultUnitCode: 'day', asksPerson: false, attachesTo: [] },
+    { id: 'l2', catalogCode: '1502', name: 'Koreograf', aliases: ['Coreographer'], defaultPaymentStatus: 'bordro', defaultUnitCode: 'day', asksPerson: false, attachesTo: [] },
   ]
 
   it('kutuphane satirlari listeye oldugu gibi girer', () => {
@@ -236,6 +236,7 @@ describe('buildRoomOptions (D3c-2 — AYIKLAMA KURALI + DEVRALMA)', () => {
       paymentStatus: 'bordro',
       unitCode: 'week',
       asksPerson: false,
+      attachesTo: [],
     })
   })
 
@@ -280,6 +281,14 @@ describe('buildRoomOptions (D3c-2 — AYIKLAMA KURALI + DEVRALMA)', () => {
     expect(byAlias.map((o) => o.name)).toEqual(['Koreograf'])
     const byFold = matchLibraryItems(options, 'isik')
     expect(byFold.map((o) => o.name)).toEqual(['Işık Ustası'])
+  })
+
+  it('kutuphane secenegi attachesTo kodlarini tasir (1500 Dilim 2a-3b)', () => {
+    const lib = [
+      { id: 'l3', catalogCode: '1501-01', name: 'Yönetmen Hak Devri', aliases: [], defaultPaymentStatus: 'telif_belgeli', defaultUnitCode: 'flat', asksPerson: false, attachesTo: ['1501', '1509'] },
+    ]
+    const r = buildRoomOptions(lib, [])
+    expect(r[0].attachesTo).toEqual(['1501', '1509'])
   })
 })
 

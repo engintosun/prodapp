@@ -167,10 +167,12 @@ export interface RoomOption {
   paymentStatus: string
   unitCode: string
   asksPerson: boolean
+  // 1500 Dilim 2a-3b: doluysa secim "Kime?" ile bir satira zimbalanir (kutuphane attaches_to).
+  attachesTo: string[]
 }
 
 export function buildRoomOptions(
-  library: { id: string; catalogCode: string; name: string; aliases: string[]; defaultPaymentStatus: string; defaultUnitCode: string; asksPerson: boolean }[],
+  library: { id: string; catalogCode: string; name: string; aliases: string[]; defaultPaymentStatus: string; defaultUnitCode: string; asksPerson: boolean; attachesTo: string[] }[],
   rows: { catalogCode: string | null; libraryItemId: string | null; name: string; paymentStatusCode: string; unitCode: string; sortNo: number }[],
 ): RoomOption[] {
   const libraryOptions: RoomOption[] = library
@@ -185,6 +187,7 @@ export function buildRoomOptions(
       paymentStatus: it.defaultPaymentStatus,
       unitCode: it.defaultUnitCode,
       asksPerson: it.asksPerson,
+      attachesTo: it.attachesTo,
     }))
 
   // AYIKLAMA KURALI: libraryItemId dolu satirlar ATLANIR (karsiligi kutuphane adiyla zaten
@@ -218,6 +221,7 @@ export function buildRoomOptions(
       paymentStatus: v.paymentStatus,
       unitCode: v.unitCode,
       asksPerson: false,
+      attachesTo: [],
     }))
 
   return [...libraryOptions, ...cardOptions]

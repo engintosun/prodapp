@@ -328,7 +328,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   }, [addQuery, allLibrary, cardCode, budgetCards])
 
   const onSelectLibraryItem = useCallback(
-    async (o: RoomOption, personObjectId?: string) => {
+    async (o: RoomOption, personObjectId?: string, parentItemId?: string) => {
       if (!cardRef.current || adding) return
       try {
         setAdding(true)
@@ -336,9 +336,10 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         // serbest kalemi) AYNI kodla + ilk satirin statu/birimini DEVRALARAK ikinci satir doger.
         // ASKS_PERSON (19 Eylul 2026): personObjectId yalniz kutuphane yolunda anlamlidir -
         // panel bunu yalniz asksPerson isaretli (source==='library') secenekte gonderir.
+        // 1500 Dilim 2a-3b: parentItemId yalniz attachesTo dolu secenekte gelir (zimba).
         const newItemId =
           o.source === 'library'
-            ? await addBudgetItem(cardRef.current.groupId, { catalogCode: o.catalogCode, personObjectId })
+            ? await addBudgetItem(cardRef.current.groupId, { catalogCode: o.catalogCode, personObjectId, parentItemId })
             : await addBudgetItem(cardRef.current.groupId, {
                 existingCode: o.catalogCode,
                 name: o.name,
@@ -453,6 +454,11 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     }
     const row = rows.find((r) => r.id === pendingId)
     if (!row) return
+    // 1500 Dilim 2a-3b: zimbali satir kapali zimba blogundaysa blok acilir (kisi blogu ile ayni desen).
+    if (row.parentItemId) {
+      setCollapseState((prev) => openBlock('a:' + row.parentItemId, prev))
+      return
+    }
     if (row.personObjectId) {
       setCollapseState((prev) => openBlock('p:' + row.personObjectId, prev))
       return
@@ -756,6 +762,15 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   useLayoutEffect(() => {
     cardViewRef.current = cardView
   })
+  // 1500 Dilim 2a-3b (KART-KATALOGU 7.4 Karar 6, 10): Kime? listesi kartin satirlarindan,
+  // secenegin attachesTo kodlarina gore; ad kartla AYNI kaynaktan (anchorNames.whoName).
+  const anchorRowsFor = useCallback(
+    (o: RoomOption) =>
+      rows
+        .filter((r) => o.attachesTo.includes(r.catalogCode))
+        .map((r) => ({ id: r.id, name: cardView.anchorNames.whoName.get(r.id) ?? r.name })),
+    [rows, cardView],
+  )
 
   // Tek kalemli rol blogu KAPALI dogar (10 Eylul 2026, Engin karari): ozet satiri zaten dogru
   // rakami gosteriyor, tek alt kalem ayni rakami tekrar etmesin; rakam kolonunda ne bosluk ne
@@ -1107,6 +1122,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
           anchor={() => findTrigger('[data-anchor="add-row"]')}
           anchorLeft={() => findTrigger('[data-col="note"]')}
           persons={cardPersons}
+          anchorRowsFor={anchorRowsFor}
         />
       )}
       {addChooserOpen && <AddChooser anchor={() => findTrigger(cellSelector(ADD_ROW_ID, 'name'))} onPick={onPickAdd} onClose={() => setAddChooserOpen(false)} />}
