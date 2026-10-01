@@ -170,8 +170,35 @@ export function commissionRowsWithoutTick(
   return [...groups.values()]
 }
 
+// 1500 Dilim 2 (1 Ekim 2026, KART-KATALOGU 7.4 Karar 1, 6): ZIMBA blogu. Capa kodlari VERIDIR:
+// kutuphanede herhangi bir atomun attaches_to listesinde gecen katalog kodlari. Kod 1501/1509
+// bilmez. Blok kisi etiketinden DEGIL satirin zimbasindan (parentItemId) kurulur.
+export function anchorCodesOf(library: readonly { attachesTo: readonly string[] }[]): Set<string> {
+  const out = new Set<string>()
+  for (const it of library) {
+    for (const code of it.attachesTo) out.add(code)
+  }
+  return out
+}
+
+// Ozeti olan capa satirlari (Karar 2): kisi adi yazilmis YA DA altina zimbali en az bir satir
+// var. Isimsiz ve alt satirsiz capa ozet ALMAZ (tek satir, gorev adi).
+export function summaryAnchorIds(
+  rows: readonly Pick<BudgetItemRow, 'id' | 'catalogCode' | 'personName' | 'parentItemId'>[],
+  anchorCodes: ReadonlySet<string>,
+): Set<string> {
+  const anchorIds = new Set(rows.filter((r) => anchorCodes.has(r.catalogCode)).map((r) => r.id))
+  const out = new Set<string>()
+  for (const r of rows) {
+    if (anchorIds.has(r.id) && r.personName !== null) out.add(r.id)
+    if (r.parentItemId !== null && anchorIds.has(r.parentItemId)) out.add(r.parentItemId)
+  }
+  return out
+}
+
 export type RenderRow =
   | { kind: 'summary'; personObjectId: string; rows: BudgetItemRow[] }
+  | { kind: 'anchorSummary'; anchorItemId: string; rows: BudgetItemRow[] }
   | { kind: 'item'; row: BudgetItemRow; underSummary: boolean }
 
 // Ucuncu gecis: sira VERITABANINDA (fn_add_budget_item catalog_code, item_code'a gore
@@ -184,13 +211,40 @@ export type RenderRow =
 // SIRALAMAYI SQL'E TASIMA (BUTCE-EKRAN-KARARLARI bolum 20 KARTIN GORUNEN DUZENI): ikinci bir
 // siralama otoritesi kurulmus olurdu, baslik ekranda kisi veritabaninda kalirdi - kompozisyon
 // TEK yerde (burada) yasar.
+// 1500 Dilim 2: zimba blogu (anchorSummary) ayni gecisin icinde, kisi blogundan ONCE sinanir.
 export function buildRenderRows(
   groupRows: readonly BudgetItemRow[],
   summaryPersonIds: ReadonlySet<string>,
+  summaryAnchors: ReadonlySet<string> = new Set(),
 ): RenderRow[] {
   const out: RenderRow[] = []
   const summarized = new Set<string>()
+  // ZIMBA BLOGU (1 Ekim 2026, Karar 1-2): ozeti olan capanin zimbali satirlari capanin
+  // BULUNDUGU yerde toplanir - kod sirasi (1501-01 < 1509) blogu araya kacirmasin. Capasi bu
+  // grupta olmayan zimbali satir (capa baska basliga tasinmis) bulundugu yerde cizilir, kaybolmaz.
+  const groupIds = new Set(groupRows.map((r) => r.id))
+  const childrenByAnchor = new Map<string, BudgetItemRow[]>()
+  const collectedChildIds = new Set<string>()
+  for (const r of groupRows) {
+    if (r.parentItemId !== null && summaryAnchors.has(r.parentItemId) && groupIds.has(r.parentItemId)) {
+      const bucket = childrenByAnchor.get(r.parentItemId)
+      if (bucket) bucket.push(r)
+      else childrenByAnchor.set(r.parentItemId, [r])
+      collectedChildIds.add(r.id)
+    }
+  }
   for (const row of groupRows) {
+    if (collectedChildIds.has(row.id)) continue
+    if (summaryAnchors.has(row.id)) {
+      // Blok icinde sira: capa, sonra kendi satirlari (hak devri), en sonda oranla dogan (komisyon).
+      const children = childrenByAnchor.get(row.id) ?? []
+      const blockRows = [row, ...children.filter((c) => c.deriveRate === null), ...children.filter((c) => c.deriveRate !== null)]
+      out.push({ kind: 'anchorSummary', anchorItemId: row.id, rows: blockRows })
+      for (const br of blockRows) {
+        out.push({ kind: 'item', row: br, underSummary: true })
+      }
+      continue
+    }
     const key = row.personObjectId
     if (key && summaryPersonIds.has(key)) {
       if (summarized.has(key)) continue

@@ -10,11 +10,14 @@ import type { BordroSheetEntry } from './components/burden-sheet'
 import { rowTotals } from './totals'
 import type { RowTotals } from './totals'
 import { groupRowsByHeading } from './format'
-import { groupByPerson, buildRenderRows, derivedUnitNets } from './person-groups'
+import { groupByPerson, buildRenderRows, derivedUnitNets, anchorCodesOf, summaryAnchorIds } from './person-groups'
+import { anchorNames } from './display-name'
+import type { AnchorLibraryEntry, AnchorNames } from './display-name'
 import type { RenderRow } from './person-groups'
 
 export type CardRenderRow =
   | { kind: 'summary'; personObjectId: string; rows: BudgetItemRow[]; totals: RowTotals }
+  | { kind: 'anchorSummary'; anchorItemId: string; rows: BudgetItemRow[]; totals: RowTotals }
   | { kind: 'item'; row: BudgetItemRow; underSummary: boolean; totals: RowTotals }
 
 export interface CardViewGroup {
@@ -28,6 +31,7 @@ export interface CardView {
   cardTotals: RowTotals
   rowTotalsById: Record<string, RowTotals>
   unitNetOverrides: Record<string, number>
+  anchorNames: AnchorNames
 }
 
 const ZERO_TOTALS: RowTotals = { net: 0, yasalYuk: 0, maliyet: 0, kdv: 0, brut: 0 }
@@ -49,6 +53,9 @@ function sumRows(rows: readonly BudgetItemRow[], rowTotalsById: Readonly<Record<
 function enrichRenderRow(rr: RenderRow, rowTotalsById: Readonly<Record<string, RowTotals>>): CardRenderRow {
   if (rr.kind === 'summary') {
     return { kind: 'summary', personObjectId: rr.personObjectId, rows: rr.rows, totals: sumRows(rr.rows, rowTotalsById) }
+  }
+  if (rr.kind === 'anchorSummary') {
+    return { kind: 'anchorSummary', anchorItemId: rr.anchorItemId, rows: rr.rows, totals: sumRows(rr.rows, rowTotalsById) }
   }
   return { kind: 'item', row: rr.row, underSummary: rr.underSummary, totals: rowTotalsById[rr.row.id] ?? ZERO_TOTALS }
 }
@@ -133,6 +140,7 @@ export function buildCardView(
   bordroData: Readonly<Record<string, BordroSheetEntry>>,
   personIdsWithRole: ReadonlySet<string>,
   personOrderIndex: ReadonlyMap<string, number>,
+  anchorLibrary: readonly AnchorLibraryEntry[] = [],
 ): CardView {
   const { rowTotalsById, unitNetOverrides } = computeRowTotals(rows, bordroData)
 
@@ -150,11 +158,15 @@ export function buildCardView(
       .filter((g) => g.hasSummary || personIdsWithRole.has(g.personObjectId))
       .map((g) => g.personObjectId),
   )
+  // ZIMBA BLOGU (1 Ekim 2026, KART-KATALOGU 7.4 Karar 1, 2): capa kodlari kutuphaneden; ozet
+  // dogup dogmayacagi DUZEN karari, bu dosyada.
+  const anchorCodes = anchorCodesOf(anchorLibrary)
+  const summaryAnchors = summaryAnchorIds(rows, anchorCodes)
 
   const groups: CardViewGroup[] = headingGroups.map((g) => ({
     heading: g.heading,
     totals: sumRows(g.rows, rowTotalsById),
-    renderRows: buildRenderRows(orderRowsByPersonList(g.rows, personOrderIndex), summaryPersonIds).map((rr) => enrichRenderRow(rr, rowTotalsById)),
+    renderRows: buildRenderRows(orderRowsByPersonList(g.rows, personOrderIndex), summaryPersonIds, summaryAnchors).map((rr) => enrichRenderRow(rr, rowTotalsById)),
   }))
 
   return {
@@ -162,5 +174,6 @@ export function buildCardView(
     cardTotals: sumRows(rows, rowTotalsById),
     rowTotalsById,
     unitNetOverrides,
+    anchorNames: anchorNames(rows, anchorCodes, anchorLibrary, summaryAnchors),
   }
 }

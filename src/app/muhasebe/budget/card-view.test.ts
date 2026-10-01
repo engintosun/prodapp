@@ -89,7 +89,7 @@ describe('buildCardView', () => {
     expect(view.groups).toHaveLength(1)
     const group = view.groups[0]
     expect(group.heading).toEqual({ key: 'H1', name: 'Baslik 1' })
-    expect(group.renderRows.map((rr) => (rr.kind === 'summary' ? 'summary:' + rr.personObjectId : rr.row.id))).toEqual([
+    expect(group.renderRows.map((rr) => (rr.kind === 'summary' ? 'summary:' + rr.personObjectId : rr.kind === 'anchorSummary' ? 'anchor:' + rr.anchorItemId : rr.row.id))).toEqual([
       'summary:p1',
       'kase',
       'komisyon',
@@ -145,7 +145,7 @@ describe('buildCardView', () => {
     ])
     const view = buildCardView(rows, [], [], NO_BORDRO, new Set(), personOrderIndex)
     const group = view.groups[0]
-    expect(group.renderRows.map((rr) => (rr.kind === 'summary' ? 'summary:' + rr.personObjectId : rr.row.id))).toEqual([
+    expect(group.renderRows.map((rr) => (rr.kind === 'summary' ? 'summary:' + rr.personObjectId : rr.kind === 'anchorSummary' ? 'anchor:' + rr.anchorItemId : rr.row.id))).toEqual([
       'ali-1',
       'veli-1',
       'bossatir',
@@ -166,10 +166,35 @@ describe('buildCardView', () => {
       new Map(),
     )
     expect(view.groups.map((g) => g.heading?.key)).toEqual(['H1', 'u1'])
-    expect(view.groups[1].renderRows.map((rr) => (rr.kind === 'summary' ? 'summary:' + rr.personObjectId : rr.row.id))).toEqual([
+    expect(view.groups[1].renderRows.map((rr) => (rr.kind === 'summary' ? 'summary:' + rr.personObjectId : rr.kind === 'anchorSummary' ? 'anchor:' + rr.anchorItemId : rr.row.id))).toEqual([
       'summary:p1',
       'kostum',
     ])
+  })
+
+  it('zimba blogu: capa ve zimbali satir ozet altinda toplanir, ad ve toplam kutuphaneden (1500 Dilim 2)', () => {
+    const anchorLibrary = [
+      { catalogCode: '1501', name: 'Yönetmen', nameSuffix: 'Hizmet Bedeli', attachesTo: [] },
+      { catalogCode: '1501-01', name: 'Yönetmen Hak Devri', nameSuffix: null, attachesTo: ['1501'] },
+    ]
+    const rows = [
+      makeItem({ id: 'a', catalogCode: '1501', unitNet: 1000 }),
+      makeItem({ id: 'h', catalogCode: '1501-01', parentItemId: 'a', unitNet: 500 }),
+    ]
+    const view = buildCardView(rows, [], [], NO_BORDRO, new Set(), new Map(), anchorLibrary)
+    const group = view.groups[0]
+    expect(group.renderRows.map((rr) => (rr.kind === 'summary' ? 'summary:' + rr.personObjectId : rr.kind === 'anchorSummary' ? 'anchor:' + rr.anchorItemId : rr.row.id))).toEqual([
+      'anchor:a',
+      'a',
+      'h',
+    ])
+    const summary = group.renderRows[0]
+    expect(summary.kind).toBe('anchorSummary')
+    if (summary.kind === 'anchorSummary') {
+      expect(summary.totals.net).toBe(1500)
+    }
+    expect(view.anchorNames.summaryName.get('a')).toBe('Yönetmen')
+    expect(view.anchorNames.rowName.get('a')).toBe('Yönetmen Hizmet Bedeli')
   })
 })
 

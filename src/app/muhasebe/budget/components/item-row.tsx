@@ -31,6 +31,8 @@ interface ItemRowProps {
   // commissionDisplayName.
   personLabelById: ReadonlyMap<string, PersonLabel>
   dutyCodes: ReadonlySet<string>
+  // 1500 Dilim 2: yonetmen satirinin hazir adi (display-name.ts anchorNames).
+  anchorName?: string
   justAdded: boolean
   bufUnitNet: string | undefined
   bufMultiplier: string | undefined
@@ -57,6 +59,7 @@ export const ItemRow = memo(function ItemRow({
   personNameById,
   personLabelById,
   dutyCodes,
+  anchorName,
   justAdded,
   bufUnitNet,
   bufMultiplier,
@@ -72,7 +75,7 @@ export const ItemRow = memo(function ItemRow({
   // AD YERLESIMI + KOMISYON SATIRININ DOGUMU (9 Eylul 2026): turetilmis satirin ad hucresi
   // AYRI mantik izler (commissionDisplayName) - 1618 gorev atomu DEGILDIR (is_duty=false),
   // itemDisplayName'in dort hali onu hic kapsamaz.
-  const nameDisplay = rowDisplayName(it, dutyCodes, personNameById, personLabelById)
+  const nameDisplay = rowDisplayName(it, dutyCodes, personNameById, personLabelById, anchorName)
   const multi = isMultiPeriod(it)
   const addedStageIds = Object.keys(it.periodQty)
   const isBordro = it.paymentStatus === 'bordro'

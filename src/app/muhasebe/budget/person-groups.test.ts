@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { groupByPerson, derivedUnitNets, buildRenderRows, personNetBases, personsNeedingCommissionRow, commissionRowsWithoutTick } from './person-groups'
+import { groupByPerson, derivedUnitNets, buildRenderRows, personNetBases, personsNeedingCommissionRow, commissionRowsWithoutTick, anchorCodesOf, summaryAnchorIds } from './person-groups'
 import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
 import type { PersonLabel } from '../../../shared/supabase/person-label-service'
 
@@ -404,5 +404,64 @@ describe('buildRenderRows', () => {
       { kind: 'item', row: rows[2], underSummary: true },
       { kind: 'item', row: rows[0], underSummary: true },
     ])
+  })
+})
+
+describe('zimba blogu (1500 Dilim 2)', () => {
+  it('anchorCodesOf: kutuphanedeki attaches_to kodlarinin birlesimi', () => {
+    const out = anchorCodesOf([{ attachesTo: ['1501', '1509'] }, { attachesTo: [] }, { attachesTo: ['1501'] }])
+    expect(out).toEqual(new Set(['1501', '1509']))
+  })
+
+  it('summaryAnchorIds: isimsiz ve alt satirsiz capa ozet almaz; isimli capa alir; alt satiri olan isimsiz capa alir', () => {
+    const codes = new Set(['1501', '1509'])
+    const rows = [
+      makeItem({ id: 'bos', catalogCode: '1501' }),
+      makeItem({ id: 'isimli', catalogCode: '1509', personName: 'Ayşe Yılmaz' }),
+      makeItem({ id: 'ebeveyn', catalogCode: '1501' }),
+      makeItem({ id: 'alt', catalogCode: '1501-01', parentItemId: 'ebeveyn' }),
+    ]
+    expect(summaryAnchorIds(rows, codes)).toEqual(new Set(['isimli', 'ebeveyn']))
+  })
+
+  it('summaryAnchorIds: capa olmayan satirin isim ve zimba durumu sonucu etkilemez', () => {
+    const codes = new Set(['1501'])
+    const rows = [
+      makeItem({ id: 'x', catalogCode: '1503', personName: 'Biri' }),
+      makeItem({ id: 'y', catalogCode: '1503', parentItemId: 'x' }),
+    ]
+    expect(summaryAnchorIds(rows, codes)).toEqual(new Set())
+  })
+
+  it('buildRenderRows: isimli tek capa ozet ve altinda kendisi', () => {
+    const a = makeItem({ id: 'a', catalogCode: '1501', personName: 'Ayşe Yılmaz' })
+    const out = buildRenderRows([a], new Set(), new Set(['a']))
+    expect(out).toEqual([
+      { kind: 'anchorSummary', anchorItemId: 'a', rows: [a] },
+      { kind: 'item', row: a, underSummary: true },
+    ])
+  })
+
+  it('buildRenderRows: zimbali satirlar capanin bulundugu yerde toplanir, kod sirasi blogu bolmez', () => {
+    const a1 = makeItem({ id: 'a1', catalogCode: '1501' })
+    const h = makeItem({ id: 'h', catalogCode: '1501-01', parentItemId: 'b9' })
+    const x = makeItem({ id: 'x', catalogCode: '1503' })
+    const b9 = makeItem({ id: 'b9', catalogCode: '1509' })
+    const k = makeItem({ id: 'k', catalogCode: '1511', parentItemId: 'b9', deriveRate: 20 })
+    const out = buildRenderRows([a1, h, x, b9, k], new Set(), new Set(['b9']))
+    expect(out).toEqual([
+      { kind: 'item', row: a1, underSummary: false },
+      { kind: 'item', row: x, underSummary: false },
+      { kind: 'anchorSummary', anchorItemId: 'b9', rows: [b9, h, k] },
+      { kind: 'item', row: b9, underSummary: true },
+      { kind: 'item', row: h, underSummary: true },
+      { kind: 'item', row: k, underSummary: true },
+    ])
+  })
+
+  it('buildRenderRows: capasi grupta olmayan zimbali satir bulundugu yerde cizilir', () => {
+    const h = makeItem({ id: 'h', catalogCode: '1501-01', parentItemId: 'b9' })
+    const out = buildRenderRows([h], new Set(), new Set(['b9']))
+    expect(out).toEqual([{ kind: 'item', row: h, underSummary: false }])
   })
 })

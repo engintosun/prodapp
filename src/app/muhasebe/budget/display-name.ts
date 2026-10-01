@@ -74,14 +74,77 @@ export function summaryDisplayName(
 // dolu olan satirdir ve commissionDisplayName'e gider; digerleri itemDisplayName'e. Bu secim
 // eskiden yalniz item-row.tsx icinde yaziliydi; pencere basligi kalemin kayitli adini (gorev
 // adi) basiyordu.
+// 1500 Dilim 2: anchorName verilirse once o doner (yonetmen satiri).
 export function rowDisplayName(
   item: Pick<BudgetItemRow, 'name' | 'catalogCode' | 'personObjectId' | 'deriveRate'>,
   dutyCodes: ReadonlySet<string>,
   personNameById: ReadonlyMap<string, string>,
   personLabelById: ReadonlyMap<string, Pick<PersonLabel, 'agencyName' | 'managerName'>>,
+  anchorName?: string,
 ): ItemDisplayName {
+  // YONETMEN SATIRI (1 Ekim 2026): adi anchorNames kurar, cagiran hazir verir. 2a-2'de SALT
+  // OKUNUR; kisi adi yazma yolu 2a-3'te acilir.
+  if (anchorName !== undefined) return { text: anchorName, editable: false }
   if (item.deriveRate !== null) {
     return commissionDisplayName(item, item.personObjectId ? personLabelById.get(item.personObjectId) : undefined)
   }
   return itemDisplayName(item, dutyCodes, personNameById)
+}
+
+// YONETMEN BLOGUNUN ADLARI - TEK KAYNAK (1 Ekim 2026, KART-KATALOGU 7.4 Karar 2, 7, 10).
+// Gorev adi ve ek KUTUPHANEDEN gelir; satirda saklanan ad okunmaz (eski ve karaktersiz adlar
+// ekrana cikmasin). Kutuphanede kaydi bulunamayan capa satirin kendi adina duser.
+// - Ozet satiri: gorev adi; isimsiz capa numarali olabilir.
+// - Ozetli capanin Ad hucresi: (kisi adi, yoksa gorev adi) + bosluk + ek ("Ayse Yilmaz Hizmet Bedeli").
+// - Ozetsiz capanin Ad hucresi: gorev adi, numarali olabilir.
+// - Kime? adi: kisi adi, yoksa gorev adi, numarali olabilir.
+// NUMARA (Karar 10): ayni katalog kodunda iki ve daha fazla ISIMSIZ capa varsa isimsizler satir
+// sirasiyla 1'den numaralanir; tek isimsiz capa numara almaz. Numara SAKLANMAZ.
+export interface AnchorLibraryEntry {
+  catalogCode: string
+  name: string
+  nameSuffix: string | null
+  attachesTo: string[]
+}
+
+export interface AnchorNames {
+  rowName: Map<string, string>
+  summaryName: Map<string, string>
+  whoName: Map<string, string>
+}
+
+export function anchorNames(
+  rows: readonly Pick<BudgetItemRow, 'id' | 'catalogCode' | 'name' | 'personName'>[],
+  anchorCodes: ReadonlySet<string>,
+  library: readonly Pick<AnchorLibraryEntry, 'catalogCode' | 'name' | 'nameSuffix'>[],
+  summaryAnchors: ReadonlySet<string>,
+): AnchorNames {
+  const libByCode = new Map(library.map((l) => [l.catalogCode, l] as const))
+  const anchors = rows.filter((r) => anchorCodes.has(r.catalogCode))
+  const unnamedByCode = new Map<string, string[]>()
+  for (const a of anchors) {
+    if (a.personName !== null) continue
+    const bucket = unnamedByCode.get(a.catalogCode)
+    if (bucket) bucket.push(a.id)
+    else unnamedByCode.set(a.catalogCode, [a.id])
+  }
+  const rowName = new Map<string, string>()
+  const summaryName = new Map<string, string>()
+  const whoName = new Map<string, string>()
+  for (const a of anchors) {
+    const lib = libByCode.get(a.catalogCode)
+    const duty = lib?.name ?? a.name
+    const suffix = lib?.nameSuffix ?? null
+    const unnamed = unnamedByCode.get(a.catalogCode) ?? []
+    const numbered = a.personName === null && unnamed.length >= 2 ? duty + ' ' + (unnamed.indexOf(a.id) + 1) : duty
+    whoName.set(a.id, a.personName ?? numbered)
+    if (summaryAnchors.has(a.id)) {
+      summaryName.set(a.id, a.personName === null ? numbered : duty)
+      const head = a.personName ?? duty
+      rowName.set(a.id, suffix ? head + ' ' + suffix : head)
+    } else {
+      rowName.set(a.id, numbered)
+    }
+  }
+  return { rowName, summaryName, whoName }
 }

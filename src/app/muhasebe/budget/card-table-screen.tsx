@@ -198,7 +198,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
       // soru satirin x'inin yaninda acilir. Tik yolunda soru kaldirilan tikin yaninda acilir.
       if (via === 'row') {
         const viewGroup = cardViewRef.current?.groups.find((g) =>
-          g.renderRows.some((rr) => (rr.kind === 'summary' ? rr.rows.some((r) => r.id === touched.id) : rr.row.id === touched.id)),
+          g.renderRows.some((rr) => (rr.kind === 'item' ? rr.row.id === touched.id : rr.rows.some((r) => r.id === touched.id))),
         )
         setCollapseState((prev) => {
           let next: CollapseState = openBlock('p:' + group.personObjectId, prev)
@@ -744,8 +744,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // card-view.ts'tir - ekran duzeni kendisi KURMAZ, hazir alir. Baslik gruplama, kisi bloklari
   // ve turetilen satirlarin (komisyon) gercek tutarlari hepsi burada tek cagriyla gelir.
   const cardView = useMemo(
-    () => buildCardView(rows, headings, userHeadings, bordroData, personIdsWithRoleOf(personLabels), personOrderIndexOf(personLabels)),
-    [rows, headings, userHeadings, bordroData, personLabels],
+    () => buildCardView(rows, headings, userHeadings, bordroData, personIdsWithRoleOf(personLabels), personOrderIndexOf(personLabels), library),
+    [rows, headings, userHeadings, bordroData, personLabels, library],
   )
   useLayoutEffect(() => {
     cardViewRef.current = cardView
@@ -757,17 +757,20 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // KATLAMA DURUMU MUTLAKTIR (20 Eylul 2026, Engin karari): collapseState artik "varsayilani
   // tersine cevirme bayragi" DEGIL, kullanicinin blokta BIRAKTIGI acik/kapali halin kendisidir
   // (bkz. collapse-state.ts). Baslik satirlarinin varsayilani ACIK'tir.
-  const singleItemPersonIds = useMemo(() => {
+  // KATLAMA ANAHTARI (1 Ekim 2026): kisi blogu "p:" + kisi, zimba blogu "a:" + capa satiri.
+  // Tek kalemli zimba blogu (isim var, alt satir yok) da kapali dogar (Karar 2).
+  const singleItemSummaryKeys = useMemo(() => {
     const s = new Set<string>()
     for (const g of cardView.groups) {
       for (const rr of g.renderRows) {
-        if (rr.kind === 'summary' && rr.rows.length === 1) s.add(rr.personObjectId)
+        if (rr.kind === 'summary' && rr.rows.length === 1) s.add('p:' + rr.personObjectId)
+        if (rr.kind === 'anchorSummary' && rr.rows.length === 1) s.add('a:' + rr.anchorItemId)
       }
     }
     return s
   }, [cardView])
-  const isSummaryCollapsed = (personObjectId: string) => {
-    return resolveCollapsed('p:' + personObjectId, collapseState, singleItemPersonIds.has(personObjectId))
+  const isSummaryCollapsed = (key: string) => {
+    return resolveCollapsed(key, collapseState, singleItemSummaryKeys.has(key))
   }
 
   const toggleCollapsed = useCallback((key: string, defaultCollapsed: boolean) => {
@@ -782,22 +785,28 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // BEKLENEN sonuctur, satirlar artik farkli yerde (bkz. KARTIN GORUNEN DUZENI karari).
   // Immutable kurulum (react-hooks/immutability): render sirasinda sayac ARTTIRILMAZ, sira bir
   // kere gezilip Map'lere donusturulur.
-  const { itemRowNoById, summaryRowNoByPerson } = useMemo(() => {
+  const { itemRowNoById, summaryRowNoByKey, summaryKeyByItemId } = useMemo(() => {
     const itemMap = new Map<string, number>()
     const summaryMap = new Map<string, number>()
+    const itemKeyMap = new Map<string, string>()
     let n = 0
     for (const group of cardView.groups) {
       for (const rr of group.renderRows) {
         if (rr.kind === 'summary') {
           n += 1
-          summaryMap.set(rr.personObjectId, n)
+          summaryMap.set('p:' + rr.personObjectId, n)
+          for (const r of rr.rows) itemKeyMap.set(r.id, 'p:' + rr.personObjectId)
+        } else if (rr.kind === 'anchorSummary') {
+          n += 1
+          summaryMap.set('a:' + rr.anchorItemId, n)
+          for (const r of rr.rows) itemKeyMap.set(r.id, 'a:' + rr.anchorItemId)
         } else if (!rr.underSummary) {
           n += 1
           itemMap.set(rr.row.id, n)
         }
       }
     }
-    return { itemRowNoById: itemMap, summaryRowNoByPerson: summaryMap }
+    return { itemRowNoById: itemMap, summaryRowNoByKey: summaryMap, summaryKeyByItemId: itemKeyMap }
   }, [cardView])
 
   // LISTEDEN DOGAN SATIR GORUNUR KILINIR (23 Eylul 2026, Engin karari, BUTCE-EKRAN-KARARLARI
@@ -814,7 +823,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     const order: string[] = []
     for (const group of cardView.groups) {
       for (const rr of group.renderRows) {
-        if (rr.kind === 'summary') order.push(...rr.rows.map((r) => r.id))
+        if (rr.kind !== 'item') order.push(...rr.rows.map((r) => r.id))
         else order.push(rr.row.id)
       }
     }
@@ -945,16 +954,30 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                         return (
                           <SummaryRow
                             key={summaryKey}
-                            rowNo={summaryRowNoByPerson.get(rr.personObjectId) ?? 0}
+                            rowNo={summaryRowNoByKey.get(summaryKey) ?? 0}
                             name={summaryDisplayName(rr.personObjectId, personLabels, dutyNameByCode)}
                             totals={rr.totals}
-                            collapsed={isSummaryCollapsed(rr.personObjectId)}
-                            onToggle={() => toggleCollapsed(summaryKey, singleItemPersonIds.has(rr.personObjectId))}
+                            collapsed={isSummaryCollapsed(summaryKey)}
+                            onToggle={() => toggleCollapsed(summaryKey, singleItemSummaryKeys.has(summaryKey))}
+                          />
+                        )
+                      }
+                      if (rr.kind === 'anchorSummary') {
+                        const summaryKey = 'a:' + rr.anchorItemId
+                        return (
+                          <SummaryRow
+                            key={summaryKey}
+                            rowNo={summaryRowNoByKey.get(summaryKey) ?? 0}
+                            name={cardView.anchorNames.summaryName.get(rr.anchorItemId) ?? ''}
+                            totals={rr.totals}
+                            collapsed={isSummaryCollapsed(summaryKey)}
+                            onToggle={() => toggleCollapsed(summaryKey, singleItemSummaryKeys.has(summaryKey))}
                           />
                         )
                       }
                       const it = rr.row
-                      if (rr.underSummary && it.personObjectId && isSummaryCollapsed(it.personObjectId)) {
+                      const ownerKey = summaryKeyByItemId.get(it.id)
+                      if (rr.underSummary && ownerKey && isSummaryCollapsed(ownerKey)) {
                         return null
                       }
                       const multi = isMultiPeriod(it)
@@ -979,6 +1002,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                             personNameById={personNameById}
                             personLabelById={personLabelById}
                             dutyCodes={dutyCodes}
+                            anchorName={cardView.anchorNames.rowName.get(it.id)}
                             justAdded={justAddedIds.includes(it.id)}
                             bufUnitNet={buffers[it.id + ':unitNet']}
                             bufMultiplier={buffers[it.id + ':multiplier']}
@@ -1110,7 +1134,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
             stageId={openBurden.stageId}
             stage={sheetStage}
             bordro={bordroData[item.id]}
-            name={rowDisplayName(item, dutyCodes, personNameById, personLabelById).text}
+            name={rowDisplayName(item, dutyCodes, personNameById, personLabelById, cardView.anchorNames.rowName.get(item.id)).text}
             anchor={() => findTrigger(openBurden.stageId === null ? cellSelector(item.id, 'burden') : cellSelector(`${item.id}:${openBurden.stageId}`, 'periodBurden'))}
             onClose={() => setOpenBurden(null)}
           />
@@ -1120,7 +1144,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         const item = rows.find((r) => r.id === openNoteItemId)
         if (!item) return null
         return (
-          <NoteSheet key={item.id} item={item} name={rowDisplayName(item, dutyCodes, personNameById, personLabelById).text} onCommit={api.commitNote} anchor={() => findTrigger(cellSelector(item.id, 'note'))} onClose={() => setOpenNoteItemId(null)} />
+          <NoteSheet key={item.id} item={item} name={rowDisplayName(item, dutyCodes, personNameById, personLabelById, cardView.anchorNames.rowName.get(item.id)).text} onCommit={api.commitNote} anchor={() => findTrigger(cellSelector(item.id, 'note'))} onClose={() => setOpenNoteItemId(null)} />
         )
       })()}
       {openStatusInfo && <StatusInfoSheet anchor={() => findTrigger('[data-anchor="status-info"]')} onClose={() => setOpenStatusInfo(false)} />}
