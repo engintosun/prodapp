@@ -84,3 +84,16 @@ export function shownRow(rows: readonly BudgetItemRow[], row: BudgetItemRow): Bu
 export function lockedRemainder(anchor: BudgetItemRow, rate: number): number {
   return rowTotals(anchor, undefined).net - rowTotals(shareItem(anchor, rate), undefined).net
 }
+
+// %50 UYARISI (1 Ekim 2026, Engin; KART-KATALOGU 7.4 "%50 UYARI METNI"). Metin TEK yerde.
+export const SPLIT_WARN_TEXT =
+  "Hak devri oranının Hizmet Bedeli'nden çok daha yüksek olması, Avrupa fonlarında (örn: CNC) 'gizli maaş' (salaire déguisé) denetimlerine takılma riski taşır. Oranı dengede tutmanız önerilir."
+
+// Esigi GECEN hak devri satirlari (pay esikten BUYUK; esitlik gecmez - "%50'yi gecerse").
+export function splitsOverThreshold(shareById: ReadonlyMap<string, number>, threshold: number): Set<string> {
+  const out = new Set<string>()
+  for (const [id, share] of shareById) {
+    if (share > threshold) out.add(id)
+  }
+  return out
+}

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
-import { unlockWrite, relockWrite, rateFromShare, shownRow, LOCKED_SHARE_OVER, lockedRemainder } from './split-lock'
+import { unlockWrite, relockWrite, rateFromShare, shownRow, LOCKED_SHARE_OVER, lockedRemainder, splitsOverThreshold } from './split-lock'
 import { shareItem } from './person-groups'
 import { rowTotals } from './totals'
 
@@ -130,5 +130,16 @@ describe('lockedRemainder (1500 Dilim 2c-1)', () => {
     const anchor = makeItem({ unitNet: 1000001 })
     const rem = lockedRemainder(anchor, 50)
     expect(rem + rowTotals(shareItem(anchor, 50), undefined).net).toBe(1000001)
+  })
+})
+
+describe('%50 uyarisi (1500 Dilim 2c-2)', () => {
+  it('esigi gecenler: yalniz esikten buyuk olan', () => {
+    const over = splitsOverThreshold(new Map([['a', 50], ['b', 60], ['c', 49.99]]), 50)
+    expect(over).toEqual(new Set(['b']))
+  })
+
+  it('bos harita bos kume verir', () => {
+    expect(splitsOverThreshold(new Map(), 50)).toEqual(new Set())
   })
 })

@@ -19,7 +19,7 @@ import { PeriodRow } from './components/period-row'
 import { HeadingRow } from './components/heading-row'
 import { SummaryRow } from './components/summary-row'
 import { buildCardView } from './card-view'
-import { unlockWrite, relockWrite, lockedRemainder } from './split-lock'
+import { unlockWrite, relockWrite, lockedRemainder, SPLIT_WARN_TEXT, splitsOverThreshold } from './split-lock'
 import type { CardView } from './card-view'
 import { resolveCollapsed, toggleCollapse, openBlock } from './collapse-state'
 import type { CollapseState } from './collapse-state'
@@ -40,15 +40,15 @@ import { HeadingWindow } from './components/heading-window'
 import { useConfirmSheet } from '../../../shared/components/use-confirm-sheet'
 import { cellSelector } from './cell-address'
 
-// TETIGIN YANINDA (TASARIM-KARARLARI bolum 9, K1): pencerenin tetigi ADRESLE bulunur - satir ve
-// sutun isaretinden sayfada aranir. Ref okumaz (react-hooks/refs kurali susturulmaz); sessiz
-// yenileme dugumu degistirse de ayni adres ayni hucreyi bulur.
 // Turkce liste: "A", "A ve B", "A, B ve C".
 function joinTr(names: string[]): string {
   if (names.length <= 1) return names[0] ?? ''
   return names.slice(0, -1).join(', ') + ' ve ' + names[names.length - 1]
 }
 
+// TETIGIN YANINDA (TASARIM-KARARLARI bolum 9, K1): pencerenin tetigi ADRESLE bulunur - satir ve
+// sutun isaretinden sayfada aranir. Ref okumaz (react-hooks/refs kurali susturulmaz); sessiz
+// yenileme dugumu degistirse de ayni adres ayni hucreyi bulur.
 function findTrigger(selector: string): HTMLElement | null {
   return document.querySelector<HTMLElement>(selector)
 }
@@ -87,6 +87,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     unitLabelByIdRef,
     unitCodeByIdRef,
     minWageThresholdsRef,
+    splitWarnPercent,
   } = useCardRows({ budgetId, cardId })
   const { addToast } = useToast()
 
@@ -840,6 +841,23 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     },
     [rows, cardView, refetch, addToast],
   )
+  // %50 UYARISI (1 Ekim 2026, Engin; KART-KATALOGU 7.4): hak devrinin payi esigi GECTIGI ANDA
+  // oran kutusunun dibinde uyari. Tetik hangi yoldan olursa olsun ayni: oran, pay, acikken rakam,
+  // kilit kapanisi - hepsi splitInfoById'yi degistirir. Ilk olcum TOHUMDUR: kart acilirken zaten
+  // ustte olan satir icin uyari cikmaz ("o anda bir uyari verecek").
+  const overSplitRef = useRef<Set<string> | null>(null)
+  useEffect(() => {
+    if (splitWarnPercent === null || loading) return
+    const shares = new Map<string, number>()
+    for (const [id, info] of splitInfoById) shares.set(id, info.sharePercent)
+    const over = splitsOverThreshold(shares, splitWarnPercent)
+    const prev = overSplitRef.current
+    overSplitRef.current = over
+    if (prev === null) return
+    for (const id of over) {
+      if (!prev.has(id)) addToast(SPLIT_WARN_TEXT, 'warning', { anchor: cellSelector(id, 'splitRate') })
+    }
+  }, [splitInfoById, splitWarnPercent, loading, addToast])
 
   // Tek kalemli rol blogu KAPALI dogar (10 Eylul 2026, Engin karari): ozet satiri zaten dogru
   // rakami gosteriyor, tek alt kalem ayni rakami tekrar etmesin; rakam kolonunda ne bosluk ne

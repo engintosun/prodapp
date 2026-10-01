@@ -190,6 +190,42 @@ export async function fetchMinimumWageThresholds(budgetId: string): Promise<Mini
   return minimumWageNetThresholds(rates)
 }
 
+// 1500 Dilim 2c-2 (1 Ekim 2026): hak devri uyari esigi (parametre_hak_devri_esik, oran). Acik
+// butcede canli cetvel (bugune kadar gecerli en yeni), muhurlu butcede muhur kopyasi (MUHUR-2
+// deseni). buildPayrollRates'e EKLENMEZ: bordro hesabi bu parametreye bagli degil, eksikligi
+// bordroyu durdurmamali. Bulunamazsa null (uyari calismaz).
+export async function fetchSplitWarnPercent(budgetId: string): Promise<number | null> {
+  const code = 'parametre_hak_devri_esik'
+  const { data: budget, error: eb } = await supabase.from('budgets').select('is_locked').eq('id', budgetId).single()
+  if (eb) throw new Error(eb.message)
+  if (budget.is_locked as boolean) {
+    const { data, error } = await supabase
+      .from('budget_versions')
+      .select('version_no, budget_rate_snapshot(component_code, value_kind, rate_percent, valid_from)')
+      .eq('budget_id', budgetId)
+      .order('version_no', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    if (error) throw new Error(error.message)
+    const rows = ((data as unknown as { budget_rate_snapshot?: Array<Record<string, unknown>> } | null)?.budget_rate_snapshot ?? [])
+      .filter((r) => r.component_code === code && r.value_kind === 'oran')
+      .sort((a, b) => String(b.valid_from).localeCompare(String(a.valid_from)))
+    return rows.length > 0 && rows[0].rate_percent !== null ? Number(rows[0].rate_percent) : null
+  }
+  const today = new Date().toISOString().slice(0, 10)
+  const { data, error } = await supabase
+    .from('rate_catalog')
+    .select('rate_percent, value_kind, valid_from, burden_components!inner(code)')
+    .eq('burden_components.code', code)
+    .eq('value_kind', 'oran')
+    .lte('valid_from', today)
+    .order('valid_from', { ascending: false })
+    .limit(1)
+  if (error) throw new Error(error.message)
+  const row = (data ?? [])[0]
+  return row && row.rate_percent !== null ? Number(row.rate_percent) : null
+}
+
 export interface BordroPeriodBreakdownEntry {
   periodIndex: number
   stageId: string | null

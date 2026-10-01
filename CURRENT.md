@@ -133,7 +133,7 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 
 ## Sıradaki iş
 
-**ANA KONU: KART 1500 Dilim 2 (1 Ekim 2026).** Adım 1 (kayıt yapısı), 2a (adlar, özet, isim yazma, "Kime?"), 2b (hak devri bölmesi, oran, kilit, pay yazımı; göçler `20261001120000` ve `20261001130000`) ve 2c-1 (komisyon tabanı, silme kuralları) uygulandı. SIRADA: 2c-2 %50 hak devri uyarısı (metin ve davranış §7.4'te). Karar evi: `docs/butce/KART-KATALOGU.md` §7.4. Mühür yüzeyi icmalle birlikte ele alınır (30 Eylül 2026).
+**ANA KONU: KART 1500 Dilim 2 TAMAMLANDI (1 Ekim 2026).** 1501-01 Yönetmen Hak Devri ve 1511 Yönetmen Temsilci Komisyonu uçtan uca: kayıt yapısı, adlar ve özet, isim yazma, "Kime?", hak devri bölmesi (oran, kilit, pay yazımı), komisyon tabanı, silme kuralları, %50 uyarısı (göçler `20261001120000` ve `20261001130000`). Karar evi: `docs/butce/KART-KATALOGU.md` §7.4. SIRADAKİ ANA KONU: Engin'in seçimi. Açık parklar: ajans adı (1500 komisyon); mühür yüzeyi (icmalle birlikte, 30 Eylül 2026).
 
 1. **Mac turları — MAKİNE YOK (24 Eylül 2026, Engin).** Mac gerçek cihaz turu (KLV kapanışı ve `v0.2-klv` etiketi buna bağlı) ve Mac Safari'de PDF içe aktarma denemesi (PDF ilk sürümünün tamam sayılması buna bağlı; Chrome'da doğrulandı) yapılamıyor. İkisi askıda; makine bulununca aynı oturumda yapılır.
 

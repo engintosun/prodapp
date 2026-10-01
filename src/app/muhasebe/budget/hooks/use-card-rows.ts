@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { getOrOpenBudget, getCard, loadUnits, fetchBudgetCards } from '../../../../shared/supabase/budget-service'
 import type { BudgetItemRow, CardView, StageRow, UnitRow, BudgetCardRef } from '../../../../shared/supabase/budget-service'
-import { fetchMinimumWageThresholds } from '../../../../shared/supabase/payroll-read'
+import { fetchMinimumWageThresholds, fetchSplitWarnPercent } from '../../../../shared/supabase/payroll-read'
 import type { MinimumWageThresholds } from '../../../../shared/supabase/payroll-read'
 import { fetchCardLibrary, fetchAllLibrary } from '../../../../shared/supabase/library-service'
 import type { LibraryItem } from '../../../../shared/supabase/library-service'
@@ -150,6 +150,26 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
     }
   }, [card?.budgetId])
 
+  // 1500 Dilim 2c-2: hak devri uyari esigi kart acilirken BIR KEZ cekilir (asgari ucret esikleri
+  // deseni). Basarisizlik SESSIZ (console.warn): yalniz ikincil bir uyari kaynagi, hesabi etkilemez.
+  // State (ref degil): kart ekraninin uyari efekti esik gelince yeniden calismali.
+  const [splitWarnPercent, setSplitWarnPercent] = useState<number | null>(null)
+  useEffect(() => {
+    if (!card?.budgetId) return
+    let cancelled = false
+    void (async () => {
+      try {
+        const p = await fetchSplitWarnPercent(card.budgetId)
+        if (!cancelled) setSplitWarnPercent(p)
+      } catch (e) {
+        console.warn('Hak devri uyari esigi yuklenemedi:', e instanceof Error ? e.message : e)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [card?.budgetId])
+
   // D3b-2a: cekim kartin KODUNA baglidir (aidiyet=kod, K-B). Basarisizlik TOAST'lanir (units
   // deseni) - asgari-ucret esiklerinden farkli olarak bu gorunur bir ozelligi (autocomplete)
   // besler, sessiz gecilmez.
@@ -238,5 +258,6 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
     unitLabelByIdRef,
     unitCodeByIdRef,
     minWageThresholdsRef,
+    splitWarnPercent,
   }
 }
