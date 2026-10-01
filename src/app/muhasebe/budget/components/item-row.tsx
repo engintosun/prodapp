@@ -41,6 +41,8 @@ interface ItemRowProps {
   split?: { locked: boolean; amount: number; sharePercent: number }
   bufSplitRate: string | undefined
   navSplitRate: string | undefined
+  // 1500 Dilim 2b-2b: kilide basma (acma/kapama kart ekraninda).
+  onToggleSplitLock: (splitItemId: string) => void
   justAdded: boolean
   bufUnitNet: string | undefined
   bufMultiplier: string | undefined
@@ -73,6 +75,7 @@ export const ItemRow = memo(function ItemRow({
   split,
   bufSplitRate,
   navSplitRate,
+  onToggleSplitLock,
   justAdded,
   bufUnitNet,
   bufMultiplier,
@@ -254,12 +257,12 @@ export const ItemRow = memo(function ItemRow({
                 value={'Oran %' + fmt(split.sharePercent)}
               />
             )}
-            {/* Kilit 2b-2b'de basilir hale gelir. */}
+            {/* 1500 Dilim 2b-2b: kilide basmak toplami acar ya da kilitler (card-table-screen.tsx onToggleSplitLock). */}
             <button
               type="button"
-              disabled
-              aria-label={split.locked ? 'Toplam kilitli' : 'Toplam açık'}
-              style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'default', color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)', lineHeight: 1 }}
+              onClick={() => onToggleSplitLock(it.id)}
+              aria-label={split.locked ? 'Toplamın kilidini aç' : 'Toplamı kilitle'}
+              style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)', lineHeight: 1 }}
             >
               {split.locked ? '🔒' : '🔓'}
             </button>

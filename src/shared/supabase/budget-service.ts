@@ -633,6 +633,22 @@ export async function addBudgetItem(
   return data as unknown as string
 }
 
+// 1500 Dilim 2b-2b (1 Ekim 2026): kilidi acip kapama TEK islemde (fn_set_split_lock). Degerleri
+// cagiran hesaplar (budget/split-lock.ts); burada hesap YOK.
+export async function setSplitLock(
+  splitItemId: string,
+  v: { rate: number | null; splitUnitNet: number | null; anchorUnitNet: number; anchorPeriodNets: Record<string, number> },
+): Promise<void> {
+  const { error } = await supabase.rpc('fn_set_split_lock', {
+    p_split_item_id: splitItemId,
+    p_split_rate: v.rate,
+    p_split_unit_net: v.splitUnitNet,
+    p_anchor_unit_net: v.anchorUnitNet,
+    p_anchor_period_nets: v.anchorPeriodNets,
+  })
+  if (error) throw new Error(error.message)
+}
+
 // KART 1600 M3b-3: fn_add_person_items sarmalayicisi. N kisilik getirmede tek
 // gidis-donus - satir basina addBudgetItem cagirmak N ayri istek acardi.
 export async function addPersonItems(

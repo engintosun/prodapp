@@ -36,7 +36,7 @@ vi.mock('./client', () => ({
   },
 }))
 
-import { updateItemField, addBudgetItem, addPersonItems, softDeleteBudgetItem } from './budget-service'
+import { updateItemField, addBudgetItem, addPersonItems, softDeleteBudgetItem, setSplitLock } from './budget-service'
 
 const BRACKETS_2026: TaxBracket[] = [
   { floor: 0, ratePercent: 15, baseTax: 0 },
@@ -551,5 +551,22 @@ describe('softDeleteBudgetItem — kisi bagini da birakir (KOMISYON TABANI VE SI
   it('tek update icinde hem is_active hem person_object_id degisir', async () => {
     await softDeleteBudgetItem('item-1')
     expect(capturedUpdateArgs).toEqual({ is_active: false, person_object_id: null })
+  })
+})
+
+describe('setSplitLock (1500 Dilim 2b-2b)', () => {
+  beforeEach(() => {
+    capturedRpcArgs = null
+  })
+
+  it('acilis argumanlari: rakamlar fn_set_split_lock parametrelerine esler', async () => {
+    await setSplitLock('hd', { rate: null, splitUnitNet: 500000, anchorUnitNet: 500000, anchorPeriodNets: {} })
+    expect(capturedRpcArgs).toEqual({
+      p_split_item_id: 'hd',
+      p_split_rate: null,
+      p_split_unit_net: 500000,
+      p_anchor_unit_net: 500000,
+      p_anchor_period_nets: {},
+    })
   })
 })

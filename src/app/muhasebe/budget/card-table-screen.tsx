@@ -8,7 +8,7 @@ import { useEditBuffers } from './hooks/use-edit-buffers'
 import { useGridNavigation } from './hooks/use-grid-navigation'
 import { isMultiPeriod, fmt, matchLibraryItems, buildRoomOptions, findCrossCardMatches } from './format'
 import type { RoomOption } from './format'
-import { addBudgetItem, addPersonItems, softDeleteBudgetItem, updateItemField } from '../../../shared/supabase/budget-service'
+import { addBudgetItem, addPersonItems, softDeleteBudgetItem, updateItemField, setSplitLock } from '../../../shared/supabase/budget-service'
 import { fetchPersonLabels, updatePersonLabel, fetchDutyOptions } from '../../../shared/supabase/person-label-service'
 import type { PersonLabel, PersonLabelPatch, DutyOption } from '../../../shared/supabase/person-label-service'
 import { useToast } from '../../../shared/components/toast'
@@ -19,6 +19,7 @@ import { PeriodRow } from './components/period-row'
 import { HeadingRow } from './components/heading-row'
 import { SummaryRow } from './components/summary-row'
 import { buildCardView } from './card-view'
+import { unlockWrite, relockWrite } from './split-lock'
 import type { CardView } from './card-view'
 import { resolveCollapsed, toggleCollapse, openBlock } from './collapse-state'
 import type { CollapseState } from './collapse-state'
@@ -792,6 +793,27 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     }
     return out
   }, [rows, splitCodes, cardView])
+  // 1500 Dilim 2b-2b (Karar 13, KILIT ACILIRKEN): kilide basinca acilir ya da kapanir. Degerleri
+  // split-lock.ts hesaplar, fn_set_split_lock tek islemde yazar, kart yeniden okunur. Hata hucrenin
+  // dibinde (oran kutusu) gosterilir.
+  const onToggleSplitLock = useCallback(
+    async (splitItemId: string) => {
+      const split = rows.find((r) => r.id === splitItemId)
+      const anchor = split && split.parentItemId !== null ? rows.find((r) => r.id === split.parentItemId) : undefined
+      if (!split || !anchor) return
+      try {
+        const write =
+          split.splitRate !== null
+            ? unlockWrite(anchor, split.splitRate)
+            : relockWrite(anchor, cardView.rowTotalsById[split.id]?.net ?? 0)
+        await setSplitLock(splitItemId, write)
+        refetch({ silent: true })
+      } catch (e) {
+        addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error', { anchor: cellSelector(splitItemId, 'splitRate') })
+      }
+    },
+    [rows, cardView, refetch, addToast],
+  )
 
   // Tek kalemli rol blogu KAPALI dogar (10 Eylul 2026, Engin karari): ozet satiri zaten dogru
   // rakami gosteriyor, tek alt kalem ayni rakami tekrar etmesin; rakam kolonunda ne bosluk ne
@@ -1052,6 +1074,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                             split={splitInfoById.get(it.id)}
                             bufSplitRate={buffers[it.id + ':splitRate']}
                             navSplitRate={isActiveEdit(it.id, 'splitRate') ? undefined : 'Oran %' + fmt(it.splitRate ?? 0)}
+                            onToggleSplitLock={onToggleSplitLock}
                             justAdded={justAddedIds.includes(it.id)}
                             bufUnitNet={buffers[it.id + ':unitNet']}
                             bufMultiplier={buffers[it.id + ':multiplier']}
