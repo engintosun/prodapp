@@ -33,6 +33,9 @@ interface ItemRowProps {
   dutyCodes: ReadonlySet<string>
   // 1500 Dilim 2: yonetmen satirinin hazir adi (display-name.ts anchorNames).
   anchorName?: string
+  // 1500 Dilim 2a-3a: yonetmen satirinin kisi adi tamponu ve KLV duzenleme kipi.
+  bufPersonName: string | undefined
+  anchorEditing: boolean
   justAdded: boolean
   bufUnitNet: string | undefined
   bufMultiplier: string | undefined
@@ -60,6 +63,8 @@ export const ItemRow = memo(function ItemRow({
   personLabelById,
   dutyCodes,
   anchorName,
+  bufPersonName,
+  anchorEditing,
   justAdded,
   bufUnitNet,
   bufMultiplier,
@@ -98,7 +103,21 @@ export const ItemRow = memo(function ItemRow({
       <td style={tdStyle}>{rowNo ?? ''}</td>
       <td style={tdStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-          {nameDisplay.editable ? (
+          {anchorName !== undefined ? (
+            // YONETMEN SATIRI (1 Ekim 2026, Karar 2; 2a-3a): hucre KISI ADINI yazar, kalemin adini
+            // degil. Gezinirken kurulmus ad, duzenlerken yalniz kisi adi (sayi hucrelerinin nav/buf
+            // deseni). Yazilan ad hucreden cikilana kadar tamponda durur.
+            <input
+              data-grid-cell="true"
+              data-row-id={it.id}
+              data-col="personName"
+              style={cellInputEllipsis}
+              value={anchorEditing ? (bufPersonName ?? it.personName ?? '') : anchorName}
+              title={anchorName}
+              onChange={(e) => api.onTextChange(it.id, 'personName', e.target.value)}
+              onBlur={() => api.commitField(it.id, 'personName')}
+            />
+          ) : nameDisplay.editable ? (
             <input
               data-grid-cell="true"
               data-row-id={it.id}

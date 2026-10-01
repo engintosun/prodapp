@@ -82,8 +82,9 @@ export function rowDisplayName(
   personLabelById: ReadonlyMap<string, Pick<PersonLabel, 'agencyName' | 'managerName'>>,
   anchorName?: string,
 ): ItemDisplayName {
-  // YONETMEN SATIRI (1 Ekim 2026): adi anchorNames kurar, cagiran hazir verir. 2a-2'de SALT
-  // OKUNUR; kisi adi yazma yolu 2a-3'te acilir.
+  // YONETMEN SATIRI (1 Ekim 2026): adi anchorNames kurar, cagiran hazir verir.
+  // Pencere basliklari icin. Kartin Ad hucresi yonetmen satirinda bu donusu KULLANMAZ, kendi
+  // yazilabilir hucresini cizer (item-row.tsx, 2a-3a).
   if (anchorName !== undefined) return { text: anchorName, editable: false }
   if (item.deriveRate !== null) {
     return commissionDisplayName(item, item.personObjectId ? personLabelById.get(item.personObjectId) : undefined)

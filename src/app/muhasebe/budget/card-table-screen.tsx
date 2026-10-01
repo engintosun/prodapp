@@ -257,6 +257,11 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     [askConfirm],
   )
 
+  // 1500 Dilim 2a-3a (1 Ekim 2026, Engin karari): kullanici yonetmen satirina ismi kendisi
+  // yazdiginda blok ACIK dogar - tek kalemli blok kurala gore kapali doger, yazilan satir gozden kaybolurdu.
+  const onPersonNameCommitted = useCallback((id: string) => {
+    setCollapseState((prev) => openBlock('a:' + id, prev))
+  }, [])
   const { buffers, bordroData, itemWarnings, periodWarnings, refreshBordroMany, api } = useEditBuffers({
     rowsRef,
     savedRef,
@@ -267,6 +272,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     minWageThresholdsRef,
     patchRow,
     onMoneyCommitted: birthMissingCommissionRows,
+    onPersonNameCommitted,
     confirmPeriodRemoval,
   })
   useLayoutEffect(() => {
@@ -1003,6 +1009,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                             personLabelById={personLabelById}
                             dutyCodes={dutyCodes}
                             anchorName={cardView.anchorNames.rowName.get(it.id)}
+                            bufPersonName={buffers[it.id + ':personName']}
+                            anchorEditing={isActiveEdit(it.id, 'personName')}
                             justAdded={justAddedIds.includes(it.id)}
                             bufUnitNet={buffers[it.id + ':unitNet']}
                             bufMultiplier={buffers[it.id + ':multiplier']}

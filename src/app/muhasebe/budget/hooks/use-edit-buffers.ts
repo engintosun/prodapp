@@ -37,7 +37,7 @@ const NUMERIC_EDITABLE_FIELDS = new Set<EditableField>(['unitNet', 'multiplier',
 // - basarili para-degistiren commit'lerden sonra CAGRILIR ama GOVDESI (taban hesabi, refetch,
 // toast) card-table-screen.tsx'te yasar. useEditBuffers kendisi "neden" cagrildigini bilmez.
 export type EditApi = {
-  onTextChange: (id: string, field: 'name', value: string) => void
+  onTextChange: (id: string, field: 'name' | 'personName', value: string) => void
   onNumChange: (id: string, field: 'unitNet' | 'multiplier' | 'vatRate' | 'deriveRate', raw: string) => void
   onPeriodChange: (id: string, stageId: string, raw: string) => void
   onPeriodNetChange: (itemId: string, stageId: string, raw: string) => void
@@ -66,6 +66,9 @@ interface UseEditBuffersParams {
   minWageThresholdsRef: MutableRefObject<MinimumWageThresholds | null>
   patchRow: (id: string, patch: Partial<BudgetItemRow>) => void
   onMoneyCommitted?: () => void
+  // 1500 Dilim 2a-3a: kullanici isimsiz yonetmen satirina ilk kez isim yazdiginda cagrilir;
+  // karar ekranda (blok acik dogar). Kimligi sabit olmali (api bir kere kurulur).
+  onPersonNameCommitted?: (id: string) => void
   // SORU PENCERESI (K3, 25 Eylul 2026): donem kaldirma sorusu kart ekraninda kurulur (yazi ve
   // tetik adresi orada); bu kanca yalniz sorar ve cevabi bekler. Kimligi sabit olmali (api bir
   // kere kurulur).
@@ -82,6 +85,7 @@ export function useEditBuffers({
   minWageThresholdsRef,
   patchRow,
   onMoneyCommitted,
+  onPersonNameCommitted,
   confirmPeriodRemoval,
 }: UseEditBuffersParams) {
   const { addToast } = useToast()
@@ -246,7 +250,13 @@ export function useEditBuffers({
       setBuffers(c)
     }
 
-    function onTextChange(id: string, field: 'name', value: string) {
+    function onTextChange(id: string, field: 'name' | 'personName', value: string) {
+      // personName yalniz TAMPONA yazilir (1 Ekim 2026): satira yazilsa her harfte kart duzeni
+      // yeniden kurulur, ozet satiri dogup kaybolur, yazilan hucre kapali bloga girebilir.
+      if (field === 'personName') {
+        setBuf(id + ':personName', value)
+        return
+      }
       patchRow(id, { [field]: value } as Partial<BudgetItemRow>)
     }
 
@@ -384,6 +394,38 @@ export function useEditBuffers({
       if (!row) return
       const saved = savedRef.current[id]
       const bufKey = id + ':' + field
+      if (field === 'personName') {
+        // 1500 Dilim 2a-3a: tampondaki ad kirpilir, bos ise isimsiz (null). Kayitliyla ayniysa
+        // servise gidilmez. Isimsizden isimliye gecis onPersonNameCommitted'i cagirir.
+        const raw = buffersRef.current[bufKey]
+        if (raw === undefined) return
+        const trimmed = raw.trim()
+        const next = trimmed === '' ? null : trimmed
+        const before = saved ? saved.personName : row.personName
+        if (before === next) {
+          clearBuf(bufKey)
+          return
+        }
+        patchRow(id, { personName: next })
+        try {
+          await updateItemField(id, 'personName', next ?? '')
+          savedRef.current[id] = {
+            ...(saved ?? row),
+            personName: next,
+            periodQty: { ...(saved?.periodQty ?? row.periodQty) },
+            periodNet: { ...(saved?.periodNet ?? row.periodNet) },
+            periodUnit: { ...(saved?.periodUnit ?? row.periodUnit) },
+            periodRepeat: { ...(saved?.periodRepeat ?? row.periodRepeat) },
+          } as BudgetItemRow
+          if (before === null && next !== null) onPersonNameCommitted?.(id)
+        } catch (e) {
+          patchRow(id, { personName: before })
+          addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error', { anchor: cellSelector(id, 'personName') })
+        } finally {
+          clearBuf(bufKey)
+        }
+        return
+      }
       // PARSE GUVENCESI (K10 revize + TD-16, 2026-07-18): sayisal alanda taslak metni
       // ayristirilamiyorsa (veya repeat<=0, mevcut onRepeatChange kurali korunur) kasadaki
       // eski (saved) deger AYNEN geri yazilir, servise hic gidilmez.
