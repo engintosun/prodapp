@@ -206,11 +206,12 @@ Etap: ATL (Prep→Prod→Post) · RECOUPABLE DEĞİL · görünürlük: KISMİ M
 
 **REVİZE (KART 1500 Dilim 1, 30 Eylül 2026, Engin kararı; göç `20260930120000`):** Kodlar MMB 6.1'e hizalandı (kaynak: `docs/butce/MMB-6.1-ornek-hesap-plani.pdf`, 1500 Directors Unit). Kart DÜZ: kütüphane başlığı YOK (MMB'de 1500 ara başlıksız tek hesap grubu; atomlarda `heading_id` boş). Sıralama kod sırasıdır. Kütüphane 14 satır, şablon 5 kalem.
 
-**Kütüphane (14 satır):** S = şablona giren, K = yalnız kütüphanede.
+**Kütüphane (16 satır):** S = şablona giren, K = yalnız kütüphanede.
 
 | Kod | Ad | İngilizce | Birim | Ödeme statüsü | S/K |
 |---|---|---|---|---|---|
-| 1501 | Yönetmen Kaşesi | Director Fee | flat | telif_belgeli | S |
+| 1501 | Yönetmen (ek: Hizmet Bedeli) | Director Fee | flat | telif_belgeli | S |
+| 1501-01 | Yönetmen Hak Devri | | flat | telif_belgeli | K |
 | 1502 | Yönetmen Özel Asistanı | Personal Assistant | week | bordro | S |
 | 1503 | Koreograf | Choreographer | week | smm | S |
 | 1504 | Oyuncu/Diyalog Koçu | Dialogue/Acting Coach | day | smm | S |
@@ -222,15 +223,16 @@ Etap: ATL (Prep→Prod→Post) · RECOUPABLE DEĞİL · görünürlük: KISMİ M
 | 1508-04 | Harcırah | Per Diem | day | sirket | K |
 | 1508-05 | Festival Katılımı | Festival Attendance | flat | sirket | K |
 | 1508-06 | Araç Kiralama | Car Rentals | day | sirket | K |
-| 1509 | İkinci Ekip Yönetmeni | Second Unit Director | week | smm | K |
+| 1509 | İkinci Ekip Yönetmeni (ek: Hizmet Bedeli) | Second Unit Director | week | smm | K |
 | 1510 | Konsept Sanatçısı | Concept Artist | week | smm | K |
+| 1511 | Yönetmen Temsilci Komisyonu | | flat | sirket | K |
 
 1505 (MMB: Secretary) BOŞ; işi 1502'nin içinde. 1508-01..06, 1100'deki 1108 ekleriyle aynıdır (05 Festival Katılımı); 1108-03'ün birimi de `flat`'e çekildi (göçle, bkz. §7.1). 1506'nın eş adları (`aliases`): Previz, Previsualization, Animatic; kalem ekleme odasındaki arama eş adı okur. Provenance: 1508-xx 'Koster/MMB + KAAPA damitim', 1510 'KAAPA', diğerleri 'Koster/MMB-6.1'.
 
 **Şablon (5 kalem):** 1501, 1502, 1503, 1504, 1506. Kartın `misc_prefix` hanesi `"15"` (1100 kartınınki `"11"`); değerler `fn_open_budget`'taki geri-düşümün ürettiği değerin aynısıdır, davranış değişmedi (TD-39).
 
 A. Kreatif Ana İşçilik (İşçilik + ödeme-statüsü)
-- 1501 Yönetmen Kaşesi (Director Fee): cost_type=İşçilik(ATL) · ödeme-statüsü: SMM/Loan-Out/Telif · kısmi maskede gizli baş-kaşe 🔒 · milestone denetimi: 5100 Kurgu onay tikleri ile.
+- 1501 Yönetmen (Director Fee; ekranda "Yönetmen Hizmet Bedeli", bkz. aşağıdaki Dilim 2 bloğu): cost_type=İşçilik(ATL) · ödeme-statüsü: SMM/Loan-Out/Telif · kısmi maskede gizli baş-kaşe 🔒 · milestone denetimi: 5100 Kurgu onay tikleri ile.
 - 1509 İkinci Ekip Yönetmeni (Second Unit Director): cost_type=İşçilik(ATL) · haftalık/paket · çapraz: 4200 Second Unit (orası ekip/ekipman; 1509 sadece kaşe). Eski kodu 1502'ydi.
 
 B. Kreatif Destek Ekibi (İşçilik + ödeme-statüsü)
@@ -248,15 +250,53 @@ D. Lojistik & Temsil (operasyonel gider)
 
 Kart-özel anomali kuralları: çift-fringe guard (1501/kreatifler Loan-Out) · milestone uyuşmazlık (1501↔5100) · Crew Overlap (1504/1502 ↔ set ekibi). Genel kurallar §4.9'da.
 
-**KARARLAŞTI, UYGULANMADI (Dilim 2):** 1501-01 Yönetmen Hak Devri ve 1511 Yönetmen Temsilci Komisyonu.
-- İkisi de kütüphaneden çağrılır; "Kime?" listesiyle kartın yönetmen satırlarından (1501/1509) birinin ALTINA alt satır olarak girer. Liste satırları görünen adlarıyla gösterilir.
-- Yönetmenin kişi adı kalemin adından AYRI bir alanda tutulur ve "Yönetmen Kaşesi — Ayşe Yılmaz" biçiminde gösterilir (tek kaynak `display-name.ts`).
-- Komisyon: tek atom, statü sirket, oran %20 (kütüphane `default_derive_rate`), taban = kaşe + hak devri toplamı.
-- Hak devri: statü telif; oran, kaşe ile hak devrinin bölüşümünü belirler. Oran hanesine bitişik kilit: KİLİTLİ (hazır gelen) = toplam sabit, oran ya da bir alt satır değişince öbürü tamamlar; AÇIK = oran devre dışı, alt satırlar serbest, toplam onların toplamı.
-- Hak devri %50'yi GEÇİNCE uyarı: "Telif oranının kaşeden çok daha yüksek olması, Avrupa fonlarında (örn: CNC) 'gizli maaş' (salaire déguisé) denetimlerine takılma riski taşır. Oranı dengede tutmanız önerilir." Eşik koda gömülmez, oran cetveline girer.
-- Türk bütçesinde hak devri kalemi olmaz (Türkiye'de yönetmen kaşesi tek rakam, telif %17).
-- Gerekçe: CNC, Eurimages, FFA, Medienboard, Wallimage, Screen Flanders ve ortak yapımcı Avrupa kanalları (Arte, ZDF, Canal+) iki kalemi "Director" altında ayrı ister.
-- Teknik tasarım konuşulmadan başlanmaz.
+**KARARLAŞTI (Dilim 2; 30 Eylül 2026 ve 1 Ekim 2026, Engin kararları):** 1501-01 Yönetmen Hak Devri ve 1511 Yönetmen Temsilci Komisyonu. Uygulama dört adımdadır: 1) kayıt yapısı (göç `20261001120000`, UYGULANDI); 2a) adlar, özet satırı ve "Kime?"; 2b) hak devri oranı, kilit ve bölme; 2c) komisyon tabanı, %50 uyarısı ve silme.
+
+**Engin'in metni (30 Eylül 2026, BİREBİR; özetlenmez, kısaltılmaz):**
+
+> komisyonun neyin üzerinden hesaplanacağı: komisyon satırı aynı oyuncuda olduğu gibi bir satır yapısı olur, oran hanesi  vardır , şablondan %20 sabit gelir, kullanıcı isterse değiştirir.
+>
+> Yönetmen hak bedeli konusu:  "Directors rights" Türk bütçelerinde ayrı olarak gösterilmez (genelde) sebebi, bu kalem sözleşmede  hak devirlerinden sözedilse de ayrı olarak hesaplanmamasıdır. mali haklar devir sözleşmesi yapılır. Bu sözleşmede hem hak devri hem de kaşe yi  kapsar. toplam bir rakam yazılır. Kültür bakanlığı filmler için eser işletme belgesi verirken hak devri yapılıp yapılmadığına bakar ama bunun mali karşılığını araştırmaz sorgulamaz. Dolayısıyla Türk bütçelerinde Yönetmenin kazancı tek rakam olarak girilir.
+> Bütçe de hak devrinin ayrı ayrı gösterilmesini isteyen kurum ve kuruluşlar CNC Fransa, yönetmen hakları (Droit d'auteur) (kaşe üzerinden ağır sosyal güvenlik primleri kesilirken, telif bedeli farklı ve daha düşük bir vergi dilimine tabidir. Bütçenin doğru hesaplanabilmesi için bu ayrım şarttır.), Almanya'daki FFA veya Medienboard, Belçika'daki Wallimage veya Screen Flanders gibi fonlar da birebir CNC ve Eurimages formatını takip eder. Bütçe formlarında (çoğunlukla excel şablonlarında) bu iki kalem "Director" ana başlığı altında ayrı satırlar olarak (kodları bile farklıdır) sabit olarak gelir.
+> Avrupa kamu yayıncıları (Arte,ZDF,CANAL +, vb)  Bu kanallar bir projeye sadece yayın haklarını satın almak için değil, "Ortak Yapımcı" (Co-producer) sıfatıyla ve yapım bütçesine katkı sunarak girdiklerinde, kendi ülkelerinin vergi ve telif yasaları gereği bütçe planında bu ayrımı görmek isterler.
+> Euromages  da bu  kalemi şablon bütçesinde ayrı görmek ister.
+> Hak devri, kütüphaneden çağrılabilen bir atom/kalem olmalıdır. Tıklandığında, tıpkı oyuncu kartında olduğu gibi "Kime?" sorusunu soran bir liste açılmalıdır (Çünkü birden fazla yönetmen olabilir).
+> Bu listede yönetmenin ismi belliyse doğrudan isim yazmalı, isim boşsa kalemin kendi başlığı (Örn: 1. Yönetmen) gösterilmelidir.
+> Bu kalem çağrıldığında bağımsız bir satır oluşturmaz; oyuncu kartındaki "Ajans Komisyonu" mantığına benzer şekilde ilgili yönetmenin altında bir alt satır (child) olarak belirir.
+>
+> ilk hali yönetmen kaşesi 1000 tl
+> Hak Devri Eklendikten Sonra: Özet Satır (Parent) = 1000 TL, Yönetmen Kaşesi (Child) = 500 TL, Yönetmen Hak Devri (Child) = 500 TL. (Sistem parayı %50-%50 otomatik böler).
+> satırdaki oran  kolonu burada  komisyon veya diğer oranlardan farklı bir davranış gösterecek. komisyonda  oran yönetmen toplam kaşesinin yüzde kaçı olduğunu belirliyorken burada oran kaşe ve hak devrinin yüzdesel olarak nasıl bölüneceğini belirler.
+> Burada kullanıcı iki şekilde davranmak isteyecektir. şablondan toplam kilitli bir şekilde gelir. oran satırından değişiklik yapıldığında başta girilen rakam (örneğin 1000 tl) oran satırındaki gösterilen yüzdeye göre bölünür, ancak kullanıcı buna uymak istemez ve hak devri ile kaşeyi bağımsız olarak değiştirmek isterse  serbest düzenlemeye ihtiyaç duyacaktır. bunun için bir  kilit olmalı. bu kilit ayrı bir buton olmak yerine oran inputuna bitişik olmalı ve işi oranı devre dışı bırakmak yada korumak olmalı
+>
+> * Serbest Düzenleme : Kullanıcı "Yönetmen Hizmet Bedeli"ni 600 TL yaparsa, Parent (Toplam) satırı otomatik olarak 1.100 TL'ye güncellenir. Yani rakamlar özgürdür, üst toplamı etkiler.
+> * Toplamı Kilitleme (Lock Total): Kullanıcı "Toplam 1.000 TL param var, bunu aşamam" diyorsa; Hizmet bedelini 600 TL yaptığında, sistem Hak Devrini otomatik olarak 400 TL'ye düşürür. (Bir kilit/zincir ikonu ile )
+>
+> Ayrıca fransa ve diğer bazı ülkelerde vergi mevzuatından dolayı, yönetmen kaşesi ve hak devri oranları belirli bir seviyede olmalı, hak devri %50 yi geçtiğinde fransız kanunları ve bazı diğer avrupa ülkelerinde bu  durum gizli maaş, dolayısıyla vergi kaçırma olarak görülebileceğinden  bir uyarı  çıkmalı. Hak devri &55 in üstüne çıktığında : ""Telif oranının kaşeden çok daha yüksek olması, Avrupa fonlarında (örn: CNC) 'gizli maaş' (salaire déguisé) denetimlerine takılma riski taşır. Oranı dengede tutmanız önerilir."" gibi
+
+**Engin'in cevapları (30 Eylül 2026, BİREBİR):**
+
+> yönetmen temsilci komisyonu kalacak
+> iki kalem içinde ( temsilci ve hak devri) kime  olsun
+> kilit  hazır gelen hali  ve açık hali  doğru
+> eşik tek bir uyarı eşiği olsun, hak devri %50 geçtiğinde tetiklenir
+> türk vergisi,  türkiye  için olan bütçelerde zaten hak devri  kalemi olmayacak, kullanıcı yanlışlıkla girersede sorun değil. her iki durumdada statüsü telif oalcak türkiyede yönetmenin aldığı kaşe telif %17
+> komisyon, hak devri eklenmiş bir kalemde kaşe artı hak devrinin toplamından  hesaplanır bu zaten özette yer alacak.
+
+**Teknik tasarım kararları (1 Ekim 2026, Engin kabulü):**
+1. ZIMBA: Hak devri ve komisyon, eklendikleri yönetmen satırına (1501 ya da 1509) kayıtta görünmeyen bir bağla zımbalanır (`budget_items.parent_item_id`). Üretim Kayıtları'ndaki kişi kaydı kullanılmaz; kullanılsaydı yönetmen Oyuncular listesine düşerdi.
+2. AD DÜZENİ (ekranda): tek yönetmen, alt satır ve isim yoksa tek satır "Yönetmen". İsim yok, alt satır varsa özet "Yönetmen", altında "Yönetmen Hizmet Bedeli", sonra hak devri, sonra komisyon. İsim varsa özet "Yönetmen", altında "Ayşe Yılmaz Hizmet Bedeli", sonra hak devri, sonra komisyon; isim var ama alt satır yoksa da aynı düzen, blok kapalı doğar (1600'deki tek kalemli rol emsali). Birden fazla isimsiz yönetmende özetler "Yönetmen 1", "Yönetmen 2" olur (satır sırasına göre, saklanmaz). "Kime?" listesi özetin adını gösterir ("Yönetmen", "Yönetmen 1" ya da isim). 1509 İkinci Ekip Yönetmeni aynı kurala uyar. Kişi adı satırın kendi hanesinde tutulur (`budget_items.person_name`) ve Ad hücresine yazılır. 1600'de numaralı özet adı reddedilmişti (9 Eylül 2026) çünkü orada ad Üretim Kayıtları'ndan gelir; 1500'de o kaynak yoktur, çelişki yoktur.
+3. HAK DEVRİ GİRİŞİ: Engin'in yukarıdaki metni geçerlidir. KİLİTLİ (hazır gelen): toplam sabit; oran değişince toplam yeniden bölünür, bir satır değişince öbürü toplamı tamamlar. AÇIK: oran devre dışı, iki satır serbest, toplam onların toplamı. Kilit ayrı düğme değildir, oran hanesine bitişiktir. Oran şablondan %50 gelir, kullanıcı serbestçe değiştirir.
+4. KAYITTA NE TUTULUR: kilitliyken Hizmet Bedeli rakamı ile hak devri oranı; hak devri rakamı ve toplam bu ikisinden hesaplanır (B18). Açıkken oran boştur, iki rakam kendi satırında durur. Kilidin durumu ayrıca saklanmaz: oran doluysa kilitli, boşsa açık.
+5. ORANIN HANESİ: hak devri oranı `budget_items.split_rate`'te durur, komisyonun `derive_rate` hanesinde değil. Kod `derive_rate` dolu satırı komisyon sayar (altı dosyada dokuz yer); hak devri oraya yazılsaydı komisyon gibi davranırdı.
+6. KİME? LİSTESİNİN KAYNAĞI: kalemin kütüphane kaydında altına girebileceği kalemler yazılıdır (`item_library.attaches_to`: 1501, 1509). Dolu olan kalem seçilince "Kime?" açılır; liste kartta bu kodları taşıyan satırlardan kurulur. Senarist ve besteci kartlarında aynı bilgi yazılarak kullanılır, yeni mekanizma kurulmaz.
+7. GÖREV ADI VE EK: 1501'in kütüphane adı "Yönetmen", eki "Hizmet Bedeli" (`item_library.name_suffix`); 1509'un eki de "Hizmet Bedeli". Ekrandaki adlar bu ikisinden kurulur; icmal ve dışa aktarımda kalemin tam adı "Yönetmen Hizmet Bedeli".
+8. YÖNETMEN SATIRI SİLİNİRSE: × zımbalı satırları da birlikte siler; soru bugünkü proje penceresiyle sorulur ve silinecekleri adıyla söyler.
+9. HAK DEVRİ SİLİNİRSE: kilitliyken toplam korunur, hak devrinin rakamı Hizmet Bedeli'ne döner ve soru bunu söyler; açıkken Hizmet Bedeli olduğu gibi kalır.
+- KOMİSYON SİLME: 1511 × ile normal silinir. 1600'deki "oranı 0 yapın" kuralının gerekçesi tikten yeniden doğumdu; 1511 kütüphaneden elle eklenir.
+- AJANS VAR, KOMİSYON YOK: komisyon satırı %0 oranla eklenir ve durur (1600 emsali: ajans ücret almasa da sözleşmede taraftır).
+- EŞİK: oran cetvelinde "Parametre: Hak devri uyarı eşiği" %50. Uyarı hak devrinin toplam içindeki payına bakar, kilitli ve açık halde aynıdır; metin yukarıdaki Engin metnindeki cümledir.
+- AJANS ADI PARKTA: 1511 satırında ajansın adı gösterilmez (1 Ekim 2026, Engin); ayrıca değerlendirilecek.
 
 **Reddedilen:** kişi listesi modelinin 1500'e taşınması; kütüphane başlıkları (dört grup); tek kalemli başlığın çizilmemesi kuralı.
 
