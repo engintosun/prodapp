@@ -43,6 +43,11 @@ export interface BudgetItemRow {
   publicNote: string | null
   personObjectId: string | null
   deriveRate: number | null
+  // 1500 Dilim 2 (1 Ekim 2026, KART-KATALOGU 7.4 Karar 1, 2, 5): zimbalandigi satir,
+  // satirda yazili kisi adi, hak devri orani. splitRate derive_rate (komisyon) ile KARISTIRILMAZ.
+  parentItemId: string | null
+  personName: string | null
+  splitRate: number | null
 }
 
 export interface CardView {
@@ -68,6 +73,7 @@ export type EditableField =
   | 'headingCode'
   | 'deriveRate'
   | 'personObjectId'
+  | 'personName'
 
 const FIELD_COL: Record<EditableField, string> = {
   internalNote: 'internal_note',
@@ -83,6 +89,7 @@ const FIELD_COL: Record<EditableField, string> = {
   headingCode: 'heading_code',
   deriveRate: 'derive_rate',
   personObjectId: 'person_object_id',
+  personName: 'person_name',
 }
 
 export async function getProjectId(): Promise<string> {
@@ -249,6 +256,10 @@ export async function mapItemRows(itemList: readonly Record<string, unknown>[]):
     personObjectId: (i.person_object_id as string | null) ?? null,
     deriveRate:
       i.derive_rate !== null && i.derive_rate !== undefined ? Number(i.derive_rate) : null,
+    parentItemId: (i.parent_item_id as string | null) ?? null,
+    personName: (i.person_name as string | null) ?? null,
+    splitRate:
+      i.split_rate !== null && i.split_rate !== undefined ? Number(i.split_rate) : null,
   }))
 }
 
@@ -261,7 +272,7 @@ export async function fetchBudgetItemRowsByCard(
   const { data: items, error: ei } = await supabase
     .from('budget_items')
     .select(
-      'id, item_code, catalog_code, heading_code, library_item_id, name, name_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, person_object_id, derive_rate, public_note, group_id',
+      'id, item_code, catalog_code, heading_code, library_item_id, name, name_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, person_object_id, derive_rate, public_note, parent_item_id, person_name, split_rate, group_id',
     )
     .eq('budget_id', budgetId)
     .eq('is_active', true)
@@ -300,7 +311,7 @@ export async function getCard(budgetId: string, cardId?: string): Promise<CardVi
   const itemsQuery = (groupId: string) =>
     supabase
       .from('budget_items')
-      .select('id, item_code, catalog_code, heading_code, library_item_id, name, name_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, person_object_id, derive_rate, public_note')
+      .select('id, item_code, catalog_code, heading_code, library_item_id, name, name_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, person_object_id, derive_rate, public_note, parent_item_id, person_name, split_rate')
       .eq('group_id', groupId)
       .eq('is_active', true)
       .order('sort_order')
@@ -387,6 +398,10 @@ export async function updateItemField(
   } else if (field === 'personObjectId') {
     const v = String(value).trim()
     payload = { person_object_id: v === '' ? null : v }
+  } else if (field === 'personName') {
+    // 1500 Dilim 2 Karar 2: Ad hucresine yazilan kisi adi. Bos metin = isimsiz hale donus.
+    const v = String(value).trim()
+    payload = { person_name: v === '' ? null : v }
   } else {
     const n = typeof value === 'number' ? value : Number(String(value).replace(',', '.'))
     if (!Number.isFinite(n)) throw new Error('Geçersiz sayı')
@@ -582,10 +597,11 @@ export async function copyLastPeriodToMain(itemId: string, stageId: string): Pro
 // Mevcut-kod modu (D3c-2): existingCode + name + paymentStatus + unitCode - kartin MEVCUT
 // serbest kalemi ikinci kez secildiginde AYNI kodla ikinci satir doger, misc_code_seq ARTMAZ.
 // Ucu de tip duzeyinde ayrik; sunucu tarafi ayrica exception ile korur.
+// 1500 Dilim 2 (1 Ekim 2026): parentItemId, kutuphanede attaches_to dolu atomun zimbalanacagi satir.
 export async function addBudgetItem(
   groupId: string,
   opts:
-    | { catalogCode: string; personObjectId?: string }
+    | { catalogCode: string; personObjectId?: string; parentItemId?: string }
     | { name: string; paymentStatus: string; unitCode: string }
     | { existingCode: string; name: string; paymentStatus: string; unitCode: string }
 ): Promise<string> {
@@ -597,6 +613,7 @@ export async function addBudgetItem(
     p_unit_code: 'catalogCode' in opts ? null : opts.unitCode,
     p_existing_code: 'existingCode' in opts ? opts.existingCode : null,
     p_person_object_id: 'catalogCode' in opts ? (opts.personObjectId ?? null) : null,
+    p_parent_item_id: 'catalogCode' in opts ? (opts.parentItemId ?? null) : null,
   })
   if (error) throw new Error(error.message)
   return data as unknown as string

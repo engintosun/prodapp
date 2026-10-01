@@ -456,6 +456,7 @@ describe('addBudgetItem — kutuphane/serbest/mevcut-kod yollari (tek imza sonra
       p_unit_code: null,
       p_existing_code: null,
       p_person_object_id: null,
+      p_parent_item_id: null,
     })
   })
 
@@ -469,6 +470,7 @@ describe('addBudgetItem — kutuphane/serbest/mevcut-kod yollari (tek imza sonra
       p_unit_code: null,
       p_existing_code: null,
       p_person_object_id: 'person-1',
+      p_parent_item_id: null,
     })
   })
 
@@ -482,6 +484,7 @@ describe('addBudgetItem — kutuphane/serbest/mevcut-kod yollari (tek imza sonra
       p_unit_code: 'gun',
       p_existing_code: null,
       p_person_object_id: null,
+      p_parent_item_id: null,
     })
   })
 
@@ -495,6 +498,7 @@ describe('addBudgetItem — kutuphane/serbest/mevcut-kod yollari (tek imza sonra
       p_unit_code: 'gun',
       p_existing_code: '1198-01',
       p_person_object_id: null,
+      p_parent_item_id: null,
     })
   })
 })

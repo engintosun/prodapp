@@ -28,6 +28,9 @@ function makeItem(overrides: Partial<BudgetItemRow> = {}): BudgetItemRow {
     publicNote: null,
     personObjectId: null,
     deriveRate: null,
+    parentItemId: null,
+    personName: null,
+    splitRate: null,
     ...overrides,
   }
 }
