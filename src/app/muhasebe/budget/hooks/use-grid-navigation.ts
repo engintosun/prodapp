@@ -4,6 +4,7 @@ import { createGridState, reduceGrid, resolveKeyAction } from './grid-navigation
 import type { CellId, CellKind, ColumnEquivalenceGroups, GridShape, GridState, ListIntent, ListState } from './grid-navigation-core'
 import type { BudgetItemRow } from '../../../../shared/supabase/budget-service'
 import type { EditApi } from './use-edit-buffers'
+import { shownRow } from '../split-lock'
 
 // I7 motoru DOM baglayicisi. Cekirdek (grid-navigation-core) DOM'suz saf reducer;
 // bu hook onu DOM'a baglar, kolon->alan eslemesini yapip MEVCUT onXChange/commitX
@@ -84,18 +85,21 @@ export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows, list
     return rowsRef.current.find((r) => r.id === itemId)
   }
 
+  // 1500 Dilim 2b-3: kilitli capada hucreye girince PAY gorunur (kayit toplami tasir).
   function getRawValue(cell: CellId): string {
     const period = parsePeriodRowId(cell.rowId)
     if (period) {
-      const row = findItemRow(period.itemId)
-      if (!row) return ''
+      const found = findItemRow(period.itemId)
+      if (!found) return ''
+      const row = shownRow(rowsRef.current, found)
       if (cell.col === 'periodNet') return String(row.periodNet[period.stageId] ?? row.unitNet)
       if (cell.col === 'periodRepeat') return String(row.periodRepeat[period.stageId] ?? row.repeat)
       if (cell.col === 'periodQty') return String(row.periodQty[period.stageId] ?? 0)
       return ''
     }
-    const row = findItemRow(cell.rowId)
-    if (!row) return ''
+    const foundRow = findItemRow(cell.rowId)
+    if (!foundRow) return ''
+    const row = shownRow(rowsRef.current, foundRow)
     if (cell.col === 'name') return row.name
     if (cell.col === 'personName') return row.personName ?? ''
     if (cell.col === 'unitNet') return String(row.unitNet)

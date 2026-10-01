@@ -18,6 +18,8 @@ import type { MinimumWageThresholds, BordroDerivationResult } from '../../../../
 import { useToast } from '../../../../shared/components/toast'
 import { cellSelector } from '../cell-address'
 import { bordroReasonMessage, parseNumericDraft, effectiveWarning } from '../format'
+import { lockedSplits } from '../person-groups'
+import { rateFromShare } from '../split-lock'
 import type { ValueWarning } from '../format'
 import type { BordroSheetEntry } from '../components/burden-sheet'
 
@@ -268,6 +270,12 @@ export function useEditBuffers({
     }
 
     function onNumChange(id: string, field: 'unitNet' | 'multiplier' | 'vatRate' | 'deriveRate' | 'splitRate', raw: string) {
+      // KILITLI PAY (1 Ekim 2026, Karar 12; 2b-3): kilitli capanin birim neti yazarken yalniz
+      // tamponda durur - satira yazilsa kayittaki TOPLAMIN yerine gecer, toplamlar her harfte oynar.
+      if (field === 'unitNet' && lockedSplits(rowsRef.current).has(id)) {
+        setBuf(id + ':' + field, raw)
+        return
+      }
       setBuf(id + ':' + field, raw)
       const n = Number(raw.replace(',', '.'))
       patchRow(id, { [field]: Number.isFinite(n) ? n : 0 } as Partial<BudgetItemRow>)
@@ -282,6 +290,11 @@ export function useEditBuffers({
     }
 
     function onPeriodNetChange(itemId: string, stageId: string, raw: string) {
+      // KILITLI PAY (2b-3): kilitli capanin donem neti de yalniz tamponda durur.
+      if (lockedSplits(rowsRef.current).has(itemId)) {
+        setBuf(itemId + ':pnet:' + stageId, raw)
+        return
+      }
       setBuf(itemId + ':pnet:' + stageId, raw)
       const current = rowsRef.current.find((r) => r.id === itemId)
       if (!current) return
@@ -433,6 +446,36 @@ export function useEditBuffers({
         }
         return
       }
+      if (field === 'unitNet') {
+        const lock = lockedSplits(rowsRef.current).get(id)
+        if (lock) {
+          // KILITLI PAY (1 Ekim 2026, Karar 12; 2b-3): yazilan rakam PAY'dir. Kayittaki toplam
+          // DEGISMEZ; hak devrinin orani yeniden hesaplanip yazilir, ekran iki payi yeniden boler.
+          const raw = buffersRef.current[bufKey]
+          if (raw === undefined) return
+          const parsed = parseNumericDraft(raw)
+          if (parsed === null) {
+            clearBuf(bufKey)
+            return
+          }
+          const base = saved ?? row
+          try {
+            const rate = rateFromShare(base.unitNet, parsed)
+            if (Math.abs(rate - lock.rate) >= 1e-8) {
+              await updateItemField(lock.splitItemId, 'splitRate', rate)
+              patchRow(lock.splitItemId, { splitRate: rate })
+              const savedSplit = savedRef.current[lock.splitItemId]
+              if (savedSplit) savedRef.current[lock.splitItemId] = { ...savedSplit, splitRate: rate }
+              onMoneyCommitted?.()
+            }
+          } catch (e) {
+            addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error', { anchor: cellSelector(id, 'unitNet') })
+          } finally {
+            clearBuf(bufKey)
+          }
+          return
+        }
+      }
       // PARSE GUVENCESI (K10 revize + TD-16, 2026-07-18): sayisal alanda taslak metni
       // ayristirilamiyorsa (veya repeat<=0, mevcut onRepeatChange kurali korunur) kasadaki
       // eski (saved) deger AYNEN geri yazilir, servise hic gidilmez.
@@ -536,6 +579,35 @@ export function useEditBuffers({
       const saved = savedRef.current[itemId]
       const bufKey = itemId + ':pnet:' + stageId
       const raw = buffersRef.current[bufKey]
+      const lock = lockedSplits(rowsRef.current).get(itemId)
+      if (lock) {
+        // KILITLI PAY (2b-3, Karar 12): donem satirina yazilan rakam o donemin PAY'idir; oran bu
+        // donemden hesaplanir ve butun donemlere uygulanir. Bos ya da gecersiz taslak kilitliyken
+        // YOK SAYILIR (donem mirasini kilitli blokta pay girisi temizlemez).
+        if (raw === undefined) return
+        const parsed = raw.trim() === '' ? null : parseNumericDraft(raw)
+        if (parsed === null) {
+          clearBuf(bufKey)
+          return
+        }
+        const base = saved ?? row
+        const storedNet = base.periodNet[stageId] ?? base.unitNet
+        try {
+          const rate = rateFromShare(storedNet, parsed)
+          if (Math.abs(rate - lock.rate) >= 1e-8) {
+            await updateItemField(lock.splitItemId, 'splitRate', rate)
+            patchRow(lock.splitItemId, { splitRate: rate })
+            const savedSplit = savedRef.current[lock.splitItemId]
+            if (savedSplit) savedRef.current[lock.splitItemId] = { ...savedSplit, splitRate: rate }
+            onMoneyCommitted?.()
+          }
+        } catch (e) {
+          addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error', { anchor: cellSelector(`${itemId}:${stageId}`, 'periodNet') })
+        } finally {
+          clearBuf(bufKey)
+        }
+        return
+      }
       // Bos taslak ('') KASITLI: override'i temizleyip kaleme mirasi geri verir (asagida
       // hedef=null olarak zaten dogru islenir). PARSE GUVENCESI yalniz BOS-OLMAYAN, sayiya
       // cevrilemeyen ('abc', '€') taslaklari yakalar.

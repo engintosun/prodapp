@@ -6,6 +6,7 @@
 import Decimal from 'decimal.js'
 import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
 import { rowTotals } from './totals'
+import { lockedSplits, shareItem } from './person-groups'
 
 export interface SplitLockWrite {
   rate: number | null
@@ -56,4 +57,23 @@ export function relockWrite(anchor: BudgetItemRow, splitNet: number): SplitLockW
   const rate = new Decimal(splitNet).div(total).mul(100).toDecimalPlaces(8).toNumber()
   if (rate >= 100) throw new Error('Hizmet Bedeli 0 iken toplam kilitlenemez.')
   return { rate, splitUnitNet: null, anchorUnitNet: w.anchorUnitNet, anchorPeriodNets: w.anchorPeriodNets }
+}
+
+// KILITLI PAY YAZIMI (1 Ekim 2026, KART-KATALOGU 7.4 Karar 12): yazilan pay ile kayittaki birim
+// rakam orani verir; miktar ve X pay ile toplamda ayni oldugu icin sadelesir (donemli Hizmet
+// Bedeli'nde de tek adim). 8 basamak (kayit hassasiyeti, goc 20261001130000).
+export const LOCKED_SHARE_OVER =
+  'Toplam kilitli: Hizmet Bedeli payı toplamı aşamaz. Toplamı değiştirmek için oranın yanındaki kilidi aç.'
+
+export function rateFromShare(storedUnitNet: number, typedShare: number): number {
+  if (typedShare < 0) throw new Error('Negatif değer girilemez')
+  if (typedShare > storedUnitNet) throw new Error(LOCKED_SHARE_OVER)
+  if (typedShare === 0) throw new Error('Hizmet Bedeli payı 0 olamaz.')
+  return new Decimal(1).minus(new Decimal(typedShare).div(storedUnitNet)).mul(100).toDecimalPlaces(8).toNumber()
+}
+
+// Kilitli capanin ekranda gorunen satiri (KLV ham degeri icin); kilitli degilse satirin kendisi.
+export function shownRow(rows: readonly BudgetItemRow[], row: BudgetItemRow): BudgetItemRow {
+  const split = lockedSplits(rows).get(row.id)
+  return split ? shareItem(row, split.rate) : row
 }

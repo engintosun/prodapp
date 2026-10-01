@@ -89,6 +89,9 @@ export const ItemRow = memo(function ItemRow({
   const it = item
   const isCommission = it.deriveRate !== null
   const lockedSplit = split?.locked === true
+  // Karar 13: hak devrinin Birim, Miktar ve X'i IKI halde de yazilmaz (sabit, 1, 1); acikken
+  // yalniz Birim net yazilir. 2b-2a acik hali normal satir gibi cizmisti (spec hatasi).
+  const splitRow = split !== undefined
   // AD YERLESIMI + KOMISYON SATIRININ DOGUMU (9 Eylul 2026): turetilmis satirin ad hucresi
   // AYRI mantik izler (commissionDisplayName) - 1618 gorev atomu DEGILDIR (is_duty=false),
   // itemDisplayName'in dort hali onu hic kapsamaz.
@@ -318,8 +321,8 @@ export const ItemRow = memo(function ItemRow({
             )}
           </td>
           )}
-          <td style={multi || lockedSplit ? readOnlyTextTd : selectTd}>
-            {lockedSplit ? (
+          <td style={multi || splitRow ? readOnlyTextTd : selectTd}>
+            {splitRow ? (
               it.unitLabel
             ) : multi ? (
               summaryUnitId !== null ? (units.find((u) => u.id === summaryUnitId)?.label ?? it.unitLabel) : '—'
@@ -360,8 +363,8 @@ export const ItemRow = memo(function ItemRow({
               />
             )}
           </td>
-          <td style={multi || lockedSplit ? readOnlyNumTd : numFlushTd}>
-            {lockedSplit ? (
+          <td style={multi || splitRow ? readOnlyNumTd : numFlushTd}>
+            {splitRow ? (
               fmt(it.repeat)
             ) : multi ? (
               fmt(summaryRepeatSum ?? 0)
@@ -379,8 +382,8 @@ export const ItemRow = memo(function ItemRow({
               />
             )}
           </td>
-          <td style={multi || lockedSplit ? readOnlyNumTd : numFlushTd}>
-            {lockedSplit ? (
+          <td style={multi || splitRow ? readOnlyNumTd : numFlushTd}>
+            {splitRow ? (
               fmt(it.multiplier)
             ) : multi ? (
               summaryQty !== null ? fmt(summaryQty) : '—'

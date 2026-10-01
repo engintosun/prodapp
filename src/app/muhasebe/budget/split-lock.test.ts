@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
-import { unlockWrite, relockWrite } from './split-lock'
+import { unlockWrite, relockWrite, rateFromShare, shownRow, LOCKED_SHARE_OVER } from './split-lock'
 import { shareItem } from './person-groups'
 import { rowTotals } from './totals'
 
@@ -85,5 +85,38 @@ describe('split-lock (1500 Dilim 2b-2b)', () => {
 
   it('kapanis bordro Hizmet Bedeli firlatir', () => {
     expect(() => relockWrite(makeItem({ unitNet: 1000, paymentStatus: 'bordro' }), 100)).toThrow('Bordro statülü Hizmet Bedeli bölünmez.')
+  })
+})
+
+describe('kilitli pay yazimi (1500 Dilim 2b-3)', () => {
+  it('rateFromShare(1000000, 600000) -> 40', () => {
+    expect(rateFromShare(1000000, 600000)).toBe(40)
+  })
+
+  it('rateFromShare donemli ornek (200000, 120000) -> 40', () => {
+    expect(rateFromShare(200000, 120000)).toBe(40)
+  })
+
+  it('pay toplami asarsa LOCKED_SHARE_OVER firlatir', () => {
+    expect(() => rateFromShare(1000000, 1100000)).toThrow(LOCKED_SHARE_OVER)
+  })
+
+  it('pay 0 olamaz', () => {
+    expect(() => rateFromShare(1000000, 0)).toThrow('Hizmet Bedeli payı 0 olamaz.')
+  })
+
+  it('shownRow: kilitli capa payla, kilitsiz satir ayni nesne', () => {
+    const anchor = makeItem({ id: 'a', unitNet: 1000000 })
+    const hd = makeItem({ id: 'h', parentItemId: 'a', splitRate: 50, unitNet: 0 })
+    const other = makeItem({ id: 'o', unitNet: 777 })
+    const rows = [anchor, hd, other]
+    expect(shownRow(rows, anchor).unitNet).toBe(500000)
+    expect(shownRow(rows, other)).toBe(other)
+  })
+
+  it('gidis-donus: yazilan pay oran uzerinden ayni payi verir', () => {
+    const anchor = makeItem({ unitNet: 1000000 })
+    const rate = rateFromShare(1000000, 612345)
+    expect(rowTotals(shareItem({ ...anchor, unitNet: 1000000 }, rate), undefined).net).toBe(612345)
   })
 })
