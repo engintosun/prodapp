@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { groupByPerson, derivedUnitNets, buildRenderRows, personNetBases, personsNeedingCommissionRow, commissionRowsWithoutTick, anchorCodesOf, summaryAnchorIds } from './person-groups'
+import { groupByPerson, derivedUnitNets, buildRenderRows, personNetBases, personsNeedingCommissionRow, commissionRowsWithoutTick, anchorCodesOf, summaryAnchorIds, lockedSplits, shareItem } from './person-groups'
 import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
 import type { PersonLabel } from '../../../shared/supabase/person-label-service'
 
@@ -463,5 +463,34 @@ describe('zimba blogu (1500 Dilim 2)', () => {
     const h = makeItem({ id: 'h', catalogCode: '1501-01', parentItemId: 'b9' })
     const out = buildRenderRows([h], new Set(), new Set(['b9']))
     expect(out).toEqual([{ kind: 'item', row: h, underSummary: false }])
+  })
+})
+describe('hak devri bolmesi (1500 Dilim 2b-1)', () => {
+  it('lockedSplits: kilitli hak devri capasina eslenir; olmayanlar eslenmez; ilk kilitli cocuk kalir', () => {
+    const rows = [
+      makeItem({ id: 'a', catalogCode: '1501', paymentStatus: 'smm' }),
+      makeItem({ id: 'h1', catalogCode: '1501-01', parentItemId: 'a', splitRate: 50 }),
+      makeItem({ id: 'h2', catalogCode: '1501-01', parentItemId: 'a', splitRate: 30 }),
+      makeItem({ id: 'k', catalogCode: '1511', parentItemId: 'a', deriveRate: 20 }),
+      makeItem({ id: 'b', catalogCode: '1509', paymentStatus: 'smm' }),
+      makeItem({ id: 'h3', catalogCode: '1501-01', parentItemId: 'b', splitRate: null }),
+      makeItem({ id: 'h4', catalogCode: '1501-01', parentItemId: 'yok', splitRate: 40 }),
+      makeItem({ id: 'c', catalogCode: '1501', paymentStatus: 'bordro' }),
+      makeItem({ id: 'h5', catalogCode: '1501-01', parentItemId: 'c', splitRate: 50 }),
+    ]
+    const out = lockedSplits(rows)
+    expect(out.size).toBe(1)
+    expect(out.get('a')).toEqual({ splitItemId: 'h1', rate: 50 })
+    expect(out.has('b')).toBe(false)
+    expect(out.has('c')).toBe(false)
+  })
+
+  it('shareItem: birim net ve donem netleri (100 - oran) / 100 ile carpilir, diger alanlar degismez', () => {
+    const a = shareItem(makeItem({ id: 'x', unitNet: 1000000, multiplier: 2 }), 50)
+    expect(a.unitNet).toBe(500000)
+    expect(a.id).toBe('x')
+    expect(a.multiplier).toBe(2)
+    const b = shareItem(makeItem({ unitNet: 1000, periodNet: { s1: 200000, s2: null } }), 30)
+    expect(b.periodNet).toEqual({ s1: 140000, s2: null })
   })
 })

@@ -238,3 +238,77 @@ describe('cardViewTotals', () => {
     expect(cardViewTotals(rows, NO_BORDRO)).toEqual(view.cardTotals)
   })
 })
+
+describe('hak devri bolmesi (1500 Dilim 2b-1)', () => {
+  const ANCHOR_LIB = [
+    { catalogCode: '1501', name: 'Yönetmen', nameSuffix: 'Hizmet Bedeli', attachesTo: [] },
+    { catalogCode: '1501-01', name: 'Yönetmen Hak Devri', nameSuffix: null, attachesTo: ['1501'] },
+  ]
+  const build = (rows: BudgetItemRow[]) => buildCardView(rows, [], [], NO_BORDRO, new Set(), new Map(), ANCHOR_LIB)
+
+  it('tek donem, oran 50: pay ve kalan yarim yarim, ozet toplami sabit', () => {
+    const rows = [
+      makeItem({ id: 'hb', catalogCode: '1501', unitNet: 1000000 }),
+      makeItem({ id: 'hd', catalogCode: '1501-01', parentItemId: 'hb', splitRate: 50, unitNet: 0 }),
+    ]
+    const view = build(rows)
+    expect(view.rowTotalsById.hb.net).toBe(500000)
+    expect(view.rowTotalsById.hd.net).toBe(500000)
+    const summary = view.groups[0].renderRows[0]
+    expect(summary.kind).toBe('anchorSummary')
+    if (summary.kind === 'anchorSummary') expect(summary.totals.net).toBe(1000000)
+    expect(view.displayItemById.hb.unitNet).toBe(500000)
+    expect(view.unitNetOverrides.hd).toBe(500000)
+  })
+
+  it('oran 30: Hizmet Bedeli 700000, hak devri 300000', () => {
+    const rows = [
+      makeItem({ id: 'hb', catalogCode: '1501', unitNet: 1000000 }),
+      makeItem({ id: 'hd', catalogCode: '1501-01', parentItemId: 'hb', splitRate: 30, unitNet: 0 }),
+    ]
+    const view = build(rows)
+    expect(view.rowTotalsById.hb.net).toBe(700000)
+    expect(view.rowTotalsById.hd.net).toBe(300000)
+  })
+
+  it('donemli capa: her donem payi ve kalan toplam kaymadan bolunur', () => {
+    const rows = [
+      makeItem({ id: 'hb', catalogCode: '1501', unitNet: 1000000, periodQty: { s1: 1, s2: 1 }, periodNet: { s1: 200000, s2: 800000 } }),
+      makeItem({ id: 'hd', catalogCode: '1501-01', parentItemId: 'hb', splitRate: 50, unitNet: 0 }),
+    ]
+    const view = build(rows)
+    expect(view.rowTotalsById.hb.net).toBe(500000)
+    expect(view.rowTotalsById.hd.net).toBe(500000)
+    const summary = view.groups[0].renderRows[0]
+    if (summary.kind === 'anchorSummary') expect(summary.totals.net).toBe(1000000)
+  })
+
+  it('acik (splitRate bos): rakamlar kendi satirinda, capa bolunmez', () => {
+    const rows = [
+      makeItem({ id: 'hb', catalogCode: '1501', unitNet: 1000000 }),
+      makeItem({ id: 'hd', catalogCode: '1501-01', parentItemId: 'hb', splitRate: null, unitNet: 300000 }),
+    ]
+    const view = build(rows)
+    expect(view.rowTotalsById.hb.net).toBe(1000000)
+    expect(view.rowTotalsById.hd.net).toBe(300000)
+    expect(view.displayItemById.hb).toBeUndefined()
+  })
+
+  it('bordro statulu capa bolunmez, hak devri kendi rakamiyla kalir', () => {
+    const rows = [
+      makeItem({ id: 'hb', catalogCode: '1501', unitNet: 1000000, paymentStatus: 'bordro' }),
+      makeItem({ id: 'hd', catalogCode: '1501-01', parentItemId: 'hb', splitRate: 50, unitNet: 0 }),
+    ]
+    const view = build(rows)
+    expect(view.displayItemById.hb).toBeUndefined()
+    expect(view.rowTotalsById.hd.net).toBe(0)
+  })
+
+  it('cardViewTotals kilitli bolmede de kart toplamiyla ayni net 1000000', () => {
+    const rows = [
+      makeItem({ id: 'hb', catalogCode: '1501', unitNet: 1000000 }),
+      makeItem({ id: 'hd', catalogCode: '1501-01', parentItemId: 'hb', splitRate: 50, unitNet: 0 }),
+    ]
+    expect(cardViewTotals(rows, NO_BORDRO).net).toBe(1000000)
+  })
+})

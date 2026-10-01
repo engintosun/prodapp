@@ -196,6 +196,39 @@ export function summaryAnchorIds(
   return out
 }
 
+// HAK DEVRI BOLMESI (1 Ekim 2026, KART-KATALOGU 7.4 Karar 11): kilitli hak devri = splitRate
+// DOLU ve bir capaya zimbali satir. Capa (Hizmet Bedeli) kayitta TOPLAMI tasir; ekranda payi
+// gorunur, hak devri toplamdan kalandir (card-view.ts computeRowTotals).
+// Bir capada birden fazla kilitli hak devri varsa YALNIZ ilki (satir sirasiyla) boler - bolme
+// tek oranla tanimlidir; digerleri kendi rakamlariyla kalir.
+// Bordro statulu capa BOLUNMEZ: bordro neti motordan gelir, birim nete uygulanan oran onu degistirmez.
+export function lockedSplits(
+  rows: readonly BudgetItemRow[],
+): Map<string, { splitItemId: string; rate: number }> {
+  const byId = new Map(rows.map((r) => [r.id, r] as const))
+  const out = new Map<string, { splitItemId: string; rate: number }>()
+  for (const r of rows) {
+    if (r.splitRate === null || r.parentItemId === null) continue
+    const anchor = byId.get(r.parentItemId)
+    if (!anchor || anchor.paymentStatus === 'bordro') continue
+    if (out.has(anchor.id)) continue
+    out.set(anchor.id, { splitItemId: r.id, rate: r.splitRate })
+  }
+  return out
+}
+
+// Capanin EKRANDA gorunen hali (Karar 11): birim net ve donem netleri (100 - oran) / 100 ile
+// carpilir. SAKLANMAZ (B18). Yuvarlama burada YAPILMAZ: Ara toplam kendi hesabinda (cfe
+// netToplamDonemli) yuvarlar, hak devri o yuvarlanmis paydan kalan olarak dogar - toplam kaymaz.
+export function shareItem(item: BudgetItemRow, rate: number): BudgetItemRow {
+  const factor = new Decimal(100).minus(rate).div(100)
+  const periodNet: Record<string, number | null> = {}
+  for (const [sid, v] of Object.entries(item.periodNet)) {
+    periodNet[sid] = v === null ? null : new Decimal(v).mul(factor).toNumber()
+  }
+  return { ...item, unitNet: new Decimal(item.unitNet).mul(factor).toNumber(), periodNet }
+}
+
 export type RenderRow =
   | { kind: 'summary'; personObjectId: string; rows: BudgetItemRow[] }
   | { kind: 'anchorSummary'; anchorItemId: string; rows: BudgetItemRow[] }

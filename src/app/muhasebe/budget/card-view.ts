@@ -10,7 +10,7 @@ import type { BordroSheetEntry } from './components/burden-sheet'
 import { rowTotals } from './totals'
 import type { RowTotals } from './totals'
 import { groupRowsByHeading } from './format'
-import { groupByPerson, buildRenderRows, derivedUnitNets, anchorCodesOf, summaryAnchorIds } from './person-groups'
+import { groupByPerson, buildRenderRows, derivedUnitNets, anchorCodesOf, summaryAnchorIds, lockedSplits, shareItem } from './person-groups'
 import { anchorNames } from './display-name'
 import type { AnchorLibraryEntry, AnchorNames } from './display-name'
 import type { RenderRow } from './person-groups'
@@ -32,6 +32,9 @@ export interface CardView {
   rowTotalsById: Record<string, RowTotals>
   unitNetOverrides: Record<string, number>
   anchorNames: AnchorNames
+  // HAK DEVRI BOLMESI (Karar 11): kilitli capanin ekranda gorunen hali (pay). Kart ekrani bu
+  // satiri cizerken kayittaki satirin YERINE bunu verir; kayit toplami tasir.
+  displayItemById: Record<string, BudgetItemRow>
 }
 
 const ZERO_TOTALS: RowTotals = { net: 0, yasalYuk: 0, maliyet: 0, kdv: 0, brut: 0 }
@@ -100,26 +103,53 @@ function orderRowsByPersonList(
 // BIR HESAP YAZILMAZ, person-groups.ts CAGIRILIR), (3) turetilen satirlarin TUM tutarlari
 // veritabanindaki sifir yerine bu birim netle doner. buildCardView ve cardViewTotals ikisi de
 // BURADAN okur.
+// 1500 Dilim 2b-1: kilitli capa paydan, kilitli hak devri toplamdan kalandan hesaplanir; komisyon tabani ikisini de gorur.
 function computeRowTotals(
   rows: readonly BudgetItemRow[],
   bordroData: Readonly<Record<string, BordroSheetEntry>>,
-): { rowTotalsById: Record<string, RowTotals>; unitNetOverrides: Record<string, number> } {
+): {
+  rowTotalsById: Record<string, RowTotals>
+  unitNetOverrides: Record<string, number>
+  displayItemById: Record<string, BudgetItemRow>
+} {
   const rowTotalsById: Record<string, RowTotals> = {}
   const netByItemId: Record<string, number> = {}
+  const displayItemById: Record<string, BudgetItemRow> = {}
+  const splits = lockedSplits(rows)
+  const splitItemIds = new Set([...splits.values()].map((s) => s.splitItemId))
+  const fullNetByAnchor: Record<string, number> = {}
   for (const row of rows) {
-    if (row.deriveRate === null) {
+    if (row.deriveRate !== null || splitItemIds.has(row.id)) continue
+    const split = splits.get(row.id)
+    if (split) {
+      fullNetByAnchor[row.id] = rowTotals(row, bordroData[row.id]).net
+      const shown = shareItem(row, split.rate)
+      displayItemById[row.id] = shown
+      const t = rowTotals(shown, bordroData[row.id])
+      rowTotalsById[row.id] = t
+      netByItemId[row.id] = t.net
+    } else {
       const t = rowTotals(row, bordroData[row.id])
       rowTotalsById[row.id] = t
       netByItemId[row.id] = t.net
     }
   }
-  const unitNetOverrides = derivedUnitNets(rows, netByItemId)
+  const splitOverrides: Record<string, number> = {}
+  for (const [anchorId, split] of splits) {
+    const splitRow = rows.find((r) => r.id === split.splitItemId)
+    if (!splitRow) continue
+    const remainder = (fullNetByAnchor[anchorId] ?? 0) - (netByItemId[anchorId] ?? 0)
+    splitOverrides[splitRow.id] = remainder
+    rowTotalsById[splitRow.id] = rowTotals(splitRow, bordroData[splitRow.id], remainder)
+    netByItemId[splitRow.id] = remainder
+  }
+  const derived = derivedUnitNets(rows, netByItemId)
   for (const row of rows) {
     if (row.deriveRate !== null) {
-      rowTotalsById[row.id] = rowTotals(row, bordroData[row.id], unitNetOverrides[row.id] ?? 0)
+      rowTotalsById[row.id] = rowTotals(row, bordroData[row.id], derived[row.id] ?? 0)
     }
   }
-  return { rowTotalsById, unitNetOverrides }
+  return { rowTotalsById, unitNetOverrides: { ...derived, ...splitOverrides }, displayItemById }
 }
 
 // KART MASASI KAPAGI (KABUK-KARARLARI 12.3 TEK HESAP IKI YUZEY, 24 Eylul 2026): masa kapagindaki
@@ -142,7 +172,7 @@ export function buildCardView(
   personOrderIndex: ReadonlyMap<string, number>,
   anchorLibrary: readonly AnchorLibraryEntry[] = [],
 ): CardView {
-  const { rowTotalsById, unitNetOverrides } = computeRowTotals(rows, bordroData)
+  const { rowTotalsById, unitNetOverrides, displayItemById } = computeRowTotals(rows, bordroData)
 
   const headingGroups = groupRowsByHeading([...rows], [...headings], userHeadings)
   // OZET SATIRI = IS EKSENI (10 Eylul 2026, Engin karari). Eskiden ozet YALNIZ iki ve daha
@@ -175,5 +205,6 @@ export function buildCardView(
     rowTotalsById,
     unitNetOverrides,
     anchorNames: anchorNames(rows, anchorCodes, anchorLibrary, summaryAnchors),
+    displayItemById,
   }
 }

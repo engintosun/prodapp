@@ -996,7 +996,9 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                           />
                         )
                       }
-                      const it = rr.row
+                      // HAK DEVRI BOLMESI (1 Ekim 2026, Karar 11): kilitli capa PAYI ile cizilir; kayit
+                      // toplami tasir. Ayni nesne donem satirlarina da gider (donem paylari).
+                      const it = cardView.displayItemById[rr.row.id] ?? rr.row
                       const ownerKey = summaryKeyByItemId.get(it.id)
                       if (rr.underSummary && ownerKey && isSummaryCollapsed(ownerKey)) {
                         return null
@@ -1149,9 +1151,9 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         // yasar. Ham item gecince dokum sifir tabanla carpim yapiyordu. Yeni hesap YOK,
         // rowTotals'in totals.ts satir 24'te yaptigi desenin aynisi: unitNet'in yerine
         // turetilmis deger konur (B18).
-        const sheetItem = unitNetOverrides[item.id] !== undefined
-          ? { ...item, unitNet: unitNetOverrides[item.id] }
-          : item
+        // 1500 Dilim 2b-1: kilitli capanin dokumu payla, kilitli hak devrininki kalanla yapilir.
+        const sheetItem = cardView.displayItemById[item.id]
+          ?? (unitNetOverrides[item.id] !== undefined ? { ...item, unitNet: unitNetOverrides[item.id] } : item)
         return (
           <BurdenSheet
             item={sheetItem}
