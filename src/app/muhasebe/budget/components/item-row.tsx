@@ -36,6 +36,11 @@ interface ItemRowProps {
   // 1500 Dilim 2a-3a: yonetmen satirinin kisi adi tamponu ve KLV duzenleme kipi.
   bufPersonName: string | undefined
   anchorEditing: boolean
+  // 1500 Dilim 2b-2a (Karar 13): hak devri satiri. locked = oran dolu; amount = hesaplanan rakam
+  // (kilitliyken kalan); sharePercent = gosterilecek oran (kilitliyken kayittaki, acikken o anki pay).
+  split?: { locked: boolean; amount: number; sharePercent: number }
+  bufSplitRate: string | undefined
+  navSplitRate: string | undefined
   justAdded: boolean
   bufUnitNet: string | undefined
   bufMultiplier: string | undefined
@@ -65,6 +70,9 @@ export const ItemRow = memo(function ItemRow({
   anchorName,
   bufPersonName,
   anchorEditing,
+  split,
+  bufSplitRate,
+  navSplitRate,
   justAdded,
   bufUnitNet,
   bufMultiplier,
@@ -77,6 +85,7 @@ export const ItemRow = memo(function ItemRow({
 }: ItemRowProps) {
   const it = item
   const isCommission = it.deriveRate !== null
+  const lockedSplit = split?.locked === true
   // AD YERLESIMI + KOMISYON SATIRININ DOGUMU (9 Eylul 2026): turetilmis satirin ad hucresi
   // AYRI mantik izler (commissionDisplayName) - 1618 gorev atomu DEGILDIR (is_duty=false),
   // itemDisplayName'in dort hali onu hic kapsamaz.
@@ -214,6 +223,49 @@ export const ItemRow = memo(function ItemRow({
         </td>
       ) : (
         <>
+          {split ? (
+        <td style={{ ...numFlushTd, textAlign: 'left' }}>
+          {/* 1500 Dilim 2b-2a (Karar 13): oran kutusu Donemler'in yerinde, kilit sag yaninda.
+              Kilitliyken oran yazilir; acikken soluk ve o anki payi gosterir. Hak devri kendi
+              donemini secmez, dagilimini Hizmet Bedeli'nden alir. */}
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+            {split.locked ? (
+              <input
+                data-grid-cell="true"
+                data-row-id={it.id}
+                data-col="splitRate"
+                size={10}
+                style={{ ...cellInputNum, width: 'auto', textAlign: 'left' }}
+                type="text"
+                inputMode="decimal"
+                value={navSplitRate ?? fieldVal(bufSplitRate, it.splitRate ?? 0)}
+                onChange={(e) => api.onNumChange(it.id, 'splitRate', e.target.value)}
+                onBlur={() => api.commitField(it.id, 'splitRate')}
+              />
+            ) : (
+              <input
+                readOnly
+                data-grid-cell="true"
+                data-row-id={it.id}
+                data-col="splitRate"
+                data-cell-kind="text"
+                size={10}
+                style={{ ...cellInputNum, width: 'auto', textAlign: 'left', color: 'var(--color-text-muted)', cursor: 'default', background: 'transparent', border: '1px solid transparent' }}
+                value={'Oran %' + fmt(split.sharePercent)}
+              />
+            )}
+            {/* Kilit 2b-2b'de basilir hale gelir. */}
+            <button
+              type="button"
+              disabled
+              aria-label={split.locked ? 'Toplam kilitli' : 'Toplam açık'}
+              style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'default', color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)', lineHeight: 1 }}
+            >
+              {split.locked ? '🔒' : '🔓'}
+            </button>
+          </span>
+        </td>
+          ) : (
           <td style={selectTd}>
             {!multi && addedStages.length === 1 ? (
               <select
@@ -262,8 +314,11 @@ export const ItemRow = memo(function ItemRow({
               </select>
             )}
           </td>
-          <td style={multi ? readOnlyTextTd : selectTd}>
-            {multi ? (
+          )}
+          <td style={multi || lockedSplit ? readOnlyTextTd : selectTd}>
+            {lockedSplit ? (
+              it.unitLabel
+            ) : multi ? (
               summaryUnitId !== null ? (units.find((u) => u.id === summaryUnitId)?.label ?? it.unitLabel) : '—'
             ) : (
               <select
@@ -283,8 +338,10 @@ export const ItemRow = memo(function ItemRow({
               </select>
             )}
           </td>
-          <td style={multi ? readOnlyNumTd : numFlushTd}>
-            {multi ? (
+          <td style={multi || lockedSplit ? readOnlyNumTd : numFlushTd}>
+            {lockedSplit ? (
+              fmt(split?.amount ?? 0)
+            ) : multi ? (
               summaryNet !== null ? fmt(summaryNet) : '—'
             ) : (
               <input
@@ -300,8 +357,10 @@ export const ItemRow = memo(function ItemRow({
               />
             )}
           </td>
-          <td style={multi ? readOnlyNumTd : numFlushTd}>
-            {multi ? (
+          <td style={multi || lockedSplit ? readOnlyNumTd : numFlushTd}>
+            {lockedSplit ? (
+              fmt(it.repeat)
+            ) : multi ? (
               fmt(summaryRepeatSum ?? 0)
             ) : (
               <input
@@ -317,8 +376,10 @@ export const ItemRow = memo(function ItemRow({
               />
             )}
           </td>
-          <td style={multi ? readOnlyNumTd : numFlushTd}>
-            {multi ? (
+          <td style={multi || lockedSplit ? readOnlyNumTd : numFlushTd}>
+            {lockedSplit ? (
+              fmt(it.multiplier)
+            ) : multi ? (
               summaryQty !== null ? fmt(summaryQty) : '—'
             ) : (
               <input

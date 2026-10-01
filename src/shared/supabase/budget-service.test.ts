@@ -441,6 +441,24 @@ describe('updateItemField — payment_status VALID dizisi (DILIM 1100-A)', () =>
   })
 })
 
+describe('updateItemField — hak devri orani (1500 Dilim 2b-2a)', () => {
+  beforeEach(() => {
+    capturedRpcArgs = null
+  })
+
+  it('50 kabul edilir', async () => {
+    await expect(updateItemField('item-1', 'splitRate', 50)).resolves.toBeUndefined()
+  })
+
+  it('100 reddedilir', async () => {
+    await expect(updateItemField('item-1', 'splitRate', 100)).rejects.toThrow('Oran 0 ile 100 arasında olmalı (100 hariç)')
+  })
+
+  it('bos metin kabul edilir (acik hal)', async () => {
+    await expect(updateItemField('item-1', 'splitRate', '')).resolves.toBeUndefined()
+  })
+})
+
 describe('addBudgetItem — kutuphane/serbest/mevcut-kod yollari (tek imza sonrasi, DILIM 1100-A)', () => {
   beforeEach(() => {
     capturedRpcArgs = null

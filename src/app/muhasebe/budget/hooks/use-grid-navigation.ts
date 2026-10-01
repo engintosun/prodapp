@@ -8,7 +8,7 @@ import type { EditApi } from './use-edit-buffers'
 // I7 motoru DOM baglayicisi. Cekirdek (grid-navigation-core) DOM'suz saf reducer;
 // bu hook onu DOM'a baglar, kolon->alan eslemesini yapip MEVCUT onXChange/commitX
 // yollarina delege eder (dogrulama/parse yeniden yazilmaz).
-export type GridCol = 'name' | 'personName' | 'unitNet' | 'repeat' | 'multiplier' | 'deriveRate' | 'periodNet' | 'periodRepeat' | 'periodQty'
+export type GridCol = 'name' | 'personName' | 'splitRate' | 'unitNet' | 'repeat' | 'multiplier' | 'deriveRate' | 'periodNet' | 'periodRepeat' | 'periodQty'
 
 // KLV-K8: ItemRow (tek-donemli: name+unitNet+repeat+multiplier /
 // cok-donemli: name) ve PeriodRow (periodNet+periodRepeat+periodQty,
@@ -28,7 +28,8 @@ const COLUMN_EQUIVALENCE_GROUPS: ColumnEquivalenceGroups = [
   ['note'],
   ['person'],
   ['status'],
-  ['periods'],
+  // 1500 Dilim 2b-2a: hak devrinin oran kutusu Donemler kolonunun yerinde durur.
+  ['periods', 'splitRate'],
   ['unit', 'periodUnit'],
   // Birlesik hucre Birim net kolonunun yerini tutar: dikey gezinme Birim net kolonundan asagi
   // inerken komisyon satirinda bu hucreye durur. Miktar ve X kolonlarindan inen gezinme komisyon

@@ -74,6 +74,7 @@ export type EditableField =
   | 'deriveRate'
   | 'personObjectId'
   | 'personName'
+  | 'splitRate'
 
 const FIELD_COL: Record<EditableField, string> = {
   internalNote: 'internal_note',
@@ -90,6 +91,7 @@ const FIELD_COL: Record<EditableField, string> = {
   deriveRate: 'derive_rate',
   personObjectId: 'person_object_id',
   personName: 'person_name',
+  splitRate: 'split_rate',
 }
 
 export async function getProjectId(): Promise<string> {
@@ -394,6 +396,18 @@ export async function updateItemField(
       if (!Number.isFinite(n)) throw new Error('Geçersiz sayı')
       if (n < 0 || n > 100) throw new Error('Oran 0 ile 100 arasında olmalı')
       payload = { derive_rate: n }
+    }
+  } else if (field === 'splitRate') {
+    // 1500 Dilim 2b-2a (Karar 11, 13): hak devri orani. 100 HARIC - toplamin tamami hak devri
+    // olamaz, kayit kisiti da < 100. Bos metin = acik (kilitsiz) hal.
+    const v = String(value).trim()
+    if (v === '') {
+      payload = { split_rate: null }
+    } else {
+      const n = typeof value === 'number' ? value : Number(v.replace(',', '.'))
+      if (!Number.isFinite(n)) throw new Error('Geçersiz sayı')
+      if (n < 0 || n >= 100) throw new Error('Oran 0 ile 100 arasında olmalı (100 hariç)')
+      payload = { split_rate: n }
     }
   } else if (field === 'personObjectId') {
     const v = String(value).trim()

@@ -771,6 +771,27 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         .map((r) => ({ id: r.id, name: cardView.anchorNames.whoName.get(r.id) ?? r.name })),
     [rows, cardView],
   )
+  // 1500 Dilim 2b-2a (Karar 13): hak devri satiri = kutuphanede default_split_rate dolu atom ve
+  // bir satira zimbali. Acik haldeki pay ekran icin hesaplanir, SAKLANMAZ.
+  const splitCodes = useMemo(
+    () => new Set(library.filter((l) => l.defaultSplitRate !== null).map((l) => l.catalogCode)),
+    [library],
+  )
+  const splitInfoById = useMemo(() => {
+    const out = new Map<string, { locked: boolean; amount: number; sharePercent: number }>()
+    for (const r of rows) {
+      if (r.parentItemId === null || !splitCodes.has(r.catalogCode)) continue
+      const own = cardView.rowTotalsById[r.id]?.net ?? 0
+      const parentNet = cardView.rowTotalsById[r.parentItemId]?.net ?? 0
+      const total = own + parentNet
+      out.set(r.id, {
+        locked: r.splitRate !== null,
+        amount: cardView.unitNetOverrides[r.id] ?? r.unitNet,
+        sharePercent: r.splitRate ?? (total > 0 ? Math.round((own / total) * 10000) / 100 : 0),
+      })
+    }
+    return out
+  }, [rows, splitCodes, cardView])
 
   // Tek kalemli rol blogu KAPALI dogar (10 Eylul 2026, Engin karari): ozet satiri zaten dogru
   // rakami gosteriyor, tek alt kalem ayni rakami tekrar etmesin; rakam kolonunda ne bosluk ne
@@ -1028,6 +1049,9 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                             anchorName={cardView.anchorNames.rowName.get(it.id)}
                             bufPersonName={buffers[it.id + ':personName']}
                             anchorEditing={isActiveEdit(it.id, 'personName')}
+                            split={splitInfoById.get(it.id)}
+                            bufSplitRate={buffers[it.id + ':splitRate']}
+                            navSplitRate={isActiveEdit(it.id, 'splitRate') ? undefined : 'Oran %' + fmt(it.splitRate ?? 0)}
                             justAdded={justAddedIds.includes(it.id)}
                             bufUnitNet={buffers[it.id + ':unitNet']}
                             bufMultiplier={buffers[it.id + ':multiplier']}

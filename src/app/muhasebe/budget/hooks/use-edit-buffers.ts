@@ -24,7 +24,7 @@ import type { BordroSheetEntry } from '../components/burden-sheet'
 // commitField'in PARSE GUVENCESI dalinda (K10 revize + TD-16, 2026-07-18) hangi alanlar
 // sayisal - yalniz bunlar buffer'dan parse edilip garanti altina alinir; 'name' gibi metin
 // alanlari bu denetimden gecmez.
-const NUMERIC_EDITABLE_FIELDS = new Set<EditableField>(['unitNet', 'multiplier', 'repeat', 'vatRate', 'deriveRate'])
+const NUMERIC_EDITABLE_FIELDS = new Set<EditableField>(['unitNet', 'multiplier', 'repeat', 'vatRate', 'deriveRate', 'splitRate'])
 
 // EditApi SINIRI (Engin karari 2026-07-27): api yalniz useEditBuffers'in SAHIP OLDUGU state'e
 // dokunur, yani buffers + patchRow. refetch veya card-table-screen useState'i gerektiren is
@@ -38,7 +38,7 @@ const NUMERIC_EDITABLE_FIELDS = new Set<EditableField>(['unitNet', 'multiplier',
 // toast) card-table-screen.tsx'te yasar. useEditBuffers kendisi "neden" cagrildigini bilmez.
 export type EditApi = {
   onTextChange: (id: string, field: 'name' | 'personName', value: string) => void
-  onNumChange: (id: string, field: 'unitNet' | 'multiplier' | 'vatRate' | 'deriveRate', raw: string) => void
+  onNumChange: (id: string, field: 'unitNet' | 'multiplier' | 'vatRate' | 'deriveRate' | 'splitRate', raw: string) => void
   onPeriodChange: (id: string, stageId: string, raw: string) => void
   onPeriodNetChange: (itemId: string, stageId: string, raw: string) => void
   onPeriodRepeatChange: (itemId: string, stageId: string, raw: string) => void
@@ -131,6 +131,13 @@ export function useEditBuffers({
     // degil OLMAYAN bir haneyi isaretliyordu. Olcut person-groups.ts ile AYNI:
     // deriveRate !== null. Yasal yuk hesabina DOKUNULMADI, o zaten dogru calisiyor.
     if (row.deriveRate !== null) {
+      setItemWarnings((w) => ({ ...w, [itemId]: null }))
+      return
+    }
+    // KILITLI HAK DEVRI UYARI URETMEZ (1 Ekim 2026, 2b-2a): kilitliyken rakami kayitta degil
+    // hesapta yasar (card-view.ts, toplamdan kalan); kayittaki birim net 0 durur. Uyari kayda
+    // bakip Yasal Yuk haneyi kapatiyordu (Engin'in canli bulgusu). Acik hak devri normal satirdir.
+    if (row.splitRate !== null) {
       setItemWarnings((w) => ({ ...w, [itemId]: null }))
       return
     }
@@ -260,7 +267,7 @@ export function useEditBuffers({
       patchRow(id, { [field]: value } as Partial<BudgetItemRow>)
     }
 
-    function onNumChange(id: string, field: 'unitNet' | 'multiplier' | 'vatRate' | 'deriveRate', raw: string) {
+    function onNumChange(id: string, field: 'unitNet' | 'multiplier' | 'vatRate' | 'deriveRate' | 'splitRate', raw: string) {
       setBuf(id + ':' + field, raw)
       const n = Number(raw.replace(',', '.'))
       patchRow(id, { [field]: Number.isFinite(n) ? n : 0 } as Partial<BudgetItemRow>)
