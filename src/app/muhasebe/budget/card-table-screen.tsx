@@ -847,7 +847,11 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   // ustte olan satir icin uyari cikmaz ("o anda bir uyari verecek").
   const overSplitRef = useRef<Set<string> | null>(null)
   useEffect(() => {
-    if (splitWarnPercent === null || loading) return
+    // YALNIZ KAYITLI DEGER (1 Ekim 2026, Engin'in canli bulgusu): yazarken her harf satira
+    // islenir; 60 -> 70 yazarken oran bir an 7 olur ve "esikten indi, yeniden gecti" diye yanlis
+    // uyari cikardi. Acik bir tampon varken olcum YAPILMAZ ve onceki olcum KORUNUR; hucreden
+    // cikilip tampon temizlenince efekt kayitli degerle yeniden calisir.
+    if (splitWarnPercent === null || loading || Object.keys(buffers).length > 0) return
     const shares = new Map<string, number>()
     for (const [id, info] of splitInfoById) shares.set(id, info.sharePercent)
     const over = splitsOverThreshold(shares, splitWarnPercent)
@@ -857,7 +861,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     for (const id of over) {
       if (!prev.has(id)) addToast(SPLIT_WARN_TEXT, 'warning', { anchor: cellSelector(id, 'splitRate') })
     }
-  }, [splitInfoById, splitWarnPercent, loading, addToast])
+  }, [splitInfoById, splitWarnPercent, loading, buffers, addToast])
 
   // Tek kalemli rol blogu KAPALI dogar (10 Eylul 2026, Engin karari): ozet satiri zaten dogru
   // rakami gosteriyor, tek alt kalem ayni rakami tekrar etmesin; rakam kolonunda ne bosluk ne
