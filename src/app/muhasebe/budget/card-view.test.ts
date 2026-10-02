@@ -239,89 +239,85 @@ describe('cardViewTotals', () => {
   })
 })
 
-describe('hak devri bolmesi (1500 Dilim 2b-1)', () => {
+describe('hak devri iki kural (1 Ekim 2026)', () => {
   const ANCHOR_LIB = [
     { catalogCode: '1501', name: 'Yönetmen', nameSuffix: 'Hizmet Bedeli', attachesTo: [] },
     { catalogCode: '1501-01', name: 'Yönetmen Hak Devri', nameSuffix: null, attachesTo: ['1501'] },
   ]
   const build = (rows: BudgetItemRow[]) => buildCardView(rows, [], [], NO_BORDRO, new Set(), new Map(), ANCHOR_LIB)
 
-  it('tek donem, oran 50: pay ve kalan yarim yarim, ozet toplami sabit', () => {
+  it('HB 500000, oran 50: hak devri 500000, ozet 1000000', () => {
     const rows = [
-      makeItem({ id: 'hb', catalogCode: '1501', unitNet: 1000000 }),
+      makeItem({ id: 'hb', catalogCode: '1501', unitNet: 500000 }),
       makeItem({ id: 'hd', catalogCode: '1501-01', parentItemId: 'hb', splitRate: 50, unitNet: 0 }),
     ]
     const view = build(rows)
-    expect(view.rowTotalsById.hb.net).toBe(500000)
     expect(view.rowTotalsById.hd.net).toBe(500000)
+    expect(view.rowTotalsById.hb.net).toBe(500000)
     const summary = view.groups[0].renderRows[0]
     expect(summary.kind).toBe('anchorSummary')
     if (summary.kind === 'anchorSummary') expect(summary.totals.net).toBe(1000000)
-    expect(view.displayItemById.hb.unitNet).toBe(500000)
     expect(view.unitNetOverrides.hd).toBe(500000)
   })
 
-  it('oran 30: Hizmet Bedeli 700000, hak devri 300000', () => {
+  it('HB 700000, oran 30: hak devri 300000, ozet 1000000', () => {
     const rows = [
-      makeItem({ id: 'hb', catalogCode: '1501', unitNet: 1000000 }),
+      makeItem({ id: 'hb', catalogCode: '1501', unitNet: 700000 }),
       makeItem({ id: 'hd', catalogCode: '1501-01', parentItemId: 'hb', splitRate: 30, unitNet: 0 }),
     ]
     const view = build(rows)
-    expect(view.rowTotalsById.hb.net).toBe(700000)
     expect(view.rowTotalsById.hd.net).toBe(300000)
+    const summary = view.groups[0].renderRows[0]
+    if (summary.kind === 'anchorSummary') expect(summary.totals.net).toBe(1000000)
   })
 
-  it('donemli capa: her donem payi ve kalan toplam kaymadan bolunur', () => {
+  it('donemli HB: hak devri donem toplamindan hesaplanir', () => {
     const rows = [
-      makeItem({ id: 'hb', catalogCode: '1501', unitNet: 1000000, periodQty: { s1: 1, s2: 1 }, periodNet: { s1: 200000, s2: 800000 } }),
+      makeItem({ id: 'hb', catalogCode: '1501', unitNet: 500000, periodQty: { s1: 1, s2: 1 }, periodNet: { s1: 100000, s2: 400000 } }),
       makeItem({ id: 'hd', catalogCode: '1501-01', parentItemId: 'hb', splitRate: 50, unitNet: 0 }),
     ]
     const view = build(rows)
-    expect(view.rowTotalsById.hb.net).toBe(500000)
     expect(view.rowTotalsById.hd.net).toBe(500000)
     const summary = view.groups[0].renderRows[0]
     if (summary.kind === 'anchorSummary') expect(summary.totals.net).toBe(1000000)
   })
 
-  it('acik (splitRate bos): rakamlar kendi satirinda, capa bolunmez', () => {
+  it('oran yok: hak devri kendi rakamiyla, HB 500000', () => {
     const rows = [
-      makeItem({ id: 'hb', catalogCode: '1501', unitNet: 1000000 }),
+      makeItem({ id: 'hb', catalogCode: '1501', unitNet: 500000 }),
       makeItem({ id: 'hd', catalogCode: '1501-01', parentItemId: 'hb', splitRate: null, unitNet: 300000 }),
     ]
     const view = build(rows)
-    expect(view.rowTotalsById.hb.net).toBe(1000000)
     expect(view.rowTotalsById.hd.net).toBe(300000)
-    expect(view.displayItemById.hb).toBeUndefined()
+    expect(view.rowTotalsById.hb.net).toBe(500000)
   })
 
-  it('bordro statulu capa bolunmez, hak devri kendi rakamiyla kalir', () => {
+  it('bordro capa: hak devri kendi rakamiyla (0)', () => {
     const rows = [
       makeItem({ id: 'hb', catalogCode: '1501', unitNet: 1000000, paymentStatus: 'bordro' }),
       makeItem({ id: 'hd', catalogCode: '1501-01', parentItemId: 'hb', splitRate: 50, unitNet: 0 }),
     ]
     const view = build(rows)
-    expect(view.displayItemById.hb).toBeUndefined()
     expect(view.rowTotalsById.hd.net).toBe(0)
   })
 
-  it('cardViewTotals kilitli bolmede de kart toplamiyla ayni net 1000000', () => {
+  it('komisyon tabani: HB + hak devri toplami x oran', () => {
     const rows = [
-      makeItem({ id: 'hb', catalogCode: '1501', unitNet: 1000000 }),
-      makeItem({ id: 'hd', catalogCode: '1501-01', parentItemId: 'hb', splitRate: 50, unitNet: 0 }),
-    ]
-    expect(cardViewTotals(rows, NO_BORDRO).net).toBe(1000000)
-  })
-
-  it('zimbali komisyon tabani: ozet toplami (Hizmet Bedeli + hak devri) x oran', () => {
-    const rows = [
-      makeItem({ id: 'hb', catalogCode: '1501', unitNet: 1000000 }),
+      makeItem({ id: 'hb', catalogCode: '1501', unitNet: 500000 }),
       makeItem({ id: 'hd', catalogCode: '1501-01', parentItemId: 'hb', splitRate: 50, unitNet: 0 }),
       makeItem({ id: 'k', catalogCode: '1511', parentItemId: 'hb', deriveRate: 20, unitNet: 0 }),
     ]
     const view = build(rows)
     expect(view.rowTotalsById.k.net).toBe(200000)
     const summary = view.groups[0].renderRows[0]
-    expect(summary.kind).toBe('anchorSummary')
     if (summary.kind === 'anchorSummary') expect(summary.totals.net).toBe(1200000)
+  })
+
+  it('cardViewTotals ayni satirlarla net 1000000', () => {
+    const rows = [
+      makeItem({ id: 'hb', catalogCode: '1501', unitNet: 500000 }),
+      makeItem({ id: 'hd', catalogCode: '1501-01', parentItemId: 'hb', splitRate: 50, unitNet: 0 }),
+    ]
+    expect(cardViewTotals(rows, NO_BORDRO).net).toBe(1000000)
   })
 })

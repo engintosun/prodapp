@@ -10,9 +10,9 @@ import type { BordroSheetEntry } from './components/burden-sheet'
 import { rowTotals } from './totals'
 import type { RowTotals } from './totals'
 import { groupRowsByHeading } from './format'
-import { groupByPerson, buildRenderRows, derivedUnitNets, anchorCodesOf, summaryAnchorIds, lockedSplits, shareItem } from './person-groups'
+import { groupByPerson, buildRenderRows, derivedUnitNets, anchorCodesOf, summaryAnchorIds, lockedSplits } from './person-groups'
 import { anchorNames } from './display-name'
-import { lockedRemainder } from './split-lock'
+import { splitNetFrom } from './split-share'
 import type { AnchorLibraryEntry, AnchorNames } from './display-name'
 import type { RenderRow } from './person-groups'
 
@@ -36,6 +36,7 @@ export interface CardView {
   // HAK DEVRI BOLMESI (Karar 11): kilitli capanin ekranda gorunen hali (pay). Kart ekrani bu
   // satiri cizerken kayittaki satirin YERINE bunu verir; kayit toplami tasir.
   displayItemById: Record<string, BudgetItemRow>
+  // 1500 IKI KURAL: artik hep bos; ikinci dilimde kalkar.
 }
 
 const ZERO_TOTALS: RowTotals = { net: 0, yasalYuk: 0, maliyet: 0, kdv: 0, brut: 0 }
@@ -104,7 +105,7 @@ function orderRowsByPersonList(
 // BIR HESAP YAZILMAZ, person-groups.ts CAGIRILIR), (3) turetilen satirlarin TUM tutarlari
 // veritabanindaki sifir yerine bu birim netle doner. buildCardView ve cardViewTotals ikisi de
 // BURADAN okur.
-// 1500 Dilim 2b-1: kilitli capa paydan, kilitli hak devri toplamdan kalandan hesaplanir; komisyon tabani ikisini de gorur.
+// 1500 IKI KURAL (1 Ekim 2026): Hizmet Bedeli kendi rakamini tasir; hak devri = Hizmet Bedeli x oran / (100 - oran); komisyon tabani ikisinin toplami.
 function computeRowTotals(
   rows: readonly BudgetItemRow[],
   bordroData: Readonly<Record<string, BordroSheetEntry>>,
@@ -115,33 +116,22 @@ function computeRowTotals(
 } {
   const rowTotalsById: Record<string, RowTotals> = {}
   const netByItemId: Record<string, number> = {}
-  const displayItemById: Record<string, BudgetItemRow> = {}
   const splits = lockedSplits(rows)
   const splitItemIds = new Set([...splits.values()].map((s) => s.splitItemId))
   for (const row of rows) {
     if (row.deriveRate !== null || splitItemIds.has(row.id)) continue
-    const split = splits.get(row.id)
-    if (split) {
-      const shown = shareItem(row, split.rate)
-      displayItemById[row.id] = shown
-      const t = rowTotals(shown, bordroData[row.id])
-      rowTotalsById[row.id] = t
-      netByItemId[row.id] = t.net
-    } else {
-      const t = rowTotals(row, bordroData[row.id])
-      rowTotalsById[row.id] = t
-      netByItemId[row.id] = t.net
-    }
+    const t = rowTotals(row, bordroData[row.id])
+    rowTotalsById[row.id] = t
+    netByItemId[row.id] = t.net
   }
   const splitOverrides: Record<string, number> = {}
   for (const [anchorId, split] of splits) {
     const splitRow = rows.find((r) => r.id === split.splitItemId)
-    const anchorRow = rows.find((r) => r.id === anchorId)
-    if (!splitRow || !anchorRow) continue
-    const remainder = lockedRemainder(anchorRow, split.rate)
-    splitOverrides[splitRow.id] = remainder
-    rowTotalsById[splitRow.id] = rowTotals(splitRow, bordroData[splitRow.id], remainder)
-    netByItemId[splitRow.id] = remainder
+    if (!splitRow) continue
+    const amount = splitNetFrom(netByItemId[anchorId] ?? 0, split.rate)
+    splitOverrides[splitRow.id] = amount
+    rowTotalsById[splitRow.id] = rowTotals(splitRow, bordroData[splitRow.id], amount)
+    netByItemId[splitRow.id] = amount
   }
   const derived = derivedUnitNets(rows, netByItemId)
   for (const row of rows) {
@@ -149,7 +139,7 @@ function computeRowTotals(
       rowTotalsById[row.id] = rowTotals(row, bordroData[row.id], derived[row.id] ?? 0)
     }
   }
-  return { rowTotalsById, unitNetOverrides: { ...derived, ...splitOverrides }, displayItemById }
+  return { rowTotalsById, unitNetOverrides: { ...derived, ...splitOverrides }, displayItemById: {} }
 }
 
 // KART MASASI KAPAGI (KABUK-KARARLARI 12.3 TEK HESAP IKI YUZEY, 24 Eylul 2026): masa kapagindaki

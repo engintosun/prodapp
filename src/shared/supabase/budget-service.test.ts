@@ -37,7 +37,7 @@ vi.mock('./client', () => ({
   },
 }))
 
-import { updateItemField, addBudgetItem, addPersonItems, softDeleteBudgetItem, softDeleteBudgetItems, setSplitLock } from './budget-service'
+import { updateItemField, addBudgetItem, addPersonItems, softDeleteBudgetItem, softDeleteBudgetItems, setSplitLock, setSplitShare } from './budget-service'
 
 const BRACKETS_2026: TaxBracket[] = [
   { floor: 0, ratePercent: 15, baseTax: 0 },
@@ -580,5 +580,27 @@ describe('softDeleteBudgetItems (1500 Dilim 2c-1)', () => {
   it('tek update icinde is_active ve person_object_id degisir', async () => {
     await softDeleteBudgetItems(['a', 'b'])
     expect(capturedUpdateArgs).toEqual({ is_active: false, person_object_id: null })
+  })
+})
+
+describe('setSplitShare (1500 iki kural)', () => {
+  beforeEach(() => {
+    capturedRpcArgs = null
+  })
+
+  it('argumanlar fn_set_split_share parametrelerine eslenir', async () => {
+    await setSplitShare('hd', { rate: 50, anchorUnitNet: 500000, anchorPeriodNets: {} })
+    expect(capturedRpcArgs).toEqual({
+      p_split_item_id: 'hd',
+      p_rate: 50,
+      p_anchor_unit_net: 500000,
+      p_anchor_period_nets: {},
+      p_close_split: false,
+    })
+  })
+
+  it('ucuncu arguman true: p_close_split true', async () => {
+    await setSplitShare('hd', { rate: 0, anchorUnitNet: 1000000, anchorPeriodNets: {} }, true)
+    expect(capturedRpcArgs).toMatchObject({ p_close_split: true })
   })
 })

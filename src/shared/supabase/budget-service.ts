@@ -649,6 +649,24 @@ export async function setSplitLock(
   if (error) throw new Error(error.message)
 }
 
+// 1500 IKI KURAL (1 Ekim 2026): paylasimi yaz - Hizmet Bedeli rakamlari + oran TEK islemde
+// (fn_set_split_share); closeSplit silmede hak devrini ayni islemde kapatir. Degerleri
+// cagiran hesaplar (budget/split-share.ts).
+export async function setSplitShare(
+  splitItemId: string,
+  v: { rate: number; anchorUnitNet: number; anchorPeriodNets: Record<string, number> },
+  closeSplit = false,
+): Promise<void> {
+  const { error } = await supabase.rpc('fn_set_split_share', {
+    p_split_item_id: splitItemId,
+    p_rate: v.rate,
+    p_anchor_unit_net: v.anchorUnitNet,
+    p_anchor_period_nets: v.anchorPeriodNets,
+    p_close_split: closeSplit,
+  })
+  if (error) throw new Error(error.message)
+}
+
 // KART 1600 M3b-3: fn_add_person_items sarmalayicisi. N kisilik getirmede tek
 // gidis-donus - satir basina addBudgetItem cagirmak N ayri istek acardi.
 export async function addPersonItems(
