@@ -792,10 +792,10 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         .map((r) => ({ id: r.id, name: cardView.anchorNames.whoName.get(r.id) ?? r.name })),
     [rows, cardView],
   )
-  // HAK DEVRI SATIRI (duz satir, 2 Ekim 2026): kutuphanede default_split_rate dolu atom ve bir satira
+  // HAK DEVRI SATIRI (duz satir, 2 Ekim 2026): kutuphanede is_rights_transfer isaretli atom ve bir satira
   // zimbali. Pay ekran icin hesaplanir, SAKLANMAZ (B18).
   const splitCodes = useMemo(
-    () => new Set(library.filter((l) => l.defaultSplitRate !== null).map((l) => l.catalogCode)),
+    () => new Set(library.filter((l) => l.isRightsTransfer).map((l) => l.catalogCode)),
     [library],
   )
   const splitInfoById = useMemo(() => {

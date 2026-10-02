@@ -37,7 +37,7 @@ vi.mock('./client', () => ({
   },
 }))
 
-import { updateItemField, addBudgetItem, addPersonItems, softDeleteBudgetItem, softDeleteBudgetItems, setSplitLock, setSplitShare } from './budget-service'
+import { updateItemField, addBudgetItem, addPersonItems, softDeleteBudgetItem, softDeleteBudgetItems } from './budget-service'
 
 const BRACKETS_2026: TaxBracket[] = [
   { floor: 0, ratePercent: 15, baseTax: 0 },
@@ -442,24 +442,6 @@ describe('updateItemField — payment_status VALID dizisi (DILIM 1100-A)', () =>
   })
 })
 
-describe('updateItemField — hak devri orani (1500 Dilim 2b-2a)', () => {
-  beforeEach(() => {
-    capturedRpcArgs = null
-  })
-
-  it('50 kabul edilir', async () => {
-    await expect(updateItemField('item-1', 'splitRate', 50)).resolves.toBeUndefined()
-  })
-
-  it('100 reddedilir', async () => {
-    await expect(updateItemField('item-1', 'splitRate', 100)).rejects.toThrow('Oran 0 ile 100 arasında olmalı (100 hariç)')
-  })
-
-  it('bos metin kabul edilir (acik hal)', async () => {
-    await expect(updateItemField('item-1', 'splitRate', '')).resolves.toBeUndefined()
-  })
-})
-
 describe('addBudgetItem — kutuphane/serbest/mevcut-kod yollari (tek imza sonrasi, DILIM 1100-A)', () => {
   beforeEach(() => {
     capturedRpcArgs = null
@@ -555,23 +537,6 @@ describe('softDeleteBudgetItem — kisi bagini da birakir (KOMISYON TABANI VE SI
   })
 })
 
-describe('setSplitLock (1500 Dilim 2b-2b)', () => {
-  beforeEach(() => {
-    capturedRpcArgs = null
-  })
-
-  it('acilis argumanlari: rakamlar fn_set_split_lock parametrelerine esler', async () => {
-    await setSplitLock('hd', { rate: null, splitUnitNet: 500000, anchorUnitNet: 500000, anchorPeriodNets: {} })
-    expect(capturedRpcArgs).toEqual({
-      p_split_item_id: 'hd',
-      p_split_rate: null,
-      p_split_unit_net: 500000,
-      p_anchor_unit_net: 500000,
-      p_anchor_period_nets: {},
-    })
-  })
-})
-
 describe('softDeleteBudgetItems (1500 Dilim 2c-1)', () => {
   beforeEach(() => {
     capturedUpdateArgs = null
@@ -580,27 +545,5 @@ describe('softDeleteBudgetItems (1500 Dilim 2c-1)', () => {
   it('tek update icinde is_active ve person_object_id degisir', async () => {
     await softDeleteBudgetItems(['a', 'b'])
     expect(capturedUpdateArgs).toEqual({ is_active: false, person_object_id: null })
-  })
-})
-
-describe('setSplitShare (1500 iki kural)', () => {
-  beforeEach(() => {
-    capturedRpcArgs = null
-  })
-
-  it('argumanlar fn_set_split_share parametrelerine eslenir', async () => {
-    await setSplitShare('hd', { rate: 50, anchorUnitNet: 500000, anchorPeriodNets: {} })
-    expect(capturedRpcArgs).toEqual({
-      p_split_item_id: 'hd',
-      p_rate: 50,
-      p_anchor_unit_net: 500000,
-      p_anchor_period_nets: {},
-      p_close_split: false,
-    })
-  })
-
-  it('ucuncu arguman true: p_close_split true', async () => {
-    await setSplitShare('hd', { rate: 0, anchorUnitNet: 1000000, anchorPeriodNets: {} }, true)
-    expect(capturedRpcArgs).toMatchObject({ p_close_split: true })
   })
 })

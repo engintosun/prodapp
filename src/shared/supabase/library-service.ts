@@ -19,10 +19,10 @@ export interface LibraryItem {
   isDerived: boolean
   asksPerson: boolean
   // 1500 Dilim 2 (1 Ekim 2026, KART-KATALOGU 7.4 Karar 6-7): gorev adinin eki, atomun
-  // altina girebildigi katalog kodlari, hak devri oraninin hazir gelen degeri.
+  // altina girebildigi katalog kodlari, hak devri atomu mu (HAK DEVRI DUZ SATIR, 2 Ekim 2026).
   nameSuffix: string | null
   attachesTo: string[]
-  defaultSplitRate: number | null
+  isRightsTransfer: boolean
 }
 
 export interface CardLibrary {
@@ -46,7 +46,7 @@ function mapLibraryRow(r: Record<string, unknown>): LibraryItem {
     asksPerson: r.asks_person as boolean,
     nameSuffix: (r.name_suffix as string | null) ?? null,
     attachesTo: (r.attaches_to as string[] | null) ?? [],
-    defaultSplitRate: r.default_split_rate !== null && r.default_split_rate !== undefined ? Number(r.default_split_rate) : null,
+    isRightsTransfer: r.is_rights_transfer === true,
   }
 }
 
@@ -58,7 +58,7 @@ function mapLibraryRow(r: Record<string, unknown>): LibraryItem {
 export async function fetchCardLibrary(cardCode: string): Promise<CardLibrary> {
   const { data, error } = await supabase
     .from('item_library')
-    .select('id, catalog_code, card_code, name, name_en, default_payment_status, default_unit_code, default_derive_rate, aliases, is_group, is_derived, asks_person, name_suffix, attaches_to, default_split_rate')
+    .select('id, catalog_code, card_code, name, name_en, default_payment_status, default_unit_code, default_derive_rate, aliases, is_group, is_derived, asks_person, name_suffix, attaches_to, is_rights_transfer')
     .eq('card_code', cardCode)
     .order('catalog_code')
   if (error) throw new Error(error.message)
@@ -75,7 +75,7 @@ export async function fetchCardLibrary(cardCode: string): Promise<CardLibrary> {
 export async function fetchAllLibrary(): Promise<LibraryItem[]> {
   const { data, error } = await supabase
     .from('item_library')
-    .select('id, catalog_code, card_code, name, name_en, default_payment_status, default_unit_code, default_derive_rate, aliases, is_group, is_derived, asks_person, name_suffix, attaches_to, default_split_rate')
+    .select('id, catalog_code, card_code, name, name_en, default_payment_status, default_unit_code, default_derive_rate, aliases, is_group, is_derived, asks_person, name_suffix, attaches_to, is_rights_transfer')
     .order('catalog_code')
   if (error) throw new Error(error.message)
   return (data ?? []).map(mapLibraryRow)

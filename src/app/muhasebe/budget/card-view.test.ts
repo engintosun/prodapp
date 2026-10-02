@@ -31,7 +31,6 @@ function makeItem(overrides: Partial<BudgetItemRow> = {}): BudgetItemRow {
     deriveRate: null,
     parentItemId: null,
     personName: null,
-    splitRate: null,
     ...overrides,
   }
 }

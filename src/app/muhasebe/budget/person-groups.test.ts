@@ -31,7 +31,6 @@ function makeItem(overrides: Partial<BudgetItemRow> = {}): BudgetItemRow {
     deriveRate: null,
     parentItemId: null,
     personName: null,
-    splitRate: null,
     ...overrides,
   }
 }
@@ -467,7 +466,7 @@ describe('zimba blogu (1500 Dilim 2)', () => {
 })
 describe('zimbali komisyon tabani (1500 Dilim 2c-1)', () => {
   const hb = makeItem({ id: 'hb', catalogCode: '1501' })
-  const hd = makeItem({ id: 'hd', catalogCode: '1501-01', parentItemId: 'hb', splitRate: 50 })
+  const hd = makeItem({ id: 'hd', catalogCode: '1501-01', parentItemId: 'hb' })
   const k = makeItem({ id: 'k', catalogCode: '1511', parentItemId: 'hb', deriveRate: 20 })
 
   it('anchorNetBases: capa ve zimbali turetilmemis satirlarin toplami, komisyon tabana girmez', () => {

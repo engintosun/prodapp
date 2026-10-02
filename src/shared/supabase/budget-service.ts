@@ -44,10 +44,9 @@ export interface BudgetItemRow {
   personObjectId: string | null
   deriveRate: number | null
   // 1500 Dilim 2 (1 Ekim 2026, KART-KATALOGU 7.4 Karar 1, 2, 5): zimbalandigi satir,
-  // satirda yazili kisi adi, hak devri orani. splitRate derive_rate (komisyon) ile KARISTIRILMAZ.
+  // satirda yazili kisi adi.
   parentItemId: string | null
   personName: string | null
-  splitRate: number | null
 }
 
 export interface CardView {
@@ -74,7 +73,6 @@ export type EditableField =
   | 'deriveRate'
   | 'personObjectId'
   | 'personName'
-  | 'splitRate'
 
 const FIELD_COL: Record<EditableField, string> = {
   internalNote: 'internal_note',
@@ -91,7 +89,6 @@ const FIELD_COL: Record<EditableField, string> = {
   deriveRate: 'derive_rate',
   personObjectId: 'person_object_id',
   personName: 'person_name',
-  splitRate: 'split_rate',
 }
 
 export async function getProjectId(): Promise<string> {
@@ -260,8 +257,6 @@ export async function mapItemRows(itemList: readonly Record<string, unknown>[]):
       i.derive_rate !== null && i.derive_rate !== undefined ? Number(i.derive_rate) : null,
     parentItemId: (i.parent_item_id as string | null) ?? null,
     personName: (i.person_name as string | null) ?? null,
-    splitRate:
-      i.split_rate !== null && i.split_rate !== undefined ? Number(i.split_rate) : null,
   }))
 }
 
@@ -274,7 +269,7 @@ export async function fetchBudgetItemRowsByCard(
   const { data: items, error: ei } = await supabase
     .from('budget_items')
     .select(
-      'id, item_code, catalog_code, heading_code, library_item_id, name, name_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, person_object_id, derive_rate, public_note, parent_item_id, person_name, split_rate, group_id',
+      'id, item_code, catalog_code, heading_code, library_item_id, name, name_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, person_object_id, derive_rate, public_note, parent_item_id, person_name, group_id',
     )
     .eq('budget_id', budgetId)
     .eq('is_active', true)
@@ -313,7 +308,7 @@ export async function getCard(budgetId: string, cardId?: string): Promise<CardVi
   const itemsQuery = (groupId: string) =>
     supabase
       .from('budget_items')
-      .select('id, item_code, catalog_code, heading_code, library_item_id, name, name_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, person_object_id, derive_rate, public_note, parent_item_id, person_name, split_rate')
+      .select('id, item_code, catalog_code, heading_code, library_item_id, name, name_en, unit_net, unit_id, multiplier, repeat, vat_rate, payment_status, internal_note, person_object_id, derive_rate, public_note, parent_item_id, person_name')
       .eq('group_id', groupId)
       .eq('is_active', true)
       .order('sort_order')
@@ -396,18 +391,6 @@ export async function updateItemField(
       if (!Number.isFinite(n)) throw new Error('Geçersiz sayı')
       if (n < 0 || n > 100) throw new Error('Oran 0 ile 100 arasında olmalı')
       payload = { derive_rate: n }
-    }
-  } else if (field === 'splitRate') {
-    // 1500 Dilim 2b-2a (Karar 11, 13): hak devri orani. 100 HARIC - toplamin tamami hak devri
-    // olamaz, kayit kisiti da < 100. Bos metin = acik (kilitsiz) hal.
-    const v = String(value).trim()
-    if (v === '') {
-      payload = { split_rate: null }
-    } else {
-      const n = typeof value === 'number' ? value : Number(v.replace(',', '.'))
-      if (!Number.isFinite(n)) throw new Error('Geçersiz sayı')
-      if (n < 0 || n >= 100) throw new Error('Oran 0 ile 100 arasında olmalı (100 hariç)')
-      payload = { split_rate: n }
     }
   } else if (field === 'personObjectId') {
     const v = String(value).trim()
@@ -631,40 +614,6 @@ export async function addBudgetItem(
   })
   if (error) throw new Error(error.message)
   return data as unknown as string
-}
-
-// 1500 Dilim 2b-2b (1 Ekim 2026): kilidi acip kapama TEK islemde (fn_set_split_lock). Degerleri
-// cagiran hesaplar (budget/split-lock.ts); burada hesap YOK.
-export async function setSplitLock(
-  splitItemId: string,
-  v: { rate: number | null; splitUnitNet: number | null; anchorUnitNet: number; anchorPeriodNets: Record<string, number> },
-): Promise<void> {
-  const { error } = await supabase.rpc('fn_set_split_lock', {
-    p_split_item_id: splitItemId,
-    p_split_rate: v.rate,
-    p_split_unit_net: v.splitUnitNet,
-    p_anchor_unit_net: v.anchorUnitNet,
-    p_anchor_period_nets: v.anchorPeriodNets,
-  })
-  if (error) throw new Error(error.message)
-}
-
-// 1500 IKI KURAL (1 Ekim 2026): paylasimi yaz - Hizmet Bedeli rakamlari + oran TEK islemde
-// (fn_set_split_share); closeSplit silmede hak devrini ayni islemde kapatir. Degerleri
-// cagiran hesaplar (budget/split-share.ts).
-export async function setSplitShare(
-  splitItemId: string,
-  v: { rate: number; anchorUnitNet: number; anchorPeriodNets: Record<string, number> },
-  closeSplit = false,
-): Promise<void> {
-  const { error } = await supabase.rpc('fn_set_split_share', {
-    p_split_item_id: splitItemId,
-    p_rate: v.rate,
-    p_anchor_unit_net: v.anchorUnitNet,
-    p_anchor_period_nets: v.anchorPeriodNets,
-    p_close_split: closeSplit,
-  })
-  if (error) throw new Error(error.message)
 }
 
 // KART 1600 M3b-3: fn_add_person_items sarmalayicisi. N kisilik getirmede tek
