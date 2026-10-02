@@ -128,6 +128,22 @@ Dilim 1a'da Sonnet lint uyarısını spec'te olmayan iki susturma satırıyla ge
 
 Engin "terminal kapandı" dedikten sonra Opus bir sonraki promptu, oturum kesintisiz sürüyormuş gibi "CLAUDE.md'yi oku" satırı olmadan yazdı. Yeni oturum birkaç tökezlemeden sonra işe başladı; zarar çıkmadı ama bu satır tam bu durum için vardı. KURAL: Engin terminalin kapandığını ya da yeni oturum açtığını söylediyse sonraki prompt okuma satırıyla başlar. Oturumun kesintisiz olduğundan emin olunamıyorsa satır konur; bedeli bir okuma turudur, eksikliğinin bedeli kuralsız çalışan bir oturumdur.
 
+### Kart davranışını bir moda bağlamak (1 Ekim 2026)
+
+Hak devrinin kilidi kolaylık olarak istenmişti (oranla otomatik hesap); tasarımda moda dönüştü: kilitliyken Hizmet Bedeli'nin kaydı toplamı, ekranı payı taşıdı ve aynı hücreye yazılan rakam kilide göre başka anlama geldi. Sonuç: dönem eklenince rakam yazılamadı, toplam 0 iken çıkmaz oluştu, kilit açılınca kuruş çıktı, "Bedel 0" uyarısı bayat kaldı. Her düzeltme yeni bir istisna ekledi; Engin durdurdu, çözüm modu kaldırmak oldu (iki kural: yazılan satır değişir, öbürü uyar). KURAL: kart davranışında mod kurulmaz, bir hücreye yazılanın tek anlamı olur. Bir kurumun ihtiyacı Türk bütçesinin günlük işine mod olarak girmez; kurum farkı şablonda, denetimde ve çıktıda çözülür (Hedef Mecra ilkesi). Belirti: düzeltme "şu durumda da şöyle olur" diye istisna eklemeye başladıysa kök tasarım sorgulanır.
+
+### Ekransız dilime işlev koymak (1 Ekim 2026)
+
+2d-1'e ekranın çağıracağı iki saf işlev (`reshareWrite`, `rateFromAmount`) kondu, öksüz işlev kapısı bilindiği halde; Sonnet kapıda durdu, işlevler 2d-2'ye taşındı. Aynı gün 2a-1 spec'i, RPC argümanlarını birebir karşılaştıran `budget-service.test.ts`'i okumadan işlev imzasını değiştirdi; Sonnet yine durdu. KURAL: bir dilime giren her dışa açık işlevin o dilimde bir çağıranı olur; imzası değişen işlevin testleri spec yazılmadan okunur.
+
+### Bir konuyu çözerken başka konular açmak (1 Ekim 2026)
+
+Hak devri düzeltilirken aynı turlara Hedef Mecra, uyarı metinleri, ölçümler, ara dönem uyarıları ve karar numaraları eklendi; Engin "kabul dediğim nedir onu bile unuttum" dedi. KURAL: takılınan yer tek cümleyle söylenir, çözüm tek cümleyle verilir; başka konu ancak takılınan yeri doğrudan değiştiriyorsa açılır; uygulama ayrıntısı karar gibi sunulmaz.
+
+### Kapanışta Engin'in metnini özetlemek (1 Ekim 2026)
+
+30 Eylül kapanış promptu Engin'in hak devri metnini bir paragrafa sıkıştırdı; örnekler ve gerekçe düştü, ertesi gün Engin aynı şeyleri yeniden anlatmak zorunda kaldı. Metin önceki sohbetten bulunup §7.4'e birebir taşındı. KURAL: Engin'in özenle yazdığı gerekçe ve tasarım metni ev dosyasına birebir girer, özetlenmez.
+
 ## Ters yönde bir kayıt
 
 Sonnet'in DUR'ları üç kez haklı çıktı ve üçünde de canlıyı korudu: canlıda olmayan tablo zincire konmak üzereydi, ölü bir fonksiyon overload'ı taban alınmıştı, zorunlu alan eklemek kapsam dışı bir testi kırıyordu. Sonnet'in RAPORU doğrulama değildir ama DUR'u sinyaldir; incelenmeden geçilmez.
