@@ -8,7 +8,8 @@ import { useEditBuffers } from './hooks/use-edit-buffers'
 import { useGridNavigation } from './hooks/use-grid-navigation'
 import { isMultiPeriod, fmt, matchLibraryItems, buildRoomOptions, findCrossCardMatches } from './format'
 import type { RoomOption } from './format'
-import { addBudgetItem, addPersonItems, softDeleteBudgetItem, softDeleteBudgetItems, updateItemField, setSplitLock } from '../../../shared/supabase/budget-service'
+import { addBudgetItem, addPersonItems, softDeleteBudgetItem, softDeleteBudgetItems, updateItemField, setSplitShare } from '../../../shared/supabase/budget-service'
+import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
 import { fetchPersonLabels, updatePersonLabel, fetchDutyOptions } from '../../../shared/supabase/person-label-service'
 import type { PersonLabel, PersonLabelPatch, DutyOption } from '../../../shared/supabase/person-label-service'
 import { useToast } from '../../../shared/components/toast'
@@ -19,11 +20,11 @@ import { PeriodRow } from './components/period-row'
 import { HeadingRow } from './components/heading-row'
 import { SummaryRow } from './components/summary-row'
 import { buildCardView } from './card-view'
-import { unlockWrite, relockWrite, lockedRemainder, SPLIT_WARN_TEXT, splitsOverThreshold } from './split-lock'
+import { reshareWrite, rateFromAmount, SPLIT_WARN_TEXT, splitsOverThreshold } from './split-share'
 import type { CardView } from './card-view'
 import { resolveCollapsed, toggleCollapse, openBlock } from './collapse-state'
 import type { CollapseState } from './collapse-state'
-import { personsNeedingCommissionRow, commissionRowsWithoutTick, COMMISSION_CATALOG_BY_KIND, lockedSplits } from './person-groups'
+import { personsNeedingCommissionRow, commissionRowsWithoutTick, COMMISSION_CATALOG_BY_KIND } from './person-groups'
 import type { CommissionKind, UntickedCommission } from './person-groups'
 import { personCardPresence, personNameCollisions, cardUsesPersonList } from './person-bring'
 import { summaryDisplayName, commissionDisplayName, rowDisplayName } from './display-name'
@@ -270,6 +271,37 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
   const onPersonNameCommitted = useCallback((id: string) => {
     setCollapseState((prev) => openBlock('a:' + id, prev))
   }, [])
+  // HAK DEVRI IKI KURAL, Kural 2 (2d-2a): hak devrine yazilan oran ya da tutar paylasimi
+  // degistirir, toplam sabit kalir. Degerleri split-share.ts hesaplar, fn_set_split_share tek
+  // islemde yazar, kart yeniden okunur. Hata yazilan hucrenin dibinde. Kimligi sabit: api bir
+  // kere kurulur.
+  const onSplitShare = useCallback(
+    async (splitItemId: string, input: { rate: number } | { amount: number }) => {
+      const all = rowsRef.current
+      const split = all.find((r) => r.id === splitItemId)
+      const anchor = split && split.parentItemId !== null ? all.find((r) => r.id === split.parentItemId) : undefined
+      if (!split || !anchor || split.splitRate === null) return
+      const currentRate = split.splitRate
+      const col = 'rate' in input ? 'splitRate' : 'unitNet'
+      try {
+        let rate: number
+        if ('rate' in input) {
+          if (Math.abs(input.rate - currentRate) < 1e-8) return
+          rate = input.rate
+        } else {
+          if (input.amount === (cardViewRef.current?.unitNetOverrides[splitItemId] ?? 0)) return
+          rate = rateFromAmount(anchor, currentRate, input.amount)
+        }
+        await setSplitShare(splitItemId, reshareWrite(anchor, currentRate, rate))
+        refetch({ silent: true })
+      } catch (e) {
+        addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error', { anchor: cellSelector(splitItemId, col) })
+      }
+    },
+    // rowsRef/cardViewRef useRef nesneleridir, kimlikleri sabittir.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [refetch, addToast],
+  )
   const { buffers, bordroData, itemWarnings, periodWarnings, refreshBordroMany, api } = useEditBuffers({
     rowsRef,
     savedRef,
@@ -282,6 +314,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     onMoneyCommitted: birthMissingCommissionRows,
     onPersonNameCommitted,
     confirmPeriodRemoval,
+    onSplitShare,
   })
   useLayoutEffect(() => {
     allLibraryRef.current = allLibrary
@@ -434,7 +467,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     [onOpenAddPanel],
   )
 
-  const { containerRef, handleKeyDown, handleFocus, handlePaste, handleDrop, handleDragOver, isActiveEdit } = useGridNavigation({ rowsRef, savedRef, patchRow, api, rows })
+  const { containerRef, handleKeyDown, handleFocus, handlePaste, handleDrop, handleDragOver, isActiveEdit } = useGridNavigation({ rowsRef, savedRef, patchRow, api, rows, unitNetOverride: (id: string) => cardViewRef.current?.unitNetOverrides[id] })
 
   // Yeni eklenen kalem sessiz yenilemeden sonra tabloya inince gorunur alana sokulur.
   // block: nearest = satir tam gorunuyorsa hicbir sey oynamaz, degilse en az hareketle
@@ -730,22 +763,24 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         return
       }
       // 1500 Dilim 2c-1 (Karar 8, 9): yonetmen satiri zimbalilariyla birlikte silinir, soru
-      // silinecekleri adiyla soyler. Kilitli hak devri silinirken rakami Hizmet Bedeli'ne doner
-      // (kayda bir sey yazilmaz - Karar 11), soru bunu soyler.
+      // silinecekleri adiyla soyler. Hak devri silinirken rakami Hizmet Bedeli'ne doner (iki kural,
+      // Kural 3): fn_set_split_share Hizmet Bedeli'ni yeniden yazar, hak devrini ayni islemde kapatir.
       const all = rowsRef.current
       const children = all.filter((r) => r.parentItemId === itemId)
       const deleteIds = [itemId, ...children.map((r) => r.id)]
       let message = 'Bu kalemi silmek istiyor musun?'
+      let splitClose: { anchor: BudgetItemRow; rate: number } | null = null
       if (target && children.length > 0) {
         const lib = library.find((l) => l.catalogCode === target.catalogCode)
         const head = target.personName ?? lib?.name ?? target.name
         const anchorLabel = lib?.nameSuffix ? head + ' ' + lib.nameSuffix : head
         message = `${anchorLabel} ile altındaki ${joinTr(children.map((r) => r.name))} silinecek.`
-      } else if (target && target.parentItemId !== null) {
-        const lock = lockedSplits(all).get(target.parentItemId)
+      } else if (target && target.parentItemId !== null && target.splitRate !== null) {
+        const amount = cardViewRef.current?.unitNetOverrides[target.id] ?? 0
         const anchor = all.find((r) => r.id === target.parentItemId)
-        if (lock && lock.splitItemId === target.id && anchor) {
-          message = `${target.name} silinecek, ${fmt(lockedRemainder(anchor, lock.rate))} Hizmet Bedeli'ne eklenecek.`
+        if (amount > 0 && anchor) {
+          splitClose = { anchor, rate: target.splitRate }
+          message = `${target.name} silinecek, ${fmt(amount)} Hizmet Bedeli'ne eklenecek.`
         }
       }
       const ok = await askConfirm({
@@ -758,7 +793,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         const list = rowsRef.current
         const idx = list.findIndex((r) => r.id === itemId)
         const neighbour = idx > 0 ? list[idx - 1] : list[idx + 1]
-        await softDeleteBudgetItems(deleteIds)
+        if (splitClose) await setSplitShare(itemId, reshareWrite(splitClose.anchor, splitClose.rate, 0), true)
+        else await softDeleteBudgetItems(deleteIds)
         refetch({ silent: true })
         // Silinen satir gozden kayboluyor, odak bosta kalmasin (Engin karari 2026-07-27):
         // bir USTTEKI kaleme gider; ilk satir siliniyorsa alttakine; kart tamamen bosaliyorsa
@@ -800,50 +836,25 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     [rows, cardView],
   )
   // 1500 Dilim 2b-2a (Karar 13): hak devri satiri = kutuphanede default_split_rate dolu atom ve
-  // bir satira zimbali. Acik haldeki pay ekran icin hesaplanir, SAKLANMAZ.
+  // bir satira zimbali. Rakam ekran icin hesaplanir, SAKLANMAZ (B18).
   const splitCodes = useMemo(
     () => new Set(library.filter((l) => l.defaultSplitRate !== null).map((l) => l.catalogCode)),
     [library],
   )
   const splitInfoById = useMemo(() => {
-    const out = new Map<string, { locked: boolean; amount: number; sharePercent: number }>()
+    const out = new Map<string, { amount: number; sharePercent: number }>()
     for (const r of rows) {
       if (r.parentItemId === null || !splitCodes.has(r.catalogCode)) continue
-      const own = cardView.rowTotalsById[r.id]?.net ?? 0
-      const parentNet = cardView.rowTotalsById[r.parentItemId]?.net ?? 0
-      const total = own + parentNet
       out.set(r.id, {
-        locked: r.splitRate !== null,
         amount: cardView.unitNetOverrides[r.id] ?? r.unitNet,
-        sharePercent: r.splitRate ?? (total > 0 ? Math.round((own / total) * 10000) / 100 : 0),
+        sharePercent: r.splitRate ?? 0,
       })
     }
     return out
   }, [rows, splitCodes, cardView])
-  // 1500 Dilim 2b-2b (Karar 13, KILIT ACILIRKEN): kilide basinca acilir ya da kapanir. Degerleri
-  // split-lock.ts hesaplar, fn_set_split_lock tek islemde yazar, kart yeniden okunur. Hata hucrenin
-  // dibinde (oran kutusu) gosterilir.
-  const onToggleSplitLock = useCallback(
-    async (splitItemId: string) => {
-      const split = rows.find((r) => r.id === splitItemId)
-      const anchor = split && split.parentItemId !== null ? rows.find((r) => r.id === split.parentItemId) : undefined
-      if (!split || !anchor) return
-      try {
-        const write =
-          split.splitRate !== null
-            ? unlockWrite(anchor, split.splitRate)
-            : relockWrite(anchor, cardView.rowTotalsById[split.id]?.net ?? 0)
-        await setSplitLock(splitItemId, write)
-        refetch({ silent: true })
-      } catch (e) {
-        addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error', { anchor: cellSelector(splitItemId, 'splitRate') })
-      }
-    },
-    [rows, cardView, refetch, addToast],
-  )
   // %50 UYARISI (1 Ekim 2026, Engin; KART-KATALOGU 7.4): hak devrinin payi esigi GECTIGI ANDA
-  // oran kutusunun dibinde uyari. Tetik hangi yoldan olursa olsun ayni: oran, pay, acikken rakam,
-  // kilit kapanisi - hepsi splitInfoById'yi degistirir. Ilk olcum TOHUMDUR: kart acilirken zaten
+  // oran kutusunun dibinde uyari. Tetik hangi yoldan olursa olsun ayni: hak devrine oran ya da tutar
+  // yazmak - hepsi splitInfoById'yi degistirir. Ilk olcum TOHUMDUR: kart acilirken zaten
   // ustte olan satir icin uyari cikmaz ("o anda bir uyari verecek").
   const overSplitRef = useRef<Set<string> | null>(null)
   useEffect(() => {
@@ -1087,9 +1098,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                           />
                         )
                       }
-                      // HAK DEVRI BOLMESI (1 Ekim 2026, Karar 11): kilitli capa PAYI ile cizilir; kayit
-                      // toplami tasir. Ayni nesne donem satirlarina da gider (donem paylari).
-                      const it = cardView.displayItemById[rr.row.id] ?? rr.row
+                      const it = rr.row
                       const ownerKey = summaryKeyByItemId.get(it.id)
                       if (rr.underSummary && ownerKey && isSummaryCollapsed(ownerKey)) {
                         return null
@@ -1122,12 +1131,11 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
                             split={splitInfoById.get(it.id)}
                             bufSplitRate={buffers[it.id + ':splitRate']}
                             navSplitRate={isActiveEdit(it.id, 'splitRate') ? undefined : 'Oran %' + fmt(it.splitRate ?? 0)}
-                            onToggleSplitLock={onToggleSplitLock}
                             justAdded={justAddedIds.includes(it.id)}
                             bufUnitNet={buffers[it.id + ':unitNet']}
                             bufMultiplier={buffers[it.id + ':multiplier']}
                             bufRepeat={buffers[it.id + ':repeat']}
-                            navUnitNet={isActiveEdit(it.id, 'unitNet') ? undefined : fmt(it.unitNet)}
+                            navUnitNet={isActiveEdit(it.id, 'unitNet') ? undefined : fmt(splitInfoById.get(it.id)?.amount ?? it.unitNet)}
                             navDeriveRate={isActiveEdit(it.id, 'deriveRate') ? undefined : 'Oran %' + fmt(it.deriveRate ?? 0)}
                             navMultiplier={isActiveEdit(it.id, 'multiplier') ? undefined : fmt(it.multiplier)}
                             navRepeat={isActiveEdit(it.id, 'repeat') ? undefined : fmt(it.repeat)}
@@ -1246,9 +1254,8 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
         // yasar. Ham item gecince dokum sifir tabanla carpim yapiyordu. Yeni hesap YOK,
         // rowTotals'in totals.ts satir 24'te yaptigi desenin aynisi: unitNet'in yerine
         // turetilmis deger konur (B18).
-        // 1500 Dilim 2b-1: kilitli capanin dokumu payla, kilitli hak devrininki kalanla yapilir.
-        const sheetItem = cardView.displayItemById[item.id]
-          ?? (unitNetOverrides[item.id] !== undefined ? { ...item, unitNet: unitNetOverrides[item.id] } : item)
+        // Hak devrinin dokumu hesaplanan rakamla yapilir (unitNetOverrides).
+        const sheetItem = unitNetOverrides[item.id] !== undefined ? { ...item, unitNet: unitNetOverrides[item.id] } : item
         return (
           <BurdenSheet
             item={sheetItem}

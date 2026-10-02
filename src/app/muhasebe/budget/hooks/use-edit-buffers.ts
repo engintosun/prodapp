@@ -18,8 +18,6 @@ import type { MinimumWageThresholds, BordroDerivationResult } from '../../../../
 import { useToast } from '../../../../shared/components/toast'
 import { cellSelector } from '../cell-address'
 import { bordroReasonMessage, parseNumericDraft, effectiveWarning } from '../format'
-import { lockedSplits } from '../person-groups'
-import { rateFromShare } from '../split-lock'
 import type { ValueWarning } from '../format'
 import type { BordroSheetEntry } from '../components/burden-sheet'
 
@@ -27,6 +25,12 @@ import type { BordroSheetEntry } from '../components/burden-sheet'
 // sayisal - yalniz bunlar buffer'dan parse edilip garanti altina alinir; 'name' gibi metin
 // alanlari bu denetimden gecmez.
 const NUMERIC_EDITABLE_FIELDS = new Set<EditableField>(['unitNet', 'multiplier', 'repeat', 'vatRate', 'deriveRate', 'splitRate'])
+
+// HAK DEVRI SATIRI (iki kural): oran dolu ve bir satira zimbali. Rakami kayitta degil hesapta
+// yasar (card-view.ts); kayittaki birim net 0 durur.
+function isSplitRow(row: BudgetItemRow | undefined): boolean {
+  return row !== undefined && row.splitRate !== null && row.parentItemId !== null
+}
 
 // EditApi SINIRI (Engin karari 2026-07-27): api yalniz useEditBuffers'in SAHIP OLDUGU state'e
 // dokunur, yani buffers + patchRow. refetch veya card-table-screen useState'i gerektiren is
@@ -75,6 +79,10 @@ interface UseEditBuffersParams {
   // tetik adresi orada); bu kanca yalniz sorar ve cevabi bekler. Kimligi sabit olmali (api bir
   // kere kurulur).
   confirmPeriodRemoval: (itemId: string, stageId: string) => Promise<boolean>
+  // HAK DEVRI IKI KURAL (2d-2a): hak devrine yazilan oran ya da tutar (Kural 2). Govde kart
+  // ekraninda (split-share.ts hesap, fn_set_split_share yazim, yeniden okuma); bu kanca yalniz
+  // taslagi ayristirip iletir. Kimligi sabit olmali (api bir kere kurulur).
+  onSplitShare?: (splitItemId: string, input: { rate: number } | { amount: number }) => Promise<void>
 }
 
 export function useEditBuffers({
@@ -89,6 +97,7 @@ export function useEditBuffers({
   onMoneyCommitted,
   onPersonNameCommitted,
   confirmPeriodRemoval,
+  onSplitShare,
 }: UseEditBuffersParams) {
   const { addToast } = useToast()
   const [buffers, setBuffers] = useState<Record<string, string>>({})
@@ -136,10 +145,9 @@ export function useEditBuffers({
       setItemWarnings((w) => ({ ...w, [itemId]: null }))
       return
     }
-    // KILITLI HAK DEVRI UYARI URETMEZ (1 Ekim 2026, 2b-2a): kilitliyken rakami kayitta degil
-    // hesapta yasar (card-view.ts, toplamdan kalan); kayittaki birim net 0 durur. Uyari kayda
-    // bakip Yasal Yuk haneyi kapatiyordu (Engin'in canli bulgusu). Acik hak devri normal satirdir.
-    if (row.splitRate !== null) {
+    // HAK DEVRI UYARI URETMEZ (1 Ekim 2026): rakami kayitta degil hesapta yasar (card-view.ts);
+    // kayittaki birim net 0 durur. Uyari kayda bakip Yasal Yuk haneyi kapatiyordu (Engin'in canli bulgusu).
+    if (isSplitRow(row)) {
       setItemWarnings((w) => ({ ...w, [itemId]: null }))
       return
     }
@@ -270,9 +278,9 @@ export function useEditBuffers({
     }
 
     function onNumChange(id: string, field: 'unitNet' | 'multiplier' | 'vatRate' | 'deriveRate' | 'splitRate', raw: string) {
-      // KILITLI PAY (1 Ekim 2026, Karar 12; 2b-3): kilitli capanin birim neti yazarken yalniz
-      // tamponda durur - satira yazilsa kayittaki TOPLAMIN yerine gecer, toplamlar her harfte oynar.
-      if (field === 'unitNet' && lockedSplits(rowsRef.current).has(id)) {
+      // HAK DEVRI (iki kural, 2d-2a): oran ve tutar yazarken yalniz tamponda durur; satira
+      // yazilsa toplamlar her harfte oynar. Yazim hucreden cikinca onSplitShare ile yapilir.
+      if (field === 'splitRate' || (field === 'unitNet' && isSplitRow(rowsRef.current.find((r) => r.id === id)))) {
         setBuf(id + ':' + field, raw)
         return
       }
@@ -290,11 +298,6 @@ export function useEditBuffers({
     }
 
     function onPeriodNetChange(itemId: string, stageId: string, raw: string) {
-      // KILITLI PAY (2b-3): kilitli capanin donem neti de yalniz tamponda durur.
-      if (lockedSplits(rowsRef.current).has(itemId)) {
-        setBuf(itemId + ':pnet:' + stageId, raw)
-        return
-      }
       setBuf(itemId + ':pnet:' + stageId, raw)
       const current = rowsRef.current.find((r) => r.id === itemId)
       if (!current) return
@@ -446,35 +449,19 @@ export function useEditBuffers({
         }
         return
       }
-      if (field === 'unitNet') {
-        const lock = lockedSplits(rowsRef.current).get(id)
-        if (lock) {
-          // KILITLI PAY (1 Ekim 2026, Karar 12; 2b-3): yazilan rakam PAY'dir. Kayittaki toplam
-          // DEGISMEZ; hak devrinin orani yeniden hesaplanip yazilir, ekran iki payi yeniden boler.
-          const raw = buffersRef.current[bufKey]
-          if (raw === undefined) return
-          const parsed = parseNumericDraft(raw)
-          if (parsed === null) {
-            clearBuf(bufKey)
-            return
-          }
-          const base = saved ?? row
-          try {
-            const rate = rateFromShare(base.unitNet, parsed)
-            if (Math.abs(rate - lock.rate) >= 1e-8) {
-              await updateItemField(lock.splitItemId, 'splitRate', rate)
-              patchRow(lock.splitItemId, { splitRate: rate })
-              const savedSplit = savedRef.current[lock.splitItemId]
-              if (savedSplit) savedRef.current[lock.splitItemId] = { ...savedSplit, splitRate: rate }
-              onMoneyCommitted?.()
-            }
-          } catch (e) {
-            addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error', { anchor: cellSelector(id, 'unitNet') })
-          } finally {
-            clearBuf(bufKey)
-          }
-          return
+      if (field === 'splitRate' || (field === 'unitNet' && isSplitRow(row))) {
+        // HAK DEVRI (iki kural, Kural 2): yazilan oran ya da tutar paylasimi degistirir. Hesap ve
+        // yazim kart ekraninda (onSplitShare). Gecersiz taslak birakilir, hucre kayitli degeri gosterir
+        // (PARSE GUVENCESI ile ayni).
+        const raw = buffersRef.current[bufKey]
+        if (raw === undefined) return
+        const parsed = parseNumericDraft(raw)
+        try {
+          if (parsed !== null) await onSplitShare?.(id, field === 'splitRate' ? { rate: parsed } : { amount: parsed })
+        } finally {
+          clearBuf(bufKey)
         }
+        return
       }
       // PARSE GUVENCESI (K10 revize + TD-16, 2026-07-18): sayisal alanda taslak metni
       // ayristirilamiyorsa (veya repeat<=0, mevcut onRepeatChange kurali korunur) kasadaki
@@ -579,35 +566,6 @@ export function useEditBuffers({
       const saved = savedRef.current[itemId]
       const bufKey = itemId + ':pnet:' + stageId
       const raw = buffersRef.current[bufKey]
-      const lock = lockedSplits(rowsRef.current).get(itemId)
-      if (lock) {
-        // KILITLI PAY (2b-3, Karar 12): donem satirina yazilan rakam o donemin PAY'idir; oran bu
-        // donemden hesaplanir ve butun donemlere uygulanir. Bos ya da gecersiz taslak kilitliyken
-        // YOK SAYILIR (donem mirasini kilitli blokta pay girisi temizlemez).
-        if (raw === undefined) return
-        const parsed = raw.trim() === '' ? null : parseNumericDraft(raw)
-        if (parsed === null) {
-          clearBuf(bufKey)
-          return
-        }
-        const base = saved ?? row
-        const storedNet = base.periodNet[stageId] ?? base.unitNet
-        try {
-          const rate = rateFromShare(storedNet, parsed)
-          if (Math.abs(rate - lock.rate) >= 1e-8) {
-            await updateItemField(lock.splitItemId, 'splitRate', rate)
-            patchRow(lock.splitItemId, { splitRate: rate })
-            const savedSplit = savedRef.current[lock.splitItemId]
-            if (savedSplit) savedRef.current[lock.splitItemId] = { ...savedSplit, splitRate: rate }
-            onMoneyCommitted?.()
-          }
-        } catch (e) {
-          addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error', { anchor: cellSelector(`${itemId}:${stageId}`, 'periodNet') })
-        } finally {
-          clearBuf(bufKey)
-        }
-        return
-      }
       // Bos taslak ('') KASITLI: override'i temizleyip kaleme mirasi geri verir (asagida
       // hedef=null olarak zaten dogru islenir). PARSE GUVENCESI yalniz BOS-OLMAYAN, sayiya
       // cevrilemeyen ('abc', '€') taslaklari yakalar.

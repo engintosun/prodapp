@@ -10,7 +10,7 @@ import type { BordroSheetEntry } from './components/burden-sheet'
 import { rowTotals } from './totals'
 import type { RowTotals } from './totals'
 import { groupRowsByHeading } from './format'
-import { groupByPerson, buildRenderRows, derivedUnitNets, anchorCodesOf, summaryAnchorIds, lockedSplits } from './person-groups'
+import { groupByPerson, buildRenderRows, derivedUnitNets, anchorCodesOf, summaryAnchorIds, splitLinks } from './person-groups'
 import { anchorNames } from './display-name'
 import { splitNetFrom } from './split-share'
 import type { AnchorLibraryEntry, AnchorNames } from './display-name'
@@ -33,10 +33,6 @@ export interface CardView {
   rowTotalsById: Record<string, RowTotals>
   unitNetOverrides: Record<string, number>
   anchorNames: AnchorNames
-  // HAK DEVRI BOLMESI (Karar 11): kilitli capanin ekranda gorunen hali (pay). Kart ekrani bu
-  // satiri cizerken kayittaki satirin YERINE bunu verir; kayit toplami tasir.
-  displayItemById: Record<string, BudgetItemRow>
-  // 1500 IKI KURAL: artik hep bos; ikinci dilimde kalkar.
 }
 
 const ZERO_TOTALS: RowTotals = { net: 0, yasalYuk: 0, maliyet: 0, kdv: 0, brut: 0 }
@@ -112,11 +108,10 @@ function computeRowTotals(
 ): {
   rowTotalsById: Record<string, RowTotals>
   unitNetOverrides: Record<string, number>
-  displayItemById: Record<string, BudgetItemRow>
 } {
   const rowTotalsById: Record<string, RowTotals> = {}
   const netByItemId: Record<string, number> = {}
-  const splits = lockedSplits(rows)
+  const splits = splitLinks(rows)
   const splitItemIds = new Set([...splits.values()].map((s) => s.splitItemId))
   for (const row of rows) {
     if (row.deriveRate !== null || splitItemIds.has(row.id)) continue
@@ -139,7 +134,7 @@ function computeRowTotals(
       rowTotalsById[row.id] = rowTotals(row, bordroData[row.id], derived[row.id] ?? 0)
     }
   }
-  return { rowTotalsById, unitNetOverrides: { ...derived, ...splitOverrides }, displayItemById: {} }
+  return { rowTotalsById, unitNetOverrides: { ...derived, ...splitOverrides } }
 }
 
 // KART MASASI KAPAGI (KABUK-KARARLARI 12.3 TEK HESAP IKI YUZEY, 24 Eylul 2026): masa kapagindaki
@@ -162,7 +157,7 @@ export function buildCardView(
   personOrderIndex: ReadonlyMap<string, number>,
   anchorLibrary: readonly AnchorLibraryEntry[] = [],
 ): CardView {
-  const { rowTotalsById, unitNetOverrides, displayItemById } = computeRowTotals(rows, bordroData)
+  const { rowTotalsById, unitNetOverrides } = computeRowTotals(rows, bordroData)
 
   const headingGroups = groupRowsByHeading([...rows], [...headings], userHeadings)
   // OZET SATIRI = IS EKSENI (10 Eylul 2026, Engin karari). Eskiden ozet YALNIZ iki ve daha
@@ -195,6 +190,5 @@ export function buildCardView(
     rowTotalsById,
     unitNetOverrides,
     anchorNames: anchorNames(rows, anchorCodes, anchorLibrary, summaryAnchors),
-    displayItemById,
   }
 }

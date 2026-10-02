@@ -36,13 +36,10 @@ interface ItemRowProps {
   // 1500 Dilim 2a-3a: yonetmen satirinin kisi adi tamponu ve KLV duzenleme kipi.
   bufPersonName: string | undefined
   anchorEditing: boolean
-  // 1500 Dilim 2b-2a (Karar 13): hak devri satiri. locked = oran dolu; amount = hesaplanan rakam
-  // (kilitliyken kalan); sharePercent = gosterilecek oran (kilitliyken kayittaki, acikken o anki pay).
-  split?: { locked: boolean; amount: number; sharePercent: number }
+  // Hak devri satiri (iki kural): amount = hesaplanan rakam, sharePercent = kayitli oran.
+  split?: { amount: number; sharePercent: number }
   bufSplitRate: string | undefined
   navSplitRate: string | undefined
-  // 1500 Dilim 2b-2b: kilide basma (acma/kapama kart ekraninda).
-  onToggleSplitLock: (splitItemId: string) => void
   justAdded: boolean
   bufUnitNet: string | undefined
   bufMultiplier: string | undefined
@@ -75,7 +72,6 @@ export const ItemRow = memo(function ItemRow({
   split,
   bufSplitRate,
   navSplitRate,
-  onToggleSplitLock,
   justAdded,
   bufUnitNet,
   bufMultiplier,
@@ -88,9 +84,7 @@ export const ItemRow = memo(function ItemRow({
 }: ItemRowProps) {
   const it = item
   const isCommission = it.deriveRate !== null
-  const lockedSplit = split?.locked === true
-  // Karar 13: hak devrinin Birim, Miktar ve X'i IKI halde de yazilmaz (sabit, 1, 1); acikken
-  // yalniz Birim net yazilir. 2b-2a acik hali normal satir gibi cizmisti (spec hatasi).
+  // Iki kural: hak devrinin Birim, Miktar ve X'i yazilmaz (sabit, 1, 1); oran ve Birim net (tutar) yazilir.
   const splitRow = split !== undefined
   // AD YERLESIMI + KOMISYON SATIRININ DOGUMU (9 Eylul 2026): turetilmis satirin ad hucresi
   // AYRI mantik izler (commissionDisplayName) - 1618 gorev atomu DEGILDIR (is_duty=false),
@@ -231,45 +225,21 @@ export const ItemRow = memo(function ItemRow({
         <>
           {split ? (
         <td style={{ ...numFlushTd, textAlign: 'left' }}>
-          {/* 1500 Dilim 2b-2a (Karar 13): oran kutusu Donemler'in yerinde, kilit sag yaninda.
-              Kilitliyken oran yazilir; acikken soluk ve o anki payi gosterir. Hak devri kendi
-              donemini secmez, dagilimini Hizmet Bedeli'nden alir. */}
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-            {split.locked ? (
-              <input
-                data-grid-cell="true"
-                data-row-id={it.id}
-                data-col="splitRate"
-                size={10}
-                style={{ ...cellInputNum, width: 'auto', textAlign: 'left' }}
-                type="text"
-                inputMode="decimal"
-                value={navSplitRate ?? fieldVal(bufSplitRate, it.splitRate ?? 0)}
-                onChange={(e) => api.onNumChange(it.id, 'splitRate', e.target.value)}
-                onBlur={() => api.commitField(it.id, 'splitRate')}
-              />
-            ) : (
-              <input
-                readOnly
-                data-grid-cell="true"
-                data-row-id={it.id}
-                data-col="splitRate"
-                data-cell-kind="text"
-                size={10}
-                style={{ ...cellInputNum, width: 'auto', textAlign: 'left', color: 'var(--color-text-muted)', cursor: 'default', background: 'transparent', border: '1px solid transparent' }}
-                value={'Oran %' + fmt(split.sharePercent)}
-              />
-            )}
-            {/* 1500 Dilim 2b-2b: kilide basmak toplami acar ya da kilitler (card-table-screen.tsx onToggleSplitLock). */}
-            <button
-              type="button"
-              onClick={() => onToggleSplitLock(it.id)}
-              aria-label={split.locked ? 'Toplamın kilidini aç' : 'Toplamı kilitle'}
-              style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'pointer', color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)', lineHeight: 1 }}
-            >
-              {split.locked ? '🔒' : '🔓'}
-            </button>
-          </span>
+          {/* Iki kural (2d-2a): oran kutusu Donemler kolonunun yerinde, her zaman yazilir. Yazilan oran
+              paylasimi degistirir, toplam sabit kalir. Hak devri kendi donemini secmez, dagilimini
+              Hizmet Bedeli'nden alir. */}
+          <input
+            data-grid-cell="true"
+            data-row-id={it.id}
+            data-col="splitRate"
+            size={10}
+            style={{ ...cellInputNum, width: 'auto', textAlign: 'left' }}
+            type="text"
+            inputMode="decimal"
+            value={navSplitRate ?? fieldVal(bufSplitRate, it.splitRate ?? 0)}
+            onChange={(e) => api.onNumChange(it.id, 'splitRate', e.target.value)}
+            onBlur={() => api.commitField(it.id, 'splitRate')}
+          />
         </td>
           ) : (
           <td style={selectTd}>
@@ -344,10 +314,8 @@ export const ItemRow = memo(function ItemRow({
               </select>
             )}
           </td>
-          <td style={multi || lockedSplit ? readOnlyNumTd : numFlushTd}>
-            {lockedSplit ? (
-              fmt(split?.amount ?? 0)
-            ) : multi ? (
+          <td style={multi ? readOnlyNumTd : numFlushTd}>
+            {multi ? (
               summaryNet !== null ? fmt(summaryNet) : '—'
             ) : (
               <input
@@ -357,7 +325,7 @@ export const ItemRow = memo(function ItemRow({
                 style={cellInputNum}
                 type="text"
                 inputMode="decimal"
-                value={navUnitNet ?? fieldVal(bufUnitNet, it.unitNet)}
+                value={navUnitNet ?? fieldVal(bufUnitNet, split ? split.amount : it.unitNet)}
                 onChange={(e) => api.onNumChange(it.id, 'unitNet', e.target.value)}
                 onBlur={() => api.commitField(it.id, 'unitNet')}
               />
