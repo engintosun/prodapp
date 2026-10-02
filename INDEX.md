@@ -43,7 +43,7 @@ varsayim yapilmaz.
 -> Etkiler: item-row.tsx/period-row.tsx/burden-sheet.tsx (netToplamDonemli/brutToplamDonemli/kisiyeBanka çağırır).
 -> Kritik: EVET — bordro-dışı tüm statülerin (smm/telif/şirket/kira/konaklama) net<->brüt hesabı tek buradan geçer.
 
-`src/shared/supabase/budget-service.ts` (701)
+`src/shared/supabase/budget-service.ts` (650)
 -> Görev: Bütçe açılış + kart okuma (getCard/getOrOpenBudget) + kalem alanı yazma (updateItemField, setItemPeriodNet vb.) servis çağrıları.
 -> Kullanır: shared/supabase/client.ts (Supabase SDK); fn_open_budget/fn_add_budget_item RPC'lerini çağırır.
 -> Etkiler: use-card-rows.ts (okuma) + use-edit-buffers.ts (yazma) + card-table-screen.tsx buna bağlı.
@@ -55,7 +55,7 @@ varsayim yapilmaz.
 -> Etkiler: use-edit-buffers.ts (refreshBordro) + use-card-rows.ts (fetchMinimumWageThresholds) bunu çağırır.
 -> Kritik: EVET — 500+ satır, BUTCE-UI-MIMARISI bölüm 8'de bölünme bekliyor; MUHUR-2 disiplini (açık/kilitli okuma) burada.
 
-`src/app/muhasebe/budget/hooks/use-edit-buffers.ts` (886)
+`src/app/muhasebe/budget/hooks/use-edit-buffers.ts` (807)
 -> Görev: Grid hücrelerinin edit buffer'ı + EditApi — tüm alan-bazlı commit handler'larını (onNumChange/commitField/commitPeriod vb.) tek boğazdan geçirir.
 -> Kullanır: shared/supabase/budget-service.ts (yazma) + payroll-read.ts (refreshBordro) + shared/components/toast.tsx + cell-address.ts (K4 hücre adresi).
 -> Etkiler: card-table-screen.tsx (api) + item-row.tsx/period-row.tsx (EditApi tüketir) + use-grid-navigation.ts buna bağlı.
@@ -85,7 +85,7 @@ varsayim yapilmaz.
 -> Etkiler: production-records-screen.tsx `importOpen` durumunda bunu render eder; bu dosya ekranı DEĞİŞTİRMEZ.
 -> Kritik: HAYIR — kararların evi BUTCE-EKRAN-KARARLARI §20; tahmin sınırı orada yazılı (Görev/Ajans/Menajer TAHMİN EDİLMEZ).
 
-`src/app/muhasebe/budget/card-table-screen.tsx` (1287)
+`src/app/muhasebe/budget/card-table-screen.tsx` (1248)
 -> Görev: Kart tablosu ekranının orkestrasyonu — veri hook'ları + ekleme paneli + satır bileşenlerini birbirine bağlar.
 -> Kullanır: hooks/* (use-card-rows, use-edit-buffers, use-grid-navigation) + components/* + budget-service.ts + cell-address.ts (K1 ve K4 hücre adresi).
 -> Etkiler: authenticated-shell.tsx (muhasebe "bütçe" sekmesi) buradan render eder.
@@ -93,7 +93,7 @@ varsayim yapilmaz.
 
 `src/app/muhasebe/budget/cell-address.ts` (5) — tablodaki hücre adresi (satır ve sütun işareti); pencerenin tetiği (K1) ve hücreye bağlı mesaj (K4) aynı adresi kullanır; kart ekranı ve kaydetme kodu buradan alır
 
-`src/app/muhasebe/budget/components/item-row.tsx` (477)
+`src/app/muhasebe/budget/components/item-row.tsx` (430)
 -> Görev: Kart tablosunun kalem satırı — 14 haneli (13 veri kolonu + etiketsiz silme hanesi) KİLİTLİ kolon setinin tek satırlık render'ı, bordro/genel ayrımı + dönem-satırı açılımı.
 -> Kullanır: shared/cfe (netToplamDonemli/brutToplamDonemli/kisiyeBanka) + format.ts + hooks/use-edit-buffers.ts (EditApi tipi).
 -> Etkiler: card-table-screen.tsx satır-başına bunu render eder.
@@ -131,7 +131,7 @@ varsayim yapilmaz.
 `src/app/layout/bottom-nav.tsx` (76) — rol-bazlı alt navigasyon sekmeleri (NAV_ITEMS)
 `src/app/layout/nav-rail.tsx` (180) — sol ray: modül duraklarını çizer, açık/kapalı iki genişlik (168/68px), kapalıda ikon + ilk harf düşüşü
 `src/app/layout/rail-icons.tsx` (73) — rayın elle yazılmış tek renkli SVG ikonları (currentColor; ikon kütüphanesi kurulmadı)
-`src/app/muhasebe/budget/card-view.ts` (200) — kartın görünen düzeninin (başlık grubu + kişi bloğu + türetilen satır tutarları) TEK kaynağı; dışa aktarma/icmal/mühür de bunu çağıracak
+`src/app/muhasebe/budget/card-view.ts` (186) — kartın görünen düzeninin (başlık grubu + kişi bloğu + türetilen satır tutarları) TEK kaynağı; dışa aktarma/icmal/mühür de bunu çağıracak
 `src/app/muhasebe/budget/collapse-state.ts` (39) — başlık ve özet satırlarının açık/kapalı halinin tek kaynağı: kullanıcının bıraktığı hal saklanır, varsayılan yalnız hiç dokunulmamış bloğa uygulanır, kapalı bloğa kalem eklenince blok açılır
 `src/app/muhasebe/budget/columns.ts` (27) — kart tablosu kolon seti tek kaynağı (BUDGET_COLUMNS: anahtar/etiket/hizalama)
 `src/app/muhasebe/budget/components/add-chooser.tsx` (57) — "+ Ekle" seçim penceresi (Kalem / Başlık)
@@ -150,9 +150,9 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/format.ts` (353) — fmt/parseNumericDraft + kütüphane arama + başlık grubu saf fonksiyonları
 `src/app/muhasebe/budget/heading-window.ts` (63) — Başlık penceresinin saf mantığı (liste, hedef süzmesi, geri alma paketleri)
 `src/app/muhasebe/budget/hooks/use-card-rows.ts` (263) — kart verisi yükleme (budgetId/cardId), ref senkronizasyonu
-`src/app/muhasebe/budget/hooks/use-grid-navigation.ts` (286) — İ7 motorunun DOM bağlayıcısı, tuş olaylarını çekirdeğe delege eder
+`src/app/muhasebe/budget/hooks/use-grid-navigation.ts` (283) — İ7 motorunun DOM bağlayıcısı, tuş olaylarını çekirdeğe delege eder
 `src/app/muhasebe/budget/person-bring.ts` (84) — Oyuncular listesi panosunun getirme mantığı: kartta olan/olmayan ayrımı, benzer ad uyarısı, görev sırası, düğmenin kendi listesi olan kartta çizilmesi
-`src/app/muhasebe/budget/person-groups.ts` (322) — kişi etiketine göre satır gruplama + orandan türetme; özet satırı ile komisyon satırı aynı hesabı paylaşır; tik kalkmış komisyon satırının seçimi (commissionRowsWithoutTick)
+`src/app/muhasebe/budget/person-groups.ts` (289) — kişi etiketine göre satır gruplama + orandan türetme; özet satırı ile komisyon satırı aynı hesabı paylaşır; tik kalkmış komisyon satırının seçimi (commissionRowsWithoutTick)
 `src/app/muhasebe/budget/totals.ts` (36) — saf satır toplamı (rowTotals); item-row kendi hesabını yapmaz, buradan çağırır; kart toplamı `card-view.ts` `cardViewTotals`
 `src/app/muhasebe/definitions-screen.tsx` (161) — Tanımlar ekranı: rate_catalog referansı + şirket profili formu
 `src/app/muhasebe/invite-screen.tsx` (232) — davet oluşturma formu + davet linki gösterimi

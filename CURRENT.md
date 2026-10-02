@@ -83,9 +83,11 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 
 - **1 Ekim 2026 — KART 1500 Dilim 2 ve hak devri iki kural.** Yönetmen bloğu (zımba, Kime?, adlar ve özet, isim yazma, komisyon, silme, %50 uyarısı) kuruldu ve sahada denendi. Hak devrinin kilit modeli bir moda dönüşüp çıkmazlar üretince Engin durdurdu; yerine iki kural geldi (yazılan satır değişir, öbürü uyar). Hedef Mecra ilkesi kabul edildi. Kararlar §7.4'te, dersler DERSLER.md'de.
 
+- **2 Ekim 2026 — KART 1500 hak devri düz satır.** İki kural sahada denendi: hak devri gelince dönemli Hizmet Bedeli her dönemde yarıya iniyor, hak devri ödeme planını belirleyen bir araca dönüşüyordu. Kilitli ve iki modlu bir öneri değerlendirildi; Engin kilidi tamamen attı. Hak devri kendi rakamını taşıyan düz satır oldu, oran kutusu payı gösteriyor, uyarı %55'te (ekran `ce38841`, göç `20261002120000`). Kararlar §7.4 "HAK DEVRİ DÜZ SATIR".
+
 ## Durum
 
-- HEAD: fd001ec (1 Ekim 2026 — KART 1500 Dilim 2, hak devri iki kural 2d-1 ve oturum kapanışı)
+- HEAD: ab50bfa (2 Ekim 2026 — KART 1500 hak devri düz satır ve oturum kapanışı)
 - **CANLI VERİ DENEME VERİSİDİR (Engin, 31 Ağustos ve 1 Ekim 2026).** KAAPA yapım aşamasında; kimse kullanmıyor, yürüyen bütçe yok. Deneme verisi için çevirme, ölçüm, ara dönem ya da "canlıda dönüşü yok" kaygısı açılmaz; gerekirse deneme verisi silinip yeniden kurulur.
 - **`asks_person` KURALI ARTIK UYGULANDI (19 Eylül 2026).** Daha önce burada ve "Sıradaki iş"te "kararı var, uygulanmamış TEK iş" diye duran kayıt kapandı — göç `20260919120000` canlıda, sahada doğrulandı. Karar evi: `docs/butce/KART-KATALOGU.md` §7.5.
 - KOMİSYON TABANI ARTIK ÖDEME STATÜSÜNE BAKMIYOR: ölçüt kişiye bağlı ve türetilmemiş satır. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 KOMİSYON TABANI VE SİLME madde 2.
@@ -100,7 +102,7 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 - **UYARI VE HATA MESAJLARI KAPATILANA KADAR DURUYOR; YERİ K4 VE K4b'YE GÖRE (27 Eylül 2026).** Hücreye, satıra ya da düğmeye bağlı mesaj o öğenin dibinde çıkar ve kaydırmayı izler; açık pencerenin işi olan mesaj o pencerenin başlığının altında, hiçbir yere bağlı olmayan mesaj ekranın tepesinde çıkar. Açık duran mesaj sonradan açılan pencereye taşınmaz. 18 Eylül 2026 doğrulaması (uyarı kapatılana kadar duruyor, pencere kapanınca tepeye geçiyor, başarı 3,5 saniyede gidiyor) geçerli; yerleşim 27 Eylül 2026'da ekranda denendi. Karar evi: `docs/TASARIM-KARARLARI.md` §9.
 - **ÖZET SATIRININ ADI DÖRT KADEME:** rol adı → görev adı → oyuncunun gerçek adı → boş. Görev kademesi 18 Eylül 2026'da eklendi; rol hanesi boş kişide özet ile kişinin kendi kalemi artık aynı adı taşımıyor. Üç hal aynı gün tarayıcıda doğrulandı (görev adı çıkıyor, rol yazılınca role dönüyor, rolü olan kişide hiçbir şey değişmiyor). DÖRDÜNCÜ HAL EKRANDA OLUŞAMAZ: görevi de rolü de olmayan kişi karta getirilemiyor, çünkü getirme yolu görev atomu üzerinden işliyor; o kademe yalnız testle doğrulandı ve kapalı bloğun kimliksiz kalmaması için duruyor. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 (ÖZET ADINA GÖREV KADEMESİ).
 - ÖZET SATIRI VE KART İÇİ SIRA DOĞRULANDI (tarayıcıda): rolü olan tek kalemli kişi özet satırı alıyor ve blok kapalı doğuyor; kart içi kişi sırası listeyle birebir aynı. Rol hanesi BOŞ olan kişi de eski kurala göre davranıyor: tek kalemde özet satırı doğmuyor, iki ve daha fazla kalemde doğuyor ve adını oyuncunun gerçek adından alıyor. Kural görev koduna değil rol hanesine bakar; denemede görev Başrol'dü. 17 Eylül 2026'da tarayıcıda doğrulandı.
-- Migration 20260901130000'den 20261001150000'e kadar CANLIDA. Build geçer, eslint sıfır hata. Originde tek dal: main.
+- Migration 20260901130000'den 20261002120000'e kadar CANLIDA. Build geçer, eslint sıfır hata. Originde tek dal: main.
 - SAYILAR BURADA YAŞAMAZ: beklenen test sayısı `.claude/test-count` dosyasında, kapı kümesi `.claude/hooks/gate.sh` ve `.claude/hooks/run-gates.sh` içinde yaşar. Bu iki sayı düzyazıda tazelenmez, sahibinden okunur.
 - Bütçe kolon modeli: 13 veri kolonu + etiketsiz silme hanesi (No · Ad · Statü · Dönemler · Birim · Birim net · Miktar · X · Ara toplam · Yasal Yük · Maliyet · KDV · Toplam).
 - ÇALIŞMA ORTAMI: kapılar `.claude/hooks/` altında kurulu, `supabase db push` onaya bağlı. Bu ortamda Docker YOK: `db reset` ve `db dump` çalışmaz, `db push` çalışır, salt-okuma `db query` ancak `--linked` bayrağıyla çalışır (bayraksız komut yerel veritabanına bağlanmaya çalışıp ECONNREFUSED verir). İZİN KAPISI ÖLÇÜLDÜ VE DÜZELTİLDİ (22 Eylül 2026): `.claude/settings.json` kuralı yalnız `supabase db push` ile başlayan komutu tutuyordu; 22 Eylül göçünde `npx supabase db push` izin ekranı açılmadan çalıştı. Kurala `npx supabase db push` ve `npx supabase migration up` biçimleri eklendi; kuru denemede (`npx supabase db push --dry-run`) izin ekranı çıktı.
@@ -127,21 +129,23 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 - Kart mimarisi ve kilitli kartlar → `docs/butce/KART-KATALOGU.md`
 - Ödeme statüsü kümesi ve Statü rehberi → `docs/butce/BUTCE-UI-MIMARISI.md`
 
-## Alınan kararlar (30 Eylül ve 1 Ekim 2026, Engin)
+## Alınan kararlar (30 Eylül – 2 Ekim 2026, Engin)
 
 - **KART 1500 MMB 6.1'e hizalandı, kart DÜZ.** Kütüphane başlığı yok, sıralama kod sırası. Kalemler: 1501 Yönetmen Kaşesi · 1502 Yönetmen Özel Asistanı · 1503 Koreograf · 1504 Oyuncu/Diyalog Koçu · 1506 Storyboard ve Animatic Sanatçısı · 1507 Yönetmen Birimi Ofis Giderleri · 1508-01..06 · 1509 İkinci Ekip Yönetmeni · 1510 Konsept Sanatçısı; şablon 1501, 1502, 1503, 1504, 1506. 1505 boş. Eski 1508/1509 ayrımı kalktı, ikisi 1508-03 Yemek-Ağırlama'da. UYGULANDI (Dilim 1). Ev dosyası: `docs/butce/KART-KATALOGU.md` §7.4.
-- **KART 1500 Dilim 2 UYGULANDI (1 Ekim 2026): 1501-01 Yönetmen Hak Devri ve 1511 Yönetmen Temsilci Komisyonu.** Kayıt yapısı, adlar ve özet, isim yazma, "Kime?", komisyon tabanı, silme kuralları, %50 uyarısı. Hak devri girişi aynı gün İKİ KURAL modeline geçti (kilit kalktı): yazılan satır değişir, öbürü uyar. Ev: `docs/butce/KART-KATALOGU.md` §7.4 "HAK DEVRİ İKİ KURAL".
+- **KART 1500 Dilim 2 UYGULANDI (1 Ekim 2026): 1501-01 Yönetmen Hak Devri ve 1511 Yönetmen Temsilci Komisyonu.** Kayıt yapısı, adlar ve özet, isim yazma, "Kime?", komisyon tabanı, silme kuralları, %50 uyarısı. Hak devri 2 Ekim'de DÜZ SATIR oldu (iki kural ve kilit bırakıldı): kendi rakamını taşır, oran kutusu payı gösterir, uyarı %55'te. Ev: `docs/butce/KART-KATALOGU.md` §7.4 "HAK DEVRİ DÜZ SATIR".
 - **İcmal ve dışa aktarım kalemin koduna göre gruplar; ad gösterimi "Kalem — Kişi".** Ev dosyası: `docs/EKRAN-MUHASEBE.md` §19 Ekran 1.
 - **Mühür yüzeyi icmalle birlikte ele alınır (30 Eylül 2026).**
 - **HEDEF MECRA İLKESİ (1 Ekim 2026, Engin kabul):** kart Türkiye için sade kurulur; kurum farkı şablonda, denetimde ve çıktıda çözülür, kartın davranışı kuruma göre değişmez. Ayrıntı ve tetik: Park listesi "HEDEF MECRA".
 
 ## Sıradaki iş
 
-**ANA KONU: KART 1500 hak devri DÜZ SATIR (2 Ekim 2026), uygulandı.** İki kural ve kilit bırakıldı (Engin, 2 Ekim). Hak devri düz satır: kendi rakamını taşır, Hizmet Bedeli'ne ve dönemlerine dokunmaz; oran kutusu payı gösterir (hak devri / (Hizmet Bedeli + hak devri), komisyon hariç); %55'te uyarı. Dilim 1 (ekran ve hesap) ve dilim 2 (göç `20261002120000`: `split_rate`, `default_split_rate`, `fn_set_split_share` ve `fn_set_split_lock` kalktı; hak devri atomu `item_library.is_rights_transfer`; eşik 55) uygulandı. Deneme verisindeki eski hak devri satırları 0 görünür, elle yeniden yazılır. Karar evi: `docs/butce/KART-KATALOGU.md` §7.4 "HAK DEVRİ DÜZ SATIR". Açık parklar: ajans adı (1500 komisyon); mühür yüzeyi (icmalle birlikte); Hedef Mecra; × penceresinde çift tık.
+**ANA KONU: Engin seçecek (2 Ekim 2026).** KART 1500 hak devri düz satır kapandı. Deneme verisindeki eski hak devri satırları 0 görünür, elle yeniden yazılır. Bu modülde bekleyenler: ajans adı (1500 komisyon); mühür yüzeyi (icmalle birlikte); Hedef Mecra (Park listesi); × penceresinde çift tık.
 
 1. **Mac turları — MAKİNE YOK (24 Eylül 2026, Engin).** Mac gerçek cihaz turu (KLV kapanışı ve `v0.2-klv` etiketi buna bağlı) ve Mac Safari'de PDF içe aktarma denemesi (PDF ilk sürümünün tamam sayılması buna bağlı; Chrome'da doğrulandı) yapılamıyor. İkisi askıda; makine bulununca aynı oturumda yapılır.
 
 2. **Giriş ekranında şifre alanı (24 Eylül 2026, Engin).** Şifre satırının sonunda şifreyi göster simgesi olacak, tıklanınca şifre görünecek; ayrıca "Şifremi unuttum" seçeneği olacak. İkincisi e-postayla şifre yenileme akışı demek; AUTH-KARARLARI ve giriş kodu okunmadan tasarlanmaz. Ne zaman konuşulacağını Engin söyleyecek.
+
+3. **Claude Code bulut oturumu (2 Ekim 2026, Engin: sonra konuşulacak).** Pro planın 100 dolarlık kredisi yalnız bulut oturumunda harcanıyor; talep son günü 7 Ekim. Konuşulacaklar: dal kuralı (bulut oturumu yalnız kendi çalışma dalına itebiliyor, promptlar main'e itiyor), ortamın kurulum betiğinde `npm ci`, göç dilimleri için Supabase ağ izni ve erişim anahtarı.
 
 ## Açık kalanlar
 
