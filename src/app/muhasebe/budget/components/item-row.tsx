@@ -36,10 +36,8 @@ interface ItemRowProps {
   // 1500 Dilim 2a-3a: yonetmen satirinin kisi adi tamponu ve KLV duzenleme kipi.
   bufPersonName: string | undefined
   anchorEditing: boolean
-  // Hak devri satiri (iki kural): amount = hesaplanan rakam, sharePercent = kayitli oran.
-  split?: { amount: number; sharePercent: number }
-  bufSplitRate: string | undefined
-  navSplitRate: string | undefined
+  // Hak devri satiri (duz satir, 2 Ekim 2026): sharePercent = Hizmet Bedeli + hak devri toplami icindeki pay.
+  split?: { sharePercent: number }
   justAdded: boolean
   bufUnitNet: string | undefined
   bufMultiplier: string | undefined
@@ -70,8 +68,6 @@ export const ItemRow = memo(function ItemRow({
   bufPersonName,
   anchorEditing,
   split,
-  bufSplitRate,
-  navSplitRate,
   justAdded,
   bufUnitNet,
   bufMultiplier,
@@ -84,7 +80,7 @@ export const ItemRow = memo(function ItemRow({
 }: ItemRowProps) {
   const it = item
   const isCommission = it.deriveRate !== null
-  // Iki kural: hak devrinin Birim, Miktar ve X'i yazilmaz (sabit, 1, 1); oran ve Birim net (tutar) yazilir.
+  // Duz satir: hak devrinin Birim, Miktar ve X'i yazilmaz (sabit, 1, 1); Birim net yazilir, oran yalniz gosterilir.
   const splitRow = split !== undefined
   // AD YERLESIMI + KOMISYON SATIRININ DOGUMU (9 Eylul 2026): turetilmis satirin ad hucresi
   // AYRI mantik izler (commissionDisplayName) - 1618 gorev atomu DEGILDIR (is_duty=false),
@@ -224,22 +220,11 @@ export const ItemRow = memo(function ItemRow({
       ) : (
         <>
           {split ? (
-        <td style={{ ...numFlushTd, textAlign: 'left' }}>
-          {/* Iki kural (2d-2a): oran kutusu Donemler kolonunun yerinde, her zaman yazilir. Yazilan oran
-              paylasimi degistirir, toplam sabit kalir. Hak devri kendi donemini secmez, dagilimini
-              Hizmet Bedeli'nden alir. */}
-          <input
-            data-grid-cell="true"
-            data-row-id={it.id}
-            data-col="splitRate"
-            size={10}
-            style={{ ...cellInputNum, width: 'auto', textAlign: 'left' }}
-            type="text"
-            inputMode="decimal"
-            value={navSplitRate ?? fieldVal(bufSplitRate, it.splitRate ?? 0)}
-            onChange={(e) => api.onNumChange(it.id, 'splitRate', e.target.value)}
-            onBlur={() => api.commitField(it.id, 'splitRate')}
-          />
+        <td style={readOnlyTextTd}>
+          {/* Hak devri duz satir (2 Ekim 2026): oran kutusu Donemler kolonunun yerinde durur, yazilmaz;
+              hak devrinin Hizmet Bedeli + hak devri toplami icindeki payini gosterir (komisyon haric).
+              data-col uyarinin capasidir; gezinme hucresi degildir. */}
+          <span data-row-id={it.id} data-col="splitShare">{'Oran %' + fmt(split.sharePercent)}</span>
         </td>
           ) : (
           <td style={selectTd}>
@@ -325,7 +310,7 @@ export const ItemRow = memo(function ItemRow({
                 style={cellInputNum}
                 type="text"
                 inputMode="decimal"
-                value={navUnitNet ?? fieldVal(bufUnitNet, split ? split.amount : it.unitNet)}
+                value={navUnitNet ?? fieldVal(bufUnitNet, it.unitNet)}
                 onChange={(e) => api.onNumChange(it.id, 'unitNet', e.target.value)}
                 onBlur={() => api.commitField(it.id, 'unitNet')}
               />

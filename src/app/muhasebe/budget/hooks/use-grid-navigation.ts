@@ -8,7 +8,7 @@ import type { EditApi } from './use-edit-buffers'
 // I7 motoru DOM baglayicisi. Cekirdek (grid-navigation-core) DOM'suz saf reducer;
 // bu hook onu DOM'a baglar, kolon->alan eslemesini yapip MEVCUT onXChange/commitX
 // yollarina delege eder (dogrulama/parse yeniden yazilmaz).
-export type GridCol = 'name' | 'personName' | 'splitRate' | 'unitNet' | 'repeat' | 'multiplier' | 'deriveRate' | 'periodNet' | 'periodRepeat' | 'periodQty'
+export type GridCol = 'name' | 'personName' | 'unitNet' | 'repeat' | 'multiplier' | 'deriveRate' | 'periodNet' | 'periodRepeat' | 'periodQty'
 
 // KLV-K8: ItemRow (tek-donemli: name+unitNet+repeat+multiplier /
 // cok-donemli: name) ve PeriodRow (periodNet+periodRepeat+periodQty,
@@ -28,8 +28,7 @@ const COLUMN_EQUIVALENCE_GROUPS: ColumnEquivalenceGroups = [
   ['note'],
   ['person'],
   ['status'],
-  // 1500 Dilim 2b-2a: hak devrinin oran kutusu Donemler kolonunun yerinde durur.
-  ['periods', 'splitRate'],
+  ['periods'],
   ['unit', 'periodUnit'],
   // Birlesik hucre Birim net kolonunun yerini tutar: dikey gezinme Birim net kolonundan asagi
   // inerken komisyon satirinda bu hucreye durur. Miktar ve X kolonlarindan inen gezinme komisyon
@@ -52,9 +51,6 @@ interface UseGridNavigationParams {
   // D3b-2d: artik tek boolean degil - "acik mi" + "vurgulu secenek var mi" birlikte doner.
   listState?: (rowId: string) => ListState
   onListIntent?: (rowId: string, intent: ListIntent) => void
-  // HAK DEVRI (iki kural): hesaplanan birim net (card-view.ts unitNetOverrides). Hak devrinin
-  // rakami kayitta 0 durur; hucreye girince ve vazgecince gorunen tutar buradan okunur.
-  unitNetOverride?: (itemId: string) => number | undefined
 }
 
 // PeriodRow hucreleri rowId'yi "itemId:stageId" olarak tasir (itemId/stageId UUID,
@@ -79,7 +75,7 @@ function computeGridShape(container: HTMLElement): GridShape {
   return rows
 }
 
-export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows, listState, onListIntent, unitNetOverride }: UseGridNavigationParams) {
+export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows, listState, onListIntent }: UseGridNavigationParams) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [state, setState] = useState<GridState>(createGridState)
 
@@ -87,7 +83,6 @@ export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows, list
     return rowsRef.current.find((r) => r.id === itemId)
   }
 
-  // HAK DEVRI (iki kural): hak devrinin Birim net hucresine girince hesaplanan tutar gorunur.
   function getRawValue(cell: CellId): string {
     const period = parsePeriodRowId(cell.rowId)
     if (period) {
@@ -104,7 +99,7 @@ export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows, list
     const row = foundRow
     if (cell.col === 'name') return row.name
     if (cell.col === 'personName') return row.personName ?? ''
-    if (cell.col === 'unitNet') return String(unitNetOverride?.(row.id) ?? row.unitNet)
+    if (cell.col === 'unitNet') return String(row.unitNet)
     if (cell.col === 'multiplier') return String(row.multiplier)
     if (cell.col === 'repeat') return String(row.repeat)
     return ''
@@ -153,13 +148,7 @@ export function useGridNavigation({ rowsRef, savedRef, patchRow, api, rows, list
     // personName yazarken satira degil tampona gider; vazgecmek tamponu kayitli ada geri koyar, cikista kayit esitlik gorup servise gitmez.
     if (cell.col === 'name') patchRow(cell.rowId, { name: saved.name })
     else if (cell.col === 'personName') api.onTextChange(cell.rowId, 'personName', saved.personName ?? '')
-    else if (cell.col === 'unitNet') {
-      // HAK DEVRI (iki kural): yazarken yalniz tampon dolar; vazgecmek tamponu gorunen tutara geri
-      // koyar, cikista tutar degismedigi icin yazim yapilmaz.
-      const shown = unitNetOverride?.(cell.rowId)
-      if (shown !== undefined) api.onNumChange(cell.rowId, 'unitNet', String(shown))
-      else patchRow(cell.rowId, { unitNet: saved.unitNet })
-    }
+    else if (cell.col === 'unitNet') patchRow(cell.rowId, { unitNet: saved.unitNet })
     else if (cell.col === 'multiplier') patchRow(cell.rowId, { multiplier: saved.multiplier })
     else if (cell.col === 'repeat') patchRow(cell.rowId, { repeat: saved.repeat })
   }

@@ -63,7 +63,7 @@ export function personNetBases(
 
 // ZIMBALI KOMISYON TABANI (1 Ekim 2026, KART-KATALOGU 7.4; Engin 30 Eylul: "kase arti hak
 // devrinin toplamindan hesaplanir bu zaten ozette yer alacak"): capanin ve capaya zimbali
-// TURETILMEMIS satirlarin net toplami = ozet toplami (kilitliyken pay + kalan = toplam).
+// TURETILMEMIS satirlarin net toplami = ozet toplami (Hizmet Bedeli + hak devri; hak devri payinin tabani da budur, card-view.ts anchorBases).
 // Kisi tabanindan (personNetBases) AYRI: zimbali satirin kisi etiketi yoktur.
 export function anchorNetBases(
   rows: readonly BudgetItemRow[],
@@ -217,27 +217,6 @@ export function summaryAnchorIds(
   for (const r of rows) {
     if (anchorIds.has(r.id) && r.personName !== null) out.add(r.id)
     if (r.parentItemId !== null && anchorIds.has(r.parentItemId)) out.add(r.parentItemId)
-  }
-  return out
-}
-
-// HAK DEVRI BAGI (1 Ekim 2026 iki kural; KART-KATALOGU 7.4): hak devri = splitRate DOLU ve bir
-// capaya zimbali satir. Capa (Hizmet Bedeli) kendi rakamini tasir; hak devrinin rakami
-// Hizmet Bedeli x oran / (100 - oran) olarak hesaplanir (card-view.ts computeRowTotals,
-// split-share.ts splitNetFrom). Bir capada birden fazla hak devri varsa YALNIZ ilki (satir
-// sirasiyla) baglanir; digerleri kendi rakamlariyla kalir. Bordro statulu capa BOLUNMEZ:
-// bordro neti motordan gelir.
-export function splitLinks(
-  rows: readonly BudgetItemRow[],
-): Map<string, { splitItemId: string; rate: number }> {
-  const byId = new Map(rows.map((r) => [r.id, r] as const))
-  const out = new Map<string, { splitItemId: string; rate: number }>()
-  for (const r of rows) {
-    if (r.splitRate === null || r.parentItemId === null) continue
-    const anchor = byId.get(r.parentItemId)
-    if (!anchor || anchor.paymentStatus === 'bordro') continue
-    if (out.has(anchor.id)) continue
-    out.set(anchor.id, { splitItemId: r.id, rate: r.splitRate })
   }
   return out
 }

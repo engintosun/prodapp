@@ -24,13 +24,7 @@ import type { BordroSheetEntry } from '../components/burden-sheet'
 // commitField'in PARSE GUVENCESI dalinda (K10 revize + TD-16, 2026-07-18) hangi alanlar
 // sayisal - yalniz bunlar buffer'dan parse edilip garanti altina alinir; 'name' gibi metin
 // alanlari bu denetimden gecmez.
-const NUMERIC_EDITABLE_FIELDS = new Set<EditableField>(['unitNet', 'multiplier', 'repeat', 'vatRate', 'deriveRate', 'splitRate'])
-
-// HAK DEVRI SATIRI (iki kural): oran dolu ve bir satira zimbali. Rakami kayitta degil hesapta
-// yasar (card-view.ts); kayittaki birim net 0 durur.
-function isSplitRow(row: BudgetItemRow | undefined): boolean {
-  return row !== undefined && row.splitRate !== null && row.parentItemId !== null
-}
+const NUMERIC_EDITABLE_FIELDS = new Set<EditableField>(['unitNet', 'multiplier', 'repeat', 'vatRate', 'deriveRate'])
 
 // EditApi SINIRI (Engin karari 2026-07-27): api yalniz useEditBuffers'in SAHIP OLDUGU state'e
 // dokunur, yani buffers + patchRow. refetch veya card-table-screen useState'i gerektiren is
@@ -44,7 +38,7 @@ function isSplitRow(row: BudgetItemRow | undefined): boolean {
 // toast) card-table-screen.tsx'te yasar. useEditBuffers kendisi "neden" cagrildigini bilmez.
 export type EditApi = {
   onTextChange: (id: string, field: 'name' | 'personName', value: string) => void
-  onNumChange: (id: string, field: 'unitNet' | 'multiplier' | 'vatRate' | 'deriveRate' | 'splitRate', raw: string) => void
+  onNumChange: (id: string, field: 'unitNet' | 'multiplier' | 'vatRate' | 'deriveRate', raw: string) => void
   onPeriodChange: (id: string, stageId: string, raw: string) => void
   onPeriodNetChange: (itemId: string, stageId: string, raw: string) => void
   onPeriodRepeatChange: (itemId: string, stageId: string, raw: string) => void
@@ -79,10 +73,6 @@ interface UseEditBuffersParams {
   // tetik adresi orada); bu kanca yalniz sorar ve cevabi bekler. Kimligi sabit olmali (api bir
   // kere kurulur).
   confirmPeriodRemoval: (itemId: string, stageId: string) => Promise<boolean>
-  // HAK DEVRI IKI KURAL (2d-2a): hak devrine yazilan oran ya da tutar (Kural 2). Govde kart
-  // ekraninda (split-share.ts hesap, fn_set_split_share yazim, yeniden okuma); bu kanca yalniz
-  // taslagi ayristirip iletir. Kimligi sabit olmali (api bir kere kurulur).
-  onSplitShare?: (splitItemId: string, input: { rate: number } | { amount: number }) => Promise<void>
 }
 
 export function useEditBuffers({
@@ -97,7 +87,6 @@ export function useEditBuffers({
   onMoneyCommitted,
   onPersonNameCommitted,
   confirmPeriodRemoval,
-  onSplitShare,
 }: UseEditBuffersParams) {
   const { addToast } = useToast()
   const [buffers, setBuffers] = useState<Record<string, string>>({})
@@ -142,12 +131,6 @@ export function useEditBuffers({
     // degil OLMAYAN bir haneyi isaretliyordu. Olcut person-groups.ts ile AYNI:
     // deriveRate !== null. Yasal yuk hesabina DOKUNULMADI, o zaten dogru calisiyor.
     if (row.deriveRate !== null) {
-      setItemWarnings((w) => ({ ...w, [itemId]: null }))
-      return
-    }
-    // HAK DEVRI UYARI URETMEZ (1 Ekim 2026): rakami kayitta degil hesapta yasar (card-view.ts);
-    // kayittaki birim net 0 durur. Uyari kayda bakip Yasal Yuk haneyi kapatiyordu (Engin'in canli bulgusu).
-    if (isSplitRow(row)) {
       setItemWarnings((w) => ({ ...w, [itemId]: null }))
       return
     }
@@ -277,13 +260,7 @@ export function useEditBuffers({
       patchRow(id, { [field]: value } as Partial<BudgetItemRow>)
     }
 
-    function onNumChange(id: string, field: 'unitNet' | 'multiplier' | 'vatRate' | 'deriveRate' | 'splitRate', raw: string) {
-      // HAK DEVRI (iki kural, 2d-2a): oran ve tutar yazarken yalniz tamponda durur; satira
-      // yazilsa toplamlar her harfte oynar. Yazim hucreden cikinca onSplitShare ile yapilir.
-      if (field === 'splitRate' || (field === 'unitNet' && isSplitRow(rowsRef.current.find((r) => r.id === id)))) {
-        setBuf(id + ':' + field, raw)
-        return
-      }
+    function onNumChange(id: string, field: 'unitNet' | 'multiplier' | 'vatRate' | 'deriveRate', raw: string) {
       setBuf(id + ':' + field, raw)
       const n = Number(raw.replace(',', '.'))
       patchRow(id, { [field]: Number.isFinite(n) ? n : 0 } as Partial<BudgetItemRow>)
@@ -444,20 +421,6 @@ export function useEditBuffers({
         } catch (e) {
           patchRow(id, { personName: before })
           addToast(e instanceof Error ? e.message : 'Kaydedilemedi', 'error', { anchor: cellSelector(id, 'personName') })
-        } finally {
-          clearBuf(bufKey)
-        }
-        return
-      }
-      if (field === 'splitRate' || (field === 'unitNet' && isSplitRow(row))) {
-        // HAK DEVRI (iki kural, Kural 2): yazilan oran ya da tutar paylasimi degistirir. Hesap ve
-        // yazim kart ekraninda (onSplitShare). Gecersiz taslak birakilir, hucre kayitli degeri gosterir
-        // (PARSE GUVENCESI ile ayni).
-        const raw = buffersRef.current[bufKey]
-        if (raw === undefined) return
-        const parsed = parseNumericDraft(raw)
-        try {
-          if (parsed !== null) await onSplitShare?.(id, field === 'splitRate' ? { rate: parsed } : { amount: parsed })
         } finally {
           clearBuf(bufKey)
         }

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { groupByPerson, derivedUnitNets, buildRenderRows, personNetBases, personsNeedingCommissionRow, commissionRowsWithoutTick, anchorCodesOf, summaryAnchorIds, splitLinks, anchorNetBases } from './person-groups'
+import { groupByPerson, derivedUnitNets, buildRenderRows, personNetBases, personsNeedingCommissionRow, commissionRowsWithoutTick, anchorCodesOf, summaryAnchorIds, anchorNetBases } from './person-groups'
 import type { BudgetItemRow } from '../../../shared/supabase/budget-service'
 import type { PersonLabel } from '../../../shared/supabase/person-label-service'
 
@@ -465,27 +465,6 @@ describe('zimba blogu (1500 Dilim 2)', () => {
     expect(out).toEqual([{ kind: 'item', row: h, underSummary: false }])
   })
 })
-describe('hak devri bolmesi (1500 Dilim 2b-1)', () => {
-  it('splitLinks: hak devri capasina eslenir; olmayanlar eslenmez; ilk cocuk kalir', () => {
-    const rows = [
-      makeItem({ id: 'a', catalogCode: '1501', paymentStatus: 'smm' }),
-      makeItem({ id: 'h1', catalogCode: '1501-01', parentItemId: 'a', splitRate: 50 }),
-      makeItem({ id: 'h2', catalogCode: '1501-01', parentItemId: 'a', splitRate: 30 }),
-      makeItem({ id: 'k', catalogCode: '1511', parentItemId: 'a', deriveRate: 20 }),
-      makeItem({ id: 'b', catalogCode: '1509', paymentStatus: 'smm' }),
-      makeItem({ id: 'h3', catalogCode: '1501-01', parentItemId: 'b', splitRate: null }),
-      makeItem({ id: 'h4', catalogCode: '1501-01', parentItemId: 'yok', splitRate: 40 }),
-      makeItem({ id: 'c', catalogCode: '1501', paymentStatus: 'bordro' }),
-      makeItem({ id: 'h5', catalogCode: '1501-01', parentItemId: 'c', splitRate: 50 }),
-    ]
-    const out = splitLinks(rows)
-    expect(out.size).toBe(1)
-    expect(out.get('a')).toEqual({ splitItemId: 'h1', rate: 50 })
-    expect(out.has('b')).toBe(false)
-    expect(out.has('c')).toBe(false)
-  })
-})
-
 describe('zimbali komisyon tabani (1500 Dilim 2c-1)', () => {
   const hb = makeItem({ id: 'hb', catalogCode: '1501' })
   const hd = makeItem({ id: 'hd', catalogCode: '1501-01', parentItemId: 'hb', splitRate: 50 })
