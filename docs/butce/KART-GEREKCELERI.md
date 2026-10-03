@@ -42,7 +42,7 @@ Damıtım "Development bir KART mı ETAP mı" diye sormuş ve HİBRİT önermiş
 
 ---
 
-## KART 1300 — SENARYO YAZIM & YASAL TEMİZLİK  (KART-KATALOGU §7.2)
+## KART 1300 — SENARYO YAZIMI  (KART-KATALOGU §7.2)
 
 ### Neden 1100'den ayrı, neden recoupable DEĞİL?
 1100 = greenlight ÖNCESİ geliştirme hakları (recoupable). 1300 = fonlama SONRASI asıl yazım işi. Fark: 1300'deki para artık "cepten harcanıp geri alınacak avans" değil, projenin normal bütçe gideri. Bu yüzden recoupable değil ve geliştirmeye bağı yok — ayrı hesaplanır.
