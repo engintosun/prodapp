@@ -52,7 +52,7 @@ Damıtım "Development bir KART mı ETAP mı" diye sormuş ve HİBRİT önermiş
 ### Neden 1200 (Story & Other Rights) AYRI kart açılmaz?
 Koster'da "1200 Story & Other Rights" ayrı bir hesap. KAAPA'da AYRI kart açılmaz çünkü içeriği zaten ikiye bölünüyor: geliştirme-dönemi hakları → 1101 (recoupable), fonlama-sonrası yazım → 1300. Ortada boşta kalan, ayrı kart hak eden bir şey yok. Master Excel doğrular: "Story & Other Rights" sadece [1k]. Ayrı kart açmak boş kart taşımak olurdu.
 
-### 1306 Legal Clearances — motorun İLK kurulu örneği (neden bu kadar önemli?)
+### 1308 Legal Clearances (3 Ekim 2026 MMB 6.1 hizalamasına kadar 1306) — motorun İLK kurulu örneği (neden bu kadar önemli?)
 Clearance (yasal hak temizleme: marka izinleri, müzik telifleri, görünen logoların izni) kalem davranış motorunun **üç bağının ilk gerçek örneği**:
 - **Ait-kart = Senaryo:** Para 1300'de durur (clearance maliyeti senaryo işidir).
 - **Onay-köprüsü = Hukuk (6200):** Parayı Senaryo tutar ama ONAYI Hukuk departmanı verir. Çünkü "bu marka izni gerçekten alındı mı?" sorusunu avukat cevaplar, muhasebeci değil. → "harcama-kartı ≠ onay-birimi" ilkesinin doğuşu.
@@ -61,7 +61,7 @@ Clearance (yasal hak temizleme: marka izinleri, müzik telifleri, görünen logo
 **Neden bu mekanizma?** Çünkü gerçek hayatta para bir yerde durur ama onu onaylayan/denetleyen başka biridir. Eski sistemler bunu yapamaz (para neredeyse onay da orada sanır). KAAPA bunu ayırır: tek fatura tek yerde (çift-sayım yok), ama görünürlük/onay başka departmanda.
 
 ### Master Excel doğrulaması
-Script Clearance [2k], Clearance and Rights → 1306'yı doğruluyor. Writer / Writers Room / Script Polish / Readthrough → 1300 yazım kümesi. **ÖNEMLİ SINIR:** "Script Supervisor" [11k] (en evrensel ATL kalemi!) 1300'e AİT DEĞİL — o set/çekim devamlılığı tutan kişi, yazım değil. → 2100 Production Staff'a gider. Yazım (1300) ≠ çekim devamlılığı (2100). Bu ayrım kritik; karıştırılırsa en yüksek-kaynaklı kalem yanlış karta düşer.
+Script Clearance [2k], Clearance and Rights → 1308'i doğruluyor. Writer / Writers Room / Script Polish / Readthrough → 1300 yazım kümesi. **ÖNEMLİ SINIR:** "Script Supervisor" [11k] (en evrensel ATL kalemi!) 1300'e AİT DEĞİL — o set/çekim devamlılığı tutan kişi, yazım değil. → 2100 Production Staff'a gider. Yazım (1300) ≠ çekim devamlılığı (2100). Bu ayrım kritik; karıştırılırsa en yüksek-kaynaklı kalem yanlış karta düşer.
 
 ---
 

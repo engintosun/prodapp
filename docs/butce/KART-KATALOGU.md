@@ -2,7 +2,7 @@
 
 *Kalıcı domain kataloğu. Bütçe modülünün kart/kalem yapısının ve kalem davranış motorunun TEK KAYNAĞI. Koster damıtımından ve oturum kararlarından damıtıldı. TASARIM-KARARLARI.md'den referanslanır.*
 *Oluşturma: 19 Haziran 2026. Güncelleme: 20 Haziran 2026 (KART 1600 OYUNCU + §4.10 cost_object 4. eksen). Önceki: 19 Haziran (KART 1400/1500 + §4.8/§4.9/§5.1/§6).*
-*Durum: KART 1100, 1300, 1400, 1500, 1600 KİLİTLİ; runtime dikey-dilimi (DILIM-3 bordro motoru + genel-desen sökümü) TAMAMLANDI. KÜTÜPHANE TOHUMU 1100 için KAPANDI (DILIM 1100-A, 15 Ağustos 2026, §7.1); 1600 için KAPANDI (KART 1600 M2, 5 Eylül 2026, §7.5 — 4 başlık + 28 atom, heading_id ile); 1300/1400/1700 tohumu hâlâ sırada.*
+*Durum: KART 1100, 1300, 1400, 1500, 1600 KİLİTLİ; runtime dikey-dilimi (DILIM-3 bordro motoru + genel-desen sökümü) TAMAMLANDI. KÜTÜPHANE TOHUMU 1100 için KAPANDI (DILIM 1100-A, 15 Ağustos 2026, §7.1); 1600 için KAPANDI (KART 1600 M2, 5 Eylül 2026, §7.5 — 4 başlık + 28 atom, heading_id ile); 1300 için KAPANDI (KART 1300 Dilim 1, 3 Ekim 2026, §7.2; 15 atom, kart düz); 1400/1700 tohumu hâlâ sırada.*
 
 ---
 
@@ -83,7 +83,7 @@ NOT: "Kör nokta" terimi bu bağlamda KULLANILMAZ — o terim anomali motoruna a
 | Seviye | Kartlar | Set rolleri (UPM/Line Producer/1.AD) ne görür |
 |---|---|---|
 | Tam maske 🔒 | 1100, 1400 | Hiçbir şey — asma kilit, flu kart (veya ağaçta hiç listelenmez) |
-| Kısmi maske 👁️ | 1300 (1306 hariç), 1500 (1501 hariç) | Yapımcı isterse tek operasyonel satır salt-okunur açılır |
+| Kısmi maske 👁️ | 1300 (1308 hariç), 1500 (1501 hariç) | Yapımcı isterse tek operasyonel satır salt-okunur açılır |
 | Departman-açık | operasyonel kartlar (2100+) | Departman admini kendi kartını görür/yazar |
 
 Üç sabit: Muhasebe = her zaman DB tam açık · Yapımcı/Denetmen (Master/Owner) = tam açık · Anomali motoru = her kartta arka planda her zaman aktif (maske motoru durdurmaz; kör nokta yok).
@@ -169,12 +169,72 @@ Provenance tüm satırlarda: Koster/MMB + KAAPA damıtım. resmi_odeme statüsü
 
 **DÜZELTME (DILIM 1100-A kapanışı, 15 Ağustos 2026):** ilk tohum altı atomu (1101-04, 1101-07, 1104-04, 1107-03, 1108-01, 1108-05) `piece` (adet) birimiyle yazmıştı; `piece` 1 Temmuz 2026'da bilinçli olarak kaldırılmış bir birimdi (Birim yalnız periyot cinsi taşır: gün/hafta/ay/bölüm/sabit; adet/kişi Miktar kolonunun konusu — migration 20260701090000). Yukarıdaki tablo ve canlı veri `flat`'e düzeltildi (migration 20260815190000); adet ihtiyacı Miktar/X koluyla karşılanır.
 
+**EK (3 Ekim 2026, Engin kararı; göç `20261003120000`):** 1104-06 Atölye ve Lab Katılımı (Workshop & Lab Fees, flat, sirket, K) 1104 başlığının altına eklendi: Köprüde Buluşmalar, TorinoFilmLab, Sarajevo CineLink gibi geliştirme atölyelerine başvuru ve katılım bedeli; yol ve konaklaması 1108'dedir. Lablar fonlama öncesi işidir, bu yüzden 1300'e değil 1100'e girer (bkz. §7.2 SINIR). Kütüphane 48 satır (9 başlık + 39 atom), şablon değişmedi. Provenance: KAAPA.
+
 ### 7.2 KART 1300 — SENARYO YAZIM & YASAL TEMİZLİK  [KİLİTLİ]
-Etap: Yapım Öncesi · RECOUPABLE DEĞİL · Geliştirme'ye bağı YOK (clearance dahil ayrı hesaplanır) · görünürlük: KISMİ MASKE 👁️ (1306 açılabilir; yazar kaşesi gizli).
-- 1301 Senaryo Yazarı · 1302 Senaryo Doktoru/Editör · 1303 Uzman Danışmanlar · 1304 Araştırma · 1305 Senaryo Odası/Operasyon (Typing & Duplication)
-- 1306 Yasal Hak Temizleme (Legal Clearances): 3 bağ → ait-kart=Senaryo (para burada) · onay-köprüsü=Hukuk (6200, departman admini onaylar) · risk-bayrağı=E&O (6105). cost_type=Hizmet/Hukuk. Motorun İLK kurulu örneği. Görünürlük: set rollerine açılabilen istisna satırı.
-- 1307 Senaryo Süre Analizi (Script Timing) · 1308 Yazım Dönemi Lojistiği (Travel & Living) · 1309 Kaynak Ağırlama (Entertainment)
+Etap: Yapım Öncesi · RECOUPABLE DEĞİL · Geliştirme'ye bağı YOK (clearance dahil ayrı hesaplanır) · görünürlük: KISMİ MASKE 👁️ (1308 açılabilir; yazar kaşesi gizli).
+
+**REVİZE (KART 1300 Dilim 1, 3 Ekim 2026, Engin kararı; göç `20261003120000`):** Kodlar MMB 6.1'e hizalandı (kaynak: `docs/butce/MMB-6.1-ornek-hesap-plani.pdf`, 1300 Continuity & Treatment; Koster damıtımı aynı numaraları kullanır). Bu bölümün önceki numaraları (1302 Senaryo Doktoru, 1303 Danışmanlar, 1304 Araştırma, 1305 Senaryo Odası, 1306 Yasal Hak Temizleme, 1307 Süre Analizi, 1308 Lojistik, 1309 Ağırlama) geçersizdir. Kart DÜZ: kütüphane başlığı YOK (atomlarda `heading_id` boş), sıralama kod sırasıdır. Kütüphane 15 satır, şablon 5 kalem. Kart adı "Senaryo Yazım ve Yasal Temizlik".
+
+**Kütüphane (15 satır):** S = şablona giren, K = yalnız kütüphanede.
+
+| Kod | Ad | İngilizce | Birim | Ödeme statüsü | S/K |
+|---|---|---|---|---|---|
+| 1301 | Senaryo Yazarı | Writers | flat | telif_belgeli | S |
+| 1302 | Araştırma | Research | flat | smm | S |
+| 1305-01 | Ulaşım-Uçak | Air Travel | flat | sirket | K |
+| 1305-02 | Konaklama | Hotels / Accommodation | day | konaklama | K |
+| 1305-03 | Yemek-Ağırlama | Catering & Hospitality | flat | sirket | K |
+| 1305-04 | Harcırah | Per Diem | day | sirket | K |
+| 1305-06 | Araç Kiralama | Car Rentals | day | sirket | K |
+| 1306 | Senaryo Doktoru/Editör | Story Editor | flat | smm | S |
+| 1307 | Uzman Danışmanlar | Consultants | day | smm | K |
+| 1308 | Yasal Hak Temizleme | Legal Clearances | flat | sirket | S |
+| 1309 | Sekreterya | Secretaries | week | bordro | K |
+| 1310 | Ofis Giderleri | Office Expenses | flat | sirket | K |
+| 1312 | Senaryo Süre Analizi | Script Timing | flat | smm | S |
+| 1313 | Yazar Asistanı | Writer's Assistant | week | bordro | K |
+| 1314 | Bölüm/Tretman Yazarı | Episode Writers | episode | telif_belgeli | K |
+
+Eş adlar (`aliases`): 1301 Writers Room · 1306 Script Polish, Dramaturg. Provenance: MMB kalemleri 'Koster/MMB-6.1', 1305-xx 'Koster/MMB + KAAPA damitim', 1313 ve 1314 'KAAPA'.
+
+**Şablon (5 kalem):** 1301, 1302, 1306, 1308, 1312. Kartın `misc_prefix` hanesi `"13"`. Yeni kart yalnız yeni açılan bütçede doğar.
+
+**Boş numaralar:** 1303 Typing (daktilonun bugün karşılığı yok). 1304 Duplication: senaryonun çoğaltılması, dağıtılması ve revizyon basımı Üretim Ofisi/Reji işidir; kalem 2100 kurulurken oraya girer. 1305-05 Festival Katılımı: bitmiş filmin PR, pazarlama ve dağıtım işidir; Pazarlama/Dağıtım kartı kurulurken oraya taşınır, 1500'deki 1508-05 de aynı gerekçeyle taşınacak. 1311 Entertainment: ağırlama 1305-03'tedir (1500'de de 1508-03'e birleşti).
+
+**1305 aile adı: Senaryo/Araştırma Seyahat ve Ağırlama Giderleri.** Başlık satırı açılmaz: kütüphanesinde başlık bulunan kart başlıklı çizilir ve başlığı olmayan kalemler kartın dibindeki Başlıksız bloğuna düşer (BUTCE-EKRAN-KARARLARI, BAŞLIKSIZ BLOĞU). Alt kalemler 1500'deki 1508-01..06 gibi düz durur; ad yalnız bu katalogda aile adıdır, ekranda alt kalemlerin adları görünür. Alt kalemler 1108 ve 1508 setinin aynısıdır, 05 boştur.
+
+- 1308 Yasal Hak Temizleme (Legal Clearances): 3 bağ → ait-kart=Senaryo (para burada) · onay-köprüsü=Hukuk (6200, departman admini onaylar) · risk-bayrağı=E&O (6105). cost_type=Hizmet/Hukuk. Motorun İLK kurulu örneği olacak. Görünürlük: set rollerine açılabilen istisna satırı. BUGÜN (3 Ekim 2026): bağların hiçbiri kurulu değil; 6200 ve 6105 kartları ve bağ motoru yok, kalem düz satır olarak doğar.
+- 1309 Sekreterya ve 1310 Ofis Giderleri: sinema bütçesinde genelde kullanılmaz; dizi ve platform işinde Yazar Odası kurulduğu için ayrı ofis ve asistan/sekreter gideri olur. MMB standardı için kütüphanede kalır.
+- 1314 Bölüm/Tretman Yazarı: dizi ve platform projelerinde ana senarist dışındaki bölüm ve tretman yazarları; birimi bölüm.
+- **SINIR (3 Ekim 2026, Engin kabulü):** 1100/1300 sınırı korunur. Hak satın alma ve opsiyon (1101-01..03), sunum dosyası ve görsel tasarım (1104-02, 1104-03), çeviri (1104-04), noter ve resmî harçlar (1106-05), senaryo raporu (1101-07) 1100'dedir; lab katılımı 1100'e 1104-06 olarak girdi. Fonlama sonrası çalışan dramaturg 1306'nın işidir (eş ad). Gerekçe: hak ve pitch giderleri 1300'e girerse greenlight'taki geri tahsil raporu onları kaçırır (§3).
+- **Alınmayan adaylar:** Yazar Primi (platform işi), Deşifre-Çeviri ve Readthrough (kaynakları reklam/post ya da set). Script Supervisor 2100'e aittir (KART-GEREKCELERI).
+
 ÖNEMLİ — 1200 absorbe: Koster "1200 Story & Other Rights" KAAPA'da AYRI kart DEĞİL; geliştirme hakları 1101'de, yazım 1300'de. Ayrı 1200 kartı açılmaz.
+
+**Engin'in metinleri (3 Ekim 2026, BİREBİR; özetlenmez, kısaltılmaz):**
+
+> 1300 kartı tamamen senaryonun yazılması, hikayenin geliştirilmesi ve hakların alınması aşamasıdır. "Festival Katılımı" ise bitmiş filmin PR, pazarlama ve dağıtım (genelde 6000/7000 serisi PR veya Post-Prodüksiyon sonrası) aşamasına aittir. 
+> buda bize hem bu kalemin burada olmayacağı hemde post sonrası bir dönem daha koyma ihtimalini veriyor.
+> 1305'i sadece "Yazar Araştırma/Seyahat Giderleri" olarak daraltmak kafa karışıklığını önler. Bu kalem kütüphane kalemi olur şablonla gelmez
+> Typing çıkacak listeden 21. yüzyıldayız.
+> Genelde senaryo aşaması için ayrı bir ofis veya sekreter tutulmaz; bu giderler ana Üretim Ofisi (1500 serisi) altından yürütülür.Dizi / Platform İşleri İçin: "Yazar Odası" (Writer's Room) kurulduğu için ayrı bir ofis ve asistan/sekreter gideri olur.AAPA her ikisine de hizmet edeceği için ve uluslararası MMB (Movie Magic) standardını korumak adına bu iki kalemin kalması doğru. Sadece sinema bütçesi yapan kullanıcılar buraları "0" geçecektir. Bu kalem kütüphaneden çekileceği için gerektiğinde çekilir.  
+> 1305'in içindeki "Festival Katılımı"nı çıkarıp Pazarlama/Dağıtım kartlarına taşırız (geldiğinde)  ve 1305'in adını genel ulaşımdan ziyade "Senaryo/Araştırma Seyahat ve Ağırlama Giderleri" olarak netleştirebiliriz. Diğer kısımlar KAAPA'nın yapısına ve MMB standartlarına gayet uygun.
+
+> enaryonun çoğaltılması, oyunculara dağıtılması, revizyonların basılması tamamen Üretim Ofisinin (Production Staff / Office) veya Reji Grubunun operasyonudur.
+> 1305 kalemlerini birleştirip bir başlık altında tutalım kapalı gelsin.
+
+(Başlık isteği aynı gün düz alt kalem kararıyla değişti; gerekçe yukarıda, 1305 aile adı maddesinde.)
+
+> Aşağıda sebepleriyle beraber ek birkaç kalem var. bunlar varmıydı bizim listelerde? yoksa bile bunlar günümüzde gerekli olan kalemler diye düşünüyorum. ne diyorsun?
+>
+> *  Eser / Kitap / Opsiyon Hak Ödemesi (Option & Story Rights) Avukatlık (1308) harici, doğrudan yazar/eser sahibine ödenen telif veya opsiyon bedeli.
+> *  Çeviri ve Tercüme Hizmetleri (Translation Services) Fonlar ve ortak yapım marketleri için istenen İngilizce/Fransızca senaryo, tretman ve dosya çevirileri.
+> *  Pitch Deck & Görsel Konsept Tasarımı (Pitch Deck & Concept Art) Bakanlık ve market sunumları için hazırlanan moodboard, storyboard ve görsel sunum dosyası tasarım giderleri.
+> *  Telif Tescil ve Noter Masrafları (Copyright & Notary Fees) Senaryo tescili, noter tasdikleri ve Telif Hakları Genel Müdürlüğü/MESAM/WGA kayıt masrafları.
+> *  Atölye ve Lab Katılım Ücretleri (Workshop & Lab Fees) Köprüde Buluşmalar, TorinoFilmLab, Sarajevo CineLink vb. geliştirme atölyelerine başvuru ve katılım bedelleri.
+> *  Senaryo Raporlama / Coverage (Script Coverage / Dramaturg) Senaryo doktorundan (1306) bağımsız olarak, dışarıdan okuyucuya veya dramaturga yaptırılan senaryo analiz/raporlama gideri.
+> *  Bölüm / Tretman Yazarları (Episode Writers) Özellikle dizi/platform projelerinde (Yazar Odası - Writer's Room) ana senarist dışındaki bölüm veya tretman yazarları.
 
 ### 7.3 KART 1400 — YAPIMCI BİRİMİ ve FİNANSAL HAKLAR  [KİLİTLİ]
 Etap: ATL (kart birden çok etaba yayılır) · RECOUPABLE DEĞİL · görünürlük: TAM MASKE 🔒 (tüm kart set rollerine kapalı; "ticari yatak odası") · DB'de Muhasebe tam erişim · anomali her zaman aktif.
@@ -334,6 +394,8 @@ Kart-özel anomali kuralları: çift-fringe guard (1501/kreatifler Loan-Out) · 
 - HAK DEVRİ SATIRI: boş (0) gelir. Birim net'e yazılan rakam hak devrinin kendisidir; Birim, Miktar ve X sabit (1, 1). Oran kutusu Dönemler kolonunun yerinde durur, yazılmaz, payı gösterir. Hak devri her satır gibi uyarı alır (0 iken "Bedel 0").
 - ORAN TABANI (2 Ekim 2026, Engin kararı): pay = hak devri / (Hizmet Bedeli + hak devri) × 100; komisyon hariç. Gerekçe: komisyonun tabanı zaten bu toplam, CNC'nin baktığı şey de kaşe ile telif arasındaki denge; yönetmen ajansının payı bu dengenin parçası değil. Pay saklanmaz, her an hesaplanır (B18).
 - UYARI: pay %55'i geçtiği ANDA oran kutusunun dibinde çıkar; metin ve zamanlama değişmedi (%50 UYARI METNİ, %50 UYARISI DÜZELTMESİ). Pay Hizmet Bedeli değişince de değişir; tetik hangi satırdan gelirse gelsin aynıdır.
+- **UYARI HEDEF MECRA'YA BAĞLANDI (3 Ekim 2026, Engin kararı; kodu ayrı dilimde):** hak devri oran uyarısı Hedef Mecra kurulana kadar hiçbir bütçede çıkmaz. Eşik parametresi (%55) ve uyarı metni yerinde kalır; Hedef Mecra'da "yurt dışı fon" seçilince yeniden açılır. Gerekçe: kurum denetimi kartın günlük davranışına değil, Hedef Mecra'ya aittir (1 Ekim 2026 ilkesi). Engin'in metni (3 Ekim 2026, BİREBİR):
+> 1500 deki yönetmen kalemine bağlanan hak devri içinde bir ampul yandı kafamda. burada çıkan uyarı (hak devri oran uyarısı) şu an yaptığımız şablonda çıkmamalı, bütçe yurt dışı fonlar için hazırlanıyorsa çıkmalı bu uyarı. türkiyede yönetmen hizmet bedeli de hak devri de aynı vergilendirme diliminde (%17) bu uyarı anlamsız oluyor, bütçe yurtfışı fonlar için hazırlanıyorsa ve vergilendirmenin hak devrinde belirli bir oranı geçmesi durumunda denetime tabii olan region lar için geçerli bu. yine gerekecek ama türkiye için hazırlanan bütçelerde değil
 - SİLME: hak devri normal silinir; rakamı hiçbir yere dönmez, özet küçülür.
 - UYGULAMA: dilim 1 ekran ve hesap UYGULANDI (2 Ekim 2026): bağ hesabı, yeniden paylaştırma, silmede dönüş ve hesaplanan Birim net söküldü; oran ve uyarı hesaplanan paydan okunur. Dilim 2 göç ve servis UYGULANDI (2 Ekim 2026, göç `20261002120000`): `budget_items.split_rate`, `fn_set_split_share` ve `fn_set_split_lock` kalkar; `fn_add_budget_item` oran yazmaz; eşik 50'den 55'e; hak devri atomunu tanıyan işaret `default_split_rate` yerine `item_library.is_rights_transfer` işaretine geçer; servislerden oran yazımı çıkar (göçten önce veritabanına salt okuma sorgusu, Engin'in SQL onayı). Dilim 1 beş dosya sınırını bilerek aştı: yarım söküm çalışmayan ekran bırakırdı.
 
