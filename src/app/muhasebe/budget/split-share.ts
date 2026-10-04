@@ -13,6 +13,13 @@ export function sharePercentOf(net: number, base: number): number {
 export const SPLIT_WARN_TEXT =
   "Hak devri oranının Hizmet Bedeli'nden çok daha yüksek olması, Avrupa fonlarında (örn: CNC) 'gizli maaş' (salaire déguisé) denetimlerine takılma riski taşır. Oranı dengede tutmanız önerilir."
 
+// UYARI ANAHTARI (3 Ekim 2026, Engin karari; KART-KATALOGU 7.4 "UYARI HEDEF MECRA'YA BAGLANDI"):
+// hak devri oran uyarisi kurum denetimidir (Eurimages/CNC), Turkiye butcesinde anlamsizdir.
+// Hedef Mecra kurulana kadar hicbir butcede calismaz: kart acilirken esik okunmaz, balon
+// cikmaz. Esik parametresi, SPLIT_WARN_TEXT ve splitsOverThreshold yerinde kalir. Hedef Mecra
+// kurulunca bu sabitin yerini butcenin "yurt disi fon" hanesi alir.
+export const SPLIT_WARN_ACTIVE: boolean = false
+
 // Esigi GECEN hak devri satirlari (pay esikten BUYUK; esitlik gecmez - "%50'yi gecerse").
 export function splitsOverThreshold(shareById: ReadonlyMap<string, number>, threshold: number): Set<string> {
   const out = new Set<string>()

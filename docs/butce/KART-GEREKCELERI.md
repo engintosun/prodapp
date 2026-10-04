@@ -11,6 +11,7 @@ Kartlar tek kaynaktan değil, iki katmanlı doğrulamayla kuruluyor:
 - **Koster (omurga):** Robert Koster MMB SuperBudget'ı tasarladı; KAAPA onu hesap-planı iskeleti alır (1100-6400 yapısı, hesap mantığı). Kart YAPISI Koster'dan gelir.
 - **Master Excel (kütüphane eti + çapraz-doğrulama):** 4.746 kalem, 18+ kaynaktan (AICP 2023, Movie Magic, Eurimages, AFI, California Film Commission, 15 Saturation.io export'u [Netflix/BBC/HBO/CBC vb.], iki gerçek Türk yapım bütçesi). Her kalemin "kaç kaynakta geçtiği" sayısı, neyin evrensel neyin tek-kaynak olduğunu söyler.
 - **Eurimages + Türk bütçesi (bağlam):** net-of-VAT, fringe-inclusive, sorumlu-tarafa-maliyet konvansiyonu — KAAPA'nın kilitli kararlarıyla örtüşür.
+- **CNC bütçe formu (biçim ve kalem taraması; 3 Ekim 2026, Engin kararı):** Fransız CNC'nin standart sinema bütçe formu (devis détaillé CNC cinéma, 2018-01-24 sürümü, beş haneli): `docs/butce/CNC-devis-cinema-2018-5-chiffres.pdf`. Şablon formatı ve kalem taraması yapılırken Engin sorduğunda bu forma da bakılır. Örnek: formun ilk bölümü (Droits artistiques) senaristin parasını yalnız hak olarak taşır; yönetmeni ise hem burada (13, yönetmenlik telifi) hem personel bölümünde (ücret) taşır. 1500'deki hak devri satırının dayanağı bu ayrımdır.
 
 Bir kart kilitlenmeden önce: Koster omurgayı verir → Master Excel kaynak-sayısı doğrular (bu kalem gerçekten evrensel mi?) → Eurimages/Türk bütçesi bağlamı oturtur → sonra kilitlenir.
 

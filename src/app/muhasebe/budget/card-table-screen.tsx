@@ -19,7 +19,7 @@ import { PeriodRow } from './components/period-row'
 import { HeadingRow } from './components/heading-row'
 import { SummaryRow } from './components/summary-row'
 import { buildCardView } from './card-view'
-import { sharePercentOf, SPLIT_WARN_TEXT, splitsOverThreshold } from './split-share'
+import { sharePercentOf, SPLIT_WARN_ACTIVE, SPLIT_WARN_TEXT, splitsOverThreshold } from './split-share'
 import type { CardView } from './card-view'
 import { resolveCollapsed, toggleCollapse, openBlock } from './collapse-state'
 import type { CollapseState } from './collapse-state'
@@ -818,7 +818,7 @@ export function CardTableScreen({ budgetId, cardId }: { budgetId?: string; cardI
     // islenir; 60 -> 70 yazarken oran bir an 7 olur ve "esikten indi, yeniden gecti" diye yanlis
     // uyari cikardi. Acik bir tampon varken olcum YAPILMAZ ve onceki olcum KORUNUR; hucreden
     // cikilip tampon temizlenince efekt kayitli degerle yeniden calisir.
-    if (splitWarnPercent === null || loading || Object.keys(buffers).length > 0) return
+    if (!SPLIT_WARN_ACTIVE || splitWarnPercent === null || loading || Object.keys(buffers).length > 0) return
     const shares = new Map<string, number>()
     for (const [id, info] of splitInfoById) shares.set(id, info.sharePercent)
     const over = splitsOverThreshold(shares, splitWarnPercent)

@@ -3,6 +3,7 @@ import { getOrOpenBudget, getCard, loadUnits, fetchBudgetCards } from '../../../
 import type { BudgetItemRow, CardView, StageRow, UnitRow, BudgetCardRef } from '../../../../shared/supabase/budget-service'
 import { fetchMinimumWageThresholds, fetchSplitWarnPercent } from '../../../../shared/supabase/payroll-read'
 import type { MinimumWageThresholds } from '../../../../shared/supabase/payroll-read'
+import { SPLIT_WARN_ACTIVE } from '../split-share'
 import { fetchCardLibrary, fetchAllLibrary } from '../../../../shared/supabase/library-service'
 import type { LibraryItem } from '../../../../shared/supabase/library-service'
 import { fetchUserHeadings } from '../../../../shared/supabase/user-heading-service'
@@ -155,7 +156,7 @@ export function useCardRows(params?: { budgetId?: string; cardId?: string }) {
   // State (ref degil): kart ekraninin uyari efekti esik gelince yeniden calismali.
   const [splitWarnPercent, setSplitWarnPercent] = useState<number | null>(null)
   useEffect(() => {
-    if (!card?.budgetId) return
+    if (!card?.budgetId || !SPLIT_WARN_ACTIVE) return
     let cancelled = false
     void (async () => {
       try {
