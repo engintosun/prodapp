@@ -56,8 +56,8 @@
 
 ### Bütçe - dönem/nakit terimleri (2026-06-13)
 
-- **Dönem:** Bütçenin zaman dilimi; çağrı kâğıdına bağlı çekim bloklarıyla hizalı, tarih sınırlı. Varsayılan 3 (Hazırlık/Çekim/Post), inceltilebilir.
-- **Etap:** Dönemle aynı eksen. Beş etap sektörün isim standardıdır, zorunlu liste DEĞİLDİR; canlı varsayılan 3 dönemdir (bkz. Dönem). Beş etap: Geliştirme · Yapım Öncesi · Yapım · Yapım Sonrası · Dağıtım ve Teslimat. Kodda: `stage`.
+- **Dönem:** Bütçenin zaman dilimi; çağrı kâğıdına bağlı çekim bloklarıyla hizalı, tarih sınırlı. Film şablonunda varsayılan 4 (Yapım Öncesi/Yapım/Yapım Sonrası/Dağıtım ve Pazarlama; 3 Ekim 2026), inceltilebilir.
+- **Etap:** Dönemle aynı eksen. Beş etap sektörün isim standardıdır, zorunlu liste DEĞİLDİR; film şablonu 4 dönemle açılır (bkz. Dönem). Beş etap: Geliştirme · Yapım Öncesi · Yapım · Yapım Sonrası · son etap (sinemada Dağıtım ve Pazarlama, dizi ve reklamda Teslim ve Kapanış; KART-KATALOGU §1). Kodda: `stage`.
 - **Faz:** KAAPA'nın YAZILIM geliştirme aşaması (Faz 1 = MVP kapsamı, Faz 2 = sonrası). Bütçe dönemiyle ve muhasebe dönemiyle İLGİSİ YOKTUR — o ikisi için bkz. Dönem ve Etap. (Engin düzeltmesi, 7 Ağustos 2026: eski "dönemin kaba hali" tanımı YANLIŞTI; dosyalarda geçen "Faz 1/Faz 2" her zaman bu yazılım anlamındadır.)
 - **Ne zaman (kalem):** Kalemin bağlı olduğu dönem(ler). İki eksen — ait-dönem ve nakit-dönem.
 - **Ait-olduğu-dönem:** Kalemin bütçede karşı geldiği dönem (maliyet/karşılaştırma kapısı).

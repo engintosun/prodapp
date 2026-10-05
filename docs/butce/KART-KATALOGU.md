@@ -7,7 +7,7 @@
 ---
 
 ## 1. ETAP (DÖNEM) EKSENİ — zaman ekseni
-Beş etap (etap = dönem, aynı eksen): Geliştirme · Yapım Öncesi · Yapım · Yapım Sonrası · Dağıtım ve Teslimat.
+Beş etap (etap = dönem, aynı eksen): Geliştirme · Yapım Öncesi · Yapım · Yapım Sonrası · son etap. **Son etabın adı yapım türüne göre değişir (3 Ekim 2026, Engin kararı):** sinema filminde **Dağıtım ve Pazarlama**, dizi ve reklamda **Teslim ve Kapanış**. Gerekçe: dönemin adı, yapımcının o dönemde gerçekten ödediği işi söyler. Sinemada film bittikten sonra yapımcının parası festivale, tanıtıma, kopyaya ve gösterime gider. Dizide ve reklamda dağıtımı kanal, platform ya da ajans yapar; dizide teslim çekim sürerken bölüm bölüm yapılır, son dönemde son teslim, ofisin kapanması, kapanış muhasebesi ve denetim kalır. Dönem adları kodda değil şablonun içinde yazılıdır (`budget_templates.body.stages`) ve şablon yapım türü başına ayrıdır. Film şablonu v7'den beri (göç `20261003150000`) dört dönemle açılır: Yapım Öncesi, Yapım, Yapım Sonrası, Dağıtım ve Pazarlama. Dizi ve reklam şablonları henüz yok; kurulurken son dönemleri Teslim ve Kapanış olur (CURRENT.md Park). Eski ad "Dağıtım ve Teslimat" bu kararla kalktı.
 - Etap = bir kalemin ödeme/zaman etiketi. Parayı bir karttan başka karta TAŞIMAZ; sadece "ne zaman".
 - Her etap ayrı hesaplanır; alt-toplamlar toplanınca genel toplam çıkar.
 - Bir kalem birden çok etaba yayılabilir/bölünebilir (örn. hak Geliştirmede başlar, opsiyon ödemesi Dağıtıma sarkar).
