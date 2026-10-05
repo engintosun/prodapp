@@ -119,6 +119,12 @@ Producer [10k], Line Producer [9k], Executive Producer [8k], Co-Producer [4k], S
 
 ---
 
+**KART 1400 REVİZE GEREKÇE (5 Ekim 2026).**
+- **MMB 6.1 hizası ve ayrı yapımcı kalemleri:** 1300 ve 1500 aynı yoldan hizalandı; katalog kodu MMB uyumlu kanonik koddur (DEĞİŞMEZLER 1). Eski "1401 tek kalem + rol etiketi" tasarımı kodda ve şemada bulunmayan bir mekanizmaya dayanıyordu; ayrı kalem bugünkü makineyle çalışır.
+- **Kaynak doğrulaması:** Master Excel kaynak sayıları Producer 10, Associate Producer 9, Line Producer 9, Executive Producer 8, Co-Producer 4; MMB'de olmayan Supervising (3) ve Coordinating (2) 1404'ün eş adıdır (Koster damıtımı: aynı işlev). Production Executive 2 kaynakta (MMB, Disney), Packaging Fee 2 kaynakta (MMB, CBC). CNC 21 Producteurs üç rol taşır: 2111 Producteur délégué, 2121 Producteur exécutif, 2131 Producteur associé. Ad tuzağı: Fransızcadaki producteur exécutif bizim Executive Producer'ımız değil, uygulayıcı yapımcıdır; CNC çıktısında 1404'e düşer, 1401'e düşmez. Koster damıtımı: yapımcı unvanları yazım farkı değil, sözleşmeden gelen gerçek rol ayrımlarıdır.
+- **Genel gider ve kâr kalem değil:** MMB'de ve CNC'de ikisi de kart kalemi değil, bütçenin dibindeki yüzdedir (CNC: alt toplamdan sonra Imprévus ve Frais généraux). Kâr şemada zaten dipte duruyor (`budget_percent_lines`, profit); kartta da bir kâr kalemi açmak aynı parayı iki yerde saydırırdı. Master Excel'de kâr ya da mark-up adlı tek kalem yok; overhead tek kaynaklı ve dağınık (netflix, bbc, discovery, screen_australia).
+- **Kaynak kontrolü (Engin, 5 Ekim 2026):** gerektiğinde Master Excel ve CNC formuna da bakılır.
+
 ## KART 1500 — YÖNETMEN ve KREATİF REJİ EKİBİ  (KART-KATALOGU §7.4)
 
 ### Neden KISMİ MASKE (1501 gizli, ekip açılabilir)?

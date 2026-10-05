@@ -107,6 +107,7 @@ Dept (½ Kısmi Onay) ve muhasebe (Split) yapabilir. split_amount belirlenir, fi
 - **8 genel kategori:** Yakıt · Yiyecek · Ekipman · Sanat · Ulaşım · Konaklama · Kiralama · Diğer.
 - Faz 1: serbest/sabit. Faz 2: yapılandırılmış yönetim.
 - Sistem kategorileri (is_system) silinemez.
+- **BAŞTAN ELE ALINACAK (5 Ekim 2026, Engin):** "muhasabe tarafı yarım bir tasarım. bütçeye başlayınca kaldı, oradaki harcama kategorisi de eksik ve üzerine düşünülmeden hızlıca oluşturulmuş bir liste. bunu en baştan ayrıntılı bir şekilde ele alabiliriz." Yukarıdaki 8'li liste korunacak bir kısıt değildir; üç ayrı şeyi karıştırır (Sanat bir departmandır, Kiralama bir tedarik biçimidir, gerisi gider çeşididir). Önerilen yön: fiş kategorisi ile bütçenin gider çeşidi tek, global, iki kademeli sözlük olur; kaleme bağlı fiş çeşidini kalemden okur. KARARA BAĞLANMADI; ev: BUTCE-SEMA-KARARLARI, GİDER ÇEŞİDİ EKSENİ.
 
 ## 7. Bütçe ve limitler
 - Bütçe PROJEYE aittir: proje toplamı (project_budgets) + departman payları (project_dept_budgets). Dönem tabloları (period_budgets, dept_budgets) projenin zaman dilimleridir; sahip projedir.

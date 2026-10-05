@@ -215,3 +215,88 @@ NEDEN: sahadaki gerçek senaryo — görüntü yönetmenine dolar, asistanlara T
 - **DOĞRULANAN DEĞER:** katsayı 9 doğrudur (2026: brüt asgari ücret 33.030 x 9 = 297.270 aylık tavan).
 
 - **UYGULANDI (18 Eylül 2026, göç `20260918120000`, commit 1788f1f).** Cins kümesine `katsayi` eklendi, tavan satırı o cinse alındı, sayı `amount_tl` kolonunda kaldı. AYNI GÖÇTE İKİNCİ EV AÇILDI: aynı iki CHECK kısıtının kopyası `budget_rate_snapshot` tablosunda (MÜHÜR-1, göç 20260711140000) yaşıyor ve `fn_lock_budget` `rc.value_kind` değerini süzmeden kopyalıyor — dördüncü cins orada da açılmasaydı mühürleme yüzeyi açıldığı gün ilk kilitlemede CHECK ihlaliyle patlardı. Bu ev yukarıdaki karar metninde YOKTU, bağımlılık taramasıyla bulundu; kısıtın iki yerde yaşadığı bundan sonra bu maddede yazılıdır. Genişletme sırasında mühür kopyası boştu (0 satır, ölçüldü), mevcut veriye etkisi olmadı. Servis tarafında `latestKatsayi` açıldı (payroll-read.ts): cins değişip okuma değişmeseydi bordro motoru her bordrolu kartta hata verirdi, bu yüzden şema ve servis aynı dilimde indi. Tarayıcıda iki uçtan doğrulandı.
+
+## GİDER ÇEŞİDİ EKSENİ — KARARA BAĞLANMADI (5 Ekim 2026; Opus önerisi, Engin kabulü bekleniyor)
+
+**ENGİN'İN SORUSU VE ŞARTI (birebir):**
+
+> Dersüm şu, ileride toplam araç kiralama, toplam seyahat gibi raporlar yada ayrıştırılmış gider  grupları oluşturduğumda, bu kodlar( diğer kartlardakiler dahil) bize sorun çıkarır mı?
+
+> Blpke eder sadece bu kartı değil diğerlerini de bloke eder. Her kartta bağımsız kodlarla aynı giderleri tutarsak nasıl raporlayacak, bazılarında tek bir tür bazılarında bir sürü kalem var benzer işleri yapar, tüm isimleri tek tek mi gireceğiz, icmalde dönüp kodları yeniden mi düzenleyeceğiz. Yanılıyormuyum?
+
+> Bunun için 3 tür kod planlamıştık aslında , mmb hizalama, kart kodu ve veri tabanı kodu belki bir tane daha vardır
+
+> kaap tarzı bir uygulamanın raporlamalarının kati ve akışkan olması gerekir. her şeyi baştan kuruyoruz , henüz yapım aşamasındayız ve baştan beri gruplamalar ve raporlar konusu belli. kodları bir kaç kez konuştuk, hem diğer uygulamalar ve kullanıcı alışkanlıklarıyla uyumlu olsun hem de kodların getirdiği kolaylıklardan yararlanalım diye hem mmb hem kart hem de bizim kendi kod tabanımızı oluşturduk. bunun anlamı yoksa, bize gerekli veriyi vermiyorsa tamamen anlamsız bir iş yapmış oluruz.  kendi içinde ve birbiriyle tutarlı altyapımız olmalı. seyahat konaklama vs yi ayrı bir kart yapmak başta mantıklı görünüyor ama bu konuyu çok tartıştık geçmişte, bazı kalemlerin kartta kalması o tartışmaların sonucuydu. ayrıca farklı kodların aynı kartta olmasının kütüphane çağırmada vb sorun yaratacağını düşündüğünden bunu da konuştuk ve bir yolunu bulduk diye hatırlıyorum. seyahat konaklama  kendi kartına sahip olursa geliştirme maliyetine nasıl ekleyeceğız  mesela. yada bir departman veya kişinin genel maliyetini çıkarırken onun yaptığı seyahatleri de bilmemiz gerekir. bunu kendi kartında yapmazsak, seyahat konaklama kartında ayırmamız gerekecek. ekip ekonomi, yönetmen businnes uçar yada otel maliyetleri farklıdır. orada da ek iş demek. ben bu konunun başka uygulamalarda nasıl yapıldığını ayrıca araştırırım istersen sende veritabanına bak yada kendin de araştır. buna bir çözüm bulmalıyız bence,.Benim aklıma gelen ilk öneri tüm kartlarda seyahat, konaklama, araç kira vb harcamaların  aynı son rakamlarla bitmesi  1305,1405,1605,1705 ..... gibi. bunu düşün oku ve konuşalım sonra
+
+> ihtiyaç karşılama!  bu ilginç bir bakış açısı tek başına yeterlimi ? retorik tartışma istemiyorum ama anlamlıysa düşünülmeli. bu konuda en iyi çözüm+ etki analizi ile en optimum yol+ uygulamayı ağırlaştırmayan, kullanıcıyı yormayan bir tasarım. bunları karşılayacak mı bu fikir. ? herşeyi buna göre kuracağız, ısrarla değerlendirme ve açık bulma talebimin sebebi bu
+
+> Yani  bugünkü gibi kartta seyahat konaklama vb , her kartta olabilecek. Ayn cins kalemlein hem genel bir kartı olacak hem de gerekli görülen kartlarda ayırtedilebilir şekilde olacaklar başta sorduğum gruplamalar ve raporlar sorunsuzca alınabilecek öyle mi?
+
+**SORUN:** bugünkü kodların hiçbiri tür taşımıyor. `catalog_code` MMB'deki konumu, `card_code` kartı, `item_code` bütçe içi kimliği söyler (bilerek anlamsız). -06 her yerde araç kiralama değildir: seyahat ailelerinde (1108, 1305, 1508) araç kiralamadır, 1101-06, 1104-06 ve 1105-06 başka kalemlerdir. 1100'ün ailesi 1108'dedir, MMB'de 1100 seyahati 1110'dur. Kütüphanede tür alanı yoktur (şema kararı: grup alanı yok, grup = kart); serbest kalemin kodu muhtelif koddur (x98).
+
+**EKSENLERİN HARİTASI (maliyet muhasebesi üçlüsü: gider yeri, gider çeşidi, maliyet taşıyıcı):** gider yeri = kart (`card_code`); maliyet taşıyıcı = `cost_object` (kişi etiketi canlı; iş etiketi ve kütüphaneden otomatik etiket parkta, KART-KATALOGU §4.10); zaman = etap/dönem; hesap konumu = `catalog_code`; kimlik = `item_code`. EKSİK: gider çeşidi. Katalogda sık geçen ama şemaya hiç girmemiş `cost_type` (İşçilik/Hizmet/Haklar/Sarf) ve Koster damıtımındaki kanonik atom ilkesi (bir maliyet tek temsil; ATL seyahat atomları genel seyahat atomlarıyla aynıdır, etiketli tekrardır) aynı eksiğin iki yüzüdür. `cost_object` gider çeşidine uymaz: liste proje başına kullanıcının kurduğu listedir, projeler arası karşılaştırma ve kati rapor vermez.
+
+**ÖNERİ (Karar 5):** gider çeşidi ile fiş kategorisi TEK, global, kapalı, iki kademeli (üst çeşit, alt çeşit) bir sözlüktür; `rate_catalog` gibi herkese aynıdır, proje yalnız en alta ayrıntı ekleyebilir (bugünkü departman alt kategorisi gibi). Kütüphane kalemi çeşidi taşır; kalem bütçeye eklenince çeşit satıra kopyalanır (`catalog_code` ve `heading_code` emsali). Kaleme bağlı fiş çeşidini kalemden OKUR, saklamaz; bağsız fiş kendi çeşidini taşır, sahadaki kişi seçer; uyuşmazlıkta sınıflandırma alanını muhasebe sessizce düzeltir (IS-KURALLARI). Sınıf düzelten her göç mühürsüz bütçelerdeki kütüphane kökenli satırları da günceller; mühürlü bütçede çeşit değişmez (sınıf da mühürlü belgenin parçasıdır, düzeltme yeni revizyonda). Kodlar ve aileler olduğu gibi kalır; aileler içindeki -01..-06 düzeni okunaklılık içindir, rapor çeşitten okur. Gerekçe: bütçe ile gerçekleşeni aynı dilden raporlatan ve kullanıcıya yeni iş yüklemeyen yol; sandbox'ta bütün raporlar çıktı, bulunan açıkların hepsi bu tasarımın içinde kapandı.
+
+**GENEL KART DÜZENİYLE İLİŞKİ:** genel Seyahat & Konaklama kartındaki ekip konaklaması da, birim kartlarındaki konaklama da aynı çeşidi taşır; "toplam konaklama" ikisini birlikte toplar, kart kırılımı nereden geldiğini gösterir (KART-KATALOGU §3).
+
+**ADAY SÖZLÜK (sandbox taslağı; 15 üst, 66 alt; Engin'in düzeltmesi bekleniyor).** Her alt çeşit iki işareti kendiliğinden taşır, kimseye sorulmaz: doğa (işçilik, hizmet, mal, kira, hak, harç, finansman, ödenek, diğer) ve tedarik (kiralama, satın alma, imalat). Departman adı bilerek yoktur: "kostüm kiralama", Kostüm kartı ile Malzeme Kiralama'nın kesişimidir.
+- Ücret ve Kaşe: Personel Ücreti · Fazla Mesai · Temsilci ve Ajans Komisyonu · Ödenek ve Kit Kirası
+- Haklar ve Lisanslar: Hak Satın Alma · Opsiyon ve Uzatma · Hak Devri ve Telif Bedeli · Müzik Lisansı · Arşiv ve Görüntü Lisansı
+- Seyahat ve Konaklama: Ulaşım Bileti · Konaklama · Harcırah · Yolculuk Aracı Kiralama · Yolculukta Yemek ve Ağırlama · Vize ve Pasaport
+- Yemek ve İkram: Set Yemeği · Ara Öğün ve İkram · Mesai Yemeği · Ağırlama ve Temsil
+- Araç ve Nakliye: Yapım Aracı Kiralama · Oyun Aracı Kiralama · Yakıt · Yol, Köprü, Otopark · Taksi ve Transfer · Nakliye, Kargo, Kurye · Araç Bakım-Onarım
+- Mekân: Lokasyon Kirası · Stüdyo ve Plato Kirası · Ofis Kirası · Depo ve Atölye Kirası · Mekân Giderleri
+- Ekipman: Ekipman Kiralama · Ekipman Satın Alma · Kayıp ve Hasar · Ekipman Bakım-Onarım · Kayıt ve Depolama Medyası
+- Malzeme ve İmalat: Malzeme Satın Alma · Malzeme Kiralama · İmalat ve Atölye İşi · Sarf Malzeme
+- Hizmet Alımı: Hukuk ve Clearance · Mali Müşavirlik ve Denetim · Danışmanlık ve Uzmanlık · Teknik Hizmet (post, lab, VFX) · Çeviri, Altyazı, Dublaj · Tasarım ve Grafik · Güvenlik · Sağlık ve Medik · Ajans Hizmeti (casting, figüran temini)
+- Ofis ve İdari: Kırtasiye ve Ofis Sarfı · İletişim · Yazılım ve Abonelik · Basım ve Çoğaltma
+- Vergi, Harç ve Resmî Ödemeler: Noter ve Resmî Harçlar · Çekim İzni ve Belediye Harçları · Gümrük ve Karnet · Damga Vergisi
+- Finansman ve Sigorta: Sigorta Primi · Banka, Havale ve Kur Masrafı · Faiz ve Finansman Gideri
+- Tanıtım, Festival ve Dağıtım: Festival, Market ve Lab Katılımı · Tanıtım Materyali · Reklam ve Medya Alımı · PR ve Basın · Gösterim ve Kopya
+- Karma / Süreç Paketi (alt çeşidi yok)
+- Diğer: Beklenmedik Küçük Giderler
+
+**KÜTÜPHANE EŞLEMESİ (sandbox; 100 kalemin hepsi çeşit aldı):**
+- Personel Ücreti: 1101-04, 1101-06, 1102, 1102-01, 1102-02, 1103, 1103-01, 1105-06, 1107-01, 1301, 1302, 1306, 1309, 1313, 1314, 1501, 1502, 1503, 1504, 1506, 1509, 1510, 1600-01, 1600-02, 1600-03, 1601–1609, 1612, 1613, 1615, 1616, 3901–3904, 3914, 3916, 3917. Fazla Mesai: 1611. Temsilci ve Ajans Komisyonu: 1315, 1511, 1618, 1618-01. Ödenek ve Kit Kirası: 3910.
+- Hak Satın Alma: 1101-01. Opsiyon ve Uzatma: 1101-02, 1101-03. Hak Devri ve Telif Bedeli: 1501-01, 1614, 1620. Arşiv ve Görüntü Lisansı: 1107-03.
+- Seyahat aileleri (1108, 1305, 1508): -01 Ulaşım Bileti, -02 Konaklama, -03 Yolculukta Yemek ve Ağırlama, -04 Harcırah, -05 Festival, Market ve Lab Katılımı, -06 Yolculuk Aracı Kiralama. 1108 başlığı üst çeşit Seyahat ve Konaklama.
+- Festival, Market ve Lab Katılımı: 1104-06 (ayrıca 1108-05, 1508-05). Tanıtım Materyali: 1104-02, 1104-05.
+- Danışmanlık ve Uzmanlık: 1101-05, 1101-07, 1104-01, 1107, 1107-02, 1307, 1312. Hukuk ve Clearance: 1106-01, 1106-02, 1308. Mali Müşavirlik ve Denetim: 1106-03, 1106-04. Tasarım ve Grafik: 1104-03. Çeviri, Altyazı, Dublaj: 1104-04. Ajans Hizmeti: 3913. Noter ve Resmî Harçlar: 1106-05.
+- Ofis Kirası: 1105-01. Kırtasiye ve Ofis Sarfı: 1105-02. İletişim: 1105-03. Nakliye, Kargo, Kurye: 1105-04. Yazılım ve Abonelik: 1105-05. Üst düzeyde Ofis ve İdari: 1105 başlığı, 1310, 1507.
+- Banka, Havale ve Kur Masrafı: 1190-01. Beklenmedik Küçük Giderler: 1190-02 (1190 başlığı üst çeşit Diğer).
+- Karma / Süreç Paketi: 1107-04 Lokasyon Keşfi, 1610 Deneme Çekimi, 1619 Cast Gideri.
+- Çeşitsiz bırakılan karma başlıklar: 1101, 1104, 1106, 1600-04.
+
+**SANDBOX KANITI (5 Ekim 2026).** Opus konteynerinde yerel PostgreSQL 16; repodaki 78 göç sırayla uygulandı, canlıyla aynı şema ve kütüphane (113 satır). Gerçek `fn_create_project`, `fn_open_budget` (film şablonu v7), `fn_add_budget_item` ve `fn_lock_budget` ile iki proje ve iki bütçe kuruldu. Kısayollar: çeşidin satıra kopyası tetikle taklit edildi (gerçekte iki fonksiyona girer); tutarlar basit çarpım, yasal yük ve KDV yok. Sonuçlar (Film A):
+- Toplam araç kiralama 45.000: üç kartın seyahat ailesi 12.000'er ve serbest kalem olarak eklenip sonradan çeşidi seçilen minibüs 9.000.
+- Toplam seyahat 172.000: 1100 28.000 · 1300 57.000 · 1500 87.000. Departman içindeki seyahat payı: 1300'de %10,2, 1500'de %10,3.
+- Bütçe ve gerçekleşen, çeşit bazında: Konaklama 98.000 / 70.000; Yolculuk Aracı Kiralama 36.000 / 11.000; Taksi ve Transfer — / 1.500 (bağsız fiş); Yakıt — / 3.000 (bağsız fiş); çeşitsiz 6.000 / 2.500. Kaleme bağlı bir fişte saha başka çeşit seçmişti; kalemin çeşidi kazandı.
+- Projeler arası konaklama: Film A 98.000 / 70.000, Film B 137.200 / 52.000.
+- Doğa kimseye sorulmadan dağıldı: işçilik 4.050.000, hak 400.000, hizmet 286.000; kiralama toplamı 65.000.
+- Mutabakat: kalem toplamı 4.902.000 = çeşidi olanlar + çeşitsiz 6.000; para kaybolmuyor.
+- Kapsama: Master Excel'de en az iki kaynakta geçen, mükerrer olmayan 454 kalem (17 departman) tarandı; tek açık Hayvanlar. Eşleşmeyen diğer satırlar kural eksiği, departman başlığı ya da dip yüzde satırıydı (tamamlama teminatı). Etiketsiz sayfa (2.381 satır) taranmadı.
+- Ağırlık: bir sözlük tablosu (81 satır), kütüphaneye ve bütçe satırına birer alan, bağsız fişe bir alan, iki fonksiyonda kopya; raporlar düz gruplu sorgu, anında döndü. Kullanıcı: iki bütçede 100 kalem çeşit seçilmeden doğdu; bağlı fişte seçim yok.
+
+**BULUNAN AÇIKLAR VE ÇÖZÜMLERİ:**
+1. Fişte çeşidi saklamak ayrışma yaratır (kanıt: kalemin çeşidi düzeltilince bağlı fiş eski çeşitte kaldı). Çözüm: bağlı fiş kalemden okur.
+2. Sözlük düzeltmesinden sonra açık bütçede aynı kod iki çeşit taşıdı (Film B'de eski 1508-06 satırı eski, yeni eklenen yeni çeşitte). Çözüm: sınıf düzelten göç mühürsüz bütçelerdeki kütüphane kökenli satırları da günceller.
+3. Mühürlü bütçede çeşit değiştirilemedi (`fn_guard_budget_lock`). Doğru davranış.
+4. Serbest kalem çeşitsiz doğar (`fn_add_budget_item` serbest dalı başlıksız doğurur). Raporda "çeşitsiz" satırında görünür, kaybolmaz.
+5. Süreç paketleri tek çeşide oturmaz (1107-04, 1610, 1619); Karma üst çeşidinde kalır, 1310 ve 1507 üst düzeyde; raporda ayrı satır.
+6. Hayvanlar için alt çeşit yok.
+7. Dip yüzde satırları (Öngörülemeyen, Kâr, ileride Genel Gider ve teminat) çeşit raporunun dışındadır; çeşit raporu maliyet toplamını verir, dip zinciri icmalde.
+8. Gri bölge önerisi: yapım kadrosunda çalışan kişi Personel Ücreti'ne gider, statüsü ne olursa olsun (ajansla gelen figüran dahil); dışarıdan mesleki hizmet Hizmet Alımı'na gider. Sınırda: 1104-01 Bütçeleme, 1101-05 Danışman-Editör.
+
+**REDDEDİLEN YOLLAR:**
+- Her kartta x05 (Engin'in ilk önerisi): MMB'nin 619 hesabında x05 neredeyse her yerde dolu (1405 Associate Producer, 1505 Secretary, 3505 Meals, 6105 E&O); MMB hizası kırılır. MMB'nin kendi seyahat numaraları dağınıktır: 1110, 1305, 1508, 1700–1704, 3502–3504, 3911, 5122, 5505, 5614, 5714, 5900, 6314, 6410.
+- Boş bant (örn. x95; x90–x96 MMB'de hiç kullanılmıyor, KAAPA'da yalnız 1190 dolu): kod iki anlam taşır, repo bunu iki kez geri aldı (5 Eylül K-B iptali: kartı kodun ilk hanelerinden okumak 1600'de kırıldı; oyuncuları alt-kodla bağlamak reddedildi, yerine etiket kondu); tek hiyerarşi kurar (Ulaşım kartının kiralık aracı banda girmez); serbest kalem x98 alır, rapordan düşer; aileler yeniden numaralanır, ortak bant kapasitesi altı.
+- Seyahatin tümünü tek karta toplamak (KART-KATALOGU §3).
+- `cost_object` ile: proje bazlı liste, kati değil.
+- Fiş kategorisinden ayrı ikinci bir liste: iki sözlük olur, bütçe ile gerçekleşen çeşit bazında karşılaştırılamaz.
+
+**SEKTÖR VE KAYNAK:** MMB hesap numaralarını dağınık bırakır, kesişen raporu Group etiketiyle alır (Budget Setup'taki Group'lar ayrı rapor bölümüne dönüşür); sabit sonek yalnız her departmanda bulunan birkaç tür içindir: x97 Loss & Damage (19 hesap), x98 Miscellaneous (33), x99 Fringe (8). Yapım muhasebesi yazılımları hesap kodunu tek alan tutar, diğer boyutları ayrı kod alanlarında taşır (Everyset: set, vergi, fringe, bölüm, lokasyon ve üç serbest alan; Wrapbook serbest alanları teşvik, yeniden çekim, sigorta için; Eclipse: para birimi, lokasyon, bölüm, yapım, detay, set parçaları). Koster: seyahatin yeri konvansiyondur (çoğu zaman 3500 Location, ATL için 1700), hiçbir bütçe formu evrensel değildir.
+
+**ETKİ (kabul edilirse):** şema: tohumlu global sözlük tablosu (herkese salt okunur, kütüphane deseni); `item_library` ve `budget_items`'a birer alan; `receipts`'e bağsız fiş için alan; fiş kategorisi bağı (`expense_categories`, `dept_subcategories`) yeniden kurulur, bugünkü 8'li liste korunmaz (IS-KURALLARI §6). `fn_open_budget` ve `fn_add_budget_item` kopyalar; tetik gerekmez. Fiş girişindeki kategori seçicisi global listeyi okur, bağlı fişte ön dolum yapar. Bütçe ekranında değişiklik yok. Kütüphaneye bir kerelik çeşit ataması.
+
+**AÇIK SORULAR (sözlük gözden geçirmesinde):** Hayvanlar için alt çeşit; gri bölge kuralı; bağsız fişte sahadaki kişinin hangi kademeden seçeceği (66 alt çeşit mi, 15 üst çeşit ve muhasebe inceltir mi); serbest kalemde çeşidin sorulup sorulmayacağı; kiralamanın alt kademede yaşaması ve "Sanat"ın listeden çıkması.

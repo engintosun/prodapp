@@ -87,9 +87,12 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 
 - **3 Ekim 2026 — KART 1300 Senaryo Yazımı kuruldu; film şablonu dört dönemle açılıyor (beş commit: `6ca5b45`, `0a6a3fc`, `943a23d`, `44a2668`, `2912d11`).** Kütüphane 16 satır, MMB 6.1 numaralarıyla; şablon 5 kalem (1301, 1302, 1306, 1308, 1312), kart düz. Kart adı "Senaryo Yazımı", 1308 "Hukuki Uygunluk Raporu (Clearance)". 1315 Yazar Temsilci Komisyonu 1511 düzeninde kuruldu ve sahada denendi (Engin: beklendiği gibi); senarist için hak devri satırı açılmadı. Hak devri oran uyarısı Hedef Mecra kurulana kadar kapalı. 1100'e 1104-06 Atölye ve Lab Katılımı eklendi. Film şablonu v7'nin dördüncü dönemi Dağıtım ve Pazarlama. CNC bütçe formu kaynak oldu (`docs/butce/CNC-devis-cinema-2018-5-chiffres.pdf`). Kararlar: `docs/butce/KART-KATALOGU.md` §1, §7.2, §7.4.
 
+- **5 Ekim 2026 — KART 1400 açıldı, gider çeşidi ekseni tasarlandı (kod değişmedi).** 1400'de iki karar alındı: MMB 6.1 hizası; genel gider ve kâr kart kalemi değil. Kütüphane listesi ve 1400 tohumu, kartlar arası raporu verecek gider çeşidi sözlüğünü bekliyor; öneri sandbox'ta repodaki göç zinciri ve gerçek fonksiyonlarla sınandı. Film şablonu v7'nin dördüncü dönemi sahada doğrulandı. Kararlar: `docs/butce/KART-KATALOGU.md` §3 ve §7.3; açık tasarım: `docs/butce/BUTCE-SEMA-KARARLARI.md` GİDER ÇEŞİDİ EKSENİ.
+
 ## Durum
 
-- HEAD: 2912d11 (3 Ekim 2026 — KART 1300 Senaryo Yazımı ve dördüncü dönem)
+- HEAD: cf13147 (5 Ekim 2026 — KART 1400 açılışı ve gider çeşidi tasarımı)
+- **FİLM ŞABLONU v7'NİN DÖRDÜNCÜ DÖNEMİ SAHADA DOĞRULANDI (5 Ekim 2026, Engin).** Yeni film bütçesinde dönem listesinde Dağıtım ve Pazarlama çıkıyor.
 - **CANLI VERİ DENEME VERİSİDİR (Engin, 31 Ağustos ve 1 Ekim 2026).** KAAPA yapım aşamasında; kimse kullanmıyor, yürüyen bütçe yok. Deneme verisi için çevirme, ölçüm, ara dönem ya da "canlıda dönüşü yok" kaygısı açılmaz; gerekirse deneme verisi silinip yeniden kurulur.
 - **`asks_person` KURALI ARTIK UYGULANDI (19 Eylül 2026).** Daha önce burada ve "Sıradaki iş"te "kararı var, uygulanmamış TEK iş" diye duran kayıt kapandı — göç `20260919120000` canlıda, sahada doğrulandı. Karar evi: `docs/butce/KART-KATALOGU.md` §7.5.
 - KOMİSYON TABANI ARTIK ÖDEME STATÜSÜNE BAKMIYOR: ölçüt kişiye bağlı ve türetilmemiş satır. Karar evi: `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20 KOMİSYON TABANI VE SİLME madde 2.
@@ -129,9 +132,11 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 - Bir daha tartışılmayacak değişmezler → `docs/DEGISMEZLER.md`
 - Kabuk, sol ray, kart masası, Üretim Kayıtları tasarımı → `docs/KABUK-KARARLARI.md`
 - Kart mimarisi ve kilitli kartlar → `docs/butce/KART-KATALOGU.md`
+- Gider çeşidi ekseni (karara bağlanmadı): aday sözlük, kütüphane eşlemesi, sandbox kanıtı, reddedilen yollar → `docs/butce/BUTCE-SEMA-KARARLARI.md` GİDER ÇEŞİDİ EKSENİ
+- KART 1400 revizyonu (MMB hizası, genel gider ve kâr, önerilen kütüphane) → `docs/butce/KART-KATALOGU.md` §7.3
 - Ödeme statüsü kümesi ve Statü rehberi → `docs/butce/BUTCE-UI-MIMARISI.md`
 
-## Alınan kararlar (30 Eylül – 3 Ekim 2026, Engin)
+## Alınan kararlar (30 Eylül – 5 Ekim 2026, Engin)
 
 - **KART 1500 MMB 6.1'e hizalandı, kart DÜZ.** Kütüphane başlığı yok, sıralama kod sırası. Kalemler: 1501 Yönetmen Kaşesi · 1502 Yönetmen Özel Asistanı · 1503 Koreograf · 1504 Oyuncu/Diyalog Koçu · 1506 Storyboard ve Animatic Sanatçısı · 1507 Yönetmen Birimi Ofis Giderleri · 1508-01..06 · 1509 İkinci Ekip Yönetmeni · 1510 Konsept Sanatçısı; şablon 1501, 1502, 1503, 1504, 1506. 1505 boş. Eski 1508/1509 ayrımı kalktı, ikisi 1508-03 Yemek-Ağırlama'da. UYGULANDI (Dilim 1). Ev dosyası: `docs/butce/KART-KATALOGU.md` §7.4.
 - **KART 1500 Dilim 2 UYGULANDI (1 Ekim 2026): 1501-01 Yönetmen Hak Devri ve 1511 Yönetmen Temsilci Komisyonu.** Kayıt yapısı, adlar ve özet, isim yazma, "Kime?", komisyon tabanı, silme kuralları, %50 uyarısı. Hak devri 2 Ekim'de DÜZ SATIR oldu (iki kural ve kilit bırakıldı): kendi rakamını taşır, oran kutusu payı gösterir, uyarı %55'te. Ev: `docs/butce/KART-KATALOGU.md` §7.4 "HAK DEVRİ DÜZ SATIR".
@@ -144,10 +149,14 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 - **KART 1300 YAZAR KOMİSYONU (3 Ekim 2026):** 1315 Yazar Temsilci Komisyonu (%20, 1301 ve 1314'e bağlı, 1511 düzeni); komisyon bağlanınca yazarın para satırı "Telif Bedeli" alt adını alır; senarist için hak devri satırı açılmaz (MMB, Eurimages ve CNC ayırmıyor). UYGULANDI (göç `20261003140000`). Ev: `docs/butce/KART-KATALOGU.md` §7.2.
 - **SON DÖNEMİN ADI (3 Ekim 2026):** sinemada Dağıtım ve Pazarlama, dizi ve reklamda Teslim ve Kapanış; dönem adı yapımcının o dönemde ödediği işi söyler. Film şablonu v7 dört dönemle açılır. UYGULANDI (göç `20261003150000`). Dizi ve reklam tarafı Park listesinde. Ev: `docs/butce/KART-KATALOGU.md` §1.
 - **CNC BÜTÇE FORMU KAYNAK (3 Ekim 2026):** şablon formatı ve kalem taramasında, Engin sorduğunda CNC formuna da bakılır; form repoda. Ev: `docs/butce/KART-GEREKCELERI.md` Çapraz-doğrulama yöntemi.
+- **KART 1400 MMB 6.1 HİZASI (5 Ekim 2026):** beş yapımcı rolü ayrı kütüphane kalemi olur: 1401 Executive Producer · 1402 Producer · 1403 Co-Producer · 1404 Line Producer · 1405 Associate Producer. "1401 tek kalem + rol etiketi" düştü. Ev: `docs/butce/KART-KATALOGU.md` §7.3.
+- **GENEL GİDER VE YAPIMCI KÂRI KART KALEMİ DEĞİL (5 Ekim 2026):** bütçenin dibinde yüzde satırı olarak yaşarlar; dip zincirine Genel Gider satırının eklenmesi icmal turunda. Ev: `docs/butce/KART-KATALOGU.md` §7.3 ve `docs/EKRAN-MUHASEBE.md` §19 Ekran 1.
+- **GENEL KART DÜZENİ (5 Ekim 2026):** aynı cins kalemlerin (seyahat, konaklama, ağırlama vb.) hem genel bir kartı olur hem de gereken kartlarda ayırt edilebilir aileleri; reddedilen yol tümünü tek karta toplamak. Ev: `docs/butce/KART-KATALOGU.md` §3.
+- **İCMAL VE MÜHÜR KARTLARDAN SONRA (5 Ekim 2026):** önden yapılması gereken bir iş değil; icmal kalemin koduna göre gruplar, içeriği kartlardan gelir.
 
 ## Sıradaki iş
 
-**ANA KONU: Engin seçecek (3 Ekim 2026).** KART 1300 kapandı (16 satır, 5 kalemlik şablon, yazar komisyonu sahada denendi). Kartın kendi tarifinde ortak motorlara bağlı kalanlar: 1308'in üç bağı (Hukuk 6200 ve Sigorta 6105 kartları ile bağ motoru yok), görünürlük maskesi (kart görünürlük katmanı), ajans adı (1511 ve 1315 için aynı park). Kart sırasında sıradaki 1400 (§7.3 KİLİTLİ, tohumu yok). Ekran denemesi bekleyen: film şablonu v7'nin dördüncü dönemi (yeni film bütçesinde bir kaleme dönem eklerken listede Dağıtım ve Pazarlama). Deneme verisindeki eski hak devri satırları 0 görünür, elle yeniden yazılır. 1500'de bekleyenler: ajans adı; mühür yüzeyi (icmalle birlikte); Hedef Mecra (Park listesi); × penceresinde çift tık.
+**ANA KONU: GİDER ÇEŞİDİ EKSENİ, sonra KART 1400 (5 Ekim 2026).** Kartlar arası raporlar (toplam seyahat, toplam araç kiralama, ayrıştırılmış gider grupları) bugünkü kodlarla alınamıyor. Öneri (Karar 5, Engin kabulü bekliyor): gider çeşidi ile fiş kategorisi tek, global, iki kademeli bir sözlük olur; kütüphane kalemi çeşidi taşır ve bütçe satırına kopyalar; kaleme bağlı fiş çeşidini kalemden okur; sınıf düzeltmesi yalnız mühürsüz bütçeleri günceller; kodlar ve aileler olduğu gibi kalır. Sıra: (1) Karar 5'in kabulü; (2) aday sözlüğün Engin ile gözden geçirilmesi (Hayvanlar, gri bölge kuralı, bağsız fişte saha kademesi, serbest kalemde çeşit); (3) bütçe ve fiş için tek şema ve tohum dilimi; (4) KART 1400 Karar 4 ve 4a (kütüphane listesi, 1406 gezi ailesi) ve Dilim 1 tohumu. Tam içerik: `docs/butce/BUTCE-SEMA-KARARLARI.md` GİDER ÇEŞİDİ EKSENİ; 1400: `docs/butce/KART-KATALOGU.md` §7.3. KART 1300'ün ortak motorlara bağlı kalanları: 1308'in üç bağı (Hukuk 6200 ve Sigorta 6105 kartları ile bağ motoru yok), görünürlük maskesi (kart görünürlük katmanı), ajans adı (1511 ve 1315 için aynı park). Deneme verisindeki eski hak devri satırları 0 görünür, elle yeniden yazılır. 1500'de bekleyenler: ajans adı; mühür yüzeyi (icmalle birlikte, kartlardan sonra); Hedef Mecra (Park listesi); × penceresinde çift tık.
 
 1. **Mac turları — MAKİNE YOK (24 Eylül 2026, Engin).** Mac gerçek cihaz turu (KLV kapanışı ve `v0.2-klv` etiketi buna bağlı) ve Mac Safari'de PDF içe aktarma denemesi (PDF ilk sürümünün tamam sayılması buna bağlı; Chrome'da doğrulandı) yapılamıyor. İkisi askıda; makine bulununca aynı oturumda yapılır.
 

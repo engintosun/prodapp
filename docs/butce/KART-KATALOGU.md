@@ -24,7 +24,7 @@ Bir kaynağı günlük kim kullanıyorsa kalem onun kartına yazılır. Kostüm 
 - Geliştirmeyi ayıran şey geri-ödeme (recoupable): greenlight'ta cepten harcanan kasadan/yatırımcıdan geri tahsil edilir; geliştirme orada biter.
 - Tüm geliştirme bu kartta tutulur (genel kartlara DAĞITILMAZ) — recoupment toplamı temiz okunsun diye. Yemek/ulaşım/konaklama artık 1108 altında ayrı atomlara bölünmüştür (Ulaşım-Uçak / Konaklama / Yemek-Ağırlama / Harcırah / Festival-Pazar Katılımı / Araç Kiralama — bkz. §7.1 kütüphane tohumu); gün/ay/adet kırılımı İSTEĞE BAĞLIDIR, paket (flat) birimi seçenek olarak kalır. REVİZE (DILIM 1100-A, 15 Ağustos 2026): önceki "tek toplu satır, kırılım YOK" kararı geçerliliğini yitirdi — kütüphane artık kırılımı destekliyor, kullanıcı ister tek paket kalemi ister ayrı atomlar ekler.
 - Plan + gerçekleşen ikisi de var; greenlight'ta otomatik "geri tahsil edilecek toplam: X TL" raporu.
-- Genel kural farkı: Geliştirme DIŞINDA ortak kalemler kendi genel kartlarında yaşar, etap etiketiyle ayrılır. Geliştirme recoupable olduğu için bilinçli istisna.
+- Genel kural farkı (düzeltildi 5 Ekim 2026, Engin): aynı cins ortak kalemlerin (seyahat, konaklama, ağırlama vb.) hem genel bir kartı olur (Seyahat & Konaklama: ekip geneli seyahat, konaklama, harcırah, yemek) hem de gereken kartlarda ayırt edilebilir aileleri (1100 Geliştirme, 1300 Senaryo Yazımı, 1500 Yönetmen birimi). Reddedilen yol, tümünü tek karta toplamaktır: ayrı kartta geliştirme maliyetine eklenemez; bir departmanın ya da kişinin toplam maliyeti kendi seyahatini içermeli; ekip ekonomi, yönetmen business uçar, otel maliyetleri farklıdır, ayrı kartta bunları yeniden ayırmak ek iştir. Geliştirme recoupable olduğu için kendi ailesini taşır. Kartlar arası toplam (toplam seyahat, toplam konaklama) kartla değil gider çeşidi ekseniyle alınır (BUTCE-SEMA-KARARLARI, GİDER ÇEŞİDİ EKSENİ).
 
 ## 4. KALEM DAVRANIŞ MOTORU ("not alanı" = davranış)
 "Not alanı" sadece serbest metin değil; kalemin kural/uyarı/alt-yapı motoru.
@@ -242,6 +242,34 @@ Eş adlar (`aliases`): 1301 Writers Room · 1306 Script Polish, Dramaturg. Prove
 > *  Bölüm / Tretman Yazarları (Episode Writers) Özellikle dizi/platform projelerinde (Yazar Odası - Writer's Room) ana senarist dışındaki bölüm veya tretman yazarları.
 
 ### 7.3 KART 1400 — YAPIMCI BİRİMİ ve FİNANSAL HAKLAR  [KİLİTLİ]
+
+**REVİZE (5 Ekim 2026, Engin kararları; KART 1400 açılışı).** Bu bölümün aşağıdaki eski metni 19 Haziran tasarımıdır; numaraları MMB 6.1 ile tutmaz (1300 ve 1500 emsali).
+
+- **MMB 6.1 HİZASI (Karar 1, kabul):** kodlar MMB 6.1'e hizalanır (kaynak: `docs/butce/MMB-6.1-ornek-hesap-plani.pdf`, 1400 Producers Unit). Beş yapımcı rolü ayrı kütüphane kalemidir: 1401 Executive Producer, 1402 Producer, 1403 Co-Producer, 1404 Line Producer, 1405 Associate Producer. Eski "1401 tek kalem + rol etiketi" tasarımı düştü; rol etiketi mekanizması kodda ve şemada yoktur. Çatal: iki rolü taşıyan kişi için kullanıcı tek kalemi seçer, öbürü kütüphanede kalır. 1404 eş adları: Coordinating Producer, Supervising Producer. Gerekçe ve kaynak doğrulaması: `docs/butce/KART-GEREKCELERI.md` KART 1400 REVİZE GEREKÇE.
+- **GENEL GİDER VE KÂR KALEM DEĞİL (Karar 2, özü kabul):** eski tarifteki 1404 Genel Gider Payı ve 1405 Yapımcı Kârı kalem olarak açılmaz; ikisi bütçenin dibinde yüzde satırıdır. Uygulaması (dipte Genel Gider satırı, zincirdeki yeri, hangi tutar üzerinden hesaplanacağı) icmal turuna park: `docs/EKRAN-MUHASEBE.md` §19 Ekran 1.
+- **ÖNERİLEN KÜTÜPHANE — KARARA BAĞLANMADI (Karar 4 ve 4a, açık):** gider çeşidi sözlüğünden sonra ele alınır; 1400 tohumu bekler. S = şablona girer, K = yalnız kütüphanede. Statüler Opus varsayımıdır, Engin düzeltecek.
+
+| Kod | Ad | EN | Birim | Statü | |
+|---|---|---|---|---|---|
+| 1401 | Yürütücü Yapımcı | Executive Producer | flat | sirket | S |
+| 1402 | Yapımcı | Producer | flat | sirket | S |
+| 1403 | Ortak Yapımcı | Co-Producer | flat | sirket | S |
+| 1404 | Uygulayıcı Yapımcı | Line Producer | flat | smm | S |
+| 1405 | Yardımcı Yapımcı | Associate Producer | week | smm | K |
+| 1406-01 | Ulaşım-Uçak | Air Travel | flat | sirket | K |
+| 1406-02 | Konaklama | Hotels / Accommodation | day | konaklama | K |
+| 1406-03 | Yemek-Ağırlama | Catering & Hospitality | flat | sirket | K |
+| 1406-04 | Harcırah | Per Diem | day | sirket | K |
+| 1406-05 | Festival Katılımı | Festival Attendance | flat | sirket | K |
+| 1406-06 | Araç Kiralama | Car Rentals | day | sirket | K |
+| 1407 | Yapım Yöneticisi | Production Executive | week | smm | K |
+| 1408 | Sekreterya | Secretaries | week | bordro | K |
+| 1409 | Yapımcı Birimi Ofis Giderleri | Office Expenses | flat | sirket | K |
+| 1410 | Araştırma | Research | flat | smm | K |
+| 1411 | Ajans Paketleme Komisyonu | Packaging Fee | flat | sirket | K |
+
+  Notlar: 1406 MMB'de boştur, numara Opus önerisidir; MMB yapımcı seyahatini 1700 A-T-L Travel/Living hesabında tutar (1701 Hotels, 1702 Travel, 1703 Per Diem, 1704 Car Rentals, 1705 Misc.). Gezi ailesinin kartta kalma gerekçesi: kart onay zinciri birimidir, 1300 ve 1500 seyahatini kendi kartında tutar; MMB 1700 numarası dışa aktarımda kod eşlemesiyle karşılanır. 1406-05 Festival Katılımı, 1508-05 gibi Pazarlama/Dağıtım kartı kurulurken oraya taşınacak kalemlerdendir. 1411'in 1511 ve 1315 komisyon düzenine bağlanıp bağlanmayacağı açıktır. Motor isteyen maddeler kartın tarifinde yazılı kalır, bugün kurulmaz: tam maske, Compliance Guard, 1102 mahsup denetimi, rol etiketi.
+
 Etap: ATL (kart birden çok etaba yayılır) · RECOUPABLE DEĞİL · görünürlük: TAM MASKE 🔒 (tüm kart set rollerine kapalı; "ticari yatak odası") · DB'de Muhasebe tam erişim · anomali her zaman aktif.
 
 A. Kreatif & İdari Yapımcı Kaşeleri (İşçilik/Hizmet — fringe binebilir, ödeme-statüsüne göre)
