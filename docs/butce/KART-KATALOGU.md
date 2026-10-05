@@ -174,11 +174,11 @@ Provenance tüm satırlarda: Koster/MMB + KAAPA damıtım. resmi_odeme statüsü
 ### 7.2 KART 1300 — SENARYO YAZIMI  [KİLİTLİ]
 Etap: Yapım Öncesi · RECOUPABLE DEĞİL · Geliştirme'ye bağı YOK (clearance dahil ayrı hesaplanır) · görünürlük: KISMİ MASKE 👁️ (1308 açılabilir; yazar kaşesi gizli).
 
-**REVİZE (KART 1300 Dilim 1, 3 Ekim 2026, Engin kararı; göç `20261003120000`):** Kodlar MMB 6.1'e hizalandı (kaynak: `docs/butce/MMB-6.1-ornek-hesap-plani.pdf`, 1300 Continuity & Treatment; Koster damıtımı aynı numaraları kullanır). Bu bölümün önceki numaraları (1302 Senaryo Doktoru, 1303 Danışmanlar, 1304 Araştırma, 1305 Senaryo Odası, 1306 Yasal Hak Temizleme, 1307 Süre Analizi, 1308 Lojistik, 1309 Ağırlama) geçersizdir. Kart DÜZ: kütüphane başlığı YOK (atomlarda `heading_id` boş), sıralama kod sırasıdır. Kütüphane 15 satır, şablon 5 kalem. Kart adı "Senaryo Yazımı".
+**REVİZE (KART 1300 Dilim 1, 3 Ekim 2026, Engin kararı; göç `20261003120000`):** Kodlar MMB 6.1'e hizalandı (kaynak: `docs/butce/MMB-6.1-ornek-hesap-plani.pdf`, 1300 Continuity & Treatment; Koster damıtımı aynı numaraları kullanır). Bu bölümün önceki numaraları (1302 Senaryo Doktoru, 1303 Danışmanlar, 1304 Araştırma, 1305 Senaryo Odası, 1306 Yasal Hak Temizleme, 1307 Süre Analizi, 1308 Lojistik, 1309 Ağırlama) geçersizdir. Kart DÜZ: kütüphane başlığı YOK (atomlarda `heading_id` boş), sıralama kod sırasıdır. Kütüphane 16 satır (1315 ile, 3 Ekim 2026), şablon 5 kalem. Kart adı "Senaryo Yazımı".
 
 **AD DÜZELTMESİ (3 Ekim 2026, Engin kararı; göç `20261003130000`):** Kartın adı "Senaryo Yazım ve Yasal Temizlik" iken "Senaryo Yazımı", 1308'in adı "Yasal Hak Temizleme" iken "Hukuki Uygunluk Raporu (Clearance)" oldu. Gerekçe: kaynakların hiçbiri bu bölümün adına hukuki ifade koymaz (MMB 6.1 "Continuity & Treatment", Koster damıtımı "senaryo yazım departmanı"); clearance raporu kartın bir kalemidir, kimliği değil. "Yasal Hak Temizleme" Türkçe kaynakta karşılığı olmayan kelime kelime çeviriydi; sektör bu işe "clearance" der, bu yüzden sözcük adın içinde yaşar. Kalem adında "senaryo" sözcüğü yoktur, çünkü kart zaten senaryo kartıdır. Ad 34 harftir, hızlı ekleme odasında tek satıra sığar. İngilizce ad (Legal Clearances) değişmedi. Bu bölümde eski adla geçen tek yer eski numaraların listesidir, o tarihçe olarak durur.
 
-**Kütüphane (15 satır):** S = şablona giren, K = yalnız kütüphanede.
+**Kütüphane (16 satır):** S = şablona giren, K = yalnız kütüphanede.
 
 | Kod | Ad | İngilizce | Birim | Ödeme statüsü | S/K |
 |---|---|---|---|---|---|
@@ -197,6 +197,7 @@ Etap: Yapım Öncesi · RECOUPABLE DEĞİL · Geliştirme'ye bağı YOK (clearan
 | 1312 | Senaryo Süre Analizi | Script Timing | flat | smm | S |
 | 1313 | Yazar Asistanı | Writer's Assistant | week | bordro | K |
 | 1314 | Bölüm/Tretman Yazarı | Episode Writers | episode | telif_belgeli | K |
+| 1315 | Yazar Temsilci Komisyonu | Literary Agent | flat | sirket | K |
 
 Eş adlar (`aliases`): 1301 Writers Room · 1306 Script Polish, Dramaturg. Provenance: MMB kalemleri 'Koster/MMB-6.1', 1305-xx 'Koster/MMB + KAAPA damitim', 1313 ve 1314 'KAAPA'.
 
@@ -209,6 +210,7 @@ Eş adlar (`aliases`): 1301 Writers Room · 1306 Script Polish, Dramaturg. Prove
 - 1308 Hukuki Uygunluk Raporu (Clearance), İngilizce adı Legal Clearances: 3 bağ → ait-kart=Senaryo (para burada) · onay-köprüsü=Hukuk (6200, departman admini onaylar) · risk-bayrağı=E&O (6105). cost_type=Hizmet/Hukuk. Motorun İLK kurulu örneği olacak. Görünürlük: set rollerine açılabilen istisna satırı. BUGÜN (3 Ekim 2026): bağların hiçbiri kurulu değil; 6200 ve 6105 kartları ve bağ motoru yok, kalem düz satır olarak doğar.
 - 1309 Sekreterya ve 1310 Ofis Giderleri: sinema bütçesinde genelde kullanılmaz; dizi ve platform işinde Yazar Odası kurulduğu için ayrı ofis ve asistan/sekreter gideri olur. MMB standardı için kütüphanede kalır.
 - 1314 Bölüm/Tretman Yazarı: dizi ve platform projelerinde ana senarist dışındaki bölüm ve tretman yazarları; birimi bölüm.
+- **1315 Yazar Temsilci Komisyonu ve senaristin hak devri (3 Ekim 2026, Engin kararı; göç `20261003140000`):** 1315 kütüphane kalemidir; şablondan %20 gelir, kullanıcı değiştirir. 1301 Senaryo Yazarı ve 1314 Bölüm/Tretman Yazarı satırlarına bağlanır (`attaches_to`) ve 1500'deki 1511 gibi "Kime?" sorusuyla yazarın altına alt satır olarak düşer. Taban, "ajans var, komisyon yok" (%0) ve silme kuralları 1511 ile aynıdır (§7.4); ajans adı aynı park maddesine tabidir. Komisyon bağlanınca yazarın para satırı "Telif Bedeli" alt adıyla görünür (`name_suffix`; 1500'deki "Hizmet Bedeli" karşılığı, çünkü senaristin ödemesi telif). Senarist için hak devri satırı AÇILMAZ. Gerekçe: CNC (19 Agents littéraires, 1911) ve Eurimages (Literary agent) yazarın ajansını ayrı satırda ister, ama hakkını ücretinden ayırmaz. CNC'de senaristin parası yalnız hak bölümündedir (11, 12); Eurimages'ta tek satırdır (Script Writer & co-writers, fees and rights); MMB 6.1'de 1202 ve 1301 Writers tek kalemdir. Yönetmende ayrım vardır (CNC 13 telif + personel bölümünde ücret); 1500'deki hak devri satırı bu yüzden vardır.
 - **SINIR (3 Ekim 2026, Engin kabulü):** 1100/1300 sınırı korunur. Hak satın alma ve opsiyon (1101-01..03), sunum dosyası ve görsel tasarım (1104-02, 1104-03), çeviri (1104-04), noter ve resmî harçlar (1106-05), senaryo raporu (1101-07) 1100'dedir; lab katılımı 1100'e 1104-06 olarak girdi. Fonlama sonrası çalışan dramaturg 1306'nın işidir (eş ad). Gerekçe: hak ve pitch giderleri 1300'e girerse greenlight'taki geri tahsil raporu onları kaçırır (§3).
 - **Alınmayan adaylar:** Yazar Primi (platform işi), Deşifre-Çeviri ve Readthrough (kaynakları reklam/post ya da set). Script Supervisor 2100'e aittir (KART-GEREKCELERI).
 
