@@ -38,3 +38,7 @@ Bir işin onay isteyip istemediği, işin EYLEM mi düşünme mi olduğuna bakı
 - Push sonrası origin'den bağımsız doğrulama.
 
 Sınır kuralı: onay EYLEMLERİ kapsar, düşünmeyi değil. Prompt yazmak, SQL koşmak ve commit izin ister; okumak ve analiz etmek istemez.
+
+## Göç sonrası doğrulama sorgusu (3 Ekim 2026, Engin onayı)
+
+Claude Code'un otomatik modu, `db push`'tan sonra koşulan salt okuma `npx supabase db query --linked` çağrılarını reddedebiliyor (3 Ekim 2026'da iki kez; push öncesi ön ölçüm sorguları geçti). Bu yüzden prompt doğrulama sorgusunu Sonnet'e koşturmaz: Sonnet'e, sorguyu Engin'e başında `!` olan TEK SATIR olarak vermesini ve çıktıyı beklemesini yazar; commit o çıktıdan sonra gelir. Kalıcı izin kuralı yazılmaz, çünkü kural `db query` çağrısının salt okuma mı yazma mı olduğunu ayırt edemez. Sorguda `$` kullanılmaz (jsonpath yerine `jsonb_agg` ya da alt sorgu), çünkü kabuk kaçışı yapıştırmada bozulabilir. Göç dosyasındaki `do $check$` bloğu yapısal koşulları zaten denetler; dış sorgu içeriği (adlar, sıralar) göstermek içindir.

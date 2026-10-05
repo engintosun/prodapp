@@ -149,7 +149,7 @@ varsayim yapilmaz.
 `src/app/muhasebe/budget/display-name.ts` (151) — kalem/özet satırının gösterilen adının TEK kaynağı (AD YERLEŞİMİ kararı, saf hesap)
 `src/app/muhasebe/budget/format.ts` (353) — fmt/parseNumericDraft + kütüphane arama + başlık grubu saf fonksiyonları
 `src/app/muhasebe/budget/heading-window.ts` (63) — Başlık penceresinin saf mantığı (liste, hedef süzmesi, geri alma paketleri)
-`src/app/muhasebe/budget/hooks/use-card-rows.ts` (263) — kart verisi yükleme (budgetId/cardId), ref senkronizasyonu
+`src/app/muhasebe/budget/hooks/use-card-rows.ts` (264) — kart verisi yükleme (budgetId/cardId), ref senkronizasyonu
 `src/app/muhasebe/budget/hooks/use-grid-navigation.ts` (283) — İ7 motorunun DOM bağlayıcısı, tuş olaylarını çekirdeğe delege eder
 `src/app/muhasebe/budget/person-bring.ts` (84) — Oyuncular listesi panosunun getirme mantığı: kartta olan/olmayan ayrımı, benzer ad uyarısı, görev sırası, düğmenin kendi listesi olan kartta çizilmesi
 `src/app/muhasebe/budget/person-groups.ts` (289) — kişi etiketine göre satır gruplama + orandan türetme; özet satırı ile komisyon satırı aynı hesabı paylaşır; tik kalkmış komisyon satırının seçimi (commissionRowsWithoutTick)

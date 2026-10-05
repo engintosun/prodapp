@@ -18,7 +18,7 @@ Aktif milestone: M2 — Çekirdek Döngü.
 Bu bölüm kasıtlı boş bırakılmıştır. "Sıradaki iş" için CURRENT.md'ye bak.
 
 ## Backlog (uzun vadeli, tarihsiz — CURRENT.md'nin "Sıradaki iş"ine henüz girmedi)
-- KART 1400 — 1500 modeli üzerinden geçilir. KART 1300 Dilim 1 3 Ekim 2026'da canlıya girdi (KART-KATALOGU §7.2). (KART 1100 TAMAMLANDI, 21 Ağustos 2026'da çift kayıttan çıkarıldı — bkz. Yapıldı bölümü.) KART 1600 5 Eylül 2026'da canlıya girdi (CURRENT.md Milestone); bu listeden 23 Eylül 2026'da çıkarıldı.
+- KART 1400 — 1500 modeli üzerinden geçilir. KART 1300 3 Ekim 2026'da tamamlandı (KART-KATALOGU §7.2). (KART 1100 TAMAMLANDI, 21 Ağustos 2026'da çift kayıttan çıkarıldı — bkz. Yapıldı bölümü.) KART 1600 5 Eylül 2026'da canlıya girdi (CURRENT.md Milestone); bu listeden 23 Eylül 2026'da çıkarıldı.
 - **DÜZELTME (17 Ağustos 2026, Engin):** yukarıdaki "1500 modeli üzerinden geçilir" cümlesi artık TÜM kartlar için geçerli DEĞİLDİR. 1500 ÇOĞU kartın modelidir; KART 1100 ve Oyuncu kartı (1600) kendi şekillerine sahiptir ve ikisi de 1500'den farklıdır. Somut fark: 1100'ün kodları iki seviyelidir (1101 başlık + 1101-01 atom, dokuz başlık), 1500'ünkiler düzdür (1501-1505, başlık satırı yok) — bu yüzden 1100 başlıklı çizilir, 1500 düz kalır. Model kart olmak "her kart aynı şekle girer" demek değildir.
 - G6 görsel tasarım (renk/tipografi/ikonografi/tema; tokens.css placeholder bekliyor) — KABUK'tan AYRI turdur (bkz. docs/TASARIM-KARARLARI.md §3, iki tema eşitliği kararı).
 - Şablon-tipi ("ne bütçesi: film/reklam/dizi") yer tutucusu.
