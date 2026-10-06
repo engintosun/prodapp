@@ -156,3 +156,4 @@ Bulgular tasinmaz, adresleri burada tutulur:
 - docs/butce/BUTCE-ARASTIRMA-DURUM.md — rakip taramasi notlari
 - docs/butce/KART-KATALOGU.md — hesap plani karsilastirmasi, cost_object / Saturation Tag karsilastirmasi
 - docs/butce/BUTCE-EKRAN-KARARLARI.md bolum 16 — Showbiz / MMB / Hot Budget satir-ekleme deseni karsilastirmasi
+- docs/rakip/GIDER-CESIDI-TARAMASI.md — gider çeşidi ekseni taraması (6 Ekim 2026): MMB, CNC, AICP, Hot Budget, Saturation, harcama yönetimi yazılımları, Tekdüzen 7/B

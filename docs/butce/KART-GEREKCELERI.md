@@ -12,6 +12,13 @@ Kartlar tek kaynaktan değil, iki katmanlı doğrulamayla kuruluyor:
 - **Master Excel (kütüphane eti + çapraz-doğrulama):** 4.746 kalem, 18+ kaynaktan (AICP 2023, Movie Magic, Eurimages, AFI, California Film Commission, 15 Saturation.io export'u [Netflix/BBC/HBO/CBC vb.], iki gerçek Türk yapım bütçesi). Her kalemin "kaç kaynakta geçtiği" sayısı, neyin evrensel neyin tek-kaynak olduğunu söyler.
 - **Eurimages + Türk bütçesi (bağlam):** net-of-VAT, fringe-inclusive, sorumlu-tarafa-maliyet konvansiyonu — KAAPA'nın kilitli kararlarıyla örtüşür.
 - **CNC bütçe formu (biçim ve kalem taraması; 3 Ekim 2026, Engin kararı):** Fransız CNC'nin standart sinema bütçe formu (devis détaillé CNC cinéma, 2018-01-24 sürümü, beş haneli): `docs/butce/CNC-devis-cinema-2018-5-chiffres.pdf`. Şablon formatı ve kalem taraması yapılırken Engin sorduğunda bu forma da bakılır. Örnek: formun ilk bölümü (Droits artistiques) senaristin parasını yalnız hak olarak taşır; yönetmeni ise hem burada (13, yönetmenlik telifi) hem personel bölümünde (ücret) taşır. 1500'deki hak devri satırının dayanağı bu ayrımdır.
+- **Kurum formları ve bütçe yazılımı kılavuzları (6 Ekim 2026'da indirildi; gider çeşidi taraması ve Hedef Mecra için, bulgular `docs/rakip/GIDER-CESIDI-TARAMASI.md`):** aşağıdaki dosyalar kaynak sitelerinden değiştirilmeden alındı.
+  - `docs/butce/ScreenAustralia-A-Z-feature-budget.xlsx` — Screen Australia A-Z Budget (Feature Films) (kaynak: https://www.screenaustralia.gov.au/wp-content/uploads/2026/02/A-Z-feature-budget.xlsx)
+  - `docs/butce/Telefilm-standard-production-budget.xlsx` — Telefilm Canada Standard Production Budget Template (kaynak: https://telefilm.ca/wp-content/uploads/2022/03/standard-budget-template-production.xlsx)
+  - `docs/butce/BFI-future-takes-production-budget.xlsx` — BFI Future Takes Production Budget Template (kaynak: https://core-cms.bfi.org.uk/media/41937/download)
+  - `docs/butce/AICP-bid-form.xlsm` — AICP Bid Form, Excel sürümü (2023 güncellemesi) (kaynak: https://aicp.nyc3.digitaloceanspaces.com/content/documents/AICP_bidform_2023_update.xlsm)
+  - `docs/butce/AICP-bid-form-2019.pdf` — AICP Bid Form 2019, PDF (kaynak: https://aicp.com/assets/editor/AICP_bidform_2019_FINAL.pdf)
+  - `docs/butce/HotBudget-3.0-user-guide.pdf` — Hot Budget 3.0 User Guide (kaynak: https://downloads.hotbudget.com/HotBudget_v3.0_UserGuide.pdf)
 
 Bir kart kilitlenmeden önce: Koster omurgayı verir → Master Excel kaynak-sayısı doğrular (bu kalem gerçekten evrensel mi?) → Eurimages/Türk bütçesi bağlamı oturtur → sonra kilitlenir.
 
