@@ -149,6 +149,14 @@
 - **Görev:** Oyuncular listesindeki hane; kişinin ne olduğunu söyler (başrol, yardımcı oyuncu, günlük oyuncu, dublör, dublör koordinatörü) ve değerleri katalog atomlarıdır. ROL ile karıştırılmaz: Rol karakterin adıdır, Görev kişinin işidir. Kart yerleşimi Görev hanesinden okunur (3 Eylül 2026).
 - **Oyuncular listesi:** rol ile oyuncuyu eşleştiren, etiketlerin yüzü olan liste. Ayrı bir defter DEĞİLDİR (bkz. KABUK-KARARLARI TANIM KATMANLARI).
 
+### Gider çeşidi terimleri (6 Ekim 2026)
+
+- **Gider çeşidi:** paranın neyin karşılığı olduğu (örneğin konaklama, ekipman kiralama, personel ücreti). Kartın (gider yeri, yani hangi departman) ve maliyet etiketinin (`cost_object`, yani hangi iş ya da kişi) yanındaki eksendir. Nasıl ödendiğini söylemez; onu ödeme statüsü söyler. Tek sözlükten gelir; kütüphane kalemi çeşidini taşır, kalem bütçeye eklenince çeşit satıra işlenir, mühürlü bütçede donar. Karar evi: BUTCE-SEMA-KARARLARI, GİDER ÇEŞİDİ EKSENİ. İngilizce alan adı şema diliminde verilir.
+- **Üst çeşit / alt çeşit:** sözlüğün iki kademesi (örneğin Seyahat ve Konaklama / Yolculuk Aracı Kiralama). Kalem alt çeşit taşır, üst çeşit ondan gelir. Departman adı sözlükte yer almaz; departman karttır.
+- **Doğa:** alt çeşidin kimseye sorulmadan taşıdığı işaret: işçilik, hizmet, mal, kira, hak, harç, finansman, ödenek, diğer.
+- **Tedarik:** alt çeşidin kimseye sorulmadan taşıdığı ikinci işaret: kiralama, satın alma, imalat.
+- **Kategori ile ilişkisi:** Ana Terimler'deki Kategori (`category`) fişin bugünkü sınıfıdır. Fiş tarafının bu sözlüğü nasıl kullanacağı fiş turunda konuşulur.
+
 ## Alan adlandırma doktrini (KİLİTLENDİ 2026-07-26)
 
 - Varsayılan içerik dili Türkçe, SONEK YOK: `name`, `description`, `internal_note`, `public_note`.

@@ -26,6 +26,14 @@ Bir kaynağı günlük kim kullanıyorsa kalem onun kartına yazılır. Kostüm 
 - Plan + gerçekleşen ikisi de var; greenlight'ta otomatik "geri tahsil edilecek toplam: X TL" raporu.
 - Genel kural farkı (düzeltildi 5 Ekim 2026, Engin): aynı cins ortak kalemlerin (seyahat, konaklama, ağırlama vb.) hem genel bir kartı olur (Seyahat & Konaklama: ekip geneli seyahat, konaklama, harcırah, yemek) hem de gereken kartlarda ayırt edilebilir aileleri (1100 Geliştirme, 1300 Senaryo Yazımı, 1500 Yönetmen birimi). Reddedilen yol, tümünü tek karta toplamaktır: ayrı kartta geliştirme maliyetine eklenemez; bir departmanın ya da kişinin toplam maliyeti kendi seyahatini içermeli; ekip ekonomi, yönetmen business uçar, otel maliyetleri farklıdır, ayrı kartta bunları yeniden ayırmak ek iştir. Geliştirme recoupable olduğu için kendi ailesini taşır. Kartlar arası toplam (toplam seyahat, toplam konaklama) kartla değil gider çeşidi ekseniyle alınır (BUTCE-SEMA-KARARLARI, GİDER ÇEŞİDİ EKSENİ).
 
+- **HAYVANLAR KARTI (6 Ekim 2026, Engin kabulü):** film şablonuna ayrı bir Hayvanlar kartı girer; hayvanla ilgili bütün giderler bu kartta durur: kiralama ya da alım, eğitmen ve bakıcı, nakliye, yem, barınak, veteriner. Kartın kodu, adı ve kütüphanesi kendi turunda. Kaynakların ortak noktası ekosistemi tek yerde tutmalarıdır, ayrıştıkları yer konumdur: MMB 6.1 ve Koster'da Property departmanında ayrı hesap (2508 Animals: Wrangler, Additional Wranglers, Animal Handlers, Training, Animal Rental, Transport, Food, Kennel/Stable/Cage/Box); CNC'de dekor-kostüm bloğunda ayrı başlık (55 Animaux); AICP'de aksesuar ve kostümle birlikte (Props, Wardrobe & Animals); Netflix'te oyun araçlarıyla birlikte kendi hesabı (2600 Picture Vehicles & Animals), HBO'da da aynı satırda. Bakılan kaynakların hiçbiri hayvanı oyuncuların içine koymaz. KAAPA'da tek yer ve tek onaycı kartın tanımıdır; kartı tek kişiye açmanın mekanizması BUTCE-EKRAN-KARARLARI §15'teki kart bazlı yetkidir (kurulmadı). Dublör emsalinden farkı: dublör bir oyuncudur, araç ve mekanik başka departmanların işidir; hayvan ise tek sorumlunun elinde paket olarak gelir. Kart aidiyeti koddan okunmadığı için katalog kodları MMB uyumlu kalabilir (1600'ün 16xx ve 39xx taşıması gibi). Film şablonuna girdiği için her film masasında şablon setiyle sıfır değerle durur. Sözlükteki karşılığı: BUTCE-SEMA-KARARLARI, GİDER ÇEŞİDİ EKSENİ, KARARLAR madde 3. Engin'in gerekçesi (birebir):
+
+> Hayvanlar konusunda ayrı kartm açalım yoksa departman bazlı mı olsun şu an düşünüyorum. kamera önü picture animals casta girebilir. ama bazı durumlarda sanat grubunun altına da gelebilir.
+>
+> Eğer hayvanı sadece "Sanat" kartının içine eklersek, o hayvanın yemi, ahır kirası veya veteriner faturası sanat yönetmeninin bütçesini şişirecek ve raporlamada kafa karışıklığı yaratacaktır. Aynı şekilde "Cast" içine koyarsak, oyuncu koçu ile hayvan eğitmeni birbirine girecektir.
+>
+> Ayrı bir ana kart açtığımızda tüm bu ekosistemi tek bir yerde toplayıp, harcama yetkisini (Saturation örneğindeki gibi) tek bir kişiye (Hayvan Eğitmeni veya ilgili prodüksiyon amirine) atayabiliriz. Bu yapım film şablonu için düşündüğüm sen ne diyorsun?
+
 ## 4. KALEM DAVRANIŞ MOTORU ("not alanı" = davranış)
 "Not alanı" sadece serbest metin değil; kalemin kural/uyarı/alt-yapı motoru.
 ### 4.1 Üç bağ
@@ -478,13 +486,13 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 - 3916 [K!] Dancers — Dansçı: koreografili sahne dansçıları. Statü: smm. [K]
 
 **Grup 4 — Kast Operasyonu** (hizmet/destek, talent değil)
-- 1605 [K!] Casting Director — Cast Direktörü: oyuncuları seçen/yöneten kişi. cost_type=Hizmet. Statü: smm. [Ç]
+- 1605 [K!] Casting Director — Cast Direktörü: oyuncuları seçen/yöneten kişi. cost_type=Hizmet (DEĞİŞTİ 6 Ekim 2026: gider çeşidi Personel Ücreti, gri bölge kuralı; BUTCE-SEMA-KARARLARI, GİDER ÇEŞİDİ EKSENİ). Statü: smm. [Ç]
 - 1609 [K!] Casting Assistant — Cast Asistanı. Statü: bordro. [Ç]
 - 1610 Screen Tests — Deneme Çekimi: seçme sürecindeki deneme çekimi gideri (Koster kökeni, damıtım satır 691). Statü: sirket. [Ç]
 - 1619 [K!] Casting Expenses — Cast Gideri: seçme sürecinin deneme çekimi dışındaki giderleri (1610'dan ayrıldı, 4 Eylül 2026 — bkz. aşağıdaki 1610/1619 AYRIMI). Statü: sirket. [Ç]
 - 1613 ADR / Looping — Dublaj: oyuncunun post diyalog yeniden-seslendirme seansı. Statü: smm (performans ücreti). ÇAPRAZ: 5300 Post Ses alias — stüdyo/miksaj orada (5300 kendi satırı, sadece işaretçi; çift-sayım denetimi). [Ç]
 - 1620 [K!] ADR Buyout — ADR Hak Devri: ADR/dublaj seansındaki performansın hak devri bedeli, 1613'ten ayrı satır. Statü: telif_belgeli (hak devri). [K]
-- 1615 Set Teacher — Set Öğretmeni: çocuk/minör oyuncuda ZORUNLU (compliance). cost_type=Hizmet. Statü: smm. [Ç]
+- 1615 Set Teacher — Set Öğretmeni: çocuk/minör oyuncuda ZORUNLU (compliance). cost_type=Hizmet (DEĞİŞTİ 6 Ekim 2026: gider çeşidi Personel Ücreti, gri bölge kuralı; BUTCE-SEMA-KARARLARI, GİDER ÇEŞİDİ EKSENİ). Statü: smm. [Ç]
 - 1612 Cast Musicians — Müzisyen: sahnede/kayıtta görünen müzisyenler. Statü: smm. [K]
 - 3913 Extras Casting — Arkaplan Oyuncusu Castingi: figüran/kalabalık seçim ajansı. Statü: sirket. [K]
 - 3914 Crowd Controllers — Kast Sorumlusu: set figüran/kalabalık sevki (Türk saha terimi). Statü: bordro. [K]
