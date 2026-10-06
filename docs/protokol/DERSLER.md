@@ -144,7 +144,7 @@ Hak devri düzeltilirken aynı turlara Hedef Mecra, uyarı metinleri, ölçümle
 
 ### Kapanışta Engin'in metnini özetlemek (1 Ekim 2026)
 
-30 Eylül kapanış promptu Engin'in hak devri metnini bir paragrafa sıkıştırdı; örnekler ve gerekçe düştü, ertesi gün Engin aynı şeyleri yeniden anlatmak zorunda kaldı. Metin önceki sohbetten bulunup §7.4'e birebir taşındı. KURAL: Engin'in özenle yazdığı gerekçe ve tasarım metni ev dosyasına birebir girer, özetlenmez.
+30 Eylül kapanış promptu Engin'in hak devri metnini bir paragrafa sıkıştırdı; örnekler ve gerekçe düştü, ertesi gün Engin aynı şeyleri yeniden anlatmak zorunda kaldı. Metin önceki sohbetten bulunup §7.4'e birebir taşındı. KURAL: Engin'in özenle yazdığı gerekçe ve tasarım metni ev dosyasına birebir girer, özetlenmez. **EK (6 Ekim 2026, Engin):** birebir, ifadenin korunması demektir. Bitişik ya da ayrık yazılmış kelime, eksik, fazla ya da yanlış harf ve fazla boşluk gibi klavye kaymaları düzeltilir; büyük-küçük harfe, kesme işaretine, kelime seçimine ve cümle yapısına dokunulmaz. Anlamı tahmin gerektiren düzeltme önce Engin'e sorulur. 6 Ekim 2026'da gider çeşidi kararları alıntılardaki kaymalarla yazılmıştı; aynı gün düzeltildi, eski alıntılar da bu ölçüyle temizlendi.
 
 ## Ters yönde bir kayıt
 
