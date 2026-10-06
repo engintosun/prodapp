@@ -91,7 +91,7 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 
 ## Durum
 
-- HEAD: cf13147 (5 Ekim 2026 — KART 1400 açılışı ve gider çeşidi tasarımı)
+- HEAD: 7d0bc6f (6 Ekim 2026 — Gider çeşidi: bütçe tarafı ve sözlük turu)
 - **FİLM ŞABLONU v7'NİN DÖRDÜNCÜ DÖNEMİ SAHADA DOĞRULANDI (5 Ekim 2026, Engin).** Yeni film bütçesinde dönem listesinde Dağıtım ve Pazarlama çıkıyor.
 - **CANLI VERİ DENEME VERİSİDİR (Engin, 31 Ağustos ve 1 Ekim 2026).** KAAPA yapım aşamasında; kimse kullanmıyor, yürüyen bütçe yok. Deneme verisi için çevirme, ölçüm, ara dönem ya da "canlıda dönüşü yok" kaygısı açılmaz; gerekirse deneme verisi silinip yeniden kurulur.
 - **`asks_person` KURALI ARTIK UYGULANDI (19 Eylül 2026).** Daha önce burada ve "Sıradaki iş"te "kararı var, uygulanmamış TEK iş" diye duran kayıt kapandı — göç `20260919120000` canlıda, sahada doğrulandı. Karar evi: `docs/butce/KART-KATALOGU.md` §7.5.

@@ -146,6 +146,14 @@ Hak devri düzeltilirken aynı turlara Hedef Mecra, uyarı metinleri, ölçümle
 
 30 Eylül kapanış promptu Engin'in hak devri metnini bir paragrafa sıkıştırdı; örnekler ve gerekçe düştü, ertesi gün Engin aynı şeyleri yeniden anlatmak zorunda kaldı. Metin önceki sohbetten bulunup §7.4'e birebir taşındı. KURAL: Engin'in özenle yazdığı gerekçe ve tasarım metni ev dosyasına birebir girer, özetlenmez. **EK (6 Ekim 2026, Engin):** birebir, ifadenin korunması demektir. Bitişik ya da ayrık yazılmış kelime, eksik, fazla ya da yanlış harf ve fazla boşluk gibi klavye kaymaları düzeltilir; büyük-küçük harfe, kesme işaretine, kelime seçimine ve cümle yapısına dokunulmaz. Anlamı tahmin gerektiren düzeltme önce Engin'e sorulur. 6 Ekim 2026'da gider çeşidi kararları alıntılardaki kaymalarla yazılmıştı; aynı gün düzeltildi, eski alıntılar da bu ölçüyle temizlendi.
 
+### Son anılan kaynağı tek ölçü yapmak (6 Ekim 2026)
+
+5 Ekim'de MMB, 6 Ekim'de CNC, Engin'in son andığı kaynak olduğu için tek ölçü yapıldı; 6 Ekim'de CNC'ye dayanan iki hüküm (harcama yerinin eksik eksen sayılması, senarist eşlemesinin yanlış ilan edilmesi) geri alındı. KURAL: MMB, CNC, Saturation, Showbiz, Wrapbook ve Yamdu birlikte tartılır; tek kaynağa dayanan hüküm tek kaynaklı olduğu söylenerek sunulur.
+
+### Kozmetik iş için pahalı prompt (6 Ekim 2026)
+
+Alıntılardaki klavye kaymalarını düzelten dilim 36 uzun satırı baştan yazdırdı ve 44 düzenlemeyle Engin'in limitinin yaklaşık %30'unu tüketti. KURAL: bir işin değeri ile maliyeti, iş önerilmeden önce birlikte söylenir.
+
 ## Ters yönde bir kayıt
 
 Sonnet'in DUR'ları üç kez haklı çıktı ve üçünde de canlıyı korudu: canlıda olmayan tablo zincire konmak üzereydi, ölü bir fonksiyon overload'ı taban alınmıştı, zorunlu alan eklemek kapsam dışı bir testi kırıyordu. Sonnet'in RAPORU doğrulama değildir ama DUR'u sinyaldir; incelenmeden geçilmez.
