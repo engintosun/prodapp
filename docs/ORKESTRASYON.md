@@ -48,3 +48,23 @@ GitHub `main` → (push) → Vercel build → statik PWA → tarayıcıda çalı
 - Edge function deploy mekanizması (CLI `supabase functions deploy` mı panel mi) ve repo↔deployed senkronu: **Faz 0.4**.
 - DB şifresi düz metin göründüyse reset (Settings→Database→Reset password); `service_role` kullanan edge fn'ler etkilenmez.
 - staging ortamı: M4 (şu an yalnız dev-local + prod-Vercel).
+
+## 7. Alan adı ve kurumsal posta (7 Ekim 2026)
+
+Kod zincirinin (bölüm 1-5) dışındadır: uygulama hâlâ Vercel adresinde çalışır; bu bölüm alan adlarını, kurumsal postayı ve kaapa.com.tr adresinin ne göstereceğini taşır.
+
+- **Alan adları (Türkticaret, turkticaret.net):** kaapa.com.tr, kaapa.tr, kaapa.info. Ad sunucuları `ns1.turkticaret.net`, `ns2.turkticaret.net`, `ns3.turkticaret.net`. DNS kayıtları Türkticaret panelinde girilir: Domain İşlemleri → DNS Yönetimi → kaapa.com.tr. "Nameserver Yönetimi" ayrı bir ekrandır, ad sunucularını başka firmaya taşır; DNS kaydı için kullanılmaz.
+- **Ana adres kaapa.com.tr (Engin kararı, 7 Ekim 2026).** kaapa.tr ve kaapa.info ona yönlenecek; yönlenme henüz KURULMADI.
+- **kaapa.com.tr tanıtım sayfasını gösterir (Engin kararı, 7 Ekim 2026).** Uygulama göstermeye hazır olmadığı için sayfa uygulamaya bağlantı vermez; uygulama prodapp-navy.vercel.app adresinde kalır. Uygulama hazır olduğunda kendi alt adresine (önerilen: app.kaapa.com.tr) taşınması ayrıca konuşulur. Sayfa iki dilli olacak (Türkçe ve İngilizce, Engin isteği); dilin nasıl seçileceği ve sayfanın görsel yönü açık, görsel yön G6'ya bağlı (`docs/TASARIM-KARARLARI.md` §3 ve §6).
+- **Kurumsal posta: Zoho Mail, ücretsiz plan** (Mail Free: 5 kullanıcıya kadar, kişi başı 5 GB; telefonun kendi posta uygulamasına IMAP bağlantısı yok, Zoho'nun uygulaması ve web ekranı var). Hesap Zoho'nun Amerika veri merkezinde. Gerekçe: taahhütsüz başlangıç ve sağlayıcıyı sonradan değiştirme serbestliği; değiştirilirse adres aynı kalır, yalnız DNS kayıtları değişir. Adres: engin@kaapa.com.tr (süper yönetici; gönderen adı "Engin Tosun", varsayılan imza "Kaapa"). Yönetim paneli mailadmin.zoho.com, posta mail.zoho.com.
+- **kaapa.com.tr DNS kayıtları (7 Ekim 2026; posta kayıtlarının hepsi Zoho'da doğrulandı):**
+  - TXT `@`: Zoho sahiplik doğrulaması.
+  - MX `@`: mx.zoho.com (öncelik 10), mx2.zoho.com (20), mx3.zoho.com (50).
+  - TXT `@`: SPF, `v=spf1 include:zohomail.com ~all`.
+  - TXT `zmail._domainkey`: DKIM açık anahtarı; değeri Zoho panelinde, Zoho'da DKIM açık.
+  - TXT `_dmarc`: DMARC izleme kipi, `p=none`; toplu ve adli raporlar engin@kaapa.com.tr adresine; SPF ve DKIM hizalaması rahat.
+  - A `@` ve CNAME `www`: Türkticaret park sayfası; tanıtım sayfası yayına girince Vercel'e bağlanacak.
+  Ölçüm: mail-tester.com puanı 10/10 (7 Ekim 2026).
+- **DNS yedeği:** Türkticaret DNS Yönetimi sayfasının altında "zohopostatamam" adıyla kayıtlı (7 Ekim 2026). Aynı listedeki isimsiz 13:34 kaydı posta kayıtları girilmeden ÖNCEKİ haldir; geri yüklenirse posta durur.
+- **Açık:** (1) A ve CNAME kayıtlarının tanıtım sayfası için Vercel'e bağlanması. (2) kaapa.tr ve kaapa.info yönlenmesi. (3) DMARC izleme kipinde; posta trafiği oturunca sıkılaştırılır.
+- Gizli değer repoya girmez: posta şifresi Zoho'da, Türkticaret girişi Engin'de.

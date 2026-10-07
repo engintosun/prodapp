@@ -91,7 +91,8 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 
 ## Durum
 
-- HEAD: 7d0bc6f (6 Ekim 2026 — Gider çeşidi: bütçe tarafı ve sözlük turu)
+- HEAD: e90c0c8 (7 Ekim 2026 — Alan adı ve kurumsal posta)
+- **KURUMSAL POSTA ÇALIŞIYOR (7 Ekim 2026).** engin@kaapa.com.tr Zoho Mail'de; MX, SPF, DKIM ve DMARC doğrulandı, mail-tester 10/10. Uygulama hâlâ prodapp-navy.vercel.app adresinde; kaapa.com.tr henüz Türkticaret park sayfasını gösteriyor. Ayrıntı: `docs/ORKESTRASYON.md` §7.
 - **FİLM ŞABLONU v7'NİN DÖRDÜNCÜ DÖNEMİ SAHADA DOĞRULANDI (5 Ekim 2026, Engin).** Yeni film bütçesinde dönem listesinde Dağıtım ve Pazarlama çıkıyor.
 - **CANLI VERİ DENEME VERİSİDİR (Engin, 31 Ağustos ve 1 Ekim 2026).** KAAPA yapım aşamasında; kimse kullanmıyor, yürüyen bütçe yok. Deneme verisi için çevirme, ölçüm, ara dönem ya da "canlıda dönüşü yok" kaygısı açılmaz; gerekirse deneme verisi silinip yeniden kurulur.
 - **`asks_person` KURALI ARTIK UYGULANDI (19 Eylül 2026).** Daha önce burada ve "Sıradaki iş"te "kararı var, uygulanmamış TEK iş" diye duran kayıt kapandı — göç `20260919120000` canlıda, sahada doğrulandı. Karar evi: `docs/butce/KART-KATALOGU.md` §7.5.
@@ -136,7 +137,7 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 - KART 1400 revizyonu (MMB hizası, genel gider ve kâr, önerilen kütüphane) → `docs/butce/KART-KATALOGU.md` §7.3
 - Ödeme statüsü kümesi ve Statü rehberi → `docs/butce/BUTCE-UI-MIMARISI.md`
 
-## Alınan kararlar (30 Eylül – 6 Ekim 2026, Engin)
+## Alınan kararlar (30 Eylül – 7 Ekim 2026, Engin)
 
 - **KART 1500 MMB 6.1'e hizalandı, kart DÜZ.** Kütüphane başlığı yok, sıralama kod sırası. Kalemler: 1501 Yönetmen Kaşesi · 1502 Yönetmen Özel Asistanı · 1503 Koreograf · 1504 Oyuncu/Diyalog Koçu · 1506 Storyboard ve Animatic Sanatçısı · 1507 Yönetmen Birimi Ofis Giderleri · 1508-01..06 · 1509 İkinci Ekip Yönetmeni · 1510 Konsept Sanatçısı; şablon 1501, 1502, 1503, 1504, 1506. 1505 boş. Eski 1508/1509 ayrımı kalktı, ikisi 1508-03 Yemek-Ağırlama'da. UYGULANDI (Dilim 1). Ev dosyası: `docs/butce/KART-KATALOGU.md` §7.4.
 - **KART 1500 Dilim 2 UYGULANDI (1 Ekim 2026): 1501-01 Yönetmen Hak Devri ve 1511 Yönetmen Temsilci Komisyonu.** Kayıt yapısı, adlar ve özet, isim yazma, "Kime?", komisyon tabanı, silme kuralları, %50 uyarısı. Hak devri 2 Ekim'de DÜZ SATIR oldu (iki kural ve kilit bırakıldı): kendi rakamını taşır, oran kutusu payı gösterir, uyarı %55'te. Ev: `docs/butce/KART-KATALOGU.md` §7.4 "HAK DEVRİ DÜZ SATIR".
@@ -160,6 +161,9 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 
 - **SERBEST KALEM (6 Ekim 2026):** serbest kalem çeşitsiz doğar, doğarken sorulmaz; raporlarda "çeşitsiz" satırında görünür. Sınıflandırmanın yeri raporlar tasarlanırken konuşulur. Ev: BUTCE-SEMA GİDER ÇEŞİDİ EKSENİ, KARARLAR madde 5.
 
+- **ANA ADRES kaapa.com.tr (7 Ekim 2026):** kaapa.tr ve kaapa.info ona yönlenir; kurumsal posta engin@kaapa.com.tr (Zoho Mail, ücretsiz plan). Ev: `docs/ORKESTRASYON.md` §7.
+- **kaapa.com.tr TANITIM SAYFASINI GÖSTERİR (7 Ekim 2026):** uygulama göstermeye hazır olmadığı için sayfa uygulamaya bağlantı vermez, uygulama prodapp-navy.vercel.app adresinde kalır; sayfa iki dilli (Türkçe ve İngilizce). Görsel yön ve dil seçimi açık. Ev: `docs/ORKESTRASYON.md` §7.
+
 ## Sıradaki iş
 
 **ANA KONU: GİDER ÇEŞİDİ EKSENİ, sonra KART 1400 (6 Ekim 2026).** Kartlar arası raporlar (toplam seyahat, toplam araç kiralama, ayrıştırılmış gider grupları) bugünkü kodlarla alınamıyor. Karar 5'in bütçe tarafı kabul edildi: tek sözlük; her kütüphane kalemi çeşidini taşır, çeşit bütçe satırına işlenir, mühürlü bütçede donar. Fiş tarafı ertelendi. Sözlük turunda yapı, Hayvan, gri bölge ve serbest kalem karara bağlandı. Sıra: (1) sözlük turunun kalanı (ad turu, alt çeşitlerin doğa ve tedarik işaretleri, kütüphane eşlemesi); (2) bütçe şeması ve tohum dilimi (sözlük tablosu, kütüphaneye ve bütçe satırına birer alan, iki fonksiyonda kopya; fişe dokunmaz); (3) KART 1400 Karar 4 ve 4a (kütüphane listesi, 1406 gezi ailesi) ve Dilim 1 tohumu. Tam içerik: `docs/butce/BUTCE-SEMA-KARARLARI.md` GİDER ÇEŞİDİ EKSENİ; 1400: `docs/butce/KART-KATALOGU.md` §7.3. KART 1300'ün ortak motorlara bağlı kalanları: 1308'in üç bağı (Hukuk 6200 ve Sigorta 6105 kartları ile bağ motoru yok), görünürlük maskesi (kart görünürlük katmanı), ajans adı (1511 ve 1315 için aynı park). Deneme verisindeki eski hak devri satırları 0 görünür, elle yeniden yazılır. 1500'de bekleyenler: ajans adı; mühür yüzeyi (icmalle birlikte, kartlardan sonra); Hedef Mecra (Park listesi); × penceresinde çift tık.
@@ -169,6 +173,12 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 2. **Giriş ekranında şifre alanı (24 Eylül 2026, Engin).** Şifre satırının sonunda şifreyi göster simgesi olacak, tıklanınca şifre görünecek; ayrıca "Şifremi unuttum" seçeneği olacak. İkincisi e-postayla şifre yenileme akışı demek; AUTH-KARARLARI ve giriş kodu okunmadan tasarlanmaz. Ne zaman konuşulacağını Engin söyleyecek.
 
 3. **Claude Code bulut oturumu (2 Ekim 2026, Engin: sonra konuşulacak).** Pro planın 100 dolarlık kredisi yalnız bulut oturumunda harcanıyor; kredi alındı ve repo bağlandı (3 Ekim 2026, Engin). Konuşulacaklar: dal kuralı (bulut oturumu yalnız kendi çalışma dalına itebiliyor, promptlar main'e itiyor), ortamın kurulum betiğinde `npm ci`, göç dilimleri için Supabase ağ izni ve erişim anahtarı.
+
+4. **Tanıtım sayfası ve Claude Startups başvurusu (7 Ekim 2026, Engin).** kaapa.com.tr'ye tanıtım sayfası kurulacak, ardından Anthropic'in Claude Startups programına başvurulacak. Sayfanın iskeleti konuşuldu: açılış vaadi, sorun, KAAPA ne yapar, neden farklı (Türk mevzuatı hesabın kendisi), kurucu, durum ve iletişim; uydurma müşteri, yorum ya da rakam yok. Görsel yön kararı BEKLİYOR: sayfanın G6'nın ilk adımı sayılıp yazı ailesi, tek vurgu rengi ve yazı-logonun dar tutularak karara bağlanması önerildi, cevaplanmadı. Önerilen koyu zemin `docs/TASARIM-KARARLARI.md` §3 İKİ TEMA EŞİTTİR kararıyla çelişiyor; görsel turda açık tema da tasarlanır. Rakip ana sayfa bulguları: `docs/RAKIP-ANALIZI-URUN.md` §4. Başvuru notu (kaynak claude.com/programs/startups, 7 Ekim 2026'da okundu; şartlar değişebilir, başvuru günü yeniden okunur):
+   - **Şart:** son 5 yılda kurulmuş ya da son 2 yılda fon almış girişim; Claude Console hesabı; web sitesinin alan adıyla eşleşen şirket e-postası (engin@kaapa.com.tr hazır); ne inşa edildiğinin kısa açıklaması. VC şartı yok.
+   - **Kazanım:** 1 yıl ücretsiz Claude Team (Team'e yeni gelen organizasyon, 5 Premium koltuğa kadar); 1.000 dolar API kredisi (verildikten 6 ay sonra sona erer, yalnız Claude Console API'sinde geçer); ortak firmalardan 45 bin dolara kadar teklif; Anthropic Applied AI ekibiyle iki haftada bir ofis saati.
+   - **Bedel:** Team ayrı bir organizasyondur; bugünkü hesabın sohbet geçmişi ve hafızası oraya taşınmaz (asıl hafıza repo olduğu için kayıp sınırlı). Team bir yıl, kredi altı ay sürer; iş akışı bunlara yaslanmaz.
+   - **Zayıf nokta:** yalnız giriş ekranı gösteren site; tanıtım sayfası ve iyi yazılmış bir "ne inşa ediyoruz" açıklaması bunu kapatır. Başvuruların çoğu dakikalar içinde, kalanı 2-3 iş gününde sonuçlanıyor.
 
 ## Açık kalanlar
 

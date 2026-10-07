@@ -184,3 +184,15 @@ KAYNAK UYARISI: asagidaki bulgular ureticilerin kendi pazarlama/karsilastirma sa
 KAAPA notu: KABUK-KARARLARI bolum 14 (8 Agustos 2026) bu desenle uyumludur.
 
 §2.2 BAGLANTISI: MMB ve Saturation'a 14 Haziran 2026 "ekran-hissi turunda" daha once bakilmis, bulgular hicbir dosyaya yazilmadigi icin kaybolmustu (§2.2). Yukaridaki iki satir o kaybin kismi telafisidir — ayni urunlere ikinci kez bakildi. Ders: tarama bulgusu ayni oturumda bu dosyaya yazilmazsa yok sayilir.
+
+---
+
+## 4. TANITIM SAYFALARI (7 Ekim 2026)
+
+**Kaynak:** saturation.io, wrapbook.com ve yamdu.com ana sayfaları; 7 Ekim 2026'da web okuyucusuyla metin olarak özetlendi, ekran görüntüsü alınmadı. Amaç: KAAPA tanıtım sayfasının iskeleti.
+
+- **Saturation:** tek cümlelik vaat (yapım ekipleri için finansal işletim sistemi) ve iki eylem düğmesi (ücretsiz başla, demo iste); hemen ardından kullanıcı sayısı, yönetilen bütçe hacmi ve müşteri logoları; sonra özellikler gerçek ekran görüntüleriyle (bütçe, onay akışı, kart, klavye kısayolları, Movie Magic ve Excel içe aktarma); şablonlar, müşteri hikâyeleri, dört kademeli açık fiyat, son eylem çağrısı.
+- **Wrapbook:** sorunla açılır (gidip gelme bitsin); "başla" ve "demo izle" düğmeleri; müşteri logoları ve rol adıyla yorumlar; bordro, harcama ve muhasebe üçlüsü tek şemada; ekibin sektör tecrübesi (7-30 yıl) ayrı bölümde kanıt olarak; film/TV ve reklam için ayrı sekmeler; ücretsiz araçlar (ücret bulucu, teşvik hesaplayıcı); fiyat yok, görüşmeye çağırır.
+- **Yamdu:** dağınık sistemler yerine tek doğru kaynak vaadi; "ücretsiz başla" ve "satışla görüş" düğmeleri; logolar, yapay zekâ özellikleri, özelliklerin derinlemesine anlatımı (senaryo içe aktarma, çekim planı, bütçe, zaman takibi, sürdürülebilirlik), entegrasyonlar, rol bazlı faydalar, güvenlik ve uyum, yorumlar, vaka çalışmaları; 11 dil.
+- **Ortak iskelet:** vaat → kanıt → nasıl çalışır → ekran → eylem. Üçü de kanıtı müşteri logosu ve sayıyla kurar; Wrapbook ayrıca ekibinin tecrübesiyle.
+- **KAAPA notu (bulgu, karar değil):** bugün müşteri logosu ve kullanıcı sayısı yok, uydurulmaz; dürüst kanıt kurucunun saha tecrübesi ve uygulamadan gerçek bir ekran karesidir. Üç ana sayfanın hiçbirinde Türk mevzuatı (SGK, stopaj) geçmiyor; KAAPA'nın ayırt edici cümlesi bu. Karar evi: CURRENT.md Sıradaki iş madde 4.
