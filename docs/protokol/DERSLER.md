@@ -20,7 +20,7 @@ Kayıt anlatı değil SINIFTIR: ne oldu değil, hangi tür hata kaç kez tekrarl
 
 **Desen ile bütünlük iddiası.** En sık tekrar eden sınıf. Grep bulur, BÜTÜNLÜK iddiası üretemez. Kayıtlı örnekler: INDEX bayatlık listesi grep'le çıkarıldı ve dört madde kaçtı (18 Ağustos); push doğrulamasında grep deseni yanlış pozitif üretti, yerinde duran madde "düşürüldü" sanıldı (17 Ağustos); silme tablo listesi metin taramasıyla çıkarıldı ve DROP TABLE satırlarını görmedi, canlıda olmayan tablo listeye girdi (22 Ağustos); optimizasyon turunda geçici tarayıcılar üç kez yanlış alarm verdi (22 Ağustos). Aynı oturumda (31 Ağustos 2026) iki yeni kayıt: Açıklama kolonunun dokunduğu yerler grep ile çıkarıldı; period-row.tsx ve add-item-row.tsx KAÇTI, çünkü o iki dosya hücreleri SAYARAK atlıyor ve ne "description" ne "açıklama" kelimesini geçiriyor — kusur Engin'in ekranından geri geldi: dönem satırları bir hane sağa kaymıştı. Bir doküman cümlesinin ("Bütçe Toplam = BRÜT") silindiği iddia edildi; arama deseni tırnak yüzünden bozuktu, cümle yerinde duruyordu — Sonnet'in raporu doğru, Opus'un tespiti yanlıştı. Karşılığı CLAUDE.md'deki "çıktı mühürlemeden önce kaynağa dön" kuralıdır, kapı değildir.
 
-**Yokluk iddiası desen eşleşmesiyle** — bir oturumda beş kez (18 Ağustos): "karara bağlanmamış" denen dört sorunun ikisi dosyada yazılıydı. 17 Eylül 2026: "tarayıcıda denenmedi" iddiasının CURRENT.md'de iki satırda durduğu söylendi; gerçekte dört satırdaydı. Arama `grep -i` ile yapılmıştı ve büyük harfli "DENENMEDİ"yi kaçırdı, çünkü Türkçe büyük İ harf duyarsız aramada küçük i ile eşleşmiyor. Dosyalar büyük harfli vurguyla dolu olduğu için (KARARA BAĞLANMADI, DOĞRULANDI) bu kaçak tekrar eder. Türkçe kelime aranırken büyük ve küçük biçim ayrı ayrı yazılır. Kural CLAUDE.md'ye kondu; kapısı yok. 30 Eylül 2026: iki kez. "Master liste repoda yok" tek bir İngilizce ad aratılarak söylendi, klasör listelenmemişti; dosya `docs/butce/` altındaydı. "Kütüphanede eş ad alanı yok" yalnız sonradan sütun ekleyen göçler taranarak söylendi, tabloyu kuran göç okunmamıştı; `aliases` ilk göçte vardı. Ders: yokluk, arama sonucundan değil kaynağın kendisinden (klasör listesi, tablonun tam sütun kümesi) okunur.
+**Yokluk iddiası desen eşleşmesiyle** — bir oturumda beş kez (18 Ağustos): "karara bağlanmamış" denen dört sorunun ikisi dosyada yazılıydı. 17 Eylül 2026: "tarayıcıda denenmedi" iddiasının CURRENT.md'de iki satırda durduğu söylendi; gerçekte dört satırdaydı. Arama `grep -i` ile yapılmıştı ve büyük harfli "DENENMEDİ"yi kaçırdı, çünkü Türkçe büyük İ harf duyarsız aramada küçük i ile eşleşmiyor. Dosyalar büyük harfli vurguyla dolu olduğu için (KARARA BAĞLANMADI, DOĞRULANDI) bu kaçak tekrar eder. Türkçe kelime aranırken büyük ve küçük biçim ayrı ayrı yazılır. Kural CLAUDE.md'ye kondu; kapısı yok. 30 Eylül 2026: iki kez. "Master liste repoda yok" tek bir İngilizce ad aratılarak söylendi, klasör listelenmemişti; dosya `docs/butce/` altındaydı. "Kütüphanede eş ad alanı yok" yalnız sonradan sütun ekleyen göçler taranarak söylendi, tabloyu kuran göç okunmamıştı; `aliases` ilk göçte vardı. Ders: yokluk, arama sonucundan değil kaynağın kendisinden (klasör listesi, tablonun tam sütun kümesi) okunur. 8 Ekim 2026: "çok dil kararı repoda yok" dendi; kayıt `docs/ARCHITECTURE.md` §2.2'de ("Çoklu dil desteği / lokalizasyon altyapısı", 6 Ağustos 2026 notuyla) duruyordu. Arama küçük harfle yapılmıştı, kayıt büyük Ç ile başlıyordu.
 
 **Ölçülmemiş sayı.** Tablo sayısı üç kez değişti (16 → 37 → 36 → 34+1), doğrusu ancak canlı katalogdan geldi (22 Ağustos). CLAUDE.md tavanı 8 KB olarak ölçülmeden kondu ve iki kez DUR'a takıldı (22 Ağustos). Ders: sayı, üretildiği kaynaktan alınır; yuvarlak sayı bir ölçüm değildir. 12 Eylül 2026'da tekrar etti: onay ekranında taşınacak satır sayısı 44 denildi, kapanış raporunda 41 (32+9) çıktı, ve aynı dilimde koşulan salt okuma sorgusu geride hiç satır olmadığını gösterdi — yani 44 hiç ölçülmemişti. Onay ekranına yazılan sayı, onay ANINDA kaynaktan okunmuş olmak zorundadır. 19 Eylül 2026: "INDEX'te kaç dosya eksik" sorusuna, elde duran beş dosya adı INDEX'te aratılıp "dört" dendi. Tam ölçümde (bölüm 2'nin iddia ettiği yollar ile diskteki kaynak dosyaların karşılaştırılması) on çıktı. Örnek sayımı bütünlük iddiası değildir; sayı kaynaktan sayılmadan söylenmez.
 
@@ -153,6 +153,26 @@ Hak devri düzeltilirken aynı turlara Hedef Mecra, uyarı metinleri, ölçümle
 ### Kozmetik iş için pahalı prompt (6 Ekim 2026)
 
 Alıntılardaki klavye kaymalarını düzelten dilim 36 uzun satırı baştan yazdırdı ve 44 düzenlemeyle Engin'in limitinin yaklaşık %30'unu tüketti. KURAL: bir işin değeri ile maliyeti, iş önerilmeden önce birlikte söylenir.
+
+### Dokümandaki olguyu doğrulamadan dışarı taşımak (8 Ekim 2026)
+
+Tanıtım sayfasının ilk taslağına verilerin İstanbul'da durduğu yazıldı; dayanak CLAUDE.md, INDEX ve ORKESTRASYON'daki "AWS İstanbul, KVKK" kaydıydı. Kayıt yanlıştı: Supabase'de Türkiye bölgesi yok. İç dokümandaki yanlış, dışarıya dönük sayfada müşteriye verilen bir söze dönüşecekti; 3. sürümde yok. KURAL: dokümandaki bir olgu sayfaya, forma ya da başvuruya girmeden önce kaynağında doğrulanır; doküman kendi cümlesinin kanıtı değildir.
+
+### Yapım hâlindeki ürünü kodda var mı ölçüsüyle tartmak (8 Ekim 2026)
+
+KAAPA'nın farkı sorulduğunda değerlendirme kodda olanla olmayanı ayırarak yapıldı; kararı verilmiş ama sırası gelmemiş özellikler fark sayılmadı. Engin: "kodda var mı yok mu diye bakman kadar anlamsız bir şey olabilir mi ya? bitmiş bir yazılım değil ki bu." KURAL: bir fikrin değeri karar dosyalarından okunur; kodun durumu yalnız Durum satırında söylenir.
+
+### Ürünü tek özelliğe indirgemek (8 Ekim 2026)
+
+KAAPA'nın farkı önce yalnız yasal yük diye anlatıldı; Engin öğreten yanını örnek verince bu kez her şey öğretene bağlandı. Engin: "sürekli aynı şeylere takılıyorsun". KURAL: ayırt edici yönler ayrı ayrı ve eşit ağırlıkla sayılır; kullanıcının verdiği örnek listenin yeni merkezi yapılmaz.
+
+### İkinci temayı birinciden türetmek (9 Ekim 2026)
+
+Tanıtım sayfasının koyu teması açık temanın renkleri karartılarak üretildi: mühür bordosu pembeye döndü, kâğıt yüzeyler zeminden ayrılmadı. `docs/TASARIM-KARARLARI.md` §3 iki temayı eşit sayar; kural 7 Ekim notunda bile anılıyordu. KURAL: yüzeyi yöneten karar dosyası tasarımdan önce okunur ve uygulanır; iki tema eşitse ikisi de ayrı tasarlanır.
+
+### Araştırma bulgusunu aynı oturumda kaydetmemek (8 Ekim 2026)
+
+8 Ekim'de tanıtım sayfası için dokuz ürün tarandı; bulgular sohbette kaldı, bağlam sıkıştırılınca kaynaklı rakamlar kayboldu, repoda yalnız adlar var (`docs/RAKIP-ANALIZI-URUN.md` §5). Aynı oturumda şirket kuruluş maliyetlerinin kaynak bağlantıları da dosyaya yazılmadı (`docs/GIRISIM.md` §3). Sınıfın önceki vakası 14 Haziran 2026 ekran-hissi turudur (RAKIP §2.2 ve §3). Karşı örnek: 9 Ekim destek araştırmasının notları üretildikleri anda dosyaya yazıldı ve sağ kaldı (`docs/girisim/`). KURAL: bulgu üretildiği anda bir dosyaya yazılır; dosya kapanışta repoya girer.
 
 ## Ters yönde bir kayıt
 

@@ -16,8 +16,11 @@ case "$cmd" in *"git commit"*) ;; *) exit 0 ;; esac
 now=$({ git rev-parse HEAD; git diff --cached; } | sha256sum | cut -d' ' -f1)
 [ "$(cat .claude/.gate-ok)" = "$now" ] || fail "damga bayat: kapilardan sonra icerik degisti, run-gates.sh tekrar calistir"
 
+# Baglanti adresleri duzyazi degildir: URL icindeki ASCII kelime TD-32 sayilmaz,
+# kelime denetiminden once ayiklanir (9 Ekim 2026; arastirma notlarindaki kaynak
+# adresleri commit'i reddediyordu).
 for f in $(git diff --cached --name-only --diff-filter=ACM | grep '\.md$' || true); do
-  added=$(git diff --cached -U0 -- "$f" | grep '^+' | grep -v '^+++' || true)
+  added=$(git diff --cached -U0 -- "$f" | grep '^+' | grep -v '^+++' | sed -E 's#https?://[^[:space:])>]+##g' || true)
   if printf '%s' "$added" | grep -qiE '\b(icin|calis|degis|gecis|yazil|olcum|karari|acilis|kapanis|dosyasi|uretim|sadelestir)\b'; then
     fail "$f icinde Turkce karaktere dusmemis metin var (TD-32 sinifi)"
   fi

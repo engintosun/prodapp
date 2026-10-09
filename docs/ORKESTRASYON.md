@@ -5,7 +5,7 @@
 ## 1. Üç platform — GitHub tek kaynak
 - **GitHub** (engintosun/prodapp, `main` = tek kaynak): tüm kod + DB migrations + edge function kaynağı burada.
 - **Vercel** (https://prodapp-navy.vercel.app): frontend hosting.
-- **Supabase** (proje `owadnnmtnfuzobyxtcxf`, AWS İstanbul / KVKK): DB + RLS + edge functions + auth + storage.
+- **Supabase** (proje `owadnnmtnfuzobyxtcxf`, AWS İrlanda, eu-west-1): DB + RLS + edge functions + auth + storage.
 
 ## 2. Deploy akışı — ASİMETRİK (kritik)
 **Frontend → Vercel: OTOMATİK.**
@@ -48,6 +48,7 @@ GitHub `main` → (push) → Vercel build → statik PWA → tarayıcıda çalı
 - Edge function deploy mekanizması (CLI `supabase functions deploy` mı panel mi) ve repo↔deployed senkronu: **Faz 0.4**.
 - DB şifresi düz metin göründüyse reset (Settings→Database→Reset password); `service_role` kullanan edge fn'ler etkilenmez.
 - staging ortamı: M4 (şu an yalnız dev-local + prod-Vercel).
+- **KVKK, yurt dışına aktarım (9 Ekim 2026, açık):** Supabase'de Türkiye bölgesi yok; veritabanı bölüm 1'de yazan AWS bölgesinde, Türkiye dışında duruyor. Bu dosyada, CLAUDE.md'de ve INDEX.md'de yazan "AWS İstanbul, KVKK" bilgisi yanlıştı, 9 Ekim 2026'da düzeltildi. Kişisel verinin yurt dışına aktarımına dair KVKK şartları (madde 9) ve KAAPA'nın buna göre ne yapacağı araştırılmadı, karara bağlanmadı. Bugün canlıdaki veri deneme verisidir; konu gerçek kullanıcı verisinden önce ele alınır. Genel KVKK kuralları: `docs/ARCHITECTURE.md` PARKUR NOTLARI.
 
 ## 7. Alan adı ve kurumsal posta (7 Ekim 2026)
 
@@ -55,7 +56,7 @@ Kod zincirinin (bölüm 1-5) dışındadır: uygulama hâlâ Vercel adresinde ç
 
 - **Alan adları (Türkticaret, turkticaret.net):** kaapa.com.tr, kaapa.tr, kaapa.info. Ad sunucuları `ns1.turkticaret.net`, `ns2.turkticaret.net`, `ns3.turkticaret.net`. DNS kayıtları Türkticaret panelinde girilir: Domain İşlemleri → DNS Yönetimi → kaapa.com.tr. "Nameserver Yönetimi" ayrı bir ekrandır, ad sunucularını başka firmaya taşır; DNS kaydı için kullanılmaz.
 - **Ana adres kaapa.com.tr (Engin kararı, 7 Ekim 2026).** kaapa.tr ve kaapa.info ona yönlenecek; yönlenme henüz KURULMADI.
-- **kaapa.com.tr tanıtım sayfasını gösterir (Engin kararı, 7 Ekim 2026).** Uygulama göstermeye hazır olmadığı için sayfa uygulamaya bağlantı vermez; uygulama prodapp-navy.vercel.app adresinde kalır. Uygulama hazır olduğunda kendi alt adresine (önerilen: app.kaapa.com.tr) taşınması ayrıca konuşulur. Sayfa iki dilli olacak (Türkçe ve İngilizce, Engin isteği); dilin nasıl seçileceği ve sayfanın görsel yönü açık, görsel yön G6'ya bağlı (`docs/TASARIM-KARARLARI.md` §3 ve §6).
+- **kaapa.com.tr tanıtım sayfasını gösterir (Engin kararı, 7 Ekim 2026).** Uygulama göstermeye hazır olmadığı için sayfa uygulamaya bağlantı vermez; uygulama prodapp-navy.vercel.app adresinde kalır. Uygulama hazır olduğunda kendi alt adresine (önerilen: app.kaapa.com.tr) taşınması ayrıca konuşulur. Sayfa iki dilli olacak (Türkçe ve İngilizce, Engin isteği). Taslağın durumu, görsel yönü, dil seçimi ve G6 ile ilişkisi: `docs/GIRISIM.md` bölüm 1 (9 Ekim 2026).
 - **Kurumsal posta: Zoho Mail, ücretsiz plan** (Mail Free: 5 kullanıcıya kadar, kişi başı 5 GB; telefonun kendi posta uygulamasına IMAP bağlantısı yok, Zoho'nun uygulaması ve web ekranı var). Hesap Zoho'nun Amerika veri merkezinde. Gerekçe: taahhütsüz başlangıç ve sağlayıcıyı sonradan değiştirme serbestliği; değiştirilirse adres aynı kalır, yalnız DNS kayıtları değişir. Adres: engin@kaapa.com.tr (süper yönetici; gönderen adı "Engin Tosun", varsayılan imza "Kaapa"). Yönetim paneli mailadmin.zoho.com, posta mail.zoho.com.
 - **kaapa.com.tr DNS kayıtları (7 Ekim 2026; posta kayıtlarının hepsi Zoho'da doğrulandı):**
   - TXT `@`: Zoho sahiplik doğrulaması.

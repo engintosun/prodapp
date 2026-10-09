@@ -21,7 +21,7 @@ varsayim yapilmaz.
 ## 1. REPO ÖZETİ
 
 - KAAPA: sinema/TV prodüksiyon harcama yönetimi SaaS — bütçe modülü (kart/kalem planlama) + harcama/onay akışı (fiş/dönem/onay) iki ayrı doktrin taşır.
-- Stack: React 19.2.6 + TypeScript 6.0.2 + Vite 8.0.12 (PWA) · Supabase (PostgreSQL, AWS İstanbul, KVKK) · Vercel deploy.
+- Stack: React 19.2.6 + TypeScript 6.0.2 + Vite 8.0.12 (PWA) · Supabase (PostgreSQL, AWS İrlanda, eu-west-1) · Vercel deploy.
 - Mimari katman ayrımı (ARCHITECTURE 5.2/5.3): veri (`shared/supabase/*-service.ts`, Supabase SDK doğrudan) → iş mantığı (saf fonksiyon, `shared/cfe/`) → UI (rol-bazlı `app/{rol}/` ekranları) → orkestrasyon (`*-screen.tsx`).
 - Dizin ilkesi: ekranlar role göre (`saha/dept/muhasebe/reviewer/onboarding/auth/layout`), ortak kod `shared/` altında (özellik-bazlı değil).
 - Ölçü (21 Eylül 2026'da ölçüldü): 78 kaynak dosya (`src/**/*.ts,tsx`, test hariç) · 65 migration (baseline + 64 sonraki göç) · 3 edge function · 20 test dosyası. Test sayısı burada taşınmaz, `.claude/test-count` dosyasında yaşar.
@@ -250,6 +250,7 @@ KALICILIK KURALI gereği her karar CURRENT.md'ye VE kendi özel ev dosyasına ya
 | Oturum açılış ve kapanış prosedürü, prompt biçimi | `docs/protokol/ACILIS.md`, `KAPANIS.md`, `PROMPT.md` |
 | Tekrar eden kusur sınıfları ve dersleri | `docs/protokol/DERSLER.md` |
 | Bir daha tartışılmayacak değişmez | `docs/DEGISMEZLER.md` |
+| Şirket, fon, program başvurusu, tanıtım sayfası | `docs/GIRISIM.md` |
 
 Şema araştırılırken: güncel şema = baseline + sonraki TÜM göçler. Baseline bayat tabandır, göçler kronolojik okunur. Eski `supabase/SUPABASE-*.sql` ve `full-rebuild.sql` dosyaları `docs/archive/` altındadır, tarihsel referanstır.
 
@@ -270,6 +271,12 @@ Bu tarih burada TEK yerde yaşar; dosyaların kendi içinde "Son güncelleme" ba
 `docs/butce/KART-GEREKCELERI.md` [MUHURLU] (dogrulama: 16 Ağustos 2026) — Çapraz-doğrulama yöntemi · KART 1100/1300/1400/1500/1600 gerekçeleri · 1100 üç yeni atom gerekçesi + damıtımın açık sorusunun kapanması (15 Ağustos 2026) · Genel eğitim notları · kod: yok
 `docs/RAKIP-ANALIZI-URUN.md` [KAYNAK] (dogrulama: 14 Ağustos 2026) — YAMDU · Diğer rakipler · kod: yok
 `docs/RAKIP-ANALIZI-OCR.md` [KAYNAK] (dogrulama: 22 Haziran 2026) — Global/Türkiye firmaları · Bağımsız benchmark verileri · Sektör yaklaşım modelleri · KAAPA çıkarımları/kararlar · kod: yok
+`docs/GIRISIM.md` [AKAN] (dogrulama: 9 Ekim 2026) — Tanıtım sayfası · Claude Startups · Şirket kuruluşu · BiGG Yatırım · Destek araştırması · kod: yok
+`docs/girisim/DESTEK-ARASTIRMASI-2026-10.md` [KAYNAK] (dogrulama: 9 Ekim 2026) — Destek araştırması ana raporu · kod: yok
+`docs/girisim/notlar/turkiye-kamu-destekleri.md` [KAYNAK] (dogrulama: 9 Ekim 2026) — Türkiye kamu destekleri notu · kod: yok
+`docs/girisim/notlar/turkiye-ozel-yatirim.md` [KAYNAK] (dogrulama: 9 Ekim 2026) — Türkiye özel yatırım notu · kod: yok
+`docs/girisim/notlar/uluslararasi-programlar.md` [KAYNAK] (dogrulama: 9 Ekim 2026) — Uluslararası programlar notu · kod: yok
+`docs/girisim/notlar/pazar-ve-degerlendirme.md` [KAYNAK] (dogrulama: 9 Ekim 2026) — Pazar ve değerlendirme notu · kod: yok
 `docs/butce/BUTCE-ARASTIRMA-DURUM.md` [KAYNAK] (dogrulama: 1 Ağustos 2026) — Yapılan/önerilen kart listesi · Açık kararlar · 2026 yeni-nesil ihtiyaçlar · Faz 1 bekleyen (kod) · kod: yok
 `docs/butce/KAAPA_damitim_Koster_TUM-BOLUMLER.md` [KAYNAK] — Koster hesap-bazlı prodüksiyon mantığı damıtımı (1100-6400) · KAAPA'ya bağlanış katmanı · kod: yok
 `docs/ORKESTRASYON.md` [AKAN] (dogrulama: 22 Haziran 2026) — Üç platform/GitHub tek kaynak · Deploy akışı (asimetrik) · Edge functions · Secret haritası · kod: supabase/functions/** + deploy zinciri

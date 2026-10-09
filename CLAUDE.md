@@ -4,7 +4,7 @@ Her oturum bu dosyayla başlar. **Tavan 10 KB.** Bu dosya yalnız her oturumda g
 
 ## Proje kimliği
 KAAPA — sinema/TV prodüksiyon harcama yönetimi SaaS. (Repo adı: prodapp; ürün adı her zaman KAAPA.)
-Stack: React 19 + TS + Vite PWA · Supabase (AWS İstanbul, KVKK) · Vercel. Canlı: prodapp-navy.vercel.app.
+Stack: React 19 + TS + Vite PWA · Supabase (AWS İrlanda, eu-west-1) · Vercel. Canlı: prodapp-navy.vercel.app.
 Dil: chat Türkçe; kod İngilizce (değişken/fonksiyon/dosya/commit/yorum); dokümanlar Türkçe.
 
 ## Nerede ne yaşar

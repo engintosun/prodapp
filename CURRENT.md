@@ -91,7 +91,7 @@ M2 — Çekirdek Döngü. Bütçe: kavram + şema + DB temeli + göç CANLI; kar
 
 ## Durum
 
-- HEAD: e90c0c8 (7 Ekim 2026 — Alan adı ve kurumsal posta)
+- HEAD: 2a90706 (9 Ekim 2026 — Tanıtım sayfası ve destek araştırması)
 - **KURUMSAL POSTA ÇALIŞIYOR (7 Ekim 2026).** engin@kaapa.com.tr Zoho Mail'de; MX, SPF, DKIM ve DMARC doğrulandı, mail-tester 10/10. Uygulama hâlâ prodapp-navy.vercel.app adresinde; kaapa.com.tr henüz Türkticaret park sayfasını gösteriyor. Ayrıntı: `docs/ORKESTRASYON.md` §7.
 - **FİLM ŞABLONU v7'NİN DÖRDÜNCÜ DÖNEMİ SAHADA DOĞRULANDI (5 Ekim 2026, Engin).** Yeni film bütçesinde dönem listesinde Dağıtım ve Pazarlama çıkıyor.
 - **CANLI VERİ DENEME VERİSİDİR (Engin, 31 Ağustos ve 1 Ekim 2026).** KAAPA yapım aşamasında; kimse kullanmıyor, yürüyen bütçe yok. Deneme verisi için çevirme, ölçüm, ara dönem ya da "canlıda dönüşü yok" kaygısı açılmaz; gerekirse deneme verisi silinip yeniden kurulur.
@@ -136,6 +136,7 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 - Gider çeşidi ekseni (bütçe tarafı kabul edildi, fiş tarafı ertelendi; 6 Ekim 2026): kararlar, aday sözlük, kütüphane eşlemesi, sandbox kanıtı, reddedilen yollar → `docs/butce/BUTCE-SEMA-KARARLARI.md` GİDER ÇEŞİDİ EKSENİ
 - KART 1400 revizyonu (MMB hizası, genel gider ve kâr, önerilen kütüphane) → `docs/butce/KART-KATALOGU.md` §7.3
 - Ödeme statüsü kümesi ve Statü rehberi → `docs/butce/BUTCE-UI-MIMARISI.md`
+- Girişim: tanıtım sayfası, program başvuruları, şirket kuruluşu, BiGG ve destek araştırması → `docs/GIRISIM.md` (araştırma kaynakları `docs/girisim/`)
 
 ## Alınan kararlar (30 Eylül – 7 Ekim 2026, Engin)
 
@@ -174,11 +175,7 @@ Aşağıdaki konuların TAM metni kendi ev dosyasındadır; CURRENT.md kopya ta�
 
 3. **Claude Code bulut oturumu (2 Ekim 2026, Engin: sonra konuşulacak).** Pro planın 100 dolarlık kredisi yalnız bulut oturumunda harcanıyor; kredi alındı ve repo bağlandı (3 Ekim 2026, Engin). Konuşulacaklar: dal kuralı (bulut oturumu yalnız kendi çalışma dalına itebiliyor, promptlar main'e itiyor), ortamın kurulum betiğinde `npm ci`, göç dilimleri için Supabase ağ izni ve erişim anahtarı.
 
-4. **Tanıtım sayfası ve Claude Startups başvurusu (7 Ekim 2026, Engin).** kaapa.com.tr'ye tanıtım sayfası kurulacak, ardından Anthropic'in Claude Startups programına başvurulacak. Sayfanın iskeleti konuşuldu: açılış vaadi, sorun, KAAPA ne yapar, neden farklı (Türk mevzuatı hesabın kendisi), kurucu, durum ve iletişim; uydurma müşteri, yorum ya da rakam yok. Görsel yön kararı BEKLİYOR: sayfanın G6'nın ilk adımı sayılıp yazı ailesi, tek vurgu rengi ve yazı-logonun dar tutularak karara bağlanması önerildi, cevaplanmadı. Önerilen koyu zemin `docs/TASARIM-KARARLARI.md` §3 İKİ TEMA EŞİTTİR kararıyla çelişiyor; görsel turda açık tema da tasarlanır. Rakip ana sayfa bulguları: `docs/RAKIP-ANALIZI-URUN.md` §4. Başvuru notu (kaynak claude.com/programs/startups, 7 Ekim 2026'da okundu; şartlar değişebilir, başvuru günü yeniden okunur):
-   - **Şart:** son 5 yılda kurulmuş ya da son 2 yılda fon almış girişim; Claude Console hesabı; web sitesinin alan adıyla eşleşen şirket e-postası (engin@kaapa.com.tr hazır); ne inşa edildiğinin kısa açıklaması. VC şartı yok.
-   - **Kazanım:** 1 yıl ücretsiz Claude Team (Team'e yeni gelen organizasyon, 5 Premium koltuğa kadar); 1.000 dolar API kredisi (verildikten 6 ay sonra sona erer, yalnız Claude Console API'sinde geçer); ortak firmalardan 45 bin dolara kadar teklif; Anthropic Applied AI ekibiyle iki haftada bir ofis saati.
-   - **Bedel:** Team ayrı bir organizasyondur; bugünkü hesabın sohbet geçmişi ve hafızası oraya taşınmaz (asıl hafıza repo olduğu için kayıp sınırlı). Team bir yıl, kredi altı ay sürer; iş akışı bunlara yaslanmaz.
-   - **Zayıf nokta:** yalnız giriş ekranı gösteren site; tanıtım sayfası ve iyi yazılmış bir "ne inşa ediyoruz" açıklaması bunu kapatır. Başvuruların çoğu dakikalar içinde, kalanı 2-3 iş gününde sonuçlanıyor.
+4. **Girişim: tanıtım sayfası, başvurular, şirket ve destekler (9 Ekim 2026).** Tam içerik, kararlar ve açıklar `docs/GIRISIM.md` dosyasında. Kısaca: tanıtım sayfasının 3. sürümü Claude yayın sayfasında, tasarımı Engin kabul etti; içerik düzeltmeleri Engin'den, koyu tema önerisi karar bekliyor. Claude Startups'ta Team planı ve API kredisi durdu, başvuru bekliyor. Şirket, BiGG yolu netleşene kadar kurulmuyor, şahıs şirketi dahil (Engin kararı, 9 Ekim 2026). Başvurular Engin'in kararıyla şimdilik bekliyor; BiGG 2027-1 için son günler 8 ve 29 Kasım 2026, geçilirse sıradaki dönem 2027-2.
 
 ## Açık kalanlar
 

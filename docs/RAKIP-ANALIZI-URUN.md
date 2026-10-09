@@ -195,4 +195,16 @@ KAAPA notu: KABUK-KARARLARI bolum 14 (8 Agustos 2026) bu desenle uyumludur.
 - **Wrapbook:** sorunla açılır (gidip gelme bitsin); "başla" ve "demo izle" düğmeleri; müşteri logoları ve rol adıyla yorumlar; bordro, harcama ve muhasebe üçlüsü tek şemada; ekibin sektör tecrübesi (7-30 yıl) ayrı bölümde kanıt olarak; film/TV ve reklam için ayrı sekmeler; ücretsiz araçlar (ücret bulucu, teşvik hesaplayıcı); fiyat yok, görüşmeye çağırır.
 - **Yamdu:** dağınık sistemler yerine tek doğru kaynak vaadi; "ücretsiz başla" ve "satışla görüş" düğmeleri; logolar, yapay zekâ özellikleri, özelliklerin derinlemesine anlatımı (senaryo içe aktarma, çekim planı, bütçe, zaman takibi, sürdürülebilirlik), entegrasyonlar, rol bazlı faydalar, güvenlik ve uyum, yorumlar, vaka çalışmaları; 11 dil.
 - **Ortak iskelet:** vaat → kanıt → nasıl çalışır → ekran → eylem. Üçü de kanıtı müşteri logosu ve sayıyla kurar; Wrapbook ayrıca ekibinin tecrübesiyle.
-- **KAAPA notu (bulgu, karar değil):** bugün müşteri logosu ve kullanıcı sayısı yok, uydurulmaz; dürüst kanıt kurucunun saha tecrübesi ve uygulamadan gerçek bir ekran karesidir. Üç ana sayfanın hiçbirinde Türk mevzuatı (SGK, stopaj) geçmiyor; KAAPA'nın ayırt edici cümlesi bu. Karar evi: CURRENT.md Sıradaki iş madde 4.
+- **KAAPA notu (bulgu, karar değil):** bugün müşteri logosu ve kullanıcı sayısı yok, uydurulmaz; dürüst kanıt kurucunun saha tecrübesi ve uygulamadan gerçek bir ekran karesidir. Üç ana sayfanın hiçbirinde Türk mevzuatı (SGK, stopaj) geçmiyor; KAAPA'nın ayırt edici cümlesi bu. Karar evi: `docs/GIRISIM.md` bölüm 1 (9 Ekim 2026 öncesinde CURRENT.md Sıradaki iş madde 4).
+
+---
+
+## 5. PAZAR VE EMSAL TARAMASI (8-9 Ekim 2026)
+
+**Adres:** `docs/girisim/notlar/pazar-ve-degerlendirme.md` (9 Ekim 2026, kaynaklı ve tarihli). Bölüm 2'deki kural gereği burada içerik değil adres ve kısa yön bilgisi durur.
+
+- Küresel oyuncular birleşiyor: Entertainment Partners (TPG) Haziran 2025'te ödeme ve harcama platformu CASHét'i, Cast & Crew (EQT) 2020'de Showbiz bütçeleme paketinin sahibi Media Services'i aldı; Wrapbook Aralık 2025'te Cinapse'i bünyesine kattı.
+- Cast & Crew İngiltere'ye yerel bordro uzmanı Sargent-Disc'i satın alarak girdi. Büyük oyuncunun yeni ülkeye yerel mevzuat uzmanını alarak girmesi KAAPA için emsaldir, Türkiye için talep kanıtı değildir.
+- Wrapbook'un değerlemesi 2021'de 1 milyar dolar, 2024'te 750 milyon dolar. Saturation'ın bilinen tek turu 500 bin dolarlık tohum öncesi tur. Backdrop (eski adı Twig, YC W23) yapım finansından genel bir yapay zekâ ürününe döndü.
+- Taranan küresel oyuncuların hiçbiri Türkiye'ye yerelleşmemiş. Türkiye'de yalnız genel masraf araçları bulundu (Masraff, Bizigo); CineCost için sonuç çıkmadı.
+- **8 Ekim 2026 taraması:** tanıtım sayfası için CineCost, Exenize, FilmToolz, Cinapse, Backdrop, Ramp, Mercury, Pennylane ve Saturation tarandı. Kaynaklı rakamlar sohbette kaldı, bağlam sıkıştırılınca kayboldu ve repoya yazılmadı; burada yalnız adlar var. Ders: `docs/protokol/DERSLER.md`.
