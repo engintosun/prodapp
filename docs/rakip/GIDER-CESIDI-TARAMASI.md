@@ -77,7 +77,11 @@ Dokuz kategori: Ulaşım · Konaklama · Yemek · Temsil/Ağırlama · Ofis Malz
 
 ### 3.10 Kurum formları — erişim durumu
 
-- Screen Australia A-Z Budget (Feature Films), Telefilm Standard Production Budget Template, BFI Future Takes Production Budget Template, AICP Bid Form (Excel) ve Eurimages ayrıntılı bütçe şablonu web aracıyla okunamadı. İndirilebilenler `docs/butce/` altına kondu; kaynak satırları `docs/butce/KART-GEREKCELERI.md` ÇAPRAZ-DOĞRULAMA YÖNTEMİ bölümündedir. İçerikleri okununca bu bölüme eklenecek.
+- Dört form 6 Ekim 2026'da `docs/butce/` altına indirildi (kaynaklar `docs/butce/KART-GEREKCELERI.md` ÇAPRAZ-DOĞRULAMA YÖNTEMİ) ve okundu [A]. Eurimages sitesi 403 döndü, ayrıntılı bütçe şablonu alınamadı.
+- **Screen Australia A-Z Budget (Feature Films)** `docs/butce/ScreenAustralia-A-Z-feature-budget.xlsx`: ATL (A.1 Story & Script … E(a) Cast-Principals) ve BTL. Bütün ekip ücreti tek hesapta: C Unit Fees & Salaries (altında Camera Crew, Lighting Crew, Costume Crew ve diğer ekip alt satırları); yükler ayrı (D Fringes & Workers Comp). Doğa hesapları ayrı: L Rentals & Storage, M Travel & Transport, N Accommodation, Living & Catering, O Insurances, P Office Expenses; post için S ve T; Y Legal & Business (Audit, Bank Fees, Stamp Duty, Exchange Rate Fluctation, Production Legals); Z Overheads. Ayrı sayfalar: 5.Allce (ödenek), 6.Trav, 14.Fringe. Her satır üç kolona bölünür: Exclusions, Non-QAPE (yurt dışı unsur), QAPE (teşvike uygun yerli harcama).
+- **Telefilm Canada Standard Production Budget** `docs/butce/Telefilm-standard-production-budget.xlsx`: A Above the line · B Production · C Post-production · D Other. Her departmanın emeği ve malzemesi ayrı hesaptır (Camera labour / Camera equipment, Wardrobe labour / Wardrobe supplies, Construction labour / Construction materials); Fringe benefits ayrı; Travel & Living expenses ve Transportation kendi hesaplarında.
+- **BFI Future Takes Production Budget** `docs/butce/BFI-future-takes-production-budget.xlsx`: departman bölümlü (Story and script, Producer, Director, Cast, Production, Assistant Directors, Camera, Lighting, Sound, Production design, Costume, Hair and make up, Locations); Travel and transport ve Accomodation kendi bölümlerinde; Miscellaneous (Legal fees, Bank charges, Post account and audit); Insurance ve Contingency ayrı. Departman içinde Purchases, Rentals, Box rental, Consumables detay satırları var. Ayrıca Access Budget sayfası ve In kind support tablosu.
+- **AICP Bid Form, Excel (2023)** `docs/butce/AICP-bid-form.xlsm`: PDF'teki bölümlerin aynısı (§3.3). Seyahat tek bölümde DEĞİL, bölümlere dağılır: Hotels ve Per Diems C Prep & Wrap Expenses ile D Location Expenses içinde, Air Fares D'de, Director Travel L'de, Talent Air Fares ve Talent Per Diem N'de. Excel'de ayrıca Breakout Labor, Breakout Expenses ve Breakout Talent sayfaları var.
 - Eurimages başvuru belgesinin maliyetin ortak yapımcı başına dağılımını istediği aktarıldı (ChatGPT raporu, doğrulanmadı). Doğruysa KAAPA'da ortak yapımcı ekseni yok.
 - Kültür ve Turizm Bakanlığı Sinema Genel Müdürlüğü "Ayrıntılı Bütçe" istiyor; şablon açık sitede yayımlanmıyor.
 
@@ -89,13 +93,14 @@ Dokuz kategori: Ulaşım · Konaklama · Yemek · Temsil/Ağırlama · Ofis Malz
   - "Ödenek" doğası AICP (Kit Rental, Wardrobe Allowance) ve Saturation (Allowance) emsaliyle destekleniyor.
   - İşçilik ile işçilik dışı ayrımı AICP'de bölüm düzeyinde standart.
   - CNC'nin üst bölümleri doğa ağırlıklı. CNC Hedef Mecra çıktısı, özellikle 6 (Transports, défraiements, régie) ve 9 (Assurances et divers), bütün kartlardaki çeşitten beslenir. Bölüm adları ad turu için emsal.
+  - Screen Australia, Telefilm ve BFI seyahat ve konaklamayı kendi bölümünde ister; Screen Australia bütün ekip ücretini de tek hesapta ister. Bu formlara çıktı, bütün kartlardaki seyahatin ve işçiliğin çeşit ve doğa işaretiyle toplanmasıyla verilir: kurum farkı, kart ile çeşidin kesişiminde çözülür. AICP ise seyahati bölümlere dağıtır (MMB ve KAAPA gibi).
   - 7/B karşılığı çeşitten tek başına değil, çeşit ile statünün birlikte okunmasından çıkar: bordrolu emek ile dışarıdan alınan emek farklı hesaplara düşer. Kira ve yolluk 794'te, nakliye 793'tedir.
 - **Kaçınılacak:** Tedarik, sendika ve birim bilgisini tek serbest etiket alanında karıştırmak (Saturation örneği); serbest metin tür alanı (Hot Budget).
-- **Boşluk:** İncelenen film bütçe yazılımlarında departmandan bağımsız kapalı bir gider türü sözlüğü bulunmadı; KAAPA'nın küratörlü küresel sözlüğü bu alanda emsalsiz, bedeli kalıcı küratörlüktür. Eurimages ortak yapımcı kırılımı doğrulanırsa KAAPA'da veri olarak yok.
+- **Boşluk:** İncelenen film bütçe yazılımlarında departmandan bağımsız kapalı bir gider türü sözlüğü bulunmadı; KAAPA'nın küratörlü küresel sözlüğü bu alanda emsalsiz, bedeli kalıcı küratörlüktür. Eurimages ortak yapımcı kırılımı doğrulanırsa KAAPA'da veri olarak yok. Screen Australia her satırda teşvike uygun yerli harcama (QAPE) ile yurt dışı unsuru ayırır; bu bilgi KAAPA'da yok ve eşlemeyle üretilemez, satırda veri olarak durması gerekir. Türkiye'deki yabancı yapım teşvikinin benzer bir ayrım isteyip istemediği doğrulanmadı; Hedef Mecra turunun konusu.
 
 ## 5. Açık kalanlar
 
-- Excel kurum formlarının okunması ve satır satır KAAPA verisiyle karşılaştırılması (Hedef Mecra sınavı).
+- Kurum formlarının satır satır KAAPA verisiyle karşılaştırılması (Hedef Mecra sınavı; formlar okundu, §3.10).
 - 7/B'de 791 ve 792'nin güncel adlandırması (değişiklik metni).
 - Saturation harcama kategorilerinin bütçe hesabından ayrı olup olmadığı.
 - MMB 10 ve Showbiz resmi kılavuzları.

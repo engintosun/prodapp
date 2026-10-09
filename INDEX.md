@@ -283,6 +283,7 @@ Bu tarih burada TEK yerde yaşar; dosyaların kendi içinde "Son güncelleme" ba
 `docs/butce/BUTCE-UI-MIMARISI.md` [AKAN] (dogrulama: 18 Ağustos 2026) — Eksen zinciri · İlkeler (İ1-İ8) · Hedef dosya haritası · Boy aşımı bölünme bekleyenler · kod: src/app/muhasebe/budget/**
 `docs/TECH-DEBT.md` [AKAN] (dogrulama: 14 Ağustos 2026) — Açık borç · Kapatılan borçlar · Bütçe kontrolü · Ödeme merdiveni · kod: yok
 `docs/rakip/YONTEM.md` [AKAN] — Kanıt seviyeleri · İki doktrin kuralı · Boyut ızgarası (42 boyut) · Adres haritası · kod: yok
+`docs/rakip/GIDER-CESIDI-TARAMASI.md` [KAYNAK] (dogrulama: 6 Ekim 2026) — Gider çeşidi kaynak ve rakip taraması · MMB, CNC, AICP, Hot Budget, Saturation, harcama yönetimi yazılımları, Tekdüzen 7/B · Kurum formları (Screen Australia, Telefilm, BFI, AICP) · kod: yok
 `docs/IS-SIRASI.md` [AKAN] (dogrulama: 18 Ağustos 2026) — Yapıldı (referans) · Sırada · Backlog · Borçlar · kod: yok
 `docs/ARCHITECTURE.md` [AKAN] (dogrulama: 18 Ağustos 2026) — Çalışma sözleşmesi · Vizyon kontrolü · Teknik felsefe · Entropi koruması/mimari yeniden yapılanma · kod: dizin yapısının tamamı (5.3)
 `docs/butce/BUTCE-EKRAN-KARARLARI.md` [AKAN] (dogrulama: 19 Ağustos 2026) — Kalem satırı yapısı/statü · Net/Brüt/Yasal Yük · Not mimarisi · Satır ekleme+autocomplete+KLV · kod: budget/components/{item-row,period-row,add-item-panel}.tsx · budget/card-table-screen.tsx (§18 kart toplamı şeridi + tablo genişliği) · budget/components/heading-row.tsx (§19 başlık satırı)

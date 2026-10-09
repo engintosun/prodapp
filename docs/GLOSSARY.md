@@ -151,8 +151,8 @@
 
 ### Gider çeşidi terimleri (6 Ekim 2026)
 
-- **Gider çeşidi:** paranın neyin karşılığı olduğu (örneğin konaklama, ekipman kiralama, personel ücreti). Kartın (gider yeri, yani hangi departman) ve maliyet etiketinin (`cost_object`, yani hangi iş ya da kişi) yanındaki eksendir. Nasıl ödendiğini söylemez; onu ödeme statüsü söyler. Tek sözlükten gelir; kütüphane kalemi çeşidini taşır, kalem bütçeye eklenince çeşit satıra işlenir, mühürlü bütçede donar. Karar evi: BUTCE-SEMA-KARARLARI, GİDER ÇEŞİDİ EKSENİ. İngilizce alan adı şema diliminde verilir.
-- **Üst çeşit / alt çeşit:** sözlüğün iki kademesi (örneğin Seyahat ve Konaklama / Yolculuk Aracı Kiralama). Kalem alt çeşit taşır, üst çeşit ondan gelir. Departman adı sözlükte yer almaz; departman karttır.
+- **Gider çeşidi:** paranın neyin karşılığı olduğu (örneğin konaklama, ekipman kiralama, personel ücreti). Kartın (gider yeri, yani hangi departman) ve maliyet etiketinin (`cost_object`, yani hangi iş ya da kişi) yanındaki eksendir. Nasıl ödendiğini söylemez; onu ödeme statüsü söyler. Çeşit adlarında "telif" geçmez; telif olduğu statüden okunur (6 Ekim 2026). Tek sözlükten gelir; kütüphane kalemi çeşidini taşır, kalem bütçeye eklenince çeşit satıra işlenir, mühürlü bütçede donar. Karar evi: BUTCE-SEMA-KARARLARI, GİDER ÇEŞİDİ EKSENİ. İngilizce alan adı şema diliminde verilir.
+- **Üst çeşit / alt çeşit:** sözlüğün iki kademesi (örneğin Seyahat ve Konaklama / Yolculuk Aracı Kiralama). Kalem alt çeşit taşır, üst çeşit ondan gelir. Başlık çeşit taşımaz: toplamı altındaki kalemlerden gelir ve farklı çeşitlerden oluşabilir (6 Ekim 2026). Departman adı sözlükte yer almaz; departman karttır.
 - **Doğa:** alt çeşidin kimseye sorulmadan taşıdığı işaret: işçilik, hizmet, mal, kira, hak, harç, finansman, ödenek, diğer.
 - **Tedarik:** alt çeşidin kimseye sorulmadan taşıdığı ikinci işaret: kiralama, satın alma, imalat.
 - **Kategori ile ilişkisi:** Ana Terimler'deki Kategori (`category`) fişin bugünkü sınıfıdır. Fiş tarafının bu sözlüğü nasıl kullanacağı fiş turunda konuşulur.
