@@ -182,6 +182,28 @@ Gider çeşidi araştırmasından sonra sözlüğün bedelleri (kalıcı kürat�
 
 Engin brifteki araştırmanın tamamını istedi. Önce yalnız açılamayan dört kurum formu, sonra "dosya repoya, yardım sitesi bana" diye bölünmüş yirmi kaynaklık bir liste ve işin istemediği kurallar ("üçüncü taraf kopyası alınmaz") önerildi; kaynakların bir kısmı daha önce incelenmişti. Engin: "saçma sapan daraltmalar anlamsız kurallar getirme. önce planla sonra yap". Doğru yol işin sorusundan başlamaktı: çeşit için dört soru (adlar, tedarik ayrımı, 7/B'de kiranın yeri, kurum formlarının gruplaması), önceki inceleme tekrar edilmeden. KURAL: araştırma kapsamı işin ihtiyacından çıkar; önce kısa plan, sonra uygulama; toplanan veri tek işte harcanmaz, repoda saklanır.
 
+### Kavramı somut sonuç vermeden anlatmak (13 Ekim 2026)
+
+Süreç kuralı ilk sunulduğunda kural, eksen ve emsal anlatıldı; hangi satırın hangi kartta duracağı, kullanıcının neyi ekleyeceği ve raporda ne çıkacağı söylenmedi. "Yönetimi yapım yapıyor" bilgisine de satırları değiştirmeyen bir açıklama eklendi. Engin (birebir):
+
+> kavramsal konuşuyorsun ama net bir sonuç bilgisi yok
+
+> kavramsal bilgi genelde benim konuştuğum, sana verdiğim bilgi olur, sen somut olarak ne yapılacağını bildirirsin ama burada farklı döndü iş
+
+Somut biçim verilince (satır, kart, örnek rakam, rapor) aynı karar tek turda kabul aldı. KURAL: her öneri satır düzeyinde bir örnekle sunulur: hangi satır, hangi kartta, kullanıcı neyi ekler, raporda ne çıkar. Satırı ya da raporu değiştirmeyen bilgi öneriye eklenmez. Kapısı yok.
+
+### Resmin bir parçasını tek başına anlatmak (9–12 Ekim 2026)
+
+Gider çeşidi tek başına anlatıldı; bir harcamaya sorulan öbür sorular (kart, iş etiketi, kişi etiketi, dönem) birlikte konmadı. 20 Haziran 2026'dan beri kurulu olan iş etiketi ekseni analizde anılmadı, recce gelince yeni bir konu gibi açıldı; "etiket" kelimesi de çeşit yerine kullanıldı (KAAPA'da etiket kişi ve iş etiketidir). Aday sözlüğe "Karma / Süreç Paketi" adıyla bir iş sızmıştı ve bu ancak recce ile görüldü. Engin (birebir):
+
+> bu chat çok kafamı karıştırdı 1) çok dallandı budaklandı net bir yön yok
+
+KURAL: bir eksen anlatılırken komşu eksenler birlikte konur (kart, çeşit, iş ve kişi etiketi, dönem); terim KAAPA'daki anlamıyla kullanılır, başka anlamda kullanılmaz. Kapısı yok.
+
+### Yapılacaklar listesini taramadan yazmak (12 Ekim 2026)
+
+Repoya yazılacaklar ilk kez sunulduğunda liste akılda kalanlardan yazıldı ve yedi dosya gösterdi. Engin sorunca ("Yapılacak tüm bu kadar mıydı yapılacak tüm iş ve tarama") değişen kavramlar repoda tarandı; etkilenen satırlar dokuz dosyadaydı. KURAL: kapanış ve doküman listesi, değişen kavramların repoda taranmasından sonra yazılır; taranmadıysa "taranmadı" denir. Kapısı yok.
+
 ## Ters yönde bir kayıt
 
 Sonnet'in DUR'ları üç kez haklı çıktı ve üçünde de canlıyı korudu: canlıda olmayan tablo zincire konmak üzereydi, ölü bir fonksiyon overload'ı taban alınmıştı, zorunlu alan eklemek kapsam dışı bir testi kırıyordu. Sonnet'in RAPORU doğrulama değildir ama DUR'u sinyaldir; incelenmeden geçilmez.

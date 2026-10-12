@@ -85,6 +85,33 @@ Dokuz kategori: Ulaşım · Konaklama · Yemek · Temsil/Ağırlama · Ofis Malz
 - Eurimages başvuru belgesinin maliyetin ortak yapımcı başına dağılımını istediği aktarıldı (ChatGPT raporu, doğrulanmadı). Doğruysa KAAPA'da ortak yapımcı ekseni yok.
 - Kültür ve Turizm Bakanlığı Sinema Genel Müdürlüğü "Ayrıntılı Bütçe" istiyor; şablon açık sitede yayımlanmıyor.
 
+### 3.11 Keşif (recce) [A] — 11 Ekim 2026
+
+Recce iki anlam taşır: lokasyon keşfi (mekân arama) ve teknik keşif (seçilen mekâna departman başlarıyla gidiş; hazırlık dönemi). Engin'in saha bilgisi birebir `docs/butce/BUTCE-SEMA-KARARLARI.md` GİDER ÇEŞİDİ EKSENİ, KARARLAR madde 9'dadır.
+
+- MMB 6.1: 3501 Survey Costs, 3500 Location Department'ta tek hesap; detay satırları Travel, Accomodations, Per Diem, Car Rentals, Research Expenses, Entertainment, Still film/lab, Video Equipment.
+- BFI Future Takes: "Recce costs" iki yerde: 14.10 (Transport) ve 15.3 (Accomodation).
+- Screen Australia A-Z: Location Surveys'in yolu M Travel & Transport'ta, otel ve harcırahı N Accommodation, Living & Catering'de; Recce Photographs ayrı satır; yurt dışı keşif ekip satırlarında ayrı (non-QAPE) satır olarak eklenir.
+- AICP: 37 Location Scout (A Prep Crew, gün ücreti) ve 104 Scouting Expenses (C Prep & Wrap Expenses; benzin, köprü, sarf).
+- CNC 2018: 233A Personnel affecté aux repérages (1. ve 2. reji asistanı); yol ve konaklama bölüm 6'da.
+- Koster: Survey/Recce/Scout hazırlık dönemi maliyeti; lokasyon atomları arasında.
+- Master Excel: Recce Harcırah, Recce Travel, Survey Hotel, Survey Travel (Lojistik); Mekan Keşif, Mekan Scouting, Scouting Giderler (Mekan); BBC "Fares incl. Recce" ve "Prep Costs & Recce".
+
+Okuma: kaynakların çoğu keşfi cinsine göre dağıtır; tek hesapta tutan MMB de içini detay satırlarına böler.
+
+### 3.12 Deneme çekimi ve cast giderinin yeri [A] — 13 Ekim 2026
+
+- MMB 6.1: 1600 Cast hesabında 1609 Casting Expenses ve 1610 Screen Tests; ayrıca 4100 Tests hesabında 4101 Screen Tests.
+- Koster: deneme çekimi 1610'a (Cast) yazıldıysa 4101'de yok sayılır; bazı yapımcılar testler için ayrı hesap açar, bazıları oyuncuya dahil eder. Aynı para iki yere yazılmaz.
+- Screen Australia: E(b) Cast & Casting, E(b)1 Casting Fees & Expenses altında Screen Tests Crew ve Screen Tests Equipment ayrı satır; yanlarında Audition Expenses, Audition Call-Backs, Readers Fees, Sundry Expenses, Travel & Accommodation.
+- Telefilm: 10 Cast hesabında Casting Director, Casting expenses, Video expenses (casting).
+- BFI: 4 Cast bölümünde 4.1 Casting director.
+- Master Excel: Casting Expenses; MMB, BBC, BET, HBO ve Netflix bütçelerinde Oyuncu/Kast bölümünde.
+- Başka yere koyanlar: CNC 2018 bölüm 5'in Stüdyo başlığında 511 Essais altında 5111 Essais ve 5112 Casting (cast personeli 233B, personel bölümünde); AICP 108 Casting Director ve 109 Casting Facility, C Prep & Wrap Expenses.
+- Teknik testler ayrı konudur: MMB kamera, makyaj ve kostüm testlerini kendi departmanlarında tutar (Camera Tests, Makeup Tests, Wardrobe Tests); Netflix tek "TESTS - ALL" hesabında.
+
+Okuma: oyuncu seçimi için deneme çekimi kaynakların çoğunda oyuncu hesabındadır; KAAPA'nın 1610 yeri bu yönde (`docs/butce/KART-KATALOGU.md` §7.5, 13 Ekim 2026).
+
 ## 4. KAAPA için (YONTEM §6 I satırı; gözlem, karar değil)
 
 - **Bizde var mı:** Gider çeşidi ekseni tasarımda var (BUTCE-SEMA GİDER ÇEŞİDİ EKSENİ), şemada yok.

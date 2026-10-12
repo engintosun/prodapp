@@ -155,6 +155,7 @@
 - **Üst çeşit / alt çeşit:** sözlüğün iki kademesi (örneğin Seyahat ve Konaklama / Yolculuk Aracı Kiralama). Kalem alt çeşit taşır, üst çeşit ondan gelir. Başlık çeşit taşımaz: toplamı altındaki kalemlerden gelir ve farklı çeşitlerden oluşabilir (6 Ekim 2026). Departman adı sözlükte yer almaz; departman karttır.
 - **Doğa:** alt çeşidin kimseye sorulmadan taşıdığı işaret: işçilik, hizmet, mal, kira, hak, harç, finansman, ödenek, diğer.
 - **Tedarik:** alt çeşidin kimseye sorulmadan taşıdığı ikinci işaret: kiralama, satın alma, imalat.
+- **Paket satırı / parça satırı:** bir sürecin (deneme çekimi, cast, teknik keşif, ofis) kendi kartındaki kod ailesinin iki tür satırı. Paket satırı ana koddadır ve tek faturayla satın alınan hizmeti taşır; parça satırları alt koddadır ve prodüksiyonun içeride kurduğu parçaları (kira, ekipman, ikram) kendi çeşitleriyle taşır. Sürecin toplamı kodun toplamıdır. Karar evi: BUTCE-SEMA-KARARLARI, GİDER ÇEŞİDİ EKSENİ, KARARLAR madde 9 (13 Ekim 2026).
 - **Kategori ile ilişkisi:** Ana Terimler'deki Kategori (`category`) fişin bugünkü sınıfıdır. Fiş tarafının bu sözlüğü nasıl kullanacağı fiş turunda konuşulur.
 
 ## Alan adlandırma doktrini (KİLİTLENDİ 2026-07-26)
