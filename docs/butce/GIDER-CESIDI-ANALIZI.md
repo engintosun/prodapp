@@ -131,7 +131,7 @@ Kaynak listesi `docs/rakip/GIDER-CESIDI-TARAMASI.md` §3.11'de; deneme çekimi v
 
 **Geri dönüş:** 1 ve 2 doküman, geri alınabilir. 3 şemadır; canlı veri bugün deneme verisi olduğu için geri alınabilir, ama sözlük adları sonradan değişirse göç gerekir. Bu yüzden 2 bitmeden 3 yazılmaz.
 
-**Durum (13 Ekim 2026):** 1 ve 2 tamamlandı; sözlük turunun kararları §10'da. Sıra 3'e iki ek: sözlük tablosuna doğa ve açıklama haneleri girer; 1105 ailesine üç yeni kalem (1105-07, 1105-08, 1105-09) tohumda eklenir.
+**Durum (13 Ekim 2026):** 1 ve 2 tamamlandı; sözlük turunun kararları §10'da. Sıra 3'e iki ek: sözlük tablosuna doğa ve açıklama haneleri girer; 1105 ailesine üç yeni kalem (1105-07, 1105-08, 1105-09) tohumda eklenir. **3 TAMAM (13 Ekim 2026, göç `20261013120000`).**
 
 ## 10. Sözlük turu (13 Ekim 2026)
 
