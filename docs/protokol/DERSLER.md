@@ -222,6 +222,10 @@ Hak çeşidi ikiye ayrıldı. KURAL: devralınan bir eşleme kullanılmadan önc
 
 Ad Cast Hizmeti oldu. KURAL: önerilen her ad önce kütüphanedeki kalem adlarıyla ve sahanın sözüyle sınanır; ikisinde de karşılığı olmayan kelime ada girmez. Kapısı yok.
 
+### Tırnaklı uzun metni heredoc ile göndermek (13 Ekim 2026)
+
+Gider çeşidi göçünün son parçası (şablon, doldurma ve denetim bloğu; yaklaşık 160 satır SQL) spec'te tırnaklı heredoc ile dosyaya eklenecek diye yazıldı. Engin'in ortamında (Windows, Claude Code'un bash'i) komut tırnak ayrıştırma hatasıyla kırıldı ve parça dosyaya hiç yazılmadı. Sonnet durdu, metni değiştirmeden geçici dosyaya Write ile yazıp ekledi; dosya boyu sandbox'ta sınanan dosyayla aynı çıktı ve origin'den satır satır karşılaştırıldı. Zarar oluşmadı, ama yol spec'in dışına çıktı. KURAL: tek tırnak, dolar işareti ya da ters eğik çizgi taşıyan uzun metin Sonnet'e heredoc ile değil, Write ile geçici dosyaya yazdırılıp eklenir. Aynı oturumda ikinci bir küçük kayıp: prompttaki bir YENİ metnin sonundaki boşluk kopyalamada düştü (`20261013120000`;sözlük). YENİ metin boşlukla bitmez; ayraç boşluğu bir sonraki kelimeyle birlikte yazılır. Kapısı yok.
+
 ## Ters yönde bir kayıt
 
 Sonnet'in DUR'ları üç kez haklı çıktı ve üçünde de canlıyı korudu: canlıda olmayan tablo zincire konmak üzereydi, ölü bir fonksiyon overload'ı taban alınmıştı, zorunlu alan eklemek kapsam dışı bir testi kırıyordu. Sonnet'in RAPORU doğrulama değildir ama DUR'u sinyaldir; incelenmeden geçilmez.
