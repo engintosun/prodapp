@@ -85,7 +85,7 @@
 - **ATL baş-kaşe deseni:** ATL kartlarında baş-kaşe (yönetmen/yazar/yıldız kaşesi) set rollerine daima gizli; ekip satırları açılabilir. Baş-kaşe çoğul olabilir.
 - **Master/Owner:** Muhasebe'nin üstündeki proje sahibi Yapımcı (ve ayrı Denetmen/Auditor) katmanı. 1400 ticari yatak odası bu katmana ait.
 - **Compliance Guard:** Şablon-bağlamlı uyumluluk denetimi. Seçili Hedef Mecra'nın (Eurimages/Netflix/TRT/Bakanlık) sınırlarına göre yüzde-kalemleri denetler. Teşhis+uyarı verir, gizleme reçetesi vermez.
-- **Hedef Mecra (Bütçe Şablonu):** Bütçenin sunulacağı kurum (Eurimages/Netflix/TRT/Bakanlık). Compliance Guard'ın denetim bağlamını belirler.
+- **Hedef Mecra (Bütçe Şablonu):** Bütçenin sunulacağı kurum (Eurimages/Netflix/TRT/Bakanlık). Compliance Guard'ın denetim bağlamını belirler. Bakanlığın bütçe şablonu yoktur; bütçe yapımcının kendi biçiminde verilir (Engin, 13 Ekim 2026).
 - **Rol-etiketi:** Tek kalemin altında gerçek sözleşmesel rol ayrımı (örn. 1401: Executive/Line/Coordinating/Supervising). Kalem katlanır, etiket gerçek ayrım taşır.
 - **Salt-okunur toplam:** Kart yüzünde tek toplam gösteren, alt-dökümü arkada tutulan kalem (örn. 1108).
 
@@ -153,8 +153,8 @@
 
 - **Gider çeşidi:** paranın neyin karşılığı olduğu (örneğin konaklama, ekipman kiralama, personel ücreti). Kartın (gider yeri, yani hangi departman) ve maliyet etiketinin (`cost_object`, yani hangi iş ya da kişi) yanındaki eksendir. Nasıl ödendiğini söylemez; onu ödeme statüsü söyler. Çeşit adlarında "telif" geçmez; telif olduğu statüden okunur (6 Ekim 2026). Tek sözlükten gelir; kütüphane kalemi çeşidini taşır, kalem bütçeye eklenince çeşit satıra işlenir, mühürlü bütçede donar. Karar evi: BUTCE-SEMA-KARARLARI, GİDER ÇEŞİDİ EKSENİ. İngilizce alan adı şema diliminde verilir.
 - **Üst çeşit / alt çeşit:** sözlüğün iki kademesi (örneğin Seyahat ve Konaklama / Yolculuk Aracı Kiralama). Kalem alt çeşit taşır, üst çeşit ondan gelir. Başlık çeşit taşımaz: toplamı altındaki kalemlerden gelir ve farklı çeşitlerden oluşabilir (6 Ekim 2026). Departman adı sözlükte yer almaz; departman karttır.
-- **Doğa:** alt çeşidin kimseye sorulmadan taşıdığı işaret: işçilik, hizmet, mal, kira, hak, harç, finansman, ödenek, diğer.
-- **Tedarik:** alt çeşidin kimseye sorulmadan taşıdığı ikinci işaret: kiralama, satın alma, imalat.
+- **Doğa:** alt çeşidin kimseye sorulmadan taşıdığı tek işaret; alışverişin türünü söyler (çeşit paranın hangi alana gittiğini söyler). On değer: İşçilik, Ödenek, Kiralama, Satın Alma, İmalat, Hizmet, Hak, Harç ve Vergi, Finansman ve Sigorta, Diğer (13 Ekim 2026; doğa ve tedarik işaretleri birleşti). Kartlar üstü toplamlar ("toplam kiralama", "toplam işçilik") doğadan alınır. Karar evi: BUTCE-SEMA-KARARLARI, GİDER ÇEŞİDİ EKSENİ, KARARLAR madde 2 ve 10.
+- **Tedarik:** KALKTI (13 Ekim 2026). Eskiden alt çeşidin ikinci işaretiydi (kiralama, satın alma, imalat); üç değer doğaya katıldı, aynı bilgi iki alanda tutulmaz (bkz. Doğa).
 - **Paket satırı / parça satırı:** bir sürecin (deneme çekimi, cast, teknik keşif, ofis) kendi kartındaki kod ailesinin iki tür satırı. Paket satırı ana koddadır ve tek faturayla satın alınan hizmeti taşır; parça satırları alt koddadır ve prodüksiyonun içeride kurduğu parçaları (kira, ekipman, ikram) kendi çeşitleriyle taşır. Sürecin toplamı kodun toplamıdır. Karar evi: BUTCE-SEMA-KARARLARI, GİDER ÇEŞİDİ EKSENİ, KARARLAR madde 9 (13 Ekim 2026).
 - **Kategori ile ilişkisi:** Ana Terimler'deki Kategori (`category`) fişin bugünkü sınıfıdır. Fiş tarafının bu sözlüğü nasıl kullanacağı fiş turunda konuşulur.
 

@@ -19,6 +19,7 @@ Kartlar tek kaynaktan değil, iki katmanlı doğrulamayla kuruluyor:
   - `docs/butce/AICP-bid-form.xlsm` — AICP Bid Form, Excel sürümü (2023 güncellemesi) (kaynak: https://aicp.nyc3.digitaloceanspaces.com/content/documents/AICP_bidform_2023_update.xlsm)
   - `docs/butce/AICP-bid-form-2019.pdf` — AICP Bid Form 2019, PDF (kaynak: https://aicp.com/assets/editor/AICP_bidform_2019_FINAL.pdf)
   - `docs/butce/HotBudget-3.0-user-guide.pdf` — Hot Budget 3.0 User Guide (kaynak: https://downloads.hotbudget.com/HotBudget_v3.0_UserGuide.pdf)
+  - `docs/butce/Eurimages-summary-production-budget-2018-REV3.xlsx` — Eurimages Summary Production Budget 2018 REV3 (Engin, 13 Ekim 2026'da Eurimages sitesinden ekledi; bulgular `docs/rakip/GIDER-CESIDI-TARAMASI.md` §3.14)
 
 Bir kart kilitlenmeden önce: Koster omurgayı verir → Master Excel kaynak-sayısı doğrular (bu kalem gerçekten evrensel mi?) → Eurimages/Türk bütçesi bağlamı oturtur → sonra kilitlenir.
 
@@ -107,7 +108,7 @@ Koster uyarıyor: yapımcı unvanları (Executive/Line/Coordinating/Supervising)
 **1108 ile çakışma çözümü:** Geliştirme dönemi yapımcı seyahati 1108'e (recoupable), yapım dönemi 1407'ye. Etap ayrımı çözer.
 
 ### Compliance Guard — neden "teşhis evet, gizleme hayır"? (KAAPA'nın varlık nedeni)
-Yapımcı bir Hedef Mecra seçer (Eurimages/Netflix/TRT/Bakanlık). Motor o şablonun sınırlarına göre denetler. Ama KRİTİK sınır:
+Yapımcı bir Hedef Mecra seçer (Eurimages/Netflix/TRT/Bakanlık). (Not, 13 Ekim 2026: Bakanlığın bütçe şablonu yok; bütçe yapımcının kendi biçiminde verilir, Engin.) Motor o şablonun sınırlarına göre denetler. Ama KRİTİK sınır:
 
 **KAAPA riski ve görünürlüğü gösterir, gizleme/kaçırma yöntemi ÖNERMEZ.**
 - ✓ "Eurimages overhead %7'yi aşıyor, başvuru reddedilebilir" (teşhis — yapımcıyı hatadan korur)
@@ -137,7 +138,7 @@ Producer [10k], Line Producer [9k], Executive Producer [8k], Co-Producer [4k], S
 ### Neden KISMİ MASKE (1501 gizli, ekip açılabilir)?
 Yönetmen kaşesi (1501) hassas ATL kreatif maliyet — set rollerine gizli. Ama ekip satırları (koreograf, storyboard, diyalog koçu) operasyoneldir; UPM "koreograf ne zaman geliyor, ne kadar" bilmeli ki planlasın. Bu 1300'ün aynası (1306 açılır, yazar kaşesi gizli) ve bir GENEL DESEN:
 
-**ATL baş-kaşe deseni:** ATL kartlarında baş-kaşe (yönetmen 1501, yazar kaşesi, yıldız kaşesi) set rollerine daima gizli; operasyonel/ekip satırları yapımcı isterse salt-okunur açılır. **Not: baş-kaşe ÇOĞUL olabilir** — birden fazla başrol, hatta birden fazla baş-yönetmen (ortak yönetmenlik) olabilir; hepsi gizli sınıfındadır. Bu desen 1600 Cast'e de uygulanacak (yıldız kaşesi gizli, figüran/set öğretmeni açık).
+**ATL baş-kaşe deseni:** ATL kartlarında baş-kaşe (yönetmen 1501, yazar kaşesi, yıldız kaşesi) set rollerine daima gizli; operasyonel/ekip satırları yapımcı isterse salt-okunur açılır. **Not: baş-kaşe ÇOĞUL olabilir** — birden fazla başrol, hatta birden fazla baş-yönetmen (ortak yönetmenlik) olabilir; hepsi gizli sınıfındadır. Bu desen 1600 Cast'e de uygulanacak (yıldız kaşesi gizli, arkaplan oyuncusu/set öğretmeni açık).
 
 ### Loan-Out / ödeme-statüsü — KAAPA'nın fringe modelinin doğuşu (en önemli kavram)
 Koster'ın "loan-out" dediği şey KAAPA için fringe motorunun TEMEL ayrımı. Çoğu yönetmenin/büyük oyuncunun gelirini aldığı bir şirketi vardır; yapımcı kişiyle değil, şirketiyle sözleşir.
@@ -169,10 +170,10 @@ Storyboard Artist [8k], Script Timing [6k], Dialogue Coach [4k], Choreographer (
 ## KART 1600 — OYUNCU  (KART-KATALOGU §7.5)
 
 ### Neden TEK kart (Cast + Atmosphere birleşik)?
-Koster Cast'i 1600 (ATL), Atmosphere/figüranı 3900 (Production) AYRI tutar — ama bu konvansiyon, mantık değil: Koster'ın kendi metni "ATL/BTL tarihsel kaza, sınır kayar" der. DÖRT kaynak birleştiriyor: **Saturation** (screen_australia hesap-kodunu korumuş: Principals E(b)2, Standins E(b)4, Stunts E(b)5, Extras E(b)6 — dördü tek "E" Cast hesabı altında alt-satır) · **Eurimages** ("Extras fees, casting & coordination" tek kova; ayrı bölüm yok) · **Master gerçek bütçeler** (figüran Oyuncu altında kümeli: EXTRAS 7k, Stand-ins 7k, General Extras 3k…) · **Türk saha** (figüran genelde cast altında tutulur). Sadece Koster nominal ayırır, o da "konvansiyon" der. KAAPA: tek Oyuncu kartı, 4 görsel grup. Görünürlük zaten satır-seviyesinde (baş-kaşe gizli, figüran açık) — ayrı kart gerektirmez; 2-seviye derinlik de tek-kartı destekler.
+Koster Cast'i 1600 (ATL), Atmosphere/arkaplan oyuncusunu 3900 (Production) AYRI tutar — ama bu konvansiyon, mantık değil: Koster'ın kendi metni "ATL/BTL tarihsel kaza, sınır kayar" der. DÖRT kaynak birleştiriyor: **Saturation** (screen_australia hesap-kodunu korumuş: Principals E(b)2, Standins E(b)4, Stunts E(b)5, Extras E(b)6 — dördü tek "E" Cast hesabı altında alt-satır) · **Eurimages** ("Extras fees, casting & coordination" tek kova; ayrı bölüm yok) · **Master gerçek bütçeler** (arkaplan oyuncusu Oyuncu altında kümeli: EXTRAS 7k, Stand-ins 7k, General Extras 3k…) · **Türk saha** (arkaplan oyuncusu genelde cast altında tutulur). Sadece Koster nominal ayırır, o da "konvansiyon" der. KAAPA: tek Oyuncu kartı, 4 görsel grup. Görünürlük zaten satır-seviyesinde (baş-kaşe gizli, arkaplan oyuncusu açık) — ayrı kart gerektirmez; 2-seviye derinlik de tek-kartı destekler.
 
-### Neden Figüran cast altında, ayrı kart değil?
-Master'da figüran ezici çoğunlukla Oyuncu departmanı altında kümeli. Türk yapımında figüran ayrı bir onay birimi değil — aynı yapım yönetimi tutar. Saturation/MMB de ayrı üst-hesap yapmaz (Set/Tag ile ayrılır, kart ile değil). Grup içinde kalır; görünürlük AÇIK (operasyonel), baş-kaşe GİZLİ.
+### Neden Arkaplan Oyuncusu cast altında, ayrı kart değil?
+Master'da arkaplan oyuncusu ezici çoğunlukla Oyuncu departmanı altında kümeli. Türk yapımında arkaplan oyuncusu ayrı bir onay birimi değil — aynı yapım yönetimi tutar. Saturation/MMB de ayrı üst-hesap yapmaz (Set/Tag ile ayrılır, kart ile değil). Grup içinde kalır; görünürlük AÇIK (operasyonel), baş-kaşe GİZLİ.
 
 ### Neden 1600 komisyon taşır, neden oran merkezi cetvele sabitlenmez?
 Türk piyasasında temsil komisyonu yapımcının giderdir (bazı ajanslarda komisyon oyuncudan alınır, o modelde bütçe gideri değildir); oran anlaşmaya göre değişir ve Rekabet Kurulu'nun 21.05.2026 tarihli kararı sonrası sektörce ortak belirlenemez — bu nedenle oran merkezi cetvele sabitlenemez, satırda yaşar. ABD kaynaklı hesap planında oyuncu-başına ajans komisyonu bulunmadığı için katalogda bu boşluk oluşmuştu.
@@ -187,8 +188,8 @@ Koster Welfare Worker/Teacher'ı hem Cast (1615) hem Atmosphere (3906) altında 
 Nature-split kart-aşırı toplam ihtiyacı doğurdu ("stunt toplam ne?"). Çözüm cost_object (MMB Set / Saturation Tag, endüstri standardı). Ama KATEGORİ seviyesinde ("Stunt"), sahne-instance (SFX1/SFX2) DEĞİL: per-sahne ayrım her kaleme ikinci sahne-etiketi demek = breakdown'sız kullanıcı dikkatine bağlı + hataya açık. Sahne-bazlı maliyet aslında BREAKDOWN'ın işidir (Celtx/Gorilla breakdown elementlerini bütçeye otomatik akıtır; Saturation'da breakdown YOK, Tag ile seçici yapar). KAAPA = Saturation gibi: breakdown kurmaz (dev ERP kapsamı), cost_object'i Tag gibi opsiyonel/seçici kullanır. Düşük-bahis: etiket unutulsa bütçe bozulmaz, sadece rollup eksik kalır. Kapı-açık: gelecek breakdown modülü cost_object'i otomatik besler.
 
 ### Terim gerekçeleri (Türk saha)
-- **Kast Sorumlusu** (Crowd Controllers) ≠ **Crowd AD**: ilki figüranı SEVK eder (Oyuncu kartı, 3914); ikincisi sahneyi YÖNETİR (reji asistanı → 2100+ AD kartı, 1500'de değil).
-- Üç "öne çıkan figüran" tipi ayrı: **Sessiz Rol** (eylemli, repliksiz) · **Özel Yetenekli** (beceri) · **Özel Tip** (fiziksel görünüm; ABD Specialty Background, FR Silhouette).
+- **Cast Sorumlusu** (Crowd Controllers) ≠ **Crowd AD**: ilki arkaplan oyuncusunu SEVK eder (Oyuncu kartı, 3914); ikincisi sahneyi YÖNETİR (reji asistanı → 2100+ AD kartı, 1500'de değil).
+- Üç "öne çıkan arkaplan oyuncusu" tipi ayrı: **Sessiz Rol** (eylemli, repliksiz) · **Özel Yetenekli** (beceri) · **Özel Tip** (fiziksel görünüm; ABD Specialty Background, FR Silhouette).
 - **Dublör** (Stunt Double) ≠ **Stunt Oyuncusu** (Stunt Players) ≠ **Aksiyon Teknisyeni** (Stunt Utility): birincisi belirli oyuncunun yerine, ikincisi genel stunt rolü, üçüncüsü genel destek.
 - **Dublaj** (Looping/ADR); **Mesai** (Overtime, fazla mesai — Turnaround DEĞİL, bkz. aşağıdaki Turnaround gerekçesi); **Stand-In** İngilizce kalır (sektör kullanımı).
 
@@ -198,8 +199,8 @@ Oyuncu-Kast 197 kalem. Çekirdek (kaynak-sayısı = kaç bütçede): Cast Direct
 ### 1618 Temsilci Komisyonu atomu (KART 1600 M1, 1 Eylül 2026, Engin kararı)
 Temsilci komisyonu yapımcının maliyetidir ve oyuncunun kendi özeti altında yaşar (1400'de değil). Tek atom yeter: ajans ile menajer farkı statüde yaşar (statü satır bazında seçilir), ayrı atom gerektirmez. Kod 1618 KAAPA-atamalıdır çünkü 1617 Koster'de Contractuals olarak doludur ve item_burdens'a gider.
 
-### Figüran statüsü neden şirket (ajans modeli, 4 Eylül 2026, Engin'in saha bilgisi)
-Arkaplan grubunun beş atomu (Genel Arkaplan, Stand-In, Sessiz Rol, Özel Yetenekli, Özel Tip) statü=sirket alır. Figüranı ajans temin ediyor, ajans kendi 4/a'lı çalışanını yapımcıya hizmet olarak veriyor; yapımcı ayrıca sigortalı bildirimi yapmıyor. Bu yüzden ödeme yapımcının kendi bordrosu ya da SMM faturası değil, ajansa kesilen şirket faturasıdır.
+### Arkaplan oyuncusunun statüsü neden şirket (ajans modeli, 4 Eylül 2026, Engin'in saha bilgisi)
+Arkaplan grubunun beş atomu (Genel Arkaplan, Stand-In, Sessiz Rol, Özel Yetenekli, Özel Tip) statü=sirket alır. Arkaplan oyuncusunu ajans temin ediyor, ajans kendi 4/a'lı çalışanını yapımcıya hizmet olarak veriyor; yapımcı ayrıca sigortalı bildirimi yapmıyor. Bu yüzden ödeme yapımcının kendi bordrosu ya da SMM faturası değil, ajansa kesilen şirket faturasıdır.
 
 ### Turnaround neden bütçeye hiç girmez (4 Eylül 2026, Engin kararı)
 Turnaround (yetersiz dinlenme telafisi) öngörülemez bir ihlal tazminatıdır, Türkiye'de resmi bir cetveli yoktur; gerçekleşirse muhtelif bloğundan geçer, kendi atomu olmaz. Mesai (Overtime, 1611) ise planlanabilir fazla çalışmadır ve ayrı atomdur — ikisi aynı satırda yaşıyordu, bu turda ayrıştırıldı.

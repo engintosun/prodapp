@@ -20,9 +20,9 @@ Kayıt anlatı değil SINIFTIR: ne oldu değil, hangi tür hata kaç kez tekrarl
 
 **Desen ile bütünlük iddiası.** En sık tekrar eden sınıf. Grep bulur, BÜTÜNLÜK iddiası üretemez. Kayıtlı örnekler: INDEX bayatlık listesi grep'le çıkarıldı ve dört madde kaçtı (18 Ağustos); push doğrulamasında grep deseni yanlış pozitif üretti, yerinde duran madde "düşürüldü" sanıldı (17 Ağustos); silme tablo listesi metin taramasıyla çıkarıldı ve DROP TABLE satırlarını görmedi, canlıda olmayan tablo listeye girdi (22 Ağustos); optimizasyon turunda geçici tarayıcılar üç kez yanlış alarm verdi (22 Ağustos). Aynı oturumda (31 Ağustos 2026) iki yeni kayıt: Açıklama kolonunun dokunduğu yerler grep ile çıkarıldı; period-row.tsx ve add-item-row.tsx KAÇTI, çünkü o iki dosya hücreleri SAYARAK atlıyor ve ne "description" ne "açıklama" kelimesini geçiriyor — kusur Engin'in ekranından geri geldi: dönem satırları bir hane sağa kaymıştı. Bir doküman cümlesinin ("Bütçe Toplam = BRÜT") silindiği iddia edildi; arama deseni tırnak yüzünden bozuktu, cümle yerinde duruyordu — Sonnet'in raporu doğru, Opus'un tespiti yanlıştı. Karşılığı CLAUDE.md'deki "çıktı mühürlemeden önce kaynağa dön" kuralıdır, kapı değildir.
 
-**Yokluk iddiası desen eşleşmesiyle** — bir oturumda beş kez (18 Ağustos): "karara bağlanmamış" denen dört sorunun ikisi dosyada yazılıydı. 17 Eylül 2026: "tarayıcıda denenmedi" iddiasının CURRENT.md'de iki satırda durduğu söylendi; gerçekte dört satırdaydı. Arama `grep -i` ile yapılmıştı ve büyük harfli "DENENMEDİ"yi kaçırdı, çünkü Türkçe büyük İ harf duyarsız aramada küçük i ile eşleşmiyor. Dosyalar büyük harfli vurguyla dolu olduğu için (KARARA BAĞLANMADI, DOĞRULANDI) bu kaçak tekrar eder. Türkçe kelime aranırken büyük ve küçük biçim ayrı ayrı yazılır. Kural CLAUDE.md'ye kondu; kapısı yok. 30 Eylül 2026: iki kez. "Master liste repoda yok" tek bir İngilizce ad aratılarak söylendi, klasör listelenmemişti; dosya `docs/butce/` altındaydı. "Kütüphanede eş ad alanı yok" yalnız sonradan sütun ekleyen göçler taranarak söylendi, tabloyu kuran göç okunmamıştı; `aliases` ilk göçte vardı. Ders: yokluk, arama sonucundan değil kaynağın kendisinden (klasör listesi, tablonun tam sütun kümesi) okunur. 8 Ekim 2026: "çok dil kararı repoda yok" dendi; kayıt `docs/ARCHITECTURE.md` §2.2'de ("Çoklu dil desteği / lokalizasyon altyapısı", 6 Ağustos 2026 notuyla) duruyordu. Arama küçük harfle yapılmıştı, kayıt büyük Ç ile başlıyordu.
+**Yokluk iddiası desen eşleşmesiyle** — bir oturumda beş kez (18 Ağustos): "karara bağlanmamış" denen dört sorunun ikisi dosyada yazılıydı. 17 Eylül 2026: "tarayıcıda denenmedi" iddiasının CURRENT.md'de iki satırda durduğu söylendi; gerçekte dört satırdaydı. Arama `grep -i` ile yapılmıştı ve büyük harfli "DENENMEDİ"yi kaçırdı, çünkü Türkçe büyük İ harf duyarsız aramada küçük i ile eşleşmiyor. Dosyalar büyük harfli vurguyla dolu olduğu için (KARARA BAĞLANMADI, DOĞRULANDI) bu kaçak tekrar eder. Türkçe kelime aranırken büyük ve küçük biçim ayrı ayrı yazılır. Kural CLAUDE.md'ye kondu; kapısı yok. 30 Eylül 2026: iki kez. "Master liste repoda yok" tek bir İngilizce ad aratılarak söylendi, klasör listelenmemişti; dosya `docs/butce/` altındaydı. "Kütüphanede eş ad alanı yok" yalnız sonradan sütun ekleyen göçler taranarak söylendi, tabloyu kuran göç okunmamıştı; `aliases` ilk göçte vardı. Ders: yokluk, arama sonucundan değil kaynağın kendisinden (klasör listesi, tablonun tam sütun kümesi) okunur. 8 Ekim 2026: "çok dil kararı repoda yok" dendi; kayıt `docs/ARCHITECTURE.md` §2.2'de ("Çoklu dil desteği / lokalizasyon altyapısı", 6 Ağustos 2026 notuyla) duruyordu. Arama küçük harfle yapılmıştı, kayıt büyük Ç ile başlıyordu. 13 Ekim 2026: "repoda Eurimages ya da Türk kaynağı yok" dendi; Eurimages sınıflandırmasının kalemleri ve 15 Saturation şablonu Master Excel'de kaynak olarak duruyordu (KART-GEREKCELERI ÇAPRAZ-DOĞRULAMA YÖNTEMİ). Engin (birebir): "Eurimages bütçesini defalarca yükledim. şimdi sitesine girip bir şey buldum onu da ekledim önceki de bir yerlerde olmalı repoyu kontrol ettin mi? eurimages bütçesine dair pek çok konuşma yaptık, bütün kalemlerin durduğu excel dosyasına da aldın oradan"
 
-**Ölçülmemiş sayı.** Tablo sayısı üç kez değişti (16 → 37 → 36 → 34+1), doğrusu ancak canlı katalogdan geldi (22 Ağustos). CLAUDE.md tavanı 8 KB olarak ölçülmeden kondu ve iki kez DUR'a takıldı (22 Ağustos). Ders: sayı, üretildiği kaynaktan alınır; yuvarlak sayı bir ölçüm değildir. 12 Eylül 2026'da tekrar etti: onay ekranında taşınacak satır sayısı 44 denildi, kapanış raporunda 41 (32+9) çıktı, ve aynı dilimde koşulan salt okuma sorgusu geride hiç satır olmadığını gösterdi — yani 44 hiç ölçülmemişti. Onay ekranına yazılan sayı, onay ANINDA kaynaktan okunmuş olmak zorundadır. 19 Eylül 2026: "INDEX'te kaç dosya eksik" sorusuna, elde duran beş dosya adı INDEX'te aratılıp "dört" dendi. Tam ölçümde (bölüm 2'nin iddia ettiği yollar ile diskteki kaynak dosyaların karşılaştırılması) on çıktı. Örnek sayımı bütünlük iddiası değildir; sayı kaynaktan sayılmadan söylenmez.
+**Ölçülmemiş sayı.** Tablo sayısı üç kez değişti (16 → 37 → 36 → 34+1), doğrusu ancak canlı katalogdan geldi (22 Ağustos). CLAUDE.md tavanı 8 KB olarak ölçülmeden kondu ve iki kez DUR'a takıldı (22 Ağustos). Ders: sayı, üretildiği kaynaktan alınır; yuvarlak sayı bir ölçüm değildir. 12 Eylül 2026'da tekrar etti: onay ekranında taşınacak satır sayısı 44 denildi, kapanış raporunda 41 (32+9) çıktı, ve aynı dilimde koşulan salt okuma sorgusu geride hiç satır olmadığını gösterdi — yani 44 hiç ölçülmemişti. Onay ekranına yazılan sayı, onay ANINDA kaynaktan okunmuş olmak zorundadır. 19 Eylül 2026: "INDEX'te kaç dosya eksik" sorusuna, elde duran beş dosya adı INDEX'te aratılıp "dört" dendi. Tam ölçümde (bölüm 2'nin iddia ettiği yollar ile diskteki kaynak dosyaların karşılaştırılması) on çıktı. Örnek sayımı bütünlük iddiası değildir; sayı kaynaktan sayılmadan söylenmez. 13 Ekim 2026: sözlük turunun kapanış listesinde KART-KATALOGU'nda "figüran" geçen satır beş yazıldı; prompt yazılırken dosyadan sayılınca altı çıktı.
 
 **Kapsamı yanlış soruyla ölçmek** — "bu fonksiyonu kim çağırıyor" ölçüldü, "bu tipi kim sıfırdan kuruyor" ölçülmedi; dosya sayısı kapısı çaldı (19 Ağustos).
 
@@ -148,7 +148,7 @@ Hak devri düzeltilirken aynı turlara Hedef Mecra, uyarı metinleri, ölçümle
 
 ### Son anılan kaynağı tek ölçü yapmak (6 Ekim 2026)
 
-5 Ekim'de MMB, 6 Ekim'de CNC, Engin'in son andığı kaynak olduğu için tek ölçü yapıldı; 6 Ekim'de CNC'ye dayanan iki hüküm (harcama yerinin eksik eksen sayılması, senarist eşlemesinin yanlış ilan edilmesi) geri alındı. KURAL: MMB, CNC, Saturation, Showbiz, Wrapbook ve Yamdu birlikte tartılır; tek kaynağa dayanan hüküm tek kaynaklı olduğu söylenerek sunulur.
+5 Ekim'de MMB, 6 Ekim'de CNC, Engin'in son andığı kaynak olduğu için tek ölçü yapıldı; 6 Ekim'de CNC'ye dayanan iki hüküm (harcama yerinin eksik eksen sayılması, senarist eşlemesinin yanlış ilan edilmesi) geri alındı. KURAL: MMB, CNC, Saturation, Showbiz, Wrapbook ve Yamdu birlikte tartılır; tek kaynağa dayanan hüküm tek kaynaklı olduğu söylenerek sunulur. 13 Ekim 2026: doğa önerisi en ayrıntılı form olduğu için Screen Australia'ya yaslandı ve onun L Rentals & Storage bölümü bütün kiralar diye okundu (çoğunlukla mekân kirası). Engin (birebir): "bir şey dikkatimi çekiyor screen Australia yı her yerde görmeye başladım neden. iyi bir model mi yol gösterici mi türkiyeye mi uygun?, saturation yamdu gibileri ise hiç görmüyorum" Sınama bütün formlarla ve 15 Saturation şablonuyla tekrarlanınca üç tanım düzeldi. En ayrıntılı kaynak en ağır kaynak değildir.
 
 ### Kozmetik iş için pahalı prompt (6 Ekim 2026)
 
@@ -156,7 +156,7 @@ Alıntılardaki klavye kaymalarını düzelten dilim 36 uzun satırı baştan ya
 
 ### Dokümandaki olguyu doğrulamadan dışarı taşımak (8 Ekim 2026)
 
-Tanıtım sayfasının ilk taslağına verilerin İstanbul'da durduğu yazıldı; dayanak CLAUDE.md, INDEX ve ORKESTRASYON'daki "AWS İstanbul, KVKK" kaydıydı. Kayıt yanlıştı: Supabase'de Türkiye bölgesi yok. İç dokümandaki yanlış, dışarıya dönük sayfada müşteriye verilen bir söze dönüşecekti; 3. sürümde yok. KURAL: dokümandaki bir olgu sayfaya, forma ya da başvuruya girmeden önce kaynağında doğrulanır; doküman kendi cümlesinin kanıtı değildir.
+Tanıtım sayfasının ilk taslağına verilerin İstanbul'da durduğu yazıldı; dayanak CLAUDE.md, INDEX ve ORKESTRASYON'daki "AWS İstanbul, KVKK" kaydıydı. Kayıt yanlıştı: Supabase'de Türkiye bölgesi yok. İç dokümandaki yanlış, dışarıya dönük sayfada müşteriye verilen bir söze dönüşecekti; 3. sürümde yok. KURAL: dokümandaki bir olgu sayfaya, forma ya da başvuruya girmeden önce kaynağında doğrulanır; doküman kendi cümlesinin kanıtı değildir. 13 Ekim 2026: tarama raporundaki "Bakanlık Ayrıntılı Bütçe istiyor" satırı kaynağı yazılmadan duruyordu, doğrulanmadan iki kez tekrarlandı. Engin (birebir): "Kültür bakanlığının bütçesi diye bir şey yok. nereden çıkardın bunu?" ve "Bakanlık desteğinde bütçe yapımcının kendi biçiminde veriliyor." Satır ve onu tekrarlayan Hedef Mecra listeleri aynı turda düzeltildi.
 
 ### Yapım hâlindeki ürünü kodda var mı ölçüsüyle tartmak (8 Ekim 2026)
 
@@ -180,7 +180,7 @@ Gider çeşidi araştırmasından sonra sözlüğün bedelleri (kalıcı kürat�
 
 ### Araştırma kapsamını keyfi daraltmak (6 Ekim 2026)
 
-Engin brifteki araştırmanın tamamını istedi. Önce yalnız açılamayan dört kurum formu, sonra "dosya repoya, yardım sitesi bana" diye bölünmüş yirmi kaynaklık bir liste ve işin istemediği kurallar ("üçüncü taraf kopyası alınmaz") önerildi; kaynakların bir kısmı daha önce incelenmişti. Engin: "saçma sapan daraltmalar anlamsız kurallar getirme. önce planla sonra yap". Doğru yol işin sorusundan başlamaktı: çeşit için dört soru (adlar, tedarik ayrımı, 7/B'de kiranın yeri, kurum formlarının gruplaması), önceki inceleme tekrar edilmeden. KURAL: araştırma kapsamı işin ihtiyacından çıkar; önce kısa plan, sonra uygulama; toplanan veri tek işte harcanmaz, repoda saklanır.
+Engin brifteki araştırmanın tamamını istedi. Önce yalnız açılamayan dört kurum formu, sonra "dosya repoya, yardım sitesi bana" diye bölünmüş yirmi kaynaklık bir liste ve işin istemediği kurallar ("üçüncü taraf kopyası alınmaz") önerildi; kaynakların bir kısmı daha önce incelenmişti. Engin: "saçma sapan daraltmalar anlamsız kurallar getirme. önce planla sonra yap". Doğru yol işin sorusundan başlamaktı: çeşit için dört soru (adlar, tedarik ayrımı, 7/B'de kiranın yeri, kurum formlarının gruplaması), önceki inceleme tekrar edilmeden. KURAL: araştırma kapsamı işin ihtiyacından çıkar; önce kısa plan, sonra uygulama; toplanan veri tek işte harcanmaz, repoda saklanır. 13 Ekim 2026: doğa sınamasında kart yönteminin çapraz doğrulama katmanı olan Master Excel ilk turda atlandı; Saturation şablonları ve Eurimages sınıflandırması Engin sorunca tarandı. Engin (birebir): "saturation un şablonlarını buldum dedin onları da çalışmana kattın mı?"
 
 ### Kavramı somut sonuç vermeden anlatmak (13 Ekim 2026)
 
@@ -191,6 +191,8 @@ Süreç kuralı ilk sunulduğunda kural, eksen ve emsal anlatıldı; hangi satı
 > kavramsal bilgi genelde benim konuştuğum, sana verdiğim bilgi olur, sen somut olarak ne yapılacağını bildirirsin ama burada farklı döndü iş
 
 Somut biçim verilince (satır, kart, örnek rakam, rapor) aynı karar tek turda kabul aldı. KURAL: her öneri satır düzeyinde bir örnekle sunulur: hangi satır, hangi kartta, kullanıcı neyi ekler, raporda ne çıkar. Satırı ya da raporu değiştirmeyen bilgi öneriye eklenmez. Kapısı yok.
+
+13 Ekim 2026'da tekrar etti: doğa işareti on değerin listesiyle sunuldu, hangi soruyu cevapladığı söylenmedi. Engin (birebir): "Çok hızlı gidiyorsun ve basite indirgiyorsun nedir bu 10 doğa, baştan beri söylediğim şeyi verecek mi bana, yakıta ne kadar harcamışım? Nakliyeye, yönetmene, ekipmana bu soruların raporlarını alabilecek miyim bu doğa olayı nedir" Yakıta, nakliyeye ve ekipmana ne gittiği çeşitten, yönetmene ne gittiği kişi etiketinden cevaplanır; doğa bunların üstünden kesen toplamı verir (toplam kiralama, toplam işçilik). Bu iki cümle baştan söylenseydi soru doğmazdı.
 
 ### Resmin bir parçasını tek başına anlatmak (9–12 Ekim 2026)
 
@@ -203,6 +205,22 @@ KURAL: bir eksen anlatılırken komşu eksenler birlikte konur (kart, çeşit, i
 ### Yapılacaklar listesini taramadan yazmak (12 Ekim 2026)
 
 Repoya yazılacaklar ilk kez sunulduğunda liste akılda kalanlardan yazıldı ve yedi dosya gösterdi. Engin sorunca ("Yapılacak tüm bu kadar mıydı yapılacak tüm iş ve tarama") değişen kavramlar repoda tarandı; etkilenen satırlar dokuz dosyadaydı. KURAL: kapanış ve doküman listesi, değişen kavramların repoda taranmasından sonra yazılır; taranmadıysa "taranmadı" denir. Kapısı yok.
+
+### Devralınan eşlemeyi kalemin kararını okumadan kullanmak (13 Ekim 2026)
+
+6 Ekim eşlemesi 1614 Tekrar Telifi'ni hak devri satırlarıyla aynı çeşide koymuştu; 1614'ün bütçeye yazılmayan, hasılattan hesaplanan bir pay olduğunu söyleyen kararlar (11 ve 19 Eylül 2026, KART-KATALOGU §7.5) okunmadı. Ad turunda aynı eşlemenin üstüne tek bir ad önerildi. Engin (birebir):
+
+> Neden? Hak devri maaşın bir kısmı gibi görülebilir pratikte, yapımcı hak devri der ikinci taksite mesela, ancak tekrar telifi bütçede değil sözleşmede olan bir şeydir. Hiç oluşmayabilir ya da onlarca defa olabilir. Bundan emin misin, kafa karışmasın
+
+Hak çeşidi ikiye ayrıldı. KURAL: devralınan bir eşleme kullanılmadan önce her kalemin kendi karar kaydı okunur; eşleme kalemin kararının yerine geçmez. Kapısı yok.
+
+### Adı kütüphane ve saha sözüyle sınamamak (13 Ekim 2026)
+
+"Ajans Hizmeti" yerine önce "Cast ve Figüran Hizmeti" önerildi; kütüphanede "figüran" geçmiyordu (1600-03 Arkaplan, 3901 Genel Arkaplan Oyuncusu, 3913 Arkaplan Oyuncusu Castingi). Engin (birebir):
+
+> figüran kelimesi artık kullanılmıyor sektörde
+
+Ad Cast Hizmeti oldu. KURAL: önerilen her ad önce kütüphanedeki kalem adlarıyla ve sahanın sözüyle sınanır; ikisinde de karşılığı olmayan kelime ada girmez. Kapısı yok.
 
 ## Ters yönde bir kayıt
 

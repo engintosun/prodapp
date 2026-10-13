@@ -99,12 +99,12 @@ NOT: "Kör nokta" terimi bu bağlamda KULLANILMAZ — o terim anomali motoruna a
 
 Satır-seviyesi gizleme (hidden row): Kart açık olsa bile içindeki tek tek satırlar gizlenebilir. Yapımcı, kartın tamamını kapatmak yerine sadece hassas satırları gizleyip operasyonel satırları açar.
 
-ATL baş-kaşe deseni (genel kural): ATL kartlarında baş-kaşe (yönetmen kaşesi 1501, yazar kaşesi, yıldız kaşesi) set rollerine daima gizlidir; operasyonel/ekip satırları (koreograf, storyboard, set öğretmeni, figüran, clearance) yapımcı isterse salt-okunur açılır. Not: baş-kaşe ÇOĞUL olabilir (birden fazla başrol/baş-yönetmen) — hepsi gizli sınıfındadır.
+ATL baş-kaşe deseni (genel kural): ATL kartlarında baş-kaşe (yönetmen kaşesi 1501, yazar kaşesi, yıldız kaşesi) set rollerine daima gizlidir; operasyonel/ekip satırları (koreograf, storyboard, set öğretmeni, arkaplan oyuncusu, clearance) yapımcı isterse salt-okunur açılır. Not: baş-kaşe ÇOĞUL olabilir (birden fazla başrol/baş-yönetmen) — hepsi gizli sınıfındadır.
 
 Master/Owner katmanı: Muhasebe'nin üstünde, proje sahibi Yapımcı (ve ayrı Denetmen/Auditor rolü) katmanı. 1400 "ticari yatak odası" (ortaklık payı, mark-up, overhead, komisyon) bu katmana aittir. (Auth tarafı detayı: AUTH-KARARLARI.md.)
 
 ## 6. ŞABLON-BAĞLAMLI UYUMLULUK DENETİMİ (Compliance Guard)
-Yapımcı bütçeyi kurarken bir Hedef Mecra / Bütçe Şablonu seçer (Eurimages / Netflix / TRT / Bakanlık vb.). Anomali motoru, yüzde-bazlı kalemleri (özellikle 1404 Overhead, 1405 Mark-up) seçili şablonun sınırlarına göre denetler.
+Yapımcı bütçeyi kurarken bir Hedef Mecra / Bütçe Şablonu seçer (Eurimages / Netflix / TRT / Bakanlık vb.). Anomali motoru, yüzde-bazlı kalemleri (özellikle 1404 Overhead, 1405 Mark-up) seçili şablonun sınırlarına göre denetler. **NOT (13 Ekim 2026):** Bakanlığın bütçe şablonu yok; bütçe yapımcının kendi biçiminde verilir (Engin). Bakanlık seçildiğinde neyin denetleneceği Hedef Mecra turunda yazılır.
 
 Motor felsefesi — SINIR KURALI (kilitli): KAAPA yapımcıya riski ve görünürlüğü gösterir ("bu kalem dışarıdan şöyle görünür", "bu oran şu sınırı aşıyor"). KAAPA gizleme/kaçırma yöntemi ÖNERMEZ ("şuraya böl, fark edilmesin" demez). Sınır: teşhis ve uyarı EVET; gizleme reçetesi HAYIR. Karar her zaman yapımcının.
 
@@ -152,6 +152,9 @@ Etap: Geliştirme · tüm kart RECOUPABLE · görünürlük: TAM MASKE 🔒 (set
 | 1105-04 | Kargo-Kurye | Shipping & Courier | month | sirket | K |
 | 1105-05 | Yazılım-Abonelik | Software Subscriptions | month | sirket | K |
 | 1105-06 | Sekretarya / İdari Destek | Secretarial / Administrative Support | month | bordro | K |
+| 1105-07 | Ofis Aidat ve Faturaları | Utility Costs | month | sirket | K |
+| 1105-08 | Ofis Donanım Kirası | Furniture/Equipment Rental | month | sirket | K |
+| 1105-09 | Ofis Donanım Alımı | Furniture/Equipment Purchase | flat | sirket | K |
 | **1106** | Hukuk ve Muhasebe | Legal & Accounting | — | *(başlık)* | — |
 | 1106-01 | Avukatlık-Sözleşme | Legal Fees / Contracts | flat | smm | S |
 | 1106-02 | Clearance-İzin | Clearances & Permissions | flat | sirket | K |
@@ -182,6 +185,8 @@ Provenance tüm satırlarda: Koster/MMB + KAAPA damıtım. resmi_odeme statüsü
 
 **1107-04 LOKASYON KEŞFİ (13 Ekim 2026, Engin kabul):** satır yalnız keşif hizmetini taşır; yolu, oteli ve aracı 1108 ailesine yazılır (1104-06 deseni). Çeşidi Danışmanlık ve Uzmanlık. Bedel: geliştirme keşfinin toplamı koddan ayrılmaz. Teknik keşif (hazırlık dönemi) bu kalem değildir; Lokasyon kartı kurulurken süreç kuralıyla kurulur (BUTCE-SEMA-KARARLARI GİDER ÇEŞİDİ EKSENİ, KARARLAR madde 9).
 
+**OFİS AİLESİ (13 Ekim 2026, Engin kabul; sözlük turu):** 1105, 1310 ve 1507 aynı parça setini taşır: -01 Ofis Kirası · -02 Kırtasiye-Sarf · -03 İletişim · -04 Kargo-Kurye · -05 Yazılım-Abonelik · -07 Ofis Aidat ve Faturaları · -08 Ofis Donanım Kirası · -09 Ofis Donanım Alımı; -06 yalnız 1105'te (Sekretarya). 1105'e üç kalem eklenir (-07, -08, -09, yukarıdaki tabloda; kütüphane, şablon değişmez); 1100'de değişiklik yalnız ekleme. Kiralık ve satın alınan donanım ayrı satırdır, çünkü ayrı çeşittir (Ekipman Kiralama, Ekipman Satın Alma). Yapım şirketinin kendi ofisi bu ailelere yazılmaz; şirketin genel gideridir, bütçenin dibinde yüzde satırıyla taşınır (§7.3). Kaynaklar ve rapor örneği: `docs/butce/GIDER-CESIDI-ANALIZI.md` §10. Tohum şema diliminde.
+
 ### 7.2 KART 1300 — SENARYO YAZIMI  [KİLİTLİ]
 Etap: Yapım Öncesi · RECOUPABLE DEĞİL · Geliştirme'ye bağı YOK (clearance dahil ayrı hesaplanır) · görünürlük: KISMİ MASKE 👁️ (1308 açılabilir; yazar kaşesi gizli).
 
@@ -189,7 +194,7 @@ Etap: Yapım Öncesi · RECOUPABLE DEĞİL · Geliştirme'ye bağı YOK (clearan
 
 **AD DÜZELTMESİ (3 Ekim 2026, Engin kararı; göç `20261003130000`):** Kartın adı "Senaryo Yazım ve Yasal Temizlik" iken "Senaryo Yazımı", 1308'in adı "Yasal Hak Temizleme" iken "Hukuki Uygunluk Raporu (Clearance)" oldu. Gerekçe: kaynakların hiçbiri bu bölümün adına hukuki ifade koymaz (MMB 6.1 "Continuity & Treatment", Koster damıtımı "senaryo yazım departmanı"); clearance raporu kartın bir kalemidir, kimliği değil. "Yasal Hak Temizleme" Türkçe kaynakta karşılığı olmayan kelime kelime çeviriydi; sektör bu işe "clearance" der, bu yüzden sözcük adın içinde yaşar. Kalem adında "senaryo" sözcüğü yoktur, çünkü kart zaten senaryo kartıdır. Ad 34 harftir, hızlı ekleme odasında tek satıra sığar. İngilizce ad (Legal Clearances) değişmedi. Bu bölümde eski adla geçen tek yer eski numaraların listesidir, o tarihçe olarak durur.
 
-**Kütüphane (16 satır):** S = şablona giren, K = yalnız kütüphanede.
+**Kütüphane (24 satır; 13 Ekim 2026 sözlük turunda ofis ailesinin sekiz parça satırı eklendi, tohum şema diliminde):** S = şablona giren, K = yalnız kütüphanede.
 
 | Kod | Ad | İngilizce | Birim | Ödeme statüsü | S/K |
 |---|---|---|---|---|---|
@@ -204,13 +209,21 @@ Etap: Yapım Öncesi · RECOUPABLE DEĞİL · Geliştirme'ye bağı YOK (clearan
 | 1307 | Uzman Danışmanlar | Consultants | day | smm | K |
 | 1308 | Hukuki Uygunluk Raporu (Clearance) | Legal Clearances | flat | sirket | S |
 | 1309 | Sekreterya | Secretaries | week | bordro | K |
-| 1310 | Ofis Giderleri | Office Expenses | flat | sirket | K |
+| 1310 | Ofis Giderleri | Office Expenses | month | sirket | K |
+| 1310-01 | Ofis Kirası | Office Rent | month | kira_sahis | K |
+| 1310-02 | Kırtasiye-Sarf | Office Supplies | month | sirket | K |
+| 1310-03 | İletişim | Communications | month | sirket | K |
+| 1310-04 | Kargo-Kurye | Shipping & Courier | month | sirket | K |
+| 1310-05 | Yazılım-Abonelik | Software Subscriptions | month | sirket | K |
+| 1310-07 | Ofis Aidat ve Faturaları | Utility Costs | month | sirket | K |
+| 1310-08 | Ofis Donanım Kirası | Furniture/Equipment Rental | month | sirket | K |
+| 1310-09 | Ofis Donanım Alımı | Furniture/Equipment Purchase | flat | sirket | K |
 | 1312 | Senaryo Süre Analizi | Script Timing | flat | smm | S |
 | 1313 | Yazar Asistanı | Writer's Assistant | week | bordro | K |
 | 1314 | Bölüm/Tretman Yazarı | Episode Writers | episode | telif_belgeli | K |
 | 1315 | Yazar Temsilci Komisyonu | Literary Agent | flat | sirket | K |
 
-Eş adlar (`aliases`): 1301 Writers Room · 1306 Script Polish, Dramaturg. Provenance: MMB kalemleri 'Koster/MMB-6.1', 1305-xx 'Koster/MMB + KAAPA damitim', 1313 ve 1314 'KAAPA'.
+Eş adlar (`aliases`): 1301 Writers Room · 1306 Script Polish, Dramaturg · 1310 Hazır Ofis, Ortak Çalışma Alanı. Provenance: MMB kalemleri 'Koster/MMB-6.1', 1305-xx 'Koster/MMB + KAAPA damitim', 1313 ve 1314 'KAAPA'.
 
 **Şablon (5 kalem):** 1301, 1302, 1306, 1308, 1312. Kartın `misc_prefix` hanesi `"13"`. Yeni kart yalnız yeni açılan bütçede doğar.
 
@@ -219,7 +232,7 @@ Eş adlar (`aliases`): 1301 Writers Room · 1306 Script Polish, Dramaturg. Prove
 **1305 aile adı: Senaryo/Araştırma Seyahat ve Ağırlama Giderleri.** Başlık satırı açılmaz: kütüphanesinde başlık bulunan kart başlıklı çizilir ve başlığı olmayan kalemler kartın dibindeki Başlıksız bloğuna düşer (BUTCE-EKRAN-KARARLARI, BAŞLIKSIZ BLOĞU). Alt kalemler 1500'deki 1508-01..06 gibi düz durur; ad yalnız bu katalogda aile adıdır, ekranda alt kalemlerin adları görünür. Alt kalemler 1108 ve 1508 setinin aynısıdır, 05 boştur.
 
 - 1308 Hukuki Uygunluk Raporu (Clearance), İngilizce adı Legal Clearances: 3 bağ → ait-kart=Senaryo (para burada) · onay-köprüsü=Hukuk (6200, departman admini onaylar) · risk-bayrağı=E&O (6105). cost_type=Hizmet/Hukuk. Motorun İLK kurulu örneği olacak. Görünürlük: set rollerine açılabilen istisna satırı. BUGÜN (3 Ekim 2026): bağların hiçbiri kurulu değil; 6200 ve 6105 kartları ve bağ motoru yok, kalem düz satır olarak doğar.
-- 1309 Sekreterya ve 1310 Ofis Giderleri: sinema bütçesinde genelde kullanılmaz; dizi ve platform işinde Yazar Odası kurulduğu için ayrı ofis ve asistan/sekreter gideri olur. MMB standardı için kütüphanede kalır. **SÜREÇ KURALI (13 Ekim 2026, Engin kabul):** 1310 paket satırı olarak kalır (toplu ofis hizmeti); içeride kurulan ofisin parçaları 1310 altında parça satırlarıdır (ofis kirası, kırtasiye ve ofis sarfı, iletişim, yazılım ve abonelik; 1105 ailesi gibi). Parça adları ve kodları sözlük turunda, tohumu şema diliminde (BUTCE-SEMA-KARARLARI GİDER ÇEŞİDİ EKSENİ, KARARLAR madde 9).
+- 1309 Sekreterya ve 1310 Ofis Giderleri: sinema bütçesinde genelde kullanılmaz; dizi ve platform işinde Yazar Odası kurulduğu için ayrı ofis ve asistan/sekreter gideri olur. MMB standardı için kütüphanede kalır. **SÜREÇ KURALI (13 Ekim 2026, Engin kabul):** 1310 paket satırı olarak kalır (toplu ofis hizmeti); içeride kurulan ofisin parçaları 1310 altında parça satırlarıdır (ofis kirası, kırtasiye ve ofis sarfı, iletişim, yazılım ve abonelik; 1105 ailesi gibi). Parça adları ve kodları sözlük turunda, tohumu şema diliminde (BUTCE-SEMA-KARARLARI GİDER ÇEŞİDİ EKSENİ, KARARLAR madde 9). **AİLE (13 Ekim 2026, Engin kabul; sözlük turu):** 1310 hazır ofisin paket satırıdır: çeşidi Ofis Kirası, birimi ay (bugün sabit), eş adı Hazır Ofis, Ortak Çalışma Alanı. Parça satırları 1105 ailesinin aynısı (tabloda 1310-01..1310-09; -06 boş, sekreterya 1309'da). Yapım şirketinin kendi ofisi buraya yazılmaz (§7.3, genel gider). Tohum şema diliminde.
 - 1314 Bölüm/Tretman Yazarı: dizi ve platform projelerinde ana senarist dışındaki bölüm ve tretman yazarları; birimi bölüm.
 - **1315 Yazar Temsilci Komisyonu ve senaristin hak devri (3 Ekim 2026, Engin kararı; göç `20261003140000`):** 1315 kütüphane kalemidir; şablondan %20 gelir, kullanıcı değiştirir. 1301 Senaryo Yazarı ve 1314 Bölüm/Tretman Yazarı satırlarına bağlanır (`attaches_to`) ve 1500'deki 1511 gibi "Kime?" sorusuyla yazarın altına alt satır olarak düşer. Taban, "ajans var, komisyon yok" (%0) ve silme kuralları 1511 ile aynıdır (§7.4); ajans adı aynı park maddesine tabidir. Komisyon bağlanınca yazarın para satırı "Telif Bedeli" alt adıyla görünür (`name_suffix`; 1500'deki "Hizmet Bedeli" karşılığı, çünkü senaristin ödemesi telif). Senarist için hak devri satırı AÇILMAZ. Gerekçe: CNC (19 Agents littéraires, 1911) ve Eurimages (Literary agent) yazarın ajansını ayrı satırda ister, ama hakkını ücretinden ayırmaz. CNC'de senaristin parası yalnız hak bölümündedir (11, 12); Eurimages'ta tek satırdır (Script Writer & co-writers, fees and rights); MMB 6.1'de 1202 ve 1301 Writers tek kalemdir. Yönetmende ayrım vardır (CNC 13 telif + personel bölümünde ücret); 1500'deki hak devri satırı bu yüzden vardır.
 - **KURUM FARKLARI (Hedef Mecra kuralı, 3 Ekim 2026):** kartın davranışı kuruma göre değişmez; farklar Hedef Mecra kurulunca şablonda, denetimde ve çıktıda çözülür. **CNC** (`docs/butce/CNC-devis-cinema-2018-5-chiffres.pdf`): senaristin parası yalnız ilk bölümde, haklar içinde durur (11 Konu, 12 Uyarlama-Diyalog-Yorum); yazarın ajansı ayrı satırdır (19, 1911 Agents littéraires); çeviriler (16) ve metin giderleri (17) de aynı bölümdedir. KAAPA'da bunlar 1315'e, 1104-04'e ve (çoğaltma) 2100'e düşer; CNC çıktısında hak bölümüne gruplanır. **Eurimages:** senarist tek satırdır (Script Writer & co-writers, fees and rights), yazarın ajansı ayrı satırdır (Literary agent). **MMB 6.1:** 1300 Continuity & Treatment; ajans satırı yoktur. **Türkiye:** senaristin ödemesi telif (`telif_belgeli`), ücret ile hak ayrılmaz. Sonuç: 1300'de kurum farkı kartın davranışına değil, çıktıdaki gruplamaya dokunur.
@@ -279,7 +292,7 @@ Eş adlar (`aliases`): 1301 Writers Room · 1306 Script Polish, Dramaturg. Prove
 | 1410 | Araştırma | Research | flat | smm | K |
 | 1411 | Ajans Paketleme Komisyonu | Packaging Fee | flat | sirket | K |
 
-  Notlar: 1406 MMB'de boştur, numara Opus önerisidir; MMB yapımcı seyahatini 1700 A-T-L Travel/Living hesabında tutar (1701 Hotels, 1702 Travel, 1703 Per Diem, 1704 Car Rentals, 1705 Misc.). Gezi ailesinin kartta kalma gerekçesi: kart onay zinciri birimidir, 1300 ve 1500 seyahatini kendi kartında tutar; MMB 1700 numarası dışa aktarımda kod eşlemesiyle karşılanır. 1406-05 Festival Katılımı, 1508-05 gibi Pazarlama/Dağıtım kartı kurulurken oraya taşınacak kalemlerdendir. 1411'in 1511 ve 1315 komisyon düzenine bağlanıp bağlanmayacağı açıktır. Motor isteyen maddeler kartın tarifinde yazılı kalır, bugün kurulmaz: tam maske, Compliance Guard, 1102 mahsup denetimi, rol etiketi.
+  Notlar: 1406 MMB'de boştur, numara Opus önerisidir; MMB yapımcı seyahatini 1700 A-T-L Travel/Living hesabında tutar (1701 Hotels, 1702 Travel, 1703 Per Diem, 1704 Car Rentals, 1705 Misc.). Gezi ailesinin kartta kalma gerekçesi: kart onay zinciri birimidir, 1300 ve 1500 seyahatini kendi kartında tutar; MMB 1700 numarası dışa aktarımda kod eşlemesiyle karşılanır. 1406-05 Festival Katılımı, 1508-05 gibi Pazarlama/Dağıtım kartı kurulurken oraya taşınacak kalemlerdendir. 1411'in 1511 ve 1315 komisyon düzenine bağlanıp bağlanmayacağı açıktır. Motor isteyen maddeler kartın tarifinde yazılı kalır, bugün kurulmaz: tam maske, Compliance Guard, 1102 mahsup denetimi, rol etiketi. 1409 Yapımcı Birimi Ofis Giderleri, 1310 ve 1507 gibi ofis ailesi olarak kurulur (13 Ekim 2026 sözlük turu, §7.2); aşağıdaki anlatıda 1409 eski numarayla "Kurumsal Ağırlama" diye geçer, KART 1400 turunda çözülür.
 
 Etap: ATL (kart birden çok etaba yayılır) · RECOUPABLE DEĞİL · görünürlük: TAM MASKE 🔒 (tüm kart set rollerine kapalı; "ticari yatak odası") · DB'de Muhasebe tam erişim · anomali her zaman aktif.
 
@@ -310,7 +323,7 @@ Etap: ATL (Prep→Prod→Post) · RECOUPABLE DEĞİL · görünürlük: KISMİ M
 
 **REVİZE (KART 1500 Dilim 1, 30 Eylül 2026, Engin kararı; göç `20260930120000`):** Kodlar MMB 6.1'e hizalandı (kaynak: `docs/butce/MMB-6.1-ornek-hesap-plani.pdf`, 1500 Directors Unit). Kart DÜZ: kütüphane başlığı YOK (MMB'de 1500 ara başlıksız tek hesap grubu; atomlarda `heading_id` boş). Sıralama kod sırasıdır. Kütüphane 14 satır, şablon 5 kalem.
 
-**Kütüphane (16 satır):** S = şablona giren, K = yalnız kütüphanede.
+**Kütüphane (24 satır; 13 Ekim 2026 sözlük turunda ofis ailesinin sekiz parça satırı eklendi, tohum şema diliminde):** S = şablona giren, K = yalnız kütüphanede.
 
 | Kod | Ad | İngilizce | Birim | Ödeme statüsü | S/K |
 |---|---|---|---|---|---|
@@ -320,7 +333,15 @@ Etap: ATL (Prep→Prod→Post) · RECOUPABLE DEĞİL · görünürlük: KISMİ M
 | 1503 | Koreograf | Choreographer | week | smm | S |
 | 1504 | Oyuncu/Diyalog Koçu | Dialogue/Acting Coach | day | smm | S |
 | 1506 | Storyboard ve Animatic Sanatçısı | Storyboard & Animatic Artist | week | smm | S |
-| 1507 | Yönetmen Birimi Ofis Giderleri | Director's Office Expenses | flat | sirket | K |
+| 1507 | Yönetmen Birimi Ofis Giderleri | Director's Office Expenses | month | sirket | K |
+| 1507-01 | Ofis Kirası | Office Rent | month | kira_sahis | K |
+| 1507-02 | Kırtasiye-Sarf | Office Supplies | month | sirket | K |
+| 1507-03 | İletişim | Communications | month | sirket | K |
+| 1507-04 | Kargo-Kurye | Shipping & Courier | month | sirket | K |
+| 1507-05 | Yazılım-Abonelik | Software Subscriptions | month | sirket | K |
+| 1507-07 | Ofis Aidat ve Faturaları | Utility Costs | month | sirket | K |
+| 1507-08 | Ofis Donanım Kirası | Furniture/Equipment Rental | month | sirket | K |
+| 1507-09 | Ofis Donanım Alımı | Furniture/Equipment Purchase | flat | sirket | K |
 | 1508-01 | Ulaşım-Uçak | Air Travel | flat | sirket | K |
 | 1508-02 | Konaklama | Hotels / Accommodation | day | konaklama | K |
 | 1508-03 | Yemek-Ağırlama | Catering & Hospitality | flat | sirket | K |
@@ -349,7 +370,7 @@ C. Görselleştirme & Tasarım (İşçilik + ödeme-statüsü)
 - 1510 Konsept Sanatçısı: Kapsam: SADECE yönetmen erken-vizyonu (greenlight öncesi dünya/renk/VFX-planı). Prodüksiyon tasarımı → 2200. cost_type=İşçilik · çapraz: 2200 alias (çift-sayım önler). Eski kodu 1507'ydi.
 
 D. Lojistik & Temsil (operasyonel gider)
-- 1507 Yönetmen Birimi Ofis Giderleri. **SÜREÇ KURALI (13 Ekim 2026, Engin kabul):** 1310 ile aynı desen (§7.2).
+- 1507 Yönetmen Birimi Ofis Giderleri. **SÜREÇ KURALI (13 Ekim 2026, Engin kabul):** 1310 ile aynı desen (§7.2). **AİLE (13 Ekim 2026, Engin kabul; sözlük turu):** 1310 ile aynı aile (§7.2): ana kod hazır ofisin paket satırı (Ofis Kirası, birimi ay, eş adı Hazır Ofis, Ortak Çalışma Alanı), parçalar 1507-01..1507-09 (-06 boş, sekreterya 1502'de). Tohum şema diliminde.
 - 1508-01..06 Yönetmen birimi seyahat/konaklama/yemek: Kapsam: KENDİ kreatif ekibimizin gideri (festival/reco/çekim — uçak/araç/otel) ve karşı tarafı ağırlama. Eski 1508/1509 ayrımı (kendi yol-yemeği / karşı tarafı ağırlama) KALKTI; ikisi 1508-03 Yemek-Ağırlama'da, birimi sabit (1108-03 ile aynı).
 
 Kart-özel anomali kuralları: çift-fringe guard (1501/kreatifler Loan-Out) · milestone uyuşmazlık (1501↔5100) · Crew Overlap (1504/1502 ↔ set ekibi). Genel kurallar §4.9'da.
@@ -453,13 +474,13 @@ Kart-özel anomali kuralları: çift-fringe guard (1501/kreatifler Loan-Out) · 
 *Üst-grup: OYUNCU · Etap: Yapım (casting Yapım Öncesi'ne sarkar) · Recoupable DEĞİL · Görünürlük: KISMİ MASKE (baş-kaşe satırları set rollerine gizli/çoğul, gerisi açık) · DB'de muhasebe tam · anomali aktif.*
 Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi — gerekçe GEREKCELERI). Kod = Koster köken (provenance); KAAPA item_code ayrı (#0001); [K!] = KAAPA atadı (Koster numarasız); kesin katalog kodu kütüphane resmîleşince (karar 2026-07-21: iki-kod doktrini kilitlendi — item_code kimlik olarak kalır, MMB-uyumlu katalog kodu kanonik alan olarak doğar, aidiyet=kod aralığı, çok-kart=ayrı kod, serbest kalem x698 muhtelif alt-kodu; detay BUTCE-SEMA-KARARLARI §H–L). cost_object=Stunt etiketi içsel-stunt kalemlerde oto (§4.10). PARKTA (24 Eylül 2026), bkz. aşağıdaki 24 EYLÜL 2026 KARARLARI. [Ç]=çekirdek şablon · [K]=kütüphane.
 
-**Dört başlık (KART 1600 M2, 5 Eylül 2026, Engin kararı):** Aidiyet artık kutuphanede VERİDİR (`item_library.heading_id`), koddan türetilmez — Kast Operasyonu başlığı hem 16xx hem 39xx atom taşıdığı için tire-öncesi parçadan türetme bu kartta prensip olarak çalışmaz (bkz. BUTCE-SEMA-KARARLARI, DEĞİŞMEZLER md.2). Dört başlık kodu KAAPA yapısal koddur, Koster kodu değildir (provenance=KAAPA), tire biçimi 1100'ün tire-sonrası atom deseninin TERSİDİR (burada başlık tire taşır, atomlar düz dört haneli kalır):
+**Dört başlık (KART 1600 M2, 5 Eylül 2026, Engin kararı):** Aidiyet artık kutuphanede VERİDİR (`item_library.heading_id`), koddan türetilmez — Cast Operasyonu başlığı hem 16xx hem 39xx atom taşıdığı için tire-öncesi parçadan türetme bu kartta prensip olarak çalışmaz (bkz. BUTCE-SEMA-KARARLARI, DEĞİŞMEZLER md.2). Dört başlık kodu KAAPA yapısal koddur, Koster kodu değildir (provenance=KAAPA), tire biçimi 1100'ün tire-sonrası atom deseninin TERSİDİR (burada başlık tire taşır, atomlar düz dört haneli kalır):
 - 1600-01 Ana Kast — Principal Cast
 - 1600-02 Dublör — Stunts
 - 1600-03 Arkaplan — Background
-- 1600-04 Kast Operasyonu — Casting Operations
+- 1600-04 Cast Operasyonu — Casting Operations
 
-**Görev listesi (19 atom, `is_duty=true`):** 1601, 1602, 1603 (Ana Kast) · 1604, 1606, 1607, 1608 (Dublör) · 3901, 3902, 3903, 3904, 3916, 3917 (Arkaplan) · 1605, 1609, 1612, 1613, 1615, 3914 (Kast Operasyonu). Kodda gömülü aralık YOK; `fetchDutyOptions` tek koşulla okur (`is_duty=true`). Görev OLMAYAN 10 atom (12 Eylül 2026'da 1618-01 eklenince 9'dan 10'a çıktı): 1614, 1620 (Ana Kast) · 1610, 1619, 3910, 3913 (Kast Operasyonu) · 1611, 1616, 1618, 1618-01 (aidiyet hanesi BOŞ — başlık kişinin karttaki satırından gelir, bkz. AİDİYET KURALI).
+**Görev listesi (19 atom, `is_duty=true`):** 1601, 1602, 1603 (Ana Kast) · 1604, 1606, 1607, 1608 (Dublör) · 3901, 3902, 3903, 3904, 3916, 3917 (Arkaplan) · 1605, 1609, 1612, 1613, 1615, 3914 (Cast Operasyonu). Kodda gömülü aralık YOK; `fetchDutyOptions` tek koşulla okur (`is_duty=true`). Görev OLMAYAN 10 atom (12 Eylül 2026'da 1618-01 eklenince 9'dan 10'a çıktı): 1614, 1620 (Ana Kast) · 1610, 1619, 3910, 3913 (Cast Operasyonu) · 1611, 1616, 1618, 1618-01 (aidiyet hanesi BOŞ — başlık kişinin karttaki satırından gelir, bkz. AİDİYET KURALI).
 
 **Şablon (KART 1600 M3, 5 Eylül 2026, Engin kararı; atom sayısı 12 Eylül 2026'da 28'den 29'a çıktı, bkz. aşağıdaki ATOM SAYISI GÜNCELLEMESİ; çekirdek set 12 Eylül 2026'da 13'ten 17'ye çıktı):** Kart aktif sistem şablonuna girdi (üçüncü kart, 1100+1500'ün yanına — mevcut bütçelere dokunmadı, kart yalnız YENİ açılan bütçelerde doğar). 29 atomun 17'si [Ç] işaretli, şablonun çekirdek satır setini oluşturur: 1601, 1602, 1603, 1604, 1606, 1607, 3901, 3902, 3903, 3904, 3917, 1605, 1609, 1610, 1613, 1615, 1619. Kalan 12 atom ([K]) şablona girmez, kütüphaneden elle eklenir: 1611, 1614, 1616, 1618, 1618-01, 1608, 3916, 1612, 3910, 3913, 3914, 1620. Kartın `misc_prefix` hanesi `"39"` — kart kodu `16` değil, çünkü MMB'nin kendi 1600 Talent bloğu 1698 Miscellaneous + 1699 Fringe ile bitiyor ve kart-kodu-öneki muhtelif üretseydi bu ikisiyle çakışırdı (15 Ağustos 2026 kararı zaten bu yüzden serbest kalemi 39xx'e yönlendirmişti).
 
@@ -481,14 +502,14 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 - Grup 2'nin ödeme statüleri ONAYLANDI (5 Eylül 2026, Engin'in saha bilgisi) — 4 Eylül 2026'daki "HENÜZ ONAYLANMADI" notu bu maddeyle kapanmıştır.
 
 **Grup 3 — Arkaplan Oyuncusu** (Background Actors · sadece kişiler · AÇIK · baz+premium)
-- 3901 General Extras / Background — Genel Arkaplan Oyuncusu: repliksiz, sahneye hayat veren kalabalık. Statü: sirket (figüranı ajans temin ediyor, ajans kendi 4/a'lisini hizmet olarak veriyor, yapımcı ayrıca sigortalı bildirimi yapmıyor). [Ç]
+- 3901 General Extras / Background — Genel Arkaplan Oyuncusu: repliksiz, sahneye hayat veren kalabalık. Statü: sirket (arkaplan oyuncusunu ajans temin ediyor, ajans kendi 4/a'lisini hizmet olarak veriyor, yapımcı ayrıca sigortalı bildirimi yapmıyor). [Ç]
 - 3902 Stand-Ins — Stand-In: oyuncu yerinde set ışıklanırken duran; regular'dan fazla kazanır. Statü: sirket (ajans modeli, bkz. 3901). [Ç]
 - 3903 Silent Bits — Sessiz Rol: repliksiz ama öne çıkan/eylemli figür; premium. Statü: sirket (ajans modeli, bkz. 3901). [K]
 - 3904 Special Ability — Özel Yetenekli Arkaplan: beceri/tehlike (yüzücü/binici); baz + ek. Statü: sirket (ajans modeli, bkz. 3901). [K]
 - 3917 [K!] Specialty Background (FR: Silhouette) — Özel Tip: belirli fiziksel tip/görünüm için (dönem yüzü, ayırt edici tip). KAAPA-eklemesi. Statü: sirket (ajans modeli, bkz. 3901). [K]
 - 3916 [K!] Dancers — Dansçı: koreografili sahne dansçıları. Statü: smm. [K]
 
-**Grup 4 — Kast Operasyonu** (hizmet/destek, talent değil)
+**Grup 4 — Cast Operasyonu** (hizmet/destek, talent değil)
 - 1605 [K!] Casting Director — Cast Direktörü: oyuncuları seçen/yöneten kişi. cost_type=Hizmet (DEĞİŞTİ 6 Ekim 2026: gider çeşidi Personel Ücreti, gri bölge kuralı; BUTCE-SEMA-KARARLARI, GİDER ÇEŞİDİ EKSENİ). Statü: smm. [Ç]
 - 1609 [K!] Casting Assistant — Cast Asistanı. Statü: bordro. [Ç]
 - 1610 Screen Tests — Deneme Çekimi: seçme sürecindeki deneme çekimi gideri (Koster kökeni, damıtım satır 691). Statü: sirket. [Ç]
@@ -497,8 +518,8 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 - 1620 [K!] ADR Buyout — ADR Hak Devri: ADR/dublaj seansındaki performansın hak devri bedeli, 1613'ten ayrı satır. Statü: telif_belgeli (hak devri). [K]
 - 1615 Set Teacher — Set Öğretmeni: çocuk/minör oyuncuda ZORUNLU (compliance). cost_type=Hizmet (DEĞİŞTİ 6 Ekim 2026: gider çeşidi Personel Ücreti, gri bölge kuralı; BUTCE-SEMA-KARARLARI, GİDER ÇEŞİDİ EKSENİ). Statü: smm. [Ç]
 - 1612 Cast Musicians — Müzisyen: sahnede/kayıtta görünen müzisyenler. Statü: smm. [K]
-- 3913 Extras Casting — Arkaplan Oyuncusu Castingi: figüran/kalabalık seçim ajansı. Statü: sirket. [K]
-- 3914 Crowd Controllers — Kast Sorumlusu: set figüran/kalabalık sevki (Türk saha terimi). Statü: bordro. [K]
+- 3913 Extras Casting — Arkaplan Oyuncusu Castingi: arkaplan oyuncusu ve kalabalık seçim ajansı. Statü: sirket. [K]
+- 3914 Crowd Controllers — Cast Sorumlusu: set arkaplan oyuncusu ve kalabalık sevki (Türk saha terimi). Statü: bordro. [K]
 - 3910 Extras Wardrobe Allowance — Arkaplan Kostüm Ödeneği: kendi kıyafetini getirmesi için ödenek. Statü: sirket. [K]
 - 3915 Payroll Service — Bordro Hizmeti: KART 1600'DEN ÇIKARILDI (5 Eylül 2026, Engin kararı). Kütüphaneye tohumlanmadı, görev listesine girmez.
 
@@ -507,7 +528,7 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 - Stunt Vehicle — Stunt Aracı → TRANSPORT kartı · cost_object=Stunt (o kartın kodunu alır).
 - Stunt Rigging — Stunt Rig / Kurulum → MEKANİK FX kartı · cost_object=Stunt.
 - 1503 Choreographer — Koreograf → 1500'de KİLİTLİ (alias; Master Oyuncu'da görse de yeri 1500).
-- Crowd AD (reji asistanı) → Prodüksiyon Ekibi / AD kartı (2100+). Ayrım: Kast Sorumlusu (3914) figüranı SEVK eder; Crowd AD sahneyi YÖNETİR (reji). 1500'de YOK (1500 yalnız 1505 yönetmen özel asistanı, set reji departmanından ayrı).
+- Crowd AD (reji asistanı) → Prodüksiyon Ekibi / AD kartı (2100+). Ayrım: Cast Sorumlusu (3914) arkaplan oyuncusunu SEVK eder; Crowd AD sahneyi YÖNETİR (reji). 1500'de YOK (1500 yalnız 1505 yönetmen özel asistanı, set reji departmanından ayrı).
 
 **Stunt = doğa-bölmesi:** tek "Efekt & Dublör" kartı YOK. Performans→Oyuncu (bu kart), araç→Transport, mekanik→Mekanik FX. Üç kartın stunt satırları cost_object=Stunt taşır → CFE tek "Stunt toplam" (§4.10). Gerçekten etkilenen diğer kartlar: Transport, Mekanik FX (5300 değil — alias işaretçi).
 
@@ -543,7 +564,28 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 
 **1610/1619 AYRIMI (4 Eylül 2026, Engin):** 1610 ikiye ayrıldı. Deneme Çekimi 1610'da kalır (Koster kökeni, damıtım satır 691); Cast Gideri yeni kod 1619'u alır.
 
-**1610 VE 1619 SÜREÇ AİLESİ (13 Ekim 2026, Engin kabul):** İki kalem Oyuncu kartında, Kast Operasyonu başlığının altında kalır. Emsal: MMB 6.1'in 1600 Cast hesabında 1609 Casting Expenses ve 1610 Screen Tests; Screen Australia E(b)1 Casting Fees & Expenses altında Screen Tests Crew ve Screen Tests Equipment; Telefilm 10 Cast hesabında Casting expenses ve Video expenses (casting); BFI 4 Cast. Başka yere koyanlar: CNC 5112 Casting (bölüm 5, Stüdyo başlığı), AICP 108 ve 109 (Prep & Wrap Expenses). Koster: deneme çekimi ya Cast hesabına ya ayrı Tests hesabına yazılır, ikisine birden yazılmaz. Kaynak satırları `docs/rakip/GIDER-CESIDI-TARAMASI.md` §3.12. Teknik testler (kamera, makyaj, kostüm) 1610 değildir, kendi kartlarında ele alınır. Süreç kuralı (BUTCE-SEMA-KARARLARI GİDER ÇEŞİDİ EKSENİ, KARARLAR madde 9): ana koddaki satır tek faturayla satın alınan hizmetin paket satırıdır; prodüksiyonun içeride kurduğu altyapı alt koddaki parça satırlarına yazılır (1610: oda ya da stüdyo kirası, ekipman kiralama, makyaj ve kostüm, yemek ve ikram, ulaşım, gerekirse teste özel ekip yevmiyesi; 1619: oda ya da stüdyo kirası, kayıt ekipmanı, yemek ve ikram, ulaşım ve transfer). Parça adları, kodları ve şablona hangi satırların gireceği sözlük turunda; bugün şablonda 1610 ve 1619 tek satır olarak duruyor.
+**1610 VE 1619 SÜREÇ AİLESİ (13 Ekim 2026, Engin kabul):** İki kalem Oyuncu kartında, Cast Operasyonu başlığının altında kalır. Emsal: MMB 6.1'in 1600 Cast hesabında 1609 Casting Expenses ve 1610 Screen Tests; Screen Australia E(b)1 Casting Fees & Expenses altında Screen Tests Crew ve Screen Tests Equipment; Telefilm 10 Cast hesabında Casting expenses ve Video expenses (casting); BFI 4 Cast. Başka yere koyanlar: CNC 5112 Casting (bölüm 5, Stüdyo başlığı), AICP 108 ve 109 (Prep & Wrap Expenses). Koster: deneme çekimi ya Cast hesabına ya ayrı Tests hesabına yazılır, ikisine birden yazılmaz. Kaynak satırları `docs/rakip/GIDER-CESIDI-TARAMASI.md` §3.12. Teknik testler (kamera, makyaj, kostüm) 1610 değildir, kendi kartlarında ele alınır. Süreç kuralı (BUTCE-SEMA-KARARLARI GİDER ÇEŞİDİ EKSENİ, KARARLAR madde 9): ana koddaki satır tek faturayla satın alınan hizmetin paket satırıdır; prodüksiyonun içeride kurduğu altyapı alt koddaki parça satırlarına yazılır (1610: oda ya da stüdyo kirası, ekipman kiralama, makyaj ve kostüm, yemek ve ikram, ulaşım, gerekirse teste özel ekip yevmiyesi; 1619: oda ya da stüdyo kirası, kayıt ekipmanı, yemek ve ikram, ulaşım ve transfer). Parça adları, kodları ve şablona hangi satırların gireceği sözlük turunda; bugün şablonda 1610 ve 1619 tek satır olarak duruyor.
+
+**1610 VE 1619 AİLELERİ (13 Ekim 2026, Engin kabul; sözlük turu):** İki ana kod paket satırıdır (çeşit Cast Hizmeti), adları değişmez ve şablondan çıkar. Şablona altı parça satırı girer (1610-01, 1610-02, 1610-05, 1619-01, 1619-02, 1619-05): Cast Operasyonu bölümü 6 satırdan 10 satıra, çekirdek set 17 satırdan 21 satıra çıkar. Parça adı sürecin adıyla başlar, çünkü kod kullanıcıya görünmez. Sonekler hizalı: -01 mekân, -02 ekipman, -03 kostüm, -04 makyaj, -05 yemek ve ikram, -06 ulaşım, -07 ekip; 1619'da -03 ve -04 boş. İngilizce adlar tohum hazırlığında kaynaktan alınır. Tohum şema diliminde; gerekçe, kaynaklar ve rapor örnekleri `docs/butce/GIDER-CESIDI-ANALIZI.md` §10.
+
+| Kod | Ad | Çeşit | Birim | Statü | Şablon |
+|---|---|---|---|---|---|
+| 1610 | Deneme Çekimi | Cast Hizmeti | flat | sirket | K (bugün Ç) |
+| 1610-01 | Deneme Çekimi Mekânı | Stüdyo ve Plato Kirası | day | sirket | Ç |
+| 1610-02 | Deneme Çekimi Ekipmanı | Ekipman Kiralama | day | sirket | Ç |
+| 1610-03 | Deneme Çekimi Kostümü | Malzeme Kiralama | flat | sirket | K |
+| 1610-04 | Deneme Çekimi Makyajı | Sarf Malzeme | flat | sirket | K |
+| 1610-05 | Deneme Çekimi Yemeği | Set Yemeği | day | yemek | Ç |
+| 1610-06 | Deneme Çekimi Ulaşımı | Taksi ve Transfer | flat | sirket | K |
+| 1610-07 | Deneme Çekimi Ekibi | Personel Ücreti | day | bordro | K |
+| 1619 | Cast Gideri | Cast Hizmeti | flat | sirket | K (bugün Ç) |
+| 1619-01 | Cast Odası | Stüdyo ve Plato Kirası | day | sirket | Ç |
+| 1619-02 | Cast Kayıt Ekipmanı | Ekipman Kiralama | day | sirket | Ç |
+| 1619-05 | Cast Günü İkramı | Ara Öğün ve İkram | day | yemek | Ç |
+| 1619-06 | Cast Günü Ulaşımı | Taksi ve Transfer | flat | sirket | K |
+| 1619-07 | Cast Kayıt Ekibi | Personel Ücreti | day | bordro | K |
+
+**1610-07 KURALI (13 Ekim 2026, Engin kabul):** 1610-07 yalnız teste özel tutulan ekibi taşır; hazırlığa girmiş ekibin emeği kendi kartında kalır. Ayrım takvimden gelir: kişi yalnız test için getirildiyse ya da test onun hazırlığı başlamadan yapılıyorsa 1610-07, hazırlığın içindeyse kendi kartı. Bütçeci emin değilse 1610-07'ye yazar. 1619-07 aynı kuralla yalnız cast günleri için dışarıdan tutulan kişiyi taşır (örneğin kayıt için gelen kameraman); fazladan bir cast asistanı 1609 satırıdır. Dayanak: kaynakların ortak ayrımı (teste özel ekip test hesabında: MMB 4100 Crew, Screen Australia Screen Tests - Crew; hazırlıktaki ekip kendi satırında: AICP, CNC, Koster), tarama `docs/rakip/GIDER-CESIDI-TARAMASI.md` §3.13. Çift sayımı ileride §4.9 Crew Overlap Guard yakalar; kişi bağı kurulunca ücret kişinin kendi satırından gelir (park, CURRENT.md). O güne kadar 1610-07 elle yazılır ve şablona girmez. Ajans cast direktörünün ücretini faturalasa da ücret 1605'te durur (gri bölge kuralı), giderler 1619'da.
 
 **ADR BUYOUT (4 Eylül 2026, Engin; kod 5 Eylül 2026'da 1620 atandı):** ADR Hak Devri yeni atom (statü telif_belgeli, hak devri). 1613 ADR/Looping'den ayrı satır — 1613 performans ücretini (smm), ADR Buyout hak devrini karşılar.
 
@@ -570,7 +612,7 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 - **1618 Ajans Komisyonu ve 1618-01 Menajer Komisyonu SORMAZ** — kütüphaneden eklenmez, ajans/menajer tikinden doğar (bkz. yukarıdaki 1618/1618-01 satırları).
 **AİDİYET KURALI:** kişi soran atomun `heading_id`'si BOŞSA başlık kişinin bu karttaki satırından türer (önce görev satırı, yoksa en eski satır); DOLUYSA bugüne kadarki gibi atomdan gelir. 1611 ve 1616'nın `heading_id`'si boştur (mesai ve prova belli bir bölümün kalemi değildir); 1614 ve 1620 Ana Kast'a (1600-01) bağlıdır. **KOMİSYON ATOMLARININ AİDİYETİ DE BOŞALDI (20 Eylül 2026, Engin kararı; göç `20260920120000`):** 1618 Ajans Komisyonu ve 1618-01 Menajer Komisyonu Ana Kast'a bağlıydı, bu yüzden komisyon satırı kimin için doğarsa doğsun 1600-01 bölümünde doğuyordu; kişi bloğu bölüm sınırını geçemediği için satır sahibinin yanında hiç görünmüyordu (dublörün komisyonu kartın yukarısında Ana Kast içinde kalıyordu). İkisinin de aidiyet hanesi boşaltıldı, canlıda doğmuş aktif satırlar kişinin kendi bölümüne taşındı; ayrıca komisyon satırı artık doğum çağrısında kişiyi taşıyor — önceden satır açılıp kişi sonradan iliştiriliyordu, bu yüzden miras kuralı bu satırda hiç çalışmıyordu. Tarayıcıda DOĞRULANDI: dublörün ve sessiz rol oyuncusunun komisyonu kendi bölümünde, kendi bloğunun sonunda. **1614'ÜN AİDİYETİ SABİTTİR (19 Eylül 2026, Engin kararı):** 1614 Tekrar Telifi'nin aidiyeti Ana Kast'tır ve DEĞİŞMEZ. Gerekçe: tekrar telifinin yönetmen ve senaristi de kapsıyor olması — kâr paylaşımı sözleşmelerinde tekrar telifi tek başrole değil ekibin geniş bir kesimine yayılabilir — bu kartın işi değildir; KART 1600 yalnız oyuncu tarafını tutar, aidiyet o yüzden değişmez. "Kişi kaydının hangi katmanda yaşayacağı çözülmeden yazılamaz" engeli DÜŞTÜ: o çatal 5 Eylül 2026'da kapandı (bkz. BUTCE-EKRAN-KARARLARI.md §20 KİŞİ KAYDI KATMANI ÇATALI), asks_person göçü 19 Eylül 2026'da canlıya girdi — `fn_add_budget_item` `p_person_object_id` parametresiyle bu sınıflamayı uyguluyor, panel (add-item-panel.tsx) ikinci adımda "Kime?" sorusunu soruyor.
 
-**MESAİNİN SAHA KARŞILIĞI (20 Eylül 2026, Engin kararı):** Mesai sahada teknik ekibe ve başta öyle anlaşılmış oyunculara yazılır. Fatura kesene yazılmaz, başta mesai konuşulmamış oyuncuya yazılmaz, sürücüye yazılmaz. FİGÜRASYONA DA YAZILMAZ: figüran belirli bir saat için gelir, üstüne çalışılacaksa bedeli faturaya yansır, ayrı bir mesai kalemi gerekmez. Normal koşulların dışına çıkan saha halleri — mesainin hiç ödenmemesi, olağan ücretin bile güçlükle tahsil edilmesi — KAAPA'nın konusu değildir; kart normal koşulu modeller. Mesai ağırlıkla gerçekleşen bütçenin işidir, ama öngörülene konulması yasak değildir (bkz. yukarıdaki 19 Eylül 2026 REVİZE maddesi).
+**MESAİNİN SAHA KARŞILIĞI (20 Eylül 2026, Engin kararı):** Mesai sahada teknik ekibe ve başta öyle anlaşılmış oyunculara yazılır. Fatura kesene yazılmaz, başta mesai konuşulmamış oyuncuya yazılmaz, sürücüye yazılmaz. ARKAPLANA DA YAZILMAZ: arkaplan oyuncusu belirli bir saat için gelir, üstüne çalışılacaksa bedeli faturaya yansır, ayrı bir mesai kalemi gerekmez. Normal koşulların dışına çıkan saha halleri — mesainin hiç ödenmemesi, olağan ücretin bile güçlükle tahsil edilmesi — KAAPA'nın konusu değildir; kart normal koşulu modeller. Mesai ağırlıkla gerçekleşen bütçenin işidir, ama öngörülene konulması yasak değildir (bkz. yukarıdaki 19 Eylül 2026 REVİZE maddesi).
 
 **MESAİ/PROVA VE KOMİSYON ALABİLECEK GÖREVLER (20 Eylül 2026, Engin kararı):** KART 1600'de mesai ve prova eklenebilmesi gereken görevler: 1604 Dublör Koordinatörü, 1606 Stunt Oyuncusu, 1607 Dublör, 1608 Aksiyon Teknisyeni, 3902 Stand-In, 3904 Özel Yetenekli Arkaplan. Bunların üçü ayrıca ajans ve menajer komisyonu alabilmelidir: 1606, 1607, 3904. YENİ MEKANİZMA GEREKTİRMEZ: mesai ve prova `asks_person` yoluyla, komisyon Oyuncular listesindeki ajans/menajer tikiyle bugün zaten eklenebiliyor — tek şart kişinin Üretim Kayıtları'nda kaydının olmasıdır. AÇIK KALAN KENAR: adı girilmemiş şablon satırına (örneğin kadrosu belli olmayan bir aksiyon işi) bunların hiçbiri eklenemiyor, çünkü kartta bir kaleme iliştirilebilen tek çıpa kişi kaydıdır. Etiket tablosunda iş cinsi (`kind`) hanesi var ama Oyuncular listesi yalnız kişi cinsini okuyor ve yazıyor. Bu ayrı bir turun konusudur, karara bağlanmadı.
 

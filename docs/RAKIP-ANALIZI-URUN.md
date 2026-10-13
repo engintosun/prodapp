@@ -133,7 +133,7 @@ Bu eksende (bilgi mimarisi / kabuk / gezinme) baska rakip henuz incelenmedi. Ama
   - Koster / MMB SuperBudget omurgasi: hesap plani iskeleti (1100-6400) buradan alindi.
   - Kutuphane kaynak listesi: 4.746 kalem, 18+ kaynak (AICP 2023, Movie Magic, Eurimages, AFI, California Film Commission, 15 adet Saturation.io exportu).
   - ATL/BTL sinirinin konvansiyon oldugu tartismasi (Koster'in kendi metnine dayanir).
-  - Figuranin Oyuncu departmani altinda kumelenmesi karari: gerekce "Saturation ve MMB de ayri ust-hesap yapmaz".
+  - Arkaplan oyuncusunun Oyuncu departmanı altında kümelenmesi kararı: gerekçe "Saturation ve MMB de ayrı üst-hesap yapmaz".
   - cost_object karari: emsal "MMB Set / Saturation Tag", endustri standardi; kart sinirini asan maliyetler icin transversal eksen.
 
 - **docs/butce/BUTCE-EKRAN-KARARLARI.md bolum 16** — butce ekrani kararlarinin gerekce hatti:
