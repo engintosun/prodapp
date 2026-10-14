@@ -174,3 +174,5 @@ Sonnet'in DUR'u sinyaldir; raporu doğrulama değildir ama DUR'u incelenmeden ge
 20 Eylül 2026. ONAYLANMIŞ YÖNTEM UYGULANMADAN ÖNCE İKİNCİ KEZ ÖLÇÜLDÜ ve üç delik çıktı: kütüphane gelmeden doğan komisyon satırı oransız doğacaktı, bordro gelmeden bordrolu kişide satır yine doğmayacaktı, satır listesine bağlanan tetik her tuş vuruşunda koşacaktı. Ölçüm yapılmasaydı üçü de canlıya inecekti.
 
 21 Eylül 2026. GECİKMENİN SEBEBİ KAYITTAN SÖYLENİR. "Neden bu kadar uzadı" sorusuna iki kez farklı sebep söylendi; etkinlik kaydı ikisini de tutmadı. Engin buna yalan dedi; doğruydu. KURAL: "neden uzadı" sorusu tahminle değil, o turun komut kaydına bakılarak cevaplanır; itiraz gelince sebep değiştirilmez, kayıt yeniden okunur.
+
+14 Ekim 2026. KOPYADA ÖLÇÜLEN SAYI AKTARIMDA DÜŞEN METNİ YAKALADI: aynı gün kabul edilen sayı kuralıyla promptta DERSLER.md'nin bayt sayısı yazılıydı; Sonnet'in yazdığı dosya 9 bayt eksik çıktı ve Sonnet durdu. Fark bölüm ve satır bayt sayılarıyla tek satıra indi: metin aktarılırken bir cümleden "bu kadar" düşmüştü. Sayı yazılmasaydı eksik metin commit'lenecekti.

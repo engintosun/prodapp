@@ -12,7 +12,7 @@ Tamamlanan işin günlüğü git log'dadır; kararlar ve kararın ekranda ya da 
 
 ## Durum
 
-- HEAD: 5a077ee (14 Ekim 2026 — oturum kapanışı; bu satırı taşıyan commit CURRENT.md diyeti)
+- HEAD: 698cf67 (14 Ekim 2026 — DERSLER.md diyeti; bu satırı taşıyan commit oturum kapanışı)
 - **CANLI VERİ DENEME VERİSİDİR (Engin, 31 Ağustos ve 1 Ekim 2026).** KAAPA yapım aşamasında; kimse kullanmıyor, yürüyen bütçe yok. Deneme verisi için çevirme, ölçüm, ara dönem ya da "canlıda dönüşü yok" kaygısı açılmaz; gerekirse deneme verisi silinip yeniden kurulur.
 - Migration 20260901130000'den 20261014120000'e kadar CANLIDA. Build geçer, eslint sıfır hata. Originde tek dal: main.
 - SAYILAR BURADA YAŞAMAZ: beklenen test sayısı `.claude/test-count` dosyasında, kapı kümesi `.claude/hooks/gate.sh` ve `.claude/hooks/run-gates.sh` içinde yaşar. Bu iki sayı düzyazıda tazelenmez, sahibinden okunur.
