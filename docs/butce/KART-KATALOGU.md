@@ -265,34 +265,48 @@ Eş adlar (`aliases`): 1301 Writers Room · 1306 Script Polish, Dramaturg · 131
 > * Senaryo Raporlama / Coverage (Script Coverage / Dramaturg) Senaryo doktorundan (1306) bağımsız olarak, dışarıdan okuyucuya veya dramaturga yaptırılan senaryo analiz/raporlama gideri.
 > * Bölüm / Tretman Yazarları (Episode Writers) Özellikle dizi/platform projelerinde (Yazar Odası - Writer's Room) ana senarist dışındaki bölüm veya tretman yazarları.
 
-### 7.3 KART 1400 — YAPIMCI BİRİMİ ve FİNANSAL HAKLAR  [KİLİTLİ]
+### 7.3 KART 1400 — YAPIMCI BİRİMİ  [KİLİTLİ]
 
 **REVİZE (5 Ekim 2026, Engin kararları; KART 1400 açılışı).** Bu bölümün aşağıdaki eski metni 19 Haziran tasarımıdır; numaraları MMB 6.1 ile tutmaz (1300 ve 1500 emsali).
 
 - **MMB 6.1 HİZASI (Karar 1, kabul):** kodlar MMB 6.1'e hizalanır (kaynak: `docs/butce/MMB-6.1-ornek-hesap-plani.pdf`, 1400 Producers Unit). Beş yapımcı rolü ayrı kütüphane kalemidir: 1401 Executive Producer, 1402 Producer, 1403 Co-Producer, 1404 Line Producer, 1405 Associate Producer. Eski "1401 tek kalem + rol etiketi" tasarımı düştü; rol etiketi mekanizması kodda ve şemada yoktur. Çatal: iki rolü taşıyan kişi için kullanıcı tek kalemi seçer, öbürü kütüphanede kalır. 1404 eş adları: Coordinating Producer, Supervising Producer. Gerekçe ve kaynak doğrulaması: `docs/butce/KART-GEREKCELERI.md` KART 1400 REVİZE GEREKÇE.
 - **GENEL GİDER VE KÂR KALEM DEĞİL (Karar 2, özü kabul):** eski tarifteki 1404 Genel Gider Payı ve 1405 Yapımcı Kârı kalem olarak açılmaz; ikisi bütçenin dibinde yüzde satırıdır. Uygulaması (dipte Genel Gider satırı, zincirdeki yeri, hangi tutar üzerinden hesaplanacağı) icmal turuna park: `docs/EKRAN-MUHASEBE.md` §19 Ekran 1.
-- **ÖNERİLEN KÜTÜPHANE — KARARA BAĞLANMADI (Karar 4 ve 4a, açık):** gider çeşidi sözlüğünden sonra ele alınır; 1400 tohumu bekler. S = şablona girer, K = yalnız kütüphanede. Statüler Opus varsayımıdır, Engin düzeltecek.
+- **KÜTÜPHANE (Karar 4 ve 4a, 14 Ekim 2026, Engin kabul; göç `20261014120000`):** kart adı "Yapımcı Birimi" (MMB 6.1 1400 Producers Unit; eski "ve Finansal Haklar" eki karttan çıkan genel gider, kâr ve paketleme ücretini anlatıyordu). Kart DÜZ: kütüphane başlığı yok (atomlarda `heading_id` boş), sıralama kod sırasıdır. Kütüphane 22 satır, şablon 4 kalem; her kalem gider çeşidiyle doğar. S = şablona girer, K = yalnız kütüphanede. Gerekçeler ve kaynak taraması: `docs/butce/KART-GEREKCELERI.md` KART 1400 KÜTÜPHANE GEREKÇESİ.
 
-| Kod | Ad | EN | Birim | Statü | |
-|---|---|---|---|---|---|
-| 1401 | Yürütücü Yapımcı | Executive Producer | flat | sirket | S |
-| 1402 | Yapımcı | Producer | flat | sirket | S |
-| 1403 | Ortak Yapımcı | Co-Producer | flat | sirket | S |
-| 1404 | Uygulayıcı Yapımcı | Line Producer | flat | smm | S |
-| 1405 | Yardımcı Yapımcı | Associate Producer | week | smm | K |
-| 1406-01 | Ulaşım-Uçak | Air Travel | flat | sirket | K |
-| 1406-02 | Konaklama | Hotels / Accommodation | day | konaklama | K |
-| 1406-03 | Yemek-Ağırlama | Catering & Hospitality | flat | sirket | K |
-| 1406-04 | Harcırah | Per Diem | day | sirket | K |
-| 1406-05 | Festival Katılımı | Festival Attendance | flat | sirket | K |
-| 1406-06 | Araç Kiralama | Car Rentals | day | sirket | K |
-| 1407 | Yapım Yöneticisi | Production Executive | week | smm | K |
-| 1408 | Sekreterya | Secretaries | week | bordro | K |
-| 1409 | Yapımcı Birimi Ofis Giderleri | Office Expenses | flat | sirket | K |
-| 1410 | Araştırma | Research | flat | smm | K |
-| 1411 | Ajans Paketleme Komisyonu | Packaging Fee | flat | sirket | K |
+| Kod | Ad | İngilizce | Birim | Ödeme statüsü | Gider çeşidi | S/K |
+|---|---|---|---|---|---|---|
+| 1401 | Yürütücü Yapımcı | Executive Producer | flat | smm | Personel Ücreti | S |
+| 1402 | Yapımcı | Producer | flat | smm | Personel Ücreti | S |
+| 1403 | Ortak Yapımcı | Co-Producer | flat | smm | Personel Ücreti | S |
+| 1404 | Uygulayıcı Yapımcı | Line Producer | flat | smm | Personel Ücreti | S |
+| 1405 | Yardımcı Yapımcı | Associate Producer | week | smm | Personel Ücreti | K |
+| 1406-01 | Ulaşım-Uçak | Air Travel | flat | sirket | Ulaşım Bileti | K |
+| 1406-02 | Konaklama | Hotels / Accommodation | day | konaklama | Konaklama | K |
+| 1406-03 | Yemek-Ağırlama | Catering & Hospitality | flat | sirket | Yolculukta Yemek ve Ağırlama | K |
+| 1406-04 | Harcırah | Per Diem | day | sirket | Harcırah | K |
+| 1406-06 | Araç Kiralama | Car Rentals | day | sirket | Yolculuk Aracı Kiralama | K |
+| 1407 | Yapım Yöneticisi | Production Executive | week | smm | Personel Ücreti | K |
+| 1408 | Yapımcı Asistanı | Producers Assistant | week | bordro | Personel Ücreti | K |
+| 1409 | Yapımcı Birimi Ofis Giderleri | Office Expenses | month | sirket | Ofis Kirası | K |
+| 1409-01 | Ofis Kirası | Office Rent | month | kira_sahis | Ofis Kirası | K |
+| 1409-02 | Kırtasiye-Sarf | Office Supplies | month | sirket | Kırtasiye ve Ofis Sarfı | K |
+| 1409-03 | İletişim | Communications | month | sirket | İletişim | K |
+| 1409-04 | Kargo-Kurye | Shipping & Courier | month | sirket | Nakliye, Kargo, Kurye | K |
+| 1409-05 | Yazılım-Abonelik | Software Subscriptions | month | sirket | Yazılım ve Abonelik | K |
+| 1409-07 | Ofis Aidat ve Faturaları | Utility Costs | month | sirket | Mekân Giderleri | K |
+| 1409-08 | Ofis Donanım Kirası | Furniture/Equipment Rental | month | sirket | Ekipman Kiralama | K |
+| 1409-09 | Ofis Donanım Alımı | Furniture/Equipment Purchase | flat | sirket | Ekipman Satın Alma | K |
+| 1410 | Araştırma | Research | flat | smm | Personel Ücreti | K |
 
-  Notlar: 1406 MMB'de boştur, numara Opus önerisidir; MMB yapımcı seyahatini 1700 A-T-L Travel/Living hesabında tutar (1701 Hotels, 1702 Travel, 1703 Per Diem, 1704 Car Rentals, 1705 Misc.). Gezi ailesinin kartta kalma gerekçesi: kart onay zinciri birimidir, 1300 ve 1500 seyahatini kendi kartında tutar; MMB 1700 numarası dışa aktarımda kod eşlemesiyle karşılanır. 1406-05 Festival Katılımı, 1508-05 gibi Pazarlama/Dağıtım kartı kurulurken oraya taşınacak kalemlerdendir. 1411'in 1511 ve 1315 komisyon düzenine bağlanıp bağlanmayacağı açıktır. Motor isteyen maddeler kartın tarifinde yazılı kalır, bugün kurulmaz: tam maske, Compliance Guard, 1102 mahsup denetimi, rol etiketi. 1409 Yapımcı Birimi Ofis Giderleri, 1310 ve 1507 gibi ofis ailesi olarak kurulur (13 Ekim 2026 sözlük turu, §7.2); aşağıdaki anlatıda 1409 eski numarayla "Kurumsal Ağırlama" diye geçer, KART 1400 turunda çözülür.
+  Eş adlar (`aliases`): 1404 Coordinating Producer, Supervising Producer · 1408 Sekreterya · 1409 Hazır Ofis, Ortak Çalışma Alanı. Provenance: 1406-xx ve 1409-xx 'Koster/MMB + KAAPA damitim', diğerleri 'Koster/MMB-6.1'.
+
+**Şablon (4 kalem):** 1401, 1402, 1403, 1404. Kartın `misc_prefix` hanesi `"14"`; serbest kalem 1498-01'den başlar (MMB'nin 1498 Miscellaneous hesabıyla aynı yer). Yeni kart yalnız yeni açılan bütçede doğar. Film şablonu v9.
+
+- **AİLELER:** 1406 gezi ailesi 1508'in aynısıdır (ad, İngilizce ad, birim, statü, çeşit); -05 boş. 1409 ofis ailesi 1507'nin aynısıdır (§7.2 1310, §7.4 1507); -06 boş, yapımcının asistanı 1408'dedir. Yapım şirketinin kendi ofisi 1409 ailesine yazılmaz, genel giderdir (Karar 2). Aile içindeki son iki hane bütün ailelerde aynı türü söyler; kartlar arası toplam gider çeşidinden alınır.
+- **BOŞ NUMARALAR:** 1406-05 (festival bitmiş filmin pazarlamasıdır, geliştirmedeki market katılımı 1108-05'te), 1409-06, 1411 Packaging Fee (açılmadı; emsal 1303 Typing).
+- **STATÜ VE BİRİM:** yapımcı rolleri SMM gelir, kullanıcı satırda değiştirir. 1401'in ödemesi toplam rakam da haftalık da olabilir: birim sabit gelir, haftalık çalışan için satırda haftaya çevrilir. 1402 Yapımcı çoğu zaman ücret almaz, işin sahibidir: satır şablondan 0 gelir ve toplama girmez.
+- **KURUM FARKLARI (Hedef Mecra kuralı):** **Eurimages** Line Producer'ı yapım ekibinde, yapım müdürüyle aynı bölümde sayar (4.1 Production crew, doğrudan maliyet); öbür yapımcı ücretlerini doğrudan maliyetin altında, genel gider ve öngörülemeyenle birlikte sınırlı gider olarak tutar (9.1 Producer's fees; 8.1 Overheads; 10 Contingency). **CNC** 21 Producteurs üç rol taşır (2111 Producteur délégué, 2121 Producteur exécutif, 2131 Producteur associé); 2121 1404'e düşer; yapımcının yol ve konaklaması 6111 ve 6611'dedir. **MMB 6.1:** 1401–1411 bire bir; yapımcı seyahati 1700 A-T-L Travel/Living'de, dışa aktarımda kod eşlemesiyle karşılanır. Sonuç: kurum farkı kartın davranışına değil, çıktıdaki gruplamaya dokunur.
+- **AŞAĞIDAKİ ANLATI TARİHÇEDİR (19 Haziran tasarımı):** numaraları bu tabloyla tutmaz. Kartın tam maskesi ve kart-özel denetim kuralları (çift-fringe guard, geliştirme mahsubu, Compliance Guard) kart görünürlük katmanı ve denetim motoru kurulurken bu tablonun numaralarıyla yeniden yazılır. Eski 1409 Kurumsal Ağırlama'nın işi bugün 1406-03 Yemek-Ağırlama'dadır; sözlükteki Ağırlama ve Temsil çeşidini taşıyan kalem yok (CURRENT.md Park listesi).
 
 Etap: ATL (kart birden çok etaba yayılır) · RECOUPABLE DEĞİL · görünürlük: TAM MASKE 🔒 (tüm kart set rollerine kapalı; "ticari yatak odası") · DB'de Muhasebe tam erişim · anomali her zaman aktif.
 
