@@ -131,7 +131,7 @@ Kaynak listesi `docs/rakip/GIDER-CESIDI-TARAMASI.md` §3.11'de; deneme çekimi v
 
 **Geri dönüş:** 1 ve 2 doküman, geri alınabilir. 3 şemadır; canlı veri bugün deneme verisi olduğu için geri alınabilir, ama sözlük adları sonradan değişirse göç gerekir. Bu yüzden 2 bitmeden 3 yazılmaz.
 
-**Durum (13 Ekim 2026):** 1 ve 2 tamamlandı; sözlük turunun kararları §10'da. Sıra 3'e iki ek: sözlük tablosuna doğa ve açıklama haneleri girer; 1105 ailesine üç yeni kalem (1105-07, 1105-08, 1105-09) tohumda eklenir. **3 TAMAM (13 Ekim 2026, göç `20261013120000`).**
+**Durum (13 Ekim 2026):** 1 ve 2 tamamlandı; sözlük turunun kararları §10'da. Sıra 3'e iki ek: sözlük tablosuna doğa ve açıklama haneleri girer; 1105 ailesine üç yeni kalem (1105-07, 1105-08, 1105-09) tohumda eklenir. **3 TAMAM (13 Ekim 2026, göç `20261013120000`).** **4 TAMAM (14 Ekim 2026, göç `20261014120000`).**
 
 ## 10. Sözlük turu (13 Ekim 2026)
 
@@ -247,7 +247,7 @@ Sonekler 1610 ile hizalı (-01 mekân, -02 ekipman, -05 yemek ve ikram, -06 ula�
 
 **Geri dönüş:** bugün doküman kararı; tohumdan sonra deneme verisi olduğu için geri alınır.
 
-**Not (KART 1400 turu):** KART-KATALOGU §7.3 tablosunda 1409 Yapımcı Birimi Ofis Giderleri var; aynı aile orada da kurulur. Aynı bölümün anlatısında 1409 hâlâ "Kurumsal Ağırlama" diye geçiyor; o tur çözülür.
+**Not (KART 1400 turu):** KART-KATALOGU §7.3 tablosunda 1409 Yapımcı Birimi Ofis Giderleri var; aynı aile orada da kurulur. Aynı bölümün anlatısında 1409 hâlâ "Kurumsal Ağırlama" diye geçiyor; o tur çözülür. **ÇÖZÜLDÜ (14 Ekim 2026):** 1409 ofis ailesi 1507'nin aynısı olarak kuruldu; "Kurumsal Ağırlama" anlatısı 19 Haziran tarihçesidir (KART-KATALOGU §7.3).
 
 ### Hak çeşidinin adı — KABUL (Engin, 13 Ekim 2026)
 
@@ -347,7 +347,7 @@ Devir ile lisans farkı (FSEK): devirde mali hak yapımcıya geçer; lisansta ha
 - **Başlıklar çeşit taşımaz (madde 6):** 1101–1108, 1190 ve 1600'ün dört başlığı.
 - **Sınırdakiler (madde 4'ün ölçüsüyle tek tek):** 1104-01 Bütçeleme ve 1101-05 Danışman-Editör Danışmanlık ve Uzmanlık'ta kalır, ikisi de sonucunu teslim eder (bütçe, senaryo notu). 1306 Senaryo Doktoru/Editör Personel Ücreti'nde kalır: fonlama sonrası yazım sürecinde ekiple çalışan dramaturgdur (KART-KATALOGU §7.2 SINIR); rapor teslim eden dışarıdaki dramaturg 1101-07'dir.
 - **6 Ekim'den değişenler:** 1501-01 ve 1620 Hak Devri'ne, 1614 Tekrar Kullanım Payı'na; 3913 ile 1610 ve 1619 paketi Cast Hizmeti'ne; 1104-04 Çeviri ve Altyazı'ya (ad); 1310 ve 1507 paketi Ofis Kirası'na; 1305-05 metinden düştü.
-- **KART 1400:** kalemleri kütüphanede henüz yok; KART 1400 turunda çeşidiyle doğar (Analiz §9 sıra 4).
+- **KART 1400:** kalemleri kütüphanede henüz yok; KART 1400 turunda çeşidiyle doğar (Analiz §9 sıra 4). **DOĞDU (14 Ekim 2026, göç `20261014120000`):** 22 kalem çeşidiyle; 1401–1405, 1407, 1408 ve 1410 Personel Ücreti, 1409 Ofis Kirası, 1406 ve 1409 aileleri kardeş ailelerinin (1508, 1507) çeşidinde (KART-KATALOGU §7.3).
 
 ### Doğa işareti — KABUL (Engin, 13 Ekim 2026); kurum formlarıyla sınandı
 

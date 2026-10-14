@@ -76,6 +76,8 @@ Script Clearance [2k], Clearance and Rights → 1308'i doğruluyor. Writer / Wri
 
 ## KART 1400 — YAPIMCI BİRİMİ  (KART-KATALOGU §7.3)
 
+**NOT (14 Ekim 2026):** Bu bölümün aşağıdaki gerekçeleri 19 Haziran tasarımına aittir. A/B/C/D gruplaması, rol etiketi, 1403/1405 ve 1407/1409 ayrımları ve "Production Executive gizli alias" notu TARİHÇEDİR: 5 Ekim 2026'da kart MMB 6.1'e hizalandı, beş yapımcı rolü ayrı kalem oldu, genel gider ve kâr kart kalemi olmaktan çıktı; 14 Ekim 2026'da 1407 Yapım Yöneticisi (Production Executive) kütüphaneye kalem olarak girdi. Tam maske gerekçesi geçerli kalır. Güncel gerekçe bölümün sonundadır (KART 1400 REVİZE GEREKÇE ve KART 1400 KÜTÜPHANE GEREKÇESİ); güncel düzen KART-KATALOGU §7.3.
+
 ### Neden tüm kart TAM MASKE (set rollerine kapalı)?
 1400 projenin **"ticari yatak odası"**. İçinde ortaklık payları, şirket kârı (mark-up), overhead ve ajans komisyonları yatar. Set uzasa da, bütçe patlasa da bu kartın içeriğini UPM, 1.AD veya set muhasebecisi görmemeli. Neden? Çünkü bunlar yapımın operasyonel rakamları değil, yapımcının ticari sırları. Bir UPM'in "yapımcı bu projeden ne kadar kâr ediyor" bilgisine ihtiyacı yok — bu bilgi sızarsa pazarlık/moral/rekabet sorunu olur.
 

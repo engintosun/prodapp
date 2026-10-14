@@ -86,7 +86,7 @@
 - **Master/Owner:** Muhasebe'nin üstündeki proje sahibi Yapımcı (ve ayrı Denetmen/Auditor) katmanı. 1400 ticari yatak odası bu katmana ait.
 - **Compliance Guard:** Şablon-bağlamlı uyumluluk denetimi. Seçili Hedef Mecra'nın (Eurimages/Netflix/TRT/Bakanlık) sınırlarına göre yüzde-kalemleri denetler. Teşhis+uyarı verir, gizleme reçetesi vermez.
 - **Hedef Mecra (Bütçe Şablonu):** Bütçenin sunulacağı kurum (Eurimages/Netflix/TRT/Bakanlık). Compliance Guard'ın denetim bağlamını belirler. Bakanlığın bütçe şablonu yoktur; bütçe yapımcının kendi biçiminde verilir (Engin, 13 Ekim 2026).
-- **Rol-etiketi:** Tek kalemin altında gerçek sözleşmesel rol ayrımı (örn. 1401: Executive/Line/Coordinating/Supervising). Kalem katlanır, etiket gerçek ayrım taşır.
+- **Rol-etiketi:** Tek kalemin altında gerçek sözleşmesel rol ayrımı (örn. 1401: Executive/Line/Coordinating/Supervising). Kalem katlanır, etiket gerçek ayrım taşır. **DÜŞTÜ (5 Ekim 2026):** KART 1400'de beş yapımcı rolü ayrı kütüphane kalemi oldu (KART-KATALOGU §7.3); rol etiketi mekanizması kodda ve şemada yoktur.
 - **Salt-okunur toplam:** Kart yüzünde tek toplam gösteren, alt-dökümü arkada tutulan kalem (örn. 1108).
 
 -----

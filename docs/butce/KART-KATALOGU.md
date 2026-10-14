@@ -2,7 +2,7 @@
 
 *Kalıcı domain kataloğu. Bütçe modülünün kart/kalem yapısının ve kalem davranış motorunun TEK KAYNAĞI. Koster damıtımından ve oturum kararlarından damıtıldı. TASARIM-KARARLARI.md'den referanslanır.*
 *Oluşturma: 19 Haziran 2026. Güncelleme: 20 Haziran 2026 (KART 1600 OYUNCU + §4.10 cost_object 4. eksen). Önceki: 19 Haziran (KART 1400/1500 + §4.8/§4.9/§5.1/§6).*
-*Durum: KART 1100, 1300, 1400, 1500, 1600 KİLİTLİ; runtime dikey-dilimi (DILIM-3 bordro motoru + genel-desen sökümü) TAMAMLANDI. KÜTÜPHANE TOHUMU 1100 için KAPANDI (DILIM 1100-A, 15 Ağustos 2026, §7.1); 1600 için KAPANDI (KART 1600 M2, 5 Eylül 2026, §7.5 — 4 başlık + 28 atom, heading_id ile); 1300 için KAPANDI (KART 1300 Dilim 1, 3 Ekim 2026, §7.2; 16 atom, kart düz); 1400/1700 tohumu hâlâ sırada.*
+*Durum: KART 1100, 1300, 1400, 1500, 1600 KİLİTLİ; runtime dikey-dilimi (DILIM-3 bordro motoru + genel-desen sökümü) TAMAMLANDI. KÜTÜPHANE TOHUMU 1100 için KAPANDI (DILIM 1100-A, 15 Ağustos 2026, §7.1); 1600 için KAPANDI (KART 1600 M2, 5 Eylül 2026, §7.5 — 4 başlık + 28 atom, heading_id ile); 1300 için KAPANDI (KART 1300 Dilim 1, 3 Ekim 2026, §7.2; 16 atom, kart düz); 1400 için KAPANDI (KART 1400 Dilim 1, 14 Ekim 2026, §7.3; 22 kalem, kart düz); 1700 tohumu hâlâ sırada.*
 
 ---
 
@@ -64,7 +64,7 @@ Kaynak: Koster loan-out kavramı; Eurimages "fringe-inclusive" kilidiyle doğrud
 Aşağıdaki kurallar tek karta değil, TÜM kartlara uygulanır (kart-özel kurallar ilgili kartta belirtilir):
 - Çift-fringe / vergi guard: Bir kalemin giriş tipi "Şirket Faturası / Loan-Out / SMM" ise, o satıra otomatik binen SGK/Bordro fringe (%35-40) SIFIRLANIR; sadece KDV/Stopaj dengesi korunur. Çift-vergilendirme uyarısı verilir. (Kaynak: §4.8 ödeme-statüsü.)
 - Crew Overlap Guard (ekip çakışma): Aynı kişi (isim/kimlik) iki ayrı kartta maaş/ücret alıyorsa — örn. bir kartta paket ücret, başka kartta haftalık — mükerrer personel/çift maaş uyarısı. ATL↔BTL ve kart↔kart çapraz tarama.
-- Geliştirme mahsup kontrolü: Geliştirme etabındaki recoupable avanslar (örn. 1102/1103) ile ana yapım dönemindeki hak edişler (örn. 1401/1403/1501) arasındaki geçiş denetlenir; mahsup edilmemiş avans → mükerrer ödeme uyarısı.
+- Geliştirme mahsup kontrolü: Geliştirme etabındaki recoupable avanslar (örn. 1102/1103) ile ana yapım dönemindeki hak edişler (örn. 1401/1403/1501; 1400 numaraları 19 Haziran tasarımından, güncel düzen §7.3) arasındaki geçiş denetlenir; mahsup edilmemiş avans → mükerrer ödeme uyarısı.
 - Milestone uyuşmazlık denetimi: Hakediş taksitleri, bağlı oldukları teslim kilometre taşıyla (örn. 1501 ↔ 5100 Kurgu onay tiki) uyum kontrol edilir; teslim olmadan fatura → erken ödeme/sözleşme ihlali uyarısı.
 
 ### 4.10 cost_object (transversal etiket) — DÖRDÜNCÜ EKSEN
@@ -104,7 +104,7 @@ ATL baş-kaşe deseni (genel kural): ATL kartlarında baş-kaşe (yönetmen kaş
 Master/Owner katmanı: Muhasebe'nin üstünde, proje sahibi Yapımcı (ve ayrı Denetmen/Auditor rolü) katmanı. 1400 "ticari yatak odası" (ortaklık payı, mark-up, overhead, komisyon) bu katmana aittir. (Auth tarafı detayı: AUTH-KARARLARI.md.)
 
 ## 6. ŞABLON-BAĞLAMLI UYUMLULUK DENETİMİ (Compliance Guard)
-Yapımcı bütçeyi kurarken bir Hedef Mecra / Bütçe Şablonu seçer (Eurimages / Netflix / TRT / Bakanlık vb.). Anomali motoru, yüzde-bazlı kalemleri (özellikle 1404 Overhead, 1405 Mark-up) seçili şablonun sınırlarına göre denetler. **NOT (13 Ekim 2026):** Bakanlığın bütçe şablonu yok; bütçe yapımcının kendi biçiminde verilir (Engin). Bakanlık seçildiğinde neyin denetleneceği Hedef Mecra turunda yazılır.
+Yapımcı bütçeyi kurarken bir Hedef Mecra / Bütçe Şablonu seçer (Eurimages / Netflix / TRT / Bakanlık vb.). Anomali motoru, yüzde-bazlı kalemleri (özellikle genel gider ve kâr; 5 Ekim 2026'dan beri kart kalemi değil, bütçenin dibinde yüzde satırı, §7.3 Karar 2) seçili şablonun sınırlarına göre denetler. **NOT (13 Ekim 2026):** Bakanlığın bütçe şablonu yok; bütçe yapımcının kendi biçiminde verilir (Engin). Bakanlık seçildiğinde neyin denetleneceği Hedef Mecra turunda yazılır.
 
 Motor felsefesi — SINIR KURALI (kilitli): KAAPA yapımcıya riski ve görünürlüğü gösterir ("bu kalem dışarıdan şöyle görünür", "bu oran şu sınırı aşıyor"). KAAPA gizleme/kaçırma yöntemi ÖNERMEZ ("şuraya böl, fark edilmesin" demez). Sınır: teşhis ve uyarı EVET; gizleme reçetesi HAYIR. Karar her zaman yapımcının.
 
@@ -114,6 +114,7 @@ KAAPA, yapımcının patron olduğunu bilir; onu kısıtlamaz. Sadece dış dün
 - Overhead tavanı: Eurimages şablonunda 1404+1405 toplamı %7'yi aşarsa → "Hatırlatma: Eurimages'ta Overhead toplam bütçenin %7'sini aşamaz; başvuru reddedilmesin diye kontrol etmek isteyebilirsiniz."
 - Mark-up tavanı: Netflix/stüdyo şablonunda 1405 platform tavanını (örn. %10) aşarsa → "Müşteri Politikası Uyarısı: bu platformda genelde max %X Mark-up kabul edilir. Bu fark dışarıdan görünür durumda; nasıl ele alacağınız sizin kararınız."
 - Gizli kâr transferi görünürlüğü: Yapımcı şirketi üzerinden hem 1405 (Kâr) hem 1403 (Emek) faturalanmışsa → "Dikkat: karşı tarafın denetim mekanizması bunu 'gizli kâr transferi' olarak yorumlayabilir. Bilginize."
+- *Yukarıdaki üç senaryodaki 1403, 1404 ve 1405 19 Haziran numaralarıdır; güncel düzen §7.3. Genel gider ve kâr 5 Ekim 2026'dan beri kart kalemi değil, bütçenin dibinde yüzde satırıdır (§7.3 Karar 2).*
 
 Compliance kuralları = VERİ (koda gömülmez): Şablon sınırları güncellenebilir bir tabloda tutulur (compliance_rules: şablon / kalem / sınır% / kaynak-tarih). Her uyarıda "kaynak: X tarihli kılavuz, doğrulayın" notu — KAAPA'nın verdiği sayı yanlışsa sorumluluk doğmasın diye. (Detay: §8 PARK.)
 
@@ -553,7 +554,7 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 **KART 1600 ÜÇ KADEMELİ YAPI KARARI (21 Ağustos 2026, Engin):** Oyuncu satırı, temsilcisi varsa üç kademeli yapıya döner — kart grubu → oyuncu özet başlığı → alt kalemler (temsilci sayısı kadar). Başlık kademesi para taşımaz, altındaki alt kalemlerin toplamını gösterir; temsilcisiz oyuncu tek satır kalır, başlık doğmaz. Her alt kalem kendi ödeme statüsünü taşır (ajans faturası ≠ menajer SMM, farklı statüler tek satıra sığmaz). Detay: CURRENT.md "KART 1600 TASARIM KARARLARI" bölümü.
 
 **KART 1600 TASARIM KARARLARI (22 Ağustos 2026):**
-- Menajerlik/temsil komisyonu 1400'de değil, oyuncunun kendi özeti altında yaşar. 1406 paketleme ücreti ayrı kalır.
+- Menajerlik/temsil komisyonu 1400'de değil, oyuncunun kendi özeti altında yaşar. Paketleme ücreti (Packaging Fee) KAAPA'da açılmadı (§7.3, 14 Ekim 2026).
 - Alt kalem sayısı temsilci sayısı kadardır. TERSİNE DÖNDÜ (12 Eylül 2026, Engin kararı): "Ajans ile menajer AYRI ATOM GEREKTİRMEZ; fark statüde yaşar ve statü satır bazında seçilir. Tek bir 'Temsilci Komisyonu' atomu yeterlidir" kuralı KALKTI, yerine fark ATOMDA yaşar — 1618 Ajans Komisyonu ve 1618-01 Menajer Komisyonu iki ayrı atomdur. Gerekçe: statü kullanıcı tarafından değiştirilebilir bir vergi hanesidir, kimlik taşıyamaz.
 - Bu atom kataloga eklenecek (emsal: 1100'e üç yeni atom eklenmesi, gerekçesi KART-GEREKÇELERİ.md'ye yazılmıştı). Atom kalem ekleme listesinde GÖRÜNMEZ (is_group desenindeki gibi gizli), çünkü yalnızca türetme ile doğar.
 - Komisyon tabanı: oyuncunun TÜM satırlarının (kaşe, mesai, prova, tekrar telifi) çıplak net toplamıdır — tek kalemden değil. Komisyon satırının kendisi tabana dahil EDİLMEZ.
@@ -643,10 +644,10 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 
 ## 8. AÇIK / PARK (ilgili bölümlere gelince)
 - Recoupable + iade/depozito şema/CFE detayı.
-- percent_lines (Completion Bond/Contingency/Overhead/Insurance — dışlamalı, satır-bazlı farklı baz). 1404/1405 percent_line adayı; motor buraya gelince açılır.
+- percent_lines (Completion Bond/Contingency/Overhead/Insurance — dışlamalı, satır-bazlı farklı baz). Genel gider ve kâr percent_line'dır, kart kalemi değil (§7.3 Karar 2; eski 1404/1405); motor buraya gelince açılır.
 - ~~Fringe motoru~~ — KAPANDI: "fringe motoru" KİMLİĞİ K2 ile emeklidir (2026-07-03, docs/butce/PERSONEL-MEVZUATI.md §1); motorun kendisi CFE olarak YAPILDI (DILIM-3, bordro-çözücü canlı). Loan-out fringe yönlendirmesi §4.8 ödeme-statüsü boyutunda yaşar.
 - compliance_rules veri tablosu (şablon/kalem/sınır%/kaynak-tarih) — Compliance Guard'ın veri kaynağı; koda gömülmez, kaynak-tarihli, "doğrulayın" notlu.
-- 1405 kâr-şişirme denetimi (1403 emek + 1405 kâr toplamı fon normunu aşarsa bayrak) — uygunluk katmanına bağlı (PCCE tartışması; girdi: PERSONEL-MEVZUATI G defteri).
+- 1405 kâr-şişirme denetimi (1403 emek + 1405 kâr toplamı fon normunu aşarsa bayrak) — uygunluk katmanına bağlı (PCCE tartışması; girdi: PERSONEL-MEVZUATI G defteri). 1403 ve 1405 19 Haziran numaralarıdır; güncel düzen §7.3, kâr bütçenin dibinde yüzde satırıdır.
 - Kur farkı / çok-para-birimi (Türk bağlamı birincil).
 - Stunt doğa-bölmesi: performans 1600'de KİLİTLİ (§7.5); araç→Transport, mekanik→Mekanik FX o kartlara gelince. "Sanat" çok-kart bölünmesi, walkie yuvası — ilgili kartlara gelince.
 - Stunt iş etiketi (§7.5 24 EYLÜL 2026 KARARLARI, STUNT ETİKETİ PARKTA): Transport ya da Mekanik FX kartı kurulunca, veya kartlar arası stunt toplamı istenince açılır.
