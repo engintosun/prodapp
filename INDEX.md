@@ -249,6 +249,7 @@ KALICILIK KURALI gereği her karar CURRENT.md'ye VE kendi özel ev dosyasına ya
 | Sıradaki iş | `CURRENT.md` (tamamlananlar ve uzun vadeli backlog: `docs/IS-SIRASI.md`) |
 | Oturum açılış ve kapanış prosedürü, prompt biçimi | `docs/protokol/ACILIS.md`, `KAPANIS.md`, `PROMPT.md` |
 | Tekrar eden kusur sınıfları ve dersleri | `docs/protokol/DERSLER.md` |
+| Opus'un yerel sandbox kurulumu (açılışta okunmaz) | `docs/protokol/SANDBOX.md` |
 | Bir daha tartışılmayacak değişmez | `docs/DEGISMEZLER.md` |
 | Şirket, fon, program başvurusu, tanıtım sayfası | `docs/GIRISIM.md` |
 
@@ -301,7 +302,8 @@ Bu tarih burada TEK yerde yaşar; dosyaların kendi içinde "Son güncelleme" ba
 
 `docs/protokol/ACILIS.md` [AKAN] (dogrulama: 25 Ağustos 2026) — Oturum açılış protokolü · Taze klon zorunluluğu · Okuma sırası · Durum raporunun biçimi · kod: yok
 `docs/protokol/KAPANIS.md` [AKAN] (dogrulama: 25 Ağustos 2026) — Oturum kapanış protokolü · Diyet kuralı (Milestone damıtılır, sayılmaz) · KALICILIK KURALI · Doküman doğrulamasının zamanı · kod: yok
-`docs/protokol/DERSLER.md` [AKAN] (dogrulama: 25 Ağustos 2026) — Süreç dersleri sınıf olarak · Kapıya bağlanmış sınıflar · Kapısı olmayan sınıflar · kod: .claude/hooks/**
+`docs/protokol/DERSLER.md` [AKAN] (dogrulama: 14 Ekim 2026) — Süreç dersleri sınıf olarak · Kapıya bağlanmış sınıflar · Kapısı olmayan sınıflar (kaynağı açmadan iddia, öneri ve tasarım, spec ve prompt, oturum ve kayıt, konuşma biçimi) · Ters yönde kayıtlar · kod: .claude/hooks/**
+`docs/protokol/SANDBOX.md` [AKAN] (dogrulama: 14 Ekim 2026) — Opus'un yerel PostgreSQL sandbox tarifi (14 Ekim 2026'da DERSLER'den taşındı) · kod: yok
 `docs/protokol/PROMPT.md` [AKAN] (dogrulama: 25 Ağustos 2026) — Sonnet prompt şablonu ve zorunlulukları · kod: yok
 
 ## 8. KRİTİK DOSYALAR
