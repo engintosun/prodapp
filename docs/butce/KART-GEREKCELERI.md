@@ -2,7 +2,7 @@
 
 *Bu dosya "NEDEN" dosyasıdır. KART-KATALOGU.md kuru kararı tutar (ne); burası muhakemeyi tutar (neden, sebep, sonuç, gerçek-set örneği, çift-sayım riski).*
 *Amaç: eğitim/onboarding — yeni muhasebeci/yapımcı KAAPA'nın kart mantığını buradan öğrenir. "1510 neden 2200'den ayrı?" sorusunun cevabı kararın kendisinde değil, burada.*
-*KART-KATALOGU.md ile çapraz: her kart KART-KATALOGU §7.x ile eşleşir. Oluşturma: 19 Haziran 2026. Kapsam: KART 1100, 1300, 1400, 1500, 1600.*
+*KART-KATALOGU.md ile çapraz: her kart KART-KATALOGU §7.x ile eşleşir. Oluşturma: 19 Haziran 2026. Kapsam: KART 1100, 1300, 1400, 1500, 1600; KART 2100 tasarımda (16 Ekim 2026).*
 
 ---
 
@@ -20,6 +20,10 @@ Kartlar tek kaynaktan değil, iki katmanlı doğrulamayla kuruluyor:
   - `docs/butce/AICP-bid-form-2019.pdf` — AICP Bid Form 2019, PDF (kaynak: https://aicp.com/assets/editor/AICP_bidform_2019_FINAL.pdf)
   - `docs/butce/HotBudget-3.0-user-guide.pdf` — Hot Budget 3.0 User Guide (kaynak: https://downloads.hotbudget.com/HotBudget_v3.0_UserGuide.pdf)
   - `docs/butce/Eurimages-summary-production-budget-2018-REV3.xlsx` — Eurimages Summary Production Budget 2018 REV3 (Engin, 13 Ekim 2026'da Eurimages sitesinden ekledi; bulgular `docs/rakip/GIDER-CESIDI-TARAMASI.md` §3.14)
+
+- **Türkiye kaynakları (15 ve 16 Ekim 2026; KART 2100):**
+  - `docs/butce/Guncel-Calisma-Ilkeleri-Sinema-Televizyon-Sendikasi-10-Ekim-2024.pdf` — Sinema Televizyon Sendikası Çalışma İlkeleri, Ekim 2024 (Engin, 15 Ekim 2026'da ekledi). Kaynaklardan biridir, ana kaynak değildir (Engin, 15 Ekim 2026). Yasa değil, sözleşmenin dayanağıdır (1c); içindeki oranlar `rate_catalog`'a girmez.
+  - Sinema Televizyon Sendikası MYK meslek haritası (film ve TV-radyo): https://stvs.org.tr/myk/meslek-haritasi/ (16 Ekim 2026'da okundu; sayfadaki ayrıntılı PDF okunmadı).
 
 Bir kart kilitlenmeden önce: Koster omurgayı verir → Master Excel kaynak-sayısı doğrular (bu kalem gerçekten evrensel mi?) → Eurimages/Türk bütçesi bağlamı oturtur → sonra kilitlenir.
 
@@ -229,6 +233,24 @@ Komisyon hizmettir ama ekranda oyuncunun özeti altında yaşar; aidiyeti çizim
 
 ### Komisyon davranış kararlarının evi (5 Eylül 2026 düzeltmesi)
 Oranın seçilebilir olması, şablondan %20 varsayılan gelmesi, ajans/menajer statülerinin ayrı alt kalem doğurması ve ajans-alır-modelinde satır oluşmaması — bu kararların TAMAMI zaten repoda yazılıydı (KART-KATALOGU.md §7.5 "KART 1600 TASARIM KARARLARI", 22 Ağustos 2026; BUTCE-EKRAN-KARARLARI.md §20 "ORANIN YERİ", 3 Eylül 2026). Burada TEKRAR EDİLMEZ. Tek gerçek eksik `derive_rate`'in `item_library`'de bir varsayılan hanesi olmaması — bkz. docs/butce/BUTCE-SEMA-KARARLARI.md "VARSAYILAN ORAN item_library'DE YOK".
+
+---
+
+## KART 2100 — YAPIM VE REJİ EKİBİ  (KART-KATALOGU §7.6)
+
+### Kaynak taraması (15 ve 16 Ekim 2026)
+Okunanlar: MMB 6.1 örnek hesap planı 2101–2199; Koster damıtımı 2100; Telefilm 12 (12.01–12.95); CNC 231–234; Eurimages 4.1 ve 4.2; Screen Australia A-Z ekip sayfası (2.Crew); BFI Future Takes 5 ve 6; Master Excel'in bütün sayfaları; Sinema Televizyon Sendikası Çalışma İlkeleri; MYK meslek haritası (film). Master Excel'in etiketsiz sayfası ve öteki sayfaları yalnız kelime aramasıyla tarandı, kaçan satır olabilir. Saturation satırları yalnız Master Excel üzerinden geldi; bölüm bilgileri yok.
+
+Kalemin geçtiği kaynaklar (X = Master Excel'de en çok kaynakta geçen satırın kaynak sayısı): 2101 MMB, Telefilm, CNC, Eurimages, BFI, Screen Australia, meslek haritası, X 8 · 2108 MMB, Telefilm, Eurimages, BFI, Screen Australia, meslek haritası, X 5 · 2110 MMB, Telefilm, CNC, Eurimages, BFI, Screen Australia, X 10 · 2111 MMB, Telefilm, CNC, Eurimages, Screen Australia · 2114 MMB, Telefilm, CNC, Eurimages, Screen Australia, X 9 · 2115 MMB, Telefilm, Eurimages, Screen Australia · 2118 MMB, Telefilm, BFI, Screen Australia, meslek haritası, X 13 · 2119 MMB, Telefilm, Screen Australia · 2120 MMB, Telefilm, X 2 · 2124 MMB, X 2 · 2126 Telefilm (her bölümde .93 Kit fees), MMB detay satırları, X 6 · 2127 Telefilm 12.61 (tek kurum kaynağı; sendika ilkelerinde Yeşil Setler bölümü) · 2129 Eurimages 4.1 (tek kaynak) · 2103 MMB, Telefilm, CNC, Eurimages, BFI, Screen Australia, meslek haritası, X 5 · 2104 MMB, Telefilm, CNC, BFI, Screen Australia, meslek haritası, X 4 · 2105 MMB, Telefilm, BFI, Screen Australia, meslek haritası · 2106 MMB · 2107 MMB, Eurimages · 2113 MMB, Telefilm, CNC, Eurimages, BFI, Screen Australia, meslek haritası, X 11 · 2128 meslek haritası (tek kaynak).
+
+### Neden tek kart, iki grup?
+Kart başına bir proje departmanı açılır (`fn_open_budget`) ve saha fişi girenin departmanındaki şefe gider (IS-KURALLARI). Tek kartta fişi onaylayan ile kalemin sahibi aynı birimdir; yapım asistanının reji ekibi için aldığı telsiz pilinde kart sorusu doğmaz. Grup ise reji ekibinin maliyetini ayrı ara toplamla verir; icmalde grup seviyesi seçilebilir (EKRAN-MUHASEBE §19, 9 Ekim 2026), gerçekleşen de fiş kaleme bağlandığında grup bazında okunur. Ayırmak ya da birleştirmek MMB hizasını bozmaz: kalemin kartı ve grubu veridir, koddan türetilmez (DEĞİŞMEZLER 2). MMB biçiminde dışa aktarımda bütün kalemler 2100'e döner, Eurimages biçiminde 4.1 ve 4.2'ye gruptan ayrılır. Kaynaklarda tek bölüm: MMB 2100, Telefilm 12, CNC 23 (içi 231, 232, 233 diye bölünür; grup deseninin emsali), Screen Australia C. Ayrı bölüm: Eurimages 4.1 ve 4.2, BFI 5 ve 6.
+
+### Uzmanlar kullanana göre dağılır (CNC 234)
+CNC uzmanları tek blokta toplar (234 Conseillers spécialisés); KAAPA aynı uzmanları kullanana göre dağıtır: koreograf (2348) 1503, oyuncu çalıştırıcı (2344) 1504, storyboard (23431) 1506, üçü de Yönetmen kartında; çocuk sorumlusu (2345) 1615 ve Psikolog/Pedagog; özel efekt danışmanı (23421) Mekanik Efekt kartında; at danışmanı (234A1) ve hayvan terbiyecisi (234A2) Hayvanlar kartında; silah ustası (23491) Aksesuar ya da Mekanik Efekt kartında, o kartın turunda. Teknik danışman (CNC 2332, reji teknisyenleri arasında) 2109 olarak KART 1500'e alındı (15 Ekim 2026; ayrıntısı ayrıca konuşulacak).
+
+### Türkiye kaynakları neden ölçü değil?
+Sendika ilkeleri tek kaynaktır ve yasa değildir; dayandığı hükümler (4a statü, 19.12a ve 1b yolculuk günü, 5b ve 5d iş sağlığı ve güvenliği) öteki kaynaklarla birlikte tartıldı. Meslek haritası 2020 tarihlidir; meslekleri örgütte durdukları yere göre gruplar, bütçe ise kullanana göre: Kast Yönetmeni haritada Yapım grubundadır, KAAPA'da Oyuncu kartındadır (1605).
 
 ## GENEL EĞİTİM NOTLARI (tüm kartlara yayılan kavramlar)
 

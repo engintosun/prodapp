@@ -2,7 +2,7 @@
 
 *Kalıcı domain kataloğu. Bütçe modülünün kart/kalem yapısının ve kalem davranış motorunun TEK KAYNAĞI. Koster damıtımından ve oturum kararlarından damıtıldı. TASARIM-KARARLARI.md'den referanslanır.*
 *Oluşturma: 19 Haziran 2026. Güncelleme: 20 Haziran 2026 (KART 1600 OYUNCU + §4.10 cost_object 4. eksen). Önceki: 19 Haziran (KART 1400/1500 + §4.8/§4.9/§5.1/§6).*
-*Durum: KART 1100, 1300, 1400, 1500, 1600 KİLİTLİ; runtime dikey-dilimi (DILIM-3 bordro motoru + genel-desen sökümü) TAMAMLANDI. KÜTÜPHANE TOHUMU 1100 için KAPANDI (DILIM 1100-A, 15 Ağustos 2026, §7.1); 1600 için KAPANDI (KART 1600 M2, 5 Eylül 2026, §7.5 — 4 başlık + 28 atom, heading_id ile); 1300 için KAPANDI (KART 1300 Dilim 1, 3 Ekim 2026, §7.2; 16 atom, kart düz); 1400 için KAPANDI (KART 1400 Dilim 1, 14 Ekim 2026, §7.3; 22 kalem, kart düz); 1700 tohumu hâlâ sırada.*
+*Durum: KART 1100, 1300, 1400, 1500, 1600 KİLİTLİ; runtime dikey-dilimi (DILIM-3 bordro motoru + genel-desen sökümü) TAMAMLANDI. KÜTÜPHANE TOHUMU 1100 için KAPANDI (DILIM 1100-A, 15 Ağustos 2026, §7.1); 1600 için KAPANDI (KART 1600 M2, 5 Eylül 2026, §7.5 — 4 başlık + 28 atom, heading_id ile); 1300 için KAPANDI (KART 1300 Dilim 1, 3 Ekim 2026, §7.2; 16 atom, kart düz); 1400 için KAPANDI (KART 1400 Dilim 1, 14 Ekim 2026, §7.3; 22 kalem, kart düz); 1700 kart olarak kurulmaz (yaratıcı kadronun seyahati birim ailelerinde durur, 1700 numarası dışa aktarımda eşlemedir; KART-GEREKCELERI 1400 kütüphane gerekçesi); sıradaki kart 2100, tasarımda (§7.6).*
 
 ---
 
@@ -19,6 +19,12 @@ Beş etap (etap = dönem, aynı eksen): Geliştirme · Yapım Öncesi · Yapım 
 ### Temel kural: KULLANAN SAHİPLENİR
 Bir kaynağı günlük kim kullanıyorsa kalem onun kartına yazılır. Kostüm kamyonu→Kostüm; genel ekip/havuz aracı→Ulaşım; picture car kontrol Sanat'taysa orada, sürüş/stunt aracıysa Ulaşım; inşaat aracı→İnşaat; vinç şoförü→Grip. "Araç hep Ulaşım'a gider" diye kural YOKTUR.
 
+**ORGANİZE EDEN SAHİPLENMEZ (15 Ekim 2026, Engin):** bir kalemin kartını, paranın kimin işinin karşılığı olduğu ve kaynağı kimin kullandığı belirler; kimin organize ettiği, kimin ödediği ya da fişi kimin girdiği belirlemez. 6 Ekim 2026 şartının aynısıdır: harcamayı yapan personelden çıkmaz (BUTCE-SEMA-KARARLARI GİDER ÇEŞİDİ EKSENİ, KARARLAR madde 2). Engin (birebir):
+
+> Bir giderin kimin tarafından organize edildiği ile bütçede hangi departmana ait olduğu aynı şey değil.
+>
+> Nakliye konaklama ve yemek de yapım kartına girmez mi o durumda
+
 ## 3. GELİŞTİRME — özel durum (recoupable)
 - Geliştirme etabının TEK kartı: "Proje Geliştirme ve Haklar".
 - Geliştirmeyi ayıran şey geri-ödeme (recoupable): greenlight'ta cepten harcanan kasadan/yatırımcıdan geri tahsil edilir; geliştirme orada biter.
@@ -33,6 +39,14 @@ Bir kaynağı günlük kim kullanıyorsa kalem onun kartına yazılır. Kostüm 
 > Eğer hayvanı sadece "Sanat" kartının içine eklersek, o hayvanın yemi, ahır kirası veya veteriner faturası sanat yönetmeninin bütçesini şişirecek ve raporlamada kafa karışıklığı yaratacaktır. Aynı şekilde "Cast" içine koyarsak, oyuncu koçu ile hayvan eğitmeni birbirine girecektir.
 >
 > Ayrı bir ana kart açtığımızda tüm bu ekosistemi tek bir yerde toplayıp, harcama yetkisini (Saturation örneğindeki gibi) tek bir kişiye (Hayvan Eğitmeni veya ilgili prodüksiyon amirine) atayabiliriz. Bu yapım film şablonu için düşündüğüm sen ne diyorsun?
+
+- **SET OPERASYONLARI: SAĞLIK VE GÜVENLİK BAŞLIĞI (15 ve 16 Ekim 2026, Engin kabul; varış yerinin ayrıntısı ayrıca konuşulacak):** sağlık ve güvenlik ayrı kart olmaz; Set Operasyonları kartında "Sağlık ve Güvenlik" başlığıdır. İçinde: iş güvenliği uzmanı, işyeri hekimi, doktor, sağlık görevlisi ve paramedik, ambulans, ilk yardım malzemesi, İSG eğitimi, Psikolog/Pedagog. Set güvenliği (koruma, bekçi) aynı kartta durur; sözlükte ayrı çeşittir (Güvenlik; Sağlık ve Medik). Dekor inşa ekibine çekimden önce ayrıca tutulan ilk yardımcı Dekor İnşa kartındadır (MMB 2311; kullanan sahiplenir). Dayanak: bu hizmetleri sette herkes kullanır. MMB 3205 First Aid, 3206 Set Security, 3207 Set Firemen; Telefilm 32.25 ilk yardım ve sağlık-güvenlik malzemesi, 32.26 sette sağlık görevlisi, 32.28 güvenlik ve trafik görevlisi; Screen Australia K.6 Safety, K.5 set tesislerinin yanında. İş güvenliği uzmanı ve işyeri hekimi yasal zorunluluktur (6331 sayılı Kanun; Sinema Televizyon Sendikası Çalışma İlkeleri 5b ve 5d). Kartın kodu, adı ve kütüphanesi kendi turunda. Engin (birebir):
+
+  > burada bana en mantıklı gelen set operasyonu kartı oldu. İş güvenliği ambulans sağlık görevlisi orada durabilir bence ne diyorsun
+  >
+  > yanlış söyledim iş güvenliği ve sağlık set operasyonlarında başlık olacak
+
+- **YAPIM OFİSİ VE SENARYO ÇOĞALTMA GENEL GİDERLERİN KARTINDA (15 Ekim 2026, Engin kabul; varış yerinin ayrıntısı ayrıca konuşulacak):** yapım ofisinin giderleri (MMB 2125 Office Expenses) ve 1304 Senaryo Çoğaltma 2100'e girmez. Ofisi bütün yapım kullanır (yapım, reji, hazırlıktaki departman şefleri, muhasebe); paylaşılan kaynak kendi yerinde durur. Dayanak: Telefilm 28, CNC 68, Eurimages 7.1 ve Screen Australia P yapım ofisini ayrı tutar; MMB 2125'i yapım ekibinin içinde tutar. Yapım şirketinin kendi ofisi genel giderdir (§7.3 Karar 2); birim kartlarının ofis aileleri (1105, 1310, 1409, 1507) o birimin kullandığı ofistir. Kartın adı ve yeri kendi turunda.
 
 ## 4. KALEM DAVRANIŞ MOTORU ("not alanı" = davranış)
 "Not alanı" sadece serbest metin değil; kalemin kural/uyarı/alt-yapı motoru.
@@ -230,7 +244,7 @@ Eş adlar (`aliases`): 1301 Writers Room · 1306 Script Polish, Dramaturg · 131
 
 **Şablon (5 kalem):** 1301, 1302, 1306, 1308, 1312. Kartın `misc_prefix` hanesi `"13"`. Yeni kart yalnız yeni açılan bütçede doğar.
 
-**Boş numaralar:** 1303 Typing (daktilonun bugün karşılığı yok). 1304 Duplication: senaryonun çoğaltılması, dağıtılması ve revizyon basımı Üretim Ofisi/Reji işidir; kalem 2100 kurulurken oraya girer. 1305-05 Festival Katılımı: bitmiş filmin PR, pazarlama ve dağıtım işidir; Pazarlama/Dağıtım kartı kurulurken oraya taşınır, 1500'deki 1508-05 de aynı gerekçeyle taşınacak. 1311 Entertainment: ağırlama 1305-03'tedir (1500'de de 1508-03'e birleşti).
+**Boş numaralar:** 1303 Typing (daktilonun bugün karşılığı yok). 1304 Duplication: senaryonun çoğaltılması, dağıtılması ve revizyon basımı Üretim Ofisi/Reji işidir; kalem 2100'e girmez, yapım ofisiyle birlikte genel giderlerin kartına gider (15 Ekim 2026, Engin kabul; varış yerinin ayrıntısı ayrıca konuşulacak, §3). 1305-05 Festival Katılımı: bitmiş filmin PR, pazarlama ve dağıtım işidir; Pazarlama/Dağıtım kartı kurulurken oraya taşınır, 1500'deki 1508-05 de aynı gerekçeyle taşınacak. 1311 Entertainment: ağırlama 1305-03'tedir (1500'de de 1508-03'e birleşti).
 
 **1305 aile adı: Senaryo/Araştırma Seyahat ve Ağırlama Giderleri.** Başlık satırı açılmaz: kütüphanesinde başlık bulunan kart başlıklı çizilir ve başlığı olmayan kalemler kartın dibindeki Başlıksız bloğuna düşer (BUTCE-EKRAN-KARARLARI, BAŞLIKSIZ BLOĞU). Alt kalemler 1500'deki 1508-01..06 gibi düz durur; ad yalnız bu katalogda aile adıdır, ekranda alt kalemlerin adları görünür. Alt kalemler 1108 ve 1508 setinin aynısıdır, 05 boştur.
 
@@ -303,7 +317,7 @@ Eş adlar (`aliases`): 1301 Writers Room · 1306 Script Polish, Dramaturg · 131
 
   Eş adlar (`aliases`): 1404 Coordinating Producer, Supervising Producer · 1408 Sekreterya · 1409 Hazır Ofis, Ortak Çalışma Alanı. Provenance: 1406-xx ve 1409-xx 'Koster/MMB + KAAPA damitim', diğerleri 'Koster/MMB-6.1'.
 
-**Şablon (4 kalem):** 1401, 1402, 1403, 1404. Kartın `misc_prefix` hanesi `"14"`; serbest kalem 1498-01'den başlar (MMB'nin 1498 Miscellaneous hesabıyla aynı yer). Yeni kart yalnız yeni açılan bütçede doğar. Film şablonu v9. Ekranda doğrulandı (14 Ekim 2026, Engin): yeni projede açılan bütçede kart dört kalemle, SMM ve sabit birimle, sıfır rakamla görünüyor; "+ Ekle" odası henüz denenmedi.
+**Şablon (4 kalem):** 1401, 1402, 1403, 1404. Kartın `misc_prefix` hanesi `"14"`; serbest kalem 1498-01'den başlar (MMB'nin 1498 Miscellaneous hesabıyla aynı yer). Yeni kart yalnız yeni açılan bütçede doğar. Film şablonu v9. Ekranda doğrulandı (14 Ekim 2026, Engin): yeni projede açılan bütçede kart dört kalemle, SMM ve sabit birimle, sıfır rakamla görünüyor; "+ Ekle" odası 14 Ekim 2026'da denendi (Engin): kalan 18 kalem ve Sekreterya eş adı beklendiği gibi.
 
 - **AİLELER:** 1406 gezi ailesi 1508'in aynısıdır (ad, İngilizce ad, birim, statü, çeşit); -05 boş. 1409 ofis ailesi 1507'nin aynısıdır (§7.2 1310, §7.4 1507); -06 boş, yapımcının asistanı 1408'dedir. Yapım şirketinin kendi ofisi 1409 ailesine yazılmaz, genel giderdir (Karar 2). Aile içindeki son iki hane bütün ailelerde aynı türü söyler; kartlar arası toplam gider çeşidinden alınır.
 - **BOŞ NUMARALAR:** 1406-05 (festival bitmiş filmin pazarlamasıdır, geliştirmedeki market katılımı 1108-05'te), 1409-06, 1411 Packaging Fee (açılmadı; emsal 1303 Typing).
@@ -487,7 +501,7 @@ Kart-özel anomali kuralları: çift-fringe guard (1501/kreatifler Loan-Out) · 
 
 **Reddedilen:** kişi listesi modelinin 1500'e taşınması; kütüphane başlıkları (dört grup); tek kalemli başlığın çizilmemesi kuralı.
 
-**Alınmayan adaylar:** Teknik Danışman (2100 turunda), Dialogue Director (post), geliştirme moodboard/konsept (1100'de 1104-03/1104-05), Associate Director / Direction Trainee / Creative Consultant / Assistant Choreographer, Prep/Shoot/Post (etap ekseni), avans/bonus/royalty.
+**Alınmayan adaylar:** Teknik Danışman (ALINDI, 15 Ekim 2026, Engin kabul: 2109 olarak bu kartın kütüphanesine girer, göç 2100 diliminde; ayrıntısı ayrıca konuşulacak, §7.6), Dialogue Director (post), geliştirme moodboard/konsept (1100'de 1104-03/1104-05), Associate Director / Direction Trainee / Creative Consultant / Assistant Choreographer, Prep/Shoot/Post (etap ekseni), avans/bonus/royalty.
 
 ### 7.5 KART 1600 — OYUNCU  [KİLİTLİ]
 *Üst-grup: OYUNCU · Etap: Yapım (casting Yapım Öncesi'ne sarkar) · Recoupable DEĞİL · Görünürlük: KISMİ MASKE (baş-kaşe satırları set rollerine gizli/çoğul, gerisi açık) · DB'de muhasebe tam · anomali aktif.*
@@ -643,8 +657,69 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 - **STUNT ETİKETİ PARKTA.** Grup 2'ye otomatik Stunt iş etiketi (§4.10 oto-etiket) uygulanmıyor. Gerekçe: etiketi okuyan yüzey yok, kartlar arası stunt toplamı kurulmadı; stunt taşıyacak diğer iki kart (Transport, Mekanik FX) kurulmadı; bugün stunt parasının tamamı bu karttadır ve aynı rakamı 1600-02 Dublör başlığının toplamı zaten verir. TETİK: Transport ya da Mekanik FX kartının kurulması, veya kartlar arası stunt toplamının istenmesi.
 - **DÖNEM VARSAYILANLARI KAPANDI.** Tam metin yukarıdaki KART 1600 TASARIM KARARLARI içindeki Dönem varsayılanları maddesinde.
 - **GÖREV ATOMLARI EKLEME LİSTESİNDE KALIR.** Tam metin `docs/butce/BUTCE-EKRAN-KARARLARI.md` §20, listeden gelen oyuncu satırları maddesi.
-- **ÇOCUK OYUNCU DENETİMİ PARKTA, KAPSAMI GENİŞLEDİ.** Çocuk oyuncu varsa yalnız 1615 Set Öğretmeni değil, Psikolog/Pedagog ve 1504 Oyuncu/Diyalog Koçu da zorunludur (Engin'in saha bilgisi; mevzuat maddesi ve tarihi denetim kurulurken compliance_rules kaynağına eklenir, §8). Denetim ÜÇ KARTI birden okur: 1615 bu kartta, 1504 KART 1500'de, Psikolog/Pedagog aşağıdaki maddedeki kartta. Bugün kişi kaydında çocuk olduğunu gösteren hane yok ve genel denetim motoru parkta (§8); denetim motorla birlikte açılır.
-- **PSİKOLOG/PEDAGOG KALEMİ.** Yeni atom: Psikolog/Pedagog. KART 1600'de doğmaz. Yeri Set Operasyonları (Koster 3200; damıtımda başka karta oturmayan işlerin kartı) ya da Sağlık ve Güvenlik kartıdır. İkisi de henüz kurulmadı; Sağlık ve Güvenlik hiçbir kaynakta geçmiyor, seçilirse yeni kart olarak açılır. Hangisi olduğu o kart kurulurken kesinleşir, atom o turda doğar; o güne kadar ücret bu kartta serbest kalem olarak yazılabilir. 1615 Set Öğretmeni KART 1600'de, 1504 Oyuncu/Diyalog Koçu KART 1500'de SABİTTİR.
+- **ÇOCUK OYUNCU DENETİMİ PARKTA, KAPSAMI GENİŞLEDİ.** Çocuk oyuncu varsa yalnız 1615 Set Öğretmeni değil, Psikolog/Pedagog ve 1504 Oyuncu/Diyalog Koçu da zorunludur (Engin'in saha bilgisi; mevzuat maddesi ve tarihi denetim kurulurken compliance_rules kaynağına eklenir, §8). Denetim ÜÇ KARTI birden okur: 1615 bu kartta, 1504 KART 1500'de, Psikolog/Pedagog Set Operasyonları kartının Sağlık ve Güvenlik başlığında (16 Ekim 2026, aşağıdaki YERİ KESİNLEŞTİ maddesi). Bugün kişi kaydında çocuk olduğunu gösteren hane yok ve genel denetim motoru parkta (§8); denetim motorla birlikte açılır.
+- **PSİKOLOG/PEDAGOG KALEMİ.** Yeni atom: Psikolog/Pedagog. KART 1600'de doğmaz. Yeri Set Operasyonları (Koster 3200; damıtımda başka karta oturmayan işlerin kartı) ya da Sağlık ve Güvenlik kartıdır. İkisi de henüz kurulmadı; Sağlık ve Güvenlik hiçbir kaynakta geçmiyor (DÜZELTME 15 Ekim 2026: yanlıştı; Screen Australia K.6 Safety ayrı bölümdür, Telefilm 32.25 ve 32.26, MMB 2123 ve 3205 ile 3207), seçilirse yeni kart olarak açılır. Hangisi olduğu o kart kurulurken kesinleşir, atom o turda doğar; o güne kadar ücret bu kartta serbest kalem olarak yazılabilir. 1615 Set Öğretmeni KART 1600'de, 1504 Oyuncu/Diyalog Koçu KART 1500'de SABİTTİR.
+
+- **PSİKOLOG/PEDAGOG YERİ KESİNLEŞTİ (16 Ekim 2026, Engin):** Set Operasyonları kartının Sağlık ve Güvenlik başlığında doğar (§3); kalem o kartın turunda açılır. 15 Ekim 2026'da Oyuncu kartına (Cast Operasyonu, kod önerisi 3905, MMB 6.1 Welfare Workers/Teachers) alınması kabul edilmişti; 16 Ekim 2026'da Engin sağlık ve güvenliğe aldı. Çocuk oyuncu denetimi üç yeri okur: 1615 (bu kart), 1504 (KART 1500), Psikolog/Pedagog (Set Operasyonları). Denetim kalemleri kodlarından tanır; kart aidiyeti veri olduğu için ayrı kartlar denetimi zorlaştırmaz. Denetim kurulurken açılacak iki soru: kişi kaydında çocuğu gösteren alan (doğum tarihi ya da yaş işareti; bugün yok) ve tutarı 0 olan kalemde uyarının çıkıp çıkmayacağı.
+
+### 7.6 KART 2100 — YAPIM VE REJİ EKİBİ  [TASARIMDA]
+*Üst-grup: YAPIM/REJİ · Etap: Yapım Öncesi, Yapım, Yapım Sonrası · Recoupable DEĞİL · Görünürlük: departman-açık (§5.1) · anomali aktif. Kütüphane tohumu, iki grup başlığı ve film şablonu v10 sıradaki göç diliminde.*
+
+**TEK KART, İKİ GRUP (15 ve 16 Ekim 2026, Engin):** yapım ekibi ile reji ekibi aynı kartta, iki ayrı grupta durur: 2100-01 Yapım Ekibi, 2100-02 Reji Ekibi. Her grubun kendi ara toplamı olur (1600'ün dört başlığı emsali). Bütçede ayrı grup ekip maliyetini gösterir; tek kart gerçekleşenin eşleştirmesini kolaylaştırır. Gerekçe ve kaynaklar: KART-GEREKCELERI, KART 2100. Engin (birebir):
+
+> Reji ve yapımı aynı kartta tutmak hesap planı için önemli sonuçlar doğurur, bütçe kısmında ayrı tutmak harcama yönetimi ve ekip maliyetleri açısından daha kolaylaştırıcı olur, saturation ve mmb ne yapıyor bak bi. Bütçede ayrı tutmak gerçekleşen rakamların eşleştirmesinde aynı kartta tutmak ise farklı kolaylıklar getirecektir
+>
+> 2100 ikisini de taşısın
+>
+> yapım ve rejiyi ayırmanı istiyorum. yapım ve reji ayrı gruplar olarak yer almalı kartın içinde.
+
+**Kütüphane (20 kalem, 2 grup başlığı):**
+
+| Kod | Ad | İngilizce | Birim | Statü | Çeşit | Grup | Şablon |
+|---|---|---|---|---|---|---|---|
+| 2100-01 | Yapım Ekibi | Production crew | — | — | — | başlık | — |
+| 2101 | Yapım Amiri | Production Manager | week | bordro | Personel Ücreti | Yapım | S |
+| 2108 | Yapım Asistanı | Production Assistants | week | bordro | Personel Ücreti | Yapım | S |
+| 2110 | Yapım Koordinatörü | Production Coordinator | week | bordro | Personel Ücreti | Yapım | S |
+| 2111 | Yapım Koordinatör Asistanı | Assistant Production Coordinator | week | bordro | Personel Ücreti | Yapım | K |
+| 2114 | Yapım Muhasebecisi | Production Accountant | week | bordro | Personel Ücreti | Yapım | S |
+| 2115 | Muhasebe Asistanı | Assistant Production Accountant | week | bordro | Personel Ücreti | Yapım | K |
+| 2118 | Mekân Sorumlusu | Location Manager | week | bordro | Personel Ücreti | Yapım | S |
+| 2119 | Mekân Asistanı | Assistant Location Manager | week | bordro | Personel Ücreti | Yapım | K |
+| 2120 | Set Tercümanı | Interpreters | day | smm | Personel Ücreti | Yapım | K |
+| 2124 | Çekim Planı ve Bütçe Hazırlığı | Production Board/Budget | flat | smm | Danışmanlık ve Uzmanlık | Yapım | K |
+| 2126 | Kit ve Ekipman Ödeneği | Kit fees | week | sirket | Ödenek ve Kit Kirası | Yapım | K |
+| 2127 | Sürdürülebilirlik Sorumlusu | Sustainability/Green Advisor | week | bordro | Personel Ücreti | Yapım | K |
+| 2129 | Yapım Stajyeri | Production trainees | week | bordro | Personel Ücreti | Yapım | K |
+| 2100-02 | Reji Ekibi | Direction crew | — | — | — | başlık | — |
+| 2103 | Birinci Yönetmen Yardımcısı | First Assistant Director | week | bordro | Personel Ücreti | Reji | S |
+| 2104 | İkinci Yönetmen Yardımcısı | 2nd Assistant Director | week | bordro | Personel Ücreti | Reji | S |
+| 2105 | Üçüncü Yönetmen Yardımcısı | 3rd Assistant Director(s) | week | bordro | Personel Ücreti | Reji | K |
+| 2106 | Reji Asistanı | Other Assistants | week | bordro | Personel Ücreti | Reji | K |
+| 2107 | Reji Stajyeri | Direction trainee | week | bordro | Personel Ücreti | Reji | K |
+| 2113 | Devamlılık Asistanı | Script Supervisor | week | bordro | Personel Ücreti | Reji | S |
+| 2128 | Time Code Asistanı | (boş) | week | bordro | Personel Ücreti | Reji | K |
+
+  Eş adlar (`aliases`): 2101 Prodüksiyon Amiri, Yapım Müdürü, UPM, Unit Production Manager, Birim Amiri, Unit Manager · 2108 Prodüksiyon Asistanı, Runner, Ofis Asistanı · 2111 Yapım Sekreteri · 2115 Set Kasası · 2103 1. Reji Asistanı, 1. AD, Yardımcı Yönetmen · 2104 2. Reji Asistanı, Reji Koordinatörü · 2105 Şef Asistan, 3. Reji Asistanı, Crowd AD · 2113 Script. Set Asistanı hiçbir kalemin eş adı değildir (meslek haritasında Grip grubunda). İngilizce adlar kaynaktan kopyalandı (MMB 6.1, Telefilm, Eurimages); 2128'in uluslararası kaynağı yok, İngilizce adı boştur (13 Ekim 2026 kuralı).
+
+**Şablon (8 kalem):** 2101, 2108, 2110, 2114, 2118 (Yapım) · 2103, 2104, 2113 (Reji). Kartın serbest kalem öneki "21"; serbest kalem 2198-01'den başlar. Yeni kart yalnız yeni açılan bütçede doğar.
+
+**16 EKİM 2026 KARARLARI (Engin):** 2114 şablona girer; 2124 kütüphanede kalır; 2126'nın statüsü fatura (`sirket`); stajyer iki grupta da olur (2107, 2129); 2103'ün eş adı Yardımcı Yönetmen. Engin (birebir): "stajyerler olsun hem rejide hem yapımda" ve "1. yönetmen yardımcısı yardımcı yönetmen olarak da yazılabilir."
+
+**STATÜ VE BİRİM:** ekip bordro ve hafta gelir, kullanıcı satırda değiştirir. Dayanak: Sinema Televizyon Sendikası Çalışma İlkeleri 4a ("Proje bazlı çalışan işçiler yasal zorunluluk olan 4A üzerinden sigortalanır") ve emsal kalemler (1408, 1502, 1609). Tercüman gün ve smm; 2124 sabit ve smm.
+
+**YOLCULUK GÜNÜ (15 Ekim 2026, Engin kabul; bütün ekip kartları için):** şehir dışı yolculuk günü ücreti kişinin kendi ücret satırında gün olarak durur, yarım gün 0,5 yazılır; ayrı kalem açılmaz. Dayanak: Çalışma İlkeleri 19.12a (6 saate kadar yolculuk yarım, üstü tam günlük ücret; gidiş ve dönüş ayrı ayrı) ve 1b (kurallar şehir içi ve şehir dışı fark etmeksizin aynıdır; ücret şehir dışında değişmez, MMB'nin yerel ve uzak oran farkının Türkiye'de karşılığı yok). MMB de yolculuk gününü her ekip hesabının içinde "Travel" detay satırıyla tutar. Bedel: yolculuk günlerinin toplamı ayrı satırdan okunmaz. Şehir dışının öteki kalemleri (seyahat sigortası, tek kişilik oda, hafta tatili yemeği, fazla bagaj, çamaşır) Seyahat ve Konaklama kartının turunda bu kaynakla kurulur. Şemada miktar kesirli tutulur; ekranda 0,5 girişi denenmedi. Kaynak tek başına ölçü değildir; Engin (birebir): "Pdf i kaynak olarak koy ancak bunu da cnc de yaptığın gibi ana kaynak yapma"
+
+**ADLAR:** Türkçe adlar Sinema Televizyon Sendikası'nın MYK meslek haritasından (film, Yapım-Yönetim grubu; https://stvs.org.tr/myk/meslek-haritasi/, 16 Ekim 2026'da okundu) ve Engin'in saha sözünden gelir. Haritada film tarafında Yapım Müdürü ve Yapım Koordinatörü unvanı yok: yapımın başı Prodüksiyon (Yapım) Amiri'dir, Yapım Koordinatörü TV tarafında geçer (sendikanın emek bileşenleri listesinde Yapım Koordinatörleri Platformu var). UPM ve birim amirinin Türkiye karşılığı yok, 2101'in eş adıdır. Reji Koordinatörü ve numarasız Reji Asistanı haritada yok, jeneriklerde kullanılan adlardır. Harita 2020 tarihlidir ve "Figüran" kelimesini kullanır; KAAPA'da 13 Ekim 2026'dan beri arkaplan oyuncusu denir.
+
+**DIŞARIDA KALANLAR (16 Ekim 2026):**
+- Başka karta gidenler (kabul edildi, ayrıntısı ayrıca konuşulacak): 2109 Teknik Danışman → KART 1500 (§7.4); 2123 Safety Officers ve sağlık-güvenlik → Set Operasyonları (§3); 2125 yapım ofisi ve 1304 → genel giderlerin kartı (§3).
+- Kartı zaten belli olanlar: ulaşım ekibi → Ulaşım; set ikramı → set yemeğinin kartı (§8); clearance → 1308; Kast Yönetmeni ve Kast Yönetmen Yardımcısı → 1605, 1609; Oyuncu Koçu → 1504; Set Asistanı → Grip; telsiz → Ses ya da Set Operasyonları; Production Supervisor ve Denetçi Yapımcı → KART 1400'ün konusu (1404'ün eş adı Supervising Producer).
+- Karşılığı olmayanlar: DGA'ya özgü ödemeler (Production Fee, Severance, DGA yemek ve harcırahı); 2102 ayrı kalem olarak (2101'in eş adı); 2112 Local Production Coordinator ve 2117 Local Auditor (tek kaynak, MMB); 2116 Payroll Secretary (bordro mali müşavirde); 2121 Government Rep. ve 2122 Censor; bütçe kontrolörü (Eurimages 4.1, tek kaynak); 2197 Kayıp ve Hasar (§8 kuralı); 2199 Fringe (Yasal Yük kolonunda).
+
+**SINIRLAR:** 2120 genel set tercümanıdır; bir kişiye özel tercüman o kişinin kartındadır (yabancı yönetmeninki 1500'de, yabancı oyuncununki 1600'de). 2124 yapım ekibinin kendi işidir (plan ve bütçe), 1104-01 Bütçeleme'nin yapım dönemi karşılığıdır. 2126 bu kartın ekibinin ödeneğidir; her ekip kartı kendi ödeneğini taşır.
+
+**KURUM FARKLARI (Hedef Mecra kuralı):** Eurimages yapımı (4.1) ve rejiyi (4.2) ayrı bölümde ister, gruplar bunu doğrudan verir; script supervisor Eurimages ve CNC'de reji tarafında, MMB ve BFI'da yapım tarafındadır. MMB 2100, Telefilm 12 ve Screen Australia C bütün ekibi tek bölümde ister. CNC 23 yönetim ve idareyi (231), régie'yi (232) ve reji teknisyenlerini (233) ayırır; Fransızca régie yapımın sahadaki koludur, Türkçe reji CNC'de 233'tür.
 
 ## 8. AÇIK / PARK (ilgili bölümlere gelince)
 - Recoupable + iade/depozito şema/CFE detayı.
@@ -659,6 +734,7 @@ Tek kart; Koster Cast(1600)+Atmosphere(3900) birleşik (4-kaynak örtüşmesi �
 - 1100 başlık kodları MMB'den sapıyor (30 Eylül 2026, Engin): MMB 6.1'de 1104 Budget Preparation, 1105 Accounting, 1107 Office Overhead, 1108 Transportation, 1110 Travel/Living; KAAPA'da 1104–1108 başka anlamlarda kullanılıyor. TETİK: 1100'e sırası geldiğinde bakılır. Kaynak: `docs/butce/MMB-6.1-ornek-hesap-plani.pdf`.
 - Set catering (30 Eylül 2026, Engin): set catering'ini kuran kartın turunda catering kaleminin hazır birimi "gün" olur; mesai ve gece çekimi için "Mesai Yemeği" ayrı kalem olur, birimi "adet". Yönetmen biriminin ağırlaması (1508-03) bundan ayrıdır. TETİK: o kartın turu.
 - Ağırlama ve Temsil çeşidini taşıyan kalem yok (14 Ekim 2026, Engin kabul): gezi ailelerinin -03 satırı (1108-03, 1305-03, 1406-03, 1508-03) hem kendi yol yemeğini hem karşı tarafı ağırlamayı taşır, çeşidi Yolculukta Yemek ve Ağırlama; bu yüzden yapımcının şehir içinde bir platformla yediği iş yemeği de seyahat toplamında görünür. Master Excel'de yapımcı ağırlaması iki kaynakta ayrı satır (HBO, Netflix), genel Entertainment altı kaynakta. TETİK: raporlar turu.
+- Kayıp ve Hasar kalemi (16 Ekim 2026, Engin): bugüne kadarki kartlarda yok; ekipman ve sanat kartlarında gerekir, o kartların turunda kartın kendi kalemi olarak açılır (MMB her departmanda 97 numarasıyla tutar: 2197, 2397, 3297 gibi; çeşidi Kayıp ve Hasar, Finansman ve Sigorta altında). 2100'de açılmaz. Engin (birebir): "kayıp ve hasar şu ana kadar olan kartlarda yok ama özellikle ekipman ve sanat kartlarında gerekecek". TETİK: ekipman ve sanat kartlarının turu.
 
 ## 9. UI/EKRAN PARK (bütçe ekran tasarımına gelince)
 - Bento Grid görünümü: maskeli kartların asma kilit/flu gösterimi; ağaçta gizleme vs flu seçimi.
