@@ -204,6 +204,36 @@ Kaynaklar iki düzen gösteriyor: teste özel tutulan ekip test hesabında, haz�
 
 Okuma: iki kaynak da alanı bölümle, türü detay satırıyla ayırır. Doğa sınaması `docs/butce/GIDER-CESIDI-ANALIZI.md` §10'da.
 
+### 3.15 Seyahatin yeri: yaratıcı kadro ve ekip [A] ve [B] — 14 Ekim 2026
+
+Soru (Engin, 14 Ekim 2026): yaratıcı kadronun seyahati neden kendi kartının ailesinde duruyor da Seyahat ve Konaklama kartında durmuyor? Kararın geçmişi `docs/butce/KART-KATALOGU.md` §3 (genel kart ile birim aileleri birlikte, 5 Ekim 2026) ve `docs/butce/BUTCE-SEMA-KARARLARI.md` GİDER ÇEŞİDİ EKSENİ içindedir. İcmal gereksinimi ve erteleme `docs/EKRAN-MUHASEBE.md` §19'dadır (14 Ekim 2026, açık).
+
+#### Kurum formları ve hesap planları [A] (repodaki dosyalar)
+
+- **MMB 6.1:** 1110 Travel/Living (geliştirme), 1305 Travel & Living (senaryo) ve 1508 Travel/Living (yönetmen) birimin içinde. Yapımcı ve oyuncu dahil kalan yaratıcı kadro için 1700 A-T-L Travel/Living (1701 Hotels, 1702 Travel, 1703 Per Diem, 1704 Car Rentals, 1705 Misc). Ekip için 3500 Location (3502 Travel Costs, 3503 Per Diem, 3504 Lodging, 3505 Meals); post için 5122 ve 5505. 1600 Talent'ta seyahat yok. Ekip hesaplarındaki "Travel" detay satırı yolculuk gününün ücretidir, masraf değil (KART-KATALOGU §7.6 YOLCULUK GÜNÜ).
+- **Telefilm:** 02 Script, 03 Development, 04 Producer(s), 05 Director(s) ve 06 Stars hesaplarının her birinde aynı sonekle .60 Travel expenses ve .65 Living expenses. Ekip ve öteki oyuncular 33 Travel & Living'de (33.01 Fares, 33.10 Accommodations, 33.20 Per diem(s), 33.30 Transfers, 33.35 Overweight baggage). Post'ta kendi satırları var: 60.60 ve 60.65 (kurgu ekibi), 66.50 ve 66.55 (müzik), 67.5 (VFX) altında numarasız iki satır. Yıldız olmayan oyuncuların hesabında (10 Cast) seyahat satırı yok.
+- **Screen Australia A-Z:** A.1 Story & Script'te Writers Travel & Transport; A.2 Development'ta yurt içi ve yurt dışı yol ve otel; B.1 Producers, B.2 Directors ve E(a) Principal Cast (yurt dışı ve yerli) bloklarının her birinde Airfares, Accommodation ve Per Diems. Ekip ve geri kalanı M Travel & Transport ile N Accommodation, Living & Catering'de; 6.Trav sayfasındaki "Crew & Cast" seyahat çizelgesi M ve N'yi besler. Casting içinde (E(b)1) ayrıca Travel & Accommodation; post'ta T Post-Prodn. Travel & Accommodation.
+- **Eurimages 2018:** merkezde 4.12 Transport, Travel and living (koordinatör, uçak, otel, harcırah). Geliştirme istisnadır: 1.5 "Travel, transportation & living costs for development". Post 6.8'de. 2 Direction ve 3 Talents bölümlerinde seyahat satırı yok.
+- **CNC 2018:** merkezde bölüm 6; döneme göre (61 hazırlık, 62 çekim, 66 çekim sonrası) ve bölgeye göre (63 Paris, 64 Paris dışı, 65 yurt dışı) bölünür. Ayrı satırı olan yalnız yapımcı (6111, 6611) ve müzik personeli (6672); yazar, yönetmen ve oyuncu toplu "personel" satırlarında (6121, 6211).
+- **BFI Future Takes:** merkezde 14 Travel and transport ve 15 Accommodation (15.1 Hotels, 15.2 Per diem); keşfin iki bölümde de ayrı satırı var (14.1, 15.3). Departmanlarda seyahat yok.
+- **AICP** (6 Ekim 2026 taraması): dağıtık. Otel ve harcırah C ve D'de, uçak D'de; yönetmen seyahati L'de (yönetmen bölümü); oyuncunun uçağı ve harcırahı N'de (oyuncu giderleri).
+- **Saturation şablonları** (Master Excel'deki 15 dışa aktarım; satır adı düzeyinde, bölüm bilgisi yok): Netflix, HBO, Disney, BET ve Discovery yaratıcı kadronun seyahatini rol rol ayrı satırda tutuyor: WRITER(S) TRAVEL/HOTEL/PER DIEM/AIRFARES (bet, hbo, disney, netflix, screen_australia), PRODUCER(S) (bet, hbo, disney, netflix), DIRECTOR(S) (bet, hbo, disney, netflix, AICP), CAST (disney, hbo, netflix, bet), BITS & STUNTS (disney), COMPOSER (bet), STUDIO EXEC (netflix, georgia). Disney'de ayrıca "ATL TRAVEL & LIVING" var; Discovery Talent ve Crew diye ayırıyor. Satırların hangi hesapta durduğu dosyada yok.
+
+#### Yazılımlar (14 Ekim 2026)
+
+- **Hot Budget 3** [A, `docs/butce/HotBudget-3.0-user-guide.pdf` s. 45–47]: Travel Log ayrı bir liste. Her satır yolcuyu (Traveler), gider türünü (Cost Type, serbest metin: Flights, Hotel, Per Diem, Transportation), adedi, günü, birim fiyatı ve "Line Number"ı taşır; satırın parası bu numarayla bütçenin istenen satırına (ya da CS ile Cost Summary satırına) dağıtılır. Altta COST TYPE SUMS aynı türü toplar.
+- **Saturation** [B, https://saturation.io/budgeting]: numaralı iç içe hesaplar, 34'ten fazla şablon. Satıra etiket basılır (IATSE 600, Rental, Second Unit; konum, teşvik uygunluğu) ve etikete göre süzülür; süzülmüş görünümde toplamın verildiği sayfada yazmıyor.
+- **Yamdu** [B, "Travel & Living Planning" blog yazısı, ai-info sayfası, Showbiz ortaklığı]: seyahat kişi kişi planlanır (traveler), tek bir seyahat çizelgesinde. Maliyet bacak ve konaklama kaydına girilir; muhasebe görünümünde yolculuk ve konaklama için ayrı sütunlarda gerçekleşene akar. Bütçe hesabı için Showbiz'e aktarılır (takvim); kendi bütçe modülü beta, hesap planı yayımlanmamış.
+- **Wrapbook** [B, yardım merkezi]: harcırah ve ödenekler kişinin puantajındadır; hesap kodlaması sayfada yok.
+- **Showbiz** [C, BTL News incelemesi]: kategori, hesap ve detay; sütunlar hesaplar arası gruplama yapabilir (genel giderler, şehir bazlı çekim); seyahate özel bir yapı yok.
+- **MMB Groups** [B, §3.13]: detay satırına elle basılan etiketle hesaplar arası toplam.
+
+#### Okuma
+
+- Üç düzen var. Yaratıcı kadronun seyahati kendi biriminde, ekibinki merkezde: MMB, Telefilm, Screen Australia ve Saturation'daki stüdyo şablonları. Bütün seyahat merkezde: Eurimages, CNC ve BFI (Eurimages'ta geliştirme, CNC'de yapımcı ayrı satırdır). Bölümlere dağıtık: AICP.
+- Toplam seyahat üç yoldan alınıyor: merkezdeki bölümden (Eurimages, CNC, BFI), etiketten (MMB Groups, Saturation) ya da ayrı bir seyahat listesinden (Hot Budget Travel Log, Yamdu).
+- KAAPA'daki karşılık: genel kart ile birim aileleri birlikte (KART-KATALOGU §3), kartlar arası toplam gider çeşidi ekseniyle. İcmal diziliminin karttan bağımsız kurulması gereksinimi ve konuşulanlar `docs/EKRAN-MUHASEBE.md` §19'da; karar icmal turunda.
+
 ## 4. KAAPA için (YONTEM §6 I satırı; gözlem, karar değil)
 
 - **Bizde var mı:** Gider çeşidi ekseni tasarımda var (BUTCE-SEMA GİDER ÇEŞİDİ EKSENİ), şemada yok.
