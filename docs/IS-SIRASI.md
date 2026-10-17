@@ -18,6 +18,7 @@ Aktif milestone: M2 — Çekirdek Döngü.
 Bu bölüm kasıtlı boş bırakılmıştır. "Sıradaki iş" için CURRENT.md'ye bak.
 
 ## Backlog (uzun vadeli, tarihsiz — CURRENT.md'nin "Sıradaki iş"ine henüz girmedi)
+- **Bağlam ve doküman yükü: skill ve Obsidian (14 Ekim 2026, Engin; konuşulup karara bağlanmadı).** Engin (birebir): "bu kadar md çok etki ve bağlam için skill yükleyelim diyorum yok, obsidian diyorum yok". Engin açınca konuşulur.
 - **İcmal dip zinciri: Genel Gider satırı (5 Ekim 2026).** Yer, sıra ve taban kararı icmal turunda. Ev: EKRAN-MUHASEBE §19 Ekran 1 park maddesi.
 - **Genel Seyahat & Konaklama kartı (5 Ekim 2026).** Ekip geneli seyahat, konaklama, harcırah ve yemek; 1100, 1300 ve 1500 kendi ailelerini taşımaya devam eder. Koster damıtımında Koster'ın 3500 Location hesabı KAAPA'da Lokasyon ve Seyahat & Konaklama iki kartıdır; taslak kart listesinde Mekân & Lojistik altında "Konaklama/Yemek" adıyla duruyor; adı ve sınırı kesinleşmedi. Ev: KART-KATALOGU §3. Tetik: kart sırası o karta geldiğinde.
 - KART 1400 — 1500 modeli üzerinden geçilir. KART 1300 3 Ekim 2026'da tamamlandı (KART-KATALOGU §7.2). (KART 1100 TAMAMLANDI, 21 Ağustos 2026'da çift kayıttan çıkarıldı — bkz. Yapıldı bölümü.) KART 1600 5 Eylül 2026'da canlıya girdi (git log; KART-KATALOGU §7.5); bu listeden 23 Eylül 2026'da çıkarıldı. **KART 1400 KAPANDI (14 Ekim 2026):** Dilim 1 canlıda, kütüphane 22 kalem, film şablonu v9 (KART-KATALOGU §7.3).

@@ -13,7 +13,7 @@
 - EKIP+EKIPMAN kurali: departmana-ozel ekipman departman kartinda (beraber); paylasilan/genel kaynak kendi kartinda (genel arac Nakliye, yemek Konaklama/Yemek). MMB + Eurimages bunu teyit etti.
 - "Harcama Grubu" = kart icin hazir Turkce terim (iki Turk butcesinde de ayni).
 
-## Onerilen kart listesi (ust-grup -> kart) - 1100/1300/1400/1500/1600 KILITLENDI (KART-KATALOGU.md bolum 7); kalan kartlar TASLAK (siradaki: 1700+, Teknik/Sanat/Post/operasyonel)
+## Onerilen kart listesi (ust-grup -> kart) - 1100/1300/1400/1500/1600 KILITLENDI (KART-KATALOGU.md bolum 7); kalan kartlar TASLAK (sıradaki: KART 2100, tasarımda, KART-KATALOGU.md §7.6; 1700 kart olarak kurulmaz; kalanlar Teknik/Sanat/Post/operasyonel)
 - GELISTIRME & HAKLAR: Senaryo & Hikaye - Yapimci/Yonetmen
 - OYUNCU: Ana Kast - Kast Ekibi
 - YAPIM/REJI: Produksiyon/Reji Ekibi
